@@ -1,0 +1,50 @@
+[{
+    title : '@@form.textfield.editTextField@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.textfield.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.textfield.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.textfield.label@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'size',
+        label : '@@form.textfield.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.textfield.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@form.textfield.chooseValidator@@',
+    properties : [{
+        name : 'validator',
+        label : '@@form.textfield.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.textfield.workflowVariables@@',
+    properties : [{
+        name : 'workflowVariable',
+        label : '@@form.textfield.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

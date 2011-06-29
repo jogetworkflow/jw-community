@@ -1,0 +1,153 @@
+package org.joget.apps.form.lib;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormLoadElementBinder;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.model.FormStoreElementBinder;
+import org.joget.apps.form.service.FormUtil;
+import org.joget.workflow.model.WorkflowVariable;
+import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.util.WorkflowUtil;
+
+/**
+ * Data binder that loads/stores data from the form database and also workflow variables.
+ */
+public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadElementBinder, FormStoreElementBinder {
+
+    @Override
+    public String getName() {
+        return "WorkflowFormBinder";
+    }
+
+    @Override
+    public String getVersion() {
+        return "1.0.0";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Workflow Form Binder";
+    }
+
+    @Override
+    public String getLabel() {
+        return "Workflow Form Binder";
+    }
+
+    @Override
+    public String getPropertyOptions() {
+        return "";
+    }
+
+    @Override
+    public FormRowSet load(Element element, String primaryKey) {
+        // load form data from DB
+        FormRowSet rows = super.load(element, primaryKey);
+        if (rows != null) {
+            FormRow row = null;
+            if (rows.isEmpty()) {
+                row = new FormRow();
+                rows.add(row);
+            } else {
+                row = rows.iterator().next();
+            }
+
+            // handle workflow variables
+            String processId = primaryKey;
+            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableList(processId);
+            Map<String, String> variableMap = new HashMap<String, String>();
+            for (WorkflowVariable variable : variableList) {
+                variableMap.put(variable.getId(), variable.getVal().toString());
+            }
+            loadWorkflowVariables(element, row, variableMap);
+        }
+        return rows;
+    }
+
+    @Override
+    public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
+        FormRowSet result = rows;
+        if (rows != null && !rows.isEmpty()) {
+            // store form data to DB
+            result = super.store(element, rows, formData);
+
+            // handle workflow variables
+            if (!rows.isMultiRow()) {
+                String processId = element.getPrimaryKeyValue(formData);
+                if (processId != null) {
+                    WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+
+                    // find root form
+                    Element form = FormUtil.findRootForm(element);
+
+                    // recursively find element(s) mapped to workflow variable
+                    FormRow row = rows.iterator().next();
+                    Map<String, String> variableMap = new HashMap<String, String>();
+                    variableMap = storeWorkflowVariables(form, row, variableMap);
+
+                    // save variable values
+                    for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
+                        String variableName = i.next();
+                        String variableValue = variableMap.get(variableName);
+                        workflowManager.processVariable(processId, variableName, variableValue);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Recursive into elements to set workflow variable values to be loaded.
+     * @param element
+     * @param row The current row of data to be loaded
+     * @param variableMap The variable name=value pairs.
+     * @return
+     */
+    protected Map<String, String> loadWorkflowVariables(Element element, FormRow row, Map<String, String> variableMap) {
+        String variableName = element.getPropertyString(AppUtil.PROPERTY_WORKFLOW_VARIABLE);
+        if (variableName != null && !variableName.trim().isEmpty()) {
+            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+            String variableValue = variableMap.get(variableName);
+            if (variableValue != null) {
+                row.put(id, variableValue);
+            }
+        }
+        for (Iterator<Element> i = element.getChildren().iterator(); i.hasNext();) {
+            Element child = i.next();
+            loadWorkflowVariables(child, row, variableMap);
+        }
+        return variableMap;
+    }
+
+    /**
+     * Recursive into elements to retrieve workflow variable values to be stored.
+     * @param element
+     * @param row The current row of data
+     * @param variableMap The variable name=value pairs to be stored.
+     * @return
+     */
+    protected Map<String, String> storeWorkflowVariables(Element element, FormRow row, Map<String, String> variableMap) {
+        String variableName = element.getPropertyString(AppUtil.PROPERTY_WORKFLOW_VARIABLE);
+        if (variableName != null && !variableName.trim().isEmpty()) {
+            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+            String value = (String) row.get(id);
+            if (value != null) {
+                variableMap.put(variableName, value);
+            }
+        }
+        for (Iterator<Element> i = element.getChildren().iterator(); i.hasNext();) {
+            Element child = i.next();
+            storeWorkflowVariables(child, row, variableMap);
+        }
+        return variableMap;
+    }
+}

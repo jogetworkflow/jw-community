@@ -1,0 +1,54 @@
+[{
+    title : '@@userview.datalistmenu.editList@@',
+    properties : [{
+        name : 'id',
+        label : 'ID',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.datalistmenu.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.datalistmenu.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.datalistmenu.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'List'
+    },
+    {
+        name : 'datalistId',
+        label : '@@userview.datalistmenu.listId@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.DataListMenu/service?action=getOptions'
+    }]
+},
+{
+    title : '@@userview.datalistmenu.ui@@',
+    properties : [{
+        name : 'customHeader',
+        label : '@@userview.datalistmenu.customHeader@@',
+        type : 'textarea',
+        cols : '20',
+        rows : '5'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.datalistmenu.customFooter@@',
+        type : 'textarea',
+        cols : '20',
+        rows : '5'
+    }]
+},
+{
+    title : '@@userview.datalistmenu.advanced@@',
+    properties : [{
+        name : 'keyName',
+        label : '@@userview.datalistmenu.userviewKeyName@@',
+        type : 'textfield'
+    }]
+}]

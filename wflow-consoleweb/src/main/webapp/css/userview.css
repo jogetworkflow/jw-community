@@ -1,0 +1,95 @@
+body, ul{
+    margin:0px;
+    padding:0px;
+}
+
+#page{
+    width:960px;
+    margin: 0 auto;
+    border-left:1px dotted gray;
+    border-right:1px dotted gray;
+}
+
+#header, #main, #footer{
+    border-bottom:1px dotted gray;
+}
+
+#navigation{
+    border-right:1px dotted gray;
+    width:209px;
+    float:left;
+    min-height:600px;
+}
+
+#content{
+    width:750px;
+    float:left;
+}
+
+.embeded #content {
+    margin: 0px;
+    padding: 0px;
+}
+
+.category-label{
+    width:100%;
+    float:left;
+}
+
+.menu-container{
+    min-height:20px;
+}
+
+#header-info{
+    margin:0 50px 10px;
+}
+
+#header-name span{
+    font-size:24px;
+    font-weight:bold;
+}
+
+#header-message{
+    margin:20px 50px 5px;
+}
+
+#header-welcome-message{
+    float:left;
+    width:500px;
+}
+
+#header-logout-text{
+    float:right;
+    text-align:right;
+    width:200px;
+}
+
+#footer-message{
+    padding:10px 50px;
+}
+
+body.embeded #page{
+    width:800px;
+    border: none;
+}
+
+body.embeded #header,
+body.embeded #footer,
+body.embeded #navigation{
+    display:none;
+}
+
+body.embeded #content{
+    float:left;
+    width:100%;
+}
+
+.clear{
+    clear:both;
+}
+
+#page #form-canvas {
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}

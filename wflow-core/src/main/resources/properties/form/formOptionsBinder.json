@@ -1,0 +1,18 @@
+[{
+    title : '@@form.defaultformoptionbinder.selectForm@@',
+    properties : [
+    %s,
+    {
+        name : 'labelColumn',
+        label : '@@form.defaultformoptionbinder.labelColumn@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'extraCondition',
+        label : '@@form.defaultformoptionbinder.extraFilter@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '50'
+    }]
+}]

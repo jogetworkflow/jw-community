@@ -1,0 +1,19 @@
+[
+    {
+        title:'@@form.column.editColumn@@',
+        properties:[
+            {
+                name:'horizontal',
+                label:'@@form.column.horizontalLayout@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            }
+        ]
+    }
+]

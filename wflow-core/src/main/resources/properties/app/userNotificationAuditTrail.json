@@ -1,0 +1,69 @@
+[{
+    title : '@@app.usernotificationaudittrail.config@@',
+    properties : [{
+        name : 'base',
+        label : '@@app.usernotificationaudittrail.baseUrl@@',
+        type : 'textfield',
+        description : 'eg. : http://localhost:8080/wflow-consoleweb',
+        required : 'True'
+    },
+    {
+        name : 'host',
+        label : '@@app.usernotificationaudittrail.host@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'port',
+        label : '@@app.usernotificationaudittrail.port@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'needAuthentication',
+        label : '@@app.usernotificationaudittrail.authentication@@',
+        type : 'checkbox',
+        options : [{
+            value : 'yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'username',
+        label : '@@app.usernotificationaudittrail.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.usernotificationaudittrail.password@@',
+        type : 'password'
+    }]
+},
+{
+    title : '@@app.usernotificationaudittrail.email@@',
+    properties : [{
+        name : 'from',
+        label : '@@app.usernotificationaudittrail.from@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'cc',
+        label : '@@app.usernotificationaudittrail.cc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'subject',
+        label : '@@app.usernotificationaudittrail.subject@@',
+        type : 'textfield',
+        value : 'New Task: #assignment.activityName#'
+    },
+    {
+        name : 'emailMessage',
+        label : '@@app.usernotificationaudittrail.message@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15',
+        value : 'A new task has been created by the process #assignment.processName#'
+    }]
+}]

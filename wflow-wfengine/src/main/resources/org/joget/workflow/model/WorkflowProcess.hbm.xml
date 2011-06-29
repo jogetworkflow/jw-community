@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="WorkflowProcess" lazy="false" name="org.joget.workflow.model.WorkflowProcess" table="wf_report_process">
+    <id column="processDefId" name="id" type="string"/>
+    <property column="processName" name="name" type="string"/>
+    <property column="version" name="version" type="string"/>
+  </class>
+</hibernate-mapping>

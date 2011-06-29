@@ -1,0 +1,82 @@
+[{
+    title : '@@form.selectbox.editSelectBox@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.selectbox.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.selectbox.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.selectbox.label@@',
+        type : 'textfield'
+    },
+    {
+        name : 'size',
+        label : '@@form.selectbox.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'multiple',
+        label : '@@form.selectbox.multipleSelection@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonly',
+        label : '@@form.selectbox.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'options',
+        label : '@@form.selectbox.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.selectbox.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.selectbox.label@@'
+        }]
+    }]
+},
+{
+    title : '@@form.selectbox.chooseOptionsBinder@@',
+    properties : [{
+        name : 'optionsBinder',
+        label : '@@form.selectbox.optionsBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadOptionsBinder',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.selectbox.chooseValidator@@',
+    properties : [{
+        name : 'validator',
+        label : '@@form.selectbox.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.selectbox.workflowVariables@@',
+    properties : [{
+        name : 'workflowVariable',
+        label : '@@form.selectbox.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

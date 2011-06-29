@@ -1,0 +1,54 @@
+[{
+    title : '@@form.grid.editGrid@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.grid.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.grid.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.grid.label@@',
+        type : 'textfield'
+    },
+    {
+        name : 'size',
+        label : '@@form.grid.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'options',
+        label : '@@form.grid.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.grid.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.grid.label@@'
+        }]
+    }]
+},
+{
+    title : '@@form.grid.chooseLoadBinder@@',
+    properties : [{
+        name : 'loadBinder',
+        label : '@@form.grid.loadBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.grid.chooseStoreBinder@@',
+    properties : [{
+        name : 'storeBinder',
+        label : '@@form.grid.storeBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+}]

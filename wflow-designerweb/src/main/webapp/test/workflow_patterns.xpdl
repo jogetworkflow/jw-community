@@ -1,0 +1,2341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xpdl:Package Id="workflow_patterns" Name="Workflow patterns" xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <xpdl:PackageHeader>
+        <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>
+        <xpdl:Vendor>Together</xpdl:Vendor>
+        <xpdl:Created>2004-08-31 22:22:17</xpdl:Created>
+        <xpdl:Description>Contains workflow processes that show workflow patterns defined by Wil van der Aalst that are more or less directly supported by XPDL and Shark engine</xpdl:Description>
+    </xpdl:PackageHeader>
+    <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+        <xpdl:Author>Sasa Bojanic</xpdl:Author>
+    </xpdl:RedefinableHeader>
+    <xpdl:ConformanceClass GraphConformance="NON_BLOCKED"/>
+    <xpdl:Script Type="text/javascript"/>
+    <xpdl:Participants>
+        <xpdl:Participant Id="test" Name="Test">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+    </xpdl:Participants>
+    <xpdl:Applications>
+        <xpdl:Application Id="ResetCounter">
+            <xpdl:FormalParameters>
+                <xpdl:FormalParameter Id="counter" Mode="OUT">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+            </xpdl:FormalParameters>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="ToolAgentClass" Value="org.enhydra.shark.toolagent.JavaScriptToolAgent"/>
+                <xpdl:ExtendedAttribute Name="Script" Value="counter = 0;"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:Application>
+        <xpdl:Application Id="IncrementCounter">
+            <xpdl:FormalParameters>
+                <xpdl:FormalParameter Id="counter" Mode="INOUT">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+            </xpdl:FormalParameters>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="ToolAgentClass" Value="org.enhydra.shark.toolagent.JavaScriptToolAgent"/>
+                <xpdl:ExtendedAttribute Name="Script" Value="counter = counter + 1;"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:Application>
+        <xpdl:Application Id="DecrementCounter">
+            <xpdl:FormalParameters>
+                <xpdl:FormalParameter Id="counter" Mode="INOUT">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+            </xpdl:FormalParameters>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="ToolAgentClass" Value="org.enhydra.shark.toolagent.JavaScriptToolAgent"/>
+                <xpdl:ExtendedAttribute Name="Script" Value="counter = counter - 1;"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:Application>
+        <xpdl:Application Id="SetCounter">
+            <xpdl:FormalParameters>
+                <xpdl:FormalParameter Id="value" Mode="IN">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+                <xpdl:FormalParameter Id="counter" Mode="OUT">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+            </xpdl:FormalParameters>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="ToolAgentClass" Value="org.enhydra.shark.toolagent.JavaScriptToolAgent"/>
+                <xpdl:ExtendedAttribute Name="Script" Value="counter = value;"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:Application>
+    </xpdl:Applications>
+    <xpdl:DataFields>
+        <xpdl:DataField Id="whereToGo" IsArray="FALSE" Name="Where to go">
+            <xpdl:DataType>
+                <xpdl:BasicType Type="STRING"/>
+            </xpdl:DataType>
+            <xpdl:InitialValue>B</xpdl:InitialValue>
+            <xpdl:Description>The value of this variable determines the process flow.</xpdl:Description>
+        </xpdl:DataField>
+    </xpdl:DataFields>
+    <xpdl:WorkflowProcesses>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP1_Sequence" Name="WfBCP1 Sequence">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:28:17</xpdl:Created>
+                <xpdl:Description>execute activities A, B and C in sequence</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="206,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="356,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="509,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP1_Sequence_Tra1" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfBCP1_Sequence_Tra2" Name="Transition" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=C,X_OFFSET=661,Y_OFFSET=101,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=91,Y_OFFSET=101,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP2_Parallel_Split" Name="WfBCP2 Parallel Split">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:34:21</xpdl:Created>
+                <xpdl:Description>executes activity A, and after that activities B and C in parallel</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfBCP2_Parallel_Split_Tra2"/>
+                                    <xpdl:TransitionRef Id="WfBCP2_Parallel_Split_Tra1"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="180,80"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="330,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="330,150"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP2_Parallel_Split_Tra1" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP2_Parallel_Split_Tra2" Name="Transition" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=C,X_OFFSET=490,Y_OFFSET=190,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=B,X_OFFSET=500,Y_OFFSET=50,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=91,Y_OFFSET=41,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP3_Synchronization" Name="WfBCP3 Synchronization">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:38:46</xpdl:Created>
+                <xpdl:Description>synchronize execution of two parallel activities</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfBCP3_Synchronization_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfBCP3_Synchronization_Tra2"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="150,80"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="320,20"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="320,160"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="AND"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="480,80"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP3_Synchronization_Tra1" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP3_Synchronization_Tra2" Name="Transition" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfBCP3_Synchronization_Tra3" Name="Transition" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfBCP3_Synchronization_Tra4" Name="Transition" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=D,X_OFFSET=620,Y_OFFSET=30,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=74,Y_OFFSET=24,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP4_Exclusive_Choice" Name="WfBCP4 Exclusive Choice">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:38:47</xpdl:Created>
+                <xpdl:Description>choose one execution path from many alternatives</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B process will follow to activity B, if you set it to C it will proceed to activity C, otherwise activity D will be executed</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfBCP4_Exclusive_Choice_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfBCP4_Exclusive_Choice_Tra2"/>
+                                    <xpdl:TransitionRef Id="WfBCP4_Exclusive_Choice_Tra3"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="150,110"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="370,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="370,110"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="370,210"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP4_Exclusive_Choice_Tra1" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="B"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP4_Exclusive_Choice_Tra2" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="C"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP4_Exclusive_Choice_Tra3" Name="Transition" To="D">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=D,X_OFFSET=500,Y_OFFSET=250,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=B,X_OFFSET=500,Y_OFFSET=50,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=C,X_OFFSET=501,Y_OFFSET=151,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=80,Y_OFFSET=27,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP5_Simple_Merge" Name="WfBCP5 Simple Merge">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:49:16</xpdl:Created>
+                <xpdl:Description>merge alternative execution paths</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B process will follow to activity B, if you set it to C it will proceed to activity C, otherwise activity D will be executed</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfBCP5_Simple_Merge_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfBCP5_Simple_Merge_Tra2"/>
+                                    <xpdl:TransitionRef Id="WfBCP5_Simple_Merge_Tra5"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="180,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="400,20"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="400,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="E" Name="E">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="560,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="400,180"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP5_Simple_Merge_Tra1" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="B"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP5_Simple_Merge_Tra2" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="C"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfBCP5_Simple_Merge_Tra3" Name="Transition" To="E">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfBCP5_Simple_Merge_Tra4" Name="Transition" To="E">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfBCP5_Simple_Merge_Tra5" Name="Transition" To="D">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfBCP5_Simple_Merge_Tra6" Name="Transition" To="E">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=E,X_OFFSET=670,Y_OFFSET=30,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=86,Y_OFFSET=34,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfABSP1_Multiple_Choice" Name="WfABSP1 Multiple Choice">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:55:37</xpdl:Created>
+                <xpdl:Description>choose several execution paths from many alternatives</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B, C or D process will follow to activity B, C or D. If you set it to AB, BA, AC, CA, BC, CB, ABC, BCA, ... it will follow to all of the activities mentioned in the variable value</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP1_Multiple_Choice_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfABSP1_Multiple_Choice_Tra2"/>
+                                    <xpdl:TransitionRef Id="WfABSP1_Multiple_Choice_Tra8"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="160,130"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="430,30"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="430,130"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="430,240"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfABSP1_Multiple_Choice_Tra1" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP1_Multiple_Choice_Tra2" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP1_Multiple_Choice_Tra8" To="D">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('D') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=B,X_OFFSET=570,Y_OFFSET=60,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=D,X_OFFSET=570,Y_OFFSET=290,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=C,X_OFFSET=570,Y_OFFSET=170,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=91,Y_OFFSET=71,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfABSP2_Synchronizing_Merge" Name="WfABSP2 Synchronizing Merge">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 23:05:16</xpdl:Created>
+                <xpdl:Description>merge many execution paths. Synchronize if many paths are taken. Simple merge if only one execution path is taken 
+
+WARNING: this process can't contain loops (at least, the branch with synchronizing merge structure mustn't be in a loop)</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B process will follow to activity B, if you set it to C it will proceed to activity C, and if you set it to BC or CB, it will proceed both to B and C</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra3"/>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra4"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="100,160"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="340,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="340,210"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="R1" Name="R1">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra5"/>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra7"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="220,110"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="R2" Name="R2">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra6"/>
+                                    <xpdl:TransitionRef Id="WfABSP2_Synchronizing_Merge_Tra8"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="220,310"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="R3" Name="R3">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="470,110"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="R4" Name="R4">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="470,310"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="AND"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="590,160"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfABSP2_Synchronizing_Merge_Tra3" Name="Transition" To="R1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP2_Synchronizing_Merge_Tra4" Name="Transition" To="R2">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R1" Id="WfABSP2_Synchronizing_Merge_Tra5" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R2" Id="WfABSP2_Synchronizing_Merge_Tra6" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R1" Id="WfABSP2_Synchronizing_Merge_Tra7" Name="Transition" To="R3">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R2" Id="WfABSP2_Synchronizing_Merge_Tra8" Name="Transition" To="R4">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfABSP2_Synchronizing_Merge_Tra9" Name="Transition" To="R3">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfABSP2_Synchronizing_Merge_Tra11" Name="Transition" To="R4">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R3" Id="WfABSP2_Synchronizing_Merge_Tra13" Name="Transition" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="R4" Id="WfABSP2_Synchronizing_Merge_Tra14" Name="Transition" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=D,X_OFFSET=657,Y_OFFSET=72,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=87,Y_OFFSET=70,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess Id="WfABSP3_Multiple_Merge" Name="WfABSP3 Multiple Merge">
+            <xpdl:ProcessHeader>
+                <xpdl:Created>2006-11-23 14:26:30</xpdl:Created>
+                <xpdl:Description>merge many execution paths without synchronizing</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Fuad Abinader</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="common" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>common data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw1data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw1 data</xpdl:InitialValue>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B, C or D process will follow to activity B, C or D. If you set it to AB, BA, AC, CA, BC, CB, ABC, BCA, ... it will follow to all of the activities mentioned in the variable value</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra6"/>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra11"/>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra15"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="161,184"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="410,40"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="421,184"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="424,312"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S1" Name="S1">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="ASYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw1data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="570,186"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="D" Id="Pkg_MyPatterns_wp1_tra8" To="S1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="Pkg_MyPatterns_wp1_tra4" To="S1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="Pkg_MyPatterns_wp1_tra5" To="S1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra6" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra11" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra15" To="D">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('D') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=S1,X_OFFSET=709,Y_OFFSET=197,JaWE_GRAPH_TRANSITION_STYLE=SIMPLE_ROUTING_BEZIER,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=75,Y_OFFSET=195,JaWE_GRAPH_TRANSITION_STYLE=SIMPLE_ROUTING_BEZIER,TYPE=START_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess Id="WfABSP4_Discriminator" Name="WfABSP4 Discriminator">
+            <xpdl:ProcessHeader>
+                <xpdl:Created>2006-11-23 14:26:30</xpdl:Created>
+                <xpdl:Description>The discriminator is a point in a workflow process that waits for one of the incoming branches to complete before activating the subsequent activity. From that moment on it waits for all remaining branches to complete and "ignores" them. Once all incoming branches have been triggered, it resets itself so that it can be triggered again (which is important otherwise it could not really be used in the context of a loop). 
+(NOTE that current implementation does not support loop scenario).</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Fuad Abinader</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="availableBranchesToAccessE" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>0</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="openedBranchesAfterA" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>0</xpdl:InitialValue>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Applications>
+                <xpdl:Application Id="UpdateBooleanVariable" Name="UpdateBooleanVariable">
+                    <xpdl:FormalParameters>
+                        <xpdl:FormalParameter Id="booleanValue" Mode="OUT">
+                            <xpdl:DataType>
+                                <xpdl:BasicType Type="BOOLEAN"/>
+                            </xpdl:DataType>
+                        </xpdl:FormalParameter>
+                    </xpdl:FormalParameters>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="ToolAgentClass" Value="org.enhydra.shark.toolagent.JavaScriptToolAgent"/>
+                        <xpdl:ExtendedAttribute Name="Script" Value="booleanValue = true;"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Application>
+            </xpdl:Applications>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B, C or D process will follow to activity B, C or D. If you set it to AB, BA, AC, CA, BC, CB, ABC, BCA, ... it will follow to all of the activities mentioned in the variable value</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra6"/>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra11"/>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra15"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="184,209"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra5"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra7"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="540,60"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra4"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra8"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="540,210"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="Pkg_MyPatterns_wp1_tra8"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra9"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="540,350"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="E" Name="E">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="920,210"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="Start" Name="Start">
+                    <xpdl:Route/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="150,80"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="ResetDiscriminator" Name="Reset Discriminator">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="SetCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>1</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>availableBranchesToAccessE</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Only makes E available for one branch</xpdl:Description>
+                        </xpdl:Tool>
+                        <xpdl:Tool Id="ResetCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Toggle opened branches for 0</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="80,210"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForB" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for B</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="430,60"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForC" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for C</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="432,207"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForD" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for D</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="426,348"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="EnsureEOnlyOnce" Name="Ensure E Only Once">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>availableBranchesToAccessE</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of branches available to access E</xpdl:Description>
+                        </xpdl:Tool>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of remaining branches</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="820,210"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="HandleRemianingBranches" Name="Handle Remianing Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesAfterA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of remaining branches</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:StartMode>
+                        <xpdl:Automatic/>
+                    </xpdl:StartMode>
+                    <xpdl:FinishMode>
+                        <xpdl:Automatic/>
+                    </xpdl:FinishMode>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="820,350"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="End" Name="End">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="1080,300"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="D" Id="Pkg_MyPatterns_wp1_tra8" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">availableBranchesToAccessE&gt;0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="Pkg_MyPatterns_wp1_tra4" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">availableBranchesToAccessE&gt;0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="Pkg_MyPatterns_wp1_tra5" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">availableBranchesToAccessE&gt;0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra6" To="UpdateTriggeredBranchesForB">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra11" To="UpdateTriggeredBranchesForC">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="Pkg_MyPatterns_wp1_tra15" To="UpdateTriggeredBranchesForD">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('D') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="Start" Id="WfABSP4_Discriminator_tra11" To="ResetDiscriminator">
+                    <xpdl:Condition Type="CONDITION">openedBranchesAfterA == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="ResetDiscriminator" Id="WfABSP4_Discriminator_tra2" To="A">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForB" Id="WfABSP4_Discriminator_tra3" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForC" Id="WfABSP4_Discriminator_tra4" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForD" Id="WfABSP4_Discriminator_tra5" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="HandleRemianingBranches" Id="WfABSP4_Discriminator_tra14" To="End">
+                    <xpdl:Condition Type="CONDITION">openedBranchesAfterA == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="E" Id="WfABSP4_Discriminator_tra1" To="End">
+                    <xpdl:Condition Type="CONDITION">openedBranchesAfterA==0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="EnsureEOnlyOnce" Id="WfABSP4_Discriminator_tra6" To="E">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfABSP4_Discriminator_tra7" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfABSP4_Discriminator_tra8" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfABSP4_Discriminator_tra9" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=Start,X_OFFSET=80,Y_OFFSET=30,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=End,X_OFFSET=1150,Y_OFFSET=230,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfABSP5_N_out_of_M_Join" Name="WfABSP5 N out of M Join">
+            <xpdl:ProcessHeader>
+                <xpdl:Created>2006-12-06 09:07:54</xpdl:Created>
+                <xpdl:Description>N-out-of-M Join is a point in a workflow process where M parallel paths converge into one. The subsequent activity should be activated once N paths have completed. Completion of all remaining paths should be ignored. Similarly to the discriminator, once all incoming branches have "fired", the join resets itself so that it can fire again.</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader>
+                <xpdl:Author>Fuad Abinader</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="firedBranchesBeforeE" IsArray="FALSE" Name="Fired branches before E">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>0</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="openedBranchesFromA" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="INTEGER"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>0</xpdl:InitialValue>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities>
+                <xpdl:Activity Id="Start" Name="Start">
+                    <xpdl:Route/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="80,70"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="End" Name="End">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="1120,240"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B, C or D process will follow to activity B, C or D. If you set it to AB, BA, AC, CA, BC, CB, ABC, BCA, ... it will follow to all of the activities mentioned in the variable value</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra2"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra3"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra4"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="220,140"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="firedBranchesBeforeE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra5"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra15"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="580,30"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra6"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra16"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="580,140"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra7"/>
+                                    <xpdl:TransitionRef Id="WfABSP4_Discriminator_tra17"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="580,240"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="EnsureEOnlyOnce" Name="Ensure E Only Once">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>firedBranchesBeforeE</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of fired branches to access E</xpdl:Description>
+                        </xpdl:Tool>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of remaining branches</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="840,30"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="ResetDiscriminator" Name="Reset Discriminator">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="ResetCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>firedBranchesBeforeE</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Reset available branches for E to 0 (zero)</xpdl:Description>
+                        </xpdl:Tool>
+                        <xpdl:Tool Id="ResetCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Toggle opened branches for 0</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="130,230"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForB" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for B</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="470,30"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForC" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for C</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="469,141"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="UpdateTriggeredBranchesForD" Name="Update Triggered Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="IncrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Update triggered branches for D</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="466,245"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="HandleRemianingBranches" Name="Handle Remianing Branches">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="DecrementCounter" Type="PROCEDURE">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>openedBranchesFromA</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                            <xpdl:Description>Decrement the number of remaining branches</xpdl:Description>
+                        </xpdl:Tool>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="840,240"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="E" Name="E">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="940,140"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="Start" Id="WfABSP4_Discriminator_tra1" To="ResetDiscriminator">
+                    <xpdl:Condition Type="CONDITION">openedBranchesFromA == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP4_Discriminator_tra2" To="UpdateTriggeredBranchesForB">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP4_Discriminator_tra3" To="UpdateTriggeredBranchesForC">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP4_Discriminator_tra4" To="UpdateTriggeredBranchesForD">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('D') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfABSP4_Discriminator_tra5" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">firedBranchesBeforeE &gt; 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfABSP4_Discriminator_tra6" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">firedBranchesBeforeE &gt; 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfABSP4_Discriminator_tra7" To="EnsureEOnlyOnce">
+                    <xpdl:Condition Type="CONDITION">firedBranchesBeforeE &gt; 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="ResetDiscriminator" Id="WfABSP4_Discriminator_tra10" To="A">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForB" Id="WfABSP4_Discriminator_tra11" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForC" Id="WfABSP4_Discriminator_tra12" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="UpdateTriggeredBranchesForD" Id="WfABSP4_Discriminator_tra13" To="D">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfABSP4_Discriminator_tra15" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfABSP4_Discriminator_tra16" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfABSP4_Discriminator_tra17" To="HandleRemianingBranches">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="EnsureEOnlyOnce" Id="WfABSP5_N_out_of_M_Join_tra1" To="E">
+                    <xpdl:Condition Type="CONDITION">firedBranchesBeforeE == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="E" Id="WfABSP5_N_out_of_M_Join_tra2" To="End">
+                    <xpdl:Condition Type="CONDITION">openedBranchesFromA == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="HandleRemianingBranches" Id="WfABSP5_N_out_of_M_Join_tra3" To="End">
+                    <xpdl:Condition Type="CONDITION">openedBranchesFromA == 0</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_SPLINE"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=Start,X_OFFSET=80,Y_OFFSET=10,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=End,X_OFFSET=1150,Y_OFFSET=150,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfSP1_Arbitrary_Cycles" Name="WfSP1 Arbitrary Cycles">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-09-01 00:11:50</xpdl:Created>
+                <xpdl:Description>execute workflow graph w/out any structural restriction on loops</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="100,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="240,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B process will loop to activity B and otherwise it'll go to activity D</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfSP1_Arbitrary_Cycles_Tra3"/>
+                                    <xpdl:TransitionRef Id="WfSP1_Arbitrary_Cycles_Tra4"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="380,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to C process will loop to activity C and otherwise it'll go to activity E</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfSP1_Arbitrary_Cycles_Tra5"/>
+                                    <xpdl:TransitionRef Id="WfSP1_Arbitrary_Cycles_Tra6"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="520,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="E" Name="E">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="650,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfSP1_Arbitrary_Cycles_Tra1" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfSP1_Arbitrary_Cycles_Tra2" Name="Transition" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfSP1_Arbitrary_Cycles_Tra3" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="B"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="340,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_BEZIER"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfSP1_Arbitrary_Cycles_Tra4" Name="Transition" To="D">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfSP1_Arbitrary_Cycles_Tra5" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="C"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="480,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_BEZIER"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="D" Id="WfSP1_Arbitrary_Cycles_Tra6" Name="Transition" To="E">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=E,X_OFFSET=710,Y_OFFSET=140,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=80,Y_OFFSET=140,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfSP2_Implicit_Termination" Name="WfSP2 Implicit Termination">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-09-01 00:26:33</xpdl:Created>
+                <xpdl:Description>terminate if there is nothing to be done</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to B process will folow to activity B, if you set it to C it will proceed to activity C, otherwise process will be implicitly terminated, because there's nothing else to do</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfABSP1_Multiple_Choice_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfABSP1_Multiple_Choice_Tra2"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="90,90"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to D process will folow to activity D, otherwise it will either finish or wait for activity C and possibly E to finish</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="340,20"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>you have option to change the value of variable whereToGo. If you set it to E process will folow to activity E, otherwise it will either finish or wait for activity B and possibly D to finish</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="340,150"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="whereToGo"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="D" Name="D">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="540,20"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="E" Name="E">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="540,150"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfABSP1_Multiple_Choice_Tra1" Name="Transition" To="B">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('B') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfABSP1_Multiple_Choice_Tra2" Name="Transition" To="C">
+                    <xpdl:Condition Type="CONDITION">whereToGo.indexOf('C') != -1</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfSP2_Implicit_Termination_Tra3" Name="Transition" To="D">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="D"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="C" Id="WfSP2_Implicit_Termination_Tra4" Name="Transition" To="E">
+                    <xpdl:Condition Type="CONDITION">whereToGo=="E"</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=E,X_OFFSET=670,Y_OFFSET=190,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=D,X_OFFSET=670,Y_OFFSET=50,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=70,Y_OFFSET=20,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfPIMI1_MI_without_synchronization" Name="WfPIMI1 MI without synchronization">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-09-01 00:33:58</xpdl:Created>
+                <xpdl:Description>generate many instances of one activity without synchronizing them afterwards</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="common" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>common data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw1data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw1 data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw2data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw2 data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw3data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw3 data</xpdl:InitialValue>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of some variables.</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra3"/>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra2"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="120,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="common"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw1data"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw2data"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw3data"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S1" Name="S1">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="ASYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw1data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="320,20"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S2" Name="S2">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="ASYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw2data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="320,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S3" Name="S3">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="ASYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw3data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="320,180"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="AND"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="530,100"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra1" Name="Transition" To="S1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra2" Name="Transition" To="S2">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra3" Name="Transition" To="S3">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S1" Id="WfPIMI1_MI_without_synchronization_Tra4" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S2" Id="WfPIMI1_MI_without_synchronization_Tra5" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S3" Id="WfPIMI1_MI_without_synchronization_Tra6" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=B,X_OFFSET=645,Y_OFFSET=32,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=80,Y_OFFSET=30,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfPIMI2_MI_with_a_priori_known_design_time_knowledge" Name="WfPIMI2 MI with a priori known design time knowledge">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-09-01 21:17:30</xpdl:Created>
+                <xpdl:Description>generate many instances of one activity when the number of instances is known at the design time (with synchronization)</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="common" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>common data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw1data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw1 data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw2data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw2 data</xpdl:InitialValue>
+                </xpdl:DataField>
+                <xpdl:DataField Id="sbflw3data" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                    <xpdl:InitialValue>sbflw3 data</xpdl:InitialValue>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>you have option to change the value of some variables.</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="AND">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra1"/>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra3"/>
+                                    <xpdl:TransitionRef Id="WfPIMI1_MI_without_synchronization_Tra2"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="110,90"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="common"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw1data"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw2data"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="sbflw3data"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S1" Name="S1">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="SYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw1data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="300,10"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S2" Name="S2">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="SYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw2data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="300,90"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="S3" Name="S3">
+                    <xpdl:Implementation>
+                        <xpdl:SubFlow Execution="SYNCHR" Id="WfPIMI_Subflow">
+                            <xpdl:ActualParameters>
+                                <xpdl:ActualParameter>common</xpdl:ActualParameter>
+                                <xpdl:ActualParameter>sbflw3data</xpdl:ActualParameter>
+                            </xpdl:ActualParameters>
+                        </xpdl:SubFlow>
+                    </xpdl:Implementation>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="300,170"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="AND"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="480,90"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra1" Name="Transition" To="S1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra2" Name="Transition" To="S2">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="A" Id="WfPIMI1_MI_without_synchronization_Tra3" Name="Transition" To="S3">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S1" Id="WfPIMI1_MI_without_synchronization_Tra4" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S2" Id="WfPIMI1_MI_without_synchronization_Tra5" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="S3" Id="WfPIMI1_MI_without_synchronization_Tra6" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=B,X_OFFSET=570,Y_OFFSET=30,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=90,Y_OFFSET=20,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+        <xpdl:WorkflowProcess AccessLevel="PRIVATE" Id="WfPIMI_Subflow" Name="WfPIMI Subflow">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-09-01 21:09:50</xpdl:Created>
+                <xpdl:Description>not to be instantiated directly, but used only as a subflow process</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:RedefinableHeader PublicationStatus="UNDER_TEST">
+                <xpdl:Author>Sasa Bojanic</xpdl:Author>
+            </xpdl:RedefinableHeader>
+            <xpdl:FormalParameters>
+                <xpdl:FormalParameter Id="P1" Mode="IN">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+                <xpdl:FormalParameter Id="P2" Mode="IN">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                </xpdl:FormalParameter>
+            </xpdl:FormalParameters>
+            <xpdl:Activities>
+                <xpdl:Activity Id="sbflw_act" Name="Subflow activity">
+                    <xpdl:Description>when completing activity A, you have option to see the values of the variables.</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="240,60"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_VIEW" Value="P1"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_VIEW" Value="P2"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=sbflw_act,X_OFFSET=138,Y_OFFSET=71,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=sbflw_act,X_OFFSET=393,Y_OFFSET=71,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+    </xpdl:WorkflowProcesses>
+    <xpdl:ExtendedAttributes>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL" Value="Together Workflow Editor Professional"/>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL_VERSION" Value="2.2-1-P-20070718-1655"/>
+        <xpdl:ExtendedAttribute Name="JaWE_CONFIGURATION" Value="default"/>
+    </xpdl:ExtendedAttributes>
+</xpdl:Package>

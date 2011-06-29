@@ -1,0 +1,165 @@
+.dataList table {
+    borderx:1px solid #666666;
+    marginx:20px 0 !important;
+    margin:0px 0 !important;
+    widthx:80%;
+    borderx:1px solid #ccc;
+    -moz-border-radiusx:12px;
+    -webkit-border-radiusx:12px;
+    -moz-box-shadowx: 0 0 10px #ccc;
+    -webkit-box-shadowx: 0 0 10px #ccc;
+    paddingx:5px;
+    width:100%;
+    font-family:'PT Sans',Arial; 
+    font-size:13px; 
+    line-height:16px;
+}
+.dataList th {
+    -moz-box-shadow: inset 0 0 2px white;
+    -webkit-box-shadow: inset 0 0 2px white;
+}
+.dataList td {
+    padding:2px 4px !important;
+    text-align:left;
+    vertical-align:top;
+}
+.dataList thead tr {
+    background-colorx:#E4F6C0;
+    background-color:#DFDFDF;
+    height: 26px;
+}
+.dataList th {
+   padding:2px 4px !important;
+   text-align:center;
+   vertical-align:middle;
+   font-size: 16px;
+}
+.dataList th.sorted {
+    background-colorx:orange;
+    background-color:green;
+}
+.dataList th a, th a:visited {
+    color:black;
+    font-sizex: 16px;
+}
+.dataList th a:hover {
+    color:black;
+    text-decoration:underline;
+}
+.dataList th.sorted a, th.sortable a {
+    background-position:right center;
+    display:block;
+    width:100%;
+}
+.dataList th.sorted a {
+    color:white;
+}
+.dataList th.sortable a {
+    background-image:url("../img/arrow_off.png");
+}
+.dataList th.order1 a {
+    background-image:url("../img/arrow_down.png");
+}
+.dataList th.order2 a {
+    background-image:url("../img/arrow_up.png");
+}
+.dataList tr.odd {
+    background-color:#FFFFFF;
+}
+.dataList tr.tableRowEven, tr.even {
+    background-colorx:#FFEEAA;
+    background-color:#F9F9F9;
+}
+.dataList div.exportlinks {
+    background-color:#EEEEEE;
+    border:1px dotted #999999;
+    margin:2px 0 10px;
+    padding:2px 4px;
+    widthx:79%;
+    text-align:right;
+}
+.dataList div.exportlinks a {
+    text-decoration: none
+}
+.dataList span.export {
+    cursor:pointer;
+    display:inline-block;
+    padding:0 4px 1px 20px;
+}
+.dataList span.excel {
+    background:url("../images/v3/doc_excel.png") no-repeat;
+}
+.dataList span.csv {
+    background:url("../images/v3/doc_csv.png") no-repeat;
+}
+.dataList span.xml {
+    background:url("../images/v3/doc_xml.png") no-repeat;
+}
+.dataList span.pdf {
+    background:url("../images/v3/doc_pdf.png") no-repeat;
+}
+.dataList span.rtf {
+    background:url("../images/v3/doc_rtf.png") no-repeat;
+}
+.dataList span.pagebanner {
+    background-colorx:#EEEEEE;
+    border-color:#999999 #999999 -moz-use-text-color;
+    border-stylex:dotted dotted none;
+    border-width:1px 1px medium;
+    display:block;
+    margin-top:0px;
+    padding:2px 4px;
+    widthx:79%;
+    text-align:right;
+    font-size:smaller;
+}
+.dataList span.pagelinks {
+    background-colorx:#EEEEEE;
+    border-color:-moz-use-text-color #999999 #999999;
+    border-rightx:1px dotted #999999;
+    border-stylex:none dotted dotted;
+    border-width:medium 1px 1px;
+    display:block;
+    margin-bottom:0px;
+    padding:2px 4px;
+    widthx:79%;
+    text-align:right;
+    font-size:smaller;
+}
+.dataList .group-1 {
+    border-top:1px solid black;
+    font-weight:bold;
+    padding-bottom:10px;
+}
+.dataList .group-2 {
+    border-top:1px solid black;
+    font-style:italic;
+}
+.dataList .subtotal-sum, .grandtotal-sum {
+    font-weight:bold;
+    text-align:right;
+}
+.dataList .subtotal-header {
+    border-top:1px solid white;
+    padding-bottom:0;
+}
+.dataList .subtotal-label, .grandtotal-label {
+    border-top:1px solid white;
+    font-weight:bold;
+}
+.dataList .grouped-table tr.even {
+    background-color:#FFFFFF;
+}
+.dataList .grouped-table tr.odd {
+    background-color:#FFFFFF;
+}
+.dataList .grandtotal-row {
+    border-top:2px solid black;
+}
+.dataList .clearBoth{
+    clear:both;
+    height: 2px;
+}
+.dataList .filters {
+    margin-bottom: 2px;
+}

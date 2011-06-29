@@ -1,0 +1,42 @@
+[{
+    title : '@@form.fileupload.editFileUpload@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.fileupload.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.fileupload.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.fileupload.label@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'size',
+        label : '@@form.fileupload.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.fileupload.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'attachment',
+        label : '@@form.fileupload.download@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+}]

@@ -1,0 +1,45 @@
+[{
+    title : '@@datalist.hyperlinkdatalistaction.configureLink@@',
+    properties : [{
+        label : '@@datalist.hyperlinkdatalistaction.hyperlink@@',
+        name : 'href',
+        type : 'textfield',
+        description : '@@datalist.hyperlinkdatalistaction.hyperlink.desc@@'
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.hyperlinkTarget@@',
+        name : 'target',
+        type : 'selectbox',
+        options : [{
+            value : '_self',
+            label : '@@datalist.hyperlinkdatalistaction.currentWindow@@'
+        },
+        {
+            value : '_blank',
+            label : '@@datalist.hyperlinkdatalistaction.newWindow@@'
+        }]
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.hyperlinkParamName@@',
+        name : 'hrefParam',
+        type : 'textfield',
+        description : '@@datalist.hyperlinkdatalistaction.hyperlinkParamName.desc@@'
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.columnName@@',
+        name : 'hrefColumn',
+        type : 'textfield',
+        description : '@@datalist.hyperlinkdatalistaction.columnName.desc@@'
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.label@@',
+        name : 'label',
+        type : 'textfield',
+        description : '@@datalist.hyperlinkdatalistaction.label.desc@@'
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.confirmationMessage@@',
+        name : 'confirmation',
+        type : 'textfield'
+    }]
+}]

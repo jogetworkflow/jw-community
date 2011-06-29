@@ -1,0 +1,51 @@
+[{
+    title : '@@form.datepicker.editDatePicker@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.datepicker.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.datepicker.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.datepicker.label@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'format',
+        label : '@@form.datepicker.format@@',
+        type : 'textfield',
+        description : '@@form.datepicker.format.eg@@'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.datepicker.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@form.datepicker.chooseValidator@@',
+    properties : [{
+        name : 'validator',
+        label : '@@form.datepicker.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.datepicker.workflowVariables@@',
+    properties : [{
+        name : 'workflowVariable',
+        label : '@@form.datepicker.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

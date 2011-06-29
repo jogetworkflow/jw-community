@@ -1,0 +1,38 @@
+[{
+    title : '@@form.idgeneratorfield.editIdGeneratorField@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.idgeneratorfield.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.idgeneratorfield.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.idgeneratorfield.label@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'envVariable',
+        description : '@@form.idgeneratorfield.envVariableDesc@@',
+        label : '@@form.idgeneratorfield.envVariableName@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'format',
+        label : '@@form.idgeneratorfield.format@@',
+        type : 'textfield',
+        required : 'True'
+    }]
+},
+{
+    title : '@@form.idgeneratorfield.workflowVariables@@',
+    properties : [{
+        name : 'workflowVariable',
+        label : '@@form.idgeneratorfield.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

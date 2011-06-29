@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.2.xsd">    
+    
+    <context:annotation-config/>
+    <context:component-scan base-package="org.joget"/>
+    
+    <!-- Enable annotation-based validation using Bean Validation Framework -->
+    <bean id="configurationLoader"
+            class="org.springmodules.validation.bean.conf.loader.annotation.AnnotationBeanValidationConfigurationLoader"/>
+    <bean id="validator" class="org.springmodules.validation.bean.BeanValidator"
+            p:configurationLoader-ref="configurationLoader"/>
+
+    <bean class="org.joget.commons.spring.web.ParameterizedAnnotationMethodHandlerAdapter"/>
+   
+	<bean class="org.joget.commons.spring.web.ParameterizedUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="openSessionInViewInterceptor"/>
+                <ref bean="appOpenSessionInViewInterceptor"/>
+            </list>
+       </property>
+    </bean>
+    
+    <bean name="openSessionInViewInterceptor"
+          class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">  
+        <property name="sessionFactory"><ref bean="directorySessionFactory"/></property>
+        <property name="flushModeName" value="FLUSH_AUTO" />
+    </bean>
+
+    <bean name="appOpenSessionInViewInterceptor"
+          class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+        <property name="sessionFactory"><ref bean="appSessionFactory"/></property>
+        <property name="flushModeName" value="FLUSH_AUTO" />
+    </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="defaultEncoding">
+            <value>UTF-8</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.throwaway.ThrowawayControllerHandlerAdapter"/>
+    
+    <bean id="viewNameTranslator"
+          class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator" />
+    
+    <bean id="viewResolver"
+          class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:prefix="/WEB-INF/jsp/"
+          p:suffix=".jsp" />
+           
+    <bean id="messageSource" class="org.joget.commons.util.DatabaseResourceBundleMessageSource">
+        <property name="basenames">
+             <list>
+                <value>console</value>
+                <value>peditor</value>
+                <value>fbuilder</value>
+                <value>dbuilder</value>
+                <value>ubuilder</value>
+             </list>
+        </property>
+    </bean>
+
+</beans>

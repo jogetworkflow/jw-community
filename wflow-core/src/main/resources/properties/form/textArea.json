@@ -1,0 +1,46 @@
+[{
+    title : '@@form.textarea.editTextArea@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.textarea.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.textarea.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.textarea.label@@',
+        type : 'textfield'
+    },
+    {
+        name : 'cols',
+        label : '@@form.textarea.cols@@',
+        type : 'textfield'
+    },
+    {
+        name : 'rows',
+        label : '@@form.textarea.rows@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.textarea.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@form.textarea.chooseValidator@@',
+    properties : [{
+        name : 'validator',
+        label : '@@form.textarea.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+}]

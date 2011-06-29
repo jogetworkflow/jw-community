@@ -1,0 +1,17 @@
+[{
+    title : '@@userview.userpermission.config@@',
+    properties : [{
+        name : 'orgId',
+        label : '@@userview.userpermission.selectOrg@@',
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getOrgs'
+    },
+    {
+        name : 'allowedUsernames',
+        label : '@@userview.userpermission.selectUsers@@',
+        type : 'multiselect',
+        size : '10',
+        options_ajax_on_change : 'orgId',
+        options_ajax : '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.UserPermission/service?action=getUsers'
+    }]
+}]

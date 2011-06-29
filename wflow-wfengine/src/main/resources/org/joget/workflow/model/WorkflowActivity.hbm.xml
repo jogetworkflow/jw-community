@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="WorkflowActivity" lazy="false" name="org.joget.workflow.model.WorkflowActivity" table="wf_report_activity">
+    <id column="activityDefId" name="activityDefId" type="string"/>
+    <property column="activityName" name="name" type="string"/>
+    <property column="description" name="description" type="string"/>
+    <property column="priority" name="priority" type="string"/>
+  </class>
+</hibernate-mapping>

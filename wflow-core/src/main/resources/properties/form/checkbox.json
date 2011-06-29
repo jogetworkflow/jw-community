@@ -1,0 +1,67 @@
+[{
+    title : '@@form.checkbox.editCheckBox@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.checkbox.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.checkbox.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.checkbox.label@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.checkbox.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'options',
+        label : '@@form.checkbox.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.checkbox.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.checkbox.label@@'
+        }]
+    }]
+},
+{
+    title : '@@form.checkbox.chooseOptionsBinder@@',
+    properties : [{
+        name : 'optionsBinder',
+        label : '@@form.checkbox.optionsBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadOptionsBinder',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.checkbox.chooseValidator@@',
+    properties : [{
+        name : 'validator',
+        label : '@@form.checkbox.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.checkbox.workflowVariables@@',
+    properties : [{
+        name : 'workflowVariable',
+        label : '@@form.checkbox.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

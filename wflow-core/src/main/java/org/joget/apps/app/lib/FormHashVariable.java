@@ -1,0 +1,71 @@
+package org.joget.apps.app.lib;
+
+import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.model.FormRow;
+import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.workflow.model.service.WorkflowManager;
+import org.springframework.context.ApplicationContext;
+
+public class FormHashVariable extends HashVariablePlugin {
+
+    @Override
+    public String processHashVariable(String variableKey) {
+        String temp[] = variableKey.split("\\.");
+
+        String tableName = temp[0];
+        String columnName = "";
+        String primaryKey = "";
+        if (temp.length > 2) {
+            primaryKey = temp[1];
+            columnName = temp[2];
+        } else {
+            columnName = temp[1];
+        }
+
+        if (tableName != null && tableName.length() != 0) {
+            ApplicationContext appContext = AppUtil.getApplicationContext();
+            FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
+
+            WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
+            if (wfAssignment != null) {
+
+                WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+                WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
+
+                if (link != null) {
+                    primaryKey = link.getOriginProcessId();
+                } else if (primaryKey.isEmpty()) {
+                    primaryKey = wfAssignment.getProcessId();
+                }
+            }
+
+            FormRow row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
+
+            if (row != null && row.getCustomProperties() != null) {
+                Object val = row.getCustomProperties().get(columnName);
+                String value = (val != null) ? val.toString() : null;
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public String getName() {
+        return "FormHashVariable";
+    }
+
+    public String getPrefix() {
+        return "form";
+    }
+
+    public String getVersion() {
+        return "1.0.0";
+    }
+
+    public String getDescription() {
+        return "";
+    }
+}

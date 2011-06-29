@@ -1,0 +1,10 @@
+[{
+    title : '@@userview.organizationpermission.config@@',
+    properties : [{
+        name : 'allowedOrgIds',
+        label : '@@userview.organizationpermission.selectOrgs@@',
+        type : 'multiselect',
+        size : '10',
+        options_ajax : '[CONTEXT_PATH]/web/json/plugin/org.joget.apps.userview.lib.OrganizationPermission/service?action=getOptions'
+    }]
+}]
