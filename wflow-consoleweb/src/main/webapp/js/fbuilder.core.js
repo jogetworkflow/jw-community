@@ -524,10 +524,9 @@ FormBuilder = {
         } else {
             // make AJAX JSON call to get updated template
             var jsonStr = JSON.encode(dom);
-            jsonStr = escape(jsonStr);
             $.ajax({
                 type: "POST",
-                data: "json=" + jsonStr,
+                data: {"json": jsonStr },
                 url: FormBuilder.contextPath + FormBuilder.elementPreviewUrl,
                 success: function(response) {
                     var newElement = $(response);
