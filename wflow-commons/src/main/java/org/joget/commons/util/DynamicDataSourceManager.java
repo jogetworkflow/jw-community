@@ -319,7 +319,7 @@ public class DynamicDataSourceManager {
             writeProperty("workflowUser", "root");
             writeProperty("workflowPassword", "");
             writeProperty("workflowDriver", "com.mysql.jdbc.Driver");
-            writeProperty("workflowUrl", "jdbc:mysql://localhost:3306/jogetv3?characterEncoding=UTF-8");
+            writeProperty("workflowUrl", "jdbc:mysql://localhost:3306/jwdb?characterEncoding=UTF-8");
             writeProperty("profileName", "");
         } catch (Exception e) {
             LogUtil.error(DynamicDataSourceManager.class.getName(), e, "Error creating default profile");
