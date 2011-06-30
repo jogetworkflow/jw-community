@@ -717,15 +717,13 @@ public class AppServiceImpl implements AppService {
 
             // get package definition
             packageDef = appDef.getPackageDefinition();
+            Long packageVersion = Long.parseLong(versionStr);
             if (packageDef == null) {
-                packageDef = packageDefinitionDao.createPackageDefinition(appDef);
+                packageDef = packageDefinitionDao.createPackageDefinition(appDef, packageVersion);
             } else {
                 originalVersion = packageDef.getVersion();
+                packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
             }
-
-            // update package version
-            Long packageVersion = Long.parseLong(versionStr);
-            packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
 
             if (originalVersion != null) {
                 updateRunningProcesses(packageId, originalVersion, packageVersion);

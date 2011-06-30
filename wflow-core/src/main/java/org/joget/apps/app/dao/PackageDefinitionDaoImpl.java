@@ -115,10 +115,10 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     }
 
     @Override
-    public PackageDefinition createPackageDefinition(AppDefinition appDef) {
+    public PackageDefinition createPackageDefinition(AppDefinition appDef, Long packageVersion) {
         PackageDefinition packageDef = new PackageDefinition();
         packageDef.setId(appDef.getId());
-        packageDef.setVersion(appDef.getVersion());
+        packageDef.setVersion(packageVersion);
         packageDef.setName(appDef.getName());
         packageDef.setAppDefinition(appDef);
         saveOrUpdate(packageDef);
@@ -155,7 +155,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
-            packageDef = createPackageDefinition(appDef);
+            packageDef = createPackageDefinition(appDef, appVersion);
         }
         String processDefId = activityForm.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -182,7 +182,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
-            packageDef = createPackageDefinition(appDef);
+            packageDef = createPackageDefinition(appDef, appVersion);
         }
         String processDefId = activityPlugin.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -209,7 +209,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
-            packageDef = createPackageDefinition(appDef);
+            packageDef = createPackageDefinition(appDef, appVersion);
         }
         String processDefId = participant.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);

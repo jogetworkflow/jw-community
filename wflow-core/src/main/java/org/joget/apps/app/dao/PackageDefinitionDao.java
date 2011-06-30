@@ -38,9 +38,10 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
     /**
      * Create package definition for an app
      * @param appDef
+     * @param packageVersion
      * @return
      */
-    PackageDefinition createPackageDefinition(AppDefinition appDef);
+    PackageDefinition createPackageDefinition(AppDefinition appDef, Long packageVersion);
 
     /**
      * Update the package version for a package definition
