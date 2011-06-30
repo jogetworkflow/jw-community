@@ -72,7 +72,7 @@
         launch: function() {
             var base = 'http://${pageContext.request.serverName}:${pageContext.request.serverPort}';
             var path = base + '${pageContext.request.contextPath}';
-            document.location = base + '/wflow-wfdesignerweb/designer/webstart.jsp?path=' + encodeURIComponent(path) + '&deploy=deploy&locale=en';
+            document.location = base + '/jwdesigner/designer/webstart.jsp?path=' + encodeURIComponent(path) + '&deploy=deploy&locale=en';
         }
     }
     Template.init("#menu-apps", "#nav-app-processes");

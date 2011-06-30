@@ -16,7 +16,7 @@
                 designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length()-1);
         %>
 
-        <c:set var="viewerUrl"><%= designerwebBaseUrl %>/wflow-wfdesignerweb/viewer/viewer.jsp?processId=${wfProcess.encodedId}</c:set>
+        <c:set var="viewerUrl"><%= designerwebBaseUrl %>/jwdesigner/viewer/viewer.jsp?processId=${wfProcess.encodedId}</c:set>
         <form id="viewerForm" name="viewerForm" method="POST" action="${viewerUrl}">
             <dl>
                 <dd><textarea style="visibility:hidden" name="xpdl" rows="20" cols="80"><c:out value="${xpdl}" escapeXml="true"/></textarea></dd>

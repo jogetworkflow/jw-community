@@ -12,7 +12,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp codebase="${serverPath}/webstart">
     <information>
-        <title>wflow-wfdesignerweb-3.0-BETA</title>
+        <title>jwdesigner-3.0-BETA</title>
         <vendor>joget.org</vendor>
         <homepage href="http://www.joget.org/"/>
         <description>joget.org wfdesigner</description>
