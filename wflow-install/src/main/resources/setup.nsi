@@ -26,6 +26,7 @@
 
   !define INSTALL_TYPE_FULL full
   !define INSTALL_TYPE_UPGRADE upgrade
+  !define INSTALL_TYPE_ABORT abort
   Var INSTALL_TYPE
 
 
@@ -143,11 +144,15 @@ Section "Joget Workflow" SecJoget
 
   Call CheckUpgrade
 
+  ${If} $INSTALL_TYPE == "${INSTALL_TYPE_ABORT}"
+    MessageBox MB_OK "Existing installation found in the directory '$INSTDIR'.$\r$\nSorry, upgrade not supported yet."
+    Quit
+  ${EndIf}
+
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_UPGRADE}"
     ;MessageBox MB_OK $INSTALL_TYPE
-    ;MessageBox MB_YESNO "Existing installation found in the directory '$INSTDIR'.$\r$\nWould you like to update? $\r$\n(NOTE: Only the Joget files will be updated)" IDYES DoUpgrade
-    ;MessageBox MB_OK "Installation aborted"
-    MessageBox MB_OK "Existing installation found in the directory '$INSTDIR'.$\r$\nSorry, upgrade not supported yet."
+    MessageBox MB_YESNO "Existing installation found in the directory '$INSTDIR'.$\r$\nWould you like to update? $\r$\n(NOTE: Only the Joget files will be updated)" IDYES DoUpgrade
+    MessageBox MB_OK "Installation aborted"
     Quit
 
     DoUpgrade:
@@ -167,7 +172,6 @@ Section "Joget Workflow" SecJoget
     Return
 
   ${EndIf}
-
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
@@ -270,7 +274,9 @@ FunctionEnd
 
 Function CheckUpgrade
 
-  ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\jw.war
+  ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
   ${Else}
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_FULL}
