@@ -1250,7 +1250,7 @@ public class ConsoleWebController {
         PackageDefinition packageDef = appDef.getPackageDefinition();
         if (packageDef != null) {
             byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-            String xpdl = new String(content, "UTF8");
+            String xpdl = new String(content, "UTF-8");
             writer.write(xpdl);
         } else {
             // read default xpdl
@@ -1268,7 +1268,7 @@ public class ConsoleWebController {
                         out.write(bbuf, 0, length);
                     }
                     // form xpdl
-                    String xpdl = new String(out.toByteArray(), "UTF8");
+                    String xpdl = new String(out.toByteArray(), "UTF-8");
 
                     // replace package ID and name
                     xpdl = xpdl.replace("${packageId}", appId);
@@ -3542,8 +3542,13 @@ public class ConsoleWebController {
         // get process xpdl
         byte[] xpdlBytes = workflowManager.getPackageContent(wfProcess.getPackageId(), wfProcess.getVersion());
         if (xpdlBytes != null) {
-            String xpdl = new String(xpdlBytes);
-
+            String xpdl = null;
+            
+            try{
+                xpdl = new String(xpdlBytes, "UTF-8");
+            }catch(Exception e){
+                LogUtil.debug(ConsoleWebController.class.getName(), "XPDL cannot load");
+            }
             // get running activities
             Collection<String> runningActivityIdList = new ArrayList<String>();
             List<WorkflowActivity> activityList = (List<WorkflowActivity>) workflowManager.getActivityList(processId, 0, -1, "id", false);

@@ -646,7 +646,7 @@ public class AppServiceImpl implements AppService {
         AppDefinition newAppDef = null;
 
         try {
-            newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(getAppDefinitionXml(appId, version)));
+            newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(getAppDefinitionXml(appId, version)), "UTF-8");
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
         }
@@ -1014,10 +1014,16 @@ public class AppServiceImpl implements AppService {
             AppDefinition appDef = getAppDefinition(appId, Long.toString(version));
 
             Serializer serializer = new Persister();
-            serializer.write(appDef, baos);
+            serializer.write(appDef, baos, "UTF-8");
 
             appDefinitionXml = baos.toByteArray();
             baos.close();
+            
+            String value = new String(appDefinitionXml, "UTF-8");
+            value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentBag", "java.util.ArrayList");
+            value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentMap", "java.util.HashMap");
+
+            return value.getBytes("UTF-8");
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -1029,11 +1035,7 @@ public class AppServiceImpl implements AppService {
                 }
             }
         }
-        String value = new String(appDefinitionXml);
-        value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentBag", "java.util.ArrayList");
-        value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentMap", "java.util.HashMap");
-
-        return value.getBytes();
+        return null;
     }
 
     /**
@@ -1088,7 +1090,7 @@ public class AppServiceImpl implements AppService {
             byte[] xpdl = getXpdlFromZip(zip);
 
             Serializer serializer = new Persister();
-            AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData));
+            AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), "UTF-8");
 
             long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
 

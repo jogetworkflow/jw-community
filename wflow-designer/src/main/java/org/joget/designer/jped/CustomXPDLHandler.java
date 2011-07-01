@@ -35,9 +35,9 @@ public class CustomXPDLHandler extends PluggableXPDLHandler {
                     String contents = "";
                     int length;
                     while ((length = in.read(buffer, 0, buffer.length)) > 0) {
-                        contents += new String(buffer, 0, length);
+                        contents += new String(buffer, 0, length, "UTF-8");
                     }
-                    bytes = contents.getBytes();
+                    bytes = contents.getBytes("UTF-8");
 
                 } finally {
                     if (in != null) {

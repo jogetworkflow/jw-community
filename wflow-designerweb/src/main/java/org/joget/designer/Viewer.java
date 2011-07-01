@@ -78,7 +78,7 @@ public class Viewer {
                 // load package definition
                 XPDLHandler xpdlHandler = jaweManager.getXPDLHandler();
                 xpdlHandler.setValidation(false);
-                jaweController.openPackageFromStream(xpdl.getBytes());
+                jaweController.openPackageFromStream(xpdl.getBytes("UTF-8"));
                 org.enhydra.shark.xpdl.elements.Package pkg = xpdlHandler.getPackageById(packageId);
                 org.enhydra.shark.xpdl.elements.WorkflowProcess wp = pkg.getWorkflowProcess(processDefId);
                 GraphController gc = (GraphController) jaweManager.getComponentManager().getComponent("GraphComponent");
@@ -125,6 +125,9 @@ public class Viewer {
                 Logger.getLogger(getClass().getName()).log(Level.INFO, "Completed generating process image");
 
                 return img;
+            }catch(Exception e){
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+                return null;
             } finally {
                 try {
                     jaweController.closePackage(null, true);

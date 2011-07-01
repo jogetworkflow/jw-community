@@ -283,7 +283,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             PackageAdministration pa = getSharkPackageAdmin(sessionHandle);
             data = pa.getPackageContent(sessionHandle, packageId, version);
-
+            
 
         } catch (Exception ex) {
 
