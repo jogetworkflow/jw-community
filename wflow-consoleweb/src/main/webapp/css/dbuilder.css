@@ -27,9 +27,8 @@ div, label, input, button, select, th, td, a {
     border: 1px solid #bfbfbf;
 }
 #builder-title {
-    color: #f6f6f6;
+    color: #AAA7A7;
     font-size: 22px;
-    text-shadow: 1px 1px 0 #767676;
     text-transform: uppercase;
     line-height: 28px;
     padding-top: 5px;
