@@ -1240,7 +1240,9 @@ public class ConsoleWebController {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/console/app/" + appId + "/processes";
             map.addAttribute("url", url);
-            return "console/apps/dialogClose";
+            map.addAttribute("appId", appId);
+            map.addAttribute("appVersion", appDef.getVersion());
+            return "console/apps/packageUploadSuccess";
         }
     }
 
