@@ -174,6 +174,28 @@ public class TestDirectoryManager {
         User userHod = userHodList.iterator().next();
         Assert.isTrue(TEST_USER_HOD.equals(userHod.getUsername()));        
     }
+
+    @Test
+    @Rollback(true)
+    public void testDeletion() {
+        // delete user
+        Logger.getLogger(getClass().getName()).info("testDeletion: delete user");
+        userDao.deleteUser(TEST_DEPARTMENT_CHILD_HOD);
+        User testUser = directoryManager.getUserByUsername(TEST_DEPARTMENT_CHILD_HOD);
+        Assert.isTrue(testUser == null);
+        
+        // delete department
+        Logger.getLogger(getClass().getName()).info("testDeletion: delete department");
+        departmentDao.deleteDepartment(TEST_DEPARTMENT_CHILD);
+        Department testDept = directoryManager.getDepartmentById(TEST_DEPARTMENT_CHILD);
+        Assert.isTrue(testDept == null);
+        
+        // delete organization
+        Logger.getLogger(getClass().getName()).info("testDeletion: delete organization");
+        organizationDao.deleteOrganization(TEST_ORGANIZATION);
+        Organization testOrg = organizationDao.getOrganization(TEST_ORGANIZATION);
+        Assert.isTrue(testOrg == null);
+    }
     
     protected void addOrganization(String id) {
         Logger.getLogger(getClass().getName()).info("addOrganization");

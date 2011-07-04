@@ -19,7 +19,7 @@
             <key column="organizationId"/>
             <one-to-many entity-name="Group"/>
         </set>
-        <set cascade="delete" name="employments" inverse="true">
+        <set name="employments" inverse="true">
             <key column="organizationId" on-delete="cascade"/>
             <one-to-many entity-name="Employment"/>
         </set>

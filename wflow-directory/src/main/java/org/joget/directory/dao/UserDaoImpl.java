@@ -110,8 +110,8 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
                     for (Employment e : employments) {
                         getEmploymentDao().deleteEmployment(e.getId());
                     }
+                    employments.clear();
                 }
-
                 delete("User", user);
             }
             return true;

@@ -30,11 +30,15 @@ public class EmploymentReportToDaoImpl extends AbstractSpringDao implements Empl
         try {
             EmploymentReportTo employmentReportTo = getEmploymentReportTo(id);
 
-            employmentReportTo.setReportTo(null);
-            employmentReportTo.setSubordinate(null);
+            if (employmentReportTo != null) {
+                employmentReportTo.setReportTo(null);
+                employmentReportTo.setSubordinate(null);
 
-            delete("EmploymentReportTo", employmentReportTo);
-            return true;
+                delete("EmploymentReportTo", employmentReportTo);
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             LogUtil.error(EmploymentReportToDaoImpl.class.getName(), e, "Delete Employment Report To Error!");
             return false;

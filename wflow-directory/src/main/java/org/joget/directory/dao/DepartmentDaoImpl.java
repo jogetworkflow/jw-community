@@ -63,11 +63,15 @@ public class DepartmentDaoImpl extends AbstractSpringDao implements DepartmentDa
                     }
                 }
 
+                department.setHod(null);
+
                 if (employments != null) {
                     for (Employment employment : employments) {
                         employmentDao.unassignUserReportTo(employment.getUserId());
                         employmentDao.unassignUserFromDepartment(employment.getUserId(), id);
+                        getEmploymentDao().deleteEmployment(employment.getId());
                     }
+                    employments.clear();
                 }
 
                 delete("Department", department);

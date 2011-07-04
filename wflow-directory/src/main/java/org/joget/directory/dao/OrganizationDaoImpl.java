@@ -98,7 +98,9 @@ public class OrganizationDaoImpl extends AbstractSpringDao implements Organizati
                 if (employments != null) {
                     for (Employment employment : employments) {
                         getEmploymentDao().unassignUserFromOrganization(employment.getUserId(), id);
+                        getEmploymentDao().deleteEmployment(employment.getId());
                     }
+                    employments.clear();
                 }
 
                 delete("Organization", organization);

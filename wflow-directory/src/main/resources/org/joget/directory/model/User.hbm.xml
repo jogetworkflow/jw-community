@@ -19,7 +19,7 @@
             <key column="userId"/>
             <many-to-many column="groupId" entity-name="Group"/>
         </set>
-        <set name="employments" cascade="delete" inverse="true">
+        <set name="employments" inverse="true">
             <key column="userId"/>
             <one-to-many entity-name="Employment"/>
         </set>

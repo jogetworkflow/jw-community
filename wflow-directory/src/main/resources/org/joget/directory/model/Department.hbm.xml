@@ -6,7 +6,7 @@
         <property column="name" name="name" type="string"/>
         <property column="description" name="description" type="string"/>
         <!-- join tables -->
-        <set cascade="delete" name="employments" inverse="true">
+        <set name="employments" inverse="true">
             <key column="departmentId"/>
             <one-to-many entity-name="Employment"/>
         </set>
