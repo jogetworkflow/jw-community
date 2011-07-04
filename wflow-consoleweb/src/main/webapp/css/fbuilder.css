@@ -69,17 +69,16 @@ div, label, input, button, select, th, td, a, span {
     color: #acacac;
     text-shadow: 1px 1px 0 #fff;
     height:49px;
-    line-height: 49px;
     text-decoration: none;
     cursor: pointer;
 }
 
 #builder-bar span.title {
     font-size: 22px;
+    height:22px;
     color: #f1ffbf;
     text-shadow: 1px 1px 0 #767676;
     display:block;
-    line-height: 28px;
     padding: 3px 0 0 0
 }
 #builder-bar span.subtitle { 

@@ -53,6 +53,12 @@
     float:left;
 }
 
+.property-description{
+    display:none;
+    color:#999999;
+    font-size:10px;
+}
+
 .property-input{
     width:70%;
     float:right;

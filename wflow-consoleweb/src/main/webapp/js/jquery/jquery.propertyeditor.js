@@ -24,7 +24,7 @@
                 previousPageButtonLabel : get_peditor_msg('peditor.prev'),
                 showCancelButton: false,
                 closeAfterSaved: true,
-                showDescriptionAsToolTip: true,
+                showDescriptionAsToolTip: false,
                 mandatoryMessage: get_peditor_msg('peditor.mandatory'),
                 skipValidation:false
             }
@@ -124,6 +124,8 @@
 
                 //grid action
                 attachGridAction(editor);
+                
+                attachDescriptionEvent(editor);
 
                 //element select onchange event
                 $(editor).find('.property-type-elementselect .property-input select').change(function(){
@@ -1316,6 +1318,8 @@
 
         //grid action
         attachGridAction(content);
+        
+        attachDescriptionEvent(content);
 
         //element select onchange event
         $(content).find('.property-type-elementselect .property-input select').change(function(){
@@ -1441,6 +1445,7 @@
                 gridActionMoveDown(this);
                 return false;
             });
+            attachDescriptionEvent(row);
             gridDisabledMoveAction(table);
             return false;
         });
@@ -1496,6 +1501,15 @@
 
         $(table).find('a.property-type-grid-action-movedown').removeClass("disabled");
         $(table).find('a.property-type-grid-action-movedown:last').addClass("disabled");
+    }
+    
+    function attachDescriptionEvent(container){
+        $(container).find("input, select, textarea").focus(function(){
+            var editor = $(this).parentsUntil(".property-editor-container", ".property-editor-page").parent();
+            $(editor).find(".property-description").hide();
+            var property = $(this).parentsUntil(".property-editor-property-container", ".property-editor-property");
+            $(property).find(".property-description").show();
+        });
     }
 
 })(jQuery);
