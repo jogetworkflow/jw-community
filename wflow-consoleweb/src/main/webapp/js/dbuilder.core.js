@@ -76,7 +76,7 @@ DatalistBuilder = {
                             label : get_dbuilder_msg('dbuilder.selectDataSource'),
                             type : 'elementselect',
                             options : binderListArray,
-                            url : '[CONTEXT_PATH]/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/options'
+                            url : '[CONTEXT_PATH]/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/options?id=' + DatalistBuilder.datalistProperties.id 
                         }]
                     }
                 ];

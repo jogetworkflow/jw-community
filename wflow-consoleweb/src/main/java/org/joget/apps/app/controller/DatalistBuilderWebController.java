@@ -259,11 +259,9 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping("/json//console/app/(*:appId)/(*:appVersion)/builder/binder/options")
-    public void getBuilderDataBinderOption(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String value, HttpServletRequest request) throws Exception {
+    public void getBuilderDataBinderOption(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam("id") String id, @RequestParam String value, HttpServletRequest request) throws Exception {
         appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
-
-        String id = "list123";
 
         // get data list
         DataList dataList = new DataList();// = dataListService.getDataList(id);
