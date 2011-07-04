@@ -118,7 +118,7 @@ DatalistBuilder = {
         }
         $.getJSON(
             DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns?' + $.param(temp),
-            {id: "list123",
+            {   id: DatalistBuilder.datalistProperties.id,
                 binderId : DatalistBuilder.binderProperties.className
             },
             DatalistBuilder.updateBinderPropertiesCallBack
