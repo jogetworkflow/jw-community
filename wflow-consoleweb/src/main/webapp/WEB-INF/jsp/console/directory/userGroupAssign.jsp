@@ -27,7 +27,6 @@
                    width="100%"
                    sort="name"
                    desc="false"
-                   href="${pageContext.request.contextPath}/web/console/directory/group/view"
                    hrefParam="id"
                    hrefQuery="false"
                    hrefDialog="false"

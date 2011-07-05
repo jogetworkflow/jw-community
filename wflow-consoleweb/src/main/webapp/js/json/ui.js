@@ -226,19 +226,22 @@ JsonTable.prototype = {
 
         var handleRowSelection = function (celDiv, id) {
             $(celDiv).click (
-              function () {
-                  if($(celDiv).find('input[type="checkbox"], input[type="radio"]').length == 0){
-                      if (thisObject.link) {
-                          thisObject.link.value = id.replace(/__dot__/g, '.');
-                          thisObject.link.init();
-                          return false;
-                      }
-                      else {
-                          return true;
-                      }
-                  }
-              }
-            );
+                function () {
+                    var row = $(celDiv).parents("tr:first");
+                    var checkbox = row.find('input[type="checkbox"], input[type="radio"]');
+                    var checkboxSelected = (checkbox.length > 0) && $(celDiv).find('input[type="checkbox"], input[type="radio"]').length > 0;
+                    if (thisObject.link && !checkboxSelected) {
+                        thisObject.link.value = id.replace(/__dot__/g, '.');
+                        thisObject.link.init();
+                        return false;
+                    } else {
+                        if (!checkboxSelected) {
+                            $(checkbox[0]).click();
+                            toggleCheckbox($(checkbox[0]).attr("id"));
+                        }
+                        return true;
+                    }
+                });
         }
 
         // define columns

@@ -15,7 +15,6 @@
                    width="100%"
                    sort="username"
                    desc="false"
-                   href="${pageContext.request.contextPath}/web/console/directory/user/view"
                    hrefParam="id"
                    hrefQuery="false"
                    hrefDialog="false"
