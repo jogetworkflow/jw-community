@@ -270,6 +270,7 @@ FormBuilder = {
 
         // set definition and properties
         FormBuilder.updateElementDOM(obj);
+        FormBuilder.generateElementId(obj, "form-section", "section");
 
         // add options
         FormBuilder.decorateElementOptions(obj);
@@ -293,6 +294,7 @@ FormBuilder = {
     decorateElement: function(obj) {
         // set definition and properties
         FormBuilder.updateElementDOM(obj);
+        FormBuilder.generateElementId(obj, "form-cell", "field");
 
         if ($(obj).hasClass("form-palette-element")) {
             // set inner html
@@ -401,6 +403,33 @@ FormBuilder = {
         }
         dom.properties = property;
         $(element)[0].dom = dom;
+    },
+    
+    generateElementId: function(element, elementClass, prefix) {
+        var dom = $(element)[0].dom;
+        if (dom != null) {
+            // set ID if empty
+            var elementId = dom.properties.id;
+            if (typeof elementId == "undefined" || elementId == "") {
+                // determine element class
+                if (typeof elementClass == "undefined" || elementClass == "") {
+                    elementClass = "form-cell";
+                } 
+
+                // determine prefix
+                if (typeof prefix == "undefined" || prefix == "") {
+                    prefix = "element";
+                } 
+
+                // generate ID
+                var elements = $(".form-container").find("." + elementClass);
+                var newIndex = elements.length + 1;
+                var newId = prefix + newIndex;
+
+                // set ID
+                dom.properties.id = newId;
+            }
+        }
     },
 
     editElementProperties: function(element) {
