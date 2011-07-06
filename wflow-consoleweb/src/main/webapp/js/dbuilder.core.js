@@ -8,6 +8,7 @@ DatalistBuilder = {
     previewUrl : '',
     contextPath : '',
     appPath : '',
+    originalJson : '',
 
     columnPrefix : "column_",
     rowActionPrefix : "rowAction_",
@@ -1050,6 +1051,7 @@ DatalistBuilder = {
             DatalistBuilder.renderFilter(obj.filters[e].id);
         }
 
+        DatalistBuilder.originalJson = DatalistBuilder.getJson();
     },
 
     preview : function(){
@@ -1062,6 +1064,7 @@ DatalistBuilder = {
         $.post(DatalistBuilder.saveUrl + DatalistBuilder.datalistProperties.id, { json : DatalistBuilder.getJson() } , function(data) {
             var d = JSON.decode(data);
             if(d.success == true){
+                DatalistBuilder.originalJson = DatalistBuilder.getJson();
                 alert(get_dbuilder_msg('dbuilder.saved'));
             }else{
                 alert(get_dbuilder_msg('dbuilder.errorSaving'));
@@ -1122,5 +1125,13 @@ DatalistBuilder = {
         // update JSON definition
         var jsonString = '(' + DatalistBuilder.getJson() + ')';
         $('#list-json').val(jsonString);
+    },
+    
+    isSaved : function(){
+        if(DatalistBuilder.originalJson == DatalistBuilder.getJson()){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

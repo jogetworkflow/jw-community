@@ -29,7 +29,9 @@
             };
 
             window.onbeforeunload = function() {
-                return "<fmt:message key="dbuilder.saveBeforeClose"/>";
+                if(!DatalistBuilder.isSaved()){
+                    return "<fmt:message key="dbuilder.saveBeforeClose"/>";
+                }
             };
 
             $(document).ready(function() {
@@ -77,6 +79,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="dbuilder.title"/></div>
+                <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />
             </div>
             <div id="builder-body">
                 <div id="builder-bar">

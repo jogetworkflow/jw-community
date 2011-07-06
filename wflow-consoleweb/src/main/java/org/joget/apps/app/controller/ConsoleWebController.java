@@ -3701,6 +3701,30 @@ public class ConsoleWebController {
 
         return "console/i18n/lang";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(*:version)/builder/navigator/(*:builder)/(*:id)")
+    public String consoleBuilderNavigator(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "builder") String builder, @RequestParam(value = "id", required = false) String id){
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        Collection<FormDefinition> formDefinitionList = null;
+        Collection<DatalistDefinition> datalistDefinitionList = null;
+        Collection<UserviewDefinition> userviewDefinitionList = null;
+
+        if (appDef != null) {
+            formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, "name", false, null, null);
+            datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, "name", false, null, null);
+            userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, "name", false, null, null);
+        }
+        
+        map.addAttribute("builder", builder);
+        map.addAttribute("id", id);
+        map.addAttribute("appDef", appDef);
+        map.addAttribute("formDefinitionList", formDefinitionList);
+        map.addAttribute("datalistDefinitionList", datalistDefinitionList);
+        map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+        
+        return "console/apps/builderItems";
+    }
 
     protected Map<String, String> getPluginType() {
         Map<String, String> pluginTypeMap = new ListOrderedMap();

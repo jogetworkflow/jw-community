@@ -47,6 +47,7 @@
                         data: {"json": json },
                         url: saveUrl,
                         success: function(response) {
+                            FormBuilder.originalJson = FormBuilder.generateJSON();
                             alert("<fmt:message key="fbuilder.saved"/>");
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
@@ -57,7 +58,9 @@
             }
 
             window.onbeforeunload = function() {
-                return "<fmt:message key="fbuilder.saveBeforeClose"/>";
+                if(!FormBuilder.isSaved()){
+                    return "<fmt:message key="fbuilder.saveBeforeClose"/>";
+                }
             };
 
             $(document).ready(function() {
@@ -104,6 +107,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="fbuilder.title"/></div>
+                <jsp:include page="/web/console/app/${appId}/${appDefinition.version}/builder/navigator/f/${formId}" flush="true" />
             </div>
             <div id="builder-body">
                 <div id="builder-bar">

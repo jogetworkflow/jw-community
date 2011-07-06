@@ -61,7 +61,9 @@
             });
 
             window.onbeforeunload = function() {
-                return "<fmt:message key="ubuilder.saveBeforeClose" />";
+                if(UserviewBuilder.saveChecker != 0){
+                    return "<fmt:message key="ubuilder.saveBeforeClose" />";
+                }
             };
         </script>
     </head>
@@ -70,6 +72,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
+                <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />
             </div>
             <div id="builder-body">
                 <div id="builder-bar">

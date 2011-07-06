@@ -7,6 +7,7 @@ FormBuilder = {
     elementPreviewUrl: "/web/fbuilder/element/preview",
     formPreviewUrl: "/web/fbuilder/form/preview/",
     tinymceUrl: "/js/tiny_mce/tiny_mce.js",
+    originalJson: "",
 
     init: function(id) {
 
@@ -28,6 +29,8 @@ FormBuilder = {
         FormBuilder.initCanvas(id);
 
         FormBuilder.generateJSON();
+        
+        FormBuilder.originalJson = FormBuilder.generateJSON();
     },
 
     initPalette: function() {
@@ -761,6 +764,13 @@ FormBuilder = {
         $('#form-properties').propertyEditor(options);
 
         return false;
+    },
+    
+    isSaved : function(){
+        if(FormBuilder.originalJson == FormBuilder.generateJSON()){
+            return true;
+        }else{
+            return false;
+        }
     }
-
 }
