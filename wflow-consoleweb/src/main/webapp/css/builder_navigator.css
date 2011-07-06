@@ -94,6 +94,7 @@
     border:1px solid #797979;
     right:0px;
     top:32px;
+    z-index:1000;
 }
 
 #builder_qv_fb:hover .builder_qn_items{
