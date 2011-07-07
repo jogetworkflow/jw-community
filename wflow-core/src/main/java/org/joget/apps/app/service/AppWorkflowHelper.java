@@ -111,7 +111,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     resultList = getParticipantsByDepartment(participant);
                 } else if (PackageParticipant.TYPE_HOD.equals(participant.getType())) {
                     resultList = getParticipantsByHod(participant);
-                } else if (PackageParticipant.TYPE_WORKFLOW_VARIABLE.contains(participant.getType())) {
+                } else if (PackageParticipant.TYPE_WORKFLOW_VARIABLE.equals(participant.getType())) {
                     resultList = getParticipantsByWorkflowVariable(participant, actId);
                 } else if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType())) {
                     resultList = getParticipantsByPlugin(participant, procDefId, procId, version, actId);
@@ -326,25 +326,25 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 //assignees = (va.getVal() != null) ? va.getVal().toString() : null;
                 String variableValue = (String) va.getVal();
 
-                if (PackageParticipant.TYPE_GROUP.contains(participant.getType())) {
+                if (PackageParticipant.TYPE_GROUP.equals(participant.getValue())) {
                     Collection<User> users = directoryManager.getUserByGroupId(variableValue);
                     for (User user : users) {
                         if (user != null && user.getActive() == User.ACTIVE) {
                             resultList.add(user.getUsername());
                         }
                     }
-                } else if (PackageParticipant.TYPE_USER.contains(participant.getType())) {
+                } else if (PackageParticipant.TYPE_USER.equals(participant.getValue())) {
                     User user = directoryManager.getUserByUsername(variableValue);
                     if (user != null && user.getActive() == User.ACTIVE) {
                         resultList.add(user.getUsername());
                     }
-                } else if (PackageParticipant.TYPE_HOD.contains(participant.getType())) {
+                } else if (PackageParticipant.TYPE_HOD.equals(participant.getValue())) {
                     resultList = new ArrayList<String>();
                     User user = directoryManager.getDepartmentHod(variableValue);
                     if (user != null && user.getActive() == User.ACTIVE) {
                         resultList.add(user.getUsername());
                     }
-                } else if (PackageParticipant.TYPE_DEPARTMENT.contains(participant.getType())) {
+                } else if (PackageParticipant.TYPE_DEPARTMENT.equals(participant.getValue())) {
                     Collection<User> users = directoryManager.getUserByDepartmentId(variableValue);
                     for (User user : users) {
                         if (user != null && user.getActive() == User.ACTIVE) {
