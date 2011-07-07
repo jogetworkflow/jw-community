@@ -15,6 +15,16 @@
         required : 'True'
     },
     {
+        name : 'value',
+        label : '@@form.textfield.value@@',
+        type : 'textfield',
+    },
+    {
+        name : 'maxlength',
+        label : '@@form.textfield.maxlength@@',
+        type : 'textfield',
+    },
+    {
         name : 'size',
         label : '@@form.textfield.size@@',
         type : 'textfield'

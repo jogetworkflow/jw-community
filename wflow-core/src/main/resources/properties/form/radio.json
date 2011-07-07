@@ -14,6 +14,11 @@
         type : 'textfield'
     },
     {
+        name : 'value',
+        label : '@@form.radio.value@@',
+        type : 'textfield'
+    },
+    {
         name : 'readonly',
         label : '@@form.radio.readonly@@',
         type : 'checkbox',

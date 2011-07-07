@@ -14,6 +14,11 @@
         type : 'textfield'
     },
     {
+        name : 'value',
+        label : '@@form.textarea.value@@',
+        type : 'textarea'
+    },
+    {
         name : 'cols',
         label : '@@form.textarea.cols@@',
         type : 'textfield'

@@ -14,6 +14,12 @@
         type : 'textfield'
     },
     {
+        name : 'value',
+        description : '@@form.selectbox.value.desc@@',
+        label : '@@form.selectbox.value@@',
+        type : 'textfield'
+    },
+    {
         name : 'size',
         label : '@@form.selectbox.size@@',
         type : 'textfield'

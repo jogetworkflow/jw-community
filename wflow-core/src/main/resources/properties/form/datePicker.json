@@ -15,6 +15,11 @@
         required : 'True'
     },
     {
+        name : 'value',
+        label : '@@form.datepicker.value@@',
+        type : 'textfield'
+    },
+    {
         name : 'format',
         label : '@@form.datepicker.format@@',
         type : 'textfield',
