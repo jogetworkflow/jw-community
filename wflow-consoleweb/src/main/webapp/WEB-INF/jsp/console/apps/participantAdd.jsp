@@ -9,7 +9,7 @@
             <ul>
                 <li class="selected"><a href="#userGroup"><span><fmt:message key="console.process.config.label.mapParticipants.userGroup"/></span></a></li>
                 <li><a href="#orgChart"><span><fmt:message key="console.process.config.label.mapParticipants.orgChart"/></span></a></li>
-                <li><a href="#workflowVariable"><span><fmt:message key="console.process.config.label.mapParticipants.variable"/></span></a></li>
+                <li><a href="#workflowVariableDiv"><span><fmt:message key="console.process.config.label.mapParticipants.variable"/></span></a></li>
                 <li><a href="#plugin"><span><fmt:message key="console.process.config.label.mapParticipants.plugin"/></span></a></li>
             </ul>
             <div>
@@ -202,12 +202,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="workflowVariable">
-                    <form name="workflowVariable"">
+                <div id="workflowVariableDiv">
+                    <form name="workflowVariableForm">
                         <div class="form-row">
                             <label for="workflowVariable"><fmt:message key="console.app.process.common.label.variableId"/></label>
                             <span class="form-input">
-                                <select name="workflowVariable">
+                                <select id="workflowVariable" name="workflowVariable">
                                     <option></option>
                                     <c:forEach var="variable" items="${variableList}" varStatus="rowCounter">
                                         <option value="${variable.id}">${variable.id}</option>
