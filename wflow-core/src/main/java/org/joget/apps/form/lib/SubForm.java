@@ -120,14 +120,9 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
 
             // replace binder(s) if necessary
             FormLoadBinder loadBinder = getLoadBinder();
-            if (loadBinder != null) {
-                // clear load binder so that it will use the parent binder
-                subForm.setLoadBinder(null);
-            }
+            subForm.setLoadBinder(loadBinder);
             FormStoreBinder storeBinder = getStoreBinder();
-            if (storeBinder != null) {
-                subForm.setStoreBinder(storeBinder);
-            }
+            subForm.setStoreBinder(storeBinder);
 
             // recursively update parameter names for child elements
             String parentId = getCustomParameterName();
@@ -172,6 +167,9 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
                         if (storeBinder != null) {
                             FormRow row = null;
                             FormRowSet subFormRowSet = formData.getStoreBinderData(storeBinder);
+                            if (subFormRowSet == null) {
+                                subFormRowSet = new FormRowSet();
+                            }
                             if (!subFormRowSet.isEmpty()) {
                                 row = subFormRowSet.get(0);
                             } else {
