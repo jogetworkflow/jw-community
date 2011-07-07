@@ -3,11 +3,11 @@
     <div class="form-cell-value">
     <#list options?keys as key>
         <label>
-        <input id="${elementParamName!}" name="${elementParamName!}" type="radio" value="${key}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if value?? && value == key>checked</#if> />
+        <input <#if element.properties.readonly! != 'true'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${key}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if value?? && value == key>checked</#if> />
         ${options[key]}
         </label>
     </#list>
-        <#if element.properties.readonly! == 'true'><input name="${elementParamName!}" type="hidden" value="${value!}" /></#if>
+        <#if element.properties.readonly! == 'true'><input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!}" /></#if>
     </div>
     <div style="clear:both;"></div>
 </div>
