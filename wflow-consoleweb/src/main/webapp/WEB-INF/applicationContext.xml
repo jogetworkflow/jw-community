@@ -25,6 +25,7 @@
     <security:authentication-manager alias="authenticationManager"/>
 
     <security:http auto-config="false" access-denied-page="/web/unauthorized" servlet-api-provision="false">
+        <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/console/profile/**" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/profile" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/app/**/package/xpdl" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY"/>
