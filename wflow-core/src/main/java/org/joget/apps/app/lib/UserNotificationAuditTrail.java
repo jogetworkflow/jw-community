@@ -68,17 +68,16 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin {
 
                     public void run() {
                         try {
-                            String activityInstanceId = auditTrail.getMessage();
-                            WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
                             List<String> userList = new ArrayList<String>();
-
+                            String activityInstanceId = auditTrail.getMessage();
+                            
                             int maxAttempt = 5;
                             int numOfAttempt = 0;
                             while (userList != null && userList.isEmpty() && numOfAttempt < maxAttempt) {
                                 //LogUtil.info(getClass().getName(), "Attempting to get resource ids....");
-                                Thread.sleep(2000);
+                                Thread.sleep(4000);
+                                WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
                                 userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
-                                Thread.sleep(2000);
                                 numOfAttempt++;
                             }
 
