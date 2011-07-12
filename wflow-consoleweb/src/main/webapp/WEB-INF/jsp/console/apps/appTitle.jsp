@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <p><fmt:message key="console.app.common.label.name"/>: <input id="appNameValue" type="hidden" value="${appDefinition.name}"><span id="appName" class="nav-subtitle">${appDefinition.name}</span></p>
-<p><fmt:message key="console.app.common.label.version"/>: <span class="nav-subtitle">v${appDefinition.version} <a href="#" onclick="version()"><c:choose><c:when test="${appDefinition.published}"><fmt:message key="console.app.common.label.published"/></c:when><c:otherwise><fmt:message key="console.app.common.label.notPublished"/></c:otherwise></c:choose></a> | <a href="#" onclick="version();"><fmt:message key="console.app.common.label.versions"/></a></span></p>
+<p><fmt:message key="console.app.common.label.version"/>: <span class="nav-subtitle"><font class="ftl_label">v${appDefinition.version} </font> <a href="#" onclick="version()"><c:choose><c:when test="${appDefinition.published}"><fmt:message key="console.app.common.label.published"/></c:when><c:otherwise><fmt:message key="console.app.common.label.notPublished"/></c:otherwise></c:choose></a> | <a href="#" onclick="version();"><fmt:message key="console.app.common.label.versions"/></a></span></p>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
 

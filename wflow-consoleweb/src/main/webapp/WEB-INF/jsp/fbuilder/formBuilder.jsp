@@ -1,4 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+
+<%
+    String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
+    pageContext.setAttribute("rightToLeft", rightToLeft);
+%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -16,6 +23,12 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/fbuilder.css" />
+        
+        <c:if test="${rightToLeft == 'true'}">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
+        </c:if>
+            
         <script type="text/javascript">
             var viewForm = function() {
                 // get form row id
@@ -102,7 +115,7 @@
             </c:forEach>
         </script>
     </head>
-    <body>
+    <body id="formbuilder">
 
         <div id="builder-container">
             <div id="builder-header">

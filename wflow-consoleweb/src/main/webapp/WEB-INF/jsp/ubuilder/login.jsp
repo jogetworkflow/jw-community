@@ -1,9 +1,14 @@
-<%@page contentType="text/html" pageEncoding="windows-1252"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-    "http://www.w3.org/TR/html4/loose.dtd">
-
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@page contentType="text/html" pageEncoding="windows-1252"%>
+
+<%
+    String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
+    pageContext.setAttribute("rightToLeft", rightToLeft);
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+    "http://www.w3.org/TR/html4/loose.dtd">
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!isAnonymous}">
@@ -40,7 +45,7 @@
         </style>
     </head>
 
-    <body id="login" <c:if test="${param.embed}">class="embeded"</c:if>>
+    <body id="login" class="<c:if test="${param.embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
         <div id="page">
             <div id="header">
 

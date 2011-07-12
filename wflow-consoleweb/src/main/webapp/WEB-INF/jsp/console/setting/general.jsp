@@ -47,7 +47,7 @@
                         <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
                         <span class="form-input">
                             <input id="css" type="text" name="css" value="${settingMap['css']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.contextPath}/css/new.css</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.contextPath}/css/new.css</i>
                         </span>
                     </div>
                 </span>
@@ -75,7 +75,7 @@
                                 </c:forEach>
                             </select>
                             <br>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> en_US</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> en_US</i>
                         </span>
                     </div>
                 </span>
@@ -101,7 +101,7 @@
                         <label for="deadlineCheckerInterval"><fmt:message key="console.setting.general.label.deadlineCheckerInterval"/></label>
                         <span class="form-input">
                             <input id="deadlineCheckerInterval" type="text" name="deadlineCheckerInterval" value="${settingMap['deadlineCheckerInterval']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> 0</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 0</i>
                         </span>
                     </div>
                 </span>
@@ -112,7 +112,7 @@
                         <label for="welcomeMessageDelay"><fmt:message key="console.setting.general.label.welcomeMessageDelay"/></label>
                         <span class="form-input">
                             <input id="welcomeMessageDelay" type="text" name="welcomeMessageDelay" value="${settingMap['welcomeMessageDelay']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> 3</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 3</i>
                         </span>
                     </div>
                 </span>
@@ -136,7 +136,7 @@
                         <label for="masterLoginPassword"><fmt:message key="console.setting.general.label.masterLoginPassword"/></label>
                         <span class="form-input">
                             <input id="masterLoginPassword" type="password" name="masterLoginPassword" value="${settingMap['masterLoginPassword']}"/>
-                            <i><fmt:message key="console.setting.general.label.masterLoginHash"/><span id="masterLoginHash">-</span></i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.masterLoginHash"/></span><span id="masterLoginHash">-</span></i>
                         </span>
                     </div>
                 </span>
@@ -147,7 +147,7 @@
                         <label for="dataFileBasePath"><fmt:message key="console.setting.general.label.dataFileBasePath"/></label>
                         <span class="form-input">
                             <input id="dataFileBasePath" type="text" name="dataFileBasePath" value="${settingMap['dataFileBasePath']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> <%= new java.io.File(SetupManager.getBaseDirectory()).getAbsolutePath() %></i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <%= new java.io.File(SetupManager.getBaseDirectory()).getAbsolutePath() %></i>
                         </span>
                     </div>
                 </span>
@@ -158,7 +158,7 @@
                         <label for="designerwebBaseUrl"><fmt:message key="console.setting.general.label.designerwebBaseUrl"/></label>
                         <span class="form-input">
                             <input id="designerwebBaseUrl" type="text" name="designerwebBaseUrl" value="${settingMap['designerwebBaseUrl']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> http://${pageContext.request.serverName}:${pageContext.request.serverPort}</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> http://${pageContext.request.serverName}:${pageContext.request.serverPort}</i>
                         </span>
                     </div>
                 </span>
@@ -181,7 +181,7 @@
                         <label for="mediumWarningLevel"><fmt:message key="console.setting.general.label.mediumWarningLevel"/></label>
                         <span class="form-input">
                             <input id="mediumWarningLevel" type="text" name="mediumWarningLevel" value="${settingMap['mediumWarningLevel']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> 20</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 20</i>
                         </span>
                     </div>
                 </span>
@@ -192,7 +192,7 @@
                         <label for="criticalWarningLevel"><fmt:message key="console.setting.general.label.criticalWarningLevel"/></label>
                         <span class="form-input">
                             <input id="criticalWarningLevel" type="text" name="criticalWarningLevel" value="${settingMap['criticalWarningLevel']}"/>
-                            <i><span><fmt:message key="console.setting.general.label.default"/></span> 50</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 50</i>
                         </span>
                     </div>
                 </span>

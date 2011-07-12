@@ -1,4 +1,11 @@
 <%@page contentType="text/html" pageEncoding="windows-1252"%>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+
+<%
+    String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
+    pageContext.setAttribute("rightToLeft", rightToLeft);
+%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
@@ -25,6 +32,11 @@
         <link href="${pageContext.request.contextPath}/css/ui-lightness/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css" rel="stylesheet" type="text/css" />
 
+        <c:if test="${rightToLeft == 'true'}">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
+        </c:if>
+            
         <script type="text/javascript">
             $(document).ready(function () {
                 UserviewBuilder.tinymceUrl = '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js';
@@ -68,7 +80,7 @@
         </script>
     </head>
 
-    <body>
+    <body id="userviewbuilder">
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>

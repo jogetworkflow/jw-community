@@ -28,7 +28,7 @@
         </ul>
     </div>
     <div id="main-body">
-        <p><fmt:message key="console.app.process.common.label.name"/>: &nbsp;&nbsp; <strong>${process.name}&nbsp;</strong></p>
+        <p><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp; <strong>${process.name}&nbsp;</strong></p>
 
         <div id="main-body-content">
 
@@ -86,7 +86,7 @@
                                     ${participant.name}
                                 </span>
                                 <span class="row-content id">
-                                    <fmt:message key="console.process.config.label.id"/> : ${participant.id}
+                                    <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${participant.id}
                                 </span>
                                 <span class="row-button">
                                     <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('${participant.id}')"/>
@@ -130,13 +130,13 @@
                                                             <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${participantMap[participantUid].value}">${participantDisplayName}</a>
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'workflowVariable'}">
-                                                            <fmt:message key="console.app.process.common.label.variableId"/> : <c:out value="${fn:substring(participantMap[participantUid].value, 0, fn:indexOf(participantMap[participantUid].value, ','))}"/><br/>
+                                                            <font class="ftl_label"><fmt:message key="console.app.process.common.label.variableId"/> :</font> <c:out value="${fn:substring(participantMap[participantUid].value, 0, fn:indexOf(participantMap[participantUid].value, ','))}"/><br/>
                                                             <fmt:message key="console.process.config.label.mapParticipants.variable.${fn:substring(participantMap[participantUid].value, fn:indexOf(participantMap[participantUid].value, ',')+1, -1)}"/>
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'requester' || participantMap[participantUid].type eq 'requesterHod' || participantMap[participantUid].type eq 'requesterSubordinates' || participantMap[participantUid].type eq 'requesterDepartment'}">
                                                             <c:choose>
                                                                 <c:when test="${participantMap[participantUid].value ne ''}">
-                                                                    <fmt:message key="console.app.activity.common.label.definitionId"/> :
+                                                                    <font class="ftl_label"><fmt:message key="console.app.activity.common.label.definitionId"/> :</font>
                                                                     <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}?tab=activityList&activityDefId=${participantMap[participantUid].value}">${participantMap[participantUid].value}</a>
                                                                 </c:when>
                                                                 <c:otherwise>
@@ -195,7 +195,7 @@
                                         ${activityDisplayName} <c:if test="${activity.type ne 'normal'}">(${activity.type})</c:if>
                                     </span>
                                     <span class="row-content id">
-                                        <fmt:message key="console.process.config.label.id"/> : ${activity.id}
+                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
                                     </span>
                                     <span class="row-button">
                                         <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('${activity.id}')"/>
@@ -258,7 +258,7 @@
                                         ${activityDisplayName}
                                     </span>
                                     <span class="row-content id">
-                                        <fmt:message key="console.process.config.label.id"/> : ${activity.id}
+                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
                                     </span>
                                     <span class="row-button">
                                         <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('${activity.id}')"/>

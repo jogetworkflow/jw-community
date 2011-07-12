@@ -55,6 +55,7 @@
             }
         </script>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/v3.css" />
+        <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
     </head>
     <body>
 
@@ -228,7 +229,7 @@
                     </c:if>
                 </ul>
             </div>
-
+            <div class="clear"></div>   
         </div>
 
         <div id="container">
