@@ -30,6 +30,15 @@
 {
     title : '@@userview.datalistmenu.ui@@',
     properties : [{
+        name : 'rowCount',
+        label : '@@userview.datalistmenu.rowCount@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },{
         name : 'customHeader',
         label : '@@userview.datalistmenu.customHeader@@',
         type : 'textarea',

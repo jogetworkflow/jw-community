@@ -91,7 +91,25 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getDecoratedMenu() {
-        return null;
+        String menuItem = null;
+        boolean showRowCount = Boolean.valueOf(getPropertyString("rowCount")).booleanValue();
+        if (showRowCount) {
+            // get datalist and row count
+            DataList dataList = getDataList();
+            DataListBinder binder = dataList.getBinder();
+            if (binder != null) {
+                Properties binderProperties = getBinderProperties(dataList);
+                int rowCount = binder.getDataTotalRowCount(dataList, binderProperties, null, null);
+
+                // generate menu link
+                String menuItemId = getPropertyString("customId");
+                if (menuItemId == null || menuItemId.trim().isEmpty()) {
+                    menuItemId = getPropertyString("id");
+                }
+                menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + getPropertyString("label") + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
+            }
+        }
+        return menuItem;
     }
 
     @Override
@@ -235,24 +253,7 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
                 setProperty("error", message);
                 return;
             }
-
-            Properties binderProperties = dataList.getBinder().getProperties();
-
-            if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null && getKey().trim().length() > 0) {
-                String extraCondition = "";
-
-                if (binderProperties.getProperty("extraCondition") != null && binderProperties.getProperty("extraCondition").toString().trim().length() > 0) {
-                    extraCondition = binderProperties.getProperty("extraCondition").toString() + " AND ";
-                }
-
-                if (FormUtil.PROPERTY_ID.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_CREATED.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_MODIFIED.equals(getPropertyString("keyName"))) {
-                    extraCondition += getPropertyString("keyName") + " = '" + getKey() + "'";
-                } else {
-                    extraCondition += FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + getPropertyString("keyName") + " = '" + getKey() + "'";
-                }
-
-                binderProperties.put("extraCondition", extraCondition);
-            }
+            Properties binderProperties = getBinderProperties(dataList);
 
             // set data rows
             Boolean desc = null;
@@ -303,6 +304,26 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
             message += "\r\n<pre class=\"stacktrace\">" + out.getBuffer() + "</pre>";
             setProperty("error", message);
         }
+    }
+
+    protected Properties getBinderProperties(DataList dataList) {
+        Properties binderProperties = dataList.getBinder().getProperties();
+        if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null && getKey().trim().length() > 0) {
+            String extraCondition = "";
+
+            if (binderProperties.getProperty("extraCondition") != null && binderProperties.getProperty("extraCondition").toString().trim().length() > 0) {
+                extraCondition = binderProperties.getProperty("extraCondition").toString() + " AND ";
+            }
+
+            if (FormUtil.PROPERTY_ID.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_CREATED.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_MODIFIED.equals(getPropertyString("keyName"))) {
+                extraCondition += getPropertyString("keyName") + " = '" + getKey() + "'";
+            } else {
+                extraCondition += FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + getPropertyString("keyName") + " = '" + getKey() + "'";
+            }
+
+            binderProperties.put("extraCondition", extraCondition);
+        }
+        return binderProperties;
     }
 
     protected DataListActionResult handleAction() {
