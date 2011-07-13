@@ -38,7 +38,7 @@
             </form>
         </div>
         <br/>
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listOsgi?${pageContext.request.queryString}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="pluginList"
                        jsonData="data"

@@ -492,6 +492,9 @@ public class PluginManager implements ApplicationContextAware {
                     boolean deleted = file.delete();
                 }
                 result = true;
+                
+                // clear cache
+                pluginCache.clear();
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
             }
