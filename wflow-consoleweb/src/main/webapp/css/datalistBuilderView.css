@@ -163,3 +163,11 @@
 .dataList .filters {
     margin-bottom: 2px;
 }
+
+.dataList .actions.right{
+    text-align:right;
+}
+
+.dataList .actions.left{
+    text-align:left;
+}

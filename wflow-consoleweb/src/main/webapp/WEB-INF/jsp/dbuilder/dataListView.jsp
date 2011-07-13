@@ -10,6 +10,23 @@
 
 <div class="dataList">
     <c:catch var="dataListException">
+        <!-- set default button position if value is null -->
+        <c:set var="buttonPosition" value="bottomLeft" />
+        <c:if test="${!empty properties.buttonPosition}">
+            <c:set var="buttonPosition" value="${properties.buttonPosition}" />
+        </c:if>
+        
+        <c:set var="buttonFloat" value="left" />
+        <c:if test="${buttonPosition eq 'topRight' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothRight'}">
+            <c:set var="buttonFloat" value="right" />
+        </c:if>
+        
+        <!-- set checkbox position if value is null -->
+        <c:set var="checkboxPosition" value="left" />
+        <c:if test="${!empty properties.checkboxPosition}">
+            <c:set var="checkboxPosition" value="${properties.checkboxPosition}" />
+        </c:if>
+        
         <!-- Display Filters -->
         <c:set var="filterHeader"><%= org.joget.apps.datalist.model.DataListFilter.FILTER_HEADER%></c:set>
         <c:if test="${!empty properties.textfieldFilterMap || !empty properties.selectBoxFilterMap}">
@@ -54,6 +71,21 @@
 
         <!-- Display Main Table -->
         <form name="form_${dataListId}" action="?" method="get">
+            <!-- Display Buttons -->
+            <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
+                <c:if test="${!empty properties.dataListRows[0]}">
+                    <div class="actions top ${buttonFloat}">
+                        <c:forEach items="${properties.dataList.actions}" var="action">
+                            <c:set var="buttonConfirmation" value="" />
+                            <c:if test="${!empty action.confirmation}">
+                                <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
+                            </c:if>
+                            <button name="action" value="${action.properties.id}" ${buttonConfirmation}">${action.label}</button>
+                        </c:forEach>
+                    </div>
+                </c:if>
+            </c:if>
+            
             <c:if test="${param.embed}">
                 <input type="hidden" name="embed" id="embed" value="true"/>
             </c:if>
@@ -63,7 +95,7 @@
             <c:set var="decorator" scope="request" value="${properties.decorator}"/>
             <c:set var="dataList" scope="request" value="${properties.dataList}"/>
             <display:table id="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${properties.dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
-                <display:column property="checkbox" media="html" title="" />
+                <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}"><display:column property="checkbox" media="html" title="" /></c:if>
                 <c:forEach items="${properties.dataList.columns}" var="column">
                     <display:column
                         property="column(${column.name})"
@@ -74,19 +106,22 @@
                 <c:if test="${!empty properties.dataList.rowActions[0]}">
                     <display:column property="actions" media="html" title="" />
                 </c:if>
+                <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}"><display:column property="checkbox" media="html" title="" /></c:if>
             </display:table>
 
             <!-- Display Buttons -->
-            <c:if test="${!empty properties.dataListRows[0]}">
-                <div class="actions">
-                    <c:forEach items="${properties.dataList.actions}" var="action">
-                        <c:set var="buttonConfirmation" value="" />
-                        <c:if test="${!empty action.confirmation}">
-                            <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
-                        </c:if>
-                        <button name="action" value="${action.properties.id}" ${buttonConfirmation}">${action.label}</button>
-                    </c:forEach>
-                </div>
+            <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
+                <c:if test="${!empty properties.dataListRows[0]}">
+                    <div class="actions bottom ${buttonFloat}">
+                        <c:forEach items="${properties.dataList.actions}" var="action">
+                            <c:set var="buttonConfirmation" value="" />
+                            <c:if test="${!empty action.confirmation}">
+                                <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
+                            </c:if>
+                            <button name="action" value="${action.properties.id}" ${buttonConfirmation}">${action.label}</button>
+                        </c:forEach>
+                    </div>
+                </c:if>
             </c:if>
         </form>
 <%--

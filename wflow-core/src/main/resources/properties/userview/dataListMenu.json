@@ -39,6 +39,42 @@
             label : ''
         }]
     },{
+        name : 'buttonPosition',
+        label : '@@userview.datalistmenu.buttonPosition@@',
+        type : 'selectbox',
+        value : 'bottomLeft',
+        options : [{
+            value : 'topLeft',
+            label : '@@userview.datalistmenu.buttonPosition.topLeft@@'
+        },{
+            value : 'topRight',
+            label : '@@userview.datalistmenu.buttonPosition.topRight@@'
+        },{
+            value : 'bottomLeft',
+            label : '@@userview.datalistmenu.buttonPosition.bottomLeft@@'
+        },{
+            value : 'bottomRight',
+            label : '@@userview.datalistmenu.buttonPosition.bottomRight@@'
+        },{
+            value : 'bothLeft',
+            label : '@@userview.datalistmenu.buttonPosition.bothLeft@@'
+        },{
+            value : 'bothRight',
+            label : '@@userview.datalistmenu.buttonPosition.bothRight@@'
+        }]
+    },{
+        name : 'checkboxPosition',
+        label : '@@userview.datalistmenu.checkboxPosition@@',
+        type : 'selectbox',
+        value : 'left',
+        options : [{
+            value : 'left',
+            label : '@@userview.datalistmenu.checkboxPosition.left@@'
+        },{
+            value : 'right',
+            label : '@@userview.datalistmenu.checkboxPosition.right@@'
+        }]
+    },{
         name : 'customHeader',
         label : '@@userview.datalistmenu.customHeader@@',
         type : 'textarea',
