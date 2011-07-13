@@ -1,10 +1,5 @@
 package org.joget.apps.userview.model;
 
-import java.util.Map;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
-
 public abstract class UserviewMenu extends ExtElement{
 
     private String url;
@@ -64,10 +59,11 @@ public abstract class UserviewMenu extends ExtElement{
      * @return
      */
     public String getMenu() {
-        if (getDecoratedMenu() == null || (getDecoratedMenu() != null && getDecoratedMenu().trim().length() == 0)) {
+        String decoratedMenu = getDecoratedMenu();
+        if (decoratedMenu == null || (decoratedMenu != null && decoratedMenu.trim().length() == 0)) {
             return "<a href='" + getUrl() + "' class='menu-link default'><span>" + getPropertyString("label") + "</span></a>";
         } else {
-            return getDecoratedMenu();
+            return decoratedMenu;
         }
     }
 

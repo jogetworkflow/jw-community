@@ -171,9 +171,10 @@
                 <div id="content">
                     <c:set var="properties" scope="request" value="${userview.current.properties}"/>
                     <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
+                    <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
                     <c:choose>
-                        <c:when test="${!empty userview.current.readyJspPage}">
-                            <jsp:include page="../${userview.current.readyJspPage}" flush="true"/>
+                        <c:when test="${!empty readyJspPage}">
+                            <jsp:include page="../${readyJspPage}" flush="true"/>
                         </c:when>
                         <c:otherwise>
                             ${userview.current.readyRenderPage}
