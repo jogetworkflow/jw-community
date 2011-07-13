@@ -1218,3 +1218,7 @@ div.tick {
     width:888px;
     height:95px;
 }
+
+span.pendingTask{
+    font-weight:bold;
+}
