@@ -45,14 +45,6 @@ DatalistBuilder = {
     init : function(){
         DatalistBuilder.initBinderList();
         DatalistBuilder.initActionList();
-
-        //bind click event
-        //$('#builder-steps-properties').click( function(){
-            //DatalistBuilder.showMainProperties();
-        //});
-
-        //refresh main properties
-        //DatalistBuilder.showDatalistProperties();
     },
 
     initBinderList : function(){
@@ -1084,12 +1076,6 @@ DatalistBuilder = {
     },
 
     adjustCanvas : function(){
-        //define size of each div's child
-        var filterSize = 95;
-        var columnSize = 135;
-        var rowActionSize = 105;
-        var actionSize = 105;
-
         var columnMinWidth = 525;
         var rowActionMinWidth = 140;
 
@@ -1103,13 +1089,34 @@ DatalistBuilder = {
         minWidth = 665;
 
         //compute the width needed for each section
-        filterWidth 	= filterCount * filterSize;
-        columnWidth 	= columnCount * columnSize;
+        filterWidth = 0;
+        widthSet = true;
+        $("#databuilderContentRowActions").children().each( function(){
+            if($(this).width() == 0) widthSet = false;
+            filterWidth += $(this).outerWidth();
+        });
+        columnWidth = 0;
+        $("#databuilderContentColumns").children().each( function(){
+            if($(this).width() == 0) widthSet = false;
+            columnWidth += $(this).width() + 5;
+        });
         if(columnWidth < columnMinWidth) columnWidth = columnMinWidth;
-        rowActionWidth 	= rowActionCount * rowActionSize;
+        rowActionWidth = 0;
+        $("#databuilderContentRowActions").children().each( function(){
+            if($(this).width() == 0) widthSet = false;
+            rowActionWidth += $(this).outerWidth() + 5;
+        });
         if(rowActionWidth < rowActionMinWidth) rowActionWidth = rowActionMinWidth;
-        actionWidth 	= actionCount * actionSize;
-
+        actionWidth = 0;
+        $("#databuilderContentActions").children().each( function(){
+            if($(this).width() == 0) widthSet = false;
+            actionWidth += $(this).outerWidth();
+        });
+        
+        if(!widthSet){
+            setTimeout('DatalistBuilder.adjustCanvas()',1000);
+        }
+        
         //set the outer div's width
         if(minWidth < filterWidth) minWidth = filterWidth;
         if(minWidth < (columnWidth + rowActionWidth)) minWidth = columnWidth + rowActionWidth;

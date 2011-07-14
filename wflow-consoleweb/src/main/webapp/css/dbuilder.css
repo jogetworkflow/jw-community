@@ -441,7 +441,7 @@ ul#databuilderContentColumns li.databuilderItem{
     cursor: pointer;
     float: left;
     position: relative;
-    width: 130px;
+    min-width: 130px;
     height: auto;
     margin: 2px;
 }
@@ -450,7 +450,7 @@ ul#databuilderContentRowActions li.databuilderRowAction{
     cursor: pointer;
     float: left;
     position: relative;
-    width: 100px;
+    min-width: 100px;
     height: auto;
     margin: 2px;
 }
@@ -459,7 +459,7 @@ ul#databuilderContentActions li.databuilderAction{
     cursor: pointer;
     float: left;
     position: relative;
-    width: 100px;
+    min-width: 100px;
     height: auto;
     padding: 1px;
 }
@@ -468,7 +468,7 @@ ul#databuilderContentFilters li.databuilderFilter{
     cursor: pointer;
     float: right;
     position: relative;
-    width: 120px;
+    min-width: 120px;
     height: auto;
     padding: 5px;
 }
@@ -522,14 +522,17 @@ ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemConte
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li{
+    background: #fff;
     list-style: none;
     padding-left: 10px;
+    white-space: nowrap;
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li.even{
     background: #f7f8f5;
     list-style: none;
     padding-left: 10px;
+    white-space: nowrap;
 }
 
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle{
@@ -539,6 +542,7 @@ ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle
     font-weight: bold;
     padding: 4px;
     text-align: center;
+    white-space: nowrap;
 }
 
 ul#databuilderContentActions li.databuilderAction div.databuilderItemTitle{
