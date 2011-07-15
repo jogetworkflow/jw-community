@@ -101,12 +101,4 @@
         cols : '60',
         rows : '5'
     }]
-},
-{
-    title : '@@userview.inboxmenu.advanced@@',
-    properties : [{
-        name : 'keyName',
-        label : '@@userview.inboxmenu.userviewKeyName@@',
-        type : 'textfield'
-    }]
 }]
