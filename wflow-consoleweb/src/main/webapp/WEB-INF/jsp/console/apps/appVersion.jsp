@@ -14,7 +14,6 @@
                    width="100%"
                    sort="version"
                    desc="true"
-                   href="#"
                    hrefParam="version"
                    hrefDialogWindowName="_blank"
                    hrefQuery="false"
