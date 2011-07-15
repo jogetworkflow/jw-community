@@ -8,6 +8,8 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -72,7 +74,7 @@ public class XpdlImageUtil {
                     File file = new File(baseDir);
                     file.mkdirs();
                     file = new File(baseDir + fileName);
-                    fos = new FileOutputStream(file);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
                     HttpClient httpClient = new HttpClient();
                     String url = designerwebBaseUrl + "/jwdesigner/viewer/viewer.jsp?processId=" + process.getEncodedId();
@@ -91,11 +93,23 @@ public class XpdlImageUtil {
                     byte[] buffer = new byte[1024];
                     int byteReaded = is.read(buffer);
                     while (byteReaded != -1) {
-                        fos.write(buffer, 0, byteReaded);
+                        bos.write(buffer, 0, byteReaded);
                         byteReaded = is.read(buffer);
                     }
-                    fos.flush();
+                    bos.flush();
 
+                    // output to file
+                    byte[] contents = bos.toByteArray();
+                    ByteArrayInputStream bis = new ByteArrayInputStream(contents);
+                    fos = new FileOutputStream(file);
+                    buffer = new byte[1024];
+                    byteReaded = bis.read(buffer);
+                    while (byteReaded != -1) {
+                        fos.write(buffer, 0, byteReaded);
+                        byteReaded = bis.read(buffer);
+                    }
+                    fos.flush();
+                    
                     createThumbnail(baseDir, processDefId);
                 } catch (Exception ex) {
                     LogUtil.error(XpdlImageUtil.class.getName(), ex, "Error generating xpdl image [processDefId=" + processDefId + "]");
