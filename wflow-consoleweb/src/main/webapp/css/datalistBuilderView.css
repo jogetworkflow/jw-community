@@ -171,3 +171,11 @@
 .dataList .actions.left{
     text-align:left;
 }
+
+.dataList .actions.top{
+    margin-bottom:15px;
+}
+
+.dataList .actions.bottom{
+    margin-top:15px;
+}

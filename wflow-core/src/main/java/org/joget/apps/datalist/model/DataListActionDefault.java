@@ -61,4 +61,12 @@ public abstract class DataListActionDefault extends DefaultPlugin implements Dat
         }
         properties.put(property, value);
     }
+
+    public Boolean getVisibleOnNoRecord() {
+        if (getProperty("visible") != null && "true".equalsIgnoreCase(getProperty("visible"))) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

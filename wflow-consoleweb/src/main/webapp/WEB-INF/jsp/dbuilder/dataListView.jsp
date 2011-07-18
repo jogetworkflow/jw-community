@@ -73,17 +73,17 @@
         <form name="form_${dataListId}" action="?" method="get">
             <!-- Display Buttons -->
             <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
-                <c:if test="${!empty properties.dataListRows[0]}">
-                    <div class="actions top ${buttonFloat}">
-                        <c:forEach items="${properties.dataList.actions}" var="action">
+                <div class="actions bottom ${buttonFloat}">
+                    <c:forEach items="${properties.dataList.actions}" var="action">
+                        <c:if test="${!empty properties.dataListRows[0] || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
                             </c:if>
                             <button name="action" value="${action.properties.id}" ${buttonConfirmation}">${action.label}</button>
-                        </c:forEach>
-                    </div>
-                </c:if>
+                        </c:if>
+                    </c:forEach>
+                </div>
             </c:if>
             
             <c:if test="${param.embed}">
@@ -111,17 +111,17 @@
 
             <!-- Display Buttons -->
             <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
-                <c:if test="${!empty properties.dataListRows[0]}">
-                    <div class="actions bottom ${buttonFloat}">
-                        <c:forEach items="${properties.dataList.actions}" var="action">
+                <div class="actions bottom ${buttonFloat}">
+                    <c:forEach items="${properties.dataList.actions}" var="action">
+                        <c:if test="${!empty properties.dataListRows[0] || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
                             </c:if>
                             <button name="action" value="${action.properties.id}" ${buttonConfirmation}">${action.label}</button>
-                        </c:forEach>
-                    </div>
-                </c:if>
+                        </c:if>
+                    </c:forEach>
+                </div>
             </c:if>
         </form>
 <%--

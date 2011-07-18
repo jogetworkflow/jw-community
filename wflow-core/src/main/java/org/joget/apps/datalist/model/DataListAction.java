@@ -36,6 +36,11 @@ public interface DataListAction extends DataListConfigurable {
     String getConfirmation();
 
     /**
+     * Flag that decide to show an action object or not
+     */
+    Boolean getVisibleOnNoRecord();
+
+    /**
      * Method to perform the action on selected rows
      * @param dataList
      * @param rowKeys
