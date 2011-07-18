@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.enhydra.shark.xpdl.elements.Condition;
+import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.DeadlineLimit;
 import org.enhydra.shark.xpdl.elements.Deadlines;
 import org.enhydra.shark.xpdl.elements.ExtendedAttribute;
@@ -84,6 +85,13 @@ public class XPDLRepositoryHandler {
                     fromXML(children.item(i), (XMLSimpleElement) newOne);
                 }
                 cel.add(newOne);
+
+                // CUSTOM
+                // remove additional columns for Deadlines
+                if (newOne instanceof Deadline) {
+                    ((Deadline)newOne).hideCustomElements();
+                }
+                // END CUSTOM
             }
         }
     }

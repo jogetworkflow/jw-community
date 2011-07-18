@@ -1,6 +1,8 @@
 package org.enhydra.shark.xpdl.elements;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.enhydra.shark.xpdl.XMLAttribute;
 import org.enhydra.shark.xpdl.XMLComplexElement;
 import org.enhydra.shark.xpdl.XMLElementChangeInfo;
@@ -41,9 +43,8 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
         add(attrExecution);
         add(refDeadlineCondition);
         add(refExceptionName);
-        add(attrDurationUnit);
-        add(refDeadlineLimit);
-
+        
+        addCustomElements();
         //END CUSTOM
     }
 
@@ -130,13 +131,53 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
                     variableCondition = "(" + changedDeadlineLimit + "*" + variableCondition + ")";
 
                     set("DeadlineCondition",
-                            "var d=new java.util.Date(); d.setTime(ACTIVITY_ACTIVATED_TIME.getTime()+" + variableCondition + "); d;");
+                            "var " + durationUnitChar + "=new java.util.Date(); " + durationUnitChar + ".setTime(ACTIVITY_ACTIVATED_TIME.getTime()+" + variableCondition + "); " + durationUnitChar + ";");
                 }
             }
 
-            elements.remove(refDeadlineLimit);
-            elements.remove(attrDurationUnit);
+            hideCustomElements();
         }
+    }
+    
+    public void addCustomElements() {
+        add(attrDurationUnit);
+        add(refDeadlineLimit);
+    }
+    
+    public void hideCustomElements() {
+        // set deadline limit from deadline condition
+        String deadlineCondition = getDeadlineCondition();
+        String deadlineLimit = "";
+        Pattern pattern = Pattern.compile("\\+\\(.+\\*");
+        Matcher matcher = pattern.matcher(deadlineCondition);
+        if (matcher.find()) {
+            String match = matcher.group();
+            deadlineLimit = match.substring(2, match.length()-1);
+        }
+        refDeadlineLimit.setValue(deadlineLimit);
+        
+        // set duration unit from deadline condition
+        String durationUnit = XPDLConstants.DURATION_UNIT_D;
+        pattern = Pattern.compile("\\*\\d+\\)");
+        matcher = pattern.matcher(deadlineCondition);
+        if (matcher.find()) {
+            String match = matcher.group();
+            String millis = match.substring(1, match.length()-1);
+            if ("1000".equals(millis)) {
+                durationUnit = XPDLConstants.DURATION_UNIT_s;
+            } else if ("60000".equals(millis)) {
+                durationUnit = XPDLConstants.DURATION_UNIT_m;
+            } else if ("3600000".equals(millis)) {
+                durationUnit = XPDLConstants.DURATION_UNIT_h;
+            } else {
+                durationUnit = XPDLConstants.DURATION_UNIT_D;
+            }
+        }
+        attrDurationUnit.setValue(durationUnit);
+
+        // remove elements
+        elements.remove(refDeadlineLimit);
+        elements.remove(attrDurationUnit);
     }
     //END CUSTOM
 
