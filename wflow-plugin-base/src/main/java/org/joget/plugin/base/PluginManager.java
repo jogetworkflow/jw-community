@@ -532,9 +532,8 @@ public class PluginManager implements ApplicationContextAware {
 
             ServiceReference sr = context.getServiceReference(name);
             if (sr != null) {
-                Object obj = context.getService(sr);
-                //Class clazz = sr.getBundle().loadClass(name);
-                //Object obj = clazz.newInstance();
+                Class clazz = sr.getBundle().loadClass(name);
+                Object obj = clazz.newInstance();
                 boolean isPlugin = obj instanceof Plugin;
                 LogUtil.debug(PluginManager.class.getName(), " plugin obj " + obj + " class: " + obj.getClass().getName() + " " + isPlugin);
                 LogUtil.debug(PluginManager.class.getName(), " plugin classloader: " + obj.getClass().getClassLoader());
