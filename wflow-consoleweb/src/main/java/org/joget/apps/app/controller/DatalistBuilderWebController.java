@@ -34,6 +34,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.ui.ModelMap;
@@ -476,7 +477,7 @@ public class DatalistBuilderWebController {
                     if (paramName.startsWith(PREFIX_BINDER_PROPERTY)) {
                         String[] paramValue = (String[]) request.getParameterValues(paramName);
                         String propName = paramName.substring(PREFIX_BINDER_PROPERTY.length());
-                        properties.put(propName, CsvUtil.getDeliminatedString(paramValue));
+                        properties.put(propName, WorkflowUtil.processVariable(CsvUtil.getDeliminatedString(paramValue), null, null) );
                     }
                 }
                 binder.setProperties(properties);
