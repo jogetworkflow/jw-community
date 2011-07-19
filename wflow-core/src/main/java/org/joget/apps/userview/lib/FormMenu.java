@@ -154,7 +154,8 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
      */
     protected void displayForm() {
 
-        String processId = getRequestParameterString(FormUtil.PROPERTY_ID);
+        String id = getRequestParameterString(FormUtil.PROPERTY_ID);
+        String processId = getRequestParameterString("processId");
         String activityId = getRequestParameterString("activityId");
 
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -179,7 +180,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             form = activityForm.getForm();
         } else {
             // load data form
-            form = retrieveDataForm(formData, processId);
+            form = retrieveDataForm(formData, id);
         }
 
         if (form != null) {
@@ -205,7 +206,8 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
      */
     protected void submitForm() {
 
-        String processId = getRequestParameterString(FormUtil.PROPERTY_ID);
+        String id = getRequestParameterString(FormUtil.PROPERTY_ID);
+        String processId = getRequestParameterString("processId");
         String activityId = getRequestParameterString("activityId");
 
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -232,7 +234,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             form = submitAssignmentForm(formData, assignment, activityForm);
         } else {
             // load data form
-            form = retrieveDataForm(formData, processId);
+            form = retrieveDataForm(formData, id);
 
             // submit data form
             form = submitDataForm(formData, form);
