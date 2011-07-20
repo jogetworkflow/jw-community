@@ -67,11 +67,15 @@ public interface WorkflowManager {
 
     Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String sort, Boolean desc, Integer start, Integer rows); // REFACTOR??
 
+    Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows); // REFACTOR??
+
     Collection<WorkflowAssignment> getAssignmentListFilterByProccessDefIds(String[] processDefIds, String sort, Boolean desc, Integer start, Integer rows); // REFACTOR??
 
     int getAssignmentSize(Boolean accepted, String processDefId); // TODO: REFACTOR??
 
     int getAssignmentSize(String packageId, String processDefId, String processId); // TODO: REFACTOR??
+    
+    int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId); // TODO: REFACTOR??
 
     int getAssignmentListFilterByProccessDefIdsSize(String[] processDefIds); // TODO: VERIFY USAGE??
 

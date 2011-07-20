@@ -283,7 +283,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             PackageAdministration pa = getSharkPackageAdmin(sessionHandle);
             data = pa.getPackageContent(sessionHandle, packageId, version);
-            
+
 
         } catch (Exception ex) {
 
@@ -449,7 +449,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public PagedList<WorkflowProcess> getProcessList(String sort, Boolean desc, Integer start, Integer rows, String packageId, Boolean all, Boolean checkWhiteList) {
-        List<WorkflowProcess> processList = (List<WorkflowProcess>)getProcessList(packageId);
+        List<WorkflowProcess> processList = (List<WorkflowProcess>) getProcessList(packageId);
 
         // filter by packageId and versions
         boolean filterByPackage = packageId != null && packageId.trim().length() > 0;
@@ -642,9 +642,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public WorkflowActivity getProcessActivityDefinition(String processDefId, String activityDefId) {
         Collection<WorkflowActivity> activityList = getProcessActivityDefinitionList(processDefId);
 
-        for(Iterator<WorkflowActivity> i = activityList.iterator(); i.hasNext();){
-            WorkflowActivity wa = (WorkflowActivity)i.next();
-            if(wa.getId().equals(activityDefId)){
+        for (Iterator<WorkflowActivity> i = activityList.iterator(); i.hasNext();) {
+            WorkflowActivity wa = (WorkflowActivity) i.next();
+            if (wa.getId().equals(activityDefId)) {
                 return wa;
             }
         }
@@ -695,7 +695,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 WMEntity entity = pParticipants[i];
                 WMEntity entityType = WMEntityUtilities.getSubEntity(sessionHandle, xpdlBrowser, entity, "ParticipantType");
                 String entityTypeValue = WMEntityUtilities.getAttributeValue(sessionHandle, xpdlBrowser, entityType, "Type");
-                if("ROLE".equals(entityTypeValue)){
+                if ("ROLE".equals(entityTypeValue)) {
                     WorkflowParticipant participant = new WorkflowParticipant();
                     participant.setId(entity.getId());
                     participant.setName(entity.getName());
@@ -708,7 +708,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             String ids[] = participantIdsInProcess.split(";");
             if (ids.length > 0) {
                 for (String id : ids) {
-                    if(tempParticipantMap.get(id) != null){
+                    if (tempParticipantMap.get(id) != null) {
                         participantMap.put(id, tempParticipantMap.get(id));
                     }
                 }
@@ -3141,7 +3141,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
 
-
     public void reevaluateAssignmentsForUser(String username) {
         SharkConnection sc = null;
 
@@ -3326,7 +3325,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param processDefId
      * @return The created process instance ID
      */
-    public String processCreateWithoutStart(String processDefId){
+    public String processCreateWithoutStart(String processDefId) {
         String processInstanceId = null;
         WorkflowProcessResult result = processStart(processDefId, null, null, null, null, true);
         if (result.getProcess() != null) {
@@ -3354,7 +3353,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return processStart(processDefId, null, variables, null, null, false);
     }
 
-     /**
+    /**
      * Starts a process based on the process definition ID, while setting workflow variables values and start process username.
      * @param processDefId
      * @param variables
@@ -3365,7 +3364,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return processStart(processDefId, null, variables, startProcUsername, null, false);
     }
 
-     /**
+    /**
      * Starts a process based on the process definition ID, while setting workflow variables values, start process username and parent process id.
      * @param processDefId
      * @param variables
@@ -3390,7 +3389,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         // find running activities in current process
         Collection<WorkflowActivity> activityList = getActivityList(currentProcessId, 0, 1000, null, null);
-        for (Iterator<WorkflowActivity> i=activityList.iterator(); i.hasNext();) {
+        for (Iterator<WorkflowActivity> i = activityList.iterator(); i.hasNext();) {
             WorkflowActivity act = i.next();
             if (act.getState() == null || !act.getState().startsWith("open")) {
                 i.remove();
@@ -3400,8 +3399,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (activityList.size() > 0) {
             // get current variable values
             Collection<WorkflowVariable> variableList = getProcessVariableList(currentProcessId);
-            Map<String,String> variableMap = new HashMap<String, String>();
-            for (WorkflowVariable variable: variableList) {
+            Map<String, String> variableMap = new HashMap<String, String>();
+            for (WorkflowVariable variable : variableList) {
                 String val = (variable.getVal() != null) ? variable.getVal().toString() : null;
                 variableMap.put(variable.getId(), val);
             }
@@ -3415,7 +3414,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 // start matching activities
                 boolean abortFirstActivity = true;
-                for (WorkflowActivity act: activityList) {
+                for (WorkflowActivity act : activityList) {
                     String activityDef = act.getActivityDefId();
                     boolean actStarted = activityStart(newProcessId, activityDef, abortFirstActivity);
                     abortFirstActivity = false;
@@ -3469,9 +3468,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
         String processInstanceId = "";
         try {
 
-            if(startProcUsername != null && startProcUsername.trim().length() > 0){
+            if (startProcUsername != null && startProcUsername.trim().length() > 0) {
                 sc = connect(startProcUsername);
-            }else{
+            } else {
                 sc = connect();
             }
 
@@ -3479,15 +3478,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WfProcessMgr mgr = sc.getProcessMgr(processDefId);
             WfProcess wfProcess = null;
 
-            if(processId != null && processId.trim().length() > 0){
+            if (processId != null && processId.trim().length() > 0) {
                 wfProcess = sc.getProcess(processId);
                 processInstanceId = processId;
-            }else{
+            } else {
                 wfProcess = mgr.create_process(null);
                 processInstanceId = wfProcess.key();
             }
 
-            if(variables != null){
+            if (variables != null) {
                 //set workflow variables if the key is found
                 Set<String> keys = variables.keySet();
                 if (keys != null && keys.size() > 0) {
@@ -3512,7 +3511,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
             //process linking
-            if(parentProcessId != null && parentProcessId.trim().length() > 0){
+            if (parentProcessId != null && parentProcessId.trim().length() > 0) {
                 internalAddWorkflowProcessLink(parentProcessId, processInstanceId);
             }
 
@@ -3609,9 +3608,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param activityId
      * @return
      */
-    public Boolean isAssignmentExist(String activityId){
+    public Boolean isAssignmentExist(String activityId) {
 
-        if(activityId == null || activityId.trim().length() == 0){
+        if (activityId == null || activityId.trim().length() == 0) {
             return false;
         }
 
@@ -3696,7 +3695,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         WfActivity act = (WfActivity) requester;
                         ass.setSubflow(true);
                         ass.setProcessRequesterId(act.container().key());
-                        if(getWorkflowProcessLink(process.key()) == null){
+                        if (getWorkflowProcessLink(process.key()) == null) {
                             internalAddWorkflowProcessLink(act.container().key(), process.key());
                         }
                     }
@@ -3731,7 +3730,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         WorkflowActivity act = getActivityById(activityId);
 
-        if(act != null && activityId.equals(act.getId())){
+        if (act != null && activityId.equals(act.getId())) {
             mockAss.setProcessId(act.getProcessId());
             mockAss.setProcessDefId(act.getProcessDefId());
             mockAss.setProcessName(act.getProcessName());
@@ -3871,7 +3870,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         WfActivity act = (WfActivity) requester;
                         ass.setSubflow(true);
                         ass.setProcessRequesterId(act.container().key());
-                        if(getWorkflowProcessLink(process.key()) == null){
+                        if (getWorkflowProcessLink(process.key()) == null) {
                             internalAddWorkflowProcessLink(act.container().key(), process.key());
                         }
                     }
@@ -3898,6 +3897,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
     /**
      * Returns a list of assignments for the current user.
      * @param packageId
+     * @param processDefId
+     * @param processId
      * @param sort
      * @param desc
      * @param start
@@ -3905,6 +3906,22 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String sort, Boolean desc, Integer start, Integer rows) {
+        return getAssignmentList(packageId, processDefId, processId, null, sort, desc, start, rows);
+    }
+
+    /**
+     * Returns a list of assignments for the current user.
+     * @param packageId
+     * @param processDefId
+     * @param processId
+     * @param activityDefId
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
         SharkConnection sc = null;
         Collection<WorkflowAssignment> assignmentList = new ArrayList<WorkflowAssignment>();
 
@@ -3935,6 +3952,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // filter by process instance id
             if (processId != null && processId.trim().length() > 0) {
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessIdEquals(sessionHandle, processId));
+            }
+
+            // filter by activityDefId
+            if (activityDefId != null && activityDefId.trim().length() > 0) {
+                filter = aieb.and(sessionHandle, filter, aieb.addActivityDefIdEquals(sessionHandle, activityDefId));
             }
 
             // set sort
@@ -3994,7 +4016,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         WfActivity act = (WfActivity) requester;
                         ass.setSubflow(true);
                         ass.setProcessRequesterId(act.container().key());
-                        if(getWorkflowProcessLink(process.key()) == null){
+                        if (getWorkflowProcessLink(process.key()) == null) {
                             internalAddWorkflowProcessLink(act.container().key(), process.key());
                         }
                     }
@@ -4045,17 +4067,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (processDefIds != null && processDefIds.length > 0) {
                 WMFilter idsFilter = null;
                 int i = 0;
-                for(String id: processDefIds){
+                for (String id : processDefIds) {
                     String temp[] = id.split("#");
 
                     WMFilter tempFilter = aieb.addPackageIdEquals(sessionHandle, temp[0]);
                     tempFilter = aieb.and(sessionHandle, tempFilter, aieb.addPackageVersionEquals(sessionHandle, temp[1]));
                     tempFilter = aieb.and(sessionHandle, tempFilter, aieb.addProcessDefIdEquals(sessionHandle, temp[2]));
 
-                    if(i == 0){
+                    if (i == 0) {
                         idsFilter = tempFilter;
                         i++;
-                    }else{
+                    } else {
                         idsFilter = aieb.or(sessionHandle, idsFilter, tempFilter);
                     }
                 }
@@ -4165,17 +4187,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (processDefIds != null && processDefIds.length > 0) {
                 WMFilter idsFilter = null;
                 int i = 0;
-                for(String id: processDefIds){
+                for (String id : processDefIds) {
                     String temp[] = id.split("#");
 
                     WMFilter tempFilter = aieb.addPackageIdEquals(sessionHandle, temp[0]);
                     tempFilter = aieb.and(sessionHandle, tempFilter, aieb.addPackageVersionEquals(sessionHandle, temp[1]));
                     tempFilter = aieb.and(sessionHandle, tempFilter, aieb.addProcessDefIdEquals(sessionHandle, temp[2]));
 
-                    if(i == 0){
+                    if (i == 0) {
                         idsFilter = tempFilter;
                         i++;
-                    }else{
+                    } else {
                         idsFilter = aieb.or(sessionHandle, idsFilter, tempFilter);
                     }
                 }
@@ -4233,7 +4255,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public PagedList<WorkflowAssignment> getAssignmentPendingList(String processDefId, String sort, Boolean desc, Integer start, Integer rows) {
-        List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>)getAssignmentList(Boolean.FALSE, processDefId, sort, desc, start, rows);
+        List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>) getAssignmentList(Boolean.FALSE, processDefId, sort, desc, start, rows);
 
         // set total
         Integer total = new Integer(getAssignmentSize(Boolean.FALSE, processDefId));
@@ -4254,7 +4276,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public PagedList<WorkflowAssignment> getAssignmentAcceptedList(String processDefId, String sort, Boolean desc, Integer start, Integer rows) {
-        List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>)getAssignmentList(Boolean.TRUE, processDefId, sort, desc, start, rows);
+        List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>) getAssignmentList(Boolean.TRUE, processDefId, sort, desc, start, rows);
 
         // set total
         Integer total = new Integer(getAssignmentSize(Boolean.TRUE, processDefId));
@@ -4314,6 +4336,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getAssignmentSize(String packageId, String processDefId, String processId) {
+        return getAssignmentSize(packageId, processDefId, processId, null);
+    }
+
+    /**
+     * Returns the number of assignments for the current user.
+     * @param packageId
+     * @return
+     */
+    public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId) {
         SharkConnection sc = null;
         int size = 0;
 
@@ -4344,6 +4375,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // filter by process instance id
             if (processId != null && processId.trim().length() > 0) {
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessIdEquals(sessionHandle, processId));
+            }
+
+            // filter by ActivityDefId
+            if (activityDefId != null && activityDefId.trim().length() > 0) {
+                filter = aieb.and(sessionHandle, filter, aieb.addActivityDefIdEquals(sessionHandle, activityDefId));
             }
 
             // execute
@@ -4540,7 +4576,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             XPDLBrowser xpdlBrowser = shark.getXPDLBrowser();
             WMEntity[] entities = WMEntityUtilities.getOverallActivities(sessionHandle, xpdlBrowser, procEntity);
             WMEntity activityDef = null;
-            for (WMEntity ent: entities) {
+            for (WMEntity ent : entities) {
                 if (ent.getId().equals(activityDefId) && "Activity".equals(ent.getType())) {
                     activityDef = ent;
                     break;
@@ -4563,7 +4599,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 wfActivityArray = ai.get_next_n_sequence(0);
 
                 // abort running activities
-                for (WfActivity wfAct: wfActivityArray) {
+                for (WfActivity wfAct : wfActivityArray) {
                     String actState = wfAct.state();
                     if (SharkConstants.STATE_OPEN_RUNNING.equals(actState) || SharkConstants.STATE_OPEN_NOT_RUNNING_NOT_STARTED.equals(actState)) {
                         wfAct.abort();
@@ -4592,7 +4628,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return result;
     }
 
-    public void assignmentReassign(String processDefId ,String processId, String activityId, String username, String replaceUser) {
+    public void assignmentReassign(String processDefId, String processId, String activityId, String username, String replaceUser) {
         SharkConnection sc = null;
 
         try {
@@ -4620,7 +4656,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 res = sc.getResource(username);
             }
 
-            if(wfa.get_accepted_status()){
+            if (wfa.get_accepted_status()) {
                 wfa.set_accepted_status(false);
             }
 
@@ -4639,7 +4675,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
 
-    public void assignmentForceComplete(String processDefId ,String processId, String activityId, String username) {
+    public void assignmentForceComplete(String processDefId, String processId, String activityId, String username) {
         SharkConnection sc = null;
 
         try {
@@ -4728,7 +4764,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public void assignmentVariables(String activityId, Map<String, String> variableMap) {
         if (variableMap != null) {
-            for(Iterator<String> i=variableMap.keySet().iterator(); i.hasNext();) {
+            for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
                 String key = i.next();
                 String value = variableMap.get(key);
                 assignmentVariable(activityId, key, value);
@@ -4748,7 +4784,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (username == null || username.trim().length() == 0) {
             // look for performer in linked origin process
             WorkflowProcessLink link = getWorkflowProcessLink(processId);
-            if(link != null){
+            if (link != null) {
                 String originProcessId = link.getOriginProcessId();
                 if (originProcessId != null && !originProcessId.equals(processId)) {
                     username = getPerformer(originProcessId, activityDefId);
@@ -4764,7 +4800,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param activityDefId
      * @return
      */
-    protected String getPerformer(String processId, String activityDefId){
+    protected String getPerformer(String processId, String activityDefId) {
         SharkConnection sc = null;
 
         try {
@@ -4777,19 +4813,19 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             WfProcess process = sc.getProcess(processId);
 
-            if(process != null){
-                if(activityDefId.equals(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS)){
+            if (process != null) {
+                if (activityDefId.equals(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS)) {
                     return admin.getProcessRequesterUsername(sessionHandle, processId);
-                }else{
+                } else {
                     WfActivityIterator iter = process.get_iterator_step();
 
-                    for(int i=0; i < iter.how_many(); i++){
+                    for (int i = 0; i < iter.how_many(); i++) {
                         WfActivity activity = iter.get_next_object();
 
-                        if(activity != null){
+                        if (activity != null) {
                             WMEntity entity = admin.getActivityDefinitionInfo(sessionHandle, activity.container().key(), activity.key());
 
-                            if(entity.getId().equals(activityDefId)){
+                            if (entity.getId().equals(activityDefId)) {
                                 return admin.getActivityResourceUsername(sessionHandle, activity.container().key(), activity.key());
                             }
                         }
@@ -5000,9 +5036,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return size;
     }
 
-     protected SharkConnection connect() throws Exception {
+    protected SharkConnection connect() throws Exception {
         return connect(null);
-     }
+    }
 
     /*--- Internal methods to Shark ---*/
     /**
@@ -5012,7 +5048,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     protected SharkConnection connect(String username) throws Exception {
         SharkConnection sConn = Shark.getInstance().getSharkConnection();
-        if(username == null){
+        if (username == null) {
             username = getWorkflowUserManager().getCurrentUsername();
         }
         WMConnectInfo wmconnInfo = new WMConnectInfo(username, username, "WorkflowManager", "");
@@ -5164,7 +5200,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
 
-     /**
+    /**
      * Retrieves the next Shark assignment based on a activity ID.
      * @param sc
      * @param activityId
@@ -5306,7 +5342,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
 
-    public WorkflowProcessLink getWorkflowProcessLink(String processId){
+    public WorkflowProcessLink getWorkflowProcessLink(String processId) {
         return workflowProcessLinkDao.getWorkflowProcessLink(processId);
     }
 
@@ -5326,24 +5362,24 @@ public class WorkflowManagerImpl implements WorkflowManager {
         workflowProcessLinkDao.addWorkflowProcessLink(wfProcessLink);
     }
 
-    public void internalDeleteWorkflowProcessLink(WorkflowProcessLink wfProcessLink){
+    public void internalDeleteWorkflowProcessLink(WorkflowProcessLink wfProcessLink) {
         workflowProcessLinkDao.delete(wfProcessLink);
     }
 
-    public String getConvertedLatestProcessDefId(String processDefId){
-        if(processDefId != null && processDefId.contains(LATEST)){
+    public String getConvertedLatestProcessDefId(String processDefId) {
+        if (processDefId != null && processDefId.contains(LATEST)) {
             String currentVersion = getCurrentPackageVersion(processDefId.split("#")[0]);
 
-            if(currentVersion != null && currentVersion.trim().length() > 0){
+            if (currentVersion != null && currentVersion.trim().length() > 0) {
                 processDefId = processDefId.replace(LATEST, currentVersion);
             }
         }
         return processDefId;
     }
 
-    public Boolean isUserInWhiteList(String processDefId){
+    public Boolean isUserInWhiteList(String processDefId) {
         String temp[] = processDefId.split("#");
-        if(temp.length != 3){
+        if (temp.length != 3) {
             return true;
         }
 
@@ -5379,12 +5415,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
         previousProfile = currentProfile;
         if (profileChanged) {
             // clear process definition cache
-            synchronized(this) {
+            synchronized (this) {
                 pa.clearXPDLCache(sessionHandle);
             }
         }
 
         return pa;
     }
-
 }
