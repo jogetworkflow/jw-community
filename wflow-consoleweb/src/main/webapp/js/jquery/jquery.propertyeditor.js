@@ -831,7 +831,15 @@
             }else{
                 ajaxUrl += "?";
             }
-            ajaxUrl += loadOptionsStack[key].targetName + "=" + escape($("#"+editorId+"_"+loadOptionsStack[key].targetName).val());
+            var targetName = loadOptionsStack[key].targetName;
+            var targetValue = $("#"+editorId+"_"+targetName).val();
+            if(targetValue == null || targetValue == undefined){
+                var options = optionsStack[editorId];
+                if(options.propertyValues != undefined && options.propertyValues[targetName] != undefined && options.propertyValues[targetName] != ""){
+                    targetValue = options.propertyValues[targetName];
+                }
+            }
+            ajaxUrl += loadOptionsStack[key].targetName + "=" + escape(targetValue);
         }
         $.ajax({
             url: ajaxUrl,
