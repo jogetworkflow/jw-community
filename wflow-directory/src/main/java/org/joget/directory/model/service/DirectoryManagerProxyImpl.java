@@ -15,6 +15,8 @@ import org.joget.plugin.base.PluginManager;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.property.service.PropertyUtil;
 
 public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
 
@@ -76,7 +78,11 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
 
                     if (propertySetting != null && propertySetting.getValue() != null && propertySetting.getValue().trim().length() > 0) {
                         String properties = propertySetting.getValue();
-                        propertyMap = CsvUtil.getPluginPropertyMap(properties);
+                        if (!(directoryManagerPlugin instanceof PropertyEditable)) {
+                            propertyMap = CsvUtil.getPluginPropertyMap(properties);
+                        } else {
+                            propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
+                        }
                     }
 
                     LogUtil.debug(getClass().getName(), "DirectoryManager Plugin Found: " + setting.getValue());
