@@ -1865,11 +1865,11 @@ public class ConsoleWebController {
                 //Using Set to prevent duplicate value
                 Set values = new HashSet();
                 StringTokenizer valueToken = new StringTokenizer(value, ",");
-                StringTokenizer existingValueToken = new StringTokenizer(participantExisting.getValue(), ",");
+                StringTokenizer existingValueToken = (type.equals(participantExisting.getType())) ? new StringTokenizer(participantExisting.getValue(), ",") : null;
                 while (valueToken.hasMoreTokens()) {
                     values.add((String) valueToken.nextElement());
                 }
-                while (existingValueToken.hasMoreTokens()) {
+                while (existingValueToken != null && existingValueToken.hasMoreTokens()) {
                     values.add((String) existingValueToken.nextElement());
                 }
 
