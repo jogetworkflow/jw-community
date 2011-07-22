@@ -236,8 +236,13 @@ JsonTable.prototype = {
                         return false;
                     } else {
                         if (!checkboxSelected) {
-                            $(checkbox[0]).click();
-                            toggleCheckbox($(checkbox[0]).attr("id"));
+                            var cb = $(checkbox[0]);
+                            if (thisObject.checkboxSelectSingle) {
+                                cb.click();
+                            } else {
+                                cb.attr('checked', !cb.attr('checked'));
+                                toggleCheckbox(cb.attr("id"));
+                            }
                         }
                         return true;
                     }
