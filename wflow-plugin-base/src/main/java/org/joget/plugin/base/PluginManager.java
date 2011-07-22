@@ -243,7 +243,8 @@ public class PluginManager implements ApplicationContextAware {
             // store in cache
             pluginCache.put(classFilter, pluginMap);
         }
-        Collection<Plugin> pluginList = pluginMap.values();
+        Collection<Plugin> pluginList = new ArrayList<Plugin>();
+        pluginList.addAll(pluginMap.values());
         return pluginList;
     }
 
