@@ -123,7 +123,7 @@ public class FormBuilderWebController {
     }
     
     @RequestMapping("/form/embed")
-    public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+    public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
         FormData formData = new FormData();
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
@@ -134,7 +134,7 @@ public class FormBuilderWebController {
             callbackSetting = "{}";
         }
         
-        form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting));
+        form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
         
         if(form != null){
             // create new section for buttons
@@ -162,7 +162,7 @@ public class FormBuilderWebController {
             
             Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
             submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
-            submitButton.setProperty("label", "Submit");
+            submitButton.setProperty("label", buttonLabel);
             columnChildren.add((Element) submitButton);
         }
         

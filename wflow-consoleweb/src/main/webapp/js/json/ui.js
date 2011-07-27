@@ -73,6 +73,7 @@ PopupDialog.prototype = {
           if (!newFrame) {
               newFrame = document.createElement("IFRAME");
               newFrame.setAttribute("id", "jqueryDialogFrame");
+              newFrame.setAttribute("name", "jqueryDialogFrame");
               newFrame.setAttribute("frameborder", "0");
               newFrame.setAttribute("width", "100%");
               newFrame.setAttribute("height", this.height-22);
