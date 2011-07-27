@@ -1,12 +1,30 @@
 package org.joget.apps.app.controller;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
-import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.lib.HiddenField;
+import org.joget.apps.form.lib.SubmitButton;
+import org.joget.apps.form.model.Column;
+import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.form.service.FormUtil;
+import org.joget.plugin.base.PluginManager;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,6 +40,8 @@ public class FormBuilderWebController {
     FormBuilderPalette formBuilderPalette;
     @Autowired
     AppService appService;
+    @Autowired
+    PluginManager pluginManager;
     @Autowired
     FormDefinitionDao formDefinitionDao;
 
@@ -100,5 +120,92 @@ public class FormBuilderWebController {
         model.addAttribute("elementJson", json);
 
         return "fbuilder/previewElement";
+    }
+    
+    @RequestMapping("/form/embed")
+    public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+        FormData formData = new FormData();
+        if(id != null && !id.isEmpty()){
+            formData.setPrimaryKeyValue(id);
+        }
+        Form form = formService.loadFormFromJson(json, formData);
+        
+        if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
+            callbackSetting = "{}";
+        }
+        
+        form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting));
+        
+        if(form != null){
+            // create new section for buttons
+            Section section = new Section();
+            section.setProperty(FormUtil.PROPERTY_ID, "section-actions");
+            Collection<Element> sectionChildren = new ArrayList<Element>();
+            section.setChildren(sectionChildren);
+            Collection<Element> formChildren = form.getChildren();
+            if (formChildren == null) {
+                formChildren = new ArrayList<Element>();
+            }
+            formChildren.add(section);
+
+            // add new horizontal column to section
+            Column column = new Column();
+            column.setProperty("horizontal", "true");
+            Collection<Element> columnChildren = new ArrayList<Element>();
+            column.setChildren(columnChildren);
+            sectionChildren.add(column);
+            
+            Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
+            hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
+            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, StringEscapeUtils.escapeHtml(json));
+            columnChildren.add((Element) hiddenField);
+            
+            Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
+            submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
+            submitButton.setProperty("label", "Submit");
+            columnChildren.add((Element) submitButton);
+        }
+        
+        // generate form HTML
+        String formHtml = null;
+        
+        if("submit".equals(action)){
+            formData = formService.retrieveFormDataFromRequest(formData, request);
+            formData = formService.executeFormActions(form, formData);
+            
+            // check for validation errors
+            Map<String, String> errors = formData.getFormErrors();
+            int errorCount = 0;
+            if (errors == null || errors.isEmpty()) {
+                // render normal template
+                formHtml = formService.generateElementHtml(form, formData);
+            } else {
+                // render error template
+                formHtml = formService.generateElementErrorHtml(form, formData);
+                errorCount = errors.size();
+            }
+            
+            //convert submitted 
+            JSONObject jsonResult = new JSONObject();
+            for(FormStoreBinder binder: formData.getStoreBinders()){
+                FormRowSet rows = formData.getStoreBinderData(binder);
+                for(FormRow row : rows){
+                    for(Object o : row.keySet()){
+                        jsonResult.accumulate(o.toString(), row.get(o));
+                    }
+                }
+            }
+            
+            model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
+            model.addAttribute("setting", callbackSetting);
+            model.addAttribute("callback", callback);
+            model.addAttribute("submitted", Boolean.TRUE);
+            model.addAttribute("errorCount", errorCount);
+        }else{
+            formHtml = formService.retrieveFormHtml(form, formData);
+        }
+        
+        model.addAttribute("formHtml", formHtml);
+        return "fbuilder/embedForm";
     }
 }
