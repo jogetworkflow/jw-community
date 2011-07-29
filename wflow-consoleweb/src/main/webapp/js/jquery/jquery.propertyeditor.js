@@ -44,7 +44,7 @@
                     html += renderNoPropertyPage(editorId, o);
                 }else{
                     $.each(o.propertiesDefinition, function(i, page){
-                        html += renderPage(editorId, i, page, o);
+                        html += renderPage(editorId, i, page, o, '', '');
                     });
                 }
 
@@ -180,7 +180,7 @@
             $.each(options.propertiesDefinition, function(i, page){
                 if(page.properties != undefined){
                     validationProgressStack[editorId].count += 1;
-                    properties = $.extend(properties, getPageData(editorId, page.properties));
+                    properties = $.extend(properties, getPageData(editorId, page.properties, ''));
                 }
             });
         }
@@ -196,7 +196,7 @@
         //do normal validation check
         $.each(options.propertiesDefinition, function(i, page){
             if(page.properties != undefined){
-                validatePage(editorId, null, page.properties, properties, options.defaultPropertyValues);
+                validatePage(editorId, null, page.properties, properties, options.defaultPropertyValues, '');
             }
         });
 
@@ -256,7 +256,7 @@
         }
     }
 
-    function renderPage(id, i, page, options, element){
+    function renderPage(id, i, page, options, element, parent){
         var hiddenClass = " property-page-show";
         var pageTitle = '';
 
@@ -279,7 +279,7 @@
 
         if(page.properties != undefined){
             $.each(page.properties, function(i, property){
-                html += renderProperty(id, i, property, options);
+                html += renderProperty(id, i, property, options, parent);
             });
         }
 
@@ -332,7 +332,7 @@
         return html;
     }
 
-    function renderProperty(id, i, property, options){
+    function renderProperty(id, i, property, options, parent){
 
         var html = '<div id="property_'+ i +'" class="property-editor-property property-type-'+ property.type +'">';
 
@@ -360,6 +360,8 @@
             }
             html += '</div>';
         }
+        
+        id = id + parent;
 
         html += '<div id="'+ id +'_'+ property.name +'_input" class="property-input">';
 
@@ -944,7 +946,7 @@
                 var validator = pageValidationStack[pageId]['validators'][key];
 
                 if(validator.type == "ajax"){
-                    validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties), validator);
+                    validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator);
                 }
             }
         }else{
@@ -1024,7 +1026,7 @@
                         }
 
                         $.each(d, function(i, page){
-                            pagehtml += renderPage(editorId, elementStack[id].name + '_' + i, page, option, ' elementId="'+ id+'" elementValue="'+ value +'"');
+                            pagehtml += renderPage(editorId, elementStack[id].name + '_' + i, page, option, ' elementId="'+ id+'" elementValue="'+ value +'"', '_'+id);
                         });
 
                         addElementPropertiesPage(editorId, currentPage, pagehtml);
@@ -1043,7 +1045,7 @@
                 if(page.properties != undefined && page.properties.length > 0){
                     $.each(page.properties, function(j, property){
                         if(property.type == "elementselect"){
-                            removePropertiesPage(editor, $(editor).attr('id')+'_'+property.name);
+                            removePropertiesPage(editor, $(editor).attr('id')+'_'+id+'_'+property.name);
                         }
                     });
                 }
@@ -1053,7 +1055,7 @@
         $(editor).find('.property-editor-page[elementId='+id+']').remove();
     }
 
-    function getPageData(editorId, pagePropertiesDefinition){
+    function getPageData(editorId, pagePropertiesDefinition, parent){
         var editor = $('div#'+editorId);
         var properties = new Object();
 
@@ -1061,19 +1063,19 @@
             if(property.type == "elementselect"){
                 var element = new Object();
                 element['className'] = "";
-                if($(editor).find('#'+editorId+'_'+property.name).val() != null){
+                if($(editor).find('#'+editorId+'_'+parent+property.name).val() != null){
                     element['className'] = $(editor).find('#'+editorId+'_'+property.name).val();
                 }
                 element['properties'] = new Object();
 
-                if(elementStack[editorId+'_'+property.name].propertiesDefinition != undefined){
+                if(elementStack[editorId+'_'+parent+property.name].propertiesDefinition != undefined){
                     //get properties value
-                    $.each(elementStack[editorId+'_'+property.name].propertiesDefinition, function(i, page){
+                    $.each(elementStack[editorId+'_'+parent+property.name].propertiesDefinition, function(i, page){
                         if(page.properties != undefined){
                             if(validationProgressStack[editorId] != undefined){
                                 validationProgressStack[editorId].count += 1;
                             }
-                            element['properties'] = $.extend(element['properties'], getPageData(editorId, page.properties));
+                            element['properties'] = $.extend(element['properties'], getPageData(editorId, page.properties, editorId+'_'+parent+property.name+'_'));
                         }
                     });
                 }
@@ -1081,7 +1083,7 @@
                 properties[property.name] = element;
             }else if(property.type == "grid"){
                 var gridValue = new Array();
-                $(editor).find('#'+editorId+'_'+property.name).find('tr').each(function(tr){
+                $(editor).find('#'+editorId+'_'+parent+property.name).find('tr').each(function(tr){
                     var row = $(this);
                     if($(row).attr('id') != "model" && $(row).attr('id') != "header"){
                         var obj = new Object();
@@ -1098,14 +1100,14 @@
                 var value = '';
 
                 if(property.type == "checkbox"){
-                    $(editor).find('#'+editorId+'_'+property.name + ':checkbox:checked').each(function(i){
+                    $(editor).find('#'+editorId+'_'+parent+property.name + ':checkbox:checked').each(function(i){
                         value += $(this).val() + ';';
                     });
                     if(value != ''){
                         value = value.replace(/;$/i, '');
                     }
                 }else if(property.type == "multiselect"){
-                    var values = $(editor).find('#'+editorId+'_'+property.name).val();
+                    var values = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                     for(num in values){
                         value += values[num] + ';';
                     }
@@ -1113,9 +1115,11 @@
                         value = value.replace(/;$/i, '');
                     }
                 }else if(property.type == "htmleditor"){
-                    value = $(editor).find('#'+editorId+'_'+property.name).html();
+                    value = $(editor).find('#'+editorId+'_'+parent+property.name).html();
+                }else if(property.type == "radio"){
+                    value = $(editor).find('#'+editorId+'_'+parent+property.name+':checked').val();
                 }else{
-                    value = $(editor).find('#'+editorId+'_'+property.name).val();
+                    value = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                 }
 
                 properties[property.name] = value;
@@ -1124,7 +1128,7 @@
         return properties;
     }
 
-    function validatePage(editorId, pageId, pagePropertiesDefinition, data, defaultValues){
+    function validatePage(editorId, pageId, pagePropertiesDefinition, data, defaultValues, parent){
         var editor = $('div#'+editorId);
         var errors = new Array();
         if(pagePropertiesDefinition != undefined && pagePropertiesDefinition.length != 0){
@@ -1142,9 +1146,9 @@
                     obj.message = optionsStack[editorId].mandatoryMessage;
                     errors.push(obj);
                     if(property.type == "checkbox" || property.type == "radio"){
-                        $(editor).find('#'+editorId+'_'+property.name).parent().parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
+                        $(editor).find('#'+editorId+'_'+parent+property.name).parent().parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
                     }else{
-                        $(editor).find('#'+editorId+'_'+property.name).parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
+                        $(editor).find('#'+editorId+'_'+parent+property.name).parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
                     }
                 }
 
@@ -1159,15 +1163,15 @@
                             obj2.message = get_peditor_msg('peditor.validationFailed');
                         }
                         errors.push(obj2);
-                        $(editor).find('#'+editorId+'_'+property.name).parent().append('<div class="property-input-error">'+ obj2.message +'</div>');
+                        $(editor).find('#'+editorId+'_'+parent+property.name).parent().append('<div class="property-input-error">'+ obj2.message +'</div>');
                     }
                 }
 
                 if(property.type == "elementselect"){
-                    if(elementStack[editorId+'_'+property.name] != undefined && elementStack[editorId+'_'+property.name].propertiesDefinition != undefined && elementStack[editorId+'_'+property.name].propertiesDefinition.length > 0){
-                        $.each(elementStack[editorId+'_'+property.name].propertiesDefinition, function(i, page){
+                    if(elementStack[editorId+'_'+parent+property.name] != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition.length > 0){
+                        $.each(elementStack[editorId+'_'+parent+property.name].propertiesDefinition, function(i, page){
                             if(page.properties != undefined){
-                                validatePage(editorId, pageId, page.properties, value.properties);
+                                validatePage(editorId, pageId, page.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
                             }
                         });
                     }else if(value != undefined && value.className != undefined && value.className != ""){
@@ -1178,9 +1182,9 @@
                         }
 
                         $.ajax({
-                            url: replaceContextPath(elementStack[editorId+'_'+property.name].url, optionsStack[editorId].contextPath),
+                            url: replaceContextPath(elementStack[editorId+'_'+parent+property.name].url, optionsStack[editorId].contextPath),
                             context: {
-                                id : editorId+'_'+property.name,
+                                id : editorId+'_'+parent+property.name,
                                 value : value
                             },
                             data : "value="+escape(value.className),
@@ -1197,7 +1201,7 @@
                                     
                                     if(d.length > 0){
                                         $.each(d, function(i, page){
-                                            validatePage(editorId, pageId, page.properties, value.properties);
+                                            validatePage(editorId, pageId, page.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
                                         });
                                     }
                                 }
@@ -1375,7 +1379,8 @@
     }
 
     function appendElementPropertiesPageCallback(editorId, currentPage){
-        renderStepsIndicator(currentPage);
+        var activePage = $('div#'+editorId).find('.property-editor-page.current');
+        renderStepsIndicator(activePage);
 
         var editor = $('#'+editorId);
 
