@@ -376,11 +376,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
         String properties = participant.getPluginProperties();
         String participantId = participant.getParticipantId();
         try {
-            Map propertyMap = CsvUtil.getPluginPropertyMap(properties);
-            propertyMap.put("pluginManager", pluginManager);
-
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             ParticipantPlugin plugin = (ParticipantPlugin) pluginManager.getPlugin(participant.getValue());
-
+            Map propertyMap = AppPluginUtil.getDefaultProperties((Plugin)plugin, properties, appDef);
+            propertyMap.put("pluginManager", pluginManager);
             WorkflowActivity activity = workflowManager.getActivityById(activityId);
             propertyMap.put("workflowActivity", activity);
             
