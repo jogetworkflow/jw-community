@@ -41,6 +41,16 @@ public abstract class FormBinder extends DefaultPlugin {
         Object value = (properties != null) ? properties.get(property) : null;
         return value;
     }
+    
+    /**
+     * Convenience method to get a property String value
+     * @param property
+     * @return Empty string instead of null.
+     */
+    public String getPropertyString(String property) {
+        String value = (properties != null) ? (String) properties.get(property) : "";
+        return value;
+    }
 
     /**
      * Convenience method to set a property value

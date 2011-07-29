@@ -375,8 +375,44 @@ public class FormUtil implements ApplicationContextAware {
                         currentRow.putAll(elementRow);
                     }
                 } else {
-                    // multiple row result, append all to rowset
-                    rowSet.addAll(elementResult);
+                    //if the store binder of this element is null, store as single row in json format
+                    if(element.getStoreBinder() == null){
+                        try {
+                            // create json object
+                            JSONArray jsonArray = new JSONArray();
+                            for (FormRow row : elementResult) {
+                                JSONObject jsonObject = new JSONObject();
+                                for (Map.Entry entry : row.entrySet()) {
+                                    String key = (String) entry.getKey();
+                                    String value = (String) entry.getValue();
+                                    jsonObject.put(key, value);
+                                }
+                                jsonArray.put(jsonObject);
+                            }
+
+                            // convert into json string
+                            String json = jsonArray.toString();
+
+                            // store in single row FormRowSet
+                            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                            FormRow elementRow = new FormRow();
+                            elementRow.put(id, json); 
+                            
+                            // append to consolidated row set
+                            if (rowSet.isEmpty()) {
+                                rowSet.add(elementRow);
+                            } else {
+                                FormRow currentRow = rowSet.get(0);
+                                currentRow.putAll(elementRow);
+                            }
+                        } catch (JSONException ex) {
+                            Logger.getLogger(FormUtil.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }else{
+                        // multiple row result, append all to rowset
+                        rowSet.addAll(elementResult);
+                        rowSet.setMultiRow(true);
+                    }
                 }
             }
         }
@@ -959,5 +995,16 @@ public class FormUtil implements ApplicationContextAware {
         for (Element child : children) {
             setReadOnlyProperty(child);
         }
+    }
+    
+    /**
+     * Check a form is submitted or not
+     * @param formData
+     */
+    public static boolean isFormSubmitted(FormData formData) {
+        if(formData.getRequestParameter("_SUBMITTED") != null){
+            return true;
+        }
+        return false;
     }
 }

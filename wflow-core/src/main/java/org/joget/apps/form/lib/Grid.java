@@ -66,6 +66,7 @@ public class Grid extends Element implements FormBuilderPaletteElement {
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         String param = FormUtil.getElementParameterName(this);
         FormRowSet rowSet = new FormRowSet();
+        rowSet.setMultiRow(true);
 
         // get headers
         Map<String, String> headerMap = getHeaderMap(formData);
@@ -101,14 +102,9 @@ public class Grid extends Element implements FormBuilderPaletteElement {
                 // no more rows, stop looping
                 continueLoop = false;
             }
-            // look for multi-row flag
-            String multiRow = formData.getRequestParameter(param + "_multiRow");
-            if (multiRow != null) {
-                rowSet.setMultiRow(true);
-            }
         }
-
-        if (rowSet.isEmpty()) {
+            
+        if (!FormUtil.isFormSubmitted(formData)) {
             // load from binder if available
             FormRowSet binderRowSet = formData.getLoadBinderData(this);
             if (binderRowSet != null) {
@@ -170,35 +166,7 @@ public class Grid extends Element implements FormBuilderPaletteElement {
     public FormRowSet formatData(FormData formData) {
         // get form rowset
         FormRowSet rowSet = getRows(formData);
-        if (!rowSet.isEmpty() && !rowSet.isMultiRow()) {
-            try {
-                // create json object
-                JSONArray jsonArray = new JSONArray();
-                for (FormRow row : rowSet) {
-                    JSONObject jsonObject = new JSONObject();
-                    for (Map.Entry entry : row.entrySet()) {
-                        String key = (String) entry.getKey();
-                        String value = (String) entry.getValue();
-                        jsonObject.put(key, value);
-                    }
-                    jsonArray.put(jsonObject);
-                }
-
-                // convert into json string
-                String json = jsonArray.toString();
-
-                // store in single row FormRowSet
-                String id = getPropertyString(FormUtil.PROPERTY_ID);
-                FormRowSet result = new FormRowSet();
-                FormRow prop = new FormRow();
-                prop.setProperty(id, json);
-                result.add(prop);
-                rowSet = result;
-
-            } catch (JSONException ex) {
-                Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        rowSet.setMultiRow(true);
 
         // TODO: set foreign key?
 
@@ -225,10 +193,6 @@ public class Grid extends Element implements FormBuilderPaletteElement {
         // set rows
         FormRowSet rows = getRows(formData);
         dataModel.put("rows", rows);
-
-        // set multi-row flag
-        boolean multiRow = rows.isMultiRow();
-        dataModel.put("multiRow", multiRow);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

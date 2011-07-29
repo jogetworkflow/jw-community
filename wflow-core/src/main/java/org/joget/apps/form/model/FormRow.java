@@ -97,4 +97,13 @@ public class FormRow extends Properties {
             remove(FormUtil.PROPERTY_DATE_MODIFIED);
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        FormRow row = (FormRow) obj;
+        if (getId().equals(row.getId())) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -48,6 +48,5 @@
                 </tr>
             </#list>
         </table>
-        <#if multiRow?? && multiRow><input name="${elementParamName!}_multiRow" type="hidden" value="true" /></#if>
     </div>
 </div>
