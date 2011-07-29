@@ -66,7 +66,7 @@ public class GroupDaoImpl extends AbstractSpringDao implements GroupDao {
         try {
             Group group = new Group();
             group.setName(name);
-            List groups = findByExample("Department", group);
+            List groups = findByExample("Group", group);
 
             if (groups.size() > 0) {
                 return (Group) groups.get(0);
