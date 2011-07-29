@@ -42,7 +42,7 @@ public class FormService {
      * @return
      */
     public String previewElement(String json, boolean includeMetaData) {
-        Element element = createElementFromJson(json);
+        Element element = createElementFromJson(json, !includeMetaData);
         FormData formData = new FormData();
         String html = "";
         try {
@@ -57,17 +57,30 @@ public class FormService {
         }
         return html;
     }
-
+    
     /**
      * Creates an element object from a JSON definition
      * @param formJson
      * @return
      */
     public Element createElementFromJson(String elementJson) {
-        try {
-            // process hash variable
-            String processedJson = AppUtil.processHashVariable(elementJson, null, null, null);
+        return createElementFromJson(elementJson, true);
+    }
 
+    /**
+     * Creates an element object from a JSON definition
+     * @param formJson
+     * @param processHashVariable
+     * @return
+     */
+    public Element createElementFromJson(String elementJson, boolean processHashVariable) {
+        try {
+            String processedJson = elementJson;
+            // process hash variable
+            if(processHashVariable){
+                processedJson = AppUtil.processHashVariable(elementJson, null, null, null);
+            }
+            
             // instantiate element
             Element element = FormUtil.parseElementFromJson(processedJson);
             return element;
