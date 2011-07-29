@@ -643,6 +643,7 @@ public class PluginManager implements ApplicationContextAware {
             if (removeNewLines) {
                 // compress by removing new lines
                 output = output.replace('\n', ' ');
+                output = output.replace('\r', ' ');
             }
         }
 
