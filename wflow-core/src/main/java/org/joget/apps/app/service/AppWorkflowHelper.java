@@ -383,8 +383,8 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
             WorkflowActivity activity = workflowManager.getActivityById(activityId);
             propertyMap.put("workflowActivity", activity);
-
-            Collection<String> pluginResult = plugin.getActivityAssignments(new HashMap()); // TODO: plugin default properties?
+            
+            Collection<String> pluginResult = plugin.getActivityAssignments(propertyMap);
             if (pluginResult != null && pluginResult.size() > 0) {
                 resultList.addAll(pluginResult);
             }
