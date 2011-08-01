@@ -730,7 +730,7 @@ public class ConsoleWebController {
         User user = new User();
         user.setActive(1);
         Set roles = new HashSet();
-        roles.add(roleDao.getRole("ROLE_ADMIN"));
+        roles.add(roleDao.getRole("ROLE_USER"));
         user.setRoles(roles);
         model.addAttribute("user", user);
         model.addAttribute("employeeDepartmentHod", "no");
