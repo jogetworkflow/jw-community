@@ -1,6 +1,7 @@
 package org.joget.apps.userview.lib;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -201,6 +202,20 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             } else {
                 // empty start page
                 setProperty("headerTitle", process.getPackageName() + " (version " + process.getVersion() + ")");
+
+                //append fk & fke parameter to url
+                Map requestParam = getRequestParameters();
+                for (Object k : requestParam.keySet()) {
+                    String key = (String) k;
+                    if (key.startsWith(FormService.PREFIX_FOREIGN_KEY) || key.startsWith(FormService.PREFIX_FOREIGN_KEY_EDITABLE)) {
+                        try {
+                            formUrl += "&" + key + "=" + URLEncoder.encode(requestParam.get(k).toString(), "UTF-8");
+                        } catch (Exception e) {
+                            LogUtil.info(RunProcess.class.getName(), "Paramter:" + key + "cannot be append to URL");
+                        }
+                    }
+                }
+
                 setProperty("startUrl", formUrl);
                 setProperty("view", "processDetail");
             }
