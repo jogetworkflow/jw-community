@@ -205,7 +205,7 @@
             for(key in pageValidationStack[currentPageId]['validators']){
                 var validator = pageValidationStack[currentPageId]['validators'][key];
 
-                if(validator.type == "ajax"){
+                if(validator.type.toLowerCase() == "ajax"){
                     validateAjax(editorId, null, pageValidationStack[currentPageId].properties, properties, validator);
                 }
             }
@@ -334,7 +334,7 @@
 
     function renderProperty(id, i, property, options, parent){
 
-        var html = '<div id="property_'+ i +'" class="property-editor-property property-type-'+ property.type +'">';
+        var html = '<div id="property_'+ i +'" class="property-editor-property property-type-'+ property.type.toLowerCase() +'">';
 
         if(property.label != undefined && property.label != null){
             var required = '';
@@ -379,36 +379,36 @@
             defaultValue = options.defaultPropertyValues[property.name];
         }
 
-        if(property.type == "hidden"){
+        if(property.type.toLowerCase() == "hidden"){
             html += renderHidden(id, property, value);
-        }else if(property.type == "readonly"){
+        }else if(property.type.toLowerCase() == "readonly"){
             html += renderReadonly(id, property, value);
-        }else if(property.type == "textfield"){
+        }else if(property.type.toLowerCase() == "textfield"){
             html += renderTextfield(id, property, value, defaultValue);
-        }else if(property.type == "password"){
+        }else if(property.type.toLowerCase() == "password"){
             html += renderPassword(id, property, value, defaultValue);
-        }else if(property.type == "textarea"){
+        }else if(property.type.toLowerCase() == "textarea"){
             html += renderTextarea(id, property, value, defaultValue);
-        }else if(property.type == "checkbox"){
+        }else if(property.type.toLowerCase() == "checkbox"){
             html += renderCheckbox(id, property, value, defaultValue);
-        }else if(property.type == "radio"){
+        }else if(property.type.toLowerCase() == "radio"){
             html += renderRadio(id, property, value, defaultValue);
-        }else if(property.type == "selectbox"){
+        }else if(property.type.toLowerCase() == "selectbox"){
             html += renderSelectbox(id, property, value, defaultValue);
-        }else if(property.type == "multiselect"){
+        }else if(property.type.toLowerCase() == "multiselect"){
             html += renderMultiselect(id, property, value, defaultValue);
-        }else if(property.type == "grid"){
+        }else if(property.type.toLowerCase() == "grid"){
             html += renderGrid(id, property, value, defaultValue);
-        }else if(property.type == "htmleditor"){
+        }else if(property.type.toLowerCase() == "htmleditor"){
             html += renderHtmleditor(id, property, value, defaultValue);
-        }else if(property.type == "elementselect"){
+        }else if(property.type.toLowerCase() == "elementselect"){
             html += renderElementSelect(id, property, value, defaultValue);
         }
 
         html += '</div><div style="clear:both;"></div></div>'
 
         if(property.options_ajax != undefined && property.options_ajax != null){
-            addToLoadOptionsStack(id +'_'+ property.name, property.type, value, defaultValue, property.options_ajax, property.options_ajax_on_change);
+            addToLoadOptionsStack(id +'_'+ property.name, property.type.toLowerCase(), value, defaultValue, property.options_ajax, property.options_ajax_on_change);
         }
 
         return html;
@@ -945,7 +945,7 @@
             for(key in pageValidationStack[pageId]['validators']){
                 var validator = pageValidationStack[pageId]['validators'][key];
 
-                if(validator.type == "ajax"){
+                if(validator.type.toLowerCase() == "ajax"){
                     validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator);
                 }
             }
@@ -1044,7 +1044,7 @@
             $.each(elementStack[id].propertiesDefinition, function(i, page){
                 if(page.properties != undefined && page.properties.length > 0){
                     $.each(page.properties, function(j, property){
-                        if(property.type == "elementselect"){
+                        if(property.type.toLowerCase() == "elementselect"){
                             removePropertiesPage(editor, $(editor).attr('id')+'_'+id+'_'+property.name);
                         }
                     });
@@ -1060,7 +1060,7 @@
         var properties = new Object();
 
         $.each(pagePropertiesDefinition, function(i, property){
-            if(property.type == "elementselect"){
+            if(property.type.toLowerCase() == "elementselect"){
                 var element = new Object();
                 element['className'] = "";
                 if($(editor).find('#'+editorId+'_'+parent+property.name).val() != null){
@@ -1081,7 +1081,7 @@
                 }
 
                 properties[property.name] = element;
-            }else if(property.type == "grid"){
+            }else if(property.type.toLowerCase() == "grid"){
                 var gridValue = new Array();
                 $(editor).find('#'+editorId+'_'+parent+property.name).find('tr').each(function(tr){
                     var row = $(this);
@@ -1099,14 +1099,14 @@
             }else{
                 var value = '';
 
-                if(property.type == "checkbox"){
+                if(property.type.toLowerCase() == "checkbox"){
                     $(editor).find('#'+editorId+'_'+parent+property.name + ':checkbox:checked').each(function(i){
                         value += $(this).val() + ';';
                     });
                     if(value != ''){
                         value = value.replace(/;$/i, '');
                     }
-                }else if(property.type == "multiselect"){
+                }else if(property.type.toLowerCase() == "multiselect"){
                     var values = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                     for(num in values){
                         value += values[num] + ';';
@@ -1114,9 +1114,9 @@
                     if(value != ''){
                         value = value.replace(/;$/i, '');
                     }
-                }else if(property.type == "htmleditor"){
+                }else if(property.type.toLowerCase() == "htmleditor"){
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).html();
-                }else if(property.type == "radio"){
+                }else if(property.type.toLowerCase() == "radio"){
                     value = $(editor).find('#'+editorId+'_'+parent+property.name+':checked').val();
                 }else{
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).val();
@@ -1139,20 +1139,19 @@
                 if(defaultValues != undefined && defaultValues[property.name] != undefined){
                     defaultValue = defaultValues[property.name];
                 }
-
-                if(property.required != undefined && property.required == "True" && (value == '' || value == undefined) && defaultValue == ''){
+                if(property.required != undefined && property.required.toLowerCase() == "true" && (value == '' || value == undefined || (property.type.toLowerCase() == "elementselect" && value.className == '')) && defaultValue == ''){
                     var obj = new Object();
                     obj.fieldName = property.label;
                     obj.message = optionsStack[editorId].mandatoryMessage;
                     errors.push(obj);
-                    if(property.type == "checkbox" || property.type == "radio"){
+                    if(property.type.toLowerCase() == "checkbox" || property.type.toLowerCase() == "radio"){
                         $(editor).find('#'+editorId+'_'+parent+property.name).parent().parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
                     }else{
                         $(editor).find('#'+editorId+'_'+parent+property.name).parent().append('<div class="property-input-error">'+ optionsStack[editorId].mandatoryMessage +'</div>');
                     }
                 }
 
-                if(!((value == '' || value == undefined) && defaultValue == '') && property.regex_validation != undefined && property.regex_validation != '' && (property.type == "textfield" || property.type == "password" || property.type == "textarea" || property.type == "htmleditor")){
+                if(!((value == '' || value == undefined) && defaultValue == '') && property.regex_validation != undefined && property.regex_validation != '' && (property.type.toLowerCase().toLowerCase() == "textfield" || property.type.toLowerCase() == "password" || property.type.toLowerCase() == "textarea" || property.type.toLowerCase() == "htmleditor")){
                     var regex = new RegExp(property.regex_validation);
                     if(!regex.exec(value)){
                         var obj2 = new Object();
@@ -1167,7 +1166,7 @@
                     }
                 }
 
-                if(property.type == "elementselect"){
+                if(property.type.toLowerCase() == "elementselect"){
                     if(elementStack[editorId+'_'+parent+property.name] != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition.length > 0){
                         $.each(elementStack[editorId+'_'+parent+property.name].propertiesDefinition, function(i, page){
                             if(page.properties != undefined){
@@ -1245,7 +1244,7 @@
 
                 var r = $.parseJSON(response);
 
-                if(r.status == "fail"){
+                if(r.status.toLowerCase() == "fail"){
                     if(r.message.length == 0){
                         var obj = new Object();
                         obj.fieldName = '';
