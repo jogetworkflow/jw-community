@@ -338,7 +338,7 @@
 
         if(property.label != undefined && property.label != null){
             var required = '';
-            if(property.required != undefined && property.required == 'True'){
+            if(property.required != undefined && property.required.toLowerCase() == 'true'){
                 required = ' <span class="property-required">'+get_peditor_msg('peditor.mandatory.symbol')+'</span>';
             }
 
