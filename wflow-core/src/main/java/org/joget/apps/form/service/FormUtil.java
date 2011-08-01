@@ -540,6 +540,9 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static Element findElement(String id, Element rootElement, FormData formData) {
+        if (rootElement == null) {
+            return null;
+        }
         Element result = null;
         String elementId = rootElement.getPropertyString(FormUtil.PROPERTY_ID);
         if (elementId != null && elementId.equals(id)) {
