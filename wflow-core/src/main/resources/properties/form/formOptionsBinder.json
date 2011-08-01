@@ -3,6 +3,11 @@
     properties : [
     %s,
     {
+        name : 'idColumn',
+        label : '@@form.defaultformoptionbinder.idColumn@@',
+        type : 'textfield'
+    },
+    {
         name : 'labelColumn',
         label : '@@form.defaultformoptionbinder.labelColumn@@',
         type : 'textfield',

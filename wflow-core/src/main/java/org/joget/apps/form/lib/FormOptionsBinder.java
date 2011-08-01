@@ -74,7 +74,9 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     public FormRowSet load(Element element, String primaryKey) {
         FormRowSet results = new FormRowSet();
         results.setMultiRow(true);
-
+        //Using filtered formset to ensure the returned result is clean with no unnecessary nulls
+        FormRowSet filtered = new FormRowSet();
+        filtered.setMultiRow(true);
         // get form
         String formDefId = (String) getProperty("formDefId");
         Form form = getSelectedForm(formDefId);
@@ -92,19 +94,22 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
             if (results != null) {
                 String labelColumn = (String) getProperty("labelColumn");
-
+                //Determine id column. Setting to default if not specified
+                String idColumn = (String) getProperty("idColumn");
+                idColumn = (idColumn == null || "".equals(idColumn)) ? FormUtil.PROPERTY_ID : idColumn;
                 // loop thru results to set value and label
                 for (FormRow row : results) {
-                    String id = row.getProperty(FormUtil.PROPERTY_ID);
+                    String id = row.getProperty(idColumn);
                     String label = row.getProperty(labelColumn);
                     if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
                         row.setProperty(FormUtil.PROPERTY_VALUE, id);
                         row.setProperty(FormUtil.PROPERTY_LABEL, label);
+                        filtered.add(row);
                     }
                 }
             }
         }
-        return results;
+        return filtered;
     }
 
     /**
