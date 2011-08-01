@@ -19,11 +19,13 @@
         border: 1px solid #a1a1a1;
     }
 </style>
-<script type="text/javascript">
-    $(document).ready(function() {
-        $("#${element.properties.id!}").formgrid();
-    });
-</script>
+<#if element.properties.readonly! != 'true'>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#${elementParamName!}").formgrid();
+        });
+    </script>
+</#if>
 
 <div class="form-cell" ${elementMetaData!}>
     <label class="label">${element.properties.label!} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>

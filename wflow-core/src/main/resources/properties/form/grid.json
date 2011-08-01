@@ -14,11 +14,6 @@
         type : 'textfield'
     },
     {
-        name : 'size',
-        label : '@@form.grid.size@@',
-        type : 'textfield'
-    },
-    {
         name : 'options',
         label : '@@form.grid.options@@',
         type : 'grid',
@@ -29,6 +24,16 @@
         {
             key : 'label',
             label : '@@form.grid.label@@'
+        }]
+    },
+    {
+        name : 'readonly',
+        label : '@@form.grid.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
         }]
     }]
 },
