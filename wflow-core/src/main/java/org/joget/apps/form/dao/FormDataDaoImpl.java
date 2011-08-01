@@ -60,6 +60,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
     public static final String FORM_PREFIX_COLUMN = "c_";
     Map<String, HibernateTemplate> templateCache = new HashMap<String, HibernateTemplate>();
+    Map<String, PersistentClass> persistentClassCache = new HashMap<String, PersistentClass>();
     ThreadLocal currentThreadForm = new ThreadLocal();
     private FormDefinitionDao formDefinitionDao;
     private FormService formService;
@@ -390,20 +391,27 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             ht = template;
             Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template found in cache", entityName);
 
-            Collection<String> columnList = getFormRowColumnNames(rowSet);
-            if (!columnList.isEmpty()) {
-
+            // lookup existing PersistentClass from cache
+            PersistentClass pc = persistentClassCache.get(entityName);
+            String filename = entityName + ".hbm.xml";
+            if(pc == null){
                 // get existing mapping file
-                String filename = entityName + ".hbm.xml";
                 File mappingFile = new File(path, filename);
                 if (mappingFile.exists()) {
                     Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} loaded form mapping file {1}", new Object[]{entityName, mappingFile.getName()});
-
-                    // check for changes
-                    boolean changes = false;
                     Configuration configuration = new Configuration().configure();
                     configuration.addFile(mappingFile);
-                    PersistentClass pc = configuration.getClassMapping(entityName);
+                    pc = configuration.getClassMapping(entityName);
+                    persistentClassCache.put(entityName, pc);
+                }
+            }
+            
+            if (pc != null) {
+                // check for changes
+                boolean changes = false;
+                
+                Collection<String> columnList = getFormRowColumnNames(rowSet);
+                if (!columnList.isEmpty()) {
                     Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
                     Component customComponent = (Component) custom.getValue();
                     Iterator i = customComponent.getPropertyIterator();
@@ -421,23 +429,34 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                             break;
                         }
                     }
-                    if (changes) {
-                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} changes detected", entityName);
-
-                        // properties changed, close session factory
-                        SessionFactory sf = ht.getSessionFactory();
-                        sf.close();
-                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} existing session factory closed", entityName);
-
-                        // delete existing mapping file
-                        mappingFile.delete();
-
-                        // clear template to be recreated
-                        ht = null;
-                    }
-                } else {
-                    ht = null;
                 }
+                
+                if(!tableName.equals(pc.getTable().getName())){
+                    changes = true;
+                } 
+                
+                if (changes) {
+                    Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} changes detected", entityName);
+
+                    // properties changed, close session factory
+                    SessionFactory sf = ht.getSessionFactory();
+                    sf.close();
+                    Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} existing session factory closed", entityName);
+
+                    // delete existing mapping file
+                    File mappingFile = new File(path, filename);
+                    if (mappingFile.exists()) {
+                        mappingFile.delete();
+                    }
+
+                    // clear template to be recreated
+                    ht = null;
+                    
+                    //remove persistentClassCache
+                    persistentClassCache.remove(entityName);
+                }
+            } else {
+                ht = null;
             }
         }
 
