@@ -1,5 +1,6 @@
 package org.joget.directory.model.service;
 
+import org.joget.directory.ext.DirectoryManagerAuthenticatorImpl;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
@@ -60,6 +61,11 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
             return true;
         }
         return false;
+    }
+
+    private DirectoryManagerAuthenticator getDirectoryManagerAuthenticator() {
+        DirectoryManagerAuthenticator authenticator = (DirectoryManagerAuthenticator)pluginManager.getPlugin(DirectoryManagerAuthenticatorImpl.class.getName());
+        return authenticator;
     }
 
     private DirectoryManager getCustomDirectoryManagerImpl() {
@@ -243,7 +249,10 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
     }
 
     public boolean authenticate(String username, String password) {
-        return getDirectoryManagerImpl().authenticate(username, password);
+        DirectoryManagerAuthenticator authenticator = getDirectoryManagerAuthenticator();
+        DirectoryManager directoryManager = getDirectoryManagerImpl();
+        boolean authenticated = authenticator.authenticate(directoryManager, username, password);
+        return authenticated;
     }
 
     public Group getGroupById(String groupId) {
