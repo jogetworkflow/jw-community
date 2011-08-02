@@ -33,7 +33,7 @@
 </div>
 
 <div id="footer">
-    © Joget Workflow - Open Dynamics Inc. All Rights Reserved. <fmt:message key="console.footer.label.revision" />
+    <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=footer" flush="true" />
 </div>
 
 </body>

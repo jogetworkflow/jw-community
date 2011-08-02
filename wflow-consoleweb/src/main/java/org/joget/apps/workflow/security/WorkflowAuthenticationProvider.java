@@ -49,7 +49,7 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         try {
             validLogin = directoryManager.authenticate(username, password);
         } catch (Exception e) {
-            throw new AuthenticationServiceException(e.getMessage());
+            throw new BadCredentialsException(e.getMessage());
         }
         if (!validLogin) {
             throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));

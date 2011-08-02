@@ -56,7 +56,7 @@ x.welcome-box h3 {
 
 <div id="home-container">
     <div id="home-box">
-        
+        <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=home" flush="true" />
         <div class="welcome-box">
             <h3><fmt:message key="console.home.getStarted.title"/></h3>
             <p>

@@ -62,6 +62,7 @@
 
 <div id="login-container">
     <div id="login-box">
+        <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=login" flush="true" />
         <div>
             <c:if test="${!empty param.login_error}">
                 <div id="main-body-message" class="form-errors">

@@ -61,7 +61,7 @@
 
         <div id="header">
             <div id="topbar">
-                <div id="logo"><fmt:message key="console.header.top.title"/></div>
+                <div id="logo"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" flush="true" /></div>
                 <div id="account">
                     <c:if test="${isAdmin}">
                         <a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a> |
@@ -231,5 +231,5 @@
             </div>
             <div class="clear"></div>   
         </div>
-
+        <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=body" flush="true" />
         <div id="container">
