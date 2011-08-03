@@ -661,25 +661,25 @@ DatalistBuilder = {
             {
                 label : 'ID',
                 name  : 'id',
-                required : true,
+                required : 'true',
                 type : 'hidden'
             },
             {
                 label : 'Name',
                 name  : 'name',
-                required : true,
+                required : 'true',
                 type : 'hidden'
             },
             {
                 label : get_dbuilder_msg('dbuilder.label'),
                 name  : 'label',
-                required : true,
+                required : 'true',
                 type : 'textfield'
             },
             {
                 label : get_dbuilder_msg('dbuilder.sortable'),
                 name  : 'sortable',
-                required : true,
+                required : 'true',
                 type : 'selectbox',
                 options : [{
                     label : get_dbuilder_msg('dbuilder.sortable.no'),
@@ -797,25 +797,25 @@ DatalistBuilder = {
               properties : [
                 {label : get_dbuilder_msg('dbuilder.datalistId'),
                   name  : 'id',
-                  required : true,
+                  required : 'true',
                   type : 'readonly'},
                 {label : get_dbuilder_msg('dbuilder.datalistName'),
                   name  : 'name',
-                  required : true,
+                  required : 'true',
                   type : 'textfield'},
                 {label : get_dbuilder_msg('dbuilder.pageSize'),
                   name  : 'pageSize',
-                  required : true,
+                  required : 'true',
                   type : 'textfield'},
                 {label : get_dbuilder_msg('dbuilder.order'),
                   name  : 'order',
-                  required : true,
+                  required : 'true',
                   type : 'selectbox',
                   options : [{label : get_dbuilder_msg('dbuilder.order.asc'), value : '2'},
                               {label : get_dbuilder_msg('dbuilder.order.desc'), value : '1'}]},
                 {label : get_dbuilder_msg('dbuilder.orderBy'),
                   name  : 'orderBy',
-                  required : true,
+                  required : 'true',
                   type : 'selectbox'}
               ]
             }
