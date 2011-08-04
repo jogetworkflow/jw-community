@@ -408,7 +408,7 @@
         html += '</div><div style="clear:both;"></div></div>'
 
         if(property.options_ajax != undefined && property.options_ajax != null){
-            addToLoadOptionsStack(id +'_'+ property.name, property.type.toLowerCase(), value, defaultValue, property.options_ajax, property.options_ajax_on_change);
+            addToLoadOptionsStack(id +'_'+ property.name, property.type.toLowerCase(), value, defaultValue, property.options_ajax, property.options_ajax_on_change, id);
         }
 
         return html;
@@ -805,13 +805,14 @@
         return string.replace(regX, replaceString);
     }
 
-    function addToLoadOptionsStack(id, type, value, defaultValue, url, targetName){
+    function addToLoadOptionsStack(id, type, value, defaultValue, url, targetName, targetPrefixId){
         loadOptionsStack[id] = new Object();
         loadOptionsStack[id]['type'] = type;
         loadOptionsStack[id]['value'] = value;
         loadOptionsStack[id]['defaultValue'] = defaultValue;
         loadOptionsStack[id]['url'] = url;
         loadOptionsStack[id]['targetName'] = targetName;
+        loadOptionsStack[id]['targetPrefixId'] = targetPrefixId;
     }
 
     function loadOptions(editor){
@@ -834,7 +835,7 @@
                 ajaxUrl += "?";
             }
             var targetName = loadOptionsStack[key].targetName;
-            var targetValue = $("#"+editorId+"_"+targetName).val();
+            var targetValue = $("#"+loadOptionsStack[key].targetPrefixId+"_"+targetName).val();
             if(targetValue == null || targetValue == undefined){
                 var options = optionsStack[editorId];
                 if(options.propertyValues != undefined && options.propertyValues[targetName] != undefined && options.propertyValues[targetName] != ""){
@@ -1432,7 +1433,7 @@
     }
 
     function fieldOnChange(editorId, key) {
-        var targetEl = $("#" + editorId + '_' + loadOptionsStack[key].targetName);
+        var targetEl = $("#" + loadOptionsStack[key].targetPrefixId + '_' + loadOptionsStack[key].targetName);
         targetEl.change(function() {
             callLoadOptionsAjax(editorId, key);
         });
