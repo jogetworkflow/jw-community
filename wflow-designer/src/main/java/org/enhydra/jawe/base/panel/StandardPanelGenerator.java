@@ -1228,6 +1228,7 @@ public class StandardPanelGenerator implements PanelGenerator {
                     panelElements.add(el.get("Name"));
                 }
                 panelElements.add(el.getProcessHeader().getDurationUnitAttribute());
+                panelElements.add(el.getProcessHeader().get("Limit"));
                 if (!hidden.contains(el.getDataFields())) {
                     panelElements.add(this.getPanel(el.getDataFields()));
                 }
