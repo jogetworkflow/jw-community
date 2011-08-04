@@ -1379,28 +1379,29 @@ public class ConsoleWebController {
         map.addAttribute("loginHash", user.getLoginHash());
         map.addAttribute("username", user.getUsername());
 
-        boolean processFound = processDefId != null && processDefId.trim().length() > 0;
-        PackageDefinition packageDefinition = appDef.getPackageDefinition();
-        Long packageVersion = (packageDefinition != null) ? packageDefinition.getVersion() : new Long(1);
         WorkflowProcess process = null;
-        Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
-
-        if (processFound) {
-            // find matching process by definition (without version)
-            processFound = false;
-            for (WorkflowProcess wp : processList) {
-                String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
-                if (processIdWithoutVersion.equals(processDefId) && wp.getVersion().equals(packageVersion.toString())) {
-                    process = wp;
-                    processDefId = wp.getId();
-                    processFound = true;
-                    break;
+        boolean processFound = false;
+        Collection<WorkflowProcess> processList = null;
+        PackageDefinition packageDefinition = appDef.getPackageDefinition();
+        if (packageDefinition != null) {
+            Long packageVersion = packageDefinition.getVersion();
+            processList = workflowManager.getProcessList(appId, packageVersion.toString());
+            if (processDefId != null && processDefId.trim().length() > 0) {
+                // find matching process by definition (without version)
+                for (WorkflowProcess wp : processList) {
+                    String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
+                    if (processIdWithoutVersion.equals(processDefId) && wp.getVersion().equals(packageVersion.toString())) {
+                        process = wp;
+                        processDefId = wp.getId();
+                        processFound = true;
+                        break;
+                    }
                 }
             }
         }
         if (!processFound) {
             // specific process not found, get list of processes
-            if (processList.size() == 1) {
+            if (processList != null && processList.size() == 1) {
                 // redirect to the only process
                 WorkflowProcess wp = processList.iterator().next();
                 return "redirect:/web/console/app/" + appId + "/" + version + "/processes/" + wp.getIdWithoutVersion();
