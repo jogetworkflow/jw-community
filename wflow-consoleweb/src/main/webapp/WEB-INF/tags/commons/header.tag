@@ -117,6 +117,12 @@
                                         <span class="subsubtitle"><fmt:message key="console.header.submenu.description.publishedApps"/></span></a>
                                     </li>
                                     <li>
+                                        <a href="${pageContext.request.contextPath}/web/console/run/processes">
+                                        <span class="substeps">&nbsp;</span>
+                                        <span class="subtitle"><fmt:message key="console.header.submenu.label.publishedProcesses"/></span>
+                                        <span class="subsubtitle"><fmt:message key="console.header.submenu.description.publishedProcesses"/></span></a>
+                                    </li>
+                                    <li>
                                         <a href="${pageContext.request.contextPath}/web/console/run/inbox" class="substeps">
                                         <span class="substeps"></span>
                                         <span class="subtitle"><fmt:message key="console.header.submenu.label.inbox"/></span>
