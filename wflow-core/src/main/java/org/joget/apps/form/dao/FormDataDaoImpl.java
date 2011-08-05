@@ -142,6 +142,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public FormRow loadByTableNameAndColumnName(String tableName, String columnName, String primaryKey) {
         String entityName = this.getEntityName(tableName, columnName);
+
+        if (!tableName.startsWith(FORM_PREFIX_TABLE_NAME))
+            tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
 
