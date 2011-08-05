@@ -69,7 +69,7 @@ public class ReportWorkflowActivityDaoImpl extends AbstractSpringDao implements 
         }
 
         if (appVersion != null && !appVersion.isEmpty()) {
-            condition += " AND e..reportWorkflowProcess.reportWorkflowPackage.reportApp.appVersion = ?";
+            condition += " AND e.reportWorkflowProcess.reportWorkflowPackage.reportApp.appVersion = ?";
             params.add(appVersion);
         }
 

@@ -42,7 +42,6 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
             final AuditTrail auditTrail = (AuditTrail) properties.get("auditTrail");
 
             if (validation(auditTrail)) {
-                System.out.println(auditTrail.getMethod());
                 WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
                 WorkflowProcess process = null;
                 WorkflowProcess trackProcess = null;

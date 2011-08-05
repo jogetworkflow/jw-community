@@ -248,7 +248,7 @@ public class ReportManager {
         double max = min;
 
         for (int i = 0; i < values.length; i++) {
-            if (min > values[i]) {
+            if (min > values[i] && values[i] > 0) {
                 min = values[i];
             }
 

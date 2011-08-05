@@ -1894,10 +1894,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 long finishTime = admin.getProcessFinishTime(sessionHandle, processInstanceId);
 
                 completionCal.setTimeInMillis(finishTime);
-                dueCal.setTime(wfProcess.getDue());
                 wfProcess.setFinishTime(completionCal.getTime());
                 //completion minus due if completion date is after due date, vice versa otherwise
                 if (wfProcess.getDue() != null && wfProcess.getFinishTime().after(wfProcess.getDue())) {
+                    dueCal.setTime(wfProcess.getDue());
                     long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
                     long delayInMinutes = (long) delayInSeconds / 60;
@@ -2199,10 +2199,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 long finishTime = admin.getActivityFinishTime(sessionHandle, processInstanceId, activityInstanceId);
 
                 completionCal.setTimeInMillis(finishTime);
-                dueCal.setTime(wfAct.getDue());
                 wfAct.setFinishTime(completionCal.getTime());
                 //completion minus due if completion date is after due date, vice versa otherwise
                 if (wfAct.getDue() != null && wfAct.getFinishTime().after(wfAct.getDue())) {
+                    dueCal.setTime(wfAct.getDue());
                     long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
                     long delayInMinutes = (long) delayInSeconds / 60;
