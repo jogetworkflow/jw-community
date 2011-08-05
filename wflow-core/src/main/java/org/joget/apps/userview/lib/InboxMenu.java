@@ -219,7 +219,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // determine sort column
             String sortColumn = null;
             if (sort != null && !sort.trim().isEmpty()) {
-                int sortIndex = Integer.parseInt(sort) - 1;
+                int sortIndex = Integer.parseInt(sort);
                 DataListColumn[] columns = dataList.getColumns();
                 if (sortIndex < columns.length) {
                     sortColumn = columns[sortIndex].getName();
@@ -304,16 +304,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             
             // set results
             resultList.addAll(assignmentList);
-            resultList.setObjectsPerPage(pageSize);
             resultList.setFullListSize(total);
-            resultList.setSortCriterion(sort);
-            if (desc != null) {
-                if (desc.booleanValue()) {
-                    resultList.setSortDirection(SortOrderEnum.DESCENDING);
-                } else {
-                    resultList.setSortDirection(SortOrderEnum.ASCENDING);
-                }
-            }
             
             return resultList;
         } catch (Exception e) {
