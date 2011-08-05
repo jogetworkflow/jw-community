@@ -18,7 +18,6 @@
         <constructor-arg><ref bean="transactionManager" /></constructor-arg>
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="setupManager" ref="setupManager"/>
-        <property name="workflowReportManager" ref="workflowReportManager"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
 
@@ -49,59 +48,10 @@
             </props>
         </property>
     </bean>
-    
-    <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-        <qualifier value="report"/>
-        <property name="dataSource" ref="setupDataSource"/>
-        <property name="mappingResources">
-            <list>
-                <value>/org/joget/workflow/model/WorkflowReport.hbm.xml</value>
-                <value>/org/joget/workflow/model/WorkflowPackage.hbm.xml</value>
-                <value>/org/joget/workflow/model/WorkflowProcess.hbm.xml</value>
-                <value>/org/joget/workflow/model/WorkflowActivity.hbm.xml</value>
-            </list>
-        </property>
-        <property name="hibernateProperties">
-            <props>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
-                <prop key="hibernate.show_sql">false</prop>
-            </props>
-        </property>
-    </bean>
 
     <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
-    </bean>
-   
-   <!-- Audit Trail Report Dao -->
-    <bean id="workflowReportDao" class="org.joget.workflow.model.dao.WorkflowReportDao">
-        <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
-    </bean>
-
-    <bean id="workflowPackageDao" class="org.joget.workflow.model.dao.WorkflowPackageDao">
-        <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
-    </bean>
-
-    <bean id="workflowProcessDao" class="org.joget.workflow.model.dao.WorkflowProcessDao">
-        <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
-    </bean>
-
-    <bean id="workflowActivityDao" class="org.joget.workflow.model.dao.WorkflowActivityDao">
-        <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
-    </bean>
-   
-   <!-- Audit Trail Report Manager -->
-    <bean id="workflowReportManager" class="org.joget.workflow.model.service.WorkflowReportManager">
-        <property name="workflowReportDao" ref="workflowReportDao"/>
-        <property name="workflowPackageDao" ref="workflowPackageDao"/>
-        <property name="workflowProcessDao" ref="workflowProcessDao"/>
-        <property name="workflowActivityDao" ref="workflowActivityDao"/>
     </bean>
 
 </beans>

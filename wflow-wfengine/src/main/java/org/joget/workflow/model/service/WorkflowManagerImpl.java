@@ -49,7 +49,6 @@ import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
 import com.lutris.dods.builder.generator.query.QueryBuilder;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -70,8 +69,10 @@ import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.PagedList;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.util.DeadlineThreadManager;
+import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -85,7 +86,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private DataSource dataSource;
     private JtaTransactionManager transactionManager;
     protected TransactionTemplate transactionTemplate;
-    private WorkflowReportManager workflowReportManager;
     private WorkflowProcessLinkDao workflowProcessLinkDao;
     private Map processStateMap;
     private String previousProfile;
@@ -114,14 +114,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     public void setWorkflowProcessLinkDao(WorkflowProcessLinkDao workflowProcessLinkDao) {
         this.workflowProcessLinkDao = workflowProcessLinkDao;
-    }
-
-    public WorkflowReportManager getWorkflowReportManager() {
-        return workflowReportManager;
-    }
-
-    public void setWorkflowReportManager(WorkflowReportManager workflowReportManager) {
-        this.workflowReportManager = workflowReportManager;
     }
 
     /*--- Constructors and initialization methods ---*/
@@ -1376,6 +1368,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowProcess.setState(wfProcess.state());
                 workflowProcess.setPackageId(MiscUtilities.getProcessMgrPkgId(manager.name()));
                 workflowProcess.setVersion(manager.version());
+                workflowProcess.setRequesterId(getUserByProcessIdAndActivityDefId(workflowProcess.getId(), workflowProcess.getInstanceId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
             }
 
 
@@ -1735,188 +1728,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     /**
-     * Returns a list of activities with service level info based on a process definition ID for the SLA report.
-     * @param processDefinitionId
-     * @return
-     */
-    public Collection<WorkflowReport> getWorkflowSLA(String processDefinitionId) {
-        Collection<WorkflowReport> workflowSLA = new ArrayList<WorkflowReport>();
-        DecimalFormat df = new DecimalFormat("#.####");
-
-        if (processDefinitionId != null) {
-            Collection<WorkflowActivity> activities = workflowReportManager.getActivityDefByProcessDefId(processDefinitionId);
-
-            for (WorkflowActivity activity : activities) {
-                String activityDefId = activity.getActivityDefId();
-                WorkflowReport workflowReport = new WorkflowReport();
-                workflowReport.setWfActivity(activity);
-
-                List delayList = workflowReportManager.getWorkflowReportsByActivityDefIdAndProcessDefId(activityDefId, processDefinitionId);
-                int[] values = new int[delayList.size()];
-                for (int i = 0; i < delayList.size(); i++) {
-                    values[i] = Integer.parseInt(delayList.get(i).toString());
-                }
-                int[] minMax = getMinMaxValues(values);
-
-                workflowReport.setMinDelay((double) minMax[0]);
-                workflowReport.setMaxDelay((double) minMax[1]);
-
-                int[] ratioDelayAndOnTime = getRatioWithDelayAndOnTime(values, workflowReportManager.getTotalWorkflowReportsByActivityDefIdAndProcessDefId(activityDefId, processDefinitionId));
-
-                workflowReport.setRatioWithDelay(ratioDelayAndOnTime[0]);
-                workflowReport.setRatioOnTime(ratioDelayAndOnTime[1]);
-
-                workflowSLA.add(workflowReport);
-            }
-        }
-
-        return workflowSLA;
-    }
-
-    /**
-     * Returns a list of all available process definitions for the SLA report.
-     * @return
-     */
-    public Collection<WorkflowProcess> getWorkflowSLAProcessDefinitions() {
-        return workflowReportManager.getAllProcessDefinitions();
-    }
-
-    /**
      * Gets the service level for a specific process instance ID.
      * @param processInstanceId
      * @return
      */
     public double getServiceLevelMonitorForRunningProcess(String processInstanceId) {
-
-        SharkConnection sc = null;
-
-        try {
-
-            sc = connect();
-
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            Shark shark = Shark.getInstance();
-
-            XPDLBrowser xpdl = shark.getXPDLBrowser();
-
-            //get limit
-            AdminMisc admin = shark.getAdminMisc();
-
-            long startedTime = admin.getProcessStartedTime(sessionHandle, processInstanceId);
-
-            int limit = -1;
-            //get process limit
-            WMEntity processLimitEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
-
-            WMFilter filter = new WMFilter();
-            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-            filter.setAttributeName("Type");
-            filter.setFilterString("ProcessHeader");
-
-            WMEntityIterator processLimitEntityIterator = xpdl.listEntities(sessionHandle, processLimitEnt, filter, true);
-            WMEntity[] processLimitEntityList = null;
-            if (processLimitEntityIterator != null) {
-                processLimitEntityList = processLimitEntityIterator.getArray();
-            }
-
-            if (processLimitEntityList != null) {
-                WMEntity processLimitEntity = processLimitEntityList[0];
-
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Name");
-                filter.setFilterString("Limit");
-
-                WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, processLimitEntity, filter, true);
-                WMAttribute[] procAttributeList = null;
-                if (procAttributeIterator != null) {
-                    procAttributeList = procAttributeIterator.getArray();
-                }
-
-                if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
-                    limit = Integer.parseInt((String) procAttributeList[0].getValue());
-                }
-            }
-
-
-            String durationUnit = "";
-            if (limit != -1) {
-                //get duration unit
-                filter = new WMFilter();
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Type");
-                filter.setFilterString("ProcessHeader");
-
-                WMEntity processDurationEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
-                WMEntityIterator processDurationEntityIterator = xpdl.listEntities(sessionHandle, processDurationEnt, filter, true);
-                WMEntity[] processDurationEntityList = null;
-                if (processDurationEntityIterator != null) {
-                    processDurationEntityList = processDurationEntityIterator.getArray();
-                }
-
-                if (processDurationEntityList != null) {
-                    WMEntity entity = processDurationEntityList[0];
-
-                    filter = new WMFilter();
-                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                    filter.setAttributeName("Name");
-                    filter.setFilterString("DurationUnit");
-
-                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, entity, filter, true);
-                    WMAttribute[] procAttributeList = null;
-                    if (procAttributeIterator != null) {
-                        procAttributeList = procAttributeIterator.getArray();
-                    }
-
-                    if (procAttributeList != null) {
-                        durationUnit = (String) procAttributeList[0].getValue();
-                    }
-                }
-            }
-
-            if (limit != -1) {
-                long dueTime = 0;
-
-                if (!durationUnit.equals("")) {
-                    if (durationUnit.equals("D")) {
-                        dueTime = limit * 24 * 60 * 60 * 1000;
-                    } else if (durationUnit.equals("h")) {
-                        dueTime = limit * 60 * 60 * 1000;
-                    } else if (durationUnit.equals("m")) {
-                        dueTime = limit * 60 * 1000;
-                    } else if (durationUnit.equals("s")) {
-                        dueTime = limit * 1000;
-                    }
-
-                    Date todayDate = new Date();
-                    long currentTime = todayDate.getTime();
-                    long completedTime = admin.getProcessFinishTime(sessionHandle, processInstanceId);
-
-                    if (completedTime == SharkConstants.UNDEFINED_TIME) {
-                        if ((currentTime - startedTime) - dueTime < 0) {
-                            return ((((double) (currentTime - startedTime)) / ((double) dueTime)) * 100);
-                        } else {
-                            return 100;
-                        }
-                    } else {
-                        if ((completedTime - startedTime) - dueTime < 0) {
-                            return ((((double) (completedTime - startedTime)) / ((double) dueTime)) * 100);
-                        } else {
-                            return 100;
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-
-        return -1;
+        WorkflowProcess process = getRunningProcessInfo(processInstanceId);
+        return getServiceLevelValue(process.getStartedTime(), process.getFinishTime(), process.getDue());
     }
 
     /**
@@ -1925,140 +1743,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public double getServiceLevelMonitorForRunningActivity(String activityInstanceId) {
-
-
-        SharkConnection sc = null;
-
-        try {
-            if (activityInstanceId == null || activityInstanceId.trim().length() == 0) {
-                return -1;
-            }
-
-            sc = connect();
-
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            Shark shark = Shark.getInstance();
-
-            WfActivityIterator ai = sc.get_iterator_activity();
-            ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
-
-            XPDLBrowser xpdl = shark.getXPDLBrowser();
-
-            WMFilter filter = new WMFilter();
-
-            if (activityInstanceId != null && activityInstanceId.trim().length() > 0) {
-                filter = aieb.addIdEquals(sessionHandle, activityInstanceId);
-            }
-
-            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
-            WfActivity[] wfActivityArray = ai.get_next_n_sequence(0);
-
-            if (wfActivityArray.length == 0) {
-                return -1;
-            }
-
-            //get limit
-            AdminMisc admin = shark.getAdminMisc();
-            WMEntity actEnt = admin.getActivityDefinitionInfo(sessionHandle, wfActivityArray[0].container().key(), activityInstanceId);
-
-            filter = new WMFilter();
-            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-            filter.setAttributeName("Name");
-            filter.setFilterString("Limit");
-
-            WMAttributeIterator actAttributeIterator = xpdl.listAttributes(sessionHandle, actEnt, filter, true);
-            WMAttribute[] actAttributeList = null;
-            if (actAttributeIterator != null) {
-                actAttributeList = actAttributeIterator.getArray();
-            }
-
-            long createdTime = admin.getActivityCreatedTime(sessionHandle, wfActivityArray[0].container().key(), activityInstanceId);
-
-            int limit = -1;
-            String val = (actAttributeList != null ? (String) actAttributeList[0].getValue() : null);
-            if (actAttributeList != null && !val.equals("")) {
-                limit = Integer.parseInt(val);
-            }
-
-            String durationUnit = "";
-            if (limit != -1) {
-                //get duration unit
-                filter = new WMFilter();
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Type");
-                filter.setFilterString("ProcessHeader");
-
-                WMEntity procEnt = admin.getProcessDefinitionInfo(sessionHandle, wfActivityArray[0].container().key());
-                WMEntityIterator procEntityIterator = xpdl.listEntities(sessionHandle, procEnt, filter, true);
-                WMEntity[] procEntityList = null;
-                if (procEntityIterator != null) {
-                    procEntityList = procEntityIterator.getArray();
-                }
-
-                if (procEntityList != null) {
-                    WMEntity ent = procEntityList[0];
-
-                    filter = new WMFilter();
-                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                    filter.setAttributeName("Name");
-                    filter.setFilterString("DurationUnit");
-
-                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, ent, filter, true);
-                    WMAttribute[] procAttributeList = null;
-                    if (procAttributeIterator != null) {
-                        procAttributeList = procAttributeIterator.getArray();
-                    }
-
-                    if (procAttributeList != null) {
-                        durationUnit = (String) procAttributeList[0].getValue();
-                    }
-                }
-            }
-
-            if (limit != -1) {
-                long dueTime = 0;
-
-                if (!durationUnit.equals("")) {
-                    if (durationUnit.equals("D")) {
-                        dueTime = limit * 24 * 60 * 60 * 1000;
-                    } else if (durationUnit.equals("h")) {
-                        dueTime = limit * 60 * 60 * 1000;
-                    } else if (durationUnit.equals("m")) {
-                        dueTime = limit * 60 * 1000;
-                    } else if (durationUnit.equals("s")) {
-                        dueTime = limit * 1000;
-                    }
-
-                    Date todayDate = new Date();
-                    long currentTime = todayDate.getTime();
-                    long completedTime = admin.getActivityFinishTime(sessionHandle, wfActivityArray[0].container().key(), activityInstanceId);
-
-                    if (completedTime == SharkConstants.UNDEFINED_TIME) {
-                        if ((currentTime - createdTime) - dueTime < 0) {
-                            return ((((double) (currentTime - createdTime)) / ((double) dueTime)) * 100);
-                        } else {
-                            return 100;
-                        }
-                    } else {
-                        if ((completedTime - createdTime) - dueTime < 0) {
-                            return ((((double) (completedTime - createdTime)) / ((double) dueTime)) * 100);
-                        } else {
-                            return 100;
-                        }
-                    }
-
-                }
-            }
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return -1;
+        WorkflowActivity activity = getRunningActivityInfo(activityInstanceId);
+        return getServiceLevelValue(activity.getCreatedTime(), activity.getFinishTime(), activity.getDue());
     }
 
     /**
@@ -2179,31 +1865,22 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 if (limit != -1) {
                     if (!durationUnit.equals("")) {
+                        long limitInSecond = 0;
                         if (durationUnit.equals("D")) {
-                            startedTimeCal.add(Calendar.DATE, limit);
+                            limitInSecond = limit * 24 * 60 * 60;
                             wfProcess.setLimit(limit + " day");
-                            wfProcess.setDue(startedTimeCal.getTime());
                         } else if (durationUnit.equals("h")) {
-                            startedTimeCal.add(Calendar.HOUR, limit);
+                            limitInSecond = limit * 24 * 60;
                             wfProcess.setLimit(limit + " hour(s)");
-                            wfProcess.setDue(startedTimeCal.getTime());
                         } else if (durationUnit.equals("m")) {
-                            startedTimeCal.add(Calendar.MINUTE, limit);
+                            limitInSecond = limit * 60;
                             wfProcess.setLimit(limit + " minute(s)");
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("M")) {
-                            startedTimeCal.add(Calendar.MONTH, limit);
-                            wfProcess.setLimit(limit + " month(s)");
-                            wfProcess.setDue(startedTimeCal.getTime());
                         } else if (durationUnit.equals("s")) {
-                            startedTimeCal.add(Calendar.SECOND, limit);
+                            limitInSecond = limit;
                             wfProcess.setLimit(limit + " second(s)");
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("Y")) {
-                            startedTimeCal.add(Calendar.YEAR, limit);
-                            wfProcess.setLimit(limit + " year(s)");
-                            wfProcess.setDue(startedTimeCal.getTime());
                         }
+
+                        wfProcess.setDue(getDueDateProceedByPlugin(processInstanceId, "", limitInSecond, startedTimeCal.getTime(), startedTimeCal.getTime()));
                     }
                 }
             }
@@ -2212,18 +1889,22 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             if (wfProcessArray[0].state().equals(SharkConstants.STATE_CLOSED_COMPLETED)) {
                 Calendar completionCal = Calendar.getInstance();
+                Calendar dueCal = Calendar.getInstance();
 
                 long finishTime = admin.getProcessFinishTime(sessionHandle, processInstanceId);
 
                 completionCal.setTimeInMillis(finishTime);
+                dueCal.setTime(wfProcess.getDue());
                 wfProcess.setFinishTime(completionCal.getTime());
                 //completion minus due if completion date is after due date, vice versa otherwise
                 if (wfProcess.getDue() != null && wfProcess.getFinishTime().after(wfProcess.getDue())) {
-                    long delayInMilliseconds = completionCal.getTimeInMillis() - startedTimeCal.getTimeInMillis();
+                    long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
                     long delayInMinutes = (long) delayInSeconds / 60;
                     long delayInHours = (long) delayInMinutes / 60;
                     long delayInDays = (long) delayInHours / 24;
+                    
+                    wfProcess.setDelayInSeconds(delayInSeconds);
 
                     if (delayInSeconds < 60) {
                         wfProcess.setDelay(delayInSeconds + " second(s)");
@@ -2253,6 +1934,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 } else if (timeTakenInHours > 24) {
                     wfProcess.setTimeConsumingFromDateStarted(timeTakenInDays + " day(s) " + (timeTakenInHours % 24) + " hour(s) " + (timeTakenInMinutes % 60) + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
                 }
+                
+                wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
 
                 //time taken for completion from date created
                 timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getCreatedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getCreatedTime().getTime() : 0;
@@ -2260,6 +1943,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 timeTakenInMinutes = (long) timeTakenInSeconds / 60;
                 timeTakenInHours = (long) timeTakenInMinutes / 60;
                 timeTakenInDays = (long) timeTakenInHours / 24;
+                
+                wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
 
                 if (timeTakenInSeconds < 60) {
                     wfProcess.setTimeConsumingFromDateCreated(timeTakenInSeconds + " second(s)");
@@ -2491,24 +2176,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     if (durationUnit.equals("D")) {
                         wfAct.setLimitInSeconds(limit * 24 * 60 * 60);
                         wfAct.setLimit(limit + " day");
-                        calendar.add(Calendar.DATE, limit);
-                        wfAct.setDue(calendar.getTime());
                     } else if (durationUnit.equals("h")) {
                         wfAct.setLimitInSeconds(limit * 24 * 60);
                         wfAct.setLimit(limit + " hour(s)");
-                        calendar.add(Calendar.HOUR, limit);
-                        wfAct.setDue(calendar.getTime());
                     } else if (durationUnit.equals("m")) {
                         wfAct.setLimitInSeconds(limit * 60);
                         wfAct.setLimit(limit + " minute(s)");
-                        calendar.add(Calendar.MINUTE, limit);
-                        wfAct.setDue(calendar.getTime());
                     } else if (durationUnit.equals("s")) {
                         wfAct.setLimitInSeconds(limit);
                         wfAct.setLimit(limit + " second(s)");
-                        calendar.add(Calendar.SECOND, limit);
-                        wfAct.setDue(calendar.getTime());
                     }
+                    wfAct.setDue(getDueDateProceedByPlugin(processInstanceId, activityInstanceId, wfAct.getLimitInSeconds(), wfAct.getCreatedTime(), wfAct.getStartedTime()));
                 }
             }
 
@@ -2516,14 +2194,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             if (wfActivity.state().equals(SharkConstants.STATE_CLOSED_COMPLETED)) {
                 Calendar completionCal = Calendar.getInstance();
+                Calendar dueCal = Calendar.getInstance();
 
                 long finishTime = admin.getActivityFinishTime(sessionHandle, processInstanceId, activityInstanceId);
 
                 completionCal.setTimeInMillis(finishTime);
+                dueCal.setTime(wfAct.getDue());
                 wfAct.setFinishTime(completionCal.getTime());
                 //completion minus due if completion date is after due date, vice versa otherwise
                 if (wfAct.getDue() != null && wfAct.getFinishTime().after(wfAct.getDue())) {
-                    long delayInMilliseconds = completionCal.getTimeInMillis() - wfAct.getDue().getTime();
+                    long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
                     long delayInMinutes = (long) delayInSeconds / 60;
                     long delayInHours = (long) delayInMinutes / 60;
@@ -2611,305 +2291,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
             LogUtil.error(getClass().getName(), ex, "");
         }
         return wfAct;
-    }
-
-    /**
-     * Calculates and returns the due date for a process instance ID.
-     * @param processInstanceId
-     * @return
-     */
-    public Date getDueDateForRunningProcess(String processInstanceId) {
-
-        SharkConnection sc = null;
-
-        try {
-            if (processInstanceId == null || processInstanceId.trim().length() == 0) {
-                return null;
-            }
-
-            sc = connect();
-
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            Shark shark = Shark.getInstance();
-
-            WfProcessIterator pi = sc.get_iterator_process();
-            ProcessFilterBuilder pfb = shark.getProcessFilterBuilder();
-
-            XPDLBrowser xpdl = shark.getXPDLBrowser();
-
-            WMFilter filter = new WMFilter();
-
-            if (processInstanceId != null && processInstanceId.trim().length() > 0) {
-                filter = pfb.addIdEquals(sessionHandle, processInstanceId);
-            }
-
-            pi.set_query_expression(pfb.toIteratorExpression(sessionHandle, filter));
-            WfProcess[] wfProcessArray = pi.get_next_n_sequence(0);
-            WorkflowProcess wfProcess = new WorkflowProcess();
-
-
-            int limit = -1;
-
-            //get process limit
-            AdminMisc admin = shark.getAdminMisc();
-            WMEntity processLimitEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
-
-
-            filter = new WMFilter();
-            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-            filter.setAttributeName("Type");
-            filter.setFilterString("ProcessHeader");
-
-            WMEntityIterator processLimitEntityIterator = xpdl.listEntities(sessionHandle, processLimitEnt, filter, true);
-            WMEntity[] processLimitEntityList = null;
-            if (processLimitEntityIterator != null) {
-                processLimitEntityList = processLimitEntityIterator.getArray();
-            }
-
-            if (processLimitEntityList != null) {
-                WMEntity processLimitEntity = processLimitEntityList[0];
-
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Name");
-                filter.setFilterString("Limit");
-
-                WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, processLimitEntity, filter, true);
-                WMAttribute[] procAttributeList = null;
-                if (procAttributeIterator != null) {
-                    procAttributeList = procAttributeIterator.getArray();
-                }
-
-                if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
-                    limit = Integer.parseInt((String) procAttributeList[0].getValue());
-                }
-            }
-
-            String durationUnit = "";
-            if (limit != -1) {
-                //get duration unit
-                filter = new WMFilter();
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Type");
-                filter.setFilterString("ProcessHeader");
-
-                WMEntity processDurationEnt = admin.getProcessDefinitionInfo(sessionHandle, processInstanceId);
-                WMEntityIterator processDurationEntityIterator = xpdl.listEntities(sessionHandle, processDurationEnt, filter, true);
-                WMEntity[] processDurationEntityList = null;
-                if (processDurationEntityIterator != null) {
-                    processDurationEntityList = processDurationEntityIterator.getArray();
-                }
-
-                if (processDurationEntityList != null) {
-                    WMEntity entity = processDurationEntityList[0];
-
-                    filter = new WMFilter();
-                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                    filter.setAttributeName("Name");
-                    filter.setFilterString("DurationUnit");
-
-                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, entity, filter, true);
-                    WMAttribute[] procAttributeList = null;
-                    if (procAttributeIterator != null) {
-                        procAttributeList = procAttributeIterator.getArray();
-                    }
-
-                    if (procAttributeList != null) {
-                        durationUnit = (String) procAttributeList[0].getValue();
-                    }
-                }
-            }
-
-            Calendar startedTimeCal = Calendar.getInstance();
-
-            if (wfProcessArray != null && wfProcessArray.length > 0) {
-
-                long startedTime = admin.getProcessStartedTime(sessionHandle, processInstanceId);
-
-                startedTimeCal.setTimeInMillis(startedTime);
-
-                if (limit != -1) {
-                    if (!durationUnit.equals("")) {
-                        if (durationUnit.equals("D")) {
-                            startedTimeCal.add(Calendar.DATE, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("h")) {
-                            startedTimeCal.add(Calendar.HOUR, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("m")) {
-                            startedTimeCal.add(Calendar.MINUTE, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("M")) {
-                            startedTimeCal.add(Calendar.MONTH, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("s")) {
-                            startedTimeCal.add(Calendar.SECOND, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        } else if (durationUnit.equals("Y")) {
-                            startedTimeCal.add(Calendar.YEAR, limit);
-                            wfProcess.setDue(startedTimeCal.getTime());
-                        }
-                    }
-                }
-            }
-
-
-            return wfProcess.getDue();
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Calculates and returns the due date for an activity instance ID.
-     * @param activityInstanceId
-     * @return
-     */
-    public Date getDueDateForRunningActivity(String activityInstanceId) {
-
-        SharkConnection sc = null;
-
-        try {
-            if (activityInstanceId == null || activityInstanceId.trim().length() == 0) {
-                return null;
-            }
-
-            sc = connect();
-
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            Shark shark = Shark.getInstance();
-
-            WfActivityIterator ai = sc.get_iterator_activity();
-            ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
-
-            XPDLBrowser xpdl = shark.getXPDLBrowser();
-
-            WMFilter filter = new WMFilter();
-
-            if (activityInstanceId != null && activityInstanceId.trim().length() > 0) {
-                filter = aieb.addIdEquals(sessionHandle, activityInstanceId);
-            }
-
-            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
-            WfActivity[] wfActivityArray = ai.get_next_n_sequence(0);
-
-            if (wfActivityArray.length == 0) {
-                return null;
-            }
-
-            //get limit
-            AdminMisc admin = shark.getAdminMisc();
-            WMEntity actEnt = admin.getActivityDefinitionInfo(sessionHandle, wfActivityArray[0].container().key(), activityInstanceId);
-
-
-            filter = new WMFilter();
-            filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-            filter.setAttributeName("Name");
-            filter.setFilterString("Limit");
-
-            WMAttributeIterator actAttributeIterator = xpdl.listAttributes(sessionHandle, actEnt, filter, true);
-            WMAttribute[] actAttributeList = null;
-            if (actAttributeIterator != null) {
-                actAttributeList = actAttributeIterator.getArray();
-            }
-
-            int limit = -1;
-            if (actAttributeList != null) {
-                if (actAttributeList[0].getValue() != null && !actAttributeList[0].getValue().equals("")) {
-                    limit = Integer.parseInt((String) actAttributeList[0].getValue());
-                }
-            }
-
-            if (limit == -1) {
-                return null;
-            }
-
-            String durationUnit = "";
-            if (limit != -1) {
-                //get duration unit
-                filter = new WMFilter();
-                filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                filter.setAttributeName("Type");
-                filter.setFilterString("ProcessHeader");
-
-                WMEntity procEnt = admin.getProcessDefinitionInfo(sessionHandle, wfActivityArray[0].container().key());
-                WMEntityIterator procEntityIterator = xpdl.listEntities(sessionHandle, procEnt, filter, true);
-                WMEntity[] procEntityList = null;
-                if (procEntityIterator != null) {
-                    procEntityList = procEntityIterator.getArray();
-                }
-
-                if (procEntityList != null) {
-                    WMEntity ent = procEntityList[0];
-
-                    filter = new WMFilter();
-                    filter.setFilterType(XPDLBrowser.SIMPLE_TYPE_XPDL);
-                    filter.setAttributeName("Name");
-                    filter.setFilterString("DurationUnit");
-
-                    WMAttributeIterator procAttributeIterator = xpdl.listAttributes(sessionHandle, ent, filter, true);
-                    WMAttribute[] procAttributeList = null;
-                    if (procAttributeIterator != null) {
-                        procAttributeList = procAttributeIterator.getArray();
-                    }
-
-                    if (procAttributeList != null) {
-                        durationUnit = (String) procAttributeList[0].getValue();
-                    }
-                }
-            }
-
-            if (wfActivityArray != null && wfActivityArray.length > 0) {
-
-                Calendar calendar = Calendar.getInstance();
-
-                long createdTime = admin.getActivityCreatedTime(sessionHandle, wfActivityArray[0].container().key(), activityInstanceId);
-
-                calendar.setTimeInMillis(createdTime);
-
-                if (limit != -1) {
-                    if (!durationUnit.equals("")) {
-                        if (durationUnit.equals("D")) {
-                            calendar.add(Calendar.DATE, limit);
-                            return calendar.getTime();
-                        } else if (durationUnit.equals("h")) {
-                            calendar.add(Calendar.HOUR, limit);
-                            return calendar.getTime();
-                        } else if (durationUnit.equals("m")) {
-                            calendar.add(Calendar.MINUTE, limit);
-                            return calendar.getTime();
-                        } else if (durationUnit.equals("M")) {
-                            calendar.add(Calendar.MONTH, limit);
-                            return calendar.getTime();
-                        } else if (durationUnit.equals("s")) {
-                            calendar.add(Calendar.SECOND, limit);
-                            return calendar.getTime();
-                        } else if (durationUnit.equals("Y")) {
-                            calendar.add(Calendar.YEAR, limit);
-                            return calendar.getTime();
-                        }
-                    }
-                }
-            }
-
-
-
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return null;
     }
 
     public Map getActivityInstanceByProcessIdAndStatus(String processId, Boolean accepted) {
@@ -4903,139 +4284,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return resourceIds;
     }
 
-    /**
-     * Returns a list of activity instances previously assigned and completed by the current user.
-     * @param packageId
-     * @param processId
-     * @param processName
-     * @param activityName
-     * @param sort
-     * @param desc
-     * @param start
-     * @param rows
-     * @return
-     */
-    public Collection<WorkflowActivity> getAssignmentHistory(String packageId, String processId, String processName, String activityName, String sort, Boolean desc, Integer start, Integer rows) {
-        String currentUsername = getWorkflowUserManager().getCurrentUsername();
-        List<WorkflowActivity> activityHistoryList = new ArrayList<WorkflowActivity>();
-
-        if (currentUsername != null && currentUsername.trim().length() > 0) {
-
-            if ("dateCreated".equals(sort)) {
-                sort = "createdTime";
-            } else if ("dateCompleted".equals(sort)) {
-                sort = "finishTime";
-            } else if ("processId".equals(sort)) {
-                sort = "processInstanceId";
-            }
-
-            Collection<WorkflowReport> reportList = getWorkflowReportManager().getWorkflowReportsByAcceptedUserWithAssignmentStatus(currentUsername, "Completed", packageId, processId, processName, activityName, sort, desc, start, rows);
-
-            for (WorkflowReport report : reportList) {
-                WorkflowActivity baseActivity = this.getActivityById(report.getActivityInstanceId());
-                WorkflowActivity activity = this.getRunningActivityInfo(report.getActivityInstanceId());
-
-                if (activity != null) {
-                    activity.setActivityDefId(baseActivity.getActivityDefId());
-                    activity.setProcessDefId(baseActivity.getProcessDefId());
-                    activity.setName(baseActivity.getName());
-                    activity.setId(baseActivity.getId());
-                    activity.setProcessId(baseActivity.getProcessId());
-                    activity.setProcessName(baseActivity.getProcessName());
-                    activity.setProcessVersion(baseActivity.getProcessVersion());
-                    activity.setState(baseActivity.getState());
-                    activity.setProcessStatus(baseActivity.getProcessStatus());
-
-                    activityHistoryList.add(activity);
-                }
-            }
-        }
-
-        return activityHistoryList;
-    }
-
-    /**
-     * Returns the count of activity instances previously assigned and completed by the current user.
-     * @param packageId
-     * @param processId
-     * @param processName
-     * @param activityName
-     * @return
-     */
-    public int getAssignmentHistorySize(String packageId, String processId, String processName, String activityName) {
-        String currentUsername = getWorkflowUserManager().getCurrentUsername();
-
-        int size = 0;
-
-        if (currentUsername != null && currentUsername.trim().length() > 0) {
-            size = getWorkflowReportManager().getWorkflowReportsSizeByAcceptedUserWithAssignmentStatus(currentUsername, "Completed", packageId, processId, processName, activityName);
-        }
-
-        return size;
-    }
-
-    /**
-     * Returns a list of activity instances for a process instance ID.
-     * @param processId
-     * @param sort
-     * @param desc
-     * @param start
-     * @param rows
-     * @return
-     */
-    public Collection<WorkflowActivity> getRunningActivityList(String processId, String sort, Boolean desc, Integer start, Integer rows) {
-
-        List<WorkflowActivity> activityList = new ArrayList<WorkflowActivity>();
-
-        if (processId != null && processId.trim().length() > 0) {
-
-            if ("dateCreated".equals(sort)) {
-                sort = "createdTime";
-            } else if ("acceptedUser".equals(sort)) {
-                sort = "nameOfAcceptedUser";
-            } else if ("activityId".equals(sort)) {
-                sort = "activityInstanceId";
-            } else if ("activityName".equals(sort)) {
-                sort = "wfActivity.name";
-            }
-
-            Collection<WorkflowReport> reportList = getWorkflowReportManager().getWorkflowReportsByStatus(processId, "Completed", true, sort, desc, start, rows);
-
-            for (WorkflowReport report : reportList) {
-                WorkflowActivity baseActivity = this.getActivityById(report.getActivityInstanceId());
-                WorkflowActivity activity = this.getRunningActivityInfo(report.getActivityInstanceId());
-
-                activity.setActivityDefId(baseActivity.getActivityDefId());
-                activity.setProcessDefId(baseActivity.getProcessDefId());
-                activity.setName(baseActivity.getName());
-                activity.setId(baseActivity.getId());
-                activity.setProcessId(baseActivity.getProcessId());
-                activity.setProcessName(baseActivity.getProcessName());
-                activity.setProcessVersion(baseActivity.getProcessVersion());
-                activity.setState(baseActivity.getState());
-
-                activityList.add(activity);
-            }
-        }
-
-        return activityList;
-    }
-
-    /**
-     * Returns the count of activity instances for a process instance ID.
-     * @param processId
-     * @return
-     */
-    public int getRunningActivitySize(String processId) {
-        int size = 0;
-
-        if (processId != null && processId.trim().length() > 0) {
-            size = getWorkflowReportManager().getWorkflowReportsSizeByStatus(processId, "Completed", true);
-        }
-
-        return size;
-    }
-
     protected SharkConnection connect() throws Exception {
         return connect(null);
     }
@@ -5226,41 +4474,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
     }
 
-
     /*--- Internal methods (audit trail not captured) ---*/
-    private int[] getMinMaxValues(int[] values) {
-        int min = values[0];
-        int max = min;
-
-        for (int i = 0; i < values.length; i++) {
-            if (min > values[i]) {
-                min = values[i];
-            }
-
-            if (max < values[i]) {
-                max = values[i];
-            }
-        }
-
-        return new int[]{min, max};
-    }
-
-    private int[] getRatioWithDelayAndOnTime(int[] values, int total) {
-        int ratioWithDelay = 0;
-        int ratioOnTime = 0;
-
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] > 0) {
-                ratioWithDelay++;
-            } else {
-                ratioOnTime++;
-            }
-        }
-
-        return new int[]{(int) (((double) ratioWithDelay / total) * 100), (int) (((double) ratioOnTime / total) * 100)};
-
-    }
-
     public void internalUpdateDeadlineChecker() {
         String deadlineCheckerInterval = getSetupManager().getSettingValue("deadlineCheckerInterval");
         long deadlineCheckerIntervalValue = 0;
@@ -5298,12 +4512,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     public void internalRemoveProcessOnComplete(String procInstanceId) {
-
-        Boolean deleteProcessOnCompletion = Boolean.valueOf(WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion"));
-        if (deleteProcessOnCompletion == null || !deleteProcessOnCompletion) {
-            return;
-        }
-
         SharkConnection sc = null;
 
         try {
@@ -5328,7 +4536,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
             if (wfProcess != null && wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
-                ea.deleteProcessesWithFiltering(sessionHandle, filter);
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "processCompleted", procInstanceId);
+                
+                Boolean deleteProcessOnCompletion = Boolean.valueOf(WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion"));
+                if (deleteProcessOnCompletion != null && deleteProcessOnCompletion) {
+                    ea.deleteProcessesWithFiltering(sessionHandle, filter);
+                }
             }
 
         } catch (Exception ex) {
@@ -5421,5 +4634,49 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
 
         return pa;
+    }
+
+    protected Date getDueDateProceedByPlugin(String processId, String activityId, long limitInSecond, Date createdTime, Date startTime) {
+        WorkflowDeadline deadline = new WorkflowDeadline();
+        deadline.setDeadlineLimit((int) limitInSecond * 1000);
+
+        ApplicationContext appContext = WorkflowUtil.getApplicationContext();
+        WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+
+        WorkflowDeadline newDeadline = workflowMapper.executeDeadlinePlugin(processId, activityId, deadline, null, startTime, createdTime);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(createdTime);
+        calendar.add(Calendar.MILLISECOND, newDeadline.getDeadlineLimit());
+        return calendar.getTime();
+    }
+
+    protected double getServiceLevelValue(Date startedDate, Date finishDate, Date dueDate) {
+        Date todayDate = new Date();
+        if (startedDate != null && dueDate != null) {
+            try {
+                long currentTime = todayDate.getTime();
+                long startedTime = startedDate.getTime();
+                long dueTime = dueDate.getTime();
+
+                if (finishDate != null) {
+                    long completedTime = finishDate.getTime();
+                    if (completedTime < dueTime) {
+                        return 100 - ((((double) (completedTime - startedTime)) / ((double) (dueTime - startedTime))) * 100);
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    if (currentTime < dueTime) {
+                        return 100 - ((((double) (currentTime - startedTime)) / ((double) (dueTime - startedTime))) * 100);
+                    } else {
+                        return 0;
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
+            }
+        }
+        return -1;
     }
 }

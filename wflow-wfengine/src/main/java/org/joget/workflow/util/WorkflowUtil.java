@@ -223,4 +223,24 @@ public class WorkflowUtil implements ApplicationContextAware {
             LogUtil.error(WorkflowUtil.class.getName(), e, "Error add audit trail");
         }
     }
+    
+    public static String getServiceLevelIndicator(double value){
+        if (value >= 0) {
+            String warningLevel = getSystemSetupValue("mediumWarningLevel");
+            int mediumWarningLevel = (warningLevel != null && warningLevel.trim().length() > 0 ? 100 - Integer.parseInt(warningLevel) : 80);
+
+            warningLevel = getSystemSetupValue("criticalWarningLevel");
+            int criticalWarningLevel = (warningLevel != null && warningLevel.trim().length() > 0 ? 100 - Integer.parseInt(warningLevel) : 50);
+
+            if (value <= criticalWarningLevel) {
+                return "<span class=\"dot_red\">&nbsp;</span>";
+            } else if (value > criticalWarningLevel && value <= mediumWarningLevel) {
+                return "<span class=\"dot_yellow\">&nbsp;</span>";
+            } else {
+                return "<span class=\"dot_green\">&nbsp;</span>";
+            }
+        }else{
+            return "-";
+        }
+    }
 }

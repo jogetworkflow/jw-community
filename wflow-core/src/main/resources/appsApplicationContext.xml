@@ -123,6 +123,58 @@
             </props>
         </property>
     </bean>
+    
+    <!-- Hibernate SessionFactory for report-->
+    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <qualifier value="report"/>
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/report/model/ReportApp.hbm.xml</value>
+                <value>/org/joget/report/model/ReportWorkflowPackage.hbm.xml</value>
+                <value>/org/joget/report/model/ReportWorkflowProcess.hbm.xml</value>
+                <value>/org/joget/report/model/ReportWorkflowActivity.hbm.xml</value>
+                <value>/org/joget/report/model/ReportWorkflowProcessInstance.hbm.xml</value>
+                <value>/org/joget/report/model/ReportWorkflowActivityInstance.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="reportAppDao" class="org.joget.report.dao.ReportAppDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
+    
+    <bean id="reportWorkflowPackageDao" class="org.joget.report.dao.ReportWorkflowPackageDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
+    
+    <bean id="reportWorkflowProcessDao" class="org.joget.report.dao.ReportWorkflowProcessDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
+    
+    <bean id="reportWorkflowActivityDao" class="org.joget.report.dao.ReportWorkflowActivityDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
+    
+    <bean id="reportWorkflowProcessInstanceDao" class="org.joget.report.dao.ReportWorkflowProcessInstanceDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
+    
+    <bean id="reportWorkflowActivityInstanceDao" class="org.joget.report.dao.ReportWorkflowActivityInstanceDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
+    </bean>
 
     <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
     </bean>

@@ -25,7 +25,6 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
-import java.util.Date;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.service.AppService;
@@ -33,9 +32,9 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.model.WorkflowPackage;
 import org.joget.directory.model.User;
-import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.report.model.ReportRow;
+import org.joget.report.service.ReportManager;
 import org.joget.workflow.model.WorkflowProcessResult;
-import org.joget.workflow.model.WorkflowReport;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -57,6 +56,8 @@ public class WorkflowJsonController {
     private WorkflowManager workflowManager;
     @Autowired
     private AppService appService;
+    @Autowired
+    private ReportManager reportManager;
 
     @RequestMapping("/json/workflow/closeDialog")
     public String remoteCloseDialog() {
@@ -192,21 +193,7 @@ public class WorkflowJsonController {
             data.put("requesterId", workflowProcess.getRequesterId());
             data.put("due", workflowProcess.getDue() != null ? workflowProcess.getDue() : "-");
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             jsonObject.accumulate("data", data);
         }
@@ -241,21 +228,7 @@ public class WorkflowJsonController {
             data.put("requesterId", workflowProcess.getRequesterId());
             data.put("due", workflowProcess.getDue() != null ? workflowProcess.getDue() : "-");
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             jsonObject.accumulate("data", data);
         }
@@ -282,21 +255,7 @@ public class WorkflowJsonController {
             data.put("state", workflowActivity.getState());
             data.put("dateCreated", workflowActivity.getCreatedTime());
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             jsonObject.accumulate("data", data);
         }
@@ -427,44 +386,47 @@ public class WorkflowJsonController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/json/workflow/sla/list")
-    public void slaList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "processDefId", required = false) String processDefId) throws JSONException {
-        Collection<WorkflowReport> workflowSLA = null;
-        if (processDefId != null && processDefId.trim().length() > 0) {
-            workflowSLA = workflowManager.getWorkflowSLA(processDefId);
-        } else {
-            workflowSLA = workflowManager.getWorkflowSLA(null);
-        }
+    @RequestMapping(value = "/json/workflow/process/sla/list")
+    public void processSlaList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws JSONException {
+        Collection<ReportRow> processSla = reportManager.getWorkflowProcessSlaReport(appId, appVersion, null, null, null, null);
 
         JSONObject jsonObject = new JSONObject();
-        for (WorkflowReport workflowReport : workflowSLA) {
+        for (ReportRow row : processSla) {
             Map data = new HashMap();
-            data.put("activityName", workflowReport.getWfActivity().getName());
-            data.put("minDelay", workflowReport.getMinDelay());
-            data.put("maxDelay", workflowReport.getMaxDelay());
-            data.put("ratioWithDelay", workflowReport.getRatioWithDelay());
-            data.put("ratioOnTime", workflowReport.getRatioOnTime());
-
-            int serviceLevelMonitor = (int) workflowReport.getRatioOnTime();
-
-            String warningLevel = WorkflowUtil.getSystemSetupValue("mediumWarningLevel");
-            int mediumWarningLevel = (warningLevel != null && warningLevel.trim().length() > 0 ? 100 - Integer.parseInt(warningLevel) : 80);
-            warningLevel = WorkflowUtil.getSystemSetupValue("criticalWarningLevel");
-            int criticalWarningLevel = (warningLevel != null && warningLevel.trim().length() > 0 ? 100 - Integer.parseInt(warningLevel) : 50);
-
-            if (serviceLevelMonitor <= criticalWarningLevel) {
-                data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-            } else if (serviceLevelMonitor > criticalWarningLevel && serviceLevelMonitor <= mediumWarningLevel) {
-                data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-            } else {
-                data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-            }
-
+            data.put("processDefId", row.getId());
+            data.put("processName", row.getName());
+            data.put("minDelay", row.getMinDelay());
+            data.put("maxDelay", row.getMaxDelay());
+            data.put("ratioWithDelay", row.getRatioWithDelay());
+            data.put("ratioOnTime", row.getRatioOnTime());
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(row.getRatioOnTime()));
 
             jsonObject.accumulate("data", data);
         }
 
-        jsonObject.accumulate("total", workflowSLA.size());
+        jsonObject.accumulate("total", processSla.size());
+        jsonObject.write(writer);
+    }
+
+    @RequestMapping(value = "/json/workflow/activity/sla/list")
+    public void activitySlaList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam(value = "processDefId", required = false) String processDefId) throws JSONException {
+        Collection<ReportRow> activitySla = reportManager.getWorkflowActivitySlaReport(appId, appVersion, processDefId, null, null, null, null);
+
+        JSONObject jsonObject = new JSONObject();
+        for (ReportRow row : activitySla) {
+            Map data = new HashMap();
+            data.put("activityDefId", row.getId());
+            data.put("activityName", row.getName());
+            data.put("minDelay", row.getMinDelay());
+            data.put("maxDelay", row.getMaxDelay());
+            data.put("ratioWithDelay", row.getRatioWithDelay());
+            data.put("ratioOnTime", row.getRatioOnTime());
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(row.getRatioOnTime()));
+
+            jsonObject.accumulate("data", data);
+        }
+
+        jsonObject.accumulate("total", activitySla.size());
         jsonObject.write(writer);
     }
 
@@ -601,86 +563,6 @@ public class WorkflowJsonController {
         writeJson(writer, jsonObject, null);
     }
 
-    @RequestMapping("/json/workflow/assignment/history")
-    public void assignmentHistoryList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "packageId", required = false) String packageId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "activityName", required = false) String activityName, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-        Collection<WorkflowActivity> assignmentHistoryList = workflowManager.getAssignmentHistory(packageId, processId, processName, activityName, sort, desc, start, rows);
-        Integer total = new Integer(workflowManager.getAssignmentHistorySize(packageId, processId, processName, activityName));
-        JSONObject jsonObject = new JSONObject();
-
-        User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
-        String gmt = "";
-        if (user != null) {
-            gmt = user.getTimeZone();
-        }
-
-        for (WorkflowActivity activity : assignmentHistoryList) {
-            Map data = new HashMap();
-
-            data.put("processId", activity.getProcessId());
-            data.put("processName", activity.getProcessName());
-            data.put("processStatus", activity.getProcessStatus());
-            data.put("activityId", activity.getId());
-            data.put("activityName", activity.getName());
-            data.put("version", activity.getProcessVersion());
-            data.put("dateCreated", TimeZoneUtil.convertToTimeZone(activity.getCreatedTime(), gmt, null));
-            data.put("dateCompleted", TimeZoneUtil.convertToTimeZone(activity.getFinishTime(), gmt, null));
-
-            jsonObject.accumulate("data", data);
-        }
-
-        jsonObject.accumulate("total", total);
-        jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
-        jsonObject.accumulate("desc", desc);
-
-        writeJson(writer, jsonObject, callback);
-    }
-
-    @RequestMapping("/json/workflow/assignment/history/activity/list")
-    public void assignmentHistoryRunningActivityList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-        Collection<WorkflowActivity> runningActivityList = workflowManager.getRunningActivityList(processId, sort, desc, start, rows);
-        Integer total = new Integer(workflowManager.getRunningActivitySize(processId));
-        JSONObject jsonObject = new JSONObject();
-
-        User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
-        String gmt = "";
-        if (user != null) {
-            gmt = user.getTimeZone();
-        }
-
-        for (WorkflowActivity activity : runningActivityList) {
-            Map data = new HashMap();
-
-            data.put("activityId", activity.getId());
-            data.put("activityName", activity.getName());
-            data.put("version", activity.getProcessVersion());
-            data.put("dateCreated", TimeZoneUtil.convertToTimeZone(activity.getCreatedTime(), gmt, null));
-            data.put("state", activity.getState());
-            data.put("acceptedUser", (activity.getNameOfAcceptedUser() == null) ? "" : activity.getNameOfAcceptedUser());
-
-            String assignmentUser = "";
-            int count = 0;
-            for (String name : activity.getAssignmentUsers()) {
-                if (count < activity.getAssignmentUsers().length - 1) {
-                    assignmentUser += name + ", ";
-                } else {
-                    assignmentUser += name;
-                }
-                count++;
-            }
-            data.put("assignmentUser", assignmentUser);
-
-            jsonObject.accumulate("data", data);
-        }
-
-        jsonObject.accumulate("total", total);
-        jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
-        jsonObject.accumulate("desc", desc);
-
-        writeJson(writer, jsonObject, callback);
-    }
-
     @RequestMapping("/json/workflow/assignment/list/count")
     public void assignmentPendingAndAcceptedListCount(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "packageId", required = false) String packageId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "processId", required = false) String processId) throws JSONException, IOException {
         Integer total = new Integer(workflowManager.getAssignmentSize(packageId, processDefId, processId));
@@ -730,27 +612,11 @@ public class WorkflowJsonController {
             data.put("processVersion", assignment.getProcessVersion());
             data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
             data.put("acceptedStatus", assignment.isAccepted());
-
-            Date dueDate = workflowManager.getDueDateForRunningActivity(assignment.getActivityId());
-            data.put("due", (dueDate != null ? dueDate : "-"));
+            data.put("due", assignment.getDueDate() != null ? assignment.getDueDate() : "-");
 
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             data.put("id", assignment.getActivityId());
             data.put("label", assignment.getActivityName());
@@ -782,27 +648,11 @@ public class WorkflowJsonController {
             data.put("activityName", assignment.getActivityName());
             data.put("processVersion", assignment.getProcessVersion());
             data.put("dateCreated", dateFormat.format(assignment.getDateCreated()));
-
-            Date dueDate = workflowManager.getDueDateForRunningActivity(assignment.getActivityId());
-            data.put("due", (dueDate != null ? dueDate : "-"));
+            data.put("due", assignment.getDueDate() != null ? assignment.getDueDate() : "-");
 
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             data.put("id", assignment.getActivityId());
             data.put("label", assignment.getActivityName());
@@ -837,21 +687,7 @@ public class WorkflowJsonController {
 
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             data.put("id", assignment.getActivityId());
             data.put("label", assignment.getActivityName());

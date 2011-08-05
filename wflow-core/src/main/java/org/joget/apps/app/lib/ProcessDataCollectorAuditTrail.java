@@ -5,16 +5,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
+import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
-import org.joget.plugin.base.PluginManager;
+import org.joget.report.model.ReportApp;
+import org.joget.report.model.ReportWorkflowActivity;
+import org.joget.report.model.ReportWorkflowActivityInstance;
+import org.joget.report.model.ReportWorkflowPackage;
+import org.joget.report.model.ReportWorkflowProcess;
+import org.joget.report.model.ReportWorkflowProcessInstance;
+import org.joget.report.service.ReportManager;
 import org.joget.workflow.model.WorkflowActivity;
-import org.joget.workflow.model.WorkflowPackage;
 import org.joget.workflow.model.WorkflowProcess;
-import org.joget.workflow.model.WorkflowReport;
 import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.model.service.WorkflowReportManager;
 
 public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
@@ -27,135 +33,48 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
     }
 
     public String getDescription() {
-        return "Save process data into wf_report* tables for reporting purposes";
+        return "Save process data into app_report_* tables for reporting purposes";
     }
 
     public Object execute(Map properties) {
         Object result = null;
         try {
             final AuditTrail auditTrail = (AuditTrail) properties.get("auditTrail");
-            final PluginManager pluginManager = (PluginManager) properties.get("pluginManager");
-            final WorkflowManager workflowManager = (WorkflowManager) pluginManager.getBean("workflowManager");
-            final WorkflowReportManager workflowReportManager = (WorkflowReportManager) pluginManager.getBean("workflowReportManager");
 
             if (validation(auditTrail)) {
+                System.out.println(auditTrail.getMethod());
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                WorkflowProcess process = null;
+                WorkflowProcess trackProcess = null;
+                WorkflowActivity activity = null;
+                WorkflowActivity trackActivity = null;
+
+                if (auditTrail.getMethod().startsWith("process")) {
+                    process = workflowManager.getRunningProcessById(auditTrail.getMessage());
+                    trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
+                } else {
+                    activity = workflowManager.getActivityById(auditTrail.getMessage());
+                    trackActivity = workflowManager.getRunningActivityInfo(auditTrail.getMessage());
+                    process = workflowManager.getRunningProcessById(activity.getProcessId());
+                    trackProcess = workflowManager.getRunningProcessInfo(activity.getProcessId());
+                }
+
+                final WorkflowProcess wfProcess = process;
+                final WorkflowProcess wfTrackProcess = trackProcess;
+                final WorkflowActivity wfActivity = activity;
+                final WorkflowActivity wfTrackActivity = trackActivity;
+
                 new Thread(new Runnable() {
 
                     public void run() {
-                        String activityInstanceId = auditTrail.getMessage();
-                        WorkflowActivity wfTrackActivity = workflowManager.getRunningActivityInfo(activityInstanceId);
-                        //get workflow activity
-                        WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
+                        String method = auditTrail.getMethod();
+                        String appId = auditTrail.getAppId();
+                        String appVersion = auditTrail.getAppVersion();
 
-                        String processInstanceId = wfActivity.getProcessId();
-                        String processDefId = workflowManager.getProcessDefIdByInstanceId(processInstanceId);
-
-                        //get workflow process
-                        WorkflowProcess wfProcess = (processDefId != null ? workflowManager.getProcess(processDefId) : null);
-                        if (wfProcess != null) {
-                            List<String> userList = new ArrayList<String>();
-                            try {
-                                Thread.sleep(2000);
-                                int maxAttempt = 5;
-                                int numOfAttempt = 0;
-                                while (userList.size() == 0 && numOfAttempt < maxAttempt) {
-                                    LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
-                                    userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
-                                    Thread.sleep(2000);
-                                    numOfAttempt++;
-                                }
-
-                                LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
-                            } catch (Exception e) {
-                                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
-                            }
-
-                            //get assignment users
-                            String assignmentUsers = "";
-                            for (String username : userList) {
-                                assignmentUsers += username + ",";
-                            }
-                            if (assignmentUsers.endsWith(",")) {
-                                assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
-                            }
-
-                            //set workflow package
-                            WorkflowPackage wfPackage = new WorkflowPackage();
-                            wfPackage.setPackageId(wfProcess.getPackageId());
-                            wfPackage.setPackageName(wfProcess.getPackageName());
-
-                            WorkflowReport updateWorkflowReport = workflowReportManager.getWorkflowProcessByActivityInstanceId(activityInstanceId);
-
-                            if (updateWorkflowReport != null) {
-                                //update workflow activity
-                                workflowReportManager.updateWorkflowActivity(wfActivity);
-                                //update workflow process
-                                workflowReportManager.updateWorkflowProcess(wfProcess);
-                                //update workflow package
-                                workflowReportManager.updateWorkflowPackage(wfPackage);
-
-                                //set workflow report
-                                updateWorkflowReport.setActivityInstanceId(wfActivity.getId());
-                                updateWorkflowReport.setWfPackage(wfPackage);
-                                updateWorkflowReport.setWfProcess(wfProcess);
-                                updateWorkflowReport.setWfActivity(wfActivity);
-                                updateWorkflowReport.setAppId(auditTrail.getAppId());
-                                updateWorkflowReport.setAppVersion((auditTrail.getAppVersion() != null)?Long.parseLong(auditTrail.getAppVersion()):null);
-                                updateWorkflowReport.setProcessInstanceId(processInstanceId);
-                                updateWorkflowReport.setPriority(wfTrackActivity.getPriority());
-                                updateWorkflowReport.setCreatedTime(wfTrackActivity.getCreatedTime());
-                                updateWorkflowReport.setStartedTime(wfTrackActivity.getStartedTime());
-                                updateWorkflowReport.setLimit(wfTrackActivity.getLimitInSeconds());
-                                updateWorkflowReport.setDue(wfTrackActivity.getDue());
-                                updateWorkflowReport.setDelay(wfTrackActivity.getDelayInSeconds());
-                                updateWorkflowReport.setFinishTime(wfTrackActivity.getFinishTime());
-                                updateWorkflowReport.setTimeConsumingFromDateCreated(wfTrackActivity.getTimeConsumingFromDateCreatedInSeconds());
-                                updateWorkflowReport.setTimeConsumingFromDateStarted(wfTrackActivity.getTimeConsumingFromDateStartedInSeconds());
-                                updateWorkflowReport.setPerformer(wfTrackActivity.getPerformer());
-                                updateWorkflowReport.setNameOfAcceptedUser(wfTrackActivity.getNameOfAcceptedUser());
-                                //updateWorkflowReport.setAssignmentUsers(assignmentUsers);
-                                updateWorkflowReport.setStatus(wfTrackActivity.getStatus());
-                                updateWorkflowReport.setState(wfActivity.getState());
-
-                                //update workflow report
-                                workflowReportManager.updateWorkflowReport(updateWorkflowReport);
-                            } else {
-                                //Add or update workflow activity
-                                wfActivity.setPriority(wfTrackActivity.getPriority());
-                                workflowReportManager.updateWorkflowActivity(wfActivity);
-
-                                //Add or update workflow process
-                                workflowReportManager.updateWorkflowProcess(wfProcess);
-
-                                //Add or update workflow package
-                                workflowReportManager.updateWorkflowPackage(wfPackage);
-
-                                //Add workflow report
-                                WorkflowReport workflowReport = new WorkflowReport();
-                                workflowReport.setActivityInstanceId(wfActivity.getId());
-                                workflowReport.setWfPackage(wfPackage);
-                                workflowReport.setWfProcess(wfProcess);
-                                workflowReport.setWfActivity(wfActivity);
-                                workflowReport.setProcessInstanceId(processInstanceId);
-                                workflowReport.setAppId(auditTrail.getAppId());
-                                workflowReport.setAppVersion((auditTrail.getAppVersion() != null)?Long.parseLong(auditTrail.getAppVersion()):null);
-                                workflowReport.setPriority(wfTrackActivity.getPriority());
-                                workflowReport.setCreatedTime(wfTrackActivity.getCreatedTime());
-                                workflowReport.setStartedTime(wfTrackActivity.getStartedTime());
-                                workflowReport.setLimit(wfTrackActivity.getLimitInSeconds());
-                                workflowReport.setDue(wfTrackActivity.getDue());
-                                workflowReport.setDelay(wfTrackActivity.getDelayInSeconds());
-                                workflowReport.setFinishTime(wfTrackActivity.getFinishTime());
-                                workflowReport.setTimeConsumingFromDateCreated(wfTrackActivity.getTimeConsumingFromDateCreatedInSeconds());
-                                workflowReport.setTimeConsumingFromDateStarted(wfTrackActivity.getTimeConsumingFromDateStartedInSeconds());
-                                workflowReport.setPerformer(wfTrackActivity.getPerformer());
-                                workflowReport.setNameOfAcceptedUser(wfTrackActivity.getNameOfAcceptedUser());
-                                workflowReport.setAssignmentUsers(assignmentUsers);
-                                workflowReport.setStatus(wfTrackActivity.getStatus());
-                                workflowReport.setState(wfActivity.getState());
-                                //add workflow report
-                                workflowReportManager.addWorkflowReport(workflowReport);
-                            }
+                        if (method.startsWith("process")) {
+                            updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
+                        } else {
+                            updateActivityData(wfActivity, wfTrackActivity, wfProcess, wfTrackProcess, appId, appVersion);
                         }
                     }
                 }).start();
@@ -183,11 +102,125 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         return "";
     }
 
-    public boolean validation(AuditTrail auditTrail){
+    public boolean validation(AuditTrail auditTrail) {
         return auditTrail.getMethod().equals("getDefaultAssignments")
-               || auditTrail.getMethod().equals("processAbort")
-               || auditTrail.getMethod().equals("assignmentAccept")
-               || auditTrail.getMethod().equals("assignmentComplete")
-               || auditTrail.getMethod().equals("assignmentForceComplete");
+                || auditTrail.getMethod().equals("processAbort")
+                || auditTrail.getMethod().equals("processCompleted")
+                || auditTrail.getMethod().equals("assignmentAccept")
+                || auditTrail.getMethod().equals("assignmentComplete")
+                || auditTrail.getMethod().equals("assignmentForceComplete")
+                || auditTrail.getMethod().equals("executeTool")
+                || auditTrail.getMethod().equals("executeToolCompleted");
+    }
+
+    protected ReportWorkflowProcessInstance updateProcessData(WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, String appId, String appVersion) {
+        String processInstanceId = wfProcess.getInstanceId();
+
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+        ReportManager reportManager = (ReportManager) AppUtil.getApplicationContext().getBean("reportManager");
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+
+        if (wfTrackProcess != null) {
+            ReportWorkflowProcessInstance pInstance = reportManager.getReportWorkflowProcessInstance(processInstanceId);
+            if (pInstance == null) {
+                pInstance = new ReportWorkflowProcessInstance();
+                pInstance.setInstanceId(processInstanceId);
+
+                //get app
+                AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+                ReportApp reportApp = reportManager.getReportApp(appId, appVersion, appDef.getName());
+
+                //get package
+                ReportWorkflowPackage reportPackage = reportManager.getReportWorkflowPackage(reportApp, wfProcess.getPackageId(), wfProcess.getVersion(), wfProcess.getName());
+
+                //get process
+                ReportWorkflowProcess reportProcess = reportManager.getReportWorkflowProcess(reportPackage, wfProcess.getIdWithoutVersion(), wfProcess.getName());
+                pInstance.setReportWorkflowProcess(reportProcess);
+            }
+
+            pInstance.setRequester(wfTrackProcess.getRequesterId());
+            pInstance.setState(wfProcess.getState());
+            pInstance.setDue(wfTrackProcess.getDue());
+            pInstance.setStartedTime(wfTrackProcess.getStartedTime());
+            pInstance.setFinishTime(wfTrackProcess.getFinishTime());
+            pInstance.setDelay(wfTrackProcess.getDelayInSeconds());
+            pInstance.setTimeConsumingFromStartedTime(wfTrackProcess.getTimeConsumingFromDateStartedInSeconds());
+
+            reportManager.saveReportWorkflowProcessInstance(pInstance);
+
+            return reportManager.getReportWorkflowProcessInstance(processInstanceId);
+        }
+        return null;
+    }
+
+    protected ReportWorkflowActivityInstance updateActivityData(WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, String appId, String appVersion) {
+        String activityInstanceId = wfActivity.getId();
+
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+        ReportManager reportManager = (ReportManager) AppUtil.getApplicationContext().getBean("reportManager");
+
+        if (wfActivity != null) {
+            ReportWorkflowActivityInstance aInstance = reportManager.getReportWorkflowActivityInstance(activityInstanceId);
+            if (aInstance == null) {
+                aInstance = new ReportWorkflowActivityInstance();
+                aInstance.setInstanceId(activityInstanceId);
+
+                //set process Instance
+                String processInstanceId = wfActivity.getProcessId();
+
+                ReportWorkflowProcessInstance processInstance = reportManager.getReportWorkflowProcessInstance(processInstanceId);
+                if (processInstance == null) {
+                    processInstance = updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
+                }
+                aInstance.setReportWorkflowProcessInstance(processInstance);
+
+                //set activity
+                ReportWorkflowActivity reportActivtiy = reportManager.getReportWorkflowActivity(processInstance.getReportWorkflowProcess(), wfActivity.getActivityDefId(), wfActivity.getName());
+                aInstance.setReportWorkflowActivity(reportActivtiy);
+
+                //get assignment users
+                List<String> userList = new ArrayList<String>();
+                try {
+                    Thread.sleep(2000);
+                    int maxAttempt = 5;
+                    int numOfAttempt = 0;
+                    while (userList.size() == 0 && numOfAttempt < maxAttempt) {
+                        LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
+                        userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                        Thread.sleep(2000);
+                        numOfAttempt++;
+                    }
+
+                    LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
+                } catch (Exception e) {
+                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
+                }
+                String assignmentUsers = "";
+                for (String username : userList) {
+                    assignmentUsers += username + ",";
+                }
+                if (assignmentUsers.endsWith(",")) {
+                    assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
+                }
+                aInstance.setAssignmentUsers(assignmentUsers);
+            }
+
+            aInstance.setPerformer(wfTrackActivity.getPerformer());
+            aInstance.setNameOfAcceptedUser(wfTrackActivity.getNameOfAcceptedUser());
+            aInstance.setState(wfActivity.getState());
+            aInstance.setStatus(wfTrackActivity.getStatus());
+            aInstance.setDue(wfTrackActivity.getDue());
+            aInstance.setCreatedTime(wfTrackActivity.getCreatedTime());
+            aInstance.setStartedTime(wfTrackActivity.getStartedTime());
+            aInstance.setFinishTime(wfTrackActivity.getFinishTime());
+            aInstance.setDelay(wfTrackActivity.getDelayInSeconds());
+            aInstance.setTimeConsumingFromCreatedTime(wfTrackActivity.getTimeConsumingFromDateCreatedInSeconds());
+            aInstance.setTimeConsumingFromStartedTime(wfTrackActivity.getTimeConsumingFromDateStartedInSeconds());
+
+            reportManager.saveReportWorkflowActivityInstance(aInstance);
+
+            return reportManager.getReportWorkflowActivityInstance(activityInstanceId);
+        }
+        return null;
     }
 }

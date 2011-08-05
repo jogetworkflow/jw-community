@@ -1221,3 +1221,27 @@ div.tick {
 span.pendingTask{
     font-weight:bold;
 }
+
+span.dot_red{
+    background-color: red;
+    display: block;
+    height: 15px;
+    text-align: left;
+    width: 15px;
+}
+
+span.dot_green{
+    background-color: green;
+    display: block;
+    height: 15px;
+    text-align: left;
+    width: 15px;
+}
+
+span.dot_yellow{
+    background-color: yellow;
+    display: block;
+    height: 15px;
+    text-align: left;
+    width: 15px;
+}

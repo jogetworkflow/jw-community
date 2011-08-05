@@ -7,14 +7,12 @@ import org.joget.workflow.model.WorkflowParticipant;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowVariable;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.joget.commons.util.PagedList;
 import org.joget.workflow.model.WorkflowPackage;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowProcessResult;
-import org.joget.workflow.model.WorkflowReport;
 
 public interface WorkflowManager {
     public static String LATEST = "latest";
@@ -183,10 +181,6 @@ public interface WorkflowManager {
 
     WorkflowActivity getRunningActivityInfo(String activityInstanceId);
 
-    Date getDueDateForRunningActivity(String activityInstanceId);
-
-    Date getDueDateForRunningProcess(String processInstanceId);
-
     WorkflowProcess getRunningProcessInfo(String processInstanceId);
 
     List<String> getAssignmentResourceIds(String processId, String processInstanceId, String activityInstanceId); // TODO: VERIFY USAGE??
@@ -194,18 +188,6 @@ public interface WorkflowManager {
     void internalCheckDeadlines(int instancesPerTransaction, int failuresToIgnore);
 
     void internalUpdateDeadlineChecker();
-
-    Collection<WorkflowReport> getWorkflowSLA(String processDefinitionId);
-
-    Collection<WorkflowProcess> getWorkflowSLAProcessDefinitions();
-
-    Collection<WorkflowActivity> getAssignmentHistory(String packageId, String processId, String processName, String activityName, String sort, Boolean desc, Integer start, Integer rows);
-
-    int getAssignmentHistorySize(String packageId, String processId, String processName, String activityName);
-
-    Collection<WorkflowActivity> getRunningActivityList(String processId, String sort, Boolean desc, Integer start, Integer rows);
-
-    int getRunningActivitySize(String processId);
 
     WorkflowProcessLink getWorkflowProcessLink(String processId); // TODO: VERIFY USAGE??
 
