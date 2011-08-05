@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
@@ -318,33 +319,43 @@ public class AppWorkflowHelper implements WorkflowHelper {
         ApplicationContext appContext = AppUtil.getApplicationContext();
         DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
         WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
-        String variableName = participant.getValue();
+        String variableName = null;
+        String variableType = null;
+        String variableStr = participant.getValue();
+        if (variableStr != null) {
+            StringTokenizer st = new StringTokenizer(variableStr, ",");
+            if (st.hasMoreTokens()) {
+                variableName = st.nextToken();
+            }
+            if (st.hasMoreTokens()) {
+                variableType = st.nextToken();
+            }
+        }
         //if is workflow variable
         Collection<WorkflowVariable> varList = workflowManager.getActivityVariableList(activityId);
         for (WorkflowVariable va : varList) {
             if (va.getName() != null && va.getName().equals(variableName)) {
-                //assignees = (va.getVal() != null) ? va.getVal().toString() : null;
                 String variableValue = (String) va.getVal();
 
-                if (PackageParticipant.TYPE_GROUP.equals(participant.getValue())) {
+                if (PackageParticipant.TYPE_GROUP.equals(variableType)) {
                     Collection<User> users = directoryManager.getUserByGroupId(variableValue);
                     for (User user : users) {
                         if (user != null && user.getActive() == User.ACTIVE) {
                             resultList.add(user.getUsername());
                         }
                     }
-                } else if (PackageParticipant.TYPE_USER.equals(participant.getValue())) {
+                } else if (PackageParticipant.TYPE_USER.equals(variableType)) {
                     User user = directoryManager.getUserByUsername(variableValue);
                     if (user != null && user.getActive() == User.ACTIVE) {
                         resultList.add(user.getUsername());
                     }
-                } else if (PackageParticipant.TYPE_HOD.equals(participant.getValue())) {
+                } else if (PackageParticipant.TYPE_HOD.equals(variableType)) {
                     resultList = new ArrayList<String>();
                     User user = directoryManager.getDepartmentHod(variableValue);
                     if (user != null && user.getActive() == User.ACTIVE) {
                         resultList.add(user.getUsername());
                     }
-                } else if (PackageParticipant.TYPE_DEPARTMENT.equals(participant.getValue())) {
+                } else if (PackageParticipant.TYPE_DEPARTMENT.equals(variableType)) {
                     Collection<User> users = directoryManager.getUserByDepartmentId(variableValue);
                     for (User user : users) {
                         if (user != null && user.getActive() == User.ACTIVE) {
