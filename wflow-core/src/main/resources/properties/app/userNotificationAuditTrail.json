@@ -4,7 +4,7 @@
         name : 'base',
         label : '@@app.usernotificationaudittrail.baseUrl@@',
         type : 'textfield',
-        description : 'eg. : http://localhost:8080/wflow-consoleweb',
+        description : '@@app.usernotificationaudittrail.baseUrl.desc@@',
         required : 'True'
     },
     {
