@@ -25,31 +25,6 @@
             function closeDialog() {
                 assignmentInbox.refresh();
             }
-
-            function markAsPending(task){
-                task.processName = "<span class=\"pendingTask\">" + task.processName + "</span>";
-                task.activityName = "<span class=\"pendingTask\">" + task.activityName + "</span>";
-                task.processVersion = "<span class=\"pendingTask\">" + task.processVersion + "</span>";
-                task.dateCreated = "<span class=\"pendingTask\">" + task.dateCreated + "</span>";
-                task.processId = "<span class=\"pendingTask\">" + task.processId + "</span>";
-                task.due = "<span class=\"pendingTask\">" + task.due + "</span>";
-            }
-
-            function checkAccepted(jsonObject){
-                if(jsonObject.data != undefined && jsonObject.data.length == undefined){
-                    if(jsonObject.data.acceptedStatus == false){
-                        markAsPending(jsonObject.data);
-                    }
-                }else{
-                    for(var i in jsonObject.data){
-                        if(jsonObject.data[i].acceptedStatus == false){
-                            markAsPending(jsonObject.data[i]);
-                        }
-                    }
-                }
-
-                return jsonObject;
-            }
         </script>
 
         <div id="main-body-content">
@@ -68,7 +43,6 @@
                           hrefDialogWidth="600px"
                           hrefDialogHeight="400px"
                           hrefDialogTitle="Process Dialog"
-                          customPreProcessor="checkAccepted"
                           fields="['activityId','processName','activityName','processVersion', 'dateCreated', 'processId', 'acceptedStatus', 'serviceLevelMonitor', 'due']"
                           column1="{key: 'processName', label: 'console.app.process.common.label', sortable: false, width: '120'}"
                           column2="{key: 'activityName', label: 'console.app.activity.common.label.name', sortable: false, width: '160'}"

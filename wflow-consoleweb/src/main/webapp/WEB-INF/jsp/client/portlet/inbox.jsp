@@ -67,9 +67,7 @@
                             var inbox = '<div class="portlet_table_data">';
                             inbox += '    <span class="portlet_table_number">' + inboxNumber_${id} + '.</span>';
 
-                            var cssClass = 'portlet_table_activity_accepted';
-                            if(!acceptedStatus)
-                                cssClass = 'portlet_table_activity_pending';
+                            var cssClass = '';
 
                             var assignmentCallback = "inboxPopupDialog_${id}('" + activityId + "')";
 
@@ -231,8 +229,7 @@
             }
 
             function closeDialog() {
-                alert("closeDialog");
-                window.close();
+                doInboxRefresh_${id}();
             }
 
 </script>

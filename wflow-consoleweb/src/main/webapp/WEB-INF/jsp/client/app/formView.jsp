@@ -38,11 +38,12 @@
                 <script type="text/javascript">
                     if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
                         parent.PopupDialog.closeDialog();
-                    } else if (parent && parent.closeDialog) {
-                        parent.closeDialog();
-                    } else if (opener) {
+                    }else if (opener) {
                         window.close();
                     }
+                    if (parent && parent.closeDialog) {
+                        parent.closeDialog();
+                    } 
                 </script>
                 </c:if>
             </c:if>

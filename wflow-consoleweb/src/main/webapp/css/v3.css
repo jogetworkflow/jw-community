@@ -1218,10 +1218,6 @@ div.tick {
     height:95px;
 }
 
-span.pendingTask{
-    font-weight:bold;
-}
-
 span.dot_red{
     background-color: red;
     display: block;
