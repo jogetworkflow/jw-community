@@ -10,8 +10,6 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.model.FormRow;
-import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 
 public class FileUpload extends Element implements FormBuilderPaletteElement {
@@ -84,28 +82,20 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
     }
 
     @Override
-    public FormRowSet formatData(FormData formData) {
-        FormRowSet rowSet = super.formatData(formData);
-        if (rowSet != null && !rowSet.isEmpty()) {
-            // check for file removal
-            String postfix = "_remove";
-            String id = FormUtil.getElementParameterName(this);
-            if (id != null) {
-                String removalId = id + postfix;
-                String fileName = formData.getRequestParameter(id);
-                String removalFlag = formData.getRequestParameter(removalId);
-                if (fileName != null && fileName.isEmpty() && removalFlag == null) {
-                    // don't remove file, reset value
-                    String binderValue = formData.getLoadBinderDataProperty(this, id);
-                    if (binderValue != null) {
-                        formData.addRequestParameterValues(id, new String[]{binderValue});
-                        FormRow row = rowSet.iterator().next();
-                        row.setProperty(id, binderValue);
-                    }
-                }
+    public FormData formatDataForValidation(FormData formData) {
+        // check for file removal
+        String postfix = "_remove";
+        String id = FormUtil.getElementParameterName(this);
+        if (id != null) {
+            String removalId = id + postfix;
+            String filename = formData.getRequestParameter(id);
+            String removalFlag = formData.getRequestParameter(removalId);
+            if (filename == null && "on".equals(removalFlag)) {
+                // don't remove file, reset value
+                formData.addRequestParameterValues(id, new String[]{""});
             }
         }
-        return rowSet;
+        return formData;
     }
 
     @Override

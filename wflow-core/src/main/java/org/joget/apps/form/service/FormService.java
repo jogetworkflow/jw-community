@@ -57,7 +57,7 @@ public class FormService {
         }
         return html;
     }
-    
+
     /**
      * Creates an element object from a JSON definition
      * @param formJson
@@ -77,10 +77,10 @@ public class FormService {
         try {
             String processedJson = elementJson;
             // process hash variable
-            if(processHashVariable){
+            if (processHashVariable) {
                 processedJson = AppUtil.processHashVariable(elementJson, null, null, null);
             }
-            
+
             // instantiate element
             Element element = FormUtil.parseElementFromJson(processedJson);
             return element;
@@ -228,6 +228,7 @@ public class FormService {
      */
     public FormData submitForm(Form form, FormData formData, boolean ignoreValidation) {
         FormData updatedFormData = formData;
+        updatedFormData = FormUtil.executeElementFormatDataForValidation(form, formData);
         if (!ignoreValidation) {
             updatedFormData = validateFormData(form, formData);
         }
@@ -272,7 +273,9 @@ public class FormService {
             for (String paramName : fileMap.keySet()) {
                 MultipartFile file = fileMap.get(paramName);
                 String fileName = file.getOriginalFilename();
-                formData.addRequestParameterValues(paramName, new String[]{fileName});
+                if (!fileName.isEmpty()) {
+                    formData.addRequestParameterValues(paramName, new String[]{fileName});
+                }
             }
         }
         return formData;
@@ -298,7 +301,9 @@ public class FormService {
             for (String paramName : fileMap.keySet()) {
                 MultipartFile file = fileMap.get(paramName);
                 String fileName = file.getOriginalFilename();
-                formData.addRequestParameterValues(paramName, new String[]{fileName});
+                if (!fileName.isEmpty()) {
+                    formData.addRequestParameterValues(paramName, new String[]{fileName});
+                }
             }
         }
         return formData;

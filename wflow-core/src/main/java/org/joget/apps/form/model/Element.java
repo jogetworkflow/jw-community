@@ -156,6 +156,16 @@ public abstract class Element extends DefaultPlugin {
     }
 
     /**
+     * Method for override to perform format data in request parameter before execute validation
+     * @param formData
+     * @return the formatted data.
+     */
+    public FormData formatDataForValidation(FormData formData) {
+        //do nothing
+        return formData;
+    }
+
+    /**
      * Method that retrieves loaded or submitted form data, and formats it for a store binder.
      * The formatted data is to be stored and returned in a FormRowSet.
      * @param formData

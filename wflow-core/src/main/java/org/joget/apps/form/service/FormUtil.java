@@ -376,7 +376,7 @@ public class FormUtil implements ApplicationContextAware {
                     }
                 } else {
                     //if the store binder of this element is null, store as single row in json format
-                    if(element.getStoreBinder() == null){
+                    if (element.getStoreBinder() == null) {
                         try {
                             // create json object
                             JSONArray jsonArray = new JSONArray();
@@ -396,8 +396,8 @@ public class FormUtil implements ApplicationContextAware {
                             // store in single row FormRowSet
                             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                             FormRow elementRow = new FormRow();
-                            elementRow.put(id, json); 
-                            
+                            elementRow.put(id, json);
+
                             // append to consolidated row set
                             if (rowSet.isEmpty()) {
                                 rowSet.add(elementRow);
@@ -408,7 +408,7 @@ public class FormUtil implements ApplicationContextAware {
                         } catch (JSONException ex) {
                             Logger.getLogger(FormUtil.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    }else{
+                    } else {
                         // multiple row result, append all to rowset
                         rowSet.addAll(elementResult);
                         rowSet.setMultiRow(true);
@@ -426,6 +426,24 @@ public class FormUtil implements ApplicationContextAware {
                 }
             }
         }
+        return formData;
+    }
+
+    /**
+     * Utility method to recursively find and invoke the formatDataForValidation method starting from an element.
+     * @param element
+     * @param formData
+     * @return the formatted data.
+     */
+    public static FormData executeElementFormatDataForValidation(Element element, FormData formData) {
+        // recurse into children
+        Collection<Element> children = element.getChildren();
+        if (children != null) {
+            for (Element child : children) {
+                formData = FormUtil.executeElementFormatDataForValidation(child, formData);
+            }
+        }
+        formData = element.formatDataForValidation(formData);
         return formData;
     }
 
@@ -944,7 +962,7 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static String generateElementHtml(final Element element, final FormData formData, final String templatePath, Map dataModel) {
         PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
-        return pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/"+templatePath, "message/form/" + element.getName().replace(" ", ""));
+        return pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/" + templatePath, "message/form/" + element.getName().replace(" ", ""));
     }
 
     /**
@@ -999,13 +1017,13 @@ public class FormUtil implements ApplicationContextAware {
             setReadOnlyProperty(child);
         }
     }
-    
+
     /**
      * Check a form is submitted or not
      * @param formData
      */
     public static boolean isFormSubmitted(FormData formData) {
-        if(formData.getRequestParameter("_SUBMITTED") != null){
+        if (formData.getRequestParameter("_SUBMITTED") != null) {
             return true;
         }
         return false;
