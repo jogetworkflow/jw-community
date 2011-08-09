@@ -54,7 +54,7 @@
                 }
             }
         </script>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/v3.css" />
+        <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
     </head>
     <body>
