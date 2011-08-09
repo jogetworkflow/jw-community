@@ -32,7 +32,7 @@
    padding:2px 4px !important;
    text-align:center;
    vertical-align:middle;
-   font-size: 16px;
+   font-size: 13px;
 }
 .dataList th.sorted {
     background-colorx:orange;
@@ -40,7 +40,7 @@
 }
 .dataList th a, th a:visited {
     color:black;
-    font-sizex: 16px;
+    font-sizex: 13px;
 }
 .dataList th a:hover {
     color:black;
