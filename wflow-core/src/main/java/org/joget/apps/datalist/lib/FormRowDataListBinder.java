@@ -24,6 +24,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.Userview;
 import org.joget.plugin.property.model.PropertyEditable;
 
 /**
@@ -131,19 +132,10 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
         if (form != null) {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
             String propertyName = getFormPropertyName(form, filterName);
-            String condition = (filterName != null && !filterName.isEmpty() && filterValue != null) ? " WHERE " + propertyName + " LIKE ?" : "";
 
-            if (properties.getProperty("extraCondition") != null && properties.getProperty("extraCondition").trim().length() > 0) {
-                if (condition.trim().length() > 0) {
-                    condition += " AND ";
-                } else {
-                    condition += " WHERE ";
-                }
-                condition += properties.getProperty("extraCondition");
-            }
+            Object[] criteria = getCriteria(properties, propertyName, filterValue);
 
-            Object[] paramsArray = (filterValue != null) ? new Object[]{"%" + filterValue + "%"} : new Object[]{};
-            FormRowSet rowSet = formDataDao.find(form, condition, paramsArray, sort, desc, start, rows);
+            FormRowSet rowSet = formDataDao.find(form, criteria[0].toString(), (Object[]) criteria[1], sort, desc, start, rows);
             resultList.addAll(rowSet);
             int total = getDataTotalRowCount(dataList, properties, filterName, filterValue);
             resultList.setObjectsPerPage(rows);
@@ -168,19 +160,10 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
         if (form != null) {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
             String propertyName = getFormPropertyName(form, filterName);
-            String condition = (filterName != null && !filterName.isEmpty() && filterValue != null) ? " WHERE " + propertyName + " LIKE ?" : "";
 
-            if (properties.getProperty("extraCondition") != null && properties.getProperty("extraCondition").trim().length() > 0) {
-                if (condition.trim().length() > 0) {
-                    condition += " AND ";
-                } else {
-                    condition += " WHERE ";
-                }
-                condition += properties.getProperty("extraCondition");
-            }
+            Object[] criteria = getCriteria(properties, propertyName, filterValue);
 
-            Object[] paramsArray = (filterValue != null) ? new Object[]{"%" + filterValue + "%"} : new Object[]{};
-            Long rowCount = formDataDao.count(form, condition, paramsArray);
+            Long rowCount = formDataDao.count(form, criteria[0].toString(), (Object[]) criteria[1]);
             count = rowCount.intValue();
         }
         return count;
@@ -220,5 +203,49 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
             }
         }
         return propertyName;
+    }
+
+    protected Object[] getCriteria(Properties properties, String filterName, String filterValue) {
+        Collection<Object> params = new ArrayList<Object>();
+        String condition = "";
+
+        if (filterName != null && !filterName.isEmpty() && filterValue != null) {
+            condition = " WHERE " + filterName + " LIKE ?";
+            params.add("%" + filterValue + "%");
+        }
+
+        String extraCondition = properties.getProperty("extraCondition");
+        String keyName = properties.getProperty(Userview.USERVIEW_KEY_NAME);
+        String keyValue = properties.getProperty(Userview.USERVIEW_KEY_VALUE);
+
+        if (extraCondition != null && extraCondition.contains(USERVIEW_KEY_SYNTAX)) {
+            if (keyValue == null) {
+                keyValue = "";
+            }
+            extraCondition = extraCondition.replaceAll(USERVIEW_KEY_SYNTAX, keyValue);
+        } else if (keyName != null && !keyName.isEmpty() && keyValue != null && !keyValue.isEmpty()) {
+            if (condition.trim().length() > 0) {
+                condition += " AND ";
+            } else {
+                condition += " WHERE ";
+            }
+            if (FormUtil.PROPERTY_ID.equals(keyName) || FormUtil.PROPERTY_DATE_CREATED.equals(keyName) || FormUtil.PROPERTY_DATE_MODIFIED.equals(keyName)) {
+                condition += keyName + " = ?";
+            } else {
+                condition += FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + keyName + " = ?";
+            }
+            params.add(keyValue);
+        }
+
+        if (extraCondition != null && !extraCondition.isEmpty()) {
+            if (condition.trim().length() > 0) {
+                condition += " AND ";
+            } else {
+                condition += " WHERE ";
+            }
+            condition += extraCondition;
+        }
+
+        return new Object[]{condition, params.toArray()};
     }
 }

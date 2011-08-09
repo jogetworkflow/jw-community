@@ -3,6 +3,8 @@ package org.joget.apps.userview.model;
 import java.util.Collection;
 
 public class Userview extends Element {
+    public static String USERVIEW_KEY_NAME = "keyName";
+    public static String USERVIEW_KEY_VALUE = "keyValue";
 
     private Collection<UserviewCategory> categories;
     private UserviewSetting setting;

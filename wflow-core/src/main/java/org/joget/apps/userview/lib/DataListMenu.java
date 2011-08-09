@@ -30,7 +30,7 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
-import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.commons.util.LogUtil;
@@ -308,20 +308,11 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
 
     protected Properties getBinderProperties(DataList dataList) {
         Properties binderProperties = dataList.getBinder().getProperties();
-        if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null && getKey().trim().length() > 0) {
-            String extraCondition = "";
-
-            if (binderProperties.getProperty("extraCondition") != null && binderProperties.getProperty("extraCondition").toString().trim().length() > 0) {
-                extraCondition = binderProperties.getProperty("extraCondition").toString() + " AND ";
-            }
-
-            if (FormUtil.PROPERTY_ID.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_CREATED.equals(getPropertyString("keyName")) || FormUtil.PROPERTY_DATE_MODIFIED.equals(getPropertyString("keyName"))) {
-                extraCondition += getPropertyString("keyName") + " = '" + getKey() + "'";
-            } else {
-                extraCondition += FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + getPropertyString("keyName") + " = '" + getKey() + "'";
-            }
-
-            binderProperties.put("extraCondition", extraCondition);
+        if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
+            binderProperties.put(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
+        }
+        if (getKey() != null && getKey().trim().length() > 0) {
+            binderProperties.put(Userview.USERVIEW_KEY_VALUE, getKey());
         }
         return binderProperties;
     }
