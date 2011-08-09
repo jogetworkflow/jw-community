@@ -1,14 +1,9 @@
 .dataList table {
-    borderx:1px solid #666666;
-    marginx:20px 0 !important;
     margin:0px 0 !important;
-    widthx:80%;
-    borderx:1px solid #ccc;
     -moz-border-radiusx:12px;
     -webkit-border-radiusx:12px;
     -moz-box-shadowx: 0 0 10px #ccc;
     -webkit-box-shadowx: 0 0 10px #ccc;
-    paddingx:5px;
     width:100%;
     font-family:'PT Sans',Arial; 
     font-size:13px; 
@@ -24,7 +19,6 @@
     vertical-align:top;
 }
 .dataList thead tr {
-    background-colorx:#E4F6C0;
     background-color:#DFDFDF;
     height: 26px;
 }
@@ -35,12 +29,10 @@
    font-size: 13px;
 }
 .dataList th.sorted {
-    background-colorx:orange;
-    background-color:green;
+    background-color:#5A8EC0;
 }
 .dataList th a, th a:visited {
     color:black;
-    font-sizex: 13px;
 }
 .dataList th a:hover {
     color:black;
@@ -48,6 +40,7 @@
 }
 .dataList th.sorted a, th.sortable a {
     background-position:right center;
+    background-repeat:no-repeat;
     display:block;
     width:100%;
 }
@@ -55,19 +48,18 @@
     color:white;
 }
 .dataList th.sortable a {
-    background-image:url("../img/arrow_off.png");
+    background-image:url("../images/v3/arrow_off.png");
 }
 .dataList th.order1 a {
-    background-image:url("../img/arrow_down.png");
+    background-image:url("../images/v3/arrow_down.png");
 }
 .dataList th.order2 a {
-    background-image:url("../img/arrow_up.png");
+    background-image:url("../images/v3/arrow_up.png");
 }
 .dataList tr.odd {
     background-color:#FFFFFF;
 }
 .dataList tr.tableRowEven, tr.even {
-    background-colorx:#FFEEAA;
     background-color:#F9F9F9;
 }
 .dataList div.exportlinks {
@@ -75,7 +67,6 @@
     border:1px dotted #999999;
     margin:2px 0 10px;
     padding:2px 4px;
-    widthx:79%;
     text-align:right;
 }
 .dataList div.exportlinks a {
@@ -102,27 +93,20 @@
     background:url("../images/v3/doc_rtf.png") no-repeat;
 }
 .dataList span.pagebanner {
-    background-colorx:#EEEEEE;
     border-color:#999999 #999999 -moz-use-text-color;
-    border-stylex:dotted dotted none;
     border-width:1px 1px medium;
     display:block;
     margin-top:0px;
     padding:2px 4px;
-    widthx:79%;
     text-align:right;
     font-size:smaller;
 }
 .dataList span.pagelinks {
-    background-colorx:#EEEEEE;
     border-color:-moz-use-text-color #999999 #999999;
-    border-rightx:1px dotted #999999;
-    border-stylex:none dotted dotted;
     border-width:medium 1px 1px;
     display:block;
     margin-bottom:0px;
     padding:2px 4px;
-    widthx:79%;
     text-align:right;
     font-size:smaller;
 }
