@@ -397,7 +397,12 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 // show form
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
                 if (errorCount == 0) {
-                    setProperty("view", "assignmentUpdated");
+                    if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
+                        setProperty("view", "redirect");
+                        setProperty("redirectURL", getPropertyString("redirectUrlAfterComplete"));
+                    } else {
+                        setProperty("view", "assignmentUpdated");
+                    }
                 } else {
                     setProperty("view", "formView");
                 }
