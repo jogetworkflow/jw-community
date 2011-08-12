@@ -56,7 +56,6 @@ import org.joget.apps.form.service.FormService;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
-import org.joget.commons.util.DatabaseResourceBundleMessageSource;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
@@ -140,10 +139,6 @@ public class ConsoleWebController {
     ExtDirectoryManager directoryManager;
     @Autowired
     ResourceBundleMessageDao rbmDao;
-    @Autowired
-    ResourceBundleUtil resourceBundleUtil;
-    @Autowired
-    DatabaseResourceBundleMessageSource drbms;
     @Autowired
     Validator validator;
     @Autowired
@@ -1463,7 +1458,7 @@ public class ConsoleWebController {
 
         WorkflowParticipant processStartWhiteList = new WorkflowParticipant();
         processStartWhiteList.setId("processStartWhiteList");
-        processStartWhiteList.setName(drbms.getMessage("console.app.process.common.label.processStartWhiteList", new Object[]{}, Locale.getDefault()));
+        processStartWhiteList.setName(ResourceBundleUtil.getMessage("console.app.process.common.label.processStartWhiteList"));
         processStartWhiteList.setPackageLevel(false);
         participantList.add(processStartWhiteList);
 
@@ -3334,7 +3329,7 @@ public class ConsoleWebController {
 
         try {
             MultipartFile multiPartfile = FileStore.getFile("localeFile");
-            resourceBundleUtil.POFileImport(multiPartfile, systemLocale);
+            ResourceBundleUtil.POFileImport(multiPartfile, systemLocale);
         } catch (IOException e) {
         }
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();

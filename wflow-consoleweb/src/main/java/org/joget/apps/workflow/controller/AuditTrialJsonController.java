@@ -1,15 +1,14 @@
 package org.joget.apps.workflow.controller;
 
-import org.joget.commons.util.DatabaseResourceBundleMessageSource;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AuditTrail;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,6 @@ public class AuditTrialJsonController {
 
     @Autowired
     private AuditTrailDao auditTrailDao;
-    
-    @Autowired
-    private DatabaseResourceBundleMessageSource drbms;
 
     @RequestMapping("/json/workflow/audittrail/list")
     public void auditTrailList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "dateFrom", required = false) String dateFrom, @RequestParam(value = "dateTo", required = false) String dateTo, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
@@ -53,8 +49,8 @@ public class AuditTrialJsonController {
             Map data = new HashMap();
             data.put("id", auditTrail.getId());
             data.put("username", auditTrail.getUsername());
-            data.put("clazz", drbms.getMessage(auditTrail.getClazz(), null, auditTrail.getClazz(), Locale.getDefault()));
-            data.put("method", drbms.getMessage(auditTrail.getMethod(), null, auditTrail.getMethod(), Locale.getDefault()));
+            data.put("clazz", ResourceBundleUtil.getMessage(auditTrail.getClazz(), auditTrail.getClazz()));
+            data.put("method", ResourceBundleUtil.getMessage(auditTrail.getMethod(), auditTrail.getMethod()));
             data.put("message", auditTrail.getMessage());
             data.put("timestamp", auditTrail.getTimestamp());
             jsonObject.accumulate("data", data);

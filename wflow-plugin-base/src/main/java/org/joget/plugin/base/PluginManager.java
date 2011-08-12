@@ -47,6 +47,7 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import java.io.StringWriter;
 import java.io.Writer;
+import org.joget.commons.util.ResourceBundleUtil;
 
 public class PluginManager implements ApplicationContextAware {
 
@@ -493,7 +494,7 @@ public class PluginManager implements ApplicationContextAware {
                     boolean deleted = file.delete();
                 }
                 result = true;
-                
+
                 // clear cache
                 pluginCache.clear();
             } catch (Exception ex) {
@@ -673,10 +674,10 @@ public class PluginManager implements ApplicationContextAware {
                 locale = "en_US";
             }
 
-            try{
+            try {
                 bundle = ResourceBundle.getBundle(translationPath, new Locale(locale), plugin.getClass().getClassLoader());
-            }catch(Exception e){
-                Logger.getLogger(PluginManager.class.getName()).info(translationPath + " translation file not found");
+            } catch (Exception e) {
+                LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
             }
         }
         return bundle;
@@ -698,15 +699,17 @@ public class PluginManager implements ApplicationContextAware {
         if (!keyList.isEmpty()) {
             ResourceBundle bundle = getPluginMessageBundle(pluginName, translationPath);
 
-            if (bundle == null) {
-                return content;
-            }
-
             for (String key : keyList) {
                 String tempKey = key.replaceAll("@@", "");
-                if(bundle.containsKey(tempKey)){
-                    String label = bundle.getString(tempKey);
+                String label = null;
 
+                if (bundle != null && bundle.containsKey(tempKey)) {
+                    label = bundle.getString(tempKey);
+                } else if (ResourceBundleUtil.getMessage(tempKey) != null) {
+                    label = ResourceBundleUtil.getMessage(tempKey);
+                }
+
+                if (label != null) {
                     content = content.replaceAll(key, label);
                 }
             }
@@ -715,7 +718,11 @@ public class PluginManager implements ApplicationContextAware {
         return content;
     }
 
-    public String getPluginFreeMarkerTemplate(Map data, final String pluginName, final String templatePath, String translationPath){
+    public String getMessage(String key, String pluginName, String translationPath) {
+        return processPluginTranslation("@@" + key + "@@", pluginName, translationPath);
+    }
+
+    public String getPluginFreeMarkerTemplate(Map data, final String pluginName, final String templatePath, String translationPath) {
         String result = "";
         try {
             // init configuration

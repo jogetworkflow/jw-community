@@ -1,5 +1,6 @@
 package org.joget.apps.userview.model;
 
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.property.model.PropertyEditable;
 
 public class UserviewSetting extends Element implements PropertyEditable {
@@ -32,7 +33,7 @@ public class UserviewSetting extends Element implements PropertyEditable {
     }
 
     public String getPropertyOptions() {
-        return "[{title:'Configure Layout', properties:[{name:'theme',label:'Theme',type:'elementselect',options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewTheme',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'}]},{title:'Configure Permission', properties:[{name:'permission',label:'Permission Type',type:'elementselect',options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'}]}]";
+        return "[{title:'" + ResourceBundleUtil.getMessage("userview.userviewsetting.configLayout") + "', properties:[{name:'theme',label:'" + ResourceBundleUtil.getMessage("userview.userviewsetting.theme") + "',type:'elementselect',options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewTheme',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'}]},{title:'" + ResourceBundleUtil.getMessage("userview.userviewsetting.configPermission") + "', properties:[{name:'permission',label:'" + ResourceBundleUtil.getMessage("userview.userviewsetting.permission") + "',type:'elementselect',options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'}]}]";
     }
 
     public String getDefaultPropertyValues() {

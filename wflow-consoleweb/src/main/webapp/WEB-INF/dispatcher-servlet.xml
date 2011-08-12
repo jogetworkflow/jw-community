@@ -71,6 +71,7 @@
                 <value>fbuilder</value>
                 <value>dbuilder</value>
                 <value>ubuilder</value>
+                <value>plugin</value>
              </list>
         </property>
     </bean>

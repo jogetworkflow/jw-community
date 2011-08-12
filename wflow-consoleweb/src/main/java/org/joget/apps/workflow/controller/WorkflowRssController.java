@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.joget.commons.util.DatabaseResourceBundleMessageSource;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +27,8 @@ public class WorkflowRssController {
 
     @Autowired
     private WorkflowManager workflowManager;
-    @Autowired
-    private DatabaseResourceBundleMessageSource drbms;
-    public static final String INBOX_TITLE_KEY = "wflowClient.rss.label.inboxTitle";
-    public static final String INBOX_DESC_KEY = "wflowClient.rss.label.inboxDescription";
+    public static final String INBOX_TITLE_KEY = "client.rss.inbox.label.title";
+    public static final String INBOX_DESC_KEY = "client.rss.inbox.label.description";
     public static final String INBOX_LINK = "/web/console/run/inbox";
     public static final String ASSIGNMENT_LINK = "/web/client/app/assignment/";
 
@@ -75,12 +72,12 @@ public class WorkflowRssController {
             atts.clear();
             hd.startElement("", "", "channel", atts);
             hd.startElement("", "", "title", atts);
-            String inboxTitle = drbms.getMessage(INBOX_TITLE_KEY, null, INBOX_TITLE_KEY, Locale.getDefault());
+            String inboxTitle = ResourceBundleUtil.getMessage(INBOX_TITLE_KEY);
             hd.characters(inboxTitle.toCharArray(), 0, inboxTitle.length());
             hd.endElement("", "", "title");
 
             hd.startElement("", "", "description", atts);
-            String inboxDescription = drbms.getMessage(INBOX_DESC_KEY, null, INBOX_DESC_KEY, Locale.getDefault());
+            String inboxDescription = ResourceBundleUtil.getMessage(INBOX_DESC_KEY);
             hd.characters(inboxDescription.toCharArray(), 0, inboxDescription.length());
             hd.endElement("", "", "description");
 

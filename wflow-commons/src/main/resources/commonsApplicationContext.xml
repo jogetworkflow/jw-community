@@ -92,8 +92,4 @@
     <bean id="resourceBundleMessageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
-
-    <bean id="resourceBundleUtil" class="org.joget.commons.util.ResourceBundleUtil">
-        <property name="resourceBundleMessageDao" ref="resourceBundleMessageDao"/>
-    </bean>
 </beans>
