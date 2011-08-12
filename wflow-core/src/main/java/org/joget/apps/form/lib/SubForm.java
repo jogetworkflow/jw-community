@@ -53,11 +53,14 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
         Collection<Element> children = super.getChildren();
         if (children == null || children.isEmpty()) {
             // override getChildren to return the subform
-            Form subForm = loadSubForm(null);
-            if (subForm != null) {
-                children = new ArrayList<Element>();
-                children.add(subForm);
-                setChildren(children);
+            if (checkForRecursiveForm(this, getPropertyString("formDefId"))) {
+                Form subForm = loadSubForm(null);
+
+                if (subForm != null) {
+                    children = new ArrayList<Element>();
+                    children.add(subForm);
+                    setChildren(children);
+                }
             }
         }
         return children;
@@ -372,5 +375,19 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
             output += "]";
             response.getWriter().write(output);
         }
+    }
+
+    protected boolean checkForRecursiveForm(Element e, String id) {
+        //Recursive find parent and compare
+        Form form = FormUtil.findRootForm(e);
+        if (form != null && form != e) {
+            String formId = form.getPropertyString(FormUtil.PROPERTY_ID);
+            if (id.equals(formId)) {
+                return false;
+            } else {
+                return checkForRecursiveForm(form, id);
+            }
+        }
+        return true;
     }
 }
