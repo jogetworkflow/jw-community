@@ -273,6 +273,10 @@ public class JSPClientUtilities {
                String variableId = eas[i][1];
                if (_m.containsKey(variableId)) {
                   Object c = _m.get(variableId);
+                  // null check for Oracle DB to prevent missing workflow variable
+                  if (c == null) {
+                      c = "";
+                  }
                   if (c instanceof String || c instanceof Long || c instanceof Boolean || c instanceof Double) {
                      WorkflowVariable vd = new WorkflowVariable();
                      vd.setId(variableId);
