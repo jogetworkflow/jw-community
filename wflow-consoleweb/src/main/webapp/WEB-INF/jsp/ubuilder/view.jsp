@@ -28,6 +28,16 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
         <script type="text/javascript">
+            function userviewPrint(){
+                $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/css/userview_print.css" type="text/css" media="print"/>');
+                setTimeout("do_print()", 1000); 
+            }
+
+            function do_print(){
+                window.print();
+                $('#userview_print_css').remove();
+            }
+            
             ${userview.setting.theme.javascript}
         </script>
 

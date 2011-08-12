@@ -1,0 +1,11 @@
+#header, #navigation, #footer{
+    display: none;
+} 
+
+#main, #content, #page{
+    border:0 !important;
+} 
+
+.print-button{
+    display: none;
+}

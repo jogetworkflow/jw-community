@@ -116,3 +116,11 @@ body.rtl #navigation {
 body.rtl #content {
     float: right;
 }
+
+.print-button{
+    background: transparent url("../images/v3/action_print.gif") 0 0 no-repeat;
+    padding-left:20px;
+    display:inline-block;
+    float:right;
+    height:16px;
+}

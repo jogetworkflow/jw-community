@@ -124,3 +124,4 @@
 
 <div style="clear:both;"></div>
 
+<a class="print-button" href="#" onclick="userviewPrint();return false;"><fmt:message key="general.method.label.print" /></a>  
