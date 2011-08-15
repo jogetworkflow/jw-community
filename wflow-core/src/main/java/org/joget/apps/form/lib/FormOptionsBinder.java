@@ -13,7 +13,6 @@ import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.plugin.base.PluginProperty;
 
 /**
  * Form load binder that loads the data rows of a form.
@@ -33,11 +32,6 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     @Override
     public String getDescription() {
         return "Default Form Options Binder";
-    }
-
-    @Override
-    public PluginProperty[] getPluginProperties() {
-        return null;
     }
 
     @Override

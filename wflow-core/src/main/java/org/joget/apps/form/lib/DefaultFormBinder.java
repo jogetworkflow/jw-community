@@ -1,7 +1,6 @@
 package org.joget.apps.form.lib;
 
 import java.util.Collection;
-import java.util.Map;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -12,7 +11,6 @@ import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.plugin.base.PluginProperty;
 
 /**
  *
@@ -35,16 +33,6 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
     }
 
     @Override
-    public PluginProperty[] getPluginProperties() {
-        return null;
-    }
-
-    @Override
-    public Object execute(Map properties) {
-        return null;
-    }
-
-    @Override
     public String getClassName() {
         return getClass().getName();
     }
@@ -57,7 +45,6 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
     @Override
     public String getPropertyOptions() {
         return "";
-//        return "[{title:'Configure Binder', properties:[{name:'tableName',label:'Table Name',type:'textfield'}]}]";
     }
 
     @Override

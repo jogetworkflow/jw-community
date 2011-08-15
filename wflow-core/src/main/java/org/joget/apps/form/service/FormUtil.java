@@ -224,8 +224,6 @@ public class FormUtil implements ApplicationContextAware {
                     if (className != null && className.trim().length() > 0) {
                         binder = (FormBinder) pluginManager.getPlugin(className);
                         if (binder != null) {
-                            binder.setClassName(className);
-
                             // set child properties
                             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(binderObj);
                             binder.setProperties(properties);

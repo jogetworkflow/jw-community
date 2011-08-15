@@ -3,6 +3,7 @@ package org.joget.apps.form.model;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.plugin.base.DefaultPlugin;
+import org.joget.plugin.base.PluginProperty;
 
 /**
  * Base class for form load and store binders
@@ -13,15 +14,16 @@ public abstract class FormBinder extends DefaultPlugin {
     public static final String FORM_LOAD_BINDER = "loadBinder";
     public static final String FORM_OPTIONS_BINDER = "optionsBinder";
     public static final String FORM_STORE_BINDER = "storeBinder";
-    private String className;
     private Map<String, Object> properties;
 
-    public String getClassName() {
-        return className;
+    public abstract String getClassName();
+    
+    public Object execute(Map properties) {
+        return null;
     }
-
-    public void setClassName(String className) {
-        this.className = className;
+    
+    public PluginProperty[] getPluginProperties(){
+        return null;
     }
 
     public Map<String, Object> getProperties() {
