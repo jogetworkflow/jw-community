@@ -36,5 +36,11 @@
     <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=footer" flush="true" />
 </div>
 
+<script type="text/javascript">
+    HelpGuide.base = "${pageContext.request.contextPath}"
+    HelpGuide.attachTo = "#home-container, #main";
+    HelpGuide.show();
+</script>
+
 </body>
 </html>

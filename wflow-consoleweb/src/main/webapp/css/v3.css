@@ -75,7 +75,7 @@ img {
 #header {
     position: relative;
     min-width: 980px;
-    z-index: 2000;
+    z-index: 8;
 }
 #header #topbar {
     position: relative;
@@ -92,7 +92,7 @@ img {
     color: #B3CB5E;
     font-weight: bold;
     vertical-align: middle;
-    z-index: 100;
+    z-index: 8;
 }
 #header #account {
     padding-top: 2px;
@@ -199,7 +199,7 @@ img {
     color: #e3f71d;
     text-shadow: 1px 1px 1px #767676;
     line-height: 10px;
-    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     display: block;
     padding: 0 0 0 26px
 }
@@ -215,7 +215,7 @@ img {
 #menu ul#menu-items .dropdown { 
     display: none;
     position: absolute;
-    z-index: 999;
+    z-index: 9;
     width: 283px;
     top: 45px;
     left: 2px;
@@ -330,7 +330,7 @@ img {
     -moz-border-radius: 6px 6px 6px 6px;
     -webkit-border-radius: 6px;
     background: white;
-    z-index: 200;
+    z-index: 8;
     opacity: .97;
     -moz-opacity: .97;
     filter: alpha(opacity=97);
@@ -532,13 +532,13 @@ img {
     padding: 0px 10px 0px 0px; //5px 20px 3px;
     border-radius: 1px;
 }
-#main #main-action-help {
+#main-action-help {
     background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
     display: block;
     width: 16px;
     height: 16px;
     cursor: pointer;
-    margin: 5px 0 0 0;
+    margin: 5px;
     float: right
 }
 

@@ -633,3 +633,129 @@ BubbleDialog = {
         $(content).css( { "left": cLeft, "top": cTop } );
     }
 }
+
+HelpGuide = {
+    
+    prefix: "help.",
+    url: "/web/help/guide",
+    attachTo: null,
+    key: null,
+    definition: null,
+    
+    enable: function() {
+        $.cookie("helpGuide", "true", { expires: 3650, path:UI.base });
+    },
+    
+    disable: function() {
+        HelpGuide.hide();
+        $.cookie("helpGuide", "false", { expires: 3650, path:UI.base });
+    },
+    
+    isEnabled: function() {
+        var status = $.cookie("helpGuide");
+        return (status != "false");
+    },
+
+    toggle: function() {
+        if (HelpGuide.isEnabled()) {
+            HelpGuide.disable();
+        } else {
+            HelpGuide.enable();
+        }
+    },
+    
+    show: function() {
+        // determine key
+        var helpKey = (HelpGuide.key == null) ? HelpGuide.determineKey() : HelpGuide.key;
+
+        // ajax request to get help definition
+        $.ajax({
+            type: "GET",
+            data: {
+                "key": helpKey
+            },
+            url: UI.base + HelpGuide.url,
+            success: function(response) {
+                var helpDef = response;
+                HelpGuide.startGuide(helpDef);
+            }
+        });
+    },
+    
+    hide: function() {
+        guiders.hideAll();
+    },
+    
+    determineKey: function() {
+        // parse URL path
+        var key = '';
+        var regex = UI.base + "\\/(.*)";
+        var match = location.pathname.match(regex);
+        if (match && match.length > 0) {
+            key = match[1];
+        }
+        if (key != '') {
+            key = key.replace(/\/\//g, "/");
+            key = key.replace(/\//g, ".");
+            key = HelpGuide.prefix + key;
+        }
+        return key;
+    },
+
+    insertButton: function(div) {
+        // create button
+        var button = $('<span id="main-action-help"></span>');
+        button.click(function() {
+            HelpGuide.enable();
+            HelpGuide.show();
+        });
+        
+        // insert button
+        if ($("#main-action-help").length == 0) {
+            if (!div) {
+                div = document.body;
+            }
+            $(div).prepend(button);
+        }
+    },
+    
+    startGuide: function(helpJson) {
+        // eval definition
+        var helpDefObj;
+        if (helpJson != "") {
+            try {
+                helpDefObj = eval(helpJson);
+            } catch (e) {
+                alert(e);
+            }
+        }
+        if (helpDefObj == null) {
+            // use default
+            helpDefObj = HelpGuide.definition;
+        }        
+
+        // display guides
+        if (helpDefObj && helpDefObj.length > 0) {
+            // show button
+            HelpGuide.insertButton(HelpGuide.attachTo);
+            
+            // check activated status
+            var active = HelpGuide.isEnabled();
+            if (active) {
+                // loop thru guides
+                for (i=0; i<helpDefObj.length; i++) {
+                    var def = helpDefObj[i];
+                    HelpGuide.displayGuide(def);
+                }
+            }
+        }
+    },
+    
+    displayGuide: function(def) {
+        var guider = guiders.createGuider(def);
+        if (def.show) {
+            guider.show();
+        }
+    }
+    
+}

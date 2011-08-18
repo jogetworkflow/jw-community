@@ -20,11 +20,10 @@
 <div id="main">
     <div id="main-title"></div>
     <div id="main-action">
-        <span id="main-action-help"></span>
         <ul id="main-action-buttons">
-            <li><button onclick="launchDesigner()"><fmt:message key="console.process.config.label.launchDesigner"/></button></li>
-            <li><button onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
-            <li><button onclick="runProcess()"><fmt:message key="console.process.config.label.startProcess"/></button></li>
+            <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="console.process.config.label.launchDesigner"/></button></li>
+            <li><button id="uploadPackage" onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
+            <li><button id="runProcess" onclick="runProcess()"><fmt:message key="console.process.config.label.startProcess"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -558,6 +557,7 @@
 
 <script>
     Template.init("#menu-apps", "#nav-app-processes");
+    HelpGuide.key = "help.web.console.app.processes.view";
 </script>
 
 <commons:footer />

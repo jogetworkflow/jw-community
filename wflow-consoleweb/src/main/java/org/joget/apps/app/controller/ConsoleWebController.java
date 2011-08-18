@@ -174,6 +174,17 @@ public class ConsoleWebController {
         return "console/home";
     }
 
+    @RequestMapping("/help/guide")
+    public void consoleHelpGuide(Writer writer, @RequestParam("key") String key) throws IOException {
+        if (key != null && !key.trim().isEmpty()) {
+            String message = ResourceBundleUtil.getMessage(key);
+            if (message != null && !message.trim().isEmpty()) {
+                message = pluginManager.processPluginTranslation(message, getClass().getName(), "console");
+                writer.write(message);
+            }
+        }
+    }
+
     @RequestMapping("/console/directory/orgs")
     public String consoleOrgList(ModelMap model) {
         model.addAttribute("isCustomDirectoryManager", DirectoryUtil.isCustomDirectoryManager());

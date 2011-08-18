@@ -72,6 +72,8 @@
                 <value>dbuilder</value>
                 <value>ubuilder</value>
                 <value>plugin</value>
+                <value>helpdef</value>
+                <value>help</value>
              </list>
         </property>
     </bean>
