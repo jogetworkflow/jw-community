@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="ReportWorkflowPackage" name="org.joget.report.model.ReportWorkflowPackage" table="app_report_package">
-        <id name="uid" type="string">
+        <id name="uid" column="uuid" type="string">
             <generator class="uuid"/>
         </id>
         <property name="packageId" type="string"/>
