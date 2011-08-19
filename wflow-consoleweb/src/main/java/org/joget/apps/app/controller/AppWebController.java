@@ -50,7 +50,7 @@ public class AppWebController {
     FormDefinitionDao formDefinitionDao;
 
     @RequestMapping("/client/app/(*:appId)/(*:version)/process/(*:processDefId)")
-    public String clientProcessView(ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId) {
+    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId) {
 
         // clean process def
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -67,6 +67,7 @@ public class AppWebController {
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("process", processDef);
+        model.addAttribute("queryString", request.getQueryString());
 
         // check for start mapped form
         FormData formData = new FormData();
@@ -104,7 +105,7 @@ public class AppWebController {
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("process", processDef);
-
+        
         // check for permission
         if (!workflowManager.isUserInWhiteList(processDefId)) {
             return "client/app/processUnauthorized";
@@ -148,7 +149,7 @@ public class AppWebController {
             Collection<WorkflowActivity> activities = result.getActivities();
             if (activities != null && !activities.isEmpty()) {
                 WorkflowActivity nextActivity = activities.iterator().next();
-                String assignmentUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/assignment/" + nextActivity.getId();
+                String assignmentUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/assignment/" + nextActivity.getId() + "?" + request.getQueryString();
                 return "redirect:" + assignmentUrl;
             }
         }
