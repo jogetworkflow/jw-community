@@ -1,20 +1,25 @@
+a {
+    color:#0077bb;
+    font-family: 'Lucida Sans',Arial;
+    text-decoration: none;
+}
 #page {
     border-color: -moz-use-text-color silver;
     border-style: none solid;
-    border-width: 0 3px;
+    border-width: 0 1px;
     font-family: 'PT Sans',Arial;
     font-size: 13px;
     position: relative;
 }
 #header {
-    background: url("default_header.png") repeat-x scroll 0 0 transparent;
-    height: 132px;
+    background: url("@@contextPath@@/plugin/org.joget.apps.userview.lib.DefaultTheme/themes/default/bg-header.png") no-repeat scroll 0 0 transparent;
+    height: 130px;
 }
 #header-name {
     padding-top: 25px;
 }
 #header-link {
-    color: #00529C;
+    color: #0077bb;
     font-weight: bold;
     text-decoration: none;
 }
@@ -33,7 +38,7 @@
 }
 #sidebar {
     -moz-border-radius: 0 0 20px 20px;
-    background: none repeat scroll 0 0 #EFEFEF;
+    background: none repeat scroll 0 0 #f2f2f2;
     border: 0 none;
     margin: 0 0 30px 20px;
     min-height: 450px;
@@ -48,12 +53,12 @@
     margin: 15px;
 }
 .category-label {
-    background-color: #5A8EC0;
+    background-color: #4881a9;
     color: #FFFFFF;
 }
 .category-label span {
     display: block;
-    font-size: 16px;
+    font-size: 14px;
     padding: 5px;
 }
 .category-label a {
@@ -65,7 +70,6 @@
     text-decoration: none;
 }
 .menu {
-    background: url("arrow_blue.png") no-repeat scroll left center transparent;
     border-bottom: 1px dotted #757471;
     cursor: pointer;
     padding: 5px 5px 5px 15px;
@@ -86,12 +90,11 @@
 }
 #footer {
     border: 0 none;
-    color: #00529C;
-    font-style: italic;
+    color: #ffffff;
     text-align: center;
 }
 #footer-message {
-    background: none repeat scroll 0 0 #EFEFEF;
+    background: none repeat scroll 0 0 #4881a9;
     border-top: 1px solid silver;
     padding: 10px 50px;
 }
@@ -105,4 +108,10 @@ body#login #content, body#unauthorize #content {
     float: none;
     min-height: 350px;
     width: 920px;
+}
+#navigation {
+    background-color: #F2F2F2;
+}
+#header-message {
+    margin: 45px 50px 5px;
 }

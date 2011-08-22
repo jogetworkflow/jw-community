@@ -9,6 +9,7 @@ public class DefaultTheme extends UserviewTheme {
     public String getCss() {
         String css = AppUtil.readPluginResource(getClassName(), "/resources/themes/default/default.css");
         css += getPropertyString("css");
+        css = css.replaceAll("@@contextPath@@", getRequestParameterString("contextPath"));
         return css;
     }
 
