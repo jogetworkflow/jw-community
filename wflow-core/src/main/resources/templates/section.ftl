@@ -3,7 +3,7 @@
     <#list element.children as e>
         ${e.render(formData, includeMetaData!false)}
     </#list>
-</div>
+    
 <#if visibilityControlParam?? && includeMetaData == false>
 <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.model.Section/js/section.js"></script>
 <script type="text/javascript">
@@ -12,3 +12,5 @@
     });
 </script>
 </#if>
+
+</div>
