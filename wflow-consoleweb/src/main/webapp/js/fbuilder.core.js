@@ -524,6 +524,7 @@ FormBuilder = {
 
         // set updated element HTML (non-section and column only)
         if (elementClass != 'org.joget.apps.form.model.Section' && elementClass != 'org.joget.apps.form.model.Column') {
+            FormBuilder.unloadElement(element);
             $(element).html(elementHtml);
         } else if (elementClass == 'org.joget.apps.form.model.Column') {
             // hard-code refresh column sizes
@@ -589,10 +590,23 @@ FormBuilder = {
     },
 
     deleteElement: function(element) {
+        FormBuilder.unloadElement(element);
+        
         // delete element
         $(element).remove();
 
         FormBuilder.initSectionsAndColumns();
+    },
+    
+    unloadElement: function(element) {
+        var dom = $(element)[0].dom;
+        var elementClass = dom.className;
+        
+        var unloadMethod = elementClass.replace(/\./g, "_") + "_formBuilderElementUnLoad";
+        
+        if($.isFunction(window[unloadMethod])){
+            window[unloadMethod](element);
+        }
     },
 
     addSection: function(parent) {
