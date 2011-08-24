@@ -51,7 +51,10 @@ PopupDialog.prototype = {
       this.show();
   },
 
-  show: function(){
+  show: function() {
+      // hide help
+      HelpGuide.hide();
+      
       var newSrc = this.src;
       if (newSrc.indexOf("?") < 0) {
           newSrc += "?";
@@ -643,12 +646,12 @@ HelpGuide = {
     definition: null,
     
     enable: function() {
-        $.cookie("helpGuide", "true", { expires: 3650, path:UI.base });
+        $.cookie("helpGuide", "true", { expires: 3650, path:HelpGuide.base });
     },
     
     disable: function() {
         HelpGuide.hide();
-        $.cookie("helpGuide", "false", { expires: 3650, path:UI.base });
+        $.cookie("helpGuide", "false", { expires: 3650, path:HelpGuide.base });
     },
     
     isEnabled: function() {
@@ -667,6 +670,12 @@ HelpGuide = {
     show: function() {
         // determine key
         var helpKey = (HelpGuide.key == null) ? HelpGuide.determineKey() : HelpGuide.key;
+        
+        // display key in footer for debugging
+        if ($("#helpKey").length == 0) {
+            $(document.body).append($("<div id='helpKey'></div>"));
+        }
+        $("#helpKey").text(helpKey);
 
         // ajax request to get help definition
         $.ajax({
@@ -674,7 +683,7 @@ HelpGuide = {
             data: {
                 "key": helpKey
             },
-            url: UI.base + HelpGuide.url,
+            url: HelpGuide.base + HelpGuide.url,
             success: function(response) {
                 var helpDef = response;
                 HelpGuide.startGuide(helpDef);
@@ -689,7 +698,7 @@ HelpGuide = {
     determineKey: function() {
         // parse URL path
         var key = '';
-        var regex = UI.base + "\\/(.*)";
+        var regex = HelpGuide.base + "\\/(.*)";
         var match = location.pathname.match(regex);
         if (match && match.length > 0) {
             key = match[1];
@@ -705,10 +714,6 @@ HelpGuide = {
     insertButton: function(div) {
         // create button
         var button = $('<span id="main-action-help"></span>');
-        button.click(function() {
-            HelpGuide.enable();
-            HelpGuide.show();
-        });
         
         // insert button
         if ($("#main-action-help").length == 0) {
@@ -717,6 +722,15 @@ HelpGuide = {
             }
             $(div).prepend(button);
         }
+        
+        // display icon and set event handler
+        $("#main-action-help").css("display", "block");
+        $("#main-action-help").click(function() {
+            HelpGuide.hide();
+            HelpGuide.enable();
+            HelpGuide.show();
+        });
+
     },
     
     startGuide: function(helpJson) {
@@ -726,7 +740,7 @@ HelpGuide = {
             try {
                 helpDefObj = eval(helpJson);
             } catch (e) {
-                alert(e);
+                //alert(e);
             }
         }
         if (helpDefObj == null) {
@@ -742,11 +756,13 @@ HelpGuide = {
             // check activated status
             var active = HelpGuide.isEnabled();
             if (active) {
-                // loop thru guides
-                for (i=0; i<helpDefObj.length; i++) {
-                    var def = helpDefObj[i];
-                    HelpGuide.displayGuide(def);
-                }
+                setTimeout(function() {
+                    // loop thru guides
+                    for (i=0; i<helpDefObj.length; i++) {
+                        var def = helpDefObj[i];
+                        HelpGuide.displayGuide(def);
+                    }
+                }, 500);
             }
         }
     },

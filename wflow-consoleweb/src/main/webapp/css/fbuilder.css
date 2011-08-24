@@ -415,3 +415,13 @@ div, label, input, button, select, th, td, a, span {
     -moz-opacity: .8;
     filter: alpha(opacity=80);
 }
+#main-action-help {
+    background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    left: 932px;
+}

@@ -90,25 +90,12 @@ x.welcome-box h3 {
 <script>
     Template.init("#menu-home", "#nav-home-welcome");
 
-//--- Example on defining the help guides in the JSP. Help guides will from the resource bundles will be given priority.
-//    HelpGuide.definition = [{
-//            buttons: [{name: "Next"},{name: "Cancel", onclick: guiders.hideAll}],
-//            description: "This guide will help you to <b>get started</b>.",
-//            id: "start",
-//            next: "users",
-//            overlay: true,
-//            title: "Welcome to Joget Workflow v3",
-//            show: true
-//        },{
-//            attachTo: "#menu-users",
-//            buttons: [{name: "OK", onclick: guiders.hideAll}],
-//            description: "First, setup your users, groups and organizations",
-//            id: "users",
-//            title: "Setup Users",
-//            position: 2,
-//            width: 450,
-//            xButton: true
-//        }]
+<c:if test="${isAdmin}">
+    HelpGuide.key = "help.web.console.home.admin";
+</c:if>
+<c:if test="${!isAdmin}">
+    HelpGuide.key = "help.web.console.home.user";
+</c:if>
 </script>
 
 <commons:footer />

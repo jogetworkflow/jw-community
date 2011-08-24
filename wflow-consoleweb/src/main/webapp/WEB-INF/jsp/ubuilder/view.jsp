@@ -228,5 +228,11 @@
 
             </div>
         </div>
+        <script type="text/javascript">
+            HelpGuide.base = "${pageContext.request.contextPath}"
+            HelpGuide.attachTo = "#header";
+            HelpGuide.key = "help.web.userview.${appId}.${userview.properties.id}.${bodyId}";
+            HelpGuide.show();
+        </script>
     </body>
 </html>

@@ -61,6 +61,7 @@
 </style>
 
 <div id="login-container">
+    <span id="main-action-help" style="display:none"></span>
     <div id="login-box">
         <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=login" flush="true" />
         <div>

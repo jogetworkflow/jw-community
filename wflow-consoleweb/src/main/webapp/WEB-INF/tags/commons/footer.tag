@@ -38,7 +38,7 @@
 
 <script type="text/javascript">
     HelpGuide.base = "${pageContext.request.contextPath}"
-    HelpGuide.attachTo = "#home-container, #main";
+    HelpGuide.attachTo = "#home-container, #login-container, #main";
     HelpGuide.show();
 </script>
 

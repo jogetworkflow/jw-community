@@ -15,8 +15,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title><fmt:message key="ubuilder.title"/> - ${userview.name}</title>
 
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.4.4.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
+        <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
@@ -175,5 +174,13 @@
                 <fmt:message key="console.builder.footer"/>
             </div>
         </div>
+
+        <script type="text/javascript">
+            HelpGuide.base = "${pageContext.request.contextPath}"
+            HelpGuide.attachTo = "#builder-bar";
+            HelpGuide.key = "help.web.console.app.userview.builder";
+            HelpGuide.show();
+        </script>
+            
     </body>
 </html>

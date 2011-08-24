@@ -210,7 +210,7 @@ img {
 #menu ul#menu-items li.last-inactive:hover .dropdown { 
     display: block;
     position: absolute;
-    left: -20px;
+    left: 2px;
 }
 #menu ul#menu-items .dropdown { 
     display: none;

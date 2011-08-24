@@ -159,6 +159,7 @@
     }
     Thumbnail.init();
     Template.init("#menu-apps", "#nav-app-processes");
+    HelpGuide.key = "help.web.console.app.processes.list";
 </script>
 
 <commons:footer />

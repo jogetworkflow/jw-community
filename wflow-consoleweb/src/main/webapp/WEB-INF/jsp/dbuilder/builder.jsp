@@ -10,8 +10,7 @@
 <html>
     <head>
         <title><fmt:message key="dbuilder.title"/> - ${datalist.name}</title>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.4.4.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
+        <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor"></script>
@@ -185,5 +184,12 @@
             </div>
         </div>
 
+        <script type="text/javascript">
+            HelpGuide.base = "${pageContext.request.contextPath}"
+            HelpGuide.attachTo = "#builder-bar";
+            HelpGuide.key = "help.web.console.app.datalist.builder";
+            setTimeout(function() { HelpGuide.show(); }, 2000);
+        </script>
+            
     </body>
 </html>

@@ -35,7 +35,7 @@
                 <img src="${pageContext.request.contextPath}/images/v3/loading.gif">
                 <fmt:message key="console.process.config.label.xpdlThumbnailLoading"/>
             </div>
-            <div id="thumbnailDiv" style="display:block; overflow:hidden">
+            <div id="thumbnailDiv" style="display:block; overflow:hidden; height:250px">
                 <a id="xpdlThumbnail" href="${pageContext.request.contextPath}/web/images/xpdl/${process.encodedId}" target="_blank"></a>
             </div>
             <div id="advancedView" style="display: none">
@@ -557,7 +557,20 @@
 
 <script>
     Template.init("#menu-apps", "#nav-app-processes");
-    HelpGuide.key = "help.web.console.app.processes.view";
+    <c:choose>
+        <c:when test="${param.tab == 'toolList'}">
+            HelpGuide.key = "help.web.console.app.processes.view.run";
+        </c:when>
+        <c:when test="${param.tab == 'activityList'}">
+            HelpGuide.key = "help.web.console.app.processes.view.tools";
+        </c:when>
+        <c:when test="${param.tab == 'participantList'}">
+            HelpGuide.key = "help.web.console.app.processes.view.forms";
+        </c:when>
+        <c:otherwise>
+            HelpGuide.key = "help.web.console.app.processes.view";
+        </c:otherwise>
+    </c:choose>
 </script>
 
 <commons:footer />
