@@ -672,10 +672,10 @@ HelpGuide = {
         var helpKey = (HelpGuide.key == null) ? HelpGuide.determineKey() : HelpGuide.key;
         
         // display key in footer for debugging
-        if ($("#helpKey").length == 0) {
-            $(document.body).append($("<div id='helpKey'></div>"));
-        }
-        $("#helpKey").text(helpKey);
+//        if ($("#helpKey").length == 0) {
+//            $(document.body).append($("<div id='helpKey'></div>"));
+//        }
+//        $("#helpKey").text(helpKey);
 
         // ajax request to get help definition
         $.ajax({
