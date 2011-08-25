@@ -69,7 +69,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     if (request != null) {
                         propertiesMap.put("request", request);
                     }
-                } catch (NoClassDefFoundError e) {
+                } catch (Throwable e) {
                     // ignore if class is not found
                 }
 
