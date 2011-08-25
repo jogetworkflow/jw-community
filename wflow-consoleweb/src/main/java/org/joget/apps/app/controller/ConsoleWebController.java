@@ -1531,6 +1531,14 @@ public class ConsoleWebController {
             activity.setName("Run Process");
         }
 
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        PackageActivityForm activityForm = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+            map.addAttribute("externalFormUrl", activityForm.getFormUrl());
+            map.addAttribute("externalFormIFrameStyle", activityForm.getFormIFrameStyle());
+        }
+        
         map.addAttribute("process", process);
         map.addAttribute("activity", activity);
 
