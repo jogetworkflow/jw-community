@@ -6,6 +6,19 @@
     pageContext.setAttribute("rightToLeft", rightToLeft);
 %>
 
+<c:choose>
+    <c:when test="${activityForm.type == 'EXTERNAL'}">
+        <style>
+            #assignmentExternalForm {
+                border: 0px;
+                width: 100%;
+                height: 400px;
+            }
+        </style>
+        <iframe id="assignmentExternalForm" src="${activityForm.formUrl}appId=${appDef.id}&appVersion=${appDef.version}&processId=${assignment.processId}&activityId=${assignment.activityId}&processVersion=${assignment.processVersion}&processRequesterId=${assignment.processRequesterId}&username=<%= WorkflowUtil.getCurrentUsername() %>" frameborder="0" style="${activityForm.formIFrameStyle}"></iframe>
+    </c:when>
+    <c:otherwise>
+
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.4.4.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css" />
@@ -50,3 +63,7 @@
             <c:out value="${formHtml}" escapeXml="false" />
             
         </fieldset>
+
+    </c:otherwise>
+</c:choose>
+

@@ -178,6 +178,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             // load assignment form
             PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
             form = activityForm.getForm();
+            setProperty("activityForm", activityForm);
         } else {
             // load data form
             form = retrieveDataForm(formData, id);

@@ -120,7 +120,7 @@ public class AppWebController {
         String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
         PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrl);
         WorkflowProcessResult result = appService.submitFormToStartProcess(appId, version, processDefId, formData, variableMap, null, formUrl);
-        if (startFormDef != null && startFormDef.getForm() != null) {
+        if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
             if (result == null) {
                 // validation error, get form
                 Form startForm = startFormDef.getForm();
@@ -133,6 +133,7 @@ public class AppWebController {
                 model.addAttribute("form", startForm);
                 model.addAttribute("formJson", formJson);
                 model.addAttribute("formHtml", formHtml);
+                model.addAttribute("activityForm", startFormDef);
                 return "client/app/processFormStart";
             }
         } else {
@@ -190,12 +191,14 @@ public class AppWebController {
             String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
             PackageActivityForm activityForm = appService.viewAssignmentForm(appId, version, activityId, formData, formUrl);
             Form form = activityForm.getForm();
-
-            // generate form HTML
+            
+                // generate form HTML
             String formHtml = formService.retrieveFormHtml(form, formData);
             String formJson = formService.generateElementJson(form);
 
+            model.addAttribute("appDef", appDef);
             model.addAttribute("assignment", assignment);
+            model.addAttribute("activityForm", activityForm);
             model.addAttribute("form", form);
             model.addAttribute("formHtml", formHtml);
             model.addAttribute("formJson", formJson);

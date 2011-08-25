@@ -218,6 +218,19 @@ public class AppServiceImpl implements AppService {
         }
         activityForm.setForm(form);
 
+        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+            // set external URL
+            String externalUrl = AppUtil.processHashVariable(activityForm.getFormUrl(), assignment, null, null);
+            if (externalUrl.indexOf("?") >= 0) {
+                if (!externalUrl.endsWith("?") && !externalUrl.endsWith("&")) {
+                    externalUrl += "&";
+                }
+            } else {
+                externalUrl += "?";
+            }
+            activityForm.setFormUrl(externalUrl);
+        }        
+        
         return activityForm;
     }
 
@@ -279,23 +292,37 @@ public class AppServiceImpl implements AppService {
     public PackageActivityForm viewStartProcessForm(String appId, String version, String processDefId, FormData formData, String formUrl) {
         AppDefinition appDef = getAppDefinition(appId, version);
         PackageActivityForm startFormDef = retrieveMappedForm(appId, version, processDefId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
-        if (startFormDef != null && startFormDef.getFormId() != null && !startFormDef.getFormId().isEmpty()) {
-            // get mapped form
-            Form startForm = retrieveForm(appDef, startFormDef, formData, null);
-            if (startForm != null) {
-                // set action URL
-                startForm.setProperty("url", formUrl);
+        if (startFormDef != null) {
+            if (startFormDef.getFormId() != null && !startFormDef.getFormId().isEmpty()) {
+                // get mapped form
+                Form startForm = retrieveForm(appDef, startFormDef, formData, null);
+                if (startForm != null) {
+                    // set action URL
+                    startForm.setProperty("url", formUrl);
 
-                // decorate form with actions
-                Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
-                submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
-                submitButton.setProperty("label", "Submit");
-                FormAction[] formActions = {(FormAction) submitButton};
-                startForm = decorateFormActions(startForm, formActions);
+                    // decorate form with actions
+                    Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
+                    submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
+                    submitButton.setProperty("label", "Submit");
+                    FormAction[] formActions = {(FormAction) submitButton};
+                    startForm = decorateFormActions(startForm, formActions);
 
-                // set to definition
-                startFormDef.setForm(startForm);
+                    // set to definition
+                    startFormDef.setForm(startForm);
+                }
             }
+            if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType())) {
+                // set external URL
+                String externalUrl = AppUtil.processHashVariable(startFormDef.getFormUrl(), null, null, null);
+                if (externalUrl.indexOf("?") >= 0) {
+                    if (!externalUrl.endsWith("?") && !externalUrl.endsWith("&")) {
+                        externalUrl += "&";
+                    }
+                } else {
+                    externalUrl += "?";
+                }
+                startFormDef.setFormUrl(externalUrl);
+            }        
         }
         return startFormDef;
     }

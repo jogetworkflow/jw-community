@@ -372,6 +372,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // load assignment form
             PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
             form = activityForm.getForm();
+            setProperty("activityForm", activityForm);
         }
 
         if (form != null) {

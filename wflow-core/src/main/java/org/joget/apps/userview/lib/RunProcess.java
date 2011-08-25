@@ -199,6 +199,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 setProperty("headerTitle", process.getName());
                 setProperty("view", "formView");
                 setProperty("formHtml", formHtml);
+                setProperty("activityForm", startFormDef);
             } else {
                 // empty start page
                 setProperty("headerTitle", process.getPackageName() + " (version " + process.getVersion() + ")");
@@ -265,6 +266,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("headerTitle", process.getName());
                     setProperty("view", "formView");
                     setProperty("formHtml", formHtml);
+                    setProperty("activityForm", startFormDef);
                 }
             } else {
                 // start process - TODO: handle process linking
@@ -323,6 +325,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
                 setProperty("view", "formView");
                 setProperty("formHtml", formHtml);
+                setProperty("activityForm", activityForm);
             } catch (Exception e) {
                 Logger.getLogger(RunProcess.class.getName()).log(Level.SEVERE, null, e);
             }
