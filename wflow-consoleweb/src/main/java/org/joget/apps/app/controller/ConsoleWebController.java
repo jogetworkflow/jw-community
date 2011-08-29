@@ -1534,7 +1534,7 @@ public class ConsoleWebController {
         PackageDefinition packageDef = appDef.getPackageDefinition();
         String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         PackageActivityForm activityForm = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
-        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+        if (activityForm != null && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
             map.addAttribute("externalFormUrl", activityForm.getFormUrl());
             map.addAttribute("externalFormIFrameStyle", activityForm.getFormIFrameStyle());
         }
