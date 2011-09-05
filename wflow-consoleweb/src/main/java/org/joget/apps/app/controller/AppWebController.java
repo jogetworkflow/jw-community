@@ -50,7 +50,7 @@ public class AppWebController {
     FormDefinitionDao formDefinitionDao;
 
     @RequestMapping("/client/app/(*:appId)/(*:version)/process/(*:processDefId)")
-    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId) {
+    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String start) {
 
         // clean process def
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -71,8 +71,9 @@ public class AppWebController {
 
         // check for start mapped form
         FormData formData = new FormData();
-        String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
-        PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrl);
+        String formUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
+        String formUrlWithContextPath = AppUtil.getRequestContextPath() + formUrl;
+        PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
 
@@ -86,8 +87,13 @@ public class AppWebController {
             model.addAttribute("formHtml", formHtml);
             return "client/app/processFormStart";
         } else {
-            // empty start page
-            return "client/app/processStart";
+            if (Boolean.valueOf(start).booleanValue()) {
+                // redirect to start URL
+                return "redirect:" + formUrl;
+            } else {
+                // empty start page
+                return "client/app/processStart";
+            }
         }
     }
 

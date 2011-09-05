@@ -47,7 +47,7 @@
                     <dt><fmt:message key="console.app.process.common.label.description"/></dt>
                     <dd>${process.description}&nbsp;</dd>
                     <dt><fmt:message key="console.process.config.label.linkToRunProcess"/></dt>
-                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}/start</dd>
+                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}?start=true</dd>
                 </dl>
             </div>
             <div class="form-buttons">
