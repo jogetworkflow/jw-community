@@ -10,7 +10,6 @@ import java.util.Map;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListBinderDefault;
@@ -184,12 +183,14 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
         DataListFilterQueryObject filter = processFilterQueryObjects(filterQueryObjects);
 
-        if (filter.getQuery() != null && !filter.getQuery().isEmpty() && filter.getValues() != null && filter.getValues().length > 0) {
+        if (filter.getQuery() != null && !filter.getQuery().isEmpty()) {
             condition = " WHERE " + filter.getQuery();
-            params.addAll(Arrays.asList(filter.getValues()));
+            if (filter.getValues() != null && filter.getValues().length > 0) {
+                params.addAll(Arrays.asList(filter.getValues()));
+            }
         }
 
-        String extraCondition = properties.get("extraCondition").toString();
+        String extraCondition = (properties.get("extraCondition") != null) ? properties.get("extraCondition").toString() : null;
         String keyName = null;
         if (properties.get(Userview.USERVIEW_KEY_NAME) != null) {
             keyName = properties.get(Userview.USERVIEW_KEY_NAME).toString();
