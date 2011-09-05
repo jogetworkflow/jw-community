@@ -3,6 +3,7 @@ package org.joget.apps.datalist.lib;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
@@ -12,63 +13,56 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.plugin.property.model.PropertyEditable;
 
 /**
  * Hyperlink action for a datalist
  */
-public class HyperlinkDataListAction extends DataListActionDefault implements PropertyEditable {
+public class HyperlinkDataListAction extends DataListActionDefault {
 
-    @Override
     public String getName() {
-        return "Data List Hyperlink";
+        return "Data List Hyperlink Action";
     }
 
-    @Override
     public String getVersion() {
         return "1.0.0";
     }
 
-    @Override
     public String getDescription() {
         return "Data List Hyperlink Action";
     }
-
-    @Override
+    
     public String getLabel() {
-        String label = getProperty("label");
+        return "Data List Hyperlink Action";
+    }
+
+    public String getLinkLabel() {
+        String label = getPropertyString("label");
         if (label == null || label.isEmpty()) {
             label = "Hyperlink";
         }
         return label;
     }
 
-    @Override
     public String getHref() {
-        return getProperty("href");
+        return getPropertyString("href");
     }
 
-    @Override
     public String getTarget() {
-        return getProperty("target");
+        return getPropertyString("target");
     }
 
-    @Override
     public String getHrefParam() {
-        return getProperty("hrefParam");
+        return getPropertyString("hrefParam");
     }
 
-    @Override
     public String getHrefColumn() {
-        return getProperty("hrefColumn");
+        return getPropertyString("hrefColumn");
     }
 
-    @Override
     public String getConfirmation() {
-        return getProperty("confirmation");
+        return getPropertyString("confirmation");
     }
 
-    @Override
     public DataListActionResult executeAction(DataList dataList, String[] rowKeys) {
         DataListActionResult result = new DataListActionResult();
         result.setType(DataListActionResult.TYPE_REDIRECT);
@@ -104,22 +98,16 @@ public class HyperlinkDataListAction extends DataListActionDefault implements Pr
         return result;
     }
 
-    @Override
     public String getPropertyOptions() {
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/datalist/hyperlinkDataListAction.json", null, true, "message/datalist/hyperlinkDataListAction");
         return json;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Hyperlink'}";
     }
 
     protected Form getSelectedForm() {
         Form form = null;
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        String formDefId = getProperties().getProperty("formDefId");
+        String formDefId = getPropertyString("formDefId");
         if (formDefId != null) {
             form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
         }
@@ -142,5 +130,9 @@ public class HyperlinkDataListAction extends DataListActionDefault implements Pr
         } catch (UnsupportedEncodingException ex) {
             return paramValue;
         }
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
     }
 }

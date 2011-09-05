@@ -65,10 +65,6 @@ public class DepartmentPermission extends UserviewPermission implements PluginWe
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/departmentPermission.json", null, true, "message/userview/departmentPermission");
     }
 
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 

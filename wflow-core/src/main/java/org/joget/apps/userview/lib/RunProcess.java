@@ -55,7 +55,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     }
 
     public String getName() {
-        return "Run Process";
+        return "Run Process Menu";
     }
 
     public String getVersion() {
@@ -73,10 +73,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         Object[] arguments = new Object[]{appId, appVersion};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/runProcess.json", arguments, true, "message/userview/runProcess");
         return json;
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     @Override

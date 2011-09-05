@@ -130,11 +130,6 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Custom HTML'}";
-    }
-
-    @Override
     public String getFormBuilderCategory() {
         return FormBuilderPalette.CATEGORY_CUSTOM;
     }

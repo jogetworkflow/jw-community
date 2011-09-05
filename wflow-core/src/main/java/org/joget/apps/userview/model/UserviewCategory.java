@@ -2,9 +2,8 @@ package org.joget.apps.userview.model;
 
 import java.util.Collection;
 import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.plugin.property.model.PropertyEditable;
 
-public class UserviewCategory extends Element implements PropertyEditable {
+public class UserviewCategory extends Element {
 
     private UserviewPermission permission;
     private Collection<UserviewMenu> menus;

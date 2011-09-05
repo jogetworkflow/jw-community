@@ -140,6 +140,82 @@ AssignmentManager = {
     }
 };
 
+UrlUtil = {
+    encodeUrlParam : function(url){
+        var urlResult = url;
+        try{
+            var urlPart = urlResult.split("\\?");
+
+            urlResult = urlPart[0];
+
+            if (urlPart.length > 1) {
+                urlResult += "?" + UrlUtil.constructUrlQueryString(getUrlParams(urlPart[1]));
+            }
+        }catch(err){}
+
+        return urlResult;
+    },
+    
+    mergeRequestQueryString : function(queryString1, queryString2){
+        if (queryString1 == null || queryString2 == null) {
+            return queryString1;
+        }
+        var params = UrlUtil.getUrlParams(queryString1);
+        params = $.extend(params, UrlUtil.getUrlParams(queryString2));
+        return UrlUtil.constructUrlQueryString(params);
+    },
+    
+    getUrlParams : function(url){
+        var result = new Object();
+        if(url != ""){
+            try {
+                var queryString = url;
+                if (url.indexOf("?") != -1) {
+                    queryString = url.substring(url.indexOf("?") + 1);
+                }
+                if (queryString != "") {
+                    var params = queryString.split("&");
+                    for(a in params) {
+                        if(params[a] != ""){
+                            var param = params[a].split("=");
+                            var values = param[1].split(",");
+                            for (var i = 0; i < values.length; i++) {
+                                values[i] = decodeURIComponent(values[i]);
+                            }
+                            result[decodeURIComponent(param[0])] = values;
+                        }
+                    }
+                }
+            }catch(err){}
+        }
+        return result;
+    },
+    
+    constructUrlQueryString : function(params){
+        var queryString = "";
+        try {
+            for (key in params) {
+                var values = params[key];
+                queryString += encodeURIComponent(key) + "=";
+
+                var paramValues = "";
+                for (value in values) {
+                    paramValues += encodeURIComponent(values[value]) + ",";
+                }
+                if (paramValues != "") {
+                    paramValues = paramValues.substring(0, paramValues.length-1);
+                }
+
+                queryString += paramValues + "&";
+            }
+            if (queryString != "") {
+                queryString = queryString.substring(0, queryString.length-1);
+            }
+        }catch(err){}
+        return queryString;
+    }
+}
+
 function filter(jsonTable, url, value){
     var newUrl = url + value;
     jsonTable.load(jsonTable.url + newUrl);

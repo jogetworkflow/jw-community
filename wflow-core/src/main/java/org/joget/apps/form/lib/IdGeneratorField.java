@@ -120,7 +120,7 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
 
     @Override
     public String getName() {
-        return "IdGeneratorField";
+        return "Id Generator Field";
     }
 
     @Override
@@ -161,10 +161,5 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/idGeneratorField.json", null, true, "message/form/IdGeneratorField");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'IdGeneratorField', envVariable:'counter', format:'ID-??????'}";
     }
 }

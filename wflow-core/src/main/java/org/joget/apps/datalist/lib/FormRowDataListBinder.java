@@ -1,21 +1,22 @@
 package org.joget.apps.datalist.lib;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Properties;
-import org.displaytag.properties.SortOrderEnum;
+import java.util.Map;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListBinderDefault;
-import org.joget.apps.datalist.model.DataListBuilderProperty;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
+import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Column;
 import org.joget.apps.form.model.Element;
@@ -25,12 +26,13 @@ import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
-import org.joget.plugin.property.model.PropertyEditable;
 
-/**
- * Test implementation for a binder that retrieves rows from a form table.
- */
-public class FormRowDataListBinder extends DataListBinderDefault implements PropertyEditable {
+public class FormRowDataListBinder extends DataListBinderDefault {
+
+    @Override
+    public String getClassName() {
+        return this.getClass().getName();
+    }
 
     @Override
     public String getName() {
@@ -49,7 +51,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
 
     @Override
     public String getLabel() {
-        return getName();
+        return "Form Data Binder";
     }
 
     @Override
@@ -65,17 +67,6 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
         Object[] arguments = new Object[]{formDefField};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/datalist/formRowDataListBinder.json", arguments, true, "message/datalist/formRowDataListBinder");
         return json;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return null;
-    }
-
-    @Override
-    public DataListBuilderProperty[] getBuilderProperties() {
-        DataListBuilderProperty[] builderProps = {};
-        return builderProps;
     }
 
     @Override
@@ -125,45 +116,31 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
     }
 
     @Override
-    public DataListCollection getData(DataList dataList, Properties properties, String filterName, String filterValue, String sort, Boolean desc, int start, int rows) {
+    public DataListCollection getData(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String sort, Boolean desc, Integer start, Integer rows) {
         DataListCollection resultList = new DataListCollection();
 
         Form form = getSelectedForm();
         if (form != null) {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            String propertyName = getFormPropertyName(form, filterName);
 
-            Object[] criteria = getCriteria(properties, propertyName, filterValue);
+            DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
 
-            FormRowSet rowSet = formDataDao.find(form, criteria[0].toString(), (Object[]) criteria[1], sort, desc, start, rows);
+            FormRowSet rowSet = formDataDao.find(form, criteria.getQuery(), criteria.getValues(), sort, desc, start, rows);
             resultList.addAll(rowSet);
-            int total = getDataTotalRowCount(dataList, properties, filterName, filterValue);
-            resultList.setObjectsPerPage(rows);
-            resultList.setFullListSize(total);
-            resultList.setSortCriterion(sort);
-            if (desc != null) {
-                if (desc.booleanValue()) {
-                    resultList.setSortDirection(SortOrderEnum.DESCENDING);
-                } else {
-                    resultList.setSortDirection(SortOrderEnum.ASCENDING);
-                }
-            }
         }
 
         return resultList;
     }
 
     @Override
-    public int getDataTotalRowCount(DataList dataList, Properties properties, String filterName, String filterValue) {
+    public int getDataTotalRowCount(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
         int count = 0;
         Form form = getSelectedForm();
         if (form != null) {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            String propertyName = getFormPropertyName(form, filterName);
+            DataListFilterQueryObject criteria = getCriteria(properties, filterQueryObjects);
 
-            Object[] criteria = getCriteria(properties, propertyName, filterValue);
-
-            Long rowCount = formDataDao.count(form, criteria[0].toString(), (Object[]) criteria[1]);
+            Long rowCount = formDataDao.count(form, criteria.getQuery(), criteria.getValues());
             count = rowCount.intValue();
         }
         return count;
@@ -173,7 +150,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
         Form form = null;
         FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
         FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
-        String formDefId = getProperties().getProperty("formDefId");
+        String formDefId = getPropertyString("formDefId");
         if (formDefId != null) {
             Long version = null;
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
@@ -188,35 +165,39 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
         return form;
     }
 
-    /**
-     * Retrieves the object property name for the form column i.e. prefixed with FormUtil.PROPERTY_CUSTOM_PROPERTIES for custom form fields.
-     * @param form
-     * @param propertyName
-     * @return
-     */
-    protected String getFormPropertyName(Form form, String propertyName) {
-        if (propertyName != null && !propertyName.isEmpty()) {
+    @Override
+    public String getColumnName(String name) {
+        Form form = getSelectedForm();
+        if (name != null && !name.isEmpty()) {
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME));
-            if (columnNames.contains(propertyName) && !FormUtil.PROPERTY_ID.equals(propertyName)) {
-                propertyName = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + propertyName;
+            if (columnNames.contains(name) && !FormUtil.PROPERTY_ID.equals(name)) {
+                name = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + name;
             }
         }
-        return propertyName;
+        return name;
     }
 
-    protected Object[] getCriteria(Properties properties, String filterName, String filterValue) {
-        Collection<Object> params = new ArrayList<Object>();
+    protected DataListFilterQueryObject getCriteria(Map properties, DataListFilterQueryObject[] filterQueryObjects) {
+        Collection<String> params = new ArrayList<String>();
         String condition = "";
 
-        if (filterName != null && !filterName.isEmpty() && filterValue != null) {
-            condition = " WHERE " + filterName + " LIKE ?";
-            params.add("%" + filterValue + "%");
+        DataListFilterQueryObject filter = processFilterQueryObjects(filterQueryObjects);
+
+        if (filter.getQuery() != null && !filter.getQuery().isEmpty() && filter.getValues() != null && filter.getValues().length > 0) {
+            condition = " WHERE " + filter.getQuery();
+            params.addAll(Arrays.asList(filter.getValues()));
         }
 
-        String extraCondition = properties.getProperty("extraCondition");
-        String keyName = properties.getProperty(Userview.USERVIEW_KEY_NAME);
-        String keyValue = properties.getProperty(Userview.USERVIEW_KEY_VALUE);
+        String extraCondition = properties.get("extraCondition").toString();
+        String keyName = null;
+        if (properties.get(Userview.USERVIEW_KEY_NAME) != null) {
+            keyName = properties.get(Userview.USERVIEW_KEY_NAME).toString();
+        }
+        String keyValue = null;
+        if (properties.get(Userview.USERVIEW_KEY_VALUE) != null) {
+            keyValue = properties.get(Userview.USERVIEW_KEY_VALUE).toString();
+        }
 
         if (extraCondition != null && extraCondition.contains(USERVIEW_KEY_SYNTAX)) {
             if (keyValue == null) {
@@ -229,11 +210,7 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
             } else {
                 condition += " WHERE ";
             }
-            if (FormUtil.PROPERTY_ID.equals(keyName) || FormUtil.PROPERTY_DATE_CREATED.equals(keyName) || FormUtil.PROPERTY_DATE_MODIFIED.equals(keyName)) {
-                condition += keyName + " = ?";
-            } else {
-                condition += FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + keyName + " = ?";
-            }
+            condition += getColumnName(keyName) + " = ?";
             params.add(keyValue);
         }
 
@@ -246,6 +223,11 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Prop
             condition += extraCondition;
         }
 
-        return new Object[]{condition, params.toArray()};
+        DataListFilterQueryObject queryObject = new DataListFilterQueryObject();
+        queryObject.setQuery(condition);
+        if (params.size() > 0) {
+            queryObject.setValues((String[]) params.toArray(new String[0]));
+        }
+        return queryObject;
     }
 }

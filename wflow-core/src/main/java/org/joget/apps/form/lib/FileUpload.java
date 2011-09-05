@@ -16,7 +16,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "FileUpload";
+        return "File Upload";
     }
 
     @Override
@@ -110,17 +110,12 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getLabel() {
-        return "FileUpload";
+        return "File Upload";
     }
 
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/fileUpload.json", null, true, "message/form/FileUpload");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'FileUpload'}";
     }
 
     @Override

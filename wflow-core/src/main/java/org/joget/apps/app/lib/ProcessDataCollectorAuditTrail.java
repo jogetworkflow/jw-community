@@ -25,7 +25,7 @@ import org.joget.workflow.model.service.WorkflowManager;
 public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
     public String getName() {
-        return "ProcessDataCollectorAuditTrail";
+        return "Process Data Collector";
     }
 
     public String getVersion() {
@@ -94,10 +94,6 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
     }
 
     public String getPropertyOptions() {
-        return "";
-    }
-
-    public String getDefaultPropertyValues() {
         return "";
     }
 

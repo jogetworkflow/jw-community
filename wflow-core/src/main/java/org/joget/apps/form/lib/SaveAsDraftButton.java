@@ -3,8 +3,6 @@ package org.joget.apps.form.lib;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormBuilderPalette;
-import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
@@ -47,11 +45,6 @@ public class SaveAsDraftButton extends FormButton {
     }
 
     @Override
-    public String getLabel() {
-    return "Save As Draft Button";
-    }
-
-    @Override
     public String getPropertyOptions() {
     return "[{title:'Edit Button', properties:[{name:'id',label:'ID',type:'textfield',required:'True'},{name:'label',label:'Label',type:'textfield',required:'True'}]}]";
     }
@@ -76,4 +69,16 @@ public class SaveAsDraftButton extends FormButton {
     return null;
     }
      */
+
+    public String getLabel() {
+        return "Save As Draft Button";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
+        return "";
+    }
 }

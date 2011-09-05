@@ -1,9 +1,11 @@
 package org.joget.apps.datalist.model;
 
+import org.joget.plugin.property.model.PropertyEditable;
+
 /**
  * Formatter for columns
  */
-public interface DataListColumnFormat extends DataListConfigurable {
+public interface DataListColumnFormat extends PropertyEditable {
 
     /**
      *

@@ -11,7 +11,8 @@
     {
         name : 'label',
         label : '@@form.textarea.label@@',
-        type : 'textfield'
+        type : 'textfield',
+        value : 'TextArea'
     },
     {
         name : 'value',
@@ -21,12 +22,14 @@
     {
         name : 'cols',
         label : '@@form.textarea.cols@@',
-        type : 'textfield'
+        type : 'textfield',
+        value : '20'
     },
     {
         name : 'rows',
         label : '@@form.textarea.rows@@',
-        type : 'textfield'
+        type : 'textfield',
+        value : '5'
     },
     {
         name : 'readonly',

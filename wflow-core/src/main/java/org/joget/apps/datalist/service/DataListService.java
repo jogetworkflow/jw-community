@@ -20,28 +20,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataListService {
 
-    //@Autowired
-    //DataListDao dataListDao;
     @Autowired
     PluginManager pluginManager;
 
-    /**
-     * Retrieve a data list by ID
-     * @param id
-     * @return
-     */
-    /*
-    public DataList getDataList(String id) {
-    String json = dataListDao.loadDataListDefinition(id);
-    DataList dataList = fromJson(json);
-    dataList.setId(id);
-    return dataList;
-    }
-
-    public String getDataListJson(String id) {
-    return dataListDao.loadDataListDefinition(id);
-    }
-     */
     /**
      * Create a DataList object from JSON definition
      * @param json
@@ -54,17 +35,6 @@ public class DataListService {
         return dataList;
     }
 
-    /**
-     * Converts a DataList object into corresponding JSON definition
-     * @param dataList
-     * @return
-     */
-    /*
-    public String toJson(DataList dataList) {
-    String json = JsonUtil.toJson(dataList);
-    return json;
-    }
-     */
     /**
      * Retrieve a binder by ID. For now the ID is the class name
      * @param id

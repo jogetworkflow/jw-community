@@ -12,7 +12,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "TextField";
+        return "Text Field";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getDescription() {
-        return "TextField Element";
+        return "Text Field Element";
     }
 
     @Override
@@ -49,17 +49,12 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getLabel() {
-        return "TextField";
+        return "Text Field";
     }
 
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/textField.json", null, true, "message/form/TextField");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'TextField'}";
     }
 
     @Override

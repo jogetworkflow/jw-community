@@ -41,7 +41,7 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
     }
 
     public String getName() {
-        return "GroupPermission";
+        return "Group Permission";
     }
 
     public String getVersion() {
@@ -62,10 +62,6 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/groupPermission.json", null, true, "message/userview/groupPermission");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

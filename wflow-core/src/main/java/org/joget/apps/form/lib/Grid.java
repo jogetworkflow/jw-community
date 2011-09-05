@@ -219,11 +219,6 @@ public class Grid extends Element implements FormBuilderPaletteElement {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Grid'}";
-    }
-
-    @Override
     public String getFormBuilderCategory() {
         return FormBuilderPalette.CATEGORY_CUSTOM;
     }

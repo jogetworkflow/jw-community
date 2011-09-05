@@ -106,11 +106,6 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Checkbox'}";
-    }
-
-    @Override
     public String getFormBuilderCategory() {
         return FormBuilderPalette.CATEGORY_GENERAL;
     }

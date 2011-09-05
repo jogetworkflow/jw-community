@@ -12,7 +12,8 @@
                 name:'label',
                 label:'@@form.section.label@@',
                 type:'textfield',
-                required:'False'
+                required:'False',
+                value:'Section'
             }
         ]
     },

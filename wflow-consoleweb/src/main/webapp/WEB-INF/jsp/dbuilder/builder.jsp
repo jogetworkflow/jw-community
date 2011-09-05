@@ -75,9 +75,9 @@
                     }
                 });
 
-                DatalistBuilder.init();
                 DatalistBuilder.setJson(${json}, "${id}");
-
+                DatalistBuilder.init();
+                
                 $('#builder-steps-properties').click( function(){
                     DatalistBuilder.showDatalistProperties();
                 })

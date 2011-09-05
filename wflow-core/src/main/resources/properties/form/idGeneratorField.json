@@ -12,20 +12,23 @@
         name : 'label',
         label : '@@form.idgeneratorfield.label@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'IdGeneratorField'
     },
     {
         name : 'envVariable',
         description : '@@form.idgeneratorfield.envVariableDesc@@',
         label : '@@form.idgeneratorfield.envVariableName@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'counter'
     },
     {
         name : 'format',
         label : '@@form.idgeneratorfield.format@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'ID-??????'
     }]
 },
 {

@@ -1,6 +1,5 @@
 package org.joget.apps.form.lib;
 
-import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -8,7 +7,6 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
-import org.joget.apps.form.model.FormBuilderEditable;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
@@ -17,11 +15,11 @@ import org.joget.apps.form.service.FormUtil;
 /**
  * Form load binder that loads the data rows of a form.
  */
-public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBinder, FormBuilderEditable {
+public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBinder {
 
     @Override
     public String getName() {
-        return "DefaultFormOptionsBinder";
+        return "Default Form Options Binder";
     }
 
     @Override
@@ -32,11 +30,6 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     @Override
     public String getDescription() {
         return "Default Form Options Binder";
-    }
-
-    @Override
-    public Object execute(Map properties) {
-        return null;
     }
 
     @Override
@@ -119,15 +112,5 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
             form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
         }
         return form;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
-    @Override
-    public String getFormBuilderTemplate() {
-        return "";
     }
 }

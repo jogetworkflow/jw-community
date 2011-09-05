@@ -11,7 +11,8 @@
     {
         name : 'label',
         label : '@@form.checkbox.label@@',
-        type : 'textfield'
+        type : 'textfield',
+        value : 'Checkbox'
     },
     {
         name : 'value',

@@ -8,6 +8,7 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.springframework.beans.BeansException;
@@ -74,5 +75,10 @@ public class AppPluginUtil implements ApplicationContextAware {
         }
 
         return propertyMap;
+    }
+    
+    public static String getMessage(String key, String pluginName, String translationPath){
+        PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+        return pluginManager.getMessage(key, pluginName, translationPath);
     }
 }

@@ -42,12 +42,7 @@ public class Form extends Element implements FormBuilderEditable {
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/form.json", null, true, "message/form/Form");
     }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
+    
     @Override
     public String getFormBuilderTemplate() {
         return "";

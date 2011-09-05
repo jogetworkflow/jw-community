@@ -6,25 +6,17 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.StringTokenizer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.commons.collections.map.ListOrderedMap;
-import org.displaytag.properties.SortOrderEnum;
-import org.displaytag.tags.TableTagParameters;
-import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
-import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListCollection;
-import org.joget.apps.datalist.model.DataListColumn;
-import org.joget.apps.datalist.model.DataListFilter;
-import org.joget.apps.datalist.service.DataListDecorator;
+import org.joget.apps.datalist.model.DataListQueryParam;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
@@ -44,6 +36,7 @@ import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
 public class InboxMenu extends UserviewMenu implements PluginWebSupport {
+
     public static final String PREFIX_SELECTED = "selected_";
     public static final String PROPERTY_FILTER = "appFilter";
     public static final String PROPERTY_FILTER_ALL = "all";
@@ -70,7 +63,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     public String getName() {
-        return "Inbox";
+        return "Inbox Menu";
     }
 
     public String getVersion() {
@@ -80,17 +73,17 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     public String getDescription() {
         return "";
     }
-    
+
     @Override
     public String getCategory() {
         return UserviewBuilderPalette.CATEGORY_GENERAL;
     }
-    
+
     @Override
     public boolean isHomePageSupported() {
         return true;
     }
-    
+
     @Override
     public String getDecoratedMenu() {
         String menuItem = null;
@@ -99,15 +92,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             int rowCount = getDataTotalRowCount();
 
             // generate menu link
-            String menuItemId = getPropertyString("customId");
-            if (menuItemId == null || menuItemId.trim().isEmpty()) {
-                menuItemId = getPropertyString("id");
-            }
             menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + getPropertyString("label") + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
         }
         return menuItem;
     }
-    
+
     @Override
     public String getJspPage() {
         String mode = getRequestParameterString("mode");
@@ -127,73 +116,23 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             return handleList();
         }
     }
-    
+
     protected String handleList() {
         viewList();
 
         return "userview/plugin/datalist.jsp";
     }
- 
-    protected void viewList() {
-        // get parameters
-        String id = "inbox";
-        String sortParam = new ParamEncoder(id).encodeParameterName(TableTagParameters.PARAMETER_SORT);
-        String orderParam = new ParamEncoder(id).encodeParameterName(TableTagParameters.PARAMETER_ORDER);
-        String pageParam = new ParamEncoder(id).encodeParameterName(TableTagParameters.PARAMETER_PAGE);
-        String filterNameParam = new ParamEncoder(id).encodeParameterName(DataListFilter.PARAMETER_FILTER_NAME);
-        String filterValueParam = new ParamEncoder(id).encodeParameterName(DataListFilter.PARAMETER_FILTER_VALUE);
-        String filterOptionParam = new ParamEncoder(id).encodeParameterName(DataListFilter.PARAMETER_FILTER_OPTION);
-        String exportParam = new ParamEncoder(id).encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE);
-        String sort = getRequestParameterString(sortParam);
-        String page = getRequestParameterString(pageParam);
-        String order = getRequestParameterString(orderParam);
-        String filterName = getRequestParameterString(filterNameParam);
-        String filterValue = getRequestParameterString(filterValueParam);
-        String filterOption = getRequestParameterString(filterOptionParam);
-        String export = getRequestParameterString(exportParam);
 
+    protected void viewList() {
         try {
             // get data list
             DataList dataList = getDataList();
-
-            // set filter param names
-            setProperty("filterNameParam", filterNameParam);
-            setProperty("filterValueParam", filterValueParam);
-            setProperty("filterOptionParam", filterOptionParam);
-            setProperty("filterNameParamValue", filterName);
-            setProperty("filterValueParamValue", filterValue);
-            setProperty("filterOptionParamValue", filterOption);
+            dataList.setCheckboxPosition(DataList.CHECKBOX_POSITION_NO);
+            dataList.setRows(getRows(dataList));
+            dataList.setSize(getDataTotalRowCount());
 
             // set data list
             setProperty("dataList", dataList);
-
-            int pageSize = dataList.getPageSize();
-            int start = 0;
-            if (export == null) {
-                if (page != null && page.trim().length() > 0) {
-                    start = (Integer.parseInt(page) - 1) * pageSize;
-                }
-            } else {
-                // exporting, set full list
-                pageSize = DataList.MAXIMUM_PAGE_SIZE;
-            }
-
-            DataListCollection rows = getRows(dataList, null, sort, order, filterName, filterValue, filterOption, page, null, pageSize);
-            setProperty("dataListRows", rows);
-            setProperty("dataListSize", rows.getFullListSize());
-            setProperty("dataListPageSize", pageSize);
-
-            // set filters
-            Map<String, String> textfieldFilterMap = new ListOrderedMap(); // filter with open options (textfield)
-            Map<String, String> selectBoxFilterMap = new ListOrderedMap(); // filter with fixed options (selectbox)
-            setProperty("textfieldFilterMap", textfieldFilterMap);
-            setProperty("selectBoxFilterMap", selectBoxFilterMap);
-
-            // set checkbox
-            DataListDecorator decorator = new DataListDecorator();
-            setProperty("decorator", decorator);
-            setProperty("checkboxPosition", "none");
-
         } catch (Exception ex) {
             StringWriter out = new StringWriter();
             ex.printStackTrace(new PrintWriter(out));
@@ -202,7 +141,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("error", message);
         }
     }
-    
+
     protected DataList getDataList() {
         // get datalist
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -210,64 +149,14 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         DataListService dataListService = (DataListService) ac.getBean("dataListService");
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", null, true, "message/userview/inboxMenu");
         DataList dataList = dataListService.fromJson(json);
-        
+
         return dataList;
     }
-    
-    protected DataListCollection getRows(DataList dataList, DataListBinder binder, String sort, String order, String filterName, String filterValue, String filterOption, String page, Integer customStart, Integer customPageSize) {
+
+    protected DataListCollection getRows(DataList dataList) {
         try {
-            // determine sort column
-            String sortColumn = null;
-            if (sort != null && !sort.trim().isEmpty()) {
-                int sortIndex = Integer.parseInt(sort);
-                DataListColumn[] columns = dataList.getColumns();
-                if (sortIndex < columns.length) {
-                    sortColumn = columns[sortIndex].getName();
-                }
-            }
-
-            // determine order
-            String dir = null;
-            if ("2".equals(order)) {
-                dir = "asc";
-            } else if ("1".equals(order)) {
-                dir = "desc";
-            }
-
-            // determine start and size
-            int pageSize = dataList.getPageSize();
-            int start = 0;
-            if (page != null && page.trim().length() > 0) {
-                start = (Integer.parseInt(page) - 1) * pageSize;
-            }
-
-            // determine filter name and value
-            if (filterValue == null || filterValue.trim().length() == 0) {
-                if (filterOption != null && filterOption.trim().length() > 0) {
-                    StringTokenizer st = new StringTokenizer(filterOption, DataListFilter.FILTER_OPTION_DELIMITER);
-                    if (st.hasMoreTokens()) {
-                        filterName = st.nextToken();
-                        filterValue = (st.hasMoreTokens()) ? st.nextToken() : "";
-                    }
-                }
-            }
-
-            // set data rows
-            Boolean desc = null;
-            if (dir != null) {
-                desc = ("desc".equals(dir)) ? Boolean.TRUE : Boolean.FALSE;
-            }
-
-            if (customStart != null) {
-                start = customStart;
-            }
-
-            if (customPageSize != null) {
-                pageSize = customPageSize;
-            }
-
             DataListCollection resultList = new DataListCollection();
-            
+
             // determine filter
             String packageId = null;
             String processDefId = null;
@@ -290,31 +179,24 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                     processDefId = process.getId();
                 }
             }
-            
-            // set default sorting
-            if (sort == null || sort.trim().isEmpty()) {
-                sort = "dateCreated";
-                desc = Boolean.TRUE;
-            }
-            
+
+            DataListQueryParam param = dataList.getQueryParam(null, null);
+
             // get assignments
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, sort, desc, start, pageSize);
-            Integer total = assignmentList.getTotal();
-            
+            PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+
             // set results
             resultList.addAll(assignmentList);
-            resultList.setFullListSize(total);
-            
             return resultList;
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     public int getDataTotalRowCount() {
         WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-        
+
         String packageId = null;
         String processDefId = null;
         String appFilter = getPropertyString(PROPERTY_FILTER);
@@ -339,7 +221,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         int count = workflowManager.getAssignmentSize(packageId, processDefId, null);
         return count;
     }
-    
+
     protected String handleForm() {
         if ("submit".equals(getRequestParameterString("action"))) {
             // submit form
@@ -350,7 +232,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         }
         return "userview/plugin/form.jsp";
     }
-    
+
     protected void displayForm() {
 
         String activityId = getRequestParameterString("activityId");
@@ -367,7 +249,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         if (activityId != null && !activityId.trim().isEmpty()) {
             assignment = workflowManager.getAssignment(activityId);
         }
-        
+
         if (assignment != null) {
             // load assignment form
             PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
@@ -391,22 +273,22 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("formHtml", "Assignment Unavailable");
         }
     }
-    
+
     protected PackageActivityForm retrieveAssignmentForm(FormData formData, WorkflowAssignment assignment) {
         String processId = assignment.getProcessId();
         String activityId = assignment.getActivityId();
         formData.setPrimaryKeyValue(processId);
-        String formUrl = addParamToUrl(getUrl() , "action", "submit");
+        String formUrl = addParamToUrl(getUrl(), "action", "submit");
         formUrl = addParamToUrl(formUrl, "mode", "assignment");
         formUrl = addParamToUrl(formUrl, "activityId", activityId);
-        
+
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appDef.getVersion().toString(), activityId, formData, formUrl);
         return activityForm;
     }
-    
+
     protected void submitForm() {
 
         String activityId = getRequestParameterString("activityId");
@@ -423,7 +305,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         if (activityId != null && !activityId.trim().isEmpty()) {
             assignment = workflowManager.getAssignment(activityId);
         }
-        
+
         if (assignment != null) {
             // load assignment form
             PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
@@ -470,7 +352,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         }
 
     }
-    
+
     protected Form submitAssignmentForm(FormData formData, WorkflowAssignment assignment, PackageActivityForm activityForm) {
         Form nextForm = null;
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -521,7 +403,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         return nextForm;
 
     }
-    
+
     public String getPropertyOptions() {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId = appDef.getId();
@@ -531,10 +413,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         return json;
     }
 
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-    
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
@@ -570,7 +448,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             }
         }
     }
-    
+
     protected String addParamToUrl(String url, String name, String value) {
         if (url.contains("?")) {
             url += "&";

@@ -1,14 +1,14 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.springframework.context.ApplicationContext;
 
-public class UserHashVariable extends HashVariablePlugin {
+public class UserHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -19,7 +19,7 @@ public class UserHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "UserHashVariable";
+        return "User Hash Variable";
     }
 
     public String getPrefix() {
@@ -60,5 +60,17 @@ public class UserHashVariable extends HashVariablePlugin {
             LogUtil.error(UserHashVariable.class.getName(), e, "Error retrieving user attribute " + attribute);
         }
         return attributeValue;
+    }
+
+    public String getLabel() {
+        return "User Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
+        return "";
     }
 }

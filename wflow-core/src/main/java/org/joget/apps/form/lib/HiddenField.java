@@ -12,7 +12,7 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "HiddenField";
+        return "Hidden Field";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getDescription() {
-        return "HiddenField Element";
+        return "Hidden Field Element";
     }
 
     @Override
@@ -54,17 +54,12 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getLabel() {
-        return "HiddenField";
+        return "Hidden Field";
     }
 
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/hiddenField.json", null, true, "message/form/HiddenField");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'HiddenField'}";
     }
 
     @Override

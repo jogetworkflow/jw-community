@@ -35,4 +35,16 @@ public class AssignmentCompleteButton extends FormButton {
         formData.addFormResult(DEFAULT_ID, "true");
         return formData;
     }
+
+    public String getLabel() {
+        return "Assignment Complete Button";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
+        return "";
+    }
 }

@@ -31,8 +31,4 @@ public class SampleAuditTrailPlugin extends DefaultAuditTrailPlugin {
     public String getPropertyOptions() {
         return "";
     }
-
-    public String getDefaultPropertyValues() {
-        return "";
-    }
 }

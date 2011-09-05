@@ -1,10 +1,10 @@
 package org.joget.apps.app.lib;
 
 import javax.servlet.http.HttpServletRequest;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.workflow.util.WorkflowUtil;
 
-public class RequestParameterHashVariable extends HashVariablePlugin {
+public class RequestParameterHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -20,7 +20,7 @@ public class RequestParameterHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "RequestParameterHashVariable";
+        return "Request Parameter Hash Variable";
     }
 
     public String getPrefix() {
@@ -32,6 +32,18 @@ public class RequestParameterHashVariable extends HashVariablePlugin {
     }
 
     public String getDescription() {
+        return "";
+    }
+
+    public String getLabel() {
+        return "Request Parameter Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
         return "";
     }
 }

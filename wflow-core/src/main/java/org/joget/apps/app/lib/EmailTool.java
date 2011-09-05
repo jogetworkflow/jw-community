@@ -14,23 +14,20 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
-import org.joget.plugin.base.ApplicationPlugin;
-import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 
-public class EmailTool implements Plugin, ApplicationPlugin, PropertyEditable {
+public class EmailTool extends DefaultApplicationPlugin {
 
     private DirectoryManager directoryManager;
 
     public String getName() {
-        return "EmailTool";
+        return "Email Tool";
     }
 
     public String getDescription() {
@@ -39,10 +36,6 @@ public class EmailTool implements Plugin, ApplicationPlugin, PropertyEditable {
 
     public String getVersion() {
         return "1.0.0";
-    }
-
-    public PluginProperty[] getPluginProperties() {
-        return null;
     }
 
     public Object execute(Map properties) {
@@ -205,10 +198,6 @@ public class EmailTool implements Plugin, ApplicationPlugin, PropertyEditable {
     }
 
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/emailTool.json", null, true, "message/app/emailTool");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/emailTool.json", null, true, null);
     }
 }

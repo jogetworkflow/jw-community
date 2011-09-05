@@ -27,7 +27,7 @@ public class HtmlPage extends UserviewMenu {
     }
 
     public String getName() {
-        return "HTML Page";
+        return "HTML Page Menu";
     }
 
     public String getVersion() {
@@ -40,10 +40,6 @@ public class HtmlPage extends UserviewMenu {
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/htmlPage.json", null, true, "message/userview/htmlPage");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     @Override

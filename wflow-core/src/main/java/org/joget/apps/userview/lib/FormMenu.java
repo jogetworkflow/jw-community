@@ -40,7 +40,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getName() {
-        return "Form";
+        return "Form Menu";
     }
 
     @Override
@@ -71,11 +71,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         Object[] arguments = new Object[]{appId, appVersion};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/formMenu.json", arguments, true, "message/userview/formMenu");
         return json;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     @Override

@@ -23,11 +23,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class PropertyUtil {
+
     /**
      * Parse property xml file and convert to json output
      * @return
      */
-    public static String getPropertiesJSONObject(String[] fileNames){
+    public static String getPropertiesJSONObject(String[] fileNames) {
 
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -43,14 +44,14 @@ public class PropertyUtil {
             dummyPage.appendChild(dummyPageHidden);
             root.appendChild(dummyPage);
 
-            for(String fileName : fileNames){
+            for (String fileName : fileNames) {
                 Document doc = docBuilder.parse(PropertyUtil.class.getClassLoader().getResourceAsStream(fileName));
 
                 //processing the xml
                 //change options_source_class to option
                 NodeList nodes = doc.getElementsByTagName("options_source_class");
                 for (int i = 0; i < nodes.getLength(); i++) {
-                    try{
+                    try {
                         Node node = nodes.item(i);
                         Node parentNode = node.getParentNode();
 
@@ -61,28 +62,28 @@ public class PropertyUtil {
                         PropertyOptions optionClass = (PropertyOptions) clazz.newInstance();
                         Map optionMap = optionClass.toOptionsMap();
 
-                        for (Object obj : optionMap.entrySet()){
-                           Map.Entry entry = (Map.Entry) obj;
-                           Node option = doc.createElement("option");
-                           Node value = doc.createElement("value");
-                           Node label = doc.createElement("label");
-                           value.setTextContent(entry.getKey().toString());
-                           label.setTextContent(entry.getValue().toString());
-                           option.appendChild(value);
-                           option.appendChild(label);
+                        for (Object obj : optionMap.entrySet()) {
+                            Map.Entry entry = (Map.Entry) obj;
+                            Node option = doc.createElement("option");
+                            Node value = doc.createElement("value");
+                            Node label = doc.createElement("label");
+                            value.setTextContent(entry.getKey().toString());
+                            label.setTextContent(entry.getValue().toString());
+                            option.appendChild(value);
+                            option.appendChild(label);
 
-                           optionsNode.appendChild(option);
+                            optionsNode.appendChild(option);
                         }
 
                         parentNode.appendChild(optionsNode);
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         //ignore
                     }
                 }
 
                 NodeList pageNodes = doc.getElementsByTagName("page");
                 for (int i = 0; i < pageNodes.getLength(); i++) {
-                    Node importedPageNode = output.importNode(pageNodes.item(i),true);
+                    Node importedPageNode = output.importNode(pageNodes.item(i), true);
                     root.appendChild(importedPageNode);
                 }
             }
@@ -105,17 +106,47 @@ public class PropertyUtil {
             JSON json = xmlSerializer.read(xmlString);
             String jsonString = json.toString(2);
             return jsonString;
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
         return null;
     }
 
     /**
+     * Parse default properties string from json
+     */
+    public static String getDefaultPropertyValues(String json) {
+        JSONArray pages = (JSONArray) JSONSerializer.toJSON(json);
+        String defaultProperties = "{";
+
+        //loop page
+        if (!JSONUtils.isNull(pages)) {
+            for (int i = 0; i < pages.size(); i++) {
+                JSONObject page = (JSONObject) pages.get(i);
+                if (!JSONUtils.isNull(page)) {
+                    //loop properties
+                    JSONArray properties = (JSONArray) page.get("properties");
+                    for (int j = 0; j < properties.size(); j++) {
+                        JSONObject property = (JSONObject) properties.get(j);
+                        if (property.containsKey("value")) {
+                            defaultProperties += property.getString("name") + ":'" + property.getString("value") + "',";
+                        }
+                    }
+                }
+            }
+        }
+        if (defaultProperties.endsWith(",")) {
+            defaultProperties = defaultProperties.substring(0, defaultProperties.length() - 1);
+        }
+        defaultProperties += "}";
+        return defaultProperties;
+    }
+
+    /**
      * Parse Json and return properties map
      * @return
      */
-    public static Map<String, Object> getPropertiesValueFromJson(String json){
+    public static Map<String, Object> getPropertiesValueFromJson(String json) {
         JSONObject obj = (JSONObject) JSONSerializer.toJSON(json);
         return getProperties(obj);
     }
@@ -124,20 +155,20 @@ public class PropertyUtil {
      * Recursively call to get properties from json object
      * @return
      */
-    private static Map<String, Object> getProperties(JSONObject obj){
+    private static Map<String, Object> getProperties(JSONObject obj) {
         Map<String, Object> properties = new HashMap<String, Object>();
-        if(obj != null){
-            for(Object key : obj.keySet()){
+        if (obj != null) {
+            for (Object key : obj.keySet()) {
                 Object value = obj.get(key);
-                if(!JSONUtils.isNull(value)){
-                    if(value instanceof JSONArray){
-                        properties.put(key.toString(), getProperties((JSONArray)value));
-                    }else if(value instanceof JSONObject && !((JSONObject)value).keySet().isEmpty()){
-                        properties.put(key.toString(), getProperties((JSONObject)value));
-                    }else{
+                if (!JSONUtils.isNull(value)) {
+                    if (value instanceof JSONArray) {
+                        properties.put(key.toString(), getProperties((JSONArray) value));
+                    } else if (value instanceof JSONObject && !((JSONObject) value).keySet().isEmpty()) {
+                        properties.put(key.toString(), getProperties((JSONObject) value));
+                    } else {
                         properties.put(key.toString(), obj.getString(key.toString()));
                     }
-                }else{
+                } else {
                     properties.put(key.toString(), "");
                 }
             }
@@ -149,16 +180,16 @@ public class PropertyUtil {
      * Recursively call to get properties from json array
      * @return
      */
-    private static Object[] getProperties(JSONArray arr){
+    private static Object[] getProperties(JSONArray arr) {
         Collection<Object> array = new ArrayList<Object>();
-        if(arr != null){
+        if (arr != null) {
             for (int i = 0; i < arr.size(); i++) {
                 Object value = arr.get(i);
-                if(!JSONUtils.isNull(value)){
-                    if(value instanceof JSONArray){
-                        array.add(getProperties((JSONArray)value));
-                    }else{
-                        array.add(getProperties((JSONObject)value));
+                if (!JSONUtils.isNull(value)) {
+                    if (value instanceof JSONArray) {
+                        array.add(getProperties((JSONArray) value));
+                    } else {
+                        array.add(getProperties((JSONObject) value));
                     }
                 }
             }

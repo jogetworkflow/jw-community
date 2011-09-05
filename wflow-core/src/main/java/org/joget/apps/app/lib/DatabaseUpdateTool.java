@@ -11,17 +11,14 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.plugin.base.ApplicationPlugin;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
 
-public class DatabaseUpdateTool implements Plugin, ApplicationPlugin, PropertyEditable {
+public class DatabaseUpdateTool extends DefaultApplicationPlugin {
 
     public String getName() {
-        return "DatabaseUpdateTool";
+        return "Database Update Tool";
     }
 
     public String getVersion() {
@@ -30,10 +27,6 @@ public class DatabaseUpdateTool implements Plugin, ApplicationPlugin, PropertyEd
 
     public String getDescription() {
         return "Executes SQL INSERT and UPDATE statement on MySQL, Oracle or SQL Server database";
-    }
-
-    public PluginProperty[] getPluginProperties() {
-        return null;
     }
 
     public Object execute(Map properties) {
@@ -105,10 +98,6 @@ public class DatabaseUpdateTool implements Plugin, ApplicationPlugin, PropertyEd
     }
 
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/databaseUpdateTool.json", null, true, "message/app/databaseUpdateTool");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/databaseUpdateTool.json", null, true, null);
     }
 }

@@ -2,12 +2,12 @@ package org.joget.apps.app.lib;
 
 import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.service.AppUtil;
 import org.springframework.context.ApplicationContext;
 
-public class AppMessageHashVariable extends HashVariablePlugin {
+public class AppMessageHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -24,7 +24,7 @@ public class AppMessageHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "AppMessageHashVariable";
+        return "App Message Hash Variable";
     }
 
     public String getPrefix() {
@@ -36,6 +36,18 @@ public class AppMessageHashVariable extends HashVariablePlugin {
     }
 
     public String getDescription() {
+        return "";
+    }
+
+    public String getLabel() {
+        return "App Message Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+    
+    public String getPropertyOptions() {
         return "";
     }
 }

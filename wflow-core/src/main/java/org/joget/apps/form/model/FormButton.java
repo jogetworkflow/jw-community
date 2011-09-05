@@ -32,9 +32,4 @@ public abstract class FormButton extends Element implements FormAction {
         }
         return active;
     }
-
-    @Override
-    public String getClassName() {
-        return getClass().getName();
-    }
 }

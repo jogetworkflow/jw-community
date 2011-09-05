@@ -30,7 +30,7 @@ public class Link extends UserviewMenu {
     }
 
     public String getName() {
-        return "Link";
+        return "Link Menu";
     }
 
     public String getVersion() {
@@ -43,10 +43,6 @@ public class Link extends UserviewMenu {
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/link.json", null, true, "message/userview/link");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     @Override

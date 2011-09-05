@@ -1,40 +1,39 @@
 package org.joget.apps.datalist.model;
 
-import java.util.Map;
-import java.util.Properties;
-import org.joget.plugin.base.DefaultPlugin;
-import org.joget.plugin.base.PluginProperty;
+import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.joget.plugin.base.ExtDefaultPlugin;
 
 /**
  * Convenient abstract base class for binders to inherit
  */
-public abstract class DataListBinderDefault extends DefaultPlugin implements DataListBinder {
+public abstract class DataListBinderDefault extends ExtDefaultPlugin implements DataListBinder {
+
     public static String USERVIEW_KEY_SYNTAX = "#userviewKey#";
-
-    Properties properties;
-
+    
     @Override
-    public String getClassName() {
-        return getClass().getName();
+    public String getColumnName(String name) {
+        return name;
     }
-
-    @Override
-    public Properties getProperties() {
-        return properties;
-    }
-
-    @Override
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
-    @Override
-    public PluginProperty[] getPluginProperties() {
-        return null;
-    }
-
-    @Override
-    public Object execute(Map properties) {
-        return null;
+    
+    public DataListFilterQueryObject processFilterQueryObjects(DataListFilterQueryObject[] filterQueryObjects) {
+        DataListFilterQueryObject obj = new DataListFilterQueryObject();
+        String condition = "";
+        Collection<String> values = new ArrayList<String>();
+        for (int i = 0; i < filterQueryObjects.length; i++) {
+            if (condition.isEmpty()) {
+                obj.setOperator(filterQueryObjects[i].getOperator());
+            } else {
+                condition += " " + filterQueryObjects[i].getOperator() + " ";
+            }
+            condition += filterQueryObjects[i].getQuery();
+            values.addAll(Arrays.asList(filterQueryObjects[i].getValues()));
+        }
+        obj.setQuery(condition);
+        if (values.size() > 0){
+            obj.setValues((String[]) values.toArray(new String[0]));
+        }
+        return obj;
     }
 }

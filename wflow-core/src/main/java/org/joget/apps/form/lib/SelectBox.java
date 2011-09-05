@@ -106,11 +106,6 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'SelectBox'}";
-    }
-
-    @Override
     public String getFormBuilderCategory() {
         return FormBuilderPalette.CATEGORY_GENERAL;
     }

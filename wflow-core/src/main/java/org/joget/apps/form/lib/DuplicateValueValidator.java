@@ -7,17 +7,16 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormBuilderEditable;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 
-public class DuplicateValueValidator extends FormValidator implements FormBuilderEditable {
+public class DuplicateValueValidator extends FormValidator {
 
     @Override
     public String getName() {
-        return "DuplicateValueValidator";
+        return "Duplicate Value Validator";
     }
 
     @Override
@@ -37,7 +36,7 @@ public class DuplicateValueValidator extends FormValidator implements FormBuilde
 
     @Override
     public String getLabel() {
-        return getName();
+        return "Duplicate Value Validator";
     }
 
     @Override
@@ -53,16 +52,6 @@ public class DuplicateValueValidator extends FormValidator implements FormBuilde
         Object[] arguments = new Object[]{formDefField};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/form/duplicateValueValidator.json", arguments, true, "message/form/DuplicateValueValidator");
         return json;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
-    @Override
-    public String getFormBuilderTemplate() {
-        return "";
     }
 
     @Override

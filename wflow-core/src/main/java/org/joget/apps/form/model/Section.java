@@ -82,11 +82,6 @@ public class Section extends Element implements FormBuilderEditable {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Section'}";
-    }
-
-    @Override
     public String getFormBuilderTemplate() {
         return "";
     }

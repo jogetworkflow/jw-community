@@ -1,14 +1,16 @@
 package org.joget.apps.datalist.model;
 
+import org.joget.plugin.property.model.PropertyEditable;
+
 /**
  * Interface to represent an action taken on a data list e.g. Edit, Delete, etc.
  */
-public interface DataListAction extends DataListConfigurable {
+public interface DataListAction extends PropertyEditable {
 
     /**
      * Descriptive name for the action
      */
-    String getLabel();
+    String getLinkLabel();
 
     /**
      * Optional link to a URL

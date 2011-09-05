@@ -34,4 +34,16 @@ public class SampleApplicationPlugin extends DefaultApplicationPlugin implements
 
         response.getWriter().write("{arg1:\""+arg1+"\", arg2:\""+arg2+"\"}");
     }
+
+    public String getLabel() {
+        return "Sample Application Plugin";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
+        return "";
+    }
 }

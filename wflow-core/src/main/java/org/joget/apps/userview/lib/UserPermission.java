@@ -38,7 +38,7 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
     }
 
     public String getName() {
-        return "UserPermission";
+        return "User Permission";
     }
 
     public String getVersion() {
@@ -59,10 +59,6 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userPermission.json", null, true, "message/userview/userPermission");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

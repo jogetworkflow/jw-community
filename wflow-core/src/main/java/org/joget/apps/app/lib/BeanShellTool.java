@@ -8,17 +8,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.ApplicationPlugin;
+import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.model.ParticipantPlugin;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
 
-public class BeanShellTool implements Plugin, ApplicationPlugin, ParticipantPlugin, PropertyEditable {
+public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin, ParticipantPlugin {
 
     public String getName() {
-        return "BeanShellTool";
+        return "Bean Shell Tool";
     }
 
     public String getVersion() {
@@ -27,10 +25,6 @@ public class BeanShellTool implements Plugin, ApplicationPlugin, ParticipantPlug
 
     public String getDescription() {
         return "Executes standard Java syntax";
-    }
-
-    public PluginProperty[] getPluginProperties() {
-        return null;
     }
 
     public Object execute(Map properties) {
@@ -60,11 +54,7 @@ public class BeanShellTool implements Plugin, ApplicationPlugin, ParticipantPlug
     }
 
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/beanShellTool.json", null, true, "message/app/beanShellTool");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/beanShellTool.json", null, true, null);
     }
 
     protected Object executeScript(String script, Map properties) {

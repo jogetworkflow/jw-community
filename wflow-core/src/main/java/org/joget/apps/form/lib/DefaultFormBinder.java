@@ -5,7 +5,6 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
-import org.joget.apps.form.model.FormBuilderEditable;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormRowSet;
@@ -15,11 +14,11 @@ import org.joget.apps.form.service.FormUtil;
 /**
  *
  */
-public class DefaultFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormBuilderEditable {
+public class DefaultFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder {
 
     @Override
     public String getName() {
-        return "DefaultFormBinder";
+        return "Default Form Binder";
     }
 
     @Override
@@ -84,16 +83,6 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
             rows = appService.storeFormData(form, rows, primaryKeyValue);
         }
         return rows;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
-    @Override
-    public String getFormBuilderTemplate() {
-        return "";
     }
 
     /**

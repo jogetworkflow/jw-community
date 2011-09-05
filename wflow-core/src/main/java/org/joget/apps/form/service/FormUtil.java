@@ -82,8 +82,6 @@ public class FormUtil implements ApplicationContextAware {
         String className = obj.getString(FormUtil.PROPERTY_CLASS_NAME);
         Element element = (Element) pluginManager.getPlugin(className);
         if (element != null) {
-            element.setClassName(className);
-
             // set element properties
             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(obj);
             element.setProperties(properties);
@@ -256,8 +254,6 @@ public class FormUtil implements ApplicationContextAware {
                     if (className != null && className.trim().length() > 0) {
                         validator = (FormValidator) pluginManager.getPlugin(className);
                         if (validator != null) {
-                            validator.setClassName(className);
-
                             // set child properties
                             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(validatorObj);
                             validator.setProperties(properties);

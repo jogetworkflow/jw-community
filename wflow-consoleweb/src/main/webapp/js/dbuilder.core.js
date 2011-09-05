@@ -31,12 +31,14 @@ DatalistBuilder = {
     datalistProperties : {
         id : '',
         name : '',
-        pageSize : 10,
+        pageSize : '10',
         order : '',
-        orderBy : '',
-        actions : [],
-        rowActions : [],
-        filters : []
+        orderBy : '2',
+        showPageSizeSelector : 'true',
+        pageSizeSelectorOptions : '10,20,30,40,50,100',
+        buttonPosition : 'bottomLeft',
+        checkboxPosition : 'left',
+        useSession : 'false'
     },                          //datalist's properties
 
     propertyDialog: null,                       // property dialog popup object
@@ -45,63 +47,57 @@ DatalistBuilder = {
     init : function(){
         DatalistBuilder.initBinderList();
         DatalistBuilder.initActionList();
+        
+        // show popup dialog
+        if (DatalistBuilder.propertyDialog == null) {
+            DatalistBuilder.propertyDialog = new Boxy(
+                '<div id="form-property-editor"></div>',
+                {
+                    title: 'Property Editor',
+                    closeable: true,
+                    draggable: false,
+                    show: false,
+                    fixed: false
+                });
+        }
     },
 
     initBinderList : function(){
-        //get the list of binders available
-        $.getJSON(
-            DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binders',
-            function(returnedData) {
-                binderList = returnedData.binders;
-                binderListArray = [];
-                for(i in binderList){
-                    temp = {
-                        'label' : binderList[i].name,
-                        'value' : binderList[i].className
-                    };
-                    binderListArray.push(temp);
+        var propertiesDefinition = [
+            {title: get_dbuilder_msg('dbuilder.selectBinder'),
+                properties : [{
+                    name : 'binder',
+                    label : get_dbuilder_msg('dbuilder.selectDataSource'),
+                    type : 'elementselect',
+                    options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListBinder',
+                    url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                }]
+            }
+        ];
+
+        var propertyValues = new Array();
+        propertyValues['binder'] = DatalistBuilder.binderProperties;
+        
+        var options = {
+            tinyMceScript: DatalistBuilder.tinymceUrl,
+            contextPath: DatalistBuilder.contextPath,
+            propertiesDefinition : propertiesDefinition,
+            propertyValues : propertyValues,
+            showCancelButton: false,
+            closeAfterSaved: false,
+            saveCallback: function(container, properties) {
+                var binderChanged = DatalistBuilder.binderProperties.className != properties.binder.className;
+                DatalistBuilder.binderProperties = properties.binder;
+                if (binderChanged) {
+                    DatalistBuilder.updateBinderProperties(DatalistBuilder.UPDATE);
+                } else {
+                    DatalistBuilder.updateBinderProperties();
                 }
+            }
+        };
 
-                propertiesDefinition = [
-                    {title: get_dbuilder_msg('dbuilder.selectBinder'),
-                        properties : [{
-                            name : 'binder',
-                            label : get_dbuilder_msg('dbuilder.selectDataSource'),
-                            type : 'elementselect',
-                            options : binderListArray,
-                            url : '[CONTEXT_PATH]/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/options?id=' + DatalistBuilder.datalistProperties.id 
-                        }]
-                    }
-                ];
-
-                propertyValues = {
-                    'binder' : {
-                        'className' : DatalistBuilder.binderProperties.className,
-                        'properties' : DatalistBuilder.binderProperties.properties
-                    }
-                };
-
-                var options = {
-                    tinyMceScript: DatalistBuilder.tinymceUrl,
-                    contextPath: DatalistBuilder.contextPath,
-                    propertiesDefinition : propertiesDefinition,
-                    propertyValues : propertyValues,
-                    showCancelButton: false,
-                    closeAfterSaved: false,
-                    saveCallback: function(container, properties) {
-                        var binderChanged = DatalistBuilder.binderProperties.className != properties.binder.className;
-                        DatalistBuilder.binderProperties = properties.binder;
-                        if (binderChanged) {
-                            DatalistBuilder.updateBinderProperties(DatalistBuilder.UPDATE);
-                        } else {
-                            DatalistBuilder.updateBinderProperties();
-                        }
-                    }
-                };
-
-                $('#source').html("");
-                $('#source').propertyEditor(options);
-        });
+        $('#source').html("");
+        $('#source').propertyEditor(options);
     },
 
     updateBinderProperties : function(mode){
@@ -119,10 +115,10 @@ DatalistBuilder = {
         
         if(mode == DatalistBuilder.UPDATE){
             //reset all fields
-            DatalistBuilder.chosenColumns = [];
-            DatalistBuilder.chosenActions = [];
-            DatalistBuilder.chosenRowActions = [];
-            DatalistBuilder.chosenFilters = [];
+            DatalistBuilder.chosenColumns = new Array();
+            DatalistBuilder.chosenActions = new Array();
+            DatalistBuilder.chosenRowActions = new Array();
+            DatalistBuilder.chosenFilters = new Array();
             DatalistBuilder.columnIndexCounter = 0;
             DatalistBuilder.rowActionIndexCounter = 0;
             DatalistBuilder.filterIndexCounter = 0;
@@ -145,14 +141,9 @@ DatalistBuilder = {
         for(e in columns){
             column = columns[e];
             temp = {
-                "action"     : '',
-                "href"       : '',
-                "hrefParam"  : '',
-                "filterable" : column.filterable.toString(),
                 "id"         : column.name.toString(),
                 "label"      : column.label.toString(),
-                "name"       : column.name.toString(),
-                "sortable"   : column.sortable.toString()
+                "name"       : column.name.toString()
             }
             fields[temp.id] = temp;
         }
@@ -170,7 +161,7 @@ DatalistBuilder = {
 
     initFields : function(){
         //populate column palette
-        fields = DatalistBuilder.availableColumns;
+        var fields = DatalistBuilder.availableColumns;
         $('#builder-palettle-items').html('');
         for(var e in fields){
             var field = fields[e];
@@ -198,7 +189,7 @@ DatalistBuilder = {
 
     initActions : function(){
         //populate action palette
-        actions = DatalistBuilder.availableActions;
+        var actions = DatalistBuilder.availableActions;
         $('#builder-palettle-actions').html('');
         for(var e in actions){
             var action = actions[e];
@@ -303,7 +294,7 @@ DatalistBuilder = {
                 }
                 DatalistBuilder.chosenRowActions[columnId] = DatalistBuilder.cloneObject(DatalistBuilder.availableActions[id]);
                 DatalistBuilder.chosenRowActions[columnId].id = columnId;
-                if (!DatalistBuilder.chosenRowActions[columnId].properties) {
+                if (typeof DatalistBuilder.chosenRowActions[columnId].properties == "undefined") {
                     DatalistBuilder.chosenRowActions[columnId].properties = new Object();
                 }
                 DatalistBuilder.chosenRowActions[columnId].properties.id = columnId;
@@ -340,35 +331,51 @@ DatalistBuilder = {
             }
         });
 
-        $("#databuilderContentColumns").sortable();
-        $("#databuilderContentActions").sortable();
-        $("#databuilderContentRowActions").sortable();
-        $("#databuilderContentFilters").sortable();
+        $("#databuilderContentColumns").sortable({axis:'x',stop:DatalistBuilder.adjustCanvas});
+        $("#databuilderContentActions").sortable({axis:'x',stop:DatalistBuilder.adjustCanvas});
+        $("#databuilderContentRowActions").sortable({axis:'x',stop:DatalistBuilder.adjustCanvas});
+        $("#databuilderContentFilters").sortable({axis:'x',stop:DatalistBuilder.adjustCanvas});
     },
 
     renderFilter : function(columnId){
-        filter = DatalistBuilder.chosenFilters[columnId];
-        count = 0;
-        var string = '<li class="databuilderFilter column" id="' + columnId + '"><div class="databuilderItemTitle">' + filter.label + '</div>';
-        string += '<div class="databuilderItemContent">';
-        string += '</div>';
-
+        var filter = DatalistBuilder.chosenFilters[columnId];
+        var elementHtml = DatalistBuilder.retrieveFilterHTML(columnId, filter);
+        
         if( $('#databuilderContentFilters #' + columnId).size() != 0 ){
             //replace existing
-            $('#databuilderContentFilters #' + columnId).html(string);
+            var current =  $('#databuilderContentFilters #' + columnId);
+            $(current).replaceWith(elementHtml);
         }else{
             //append if new
-            $('#databuilderContentFilters').append(string);
+            $('#databuilderContentFilters').append(elementHtml);
         }
         DatalistBuilder.decorateFilter(columnId);
         DatalistBuilder.adjustCanvas();
     },
+    
+    retrieveFilterHTML: function(id, property) {
+        var jsonStr = JSON.encode(property);
+        $.ajax({
+            type: "POST",
+            data: {"json": jsonStr },
+            url: DatalistBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
+            success: function(response) {
+                var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + response + '</div></li>');
+
+                var current =  $('#databuilderContentFilters #' + id);
+                $(current).replaceWith(newElement);
+                DatalistBuilder.decorateFilter(id);
+                DatalistBuilder.adjustCanvas();
+            }
+        });
+
+        return '<li class="databuilderFilter column" id="' + id + '">' + get_dbuilder_msg("dbuilder.loading") + '</li>';
+    },
 
     renderAction : function(columnId){
-        action = DatalistBuilder.chosenActions[columnId];
-        count = 0;
+        var action = DatalistBuilder.chosenActions[columnId];
 
-        label = action.label;
+        var label = action.label;
         if(action.properties.label != undefined){
             label = action.properties.label;
         }
@@ -380,7 +387,8 @@ DatalistBuilder = {
 
         if( $('#databuilderContentActions #' + columnId).size() != 0 ){
             //replace existing
-            $('#databuilderContentActions #' + columnId).html(string);
+            var current = $('#databuilderContentActions #' + columnId);
+            $(current).replaceWith(string);
         }else{
             //append if new
             $('#databuilderContentActions').append(string);
@@ -390,8 +398,8 @@ DatalistBuilder = {
     },
 
     renderRowAction : function(columnId){
-        rowAction = DatalistBuilder.chosenRowActions[columnId];
-        label = rowAction.label;
+        var rowAction = DatalistBuilder.chosenRowActions[columnId];
+        var label = rowAction.label;
         if(rowAction.properties.label != undefined){
             label = rowAction.properties.label;
         }
@@ -400,7 +408,7 @@ DatalistBuilder = {
         string += '<div class="databuilderItemContent">';
         string += '<ul>';
 
-        count = 0;
+        var count = 0;
         while(count < 6){
             var className = '';
             if(count % 2 == 0){
@@ -414,7 +422,8 @@ DatalistBuilder = {
 
         if( $('#databuilderContentRowActions #' + columnId).size() != 0 ){
             //replace existing
-            $('#databuilderContentRowActions #' + columnId).html(string);
+            var current = $('#databuilderContentRowActions #' + columnId);
+            $(current).replaceWith(string);
         }else{
             //append if new
             $('#databuilderContentRowActions').append(string);
@@ -424,8 +433,8 @@ DatalistBuilder = {
     },
 
     renderColumn : function(columnId){
-        column = DatalistBuilder.chosenColumns[columnId];
-        sampleDataArray = ['Bird', 'Apple', 'Fish', 'Cat', 'Dog', 'Elephant' ];
+        var column = DatalistBuilder.chosenColumns[columnId];
+        var sampleDataArray = ['Sample Data 1', 'Sample Data 2', 'Sample Data 3', 'Sample Data 4', 'Sample Data 5', 'Sample Data 6' ];
         var sortable = '';
         if(column.name == DatalistBuilder.datalistProperties['orderBy']){
             if(DatalistBuilder.datalistProperties['order'] == '2'){
@@ -441,7 +450,7 @@ DatalistBuilder = {
         string += '<div class="databuilderItemContent">';
         string += '<ul>';
 
-        count = 0;
+        var count = 0;
         for(e in sampleDataArray){
             var className = '';
             if(count % 2 == 0){
@@ -455,7 +464,8 @@ DatalistBuilder = {
 
         if( $('#databuilderContentColumns #' + columnId).size() != 0 ){
             //replace existing
-            $('#databuilderContentColumns #' + columnId).html(string);
+            var current = $('#databuilderContentColumns #' + columnId);
+            $(current).replaceWith(string);
         }else{
             //append if new
             $('#databuilderContentColumns').append(string);
@@ -466,25 +476,26 @@ DatalistBuilder = {
 
     decorateFilter : function(columnId){
         //attach relevant events to the column
-        obj = $("#" + columnId);
+        var obj = $("#" + columnId);
         if ($(obj).children(".form-palette-options").length > 0) {
             // remove if already exists
-            $(obj).children(".element-options").remove();
+            $(obj).children(".form-palette-options").remove();
             $(obj).children(".element-clear").remove();
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-
-        if ($(obj).hasClass("column")) {
-            // add buttons for section
-            optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
-        }
-
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
 
         //events handling
         //=====================
+        // handle edit properties label
+        $(optionDiv).children(".element-edit-properties").click(function() {
+            DatalistBuilder.showFilterProperties(columnId);
+        })
+        
         // handle delete
         $(optionDiv).children(".element-delete").click(function() {
             if (confirm(get_dbuilder_msg('dbuilder.delete.confirm'))) {
@@ -504,7 +515,7 @@ DatalistBuilder = {
 
     decorateAction : function(columnId){
         //attach relevant events to the column
-        obj = $("#" + columnId);
+        var obj = $("#" + columnId);
         if ($(obj).children(".form-palette-options").length > 0) {
             // remove if already exists
             $(obj).children(".form-palette-options").remove();
@@ -513,15 +524,13 @@ DatalistBuilder = {
 
         var optionHtml = "<div class='form-palette-options'>";
 
-        if ($(obj).hasClass("column")) {
-            // add buttons for action
-            var action = DatalistBuilder.chosenActions[columnId];
-            var propertyValues = DatalistBuilder.availableActions[action.className];
-            if (propertyValues && propertyValues.propertyOptions) {
-                optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
-            }            
-            optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
-        }
+        // add buttons for action
+        var action = DatalistBuilder.chosenActions[columnId];
+        var propertyValues = DatalistBuilder.availableActions[action.className];
+        if (propertyValues && propertyValues.propertyOptions) {
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
+        }            
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
@@ -552,7 +561,7 @@ DatalistBuilder = {
 
     decorateRowAction : function(columnId){
         //attach relevant events to the column
-        obj = $("#" + columnId);
+        var obj = $("#" + columnId);
         if ($(obj).children(".form-palette-options").length > 0) {
             // remove if already exists
             $(obj).children(".form-palette-options").remove();
@@ -561,15 +570,13 @@ DatalistBuilder = {
 
         var optionHtml = "<div class='form-palette-options'>";
 
-        if ($(obj).hasClass("column")) {
-            // add buttons for action
-            var action = DatalistBuilder.chosenRowActions[columnId];
-            var propertyValues = DatalistBuilder.availableActions[action.className];
-            if (propertyValues && propertyValues.propertyOptions) {
-                optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
-            }            
-            optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
-        }
+        // add buttons for action
+        var action = DatalistBuilder.chosenRowActions[columnId];
+        var propertyValues = DatalistBuilder.availableActions[action.className];
+        if (propertyValues && propertyValues.propertyOptions) {
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
+        }            
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
@@ -600,24 +607,16 @@ DatalistBuilder = {
 
     decorateColumn : function(columnId){
         //attach relevant events to the column
-        obj = $("#" + columnId);
+        var obj = $("#" + columnId);
         if ($(obj).children(".form-palette-options").length > 0) {
             // remove if already exists
-            $(obj).children(".element-options").remove();
+            $(obj).children(".form-palette-options").remove();
             $(obj).children(".element-clear").remove();
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-
-        if ($(obj).hasClass("editable-info")) {
-            // add buttons for editable
-            optionHtml += "<button class='element-edit-label' title='"+get_dbuilder_msg('dbuilder.edit')+"'>"+get_dbuilder_msg('dbuilder.edit')+"</button>";
-        }else if ($(obj).hasClass("column")) {
-            // add buttons for section
-            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'>"+get_dbuilder_msg('dbuilder.properties')+"</button>";
-            optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
-        }
-
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'>"+get_dbuilder_msg('dbuilder.properties')+"</button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'>"+get_dbuilder_msg('dbuilder.delete')+"</button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
 
@@ -646,16 +645,7 @@ DatalistBuilder = {
     },
 
     showColumnProperties : function(columnId){
-
-        //populate formatters available
-        formatters = [];
-        for( e in DatalistBuilder.availableFormats){
-            temp = {  value : DatalistBuilder.availableFormats[e].className,
-                      label : DatalistBuilder.availableFormats[e].name };
-            formatters.push(temp);
-        }
-
-        propertiesDefinition = [{
+        var propertiesDefinition = [{
             title : get_dbuilder_msg('dbuilder.general'),
             properties :[
             {
@@ -697,8 +687,8 @@ DatalistBuilder = {
                 name : 'action',
                 label : get_dbuilder_msg('dbuilder.action'),
                 type : 'elementselect',
-                options_ajax : '[CONTEXT_PATH]/web/json/console/app' + DatalistBuilder.appPath + '/builder/column/actions',
-                url : '[CONTEXT_PATH]/web/json/console/app' + DatalistBuilder.appPath + '/builder/column/action/properties'
+                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListAction',
+                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
             }]
         },{
             title : get_dbuilder_msg('dbuilder.formatter'),
@@ -712,7 +702,7 @@ DatalistBuilder = {
             }]
         }];
 
-        propertyValues = DatalistBuilder.chosenColumns[columnId];
+        var propertyValues = DatalistBuilder.chosenColumns[columnId];
 
         var options = {
             tinyMceScript: DatalistBuilder.tinymceUrl,
@@ -731,19 +721,6 @@ DatalistBuilder = {
                 DatalistBuilder.updateColumnPropertiesCallback(columnId, properties);
             }
         }
-
-        // show popup dialog
-        if (DatalistBuilder.propertyDialog == null) {
-            DatalistBuilder.propertyDialog = new Boxy(
-                '<div id="form-property-editor"></div>',
-                {
-                    title: 'Property Editor',
-                    closeable: true,
-                    draggable: false,
-                    show: false,
-                    fixed: false
-                });
-        }
         
         $("#form-property-editor").html("");
         DatalistBuilder.propertyDialog.show();
@@ -755,6 +732,70 @@ DatalistBuilder = {
     updateColumnPropertiesCallback : function (columnId, properties){
         DatalistBuilder.chosenColumns[columnId] = properties;
         DatalistBuilder.renderColumn(columnId);
+    },
+    
+    showFilterProperties : function(columnId){
+        var propertiesDefinition = [{
+            title : get_dbuilder_msg('dbuilder.general'),
+            properties :[
+            {
+                label : 'ID',
+                name  : 'id',
+                required : 'true',
+                type : 'hidden'
+            },
+            {
+                label : 'Name',
+                name  : 'name',
+                required : 'true',
+                type : 'hidden'
+            },
+            {
+                label : get_dbuilder_msg('dbuilder.label'),
+                name  : 'label',
+                required : 'true',
+                type : 'textfield'
+            },
+            {
+                name : 'type',
+                label : get_dbuilder_msg('dbuilder.type'),
+                type : 'elementselect',
+                value : 'org.joget.apps.datalist.lib.TextFieldDataListFilterType',
+                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListFilterType',
+                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+            }]
+        }];
+
+        var propertyValues = DatalistBuilder.chosenFilters[columnId];
+
+        var options = {
+            tinyMceScript: DatalistBuilder.tinymceUrl,
+            contextPath: DatalistBuilder.contextPath,
+            propertiesDefinition : propertiesDefinition,
+            propertyValues : propertyValues,
+            closeAfterSaved : true,
+            showCancelButton : true,
+            cancelCallback: function() {
+                DatalistBuilder.propertyDialog.hide()
+            },
+            saveCallback: function(container, properties) {
+                // hide dialog
+                DatalistBuilder.propertyDialog.hide()
+                // update element properties
+                DatalistBuilder.updateFilterPropertiesCallback(columnId, properties);
+            }
+        }
+        
+        $("#form-property-editor").html("");
+        DatalistBuilder.propertyDialog.show();
+        $("#form-property-editor").propertyEditor(options);
+        DatalistBuilder.propertyDialog.center('x');
+        DatalistBuilder.propertyDialog.center('y');
+    },
+
+    updateFilterPropertiesCallback : function (columnId, properties){
+        DatalistBuilder.chosenFilters[columnId] = properties;
+        DatalistBuilder.renderFilter(columnId);
     },
 
     updateActionCallback : function (columnId, actions, properties) {
@@ -792,7 +833,15 @@ DatalistBuilder = {
     },
 
     showDatalistProperties : function(){
-        propertiesDefinition = [
+        //populate list items
+        var tempArray = [{'label':'','value':''}];
+        for(ee in DatalistBuilder.availableColumns){
+            var temp = {'label' : DatalistBuilder.availableColumns[ee].label,
+                         'value' : DatalistBuilder.availableColumns[ee].id};
+            tempArray.push(temp);
+        }
+                
+        var propertiesDefinition = [
             {title: get_dbuilder_msg('dbuilder.basicProperties'),
               properties : [
                 {label : get_dbuilder_msg('dbuilder.datalistId'),
@@ -816,31 +865,18 @@ DatalistBuilder = {
                 {label : get_dbuilder_msg('dbuilder.orderBy'),
                   name  : 'orderBy',
                   required : 'true',
-                  type : 'selectbox'}
+                  type : 'selectbox',
+                  options : tempArray}
               ]
             }
         ];
-
-        //populate the propertiesDefinition with values
-        for(e in propertiesDefinition[0].properties){
-            var propertyName = propertiesDefinition[0].properties[e].name;
-            propertiesDefinition[0].properties[e].value = DatalistBuilder.datalistProperties[propertyName];
-
-            if(propertyName == 'orderBy'){
-                //populate list items
-                var tempArray = [];
-                for(ee in DatalistBuilder.availableColumns){
-                    var temp = {'label' : DatalistBuilder.availableColumns[ee].label,
-                                 'value' : DatalistBuilder.availableColumns[ee].id};
-                    tempArray.push(temp);
-                }
-                propertiesDefinition[0].properties[e].options = tempArray;
-            }
-        }
+        
+        var propertyValues = DatalistBuilder.datalistProperties;
 
         var options = {
             propertiesDefinition : propertiesDefinition,
             showCancelButton : true,
+            propertyValues : propertyValues,
             cancelCallback : DatalistBuilder.showDatalistProperties,
             saveCallback : DatalistBuilder.updateDatalistProperties,
             closeAfterSaved : false
@@ -889,19 +925,7 @@ DatalistBuilder = {
                 DatalistBuilder.updateActionCallback(columnId, actions, properties);
             }
         }
-
-        // show popup dialog
-        if (DatalistBuilder.propertyDialog == null) {
-            DatalistBuilder.propertyDialog = new Boxy(
-                '<div id="form-property-editor"></div>',
-                {
-                    title: 'Property Editor',
-                    closeable: true,
-                    draggable: false,
-                    show: false,
-                    fixed: false
-                });
-        }
+        
         $("#form-property-editor").html("");
         DatalistBuilder.propertyDialog.show();
         $("#form-property-editor").propertyEditor(options);
@@ -910,67 +934,50 @@ DatalistBuilder = {
     },
 
     getJson : function(){
-        json = {};
-        columns = [];
-        rowActions = [];
-        actions = [];
-        filters = [];
-        formats = [];
+        var json = new Object();
+        var columns = new Array();
+        var rowActions = new Array();
+        var actions = new Array();
+        var filters = new Array();
+        var formats = new Array();
 
         //datalist properties
         for(e in DatalistBuilder.datalistProperties){
             json[e] = DatalistBuilder.datalistProperties[e];
         }
-        json.binder = {
-            'name'          : '',
-            'className'     : DatalistBuilder.binderProperties.className,
-            'properties'    : DatalistBuilder.binderProperties.properties
-        }
-
+        json.binder = DatalistBuilder.binderProperties;
 
         //columns
         $("#databuilderContentColumns").children().each( function(){
-            e = $(this).attr("id");
-            temp = DatalistBuilder.chosenColumns[e];
-
-            //re-structure the column object to comply with datalist interpreter
-            column = {};
-            for(ee in temp){
-                if(ee == 'action' || ee == 'format'){
-                    if (temp[ee] != null) {
-                        column[ee] = temp[ee];
-                    }
-                }else{
-                    column[ee] = temp[ee];
-                }
-            }
+            var e = $(this).attr("id");
+            var column = DatalistBuilder.chosenColumns[e];
             columns.push(column);
         });
         json.columns = columns;
 
         //row actions
         $("#databuilderContentRowActions").children().each( function(){
-            e = $(this).attr("id");
-            temp = DatalistBuilder.chosenRowActions[e];
-            rowActions.push(temp);
+            var e = $(this).attr("id");
+            var rowAction = DatalistBuilder.chosenRowActions[e];
+            rowActions.push(rowAction);
         });
         json.rowActions = rowActions;
 
         //actions
         $("#databuilderContentActions").children().each( function(){
-            e = $(this).attr("id");
-            temp = DatalistBuilder.chosenActions[e];
-            actions.push(temp);
+            var e = $(this).attr("id");
+            var action = DatalistBuilder.chosenActions[e];
+            actions.push(action);
         });
         json.actions = actions;
 
         //filters
-        //for(e in DatalistBuilder.chosenFilters){
         $("#databuilderContentFilters").children().each( function(){
-            e = $(this).attr("id");
-            temp = DatalistBuilder.chosenFilters[e];
-            filters.unshift(temp);
+            var e = $(this).attr("id");
+            var filter = DatalistBuilder.chosenFilters[e];
+            filters.push(filter);
         });
+        filters.reverse();
         json.filters = filters;
 
         return JSON.encode(json);
@@ -997,49 +1004,25 @@ DatalistBuilder = {
 
         //load columns
         for(e in obj.columns){
-            formats = "";
-            for(ee in obj.columns[e].formats){
-                formats = obj.columns[e].formats[ee].className + ";";
-            }
-            formats.substr(0, formats.length-1);
-            DatalistBuilder.chosenColumns[obj.columns[e].id] = { id     : obj.columns[e].id,
-                                                                 name   : obj.columns[e].name,
-                                                                 label  : obj.columns[e].label,
-                                                                 sortable   : obj.columns[e].sortable,
-                                                                 filterable : obj.columns[e].filterable,
-                                                                 type   : obj.columns[e].type,
-                                                                 action  : obj.columns[e].action,
-                                                                 formats : formats };
+            DatalistBuilder.chosenColumns[obj.columns[e].id] = obj.columns[e];
             DatalistBuilder.renderColumn(obj.columns[e].id);
         }
 
         //load row actions
         for(e in obj.rowActions){
-            DatalistBuilder.chosenRowActions[obj.rowActions[e].id] = {id            : obj.rowActions[e].id,
-                                                                      className     : obj.rowActions[e].className,
-                                                                      type          : obj.rowActions[e].type,
-                                                                      properties    : obj.rowActions[e].properties,
-                                                                      name          : obj.rowActions[e].name,
-                                                                      label         : obj.rowActions[e].label };
+            DatalistBuilder.chosenRowActions[obj.rowActions[e].id] = obj.rowActions[e];
             DatalistBuilder.renderRowAction(obj.rowActions[e].id);
         }
 
         //load actions
         for(e in obj.actions){
-            DatalistBuilder.chosenActions[obj.actions[e].id] = {id          : obj.actions[e].id,
-                                                                className   : obj.actions[e].className,
-                                                                type        : obj.actions[e].type,
-                                                                properties  : obj.actions[e].properties,
-                                                                name        : obj.actions[e].name,
-                                                                label       : obj.actions[e].label };
+            DatalistBuilder.chosenActions[obj.actions[e].id] = obj.actions[e];
             DatalistBuilder.renderAction(obj.actions[e].id);
         }
 
         //load filters
         for(e in obj.filters){
-            DatalistBuilder.chosenFilters[obj.filters[e].id] = {id          : obj.filters[e].id,
-                                                                label       : obj.filters[e].label,
-                                                                name        : obj.filters[e].name};
+            DatalistBuilder.chosenFilters[obj.filters[e].id] = obj.filters[e];
             DatalistBuilder.renderFilter(obj.filters[e].id);
         }
 
@@ -1123,10 +1106,10 @@ DatalistBuilder = {
         if(minWidth < actionWidth) minWidth = actionWidth;
 
         //set the width of each sections
-        $("#databuilderContentFilters").css("width", minWidth + 13);
+        $("#databuilderContentFilters").css("width", minWidth + 20);
         $("#databuilderContentColumns").css("width", columnWidth);
         $("#databuilderContentRowActions").css("width", rowActionWidth);
-        $("#databuilderContentActions").css("width", minWidth + 13);
+        $("#databuilderContentActions").css("width", minWidth + 20);
         $("#builder-canvas").css("width", minWidth + 10);
         
         // update JSON definition

@@ -12,7 +12,8 @@
         name : 'label',
         label : '@@form.datepicker.label@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'Date Picker'
     },
     {
         name : 'value',

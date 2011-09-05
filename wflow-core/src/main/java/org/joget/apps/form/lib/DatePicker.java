@@ -12,7 +12,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "DatePicker";
+        return "Date Picker";
     }
 
     @Override
@@ -49,17 +49,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getLabel() {
-        return "DatePicker";
+        return "Date Picker";
     }
 
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/datePicker.json", null, true, "message/form/DatePicker");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Date Picker'}";
     }
 
     @Override

@@ -35,7 +35,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
 
     @Override
     public String getName() {
-        return "SubForm";
+        return "Sub Form";
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
 
     @Override
     public String getDescription() {
-        return "SubForm Element";
+        return "Sub Form Element";
     }
 
     @Override
@@ -313,7 +313,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
 
     @Override
     public String getLabel() {
-        return "SubForm";
+        return "Sub Form";
     }
 
     @Override
@@ -329,11 +329,6 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
         Object[] arguments = new Object[]{formDefField};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/form/subForm.json", arguments, true, "message/form/SubForm");
         return json;
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'SubForm'}";
     }
 
     @Override

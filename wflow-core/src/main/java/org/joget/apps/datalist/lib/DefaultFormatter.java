@@ -16,7 +16,7 @@ public class DefaultFormatter extends DataListColumnFormatDefault {
 
     @Override
     public String getName() {
-        return "DefaultFormatter";
+        return "Default Formatter";
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DefaultFormatter extends DataListColumnFormatDefault {
             }
         }
 
-        String result = super.format(dataList, column, row, value);
+        String result = (value != null) ? value.toString() : null;
 
         if (result != null) {
             String formatting = getPropertyString("formatting");
@@ -98,7 +98,7 @@ public class DefaultFormatter extends DataListColumnFormatDefault {
         return json;
     }
 
-    public String getDefaultPropertyValues() {
-        return "";
+    public String getClassName() {
+        return this.getClass().getName();
     }
 }

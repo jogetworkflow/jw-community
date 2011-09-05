@@ -52,11 +52,6 @@ public class LinkButton extends FormButton {
     }
 
     @Override
-    public String getLabel() {
-    return "Link Button";
-    }
-
-    @Override
     public String getPropertyOptions() {
     return "[{title:'Edit Button', properties:[{name:'id',label:'ID',type:'textfield',required:'True'},{name:'label',label:'Label',type:'textfield',required:'True'},{name:'url',label:'URL',type:'textfield',required:'True'}]}]";
     }
@@ -81,4 +76,16 @@ public class LinkButton extends FormButton {
     return null;
     }
      */
+
+    public String getLabel() {
+        return "Link Button";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
+        return "";
+    }
 }

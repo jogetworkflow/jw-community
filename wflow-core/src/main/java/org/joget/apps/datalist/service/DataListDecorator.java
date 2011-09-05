@@ -95,21 +95,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
             text = text.replaceAll("\\<.*?>", "");
         }
 
-        // handle links, look in action first
+        // handle links
         DataListAction action = column.getAction();
         if (text != null && action != null && action.getHref() != null && action.getHref().trim().length() > 0 && MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
             String href = action.getHref();
             String target = action.getTarget();
-            String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : action.getName();
-            String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : dataList.getBinder().getPrimaryKeyColumnName();
-            String confirm = action.getConfirmation();
-            String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm);
-            text = link;
-        } else if (column != null && column.getHref() != null && column.getHref().trim().length() > 0 && MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            String href = column.getHref();
-            String target = column.getTarget();
-            String hrefParam = (column.getHrefParam() != null && column.getHrefParam().trim().length() > 0) ? column.getHrefParam() : column.getName();
-            String hrefColumn = (column.getHrefColumn() != null && column.getHrefColumn().trim().length() > 0) ? column.getHrefColumn() : dataList.getBinder().getPrimaryKeyColumnName();
+            String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : "";
+            String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : "";
             String confirm = action.getConfirmation();
             String link = generateLink(href, target, hrefParam, hrefColumn, text.toString(), confirm);
             text = link;
@@ -127,7 +119,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         DataListAction[] actions = dataList.getRowActions();
         if (actions != null) {
             for (DataListAction action : actions) {
-                String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), action.getLabel(), action.getConfirmation());
+                String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), action.getLinkLabel(), action.getConfirmation());
                 output += " " + link + " &nbsp; ";
             }
         }

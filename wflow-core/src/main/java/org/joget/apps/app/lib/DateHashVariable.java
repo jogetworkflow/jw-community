@@ -3,9 +3,9 @@ package org.joget.apps.app.lib;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 
-public class DateHashVariable extends HashVariablePlugin {
+public class DateHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -47,7 +47,7 @@ public class DateHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "DateHashVariable";
+        return "Date Hash Variable";
     }
 
     public String getPrefix() {
@@ -59,6 +59,18 @@ public class DateHashVariable extends HashVariablePlugin {
     }
 
     public String getDescription() {
+        return "";
+    }
+
+    public String getLabel() {
+        return "Date Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
         return "";
     }
 }

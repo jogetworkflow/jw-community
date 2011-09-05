@@ -1,7 +1,7 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
@@ -9,7 +9,7 @@ import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.ApplicationContext;
 
-public class CurrentUserHashVariable extends HashVariablePlugin {
+public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -23,7 +23,7 @@ public class CurrentUserHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "CurrentUserHashVariable";
+        return "Current User Hash Variable";
     }
 
     public String getPrefix() {
@@ -64,5 +64,17 @@ public class CurrentUserHashVariable extends HashVariablePlugin {
             LogUtil.error(CurrentUserHashVariable.class.getName(), e, "Error retrieving user attribute " + attribute);
         }
         return attributeValue;
+    }
+
+    public String getLabel() {
+        return "Current User Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+    
+    public String getPropertyOptions() {
+        return "";
     }
 }

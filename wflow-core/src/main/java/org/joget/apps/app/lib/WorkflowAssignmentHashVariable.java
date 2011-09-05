@@ -1,11 +1,12 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 
-public class WorkflowAssignmentHashVariable extends HashVariablePlugin {
+public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -29,7 +30,7 @@ public class WorkflowAssignmentHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "WorkflowAssignmentHashVariable";
+        return "Workflow Assignment Hash Variable";
     }
 
     public String getPrefix() {
@@ -41,6 +42,18 @@ public class WorkflowAssignmentHashVariable extends HashVariablePlugin {
     }
 
     public String getDescription() {
+        return "";
+    }
+
+    public String getLabel() {
+        return "Workflow Assignment Hash Variable";
+    }
+
+    public String getClassName() {
+        return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
         return "";
     }
 }

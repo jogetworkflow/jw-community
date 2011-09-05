@@ -26,7 +26,7 @@ import org.joget.workflow.util.WorkflowUtil;
 public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin {
 
     public String getName() {
-        return "UserNotificationAuditTrail";
+        return "User Notification";
     }
 
     public String getVersion() {
@@ -34,7 +34,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin {
     }
 
     public String getDescription() {
-        return "Sends email notification to all participants, for every new task created";
+        return "";
     }
 
     public Object execute(Map properties) {
@@ -156,11 +156,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin {
     }
 
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/userNotificationAuditTrail.json", null, true, "message/app/userNotificationAuditTrail");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/app/userNotificationAuditTrail.json", null, true, null);
     }
 
     private Collection<String> convertStringToInternetRecipientsList(String s) throws AddressException {

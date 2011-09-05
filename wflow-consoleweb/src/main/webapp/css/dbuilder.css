@@ -470,16 +470,17 @@ ul#databuilderContentFilters li.databuilderFilter{
     position: relative;
     min-width: 120px;
     height: auto;
-    padding: 5px;
+    padding: 10px;
+}
+
+ul#databuilderContentFilters li.databuilderFilter .content{
+    border: 1px solid #DEDEDE;
+    text-align:center;
 }
 
 ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent,
 ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent{
     border: 1px solid #DEDEDE;
-}
-
-ul#databuilderContentFilters li.databuilderFilter div.databuilderItemContent{
-    width: 100%;
 }
 
 ul#databuilderContentActions li.databuilderAction div.databuilderItemContent{
@@ -547,15 +548,6 @@ ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle
 
 ul#databuilderContentActions li.databuilderAction div.databuilderItemTitle{
     display:none;
-}
-
-ul#databuilderContentFilters li.databuilderFilter div.databuilderItemTitle{
-    background: none repeat scroll 0 0 #C4D899;
-    border: 1px solid #DEDEDE;
-    font-size: 1.1em;
-    font-weight: bold;
-    padding: 4px;
-    text-align: center;
 }
 
 .hint {

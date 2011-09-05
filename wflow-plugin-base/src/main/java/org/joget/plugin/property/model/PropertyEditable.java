@@ -1,5 +1,7 @@
 package org.joget.plugin.property.model;
 
+import java.util.Map;
+
 public interface PropertyEditable {
     /**
      * Label to be display
@@ -18,10 +20,14 @@ public interface PropertyEditable {
      * @return
      */
     public String getPropertyOptions();
-
-    /**
-     * Default JSON property values
-     * @return
-     */
-    public String getDefaultPropertyValues();
+    
+    public Map<String, Object> getProperties();
+    
+    public void setProperties(Map<String, Object> properties);
+    
+    public Object getProperty(String property);
+    
+    public String getPropertyString(String property);
+    
+    public void setProperty(String property, Object value);
 }

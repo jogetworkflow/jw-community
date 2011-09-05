@@ -44,11 +44,6 @@ public class Column extends Element implements FormBuilderEditable {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
-    @Override
     public String getFormBuilderTemplate() {
         return "";
     }

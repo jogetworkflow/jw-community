@@ -1,17 +1,12 @@
 package org.joget.apps.datalist.model;
 
-import java.util.Properties;
+import java.util.Map;
+import org.joget.plugin.property.model.PropertyEditable;
 
 /**
  * Interface to represent a data source for a data list
  */
-public interface DataListBinder extends DataListConfigurable {
-
-    /**
-     * Properties that to be configured for the binder in the builder
-     * @return
-     */
-    DataListBuilderProperty[] getBuilderProperties();
+public interface DataListBinder extends PropertyEditable {
 
     /**
      * Column types returned by the binder
@@ -24,6 +19,12 @@ public interface DataListBinder extends DataListConfigurable {
      * @return The name of the column that represents the primary key
      */
     String getPrimaryKeyColumnName();
+    
+    /**
+     * To get the actual column name
+     * @return The name of the column 
+     */
+    String getColumnName(String name);
 
     /**
      * The data rows returned by the binder.
@@ -36,7 +37,7 @@ public interface DataListBinder extends DataListConfigurable {
      * @param rows
      * @return
      */
-    DataListCollection getData(DataList dataList, Properties properties, String filterName, String filterValue, String sort, Boolean desc, int start, int rows);
+    DataListCollection getData(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String sort, Boolean desc, Integer start, Integer rows);
 
     /**
      * Total number of rows returned based on the current filter.
@@ -46,5 +47,5 @@ public interface DataListBinder extends DataListConfigurable {
      * @param filterValue
      * @return
      */
-    int getDataTotalRowCount(DataList dataList, Properties properties, String filterName, String filterValue);
+    int getDataTotalRowCount(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects);
 }

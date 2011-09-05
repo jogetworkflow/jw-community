@@ -42,4 +42,8 @@ public class Userview extends Element {
     public void setCurrentCategory(UserviewCategory currentCategory) {
         this.currentCategory = currentCategory;
     }
+
+    public String getPropertyOptions() {
+        return "";
+    }
 }

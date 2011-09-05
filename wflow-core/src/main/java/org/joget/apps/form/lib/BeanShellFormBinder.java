@@ -17,7 +17,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormStoreElementBinder;
 
-public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormBuilderEditable{
+public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder {
 
     @Override
     public String getClassName() {
@@ -53,20 +53,12 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         return executeScript(getPropertyString("script"), properties);
     }
 
-    public String getFormBuilderTemplate() {
-        return "";
-    }
-
     public String getLabel() {
         return "Bean Shell Form Binder";
     }
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/beanShellFormBinder.json", null, true, "message/form/beanShellFormBinder");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
     
     protected FormRowSet executeScript(String script, Map properties) {

@@ -81,8 +81,4 @@ public class DefaultTheme extends UserviewTheme {
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/defaultTheme.json", null, true, "message/userview/defaultTheme");
     }
-
-    public String getDefaultPropertyValues() {
-        return "";
-    }
 }

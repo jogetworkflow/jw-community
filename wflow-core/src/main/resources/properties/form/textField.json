@@ -12,7 +12,8 @@
         name : 'label',
         label : '@@form.textfield.label@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'TextField'
     },
     {
         name : 'value',

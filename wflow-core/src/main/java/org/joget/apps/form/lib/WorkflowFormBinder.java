@@ -23,7 +23,7 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
 
     @Override
     public String getName() {
-        return "WorkflowFormBinder";
+        return "Workflow Form Binder";
     }
 
     @Override

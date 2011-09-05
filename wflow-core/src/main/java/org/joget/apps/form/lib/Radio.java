@@ -103,11 +103,6 @@ public class Radio extends SelectBox implements FormBuilderPaletteElement {
     }
 
     @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'Radio'}";
-    }
-
-    @Override
     public String getFormBuilderCategory() {
         return FormBuilderPalette.CATEGORY_GENERAL;
     }

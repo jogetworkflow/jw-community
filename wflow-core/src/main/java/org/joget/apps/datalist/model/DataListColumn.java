@@ -29,33 +29,12 @@ public class DataListColumn {
      */
     private boolean sortable;
     /**
-     * Flag to indicate if column is filterable
-     */
-    private boolean filterable;
-    /**
-     * Optional filter for this column
-     */
-    private DataListFilter filter;
-    /**
      * Optional action for this column
      */
     private DataListAction action;
     /**
      * Optional link to a URL
      */
-    private String href;
-    /**
-     * Optional target to a URL
-     */
-    private String target;
-    /**
-     * Name of the parameter if linked, defaults to the current column name if not specified.
-     */
-    private String hrefParam;
-    /**
-     * Name of the column to use for the param value, defaults to the current column name if not specified.
-     */
-    private String hrefColumn;
     /**
      * Formatters for the column
      */
@@ -102,60 +81,12 @@ public class DataListColumn {
         this.sortable = sortable;
     }
 
-    public boolean isFilterable() {
-        return filterable;
-    }
-
-    public void setFilterable(boolean filterable) {
-        this.filterable = filterable;
-    }
-
-    public DataListFilter getFilter() {
-        return filter;
-    }
-
-    public void setFilter(DataListFilter filter) {
-        this.filter = filter;
-    }
-
     public DataListAction getAction() {
         return action;
     }
 
     public void setAction(DataListAction action) {
         this.action = action;
-    }
-
-    public String getHref() {
-        return href;
-    }
-
-    public void setHref(String href) {
-        this.href = href;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public String getHrefParam() {
-        return hrefParam;
-    }
-
-    public void setHrefParam(String hrefParam) {
-        this.hrefParam = hrefParam;
-    }
-
-    public String getHrefColumn() {
-        return hrefColumn;
-    }
-
-    public void setHrefColumn(String hrefColumn) {
-        this.hrefColumn = hrefColumn;
     }
 
     public Collection<DataListColumnFormat> getFormats() {

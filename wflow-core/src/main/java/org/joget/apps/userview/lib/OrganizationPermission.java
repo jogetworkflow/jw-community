@@ -41,7 +41,7 @@ public class OrganizationPermission extends UserviewPermission implements Plugin
     }
 
     public String getName() {
-        return "OrganizationPermission";
+        return "Organization Permission";
     }
 
     public String getVersion() {
@@ -62,10 +62,6 @@ public class OrganizationPermission extends UserviewPermission implements Plugin
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/organizationPermission.json", null, true, "message/userview/organizationPermission");
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

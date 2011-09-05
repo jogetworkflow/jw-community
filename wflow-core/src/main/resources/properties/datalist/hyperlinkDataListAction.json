@@ -35,7 +35,8 @@
         label : '@@datalist.hyperlinkdatalistaction.label@@',
         name : 'label',
         type : 'textfield',
-        description : '@@datalist.hyperlinkdatalistaction.label.desc@@'
+        description : '@@datalist.hyperlinkdatalistaction.label.desc@@',
+        value : 'Hyperlink'
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.confirmationMessage@@',

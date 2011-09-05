@@ -4,12 +4,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.FormBuilderEditable;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.apps.form.service.FormUtil;
 
-public class DefaultValidator extends FormValidator implements FormBuilderEditable {
+public class DefaultValidator extends FormValidator {
 
     @Override
     public String getName() {
@@ -39,16 +38,6 @@ public class DefaultValidator extends FormValidator implements FormBuilderEditab
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/defaultValidator.json", null, true, "message/form/DefaultValidator");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "";
-    }
-
-    @Override
-    public String getFormBuilderTemplate() {
-        return "";
     }
 
     @Override

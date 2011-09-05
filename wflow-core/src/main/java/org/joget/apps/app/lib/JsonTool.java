@@ -18,20 +18,17 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
-import org.joget.plugin.base.ApplicationPlugin;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.ApplicationContext;
 
-public class JsonTool implements Plugin, ApplicationPlugin, PropertyEditable{
+public class JsonTool extends DefaultApplicationPlugin {
 
     public String getName() {
-        return "JsonTool";
+        return "Json Tool";
     }
 
     public String getDescription() {
@@ -42,12 +39,8 @@ public class JsonTool implements Plugin, ApplicationPlugin, PropertyEditable{
         return "1.0.0";
     }
 
-    public PluginProperty[] getPluginProperties() {
-        return null;
-    }
-
     public String getLabel() {
-        return "JSON Tool";
+        return "Json Tool";
     }
 
     public String getClassName() {
@@ -59,12 +52,8 @@ public class JsonTool implements Plugin, ApplicationPlugin, PropertyEditable{
         String appId = appDef.getId();
         String appVersion = appDef.getVersion().toString();
         Object[] arguments = new Object[]{appId, appVersion};
-        String json = AppUtil.readPluginResource(getClass().getName(), "/properties/app/jsonTool.json", arguments, true, "message/app/jsonTool");
+        String json = AppUtil.readPluginResource(getClass().getName(), "/properties/app/jsonTool.json", arguments, true, null);
         return json;
-    }
-
-    public String getDefaultPropertyValues() {
-        return "";
     }
 
     public Object execute(Map properties) {

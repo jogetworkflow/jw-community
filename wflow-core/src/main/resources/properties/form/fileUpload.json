@@ -12,7 +12,8 @@
         name : 'label',
         label : '@@form.fileupload.label@@',
         type : 'textfield',
-        required : 'True'
+        required : 'True',
+        value : 'FileUpload'
     },
     {
         name : 'size',

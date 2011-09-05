@@ -2,8 +2,9 @@ package org.joget.apps.userview.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.plugin.property.model.PropertyEditable;
 
-public abstract class Element {
+public abstract class Element implements PropertyEditable {
 
     private Map<String, Object> properties;
 
@@ -31,7 +32,7 @@ public abstract class Element {
      * @return Empty string instead of null.
      */
     public String getPropertyString(String property) {
-        String value = (properties != null) ? (String) properties.get(property) : "";
+        String value = (properties != null && properties.get(property) != null) ? (String) properties.get(property) : "";
         return value;
     }
 
@@ -45,5 +46,13 @@ public abstract class Element {
             properties = new HashMap<String, Object>();
         }
         properties.put(property, value);
+    }
+    
+    public String getLabel() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public String getClassName() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -1,6 +1,6 @@
 package org.joget.apps.app.lib;
 
-import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.FormRow;
@@ -9,7 +9,7 @@ import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
 
-public class FormHashVariable extends HashVariablePlugin {
+public class FormHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -54,7 +54,7 @@ public class FormHashVariable extends HashVariablePlugin {
     }
 
     public String getName() {
-        return "FormHashVariable";
+        return "Form Data Hash Variable";
     }
 
     public String getPrefix() {
@@ -66,6 +66,18 @@ public class FormHashVariable extends HashVariablePlugin {
     }
 
     public String getDescription() {
+        return "";
+    }
+
+    public String getLabel() {
+        return "Form Data Hash Variable";
+    }
+
+    public String getClassName() {
+       return this.getClass().getName();
+    }
+
+    public String getPropertyOptions() {
         return "";
     }
 }

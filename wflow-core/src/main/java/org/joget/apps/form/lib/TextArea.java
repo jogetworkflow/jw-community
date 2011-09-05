@@ -12,7 +12,7 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "TextArea";
+        return "Text Area";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getDescription() {
-        return "TextArea Element";
+        return "Text Area Element";
     }
 
     @Override
@@ -49,17 +49,12 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getLabel() {
-        return "TextArea";
+        return "Text Area";
     }
 
     @Override
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/textArea.json", null, true, "message/form/TextArea");
-    }
-
-    @Override
-    public String getDefaultPropertyValues() {
-        return "{label:'TextArea',cols:'20',rows:'5'}";
     }
 
     @Override
