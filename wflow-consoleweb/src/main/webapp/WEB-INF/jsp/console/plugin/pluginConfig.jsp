@@ -182,9 +182,6 @@
                         <c:when test="${!empty properties && fn:substring(properties, 0, 1) eq '{'}">
                             propertyValues : ${properties},
                         </c:when>
-                        <c:when test="${!empty propertyEditable.defaultPropertyValues}">
-                            propertyValues : ${propertyEditable.defaultPropertyValues},
-                        </c:when>
                     </c:choose>
                     <c:if test="${!empty defaultProperties && fn:substring(defaultProperties, 0, 1) eq '{'}">
                         defaultPropertyValues : ${defaultProperties},
