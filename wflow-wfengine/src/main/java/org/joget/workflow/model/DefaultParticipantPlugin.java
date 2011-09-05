@@ -1,11 +1,6 @@
 package org.joget.workflow.model;
 
-import java.util.Map;
-import org.joget.plugin.base.DefaultPlugin;
+import org.joget.plugin.base.ExtDefaultPlugin;
 
-public abstract class DefaultParticipantPlugin extends DefaultPlugin implements ParticipantPlugin {
-
-    public final Object execute(Map props) {
-        return getActivityAssignments(props);
-    }
+public abstract class DefaultParticipantPlugin extends ExtDefaultPlugin implements ParticipantPlugin {
 }
