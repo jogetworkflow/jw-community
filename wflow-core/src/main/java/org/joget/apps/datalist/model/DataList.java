@@ -489,9 +489,9 @@ public class DataList {
             action.setProperties(properties);
             actionList.add(action);
 
-            if (DATALIST_ROW_ACTION.equals(type) && getRowActions().length > 0) {
+            if (DATALIST_ROW_ACTION.equals(type) && actionList.size() > 0) {
                 setRowActions((DataListAction[]) actionList.toArray(new DataListAction[actionList.size()]));
-            } else if (DATALIST_ACTION.equals(type) && getActions().length > 0) {
+            } else if (DATALIST_ACTION.equals(type) && actionList.size() > 0) {
                 setActions((DataListAction[]) actionList.toArray(new DataListAction[actionList.size()]));
             }
 
