@@ -161,11 +161,11 @@ var guiders = (function($){
     },
     
     _showOverlay: function() {
-      $("#guider_overlay").fadeIn("fast");
+      $("#guider_overlay").show();
     },
     
     _hideOverlay: function() {
-      $("#guider_overlay").fadeOut("fast");
+      $("#guider_overlay").hide();
     },
     
     _initializeOverlay: function() {
