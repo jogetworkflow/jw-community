@@ -24,7 +24,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "3.0.0";
     }
 
     @Override

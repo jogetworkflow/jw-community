@@ -29,7 +29,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
     }
 
     public String getVersion() {
-        return "1.0.0";
+        return "3.0.0";
     }
 
     public String getDescription() {

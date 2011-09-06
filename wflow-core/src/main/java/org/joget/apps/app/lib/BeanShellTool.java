@@ -20,7 +20,7 @@ public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin
     }
 
     public String getVersion() {
-        return "1.0.0";
+        return "3.0.0";
     }
 
     public String getDescription() {

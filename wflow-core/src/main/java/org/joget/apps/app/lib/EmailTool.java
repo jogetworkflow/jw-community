@@ -35,7 +35,7 @@ public class EmailTool extends DefaultApplicationPlugin {
     }
 
     public String getVersion() {
-        return "1.0.0";
+        return "3.0.0";
     }
 
     public Object execute(Map properties) {

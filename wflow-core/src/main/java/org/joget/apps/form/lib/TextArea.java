@@ -17,7 +17,7 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "3.0.0";
     }
 
     @Override
