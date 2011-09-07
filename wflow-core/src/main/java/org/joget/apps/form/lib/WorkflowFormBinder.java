@@ -65,7 +65,10 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
             Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableList(processId);
             Map<String, String> variableMap = new HashMap<String, String>();
             for (WorkflowVariable variable : variableList) {
-                variableMap.put(variable.getId(), variable.getVal().toString());
+                Object val = variable.getVal();
+                if (val != null) {
+                    variableMap.put(variable.getId(), val.toString());
+                }
             }
             loadWorkflowVariables(element, row, variableMap);
         }
