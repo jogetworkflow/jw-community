@@ -95,7 +95,7 @@ var guiders = (function($){
     },
 
     _attach: function(myGuider) {
-      if (typeof myGuider.attachTo === "undefined" || myGuider === null) {
+      if (typeof myGuider.attachTo === "undefined" || myGuider === null || $(myGuider.attachTo).length == 0) {
         return;
       }
 
@@ -279,7 +279,7 @@ var guiders = (function($){
       guiderElement.attr("id", myGuider.id);
 
       // Ensure myGuider.attachTo is a jQuery element.
-      if (typeof myGuider.attachTo !== "undefined" && myGuider !== null) {
+      if (typeof myGuider.attachTo !== "undefined" && myGuider !== null && $(myGuider.attachTo).length != 0) {
         guiders._attach(myGuider);
         guiders._styleArrow(myGuider);
       }
@@ -317,6 +317,11 @@ var guiders = (function($){
       }
       
       var myGuider = guiders._guiderById(id);
+      
+      if (typeof myGuider.attachTo === "undefined" || myGuider === null || $(myGuider.attachTo).length == 0) {
+        return myGuider;
+      }
+      
       if (myGuider.overlay) {
         guiders._showOverlay();
       }
