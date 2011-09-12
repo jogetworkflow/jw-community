@@ -1,2 +1,167 @@
+3.0-BETA 2
+==========
+132		Fixed: wflow-consoleweb - Guider help show error when the object attached to does not exist.
+131		Fixed: wflow-consoleweb - Plugin resource (eg. css) retrieve from servlet cannot render properly in IE.
+130		Fixed: wflow-core - Fixed NullPointerException when viewing an assignment with empty workflow variable value on Oracle.
+129		Fixed: wflow-consoleweb - Updated resource bundle to correct wrong case in a userview builder key, and modified the description for the Setup Users menu when disabled by plugin.
+128		Modified: wflow-install - Added URIEncoding="UTF-8" for connector to server.xml
+127		Modified: wflow-core - Modified the version of all plugins to the proper value.
+126		Fixed: wflow-consoleweb - Removed unused code in the plugin config page that causes a PropertyNotFoundException for 'defaultPropertyValues'.
+125		Fixed: wflow-core - Fixed FormRowDataListBinder returning the wrong rows and row count when the filter query does not contain any values (e.g. when id is null).
+124		Fixed: wflow-consoleweb - IE8: The Whole Web Page is Rendered as Solid Black, when The New "Help" is Enabled (#317)
+123		Fixed: wflow-core - Dynamic added row action & action not showing when there are no row action or action added in builder.
+122		Modified: wflow-wfengine - Updated DeadlinePlugin & ParticipantPlugin to reflect changes on plugin refactoring
+121		Fixed: wflow-consoleweb - Link to Run Process: Form Validation Error Appears When Form is Opened (#313)
+120		Added: wflow-commons - Added Url related method to StringUtil 
+		Modified: wflow-plugin-base - Refactored on plugin interface 
+		Modified: wflow-core - Updated plugins to reflect changes on plugin interface refactoring 
+		Modified: wflow-core - Refactored on data list implemetation 
+		Added: wflow-core - Added support for multiple data list filter and filter type 
+		Added: wflow-core - Added TextFieldDataListFilterType 
+		Modified: wflow-consoleweb - Refactored on Data List Builder and added filter type support 
+		Fixed: wflow-consoleweb - Sorting of columns, row actions, actions and filter in data list builder work inconsistently
+119		Fixed: wflow-consoleweb - Fixed #312: Activity Mapping: NPE thrown - caused by r117.
+118		Fixed: wflow-core - Improper handling of request object not exist when execute tool
+117		Fixed: wflow-consoleweb - Fixed existing external form values not shown when editing an activity mapping.
+116		Fixed: wflow-core, wflow-consoleweb - Fixed external forms not being displayed when mapped to an activity.
+115		Fixed: wflow-consoleweb - Fixed wrong help message in the inbox page.
+114		Modified: wflow-consoleweb - Hide debugging message showing the help key in the footer.
+113		Added: wflow-consoleweb - Added initial help/hints content for the web console, which is enabled by default. User preference to enable/disable the hints are stored using cookies.
+112		Modified: wflow-core - Properly wrap template scripting inside element div for DatePicker, Grid & Section.
+111		Added: wflow-consoleweb - Added element unload function call on Form Builder.
+110		Modified: wflow-core - Beautify Default Userview Theme.
+109		Added: wflow-consoleweb - Message of BeanShellFormBinder.
+108		Fixed: wflow-core - Form data cannot be sort in Oracle.
+107		Fixed: wflow-consoleweb - Request param when start process doesn't pass to next assignment.
+106		Fixed: wflow-core - Column name 'uid' is reserved keyword in oracle.
+105		Added: wflow-consoleweb - Added help engine to support guided tour popup dialogs in consoleweb.
+104		Added: wflow-core - Added BeanShellFormBinder.
+103		Modified: wflow-core - Refactored on Form Binder
+102		Fixed: wflow-wfengine - Workflow variable value not set from form field when running on Oracle DB #303
+101		Added: wflow-commons - Added Utility method to get message. 
+		Modified: wflow-plugin-base - Get message from default message bundle if cannot found message key from plugin message bundle 
+		Modified: wflow-core - Consolidate core plugin resource bundles for easier management/translation 
+		Modified: wflow-consoleweb - Removed hardcoded message.
+100		Added: wflow-consoleweb - Added javascript function to print userview content without header, navigation & footer. 
+		Added: wflow-consoleweb - Added print button to form userview template.
+99		Fixed: wflow-core - Problem including subform of itself (#275)
+98		Fixed: wflow-core - Run Process userview menu doesn't redirect after assignment submit. (#302)
+97		Fixed: wflow-consoleweb - Fixed web console header not using custom CSS defined in the System Settings.
+96		Fixed: wflow-consoleweb - Missing datalist sorting images.
+95		Modified: wflow-core - Modified DataListMenu to pass userview key & value to data list binder. 
+		Modified: wflow-core - Modified FormRowDataListBinder to support userview key & value.
+94		Modified: wflow-consoleweb - Reduced font size for the datalist table headers in the CSS.
+93		Fixed: wflow-consoleweb - After deploying a process, the processes page doesn't reload correctly. #249
+92		Modified: wflow-consoleweb - Remove accepted status checking in inbox as it is not supported. 
+		Fixed: wflow-consoleweb - Task inbox not refreshed to reflect the latest state, after task completion #296
+91		Modified: wflow-core - Support format data before validation in FormService 
+		Modified: wflow-core - Added validator support for FileUpload form element. (#292)
+90		Modified: wflow-core - Correction on UserNotificationAuditTrail message
+89		Fixed: wflow-core - Fixed Processes: Participant mapping by workflow variable does not work #256.
+88		Fixed: wflow-core - Sorting not working for InboxMenu. 
+		Modified: wflow-core - Removed unnecessary code from InboxMenu.
+87		Modified: Added prefix checks for table calls
+86		Fixed: wflow-wfengine - NullPointerException throw when no due date for process & activity @ WorkflowManagerImpl
+		Modified: wflow-core - Return minimum non zero delay value in getMinMaxValue method @ ReportManager 
+		Fixed: wflow-core - getReportWorkflowActivityListSize @ ReportWorkflowActivityDaoImpl not working 
+		Fixed: wflow-core - Remove accidently committed testing code from ProcessDataCollectorAuditTrail
+85		Modified: wflow-plugin-base - Added additional OSGI system package from wflow-core for plugin use.
+84		Deleted: wflow-wfengine - Remove report related classes. 
+		Modified: wflow-wfengine - Calculate process & activity due date with deadline plugin. 
+		Fixed: wflow-wfengine - Process & activity's delay value not correct. 
+		Fixed: wflow-wfengine - Process's requester is not set in getRunningProcessById. 
+		Modified: wflow-wfengine - Removed unused method from WorkflowManager. 
+		Modified: wflow-wfengine - Added audit trail point on executeTool, executeToolCompleted & processCompleted. 
+		Modified: wflow-wfengine - Modified calculation formula of SLA value based on process & activity createdDate, completedDate & dueDate 
+		Added: wflow-wfengine - Added Utility method to return SLA indicator based on warning level setting. 
+		Added: wflow-core - Added refactored report module. 
+		Modified: wflow-core - Rework on ProcessDataCollectorAuditTrail based on refactored report module. 
+		Modified:wflow-consoleweb - Remove redundant code by get Service Level Indicator from WorkflowUtil. 
+		Added: wflow-consoleweb - Added process & activity SLA report JSON API.
+83		Fixed: wflow-consoleweb - Ajax load option on change not working after (r61 :Ajax load option failed when child page contain property with same id.)
+82		Fixed: wflow-consoleweb - Fixed problem where a new app using a previously deleted app ID displays the previous process #270.
+81		Modified: wflow-designer - Added SLA Limit Field for process
+80		Fixed: wflow-consoleweb - Added missing Published Processes drop-down menu item for normal users.
+79		Modified: wflow-plugin-base - Added additional OSGI system packages from Spring framework for plugin use.
+78		Modified: wflow-plugin-base - Added additional OSGI system package from wflow-commons for plugin use.
+76		Modified: wflow-consoleweb - Updated consoleweb to support additional content using a plugin.
+75		Modified: wflow-directory - Refactored authentication into a separate interface.
+74		Modified: Added the option for users to define their id column in the default form option binder
+73		Fixed: wflow-consoleweb - User Management: Default the Role to "User", in the Create New User screen. (#264)
+72		Fixed: wflow-core - fk_ & fke_ parameters didn't pass on if process is started with confirmation dialog first @ Run Process userview menu. (#261)
+71		Fixed: wflow-core - Hibernate mapping does not get updated when table name changes in Form Builder (#283)
+70		Fixed: wflow-core - NullPointerException throws from FormUtil.findElement when root element is null. (#287)
+69		Remove: wflow-core - Removed unused property Size of Grid form element. 
+		Modified: wflow-core - Added support of readonly mode for Grid form element. 
+		Fixed: wflow-core - Grid in a Sub Form is not editable, even if the Sub Form is not set to readonly #279
+68		Fixed: wflow-core - Data storing problem when subform store binder is not defined #276
+66		Fixed: wflow-consoleweb - Mandatory value validation of Element select in Property Editor not working (#285) 
+		Modified: wflow-consoleweb - Property type, required and validator type in Property Editor should be case insensitive (#286)
+65		Fixed: wflow-core - Hash variable is processed at design time in Form Builder #278
+64		Fixed: wflow-core - Fixed ParticipantPlugin property loaded incorrectly #282
+63		Fixed: wflow-plugin-base - Fixed PluginManager.readPluginResourceAsString problem where some new line characters are not removed #281
+62		Modified: wflow-core - Convert multirow data to a single field value in json format if no store binder is specified for an element @ FormUtil.executeElementFormatData . 
+		Added: wflow-core - Added Utilty Method to check a form is submitted or not. 
+		Modified: wflow-core - Modified Grid form element to always return multirow FormRowSet @ formatData. 
+		Added: wflow-core - Added convenience method to get form binder property in String. 
+		Modified: wflow-core - Override equals method of FormRow to checking equivalent with ID only
+61		Fixed: wflow-consoleweb - Radio button's value in property editor not save. (#280) 
+		Fixed: wflow-consoleweb - Ajax load option failed when child page contain property with same id.
+60		Fixed: wflow-core - Fixed ParticipantPlugin.getActivityAssignments(Map properties) being passed an empty property map.
+59		Modified: wflow-consoleweb - Added tomcat-maven-plugin to the POM to allow Tomcat to run via 'mvn tomcat:run'
+58		Bug fix in getGroupByName() method causing a Classcastexception
+57		Modified: wflow-consoleweb - Support custom submit button label for experimental embed form. 
+		Modified: wflow-consoleweb - Add name attribute for popup dialog's iframe
+56		Added: wflow-consoleweb - Added experimental form for embed and integration
+55		Modified: wflow-plugin-base - Added additional OSGI system packages from Spring framework for plugin use.
+54		Fixed: wflow-plugin-base - List method return the cached object instance in stead of a clone of it.
+53		Fixed: wflow-consoleweb - Fixed participant mapping not removing previous selections when switching mapping types.
+52		Fixed: wflow-consoleweb - Fixed jsontable checkbox/radio row selection not working consistently.
+51		Fixed: wflow-directory - Directory Manager Plugin's properties not load correctly.
+50		Modified: wflow-wfengine - Added support to filter assignment list with ActivityDefId.
+49		Fixed: wflow-consoleweb - Load options on change fail to load with default target value when property editor initialize.
+48		Enhanced: wflow-consoleweb - Support hash variable in Datalist json
+47		Fixed: wflow-core - Form menu show assignment form instead of the data form when record id is same with process id
+46		Fixed: wflow-designer - Deadline unit and limit are not saved during package deployment #267
+45		Modified: wflow-plugin-base - Changed plugin to stateless.
+44		Modified: wflow-core/wflow-consoleweb - Support datalist button can be visible when no record.
+43		Fixed: wflow-core - Removed unused property from Inbox Menu. (Correction for r42)
+42		Added: wflow-core - Added userview Inbox menu type. Removed: wflow-core - Removed WorkflowInboxDataListBinder.
+41		Fixed: wflow-wfengine - Process generated image does not show up after app import or xpdl upload #269.
+40		Fixed: wflow-consoleweb - Fixed problem where selecting a row in the app version list is not working properly.
+39		Fixed: wflow-consoleweb - JSON is blocked if columns are too high in Datalist Builder #260
+38		Modified: wflow-consoleweb - Modified Manage Plugins list to display all (both OSGI and non-OSGI) plugins #251.
+37		Modified: wflow-consoleweb - Support button & checkbox positioning for datalist. 
+		Modified: wflow-core - Modified DataList Menu to support button & checkbox positioning.
+36		Added: wflow-core - Added property option in the userview datalist menu to display total row count next to the label e.g. Menu Item (10)
+35		Modified: wflow-core, wflow-consoleweb - Removed duplicate method calls when generating a userview menu.
+34		Fixed: wflow-consoleweb - Task Inbox: Unread Task Not Highlighted (#254)
+33		Added: wflow-consoleweb - RTL support (#252)
+32		Fixed: wflow-core - User Notification Audit Trail Plugin Not Working #258
+31		Modified: wflow-consoleweb - Modified workflow assignment page permission to require a user login. This is required to work with direct links from email.
+30		Fixed: wflow-consoleweb - Fixed problem where participant could not be mapped to workflow variable (no effect when clicking Submit button)
+29		Fixed: wflow-core - Forms - Nested subform submission does not store data and workflow variable values correctly #257
+28		Fixed: wflow-core - Form Builder - Fixed section visibility not working for selectboxes and radio buttons in subforms.
+27		Fixed: wflow-core - Participant mapping by workflow variable does not work #256
+26		Added: wflow-core - Added missing property (value, maxlength) to Text Field, Text Area, Select Box, Check Box, Radio Button & Date Picker Form Element
+25		Modified: wflow-consoleweb - Increased z-index for the builder quick navigation list so that it appears above the canvas.
+24		Added: wflow-consoleweb - Quick navigation list in form builder, datalist builder & userview builder
+23		Fixed: wflow-core - Fixed typo in the From label for the user notification audit trail plugin.
+22		Modified: wflow-consoleweb - Updated Form Builder to auto generate element IDs instead of leaving it blank by default e.g. field1, field2, etc.
+21		Modified: wflow-consoleweb - Disabled invalid links in the popup dialogs when assigning users to groups, departments, etc.
+20		Fixed: wflow-directory - Fixed problem deleting users and departments (#248), and added unit test for deletion.
+19		Fixed: wflow-consoleweb - Fix hard coded list id in DatalistBuilderWebController and amended DatalistBuilder js in retrieving DataList Binder property options.
+18		Fixed: wflow-consoleweb - Fix hardcoded list id in DatalistBuilder js. Modified: wflow-consoleweb - Removed unused coding in DatalistBuilderWebController.
+17		Fixed: wflow-consoleweb - Missing Doctype in FormBuilder, DatalistBuilder and UserviewBuilder. 
+		Modified: wflow-consoleweb - Show property description when field on focus in property editor
+16		Fixed: wflow-plugin-base - Added missing directory package definitions for the OSGI container.
+15		Fixed: wflow-consoleweb - Fixed process deployment generated image sometimes only showing up after a page refresh.
+14		Fixed: wflow-consoleweb - xpdl is not pass correctly in Unicode. 
+		Fixed: wflow-core - Fail to import, export & create new version when app contain Unicode char in any of its element. 
+		Fixed: wflow-wfengine - Unicode char in generated xpdl image is incorrect. 
+		Fixed: wflow-designer - xpdl with Unicode char cannot read properly in designer.
+13		Fixed: wflow-consoleweb - Builders' title is not visible on IE.
+
 3.0-BETA
 ==========
+Initial release of beta version.
