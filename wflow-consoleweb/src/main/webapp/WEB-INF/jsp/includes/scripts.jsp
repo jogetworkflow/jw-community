@@ -23,4 +23,17 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquerycluetip/jquery.cluetip.js"></script>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
+    
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/clear.gif?" alt="">');
+            window.setInterval("keepMeAlive('image_alive')", 200000);
+        });
+        function keepMeAlive(imgName)
+        {  
+             myImg = document.getElementById(imgName);   
+             if (myImg)
+                 myImg.src = myImg.src.replace(/\?.*$/, '?' + Math.random());   
+        }   
+    </script>
 </c:if>
