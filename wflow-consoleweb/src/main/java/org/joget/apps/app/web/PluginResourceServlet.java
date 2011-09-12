@@ -88,7 +88,7 @@ public class PluginResourceServlet extends HttpServlet {
 
                 response.setDateHeader("Expires", System.currentTimeMillis() + expires);
 
-                String contentType = getContentType(resourceUrl);
+                String contentType = request.getSession().getServletContext().getMimeType(resourceUrl);
                 if (contentType != null) {
                     response.setContentType(contentType);
                 }
@@ -111,17 +111,5 @@ public class PluginResourceServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
 
-    }
-
-    private String getContentType(String resourceUrl) {
-        resourceUrl = resourceUrl.toLowerCase();
-        if (resourceUrl.endsWith(".xml")) {
-            return "text/xml;charset=UTF-8";
-        } else if (resourceUrl.endsWith(".js") || resourceUrl.endsWith(".json")) {
-            return "text/javascript;charset=UTF-8";
-        } else if (resourceUrl.endsWith(".css")) {
-            return "text/css;charset=UTF-8";
-        }
-        return null;
     }
 }
