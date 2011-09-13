@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <form:form id="createUserview" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/submit/create" method="POST" commandName="userviewDefinition" cssClass="form">
+        <form:form id="createUserview" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/submit/create?builderMode=${param.builderMode}" method="POST" commandName="userviewDefinition" cssClass="form">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

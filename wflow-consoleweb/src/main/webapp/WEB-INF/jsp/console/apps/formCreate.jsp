@@ -8,7 +8,7 @@
     <div id="main-body-content">
 
         <c:url var="url" value="" />
-        <form:form id="createForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/submit" method="POST" commandName="formDefinition" cssClass="form">
+        <form:form id="createForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/submit?builderMode=${param.builderMode}" method="POST" commandName="formDefinition" cssClass="form">
             <input type="hidden" name="activityDefId" value="${activityDefId}"/>
             <input type="hidden" name="processDefId" value="${processDefId}"/>
             <form:errors path="*" cssClass="form-errors"/>
