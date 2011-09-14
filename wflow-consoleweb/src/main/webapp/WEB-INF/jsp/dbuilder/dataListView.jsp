@@ -110,7 +110,7 @@
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
                             </c:if>
-                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}">${action.linkLabel}</button>
+                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}>${action.linkLabel}</button>
                         </c:if>
                     </c:forEach>
                 </div>

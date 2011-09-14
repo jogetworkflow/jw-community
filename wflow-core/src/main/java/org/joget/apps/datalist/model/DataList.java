@@ -353,13 +353,14 @@ public class DataList {
     public void setSize(Integer size) {
         this.size = size;
     }
-
+    
     public DataListDecorator getPrimaryKeyDecorator() {
         if (getBinder() != null) {
             String key = getBinder().getPrimaryKeyColumnName();
             DataListDecorator decorator = new DataListDecorator();
             decorator.setId(key);
-            decorator.setFieldName(CHECKBOX_PREFIX + key);
+            decorator.setFieldName(getDataListEncodedParamName(CHECKBOX_PREFIX + key));
+            return decorator;
         }
         return new DataListDecorator();
     }
