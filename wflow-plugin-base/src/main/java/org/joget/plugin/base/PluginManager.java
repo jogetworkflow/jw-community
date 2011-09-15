@@ -648,10 +648,7 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
 
-        //if translation path not null and empty, translate the output
-        if (translationPath != null && !translationPath.isEmpty()) {
-            output = processPluginTranslation(output, pluginName, translationPath);
-        }
+        output = processPluginTranslation(output, pluginName, translationPath);
 
         return output;
     }
@@ -684,7 +681,7 @@ public class PluginManager implements ApplicationContextAware {
     }
 
     public String processPluginTranslation(String content, String pluginName, String translationPath) {
-        if (!(content != null && content.indexOf("@@") >= 0) || !(translationPath != null && !translationPath.isEmpty())) {
+        if (!(content != null && content.indexOf("@@") >= 0)) {
             return content;
         }
 
@@ -697,7 +694,11 @@ public class PluginManager implements ApplicationContextAware {
         }
 
         if (!keyList.isEmpty()) {
-            ResourceBundle bundle = getPluginMessageBundle(pluginName, translationPath);
+            ResourceBundle bundle = null;
+            
+            if (translationPath != null && !translationPath.isEmpty()) {
+                bundle = getPluginMessageBundle(pluginName, translationPath);
+            }
 
             for (String key : keyList) {
                 String tempKey = key.replaceAll("@@", "");
