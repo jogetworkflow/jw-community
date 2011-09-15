@@ -1051,6 +1051,7 @@
                     });
                 }
             });
+            elementStack[id].propertiesDefinition = "";
         }
      
         $(editor).find('.property-editor-page[elementId='+id+']').remove();
