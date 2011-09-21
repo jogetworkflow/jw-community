@@ -853,6 +853,10 @@ public class ConsoleWebController {
                 u.setFirstName(user.getFirstName());
                 u.setLastName(user.getLastName());
                 u.setEmail(user.getEmail());
+                if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                    //set md5 password
+                    u.setPassword(StringUtil.md5Base16(user.getPassword()));
+                }
                 //set roles
                 if (user.getRoles() != null && user.getRoles().size() > 0) {
                     Set roles = new HashSet();
