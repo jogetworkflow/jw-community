@@ -26,6 +26,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.plugin.base.PluginManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +57,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_DATE_MODIFIED = "dateModified";
     public static final String PROPERTY_CUSTOM_PROPERTIES = "customProperties";
     public static final String PROPERTY_TABLE_NAME = "tableName";
+    public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
     static ApplicationContext appContext;
 
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
@@ -695,6 +697,47 @@ public class FormUtil implements ApplicationContextAware {
 
         String[] result = (String[]) values.toArray(new String[0]);
         return result;
+    }
+    
+    public static boolean isElementPropertyValuesChanges(Element element, FormData formData, String[] updatedValues){
+        // get value
+        String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+        
+        if(!formData.getPrimaryKeyValue().equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))){
+            return true;
+        }
+        
+        List<String> values = new ArrayList<String>();
+        
+        String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+
+        // handle multiple values
+        if (value != null) {
+            StringTokenizer st = new StringTokenizer(value, FormUtil.PROPERTY_OPTIONS_DELIMITER);
+            while (st.hasMoreTokens()) {
+                String val = st.nextToken();
+                values.add(val);
+            }
+        }
+        
+        // load from binder if available
+        if (formData != null) {
+            String binderValue = formData.getLoadBinderDataProperty(element, id);
+            if (binderValue != null) {
+                StringTokenizer st = new StringTokenizer(binderValue, FormUtil.PROPERTY_OPTIONS_DELIMITER);
+                while (st.hasMoreTokens()) {
+                    String val = st.nextToken();
+                    values.add(val);
+                }
+            }
+        }
+        String[] loadedValues = (String[]) values.toArray(new String[0]);
+        
+        if(loadedValues != null && updatedValues != null && loadedValues.length == updatedValues.length){
+            return !Arrays.equals(loadedValues, updatedValues);
+        }
+        
+        return true;
     }
 
     /**

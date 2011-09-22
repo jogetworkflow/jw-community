@@ -108,7 +108,7 @@ public class DuplicateValueValidator extends FormValidator {
                         }
                     }
                 }
-                if (isDuplicate(form, fieldId, values)) {
+                if (isDuplicate(form, element, data, fieldId, values)) {
                     result = false;
                     data.addFormError(id, "Value already exist.");
                 }
@@ -150,11 +150,11 @@ public class DuplicateValueValidator extends FormValidator {
         return result;
     }
 
-    protected boolean isDuplicate(Form form, String fieldId, String[] values) {
+    protected boolean isDuplicate(Form form, Element element, FormData formData, String fieldId, String[] values) {
         boolean result = false;
         FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
 
-        if (values != null && values.length > 0) {
+        if (values != null && values.length > 0 && FormUtil.isElementPropertyValuesChanges(element, formData, values)) {
             for (String val : values) {
                 String key = null;
 

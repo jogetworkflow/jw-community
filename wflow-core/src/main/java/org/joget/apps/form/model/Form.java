@@ -24,6 +24,13 @@ public class Form extends Element implements FormBuilderEditable {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
+        
+        if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
+            setProperty("form_meta_original_id", formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID));
+        } else if (formData.getPrimaryKeyValue() != null) {
+            setProperty("form_meta_original_id", formData.getPrimaryKeyValue());
+        }
+        
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
     }

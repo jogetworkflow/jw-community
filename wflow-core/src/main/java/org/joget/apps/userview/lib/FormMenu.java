@@ -383,7 +383,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             Element el = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
             if (el != null) {
                 String idValue = FormUtil.getElementPropertyValue(el, formData);
-                if (idValue != null && !idValue.trim().isEmpty()) {
+                if (idValue != null && !idValue.trim().isEmpty() && !"".equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
                     el.setProperty(FormUtil.PROPERTY_READONLY, "true");
                 }
             }
