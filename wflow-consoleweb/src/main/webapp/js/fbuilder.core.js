@@ -494,7 +494,7 @@ FormBuilder = {
                     closeable: true,
                     draggable: false,
                     show: false,
-                    fixed: false
+                    fixed: true
                 });
         }
         $("#form-property-editor").html("");
