@@ -692,7 +692,9 @@ HelpGuide = {
     },
     
     hide: function() {
-        guiders.hideAll();
+        if(window['guiders'] != undefined){
+            guiders.hideAll();
+        }
     },
     
     determineKey: function() {
@@ -768,9 +770,11 @@ HelpGuide = {
     },
     
     displayGuide: function(def) {
-        var guider = guiders.createGuider(def);
-        if (def.show) {
-            guider.show();
+        if(window['guiders'] != undefined){
+            var guider = guiders.createGuider(def);
+            if (def.show) {
+                guider.show();
+            }
         }
     }
     
