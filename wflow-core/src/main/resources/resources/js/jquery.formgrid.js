@@ -12,6 +12,7 @@
                     link.click(function() {
                         var table = $(this).parent();
                         methods.addRow.apply(table, arguments);
+                        return false;
                     });
                     $(this).append(link);
                 }
@@ -96,6 +97,7 @@
                     methods.updateInput(row, rowIndex);
                 });
             }
+            return false;
         }
 
     };
