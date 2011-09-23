@@ -9,6 +9,8 @@ public interface FormDefinitionDao extends AppVersionedObjectDao<FormDefinition>
     public Collection<FormDefinition> getFormDefinitionList(String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows);
 
     public Long getFormDefinitionListCount(String filterString, AppDefinition appDefinition);
+    
+    public Collection<String> getTableNameList(AppDefinition appDefinition);
 
     /**
      * Retrieves FormDefinitions mapped to a table name.

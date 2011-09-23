@@ -31,7 +31,7 @@
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.form.common.label.tableName"/></label>
-                    <span class="form-input"><form:input path="tableName" cssErrorClass="form-input-error" /> *</span>
+                    <span class="form-input"><form:input path="tableName" cssErrorClass="form-input-error" maxlength="28" autocomplete="off"/> *</span>
                 </div>
             </fieldset>
             <div class="form-buttons">
@@ -42,6 +42,28 @@
     </div>
     
     <script type="text/javascript">
+        var preventRecursiveClick = 0;
+        $(document).ready(function(){
+            var loadTableNameData = {
+                success : function(response){
+                    var data = eval('(' + response + ')');
+                    $("#tableName").autocomplete(data.tableName, {minChars: 0});
+                    $("#tableName").click(function(){
+                        if(preventRecursiveClick < 1){
+                            preventRecursiveClick = preventRecursiveClick + 1;
+                            $("#tableName").trigger("click");
+                        }else{
+                            preventRecursiveClick = 0;
+                        }
+                    });
+                    $("#tableName").focus(function(){
+                        $("#tableName").trigger("click");
+                    });
+                }
+            }
+            ConnectionManager.get('${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/tableNameList', loadTableNameData);
+        });
+        
         function validateField(){
             var idMatch = /^[0-9a-zA-Z_]+$/.test($("#id").attr("value"));
             var tableNameMatch = /^[0-9a-zA-Z_]+$/.test($("#tableName").attr("value"));

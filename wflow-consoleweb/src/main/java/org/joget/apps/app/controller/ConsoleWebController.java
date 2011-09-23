@@ -2741,11 +2741,26 @@ public class ConsoleWebController {
     public String consoleFormCreate(ModelMap model, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         model.addAttribute("appId", appId);
+        model.addAttribute("appVersion", version);
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("formDefinition", new FormDefinition());
         model.addAttribute("activityDefId", activityDefId);
         model.addAttribute("processDefId", processDefId);
         return "console/apps/formCreate";
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(*:version)/form/tableNameList")
+    public void consoleFormTableNameList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
+        
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("tableName", tableNameList);
+        if (callback != null && callback.trim().length() != 0) {
+            writer.write(callback + "(" + jsonObject + ");");
+        } else {
+            jsonObject.write(writer);
+        }
     }
 
     @RequestMapping("/console/app/(*:appId)/(*:version)/form/submit")
