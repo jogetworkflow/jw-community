@@ -129,7 +129,7 @@ public class PropertyUtil {
                     for (int j = 0; j < properties.size(); j++) {
                         JSONObject property = (JSONObject) properties.get(j);
                         if (property.containsKey("value")) {
-                            defaultProperties += property.getString("name") + ":'" + property.getString("value") + "',";
+                            defaultProperties += "'" + property.getString("name") + "':'" + property.getString("value") + "',";
                         }
                     }
                 }
