@@ -414,6 +414,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 boolean changes = false;
                 
                 Collection<String> columnList = getFormRowColumnNames(rowSet);
+                columnList.addAll(getFormDefinitionColumnNames(tableName));
                 if (!columnList.isEmpty()) {
                     Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
                     Component customComponent = (Component) custom.getValue();
@@ -580,7 +581,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param columnList
      */
     protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
-        if (!(element instanceof Form) && !(element instanceof Section) && element.getProperties() != null) {
+        if (!(element instanceof Form) && !(element instanceof SubForm) && !(element instanceof Section) && element.getProperties() != null) {
             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
             if (id != null && !id.isEmpty()) {
                 columnList.add(id);
@@ -664,10 +665,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (rowSet != null) {
                 // column names from submitted fields
                 formFields = getFormRowColumnNames(rowSet);
-            } else {
-                // column names from all forms mapped to this table
-                formFields = getFormDefinitionColumnNames(tableName);
             }
+            
+            // merge all the field from other forms 
+            // column names from all forms mapped to this table
+            formFields = getFormDefinitionColumnNames(tableName);
+            
             for (String field : formFields) {
                 SimpleValue simpleValue = new SimpleValue();
                 String columnName = FORM_PREFIX_COLUMN + field;

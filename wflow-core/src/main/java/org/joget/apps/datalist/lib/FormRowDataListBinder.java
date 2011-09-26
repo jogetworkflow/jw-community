@@ -79,7 +79,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             String tableName = formDataDao.getFormTableName(form);
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(tableName);
             for (String columnName : columnNames) {
-                Element element = FormUtil.findElement(columnName, form, null);
+                Element element = FormUtil.findElement(columnName, form, null, true);
                 if (element != null && !(element instanceof Form) && !(element instanceof Column) && !(element instanceof Section)) {
                     String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                     String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);

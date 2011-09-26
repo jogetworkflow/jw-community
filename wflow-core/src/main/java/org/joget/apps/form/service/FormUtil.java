@@ -554,6 +554,17 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static Element findElement(String id, Element rootElement, FormData formData) {
+        return findElement(id, rootElement, formData, false);
+    }
+    
+    /**
+     * Utility method to recursively find an element by ID.
+     * @param id
+     * @param rootElement
+     * @param formData
+     * @return
+     */
+    public static Element findElement(String id, Element rootElement, FormData formData, Boolean includeSubForm) {
         if (rootElement == null) {
             return null;
         }
@@ -562,11 +573,11 @@ public class FormUtil implements ApplicationContextAware {
         if (elementId != null && elementId.equals(id)) {
             result = rootElement;
             return result;
-        } else if (!(rootElement instanceof SubForm)) { // don't recurse into subforms
+        } else if (!(rootElement instanceof SubForm) || ((rootElement instanceof SubForm) && includeSubForm)) { 
             Collection<Element> children = rootElement.getChildren();
             if (children != null) {
                 for (Element child : children) {
-                    result = FormUtil.findElement(id, child, formData);
+                    result = FormUtil.findElement(id, child, formData, includeSubForm);
                     if (result != null) {
                         break;
                     }
