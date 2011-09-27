@@ -1149,8 +1149,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/publish", method = RequestMethod.POST)
-    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/publish", method = RequestMethod.POST)
+    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
         //Unset previous published version
         Long previousVersion = appService.getPublishedVersion(appId);
         if (previousVersion != null && previousVersion != 0) {
@@ -1169,8 +1169,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/rename/(*:name)", method = RequestMethod.POST)
-    public String consoleAppRename(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "name") String name) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/rename/(*:name)", method = RequestMethod.POST)
+    public String consoleAppRename(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "name") String name) {
         //Rename app
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
@@ -1181,8 +1181,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/unpublish", method = RequestMethod.POST)
-    public String consoleAppUnpublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/unpublish", method = RequestMethod.POST)
+    public String consoleAppUnpublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
         //Set version to unpublish
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
@@ -1193,8 +1193,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/delete", method = RequestMethod.POST)
-    public String consoleAppDelete(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/delete", method = RequestMethod.POST)
+    public String consoleAppDelete(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
         Long appVersion;
         if (AppDefinition.VERSION_LATEST.equals(version)) {
             appVersion = appDefinitionDao.getLatestVersion(appId);
@@ -1205,8 +1205,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/export")
-    public void consoleAppExport(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) throws IOException {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/export")
+    public void consoleAppExport(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         ServletOutputStream output = null;
         try {
             // determine output filename
@@ -1218,7 +1218,7 @@ public class ConsoleWebController {
             response.setContentType("application/zip");
             response.addHeader("Content-Disposition", "inline; filename=" + filename);
             output = response.getOutputStream();
-            
+
             // export app
             appService.exportApp(appId, version, output);
 
@@ -1256,7 +1256,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/package/xpdl")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/package/xpdl")
     public void getPackageXpdl(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1295,7 +1295,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping(value = "/json/console/app/(*:appId)/(*:version)/package/deploy", method = RequestMethod.POST)
+    @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/package/deploy", method = RequestMethod.POST)
     public void consolePackageDeploy(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         MultipartFile packageXpdl = FileStore.getFile("packageXpdl");
@@ -1327,7 +1327,7 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, null);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/package/upload")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/package/upload")
     public String consolePackageUpload(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1336,7 +1336,7 @@ public class ConsoleWebController {
         return "console/apps/packageUpload";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/package/upload/submit", method = RequestMethod.POST)
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/package/upload/submit", method = RequestMethod.POST)
     public String consolePackageUploadSubmit(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1372,7 +1372,7 @@ public class ConsoleWebController {
         return designerwebBaseUrl;
     }
 
-    @RequestMapping({"/console/app/(*:appId)/(*:version)/processes", "/console/app/(*:appId)/(*:version)/processes/(*:processDefId)"})
+    @RequestMapping({"/console/app/(*:appId)/(~:version)/processes", "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)"})
     public String consoleProcessView(ModelMap map, @RequestParam("appId") String appId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "version", required = false) String version) {
         String result = checkVersionExist(appId, version);
         if (result != null) {
@@ -1519,7 +1519,7 @@ public class ConsoleWebController {
         return activity;
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form")
     public String consoleActivityForm(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1542,14 +1542,14 @@ public class ConsoleWebController {
             map.addAttribute("externalFormUrl", activityForm.getFormUrl());
             map.addAttribute("externalFormIFrameStyle", activityForm.getFormIFrameStyle());
         }
-        
+
         map.addAttribute("process", process);
         map.addAttribute("activity", activity);
 
         return "console/apps/activityFormAdd";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/submit")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/submit")
     public String consoleActivityFormSubmit(
             ModelMap map,
             @RequestParam String appId,
@@ -1589,7 +1589,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormAddSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/remove")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/remove")
     public String consoleActivityFormRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1617,7 +1617,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormRemoveSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/continue")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/continue")
     public void consoleActivityContinueSubmit(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam String auto) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1639,7 +1639,7 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin")
     public String consoleActivityPlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1655,7 +1655,7 @@ public class ConsoleWebController {
         return "console/apps/activityPluginAdd";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit")
     public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1674,7 +1674,7 @@ public class ConsoleWebController {
         return "console/apps/activityPluginAddSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/remove")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/remove")
     public String consoleActivityPluginRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         packageDefinitionDao.removeAppActivityPlugin(appId, appDef.getVersion(), processDefId, activityDefId);
@@ -1683,7 +1683,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormRemoveSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/configure")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/configure")
     public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1734,8 +1734,8 @@ public class ConsoleWebController {
         return "console/plugin/pluginConfig";
     }
 
-    @RequestMapping("/console/app/(*:param_appId)/(*:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit")
-    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam("param_version") String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) throws IOException {
+    @RequestMapping("/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit")
+    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefId, activityDefId);
@@ -1782,7 +1782,7 @@ public class ConsoleWebController {
         return "console/apps/activityPluginConfigSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/participant/(*:participantId)")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)")
     public String consoleParticipant(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String participantId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1827,12 +1827,12 @@ public class ConsoleWebController {
         return "console/apps/participantAdd";
     }
 
-    @RequestMapping(value = "/console/app/(*:param_appId)/(*:param_version)/processes/(*:param_processDefId)/participant/(*:param_participantId)/submit/(*:param_type)", method = RequestMethod.POST)
+    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/participant/(*:param_participantId)/submit/(*:param_type)", method = RequestMethod.POST)
     public String consoleParticipantSubmit(
             ModelMap map,
             HttpServletRequest request,
             @RequestParam("param_appId") String appId,
-            @RequestParam("param_version") String version,
+            @RequestParam(value = "param_version", required = false) String version,
             @RequestParam("param_processDefId") String processDefId,
             @RequestParam("param_participantId") String participantId,
             @RequestParam("param_type") String type,
@@ -1921,12 +1921,12 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/participant/(*:participantId)/plugin/configure")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/plugin/configure")
     public String consoleParticipantPluginConfigure(
             ModelMap map,
             HttpServletRequest request,
             @RequestParam String appId,
-            @RequestParam String version,
+            @RequestParam(required = false) String version,
             @RequestParam String processDefId,
             @RequestParam String participantId,
             @RequestParam(value = "value", required = false) String value) throws UnsupportedEncodingException, IOException {
@@ -1986,7 +1986,7 @@ public class ConsoleWebController {
         return "console/plugin/pluginConfig";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/processes/(*:processDefId)/participant/(*:participantId)/remove", method = RequestMethod.POST)
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/remove", method = RequestMethod.POST)
     @Transactional
     public String consoleParticipantRemove(ModelMap map,
             @RequestParam String appId,
@@ -2032,8 +2032,8 @@ public class ConsoleWebController {
         return "console/apps/participantAdd";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/datalists")
-    public String consoleDatalistList(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/datalists")
+    public String consoleDatalistList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(appId, version);
         if (result != null) {
             return result;
@@ -2047,8 +2047,8 @@ public class ConsoleWebController {
         return "console/apps/datalistList";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/datalist/create")
-    public String consoleDatalistCreate(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/datalist/create")
+    public String consoleDatalistCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2059,8 +2059,8 @@ public class ConsoleWebController {
         return "console/apps/datalistCreate";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/datalist/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleDatalistSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @ModelAttribute("datalistDefinition") DatalistDefinition datalistDefinition, BindingResult result) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleDatalistSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("datalistDefinition") DatalistDefinition datalistDefinition, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2098,8 +2098,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/datalist/list")
-    public void consoleDatalistListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/list")
+    public void consoleDatalistListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         Collection<DatalistDefinition> datalistDefinitionList = null;
@@ -2131,8 +2131,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/datalist/delete", method = RequestMethod.POST)
-    public String consoleDatalistDelete(@RequestParam(value = "ids") String ids, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/delete", method = RequestMethod.POST)
+    public String consoleDatalistDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
@@ -2142,8 +2142,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/userviews")
-    public String consoleUserviewList(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/userviews")
+    public String consoleUserviewList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(appId, version);
         if (result != null) {
             return result;
@@ -2157,8 +2157,8 @@ public class ConsoleWebController {
         return "console/apps/userviewList";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/userview/create")
-    public String consoleUserviewCreate(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/userview/create")
+    public String consoleUserviewCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2169,8 +2169,8 @@ public class ConsoleWebController {
         return "console/apps/userviewCreate";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/userview/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleUserviewSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @ModelAttribute("userviewDefinition") UserviewDefinition userviewDefinition, BindingResult result) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/userview/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleUserviewSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("userviewDefinition") UserviewDefinition userviewDefinition, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2208,8 +2208,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/userview/list")
-    public void consoleUserviewListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/list")
+    public void consoleUserviewListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         Collection<UserviewDefinition> userviewDefinitionList = null;
@@ -2241,8 +2241,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/userview/delete", method = RequestMethod.POST)
-    public String consoleUserviewDelete(@RequestParam(value = "ids") String ids, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/userview/delete", method = RequestMethod.POST)
+    public String consoleUserviewDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
@@ -2252,8 +2252,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/properties")
-    public String consoleProperties(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/properties")
+    public String consoleProperties(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(appId, version);
         if (result != null) {
             return result;
@@ -2268,8 +2268,8 @@ public class ConsoleWebController {
         return "console/apps/properties";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/message/create")
-    public String consoleAppMessageCreate(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/create")
+    public String consoleAppMessageCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2283,8 +2283,8 @@ public class ConsoleWebController {
         return "console/apps/messageCreate";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/message/edit/(*:id)")
-    public String consoleAppMessageEdit(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit/(*:id)")
+    public String consoleAppMessageEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2295,8 +2295,8 @@ public class ConsoleWebController {
         return "console/apps/messageEdit";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/message/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleAppMessageSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @ModelAttribute("message") Message message, BindingResult result) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleAppMessageSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("message") Message message, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2346,8 +2346,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/message/list")
-    public void consoleMessageListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "locale", required = false) String locale, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/message/list")
+    public void consoleMessageListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "locale", required = false) String locale, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         Collection<Message> messageList = null;
@@ -2382,8 +2382,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/message/delete", method = RequestMethod.POST)
-    public String consoleAppMessageDelete(@RequestParam(value = "ids") String ids, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/delete", method = RequestMethod.POST)
+    public String consoleAppMessageDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
@@ -2393,8 +2393,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/envVariable/create")
-    public String consoleAppEnvVariableCreate(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable/create")
+    public String consoleAppEnvVariableCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2404,8 +2404,8 @@ public class ConsoleWebController {
         return "console/apps/envVariableCreate";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/envVariable/edit/(*:id)")
-    public String consoleAppEnvVariableEdit(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable/edit/(*:id)")
+    public String consoleAppEnvVariableEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2416,8 +2416,8 @@ public class ConsoleWebController {
         return "console/apps/envVariableEdit";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/envVariable/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleAppEnvVariableSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @ModelAttribute("environmentVariable") EnvironmentVariable environmentVariable, BindingResult result) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/envVariable/submit/(*:action)", method = RequestMethod.POST)
+    public String consoleAppEnvVariableSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("environmentVariable") EnvironmentVariable environmentVariable, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2467,8 +2467,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/envVariable/list")
-    public void consoleEnvVariableListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/envVariable/list")
+    public void consoleEnvVariableListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         Collection<EnvironmentVariable> environmentVariableList = null;
@@ -2498,8 +2498,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/envVariable/delete", method = RequestMethod.POST)
-    public String consoleAppEnvVariableDelete(@RequestParam(value = "ids") String ids, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/envVariable/delete", method = RequestMethod.POST)
+    public String consoleAppEnvVariableDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
@@ -2509,8 +2509,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/pluginDefault/create")
-    public String consoleAppPluginDefaultCreate(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/pluginDefault/create")
+    public String consoleAppPluginDefaultCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2521,8 +2521,8 @@ public class ConsoleWebController {
         return "console/apps/pluginDefaultCreate";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/pluginDefault/config")
-    public String consoleAppPluginDefaultConfig(ModelMap map, HttpServletRequest request, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String action) throws UnsupportedEncodingException, IOException {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/pluginDefault/config")
+    public String consoleAppPluginDefaultConfig(ModelMap map, HttpServletRequest request, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String action) throws UnsupportedEncodingException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2563,8 +2563,8 @@ public class ConsoleWebController {
         return "console/plugin/pluginConfig";
     }
 
-    @RequestMapping(value = "/console/app/(*:param_appId)/(*:param_version)/pluginDefault/submit/(*:param_action)", method = RequestMethod.POST)
-    public String consoleAppPluginDefaultSubmit(ModelMap map, HttpServletRequest request, @RequestParam("param_action") String action, @RequestParam("param_appId") String appId, @RequestParam("param_version") String version, @RequestParam("param_id") String id, @RequestParam(required = false) String pluginProperties) {
+    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/pluginDefault/submit/(*:param_action)", method = RequestMethod.POST)
+    public String consoleAppPluginDefaultSubmit(ModelMap map, HttpServletRequest request, @RequestParam("param_action") String action, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_id") String id, @RequestParam(required = false) String pluginProperties) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2630,8 +2630,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/pluginDefault/list")
-    public void consolePluginDefaultListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/pluginDefault/list")
+    public void consolePluginDefaultListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         Collection<PluginDefaultProperties> pluginDefaultPropertiesList = null;
@@ -2661,8 +2661,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/pluginDefault/delete", method = RequestMethod.POST)
-    public String consoleAppPluginDefaultDelete(@RequestParam(value = "ids") String ids, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/pluginDefault/delete", method = RequestMethod.POST)
+    public String consoleAppPluginDefaultDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
@@ -2672,8 +2672,8 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/forms")
-    public String consoleFormList(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/forms")
+    public String consoleFormList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(appId, version);
         if (result != null) {
             return result;
@@ -2686,8 +2686,8 @@ public class ConsoleWebController {
         return "console/apps/formList";
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/forms")
-    public void consoleFormListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/forms")
+    public void consoleFormListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<FormDefinition> formDefinitionList = null;
         Long count = null;
@@ -2715,8 +2715,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/forms/options")
-    public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/forms/options")
+    public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<FormDefinition> formDefinitionList = null;
 
@@ -2737,8 +2737,8 @@ public class ConsoleWebController {
         writeJson(writer, jsonArray, callback);
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/form/create")
-    public String consoleFormCreate(ModelMap model, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/form/create")
+    public String consoleFormCreate(ModelMap model, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         model.addAttribute("appId", appId);
         model.addAttribute("appVersion", version);
@@ -2748,12 +2748,12 @@ public class ConsoleWebController {
         model.addAttribute("processDefId", processDefId);
         return "console/apps/formCreate";
     }
-    
-    @RequestMapping("/json/console/app/(*:appId)/(*:version)/form/tableNameList")
-    public void consoleFormTableNameList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version) throws IOException, JSONException {
+
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/tableNameList")
+    public void consoleFormTableNameList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
-        
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("tableName", tableNameList);
         if (callback != null && callback.trim().length() != 0) {
@@ -2763,8 +2763,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/form/submit")
-    public String consoleFormSubmit(ModelMap model, @ModelAttribute("formDefinition") FormDefinition formDefinition, BindingResult result, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) throws UnsupportedEncodingException {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/form/submit")
+    public String consoleFormSubmit(ModelMap model, @ModelAttribute("formDefinition") FormDefinition formDefinition, BindingResult result, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) throws UnsupportedEncodingException {
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
@@ -2813,8 +2813,8 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/form/(*:formId)/update", method = RequestMethod.POST)
-    public String consoleFormUpdate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/(*:formId)/update", method = RequestMethod.POST)
+    public String consoleFormUpdate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         // load existing form definition and update fields
@@ -2829,8 +2829,8 @@ public class ConsoleWebController {
         return "console/apps/dialogClose";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/form/delete", method = RequestMethod.POST)
-    public String consoleFormDelete(@RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam(value = "formId") String formId) {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/delete", method = RequestMethod.POST)
+    public String consoleFormDelete(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         StringTokenizer strToken = new StringTokenizer(formId, ",");
@@ -3565,10 +3565,10 @@ public class ConsoleWebController {
         byte[] xpdlBytes = workflowManager.getPackageContent(wfProcess.getPackageId(), wfProcess.getVersion());
         if (xpdlBytes != null) {
             String xpdl = null;
-            
-            try{
+
+            try {
                 xpdl = new String(xpdlBytes, "UTF-8");
-            }catch(Exception e){
+            } catch (Exception e) {
                 LogUtil.debug(ConsoleWebController.class.getName(), "XPDL cannot load");
             }
             // get running activities
@@ -3708,11 +3708,11 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/i18n/(*:name)")
-    public String consoleI18n(ModelMap map, @RequestParam("name") String name) throws IOException{
+    public String consoleI18n(ModelMap map, @RequestParam("name") String name) throws IOException {
         Properties keys = new Properties();
 
         //get message key from property file
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(name+".properties");
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
         if (inputStream != null) {
             keys.load(inputStream);
         }
@@ -3721,11 +3721,11 @@ public class ConsoleWebController {
 
         return "console/i18n/lang";
     }
-    
-    @RequestMapping("/console/app/(*:appId)/(*:version)/builder/navigator/(*:builder)/(*:id)")
-    public String consoleBuilderNavigator(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "builder") String builder, @RequestParam(value = "id", required = false) String id){
+
+    @RequestMapping("/console/app/(*:appId)/(~:version)/builder/navigator/(*:builder)/(*:id)")
+    public String consoleBuilderNavigator(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "builder") String builder, @RequestParam(value = "id", required = false) String id) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        
+
         Collection<FormDefinition> formDefinitionList = null;
         Collection<DatalistDefinition> datalistDefinitionList = null;
         Collection<UserviewDefinition> userviewDefinitionList = null;
@@ -3735,14 +3735,14 @@ public class ConsoleWebController {
             datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, "name", false, null, null);
             userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, "name", false, null, null);
         }
-        
+
         map.addAttribute("builder", builder);
         map.addAttribute("id", id);
         map.addAttribute("appDef", appDef);
         map.addAttribute("formDefinitionList", formDefinitionList);
         map.addAttribute("datalistDefinitionList", datalistDefinitionList);
         map.addAttribute("userviewDefinitionList", userviewDefinitionList);
-        
+
         return "console/apps/builderItems";
     }
 

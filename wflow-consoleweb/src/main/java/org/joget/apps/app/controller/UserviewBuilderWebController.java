@@ -32,8 +32,8 @@ public class UserviewBuilderWebController {
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
 
-    @RequestMapping("/console/app/(*:appId)/(*:appVersion)/userview/builder/(*:userviewId)")
-    public String builder(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam("appVersion") String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
+    @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/builder/(*:userviewId)")
+    public String builder(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -68,8 +68,8 @@ public class UserviewBuilderWebController {
         return "ubuilder/builder";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
-    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam("appVersion") String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) throws Exception {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
+    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) throws Exception {
         JSONObject jsonObject = new JSONObject();
 
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
@@ -84,8 +84,8 @@ public class UserviewBuilderWebController {
         jsonObject.write(writer);
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(*:appVersion)/userview/builderPreview/(*:userviewId)/(*:menuId)", method = RequestMethod.POST)
-    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam("appVersion") String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json, @RequestParam(value = "menuId", required = false) String menuId) throws Exception {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderPreview/(*:userviewId)/(*:menuId)", method = RequestMethod.POST)
+    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json, @RequestParam(value = "menuId", required = false) String menuId) throws Exception {
         // get app definition so that it's set in the current thread
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         map.addAttribute("appId", appId);

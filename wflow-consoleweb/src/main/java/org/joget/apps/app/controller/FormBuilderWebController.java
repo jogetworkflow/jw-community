@@ -45,8 +45,8 @@ public class FormBuilderWebController {
     @Autowired
     FormDefinitionDao formDefinitionDao;
 
-    @RequestMapping("/console/app/(*:appId)/(*:version)/form/builder/(*:formId)")
-    public String formBuilder(ModelMap model, @RequestParam("appId") String appId, @RequestParam("version") String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
+    @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
+    public String formBuilder(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
         // load form definition
         model.addAttribute("appId", appId);
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -98,8 +98,8 @@ public class FormBuilderWebController {
         return "fbuilder/formBuilder";
     }
 
-    @RequestMapping("/fbuilder/app/(*:appId)/(*:appVersion)/form/preview/")
-    public String previewForm(ModelMap model, @RequestParam("appId") String appId, @RequestParam("appVersion") String appVersion, @RequestParam("json") String json) {
+    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/preview/")
+    public String previewForm(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("json") String json) {
 
         model.addAttribute("appId", appId);
         model.addAttribute("appVersion", appVersion);
@@ -121,7 +121,7 @@ public class FormBuilderWebController {
 
         return "fbuilder/previewElement";
     }
-    
+
     @RequestMapping("/form/embed")
     public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
         FormData formData = new FormData();
@@ -129,13 +129,13 @@ public class FormBuilderWebController {
             formData.setPrimaryKeyValue(id);
         }
         Form form = formService.loadFormFromJson(json, formData);
-        
+
         if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
             callbackSetting = "{}";
         }
-        
+
         form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
-        
+
         if(form != null){
             // create new section for buttons
             Section section = new Section();
@@ -154,25 +154,25 @@ public class FormBuilderWebController {
             Collection<Element> columnChildren = new ArrayList<Element>();
             column.setChildren(columnChildren);
             sectionChildren.add(column);
-            
+
             Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
             hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
             hiddenField.setProperty(FormUtil.PROPERTY_VALUE, StringEscapeUtils.escapeHtml(json));
             columnChildren.add((Element) hiddenField);
-            
+
             Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
             submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
             submitButton.setProperty("label", buttonLabel);
             columnChildren.add((Element) submitButton);
         }
-        
+
         // generate form HTML
         String formHtml = null;
-        
+
         if("submit".equals(action)){
             formData = formService.retrieveFormDataFromRequest(formData, request);
             formData = formService.executeFormActions(form, formData);
-            
+
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
@@ -184,7 +184,7 @@ public class FormBuilderWebController {
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
-            
+
             //convert submitted 
             JSONObject jsonResult = new JSONObject();
             for(FormStoreBinder binder: formData.getStoreBinders()){
@@ -195,7 +195,7 @@ public class FormBuilderWebController {
                     }
                 }
             }
-            
+
             model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
             model.addAttribute("setting", callbackSetting);
             model.addAttribute("callback", callback);
@@ -204,7 +204,7 @@ public class FormBuilderWebController {
         }else{
             formHtml = formService.retrieveFormHtml(form, formData);
         }
-        
+
         model.addAttribute("formHtml", formHtml);
         return "fbuilder/embedForm";
     }

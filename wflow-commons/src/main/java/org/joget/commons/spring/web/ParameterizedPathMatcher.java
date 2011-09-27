@@ -33,7 +33,7 @@ specific language governing permissions and limitations under the License.
  */
 public class ParameterizedPathMatcher implements PathMatcher {
 
-    private static final Pattern wildcardPattern = Pattern.compile("([\\\\\\/])|(\\([^\\)]+\\))|(\\*{1,2})|(\\?)|(\\\\\\/)");
+    private static final Pattern wildcardPattern = Pattern.compile("([\\\\\\/])|(\\([^\\)]+\\))|([\\*|~]{1,2})|(\\?)|(\\\\\\/)");
     private static final Pattern wildcardFreePattern = Pattern.compile("^[\\\\\\/]?([^\\(\\*\\?\\\\\\/]*[\\\\\\/])*([^\\(\\*\\?\\\\\\/]*$)?");
     private static final Pattern regexEscapePattern = Pattern.compile("[\\\\\\/\\[\\]\\^\\$\\.\\{\\}\\&\\?\\*\\+\\|\\<\\>\\!\\=]");
     private Map<String, NamedPattern> patternCache = new HashMap<String, NamedPattern>();
@@ -154,8 +154,11 @@ public class ParameterizedPathMatcher implements PathMatcher {
                         translatedPattern.append('?');
                     }
                     nextSeparatorOptional.set(0, true);
+                } else if ("~".equals(m.group(3))) {
+                    translatedPattern.append("[^\\\\\\/]*");
                 } else if ("*".equals(m.group(3))) {
                     translatedPattern.append("[^\\\\\\/]*");
+                    nextSeparatorOptional.set(0, false);
                 } else if ("**".equals(m.group(3))) {
                     translatedPattern.append(".*?");
                 } else if (m.group(4) != null) {

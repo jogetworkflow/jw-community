@@ -151,7 +151,7 @@ public class PluginJsonController {
         }
     }
 
-    @RequestMapping("/json/app/(*:appId)/(*:appVersion)/plugin/(*:pluginName)/service")
+    @RequestMapping("/json/app/(*:appId)/(~:appVersion)/plugin/(*:pluginName)/service")
     public void service(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam String pluginName) throws IOException, ServletException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         AppUtil.setCurrentAppDefinition(appDef);

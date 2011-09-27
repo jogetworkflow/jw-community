@@ -49,7 +49,7 @@ public class AppWebController {
     @Autowired
     FormDefinitionDao formDefinitionDao;
 
-    @RequestMapping("/client/app/(*:appId)/(*:version)/process/(*:processDefId)")
+    @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
     public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String start) {
 
         // clean process def
@@ -97,7 +97,7 @@ public class AppWebController {
         }
     }
 
-    @RequestMapping("/client/app/(*:appId)/(*:version)/process/(*:processDefId)/start")
+    @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)/start")
     public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId) {
 
         // clean process def
@@ -111,7 +111,7 @@ public class AppWebController {
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("process", processDef);
-        
+
         // check for permission
         if (!workflowManager.isUserInWhiteList(processDefId)) {
             return "client/app/processUnauthorized";
@@ -164,7 +164,7 @@ public class AppWebController {
         return "client/app/processStarted";
     }
 
-    @RequestMapping("/client/app/(*:appId)/(*:version)/assignment/(*:activityId)")
+    @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)")
     public String clientAssignmentView(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
         // check assignment
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
@@ -197,8 +197,8 @@ public class AppWebController {
             String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
             PackageActivityForm activityForm = appService.viewAssignmentForm(appId, version, activityId, formData, formUrl);
             Form form = activityForm.getForm();
-            
-                // generate form HTML
+
+            // generate form HTML
             String formHtml = formService.retrieveFormHtml(form, formData);
             String formJson = formService.generateElementJson(form);
 
@@ -215,7 +215,7 @@ public class AppWebController {
         return "client/app/assignmentView";
     }
 
-    @RequestMapping("/client/app/(*:appId)/(*:version)/assignment/(*:activityId)/submit")
+    @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)/submit")
     public String clientAssignmentSubmit(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
         // check assignment
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
@@ -310,8 +310,8 @@ public class AppWebController {
      * @param processInstanceId
      * @throws IOException
      */
-    @RequestMapping("/client/app/(*:appId)/(*:version)/form/download/(*:formDefId)/(*:primaryKeyValue)/(*:fileName)")
-    public void downloadUploadedFile(HttpServletResponse response, @RequestParam("formDefId") String formDefId, @RequestParam(value = "appId") String appId, @RequestParam(value = "version") String version, @RequestParam("primaryKeyValue") String primaryKeyValue, @RequestParam("fileName") String fileName, @RequestParam(required = false) String attachment) throws IOException {
+    @RequestMapping("/client/app/(*:appId)/(~:version)/form/download/(*:formDefId)/(*:primaryKeyValue)/(*:fileName)")
+    public void downloadUploadedFile(HttpServletResponse response, @RequestParam("formDefId") String formDefId, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("primaryKeyValue") String primaryKeyValue, @RequestParam("fileName") String fileName, @RequestParam(required = false) String attachment) throws IOException {
         ServletOutputStream stream = response.getOutputStream();
         Form form = null;
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -355,4 +355,3 @@ public class AppWebController {
         }
     }
 }
-

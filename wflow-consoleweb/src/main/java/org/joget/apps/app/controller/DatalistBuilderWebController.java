@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class DatalistBuilderWebController {
-    
+
     public static final String PREFIX_SELECTED = "selected_";
     public static final String PREFIX_BINDER_PROPERTY = "binder_";
     @Autowired
@@ -53,14 +53,14 @@ public class DatalistBuilderWebController {
     DatalistDefinitionDao datalistDefinitionDao;
     @Autowired
     PluginManager pluginManager;
-    
-    @RequestMapping("/console/app/(*:appId)/(*:version)/datalist/builder/(*:id)")
-    public String builder(ModelMap map, @RequestParam("appId") String appId, @RequestParam("version") String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
+
+    @RequestMapping("/console/app/(*:appId)/(~:version)/datalist/builder/(*:id)")
+    public String builder(ModelMap map, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        
+
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
         String listJson = null;
         if (json != null && !json.trim().isEmpty()) {
@@ -70,35 +70,35 @@ public class DatalistBuilderWebController {
             // get JSON from form definition
             listJson = datalist.getJson();
         }
-        
+
         map.addAttribute("id", id);
         map.addAttribute("datalist", datalist);
         map.addAttribute("json", listJson);
         return "dbuilder/builder";
     }
-    
-    @RequestMapping(value = "/console/app/(*:appId)/(*:version)/datalist/builderSave/(*:id)", method = RequestMethod.POST)
-    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam("version") String version, @RequestParam("id") String id, @RequestParam("json") String json) throws Exception {
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/builderSave/(*:id)", method = RequestMethod.POST)
+    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam("json") String json) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
         DataList dlist = dataListService.fromJson(json);
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getName());
         datalist.setJson(json);
-        
+
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("success", success);
         jsonObject.write(writer);
     }
-    
-    @RequestMapping(value = {"/console/app/(*:appId)/(*:appVersion)/datalist/builderPreview/(*:id)", "/client/app/(*:appId)/(*:appVersion)/datalist/(*:id)"})
-    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam("appVersion") String appVersion, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
+
+    @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/datalist/builderPreview/(*:id)", "/client/app/(*:appId)/(*:appVersion)/datalist/(*:id)"})
+    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
         String view = "dbuilder/view";
 
         // get current app to set into thread
         appService.getAppDefinition(appId, appVersion);
-        
+
         try {
             // get data list
             DataList dataList = new DataList();
@@ -108,9 +108,9 @@ public class DatalistBuilderWebController {
             } else {
                 dataList = parseFromJsonParameter(map, dataList, id, request);
             }
-            
+
             map.addAttribute("dataList", dataList);
-            
+
         } catch (Exception ex) {
             StringWriter out = new StringWriter();
             ex.printStackTrace(new PrintWriter(out));
@@ -123,15 +123,15 @@ public class DatalistBuilderWebController {
         map.addAttribute("properties", new HashMap(map));
         return view;
     }
-    
-    @RequestMapping("/json/console/app/(*:appId)/(*:appVersion)/builder/actions")
+
+    @RequestMapping("/json/console/app/(*:appId)/(~:appVersion)/builder/actions")
     public void getBuilderDataActionList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, HttpServletRequest request) throws Exception {
         appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
 
         // get available binders
         DataListAction[] actions = dataListService.getAvailableActions();
-        
+
         Collection<Object> collection = new ArrayList<Object>();
         for (DataListAction action : actions) {
             Plugin p = (Plugin) action;
@@ -151,8 +151,8 @@ public class DatalistBuilderWebController {
         jsonObject.accumulate("actions", collection);
         jsonObject.write(writer);
     }
-    
-    @RequestMapping("/json/console/app/(*:appId)/(*:appVersion)/builder/binder/columns")
+
+    @RequestMapping("/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns")
     public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, HttpServletRequest request) throws Exception {
         appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
@@ -168,7 +168,7 @@ public class DatalistBuilderWebController {
         if (binder != null) {
             dataList.setBinder(binder);
         }
-        
+
         DataListColumn[] sourceColumns = binder.getColumns();
         Collection<DataListColumn> binderColumnList = new ArrayList<DataListColumn>(Arrays.asList(sourceColumns));
         Collection<String> columnNameList = new HashSet<String>();
@@ -202,7 +202,7 @@ public class DatalistBuilderWebController {
         jsonObject.accumulate("columns", collection);
         jsonObject.write(writer);
     }
-    
+
     @RequestMapping("/dbuilder/getFilterTemplate")
     public String getBuilderFilterTemplate(ModelMap model, @RequestParam("json") String json) throws Exception {
         Map<String, Object> obj = PropertyUtil.getPropertiesValueFromJson(json);
@@ -213,24 +213,24 @@ public class DatalistBuilderWebController {
             filter.setOperator(obj.get("operator").toString());
         }
         if (obj.get("type") != null) {
-            Map typeMap = (Map) obj.get("type");            
+            Map typeMap = (Map) obj.get("type");
             DataListFilterType type = (DataListFilterType) pluginManager.getPlugin(typeMap.get("className").toString());
             if (type != null) {
                 type.setProperties((Map) obj.get("properties"));
                 filter.setType(type);
             }
         }
-        
+
         model.addAttribute("template", filter.getType().getTemplate(new DataList(), filter.getName(), filter.getLabel()));
         return "dbuilder/filterTmplate";
     }
-    
+
     protected DataListBinder createDataListBinderFromRequestInternal(String binderId, HttpServletRequest request) {
         DataListBinder binder = null;
         if (binderId != null && binderId.trim().length() > 0) {
             // create binder
             binder = dataListService.getBinder(binderId);
-            
+
             if (request != null) {
                 // get request params
                 Enumeration e = request.getParameterNames();
@@ -246,7 +246,7 @@ public class DatalistBuilderWebController {
         }
         return binder;
     }
-    
+
     protected DataList parseFromJsonParameter(ModelMap map, DataList dataList, String id, HttpServletRequest request) {
         // get parameters
 
@@ -264,7 +264,7 @@ public class DatalistBuilderWebController {
         }/* else {
         json = dataListService.toJson(dataList);
         }*/
-        
+
         String jsonEncoded = null;
         try {
             if (json != null) {
