@@ -59,6 +59,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final String FORM_PREFIX_TABLE_NAME = "app_fd_";
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
     public static final String FORM_PREFIX_COLUMN = "c_";
+    public static final int ACTION_TYPE_LOAD = 0;
+    public static final int ACTION_TYPE_STORE = 1;
+    
     Map<String, HibernateTemplate> templateCache = new HashMap<String, HibernateTemplate>();
     Map<String, PersistentClass> persistentClassCache = new HashMap<String, PersistentClass>();
     ThreadLocal currentThreadForm = new ThreadLocal();
@@ -121,12 +124,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Transactional(propagation = Propagation.SUPPORTS)
     public FormRow load(String entityName, String tableName, String primaryKey) {
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) ht.load(entityName, primaryKey);
+            row = (FormRow) ht.load(tableName, primaryKey);
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         }
@@ -146,12 +149,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (!tableName.startsWith(FORM_PREFIX_TABLE_NAME))
             tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) ht.load(entityName, primaryKey);
+            row = (FormRow) ht.load(tableName, primaryKey);
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         }
@@ -175,13 +178,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String tableName = getFormTableName(form);
 
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         Collection result = (Collection) ht.execute(
                 new HibernateCallback() {
 
                     public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT e FROM " + entityName + " e ";
+                        String query = "SELECT e FROM " + tableName + " e ";
                         if (condition != null) {
                             query += condition;
                         }
@@ -240,13 +243,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String tableName = getFormTableName(form);
 
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         Long count = (Long) ht.execute(
                 new HibernateCallback() {
 
                     public Object doInHibernate(Session session) throws HibernateException {
-                        Query q = session.createQuery("SELECT COUNT(*) FROM " + entityName + " e " + condition);
+                        Query q = session.createQuery("SELECT COUNT(*) FROM " + tableName + " e " + condition);
 
                         if (params != null) {
                             int i = 0;
@@ -276,13 +279,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String tableName = getFormTableName(form);
 
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         String result = (String) ht.execute(
                 new HibernateCallback() {
 
                     public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT e.id FROM " + entityName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?";
+                        String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?";
 
                         Query q = session.createQuery(query);
 
@@ -318,7 +321,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public void saveOrUpdate(String entityName, String tableName, FormRowSet rowSet) {
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, rowSet);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_STORE);
 
         // save the form data
         for (FormRow row : rowSet) {
@@ -337,12 +340,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String tableName = getFormTableName(form);
 
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         // save the form data
         for (String key : primaryKeyValues) {
-            Object obj = ht.load(entityName, key);
-            ht.delete(entityName, obj);
+            Object obj = ht.load(tableName, key);
+            ht.delete(tableName, obj);
         }
     }
 
@@ -380,13 +383,17 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param form
      * @return
      */
-    protected HibernateTemplate getHibernateTemplate(String entityName, String tableName, FormRowSet rowSet) {
+    protected HibernateTemplate getHibernateTemplate(String entityName, String tableName, FormRowSet rowSet,  int actionType) {
 
         // determine hibernate entity name
         String path = getFormMappingPath();
 
         // get the hibernate template
         HibernateTemplate ht = null;
+        
+        if (actionType == ACTION_TYPE_LOAD) {
+            entityName = tableName;
+        }
 
         // lookup existing mapping from cache
         HibernateTemplate template = templateCache.get(entityName);
@@ -413,8 +420,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 // check for changes
                 boolean changes = false;
                 
-                Collection<String> columnList = getFormRowColumnNames(rowSet);
-                columnList.addAll(getFormDefinitionColumnNames(tableName));
+                Collection<String> columnList = null;
+                
+                if (actionType == ACTION_TYPE_STORE) {
+                    columnList = getFormRowColumnNames(rowSet);
+                } else {
+                    columnList = getFormDefinitionColumnNames(tableName);
+                }
+                
                 if (!columnList.isEmpty()) {
                     Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
                     Component customComponent = (Component) custom.getValue();
@@ -466,7 +479,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         if (ht == null) {
             // no existing or outdated template found, create new one
-            ht = createHibernateTemplate(entityName, tableName, rowSet);
+            ht = createHibernateTemplate(entityName, tableName, rowSet, actionType);
             Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.INFO, "  --- Form {0} hibernate template created", entityName);
 
             // save into cache
@@ -604,8 +617,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @return
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    protected HibernateTemplate createHibernateTemplate(String entityName, String tableName, FormRowSet rowSet) {
-        setCurrentThreadForm(entityName, tableName, rowSet);
+    protected HibernateTemplate createHibernateTemplate(String entityName, String tableName, FormRowSet rowSet, int actionType) {
+        setCurrentThreadForm(entityName, tableName, rowSet, actionType);
         HibernateTemplate ht = new HibernateTemplate(loadCustomSessionFactory());
         return ht;
     }
@@ -619,8 +632,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return currentThreadForm.get();
     }
 
-    protected void setCurrentThreadForm(String entityName, String tableName, FormRowSet rowSet) {
-        Object metadata[] = new Object[]{entityName, tableName, rowSet};
+    protected void setCurrentThreadForm(String entityName, String tableName, FormRowSet rowSet, int actionType) {
+        Object metadata[] = new Object[]{entityName, tableName, rowSet, actionType};
         currentThreadForm.set(metadata);
     }
 
@@ -649,6 +662,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         Object[] metaData = (Object[]) getCurrentThreadForm();
         String entityName = (String) metaData[0];
         String tableName = (String) metaData[1];
+        Integer actionType = (Integer) metaData[3];
         String path = getFormMappingPath();
         String filename = entityName + ".hbm.xml";
         File mappingFile = new File(path, filename);
@@ -657,19 +671,21 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             Document document = XMLUtil.loadDocument(is);
 
             // set entity name for form
-            FormRowSet rowSet = (FormRowSet) metaData[2];
             pc.setEntityName(entityName);
 
             // set column names
             Collection<String> formFields = null;
-            if (rowSet != null) {
-                // column names from submitted fields
-                formFields = getFormRowColumnNames(rowSet);
+            if (actionType == ACTION_TYPE_LOAD) {
+                // column names from all forms mapped to this table
+                formFields = getFormDefinitionColumnNames(tableName);
+            } else {
+                FormRowSet rowSet = (FormRowSet) metaData[2];
+                
+                if (rowSet != null) {
+                    // column names from submitted fields
+                    formFields = getFormRowColumnNames(rowSet);
+                }
             }
-            
-            // merge all the field from other forms 
-            // column names from all forms mapped to this table
-            formFields = getFormDefinitionColumnNames(tableName);
             
             for (String field : formFields) {
                 SimpleValue simpleValue = new SimpleValue();

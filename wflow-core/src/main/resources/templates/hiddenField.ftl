@@ -5,5 +5,5 @@
         <input id="${elementParamName!}" name="${elementParamName!}" type="text" value="${value}" readonly />
     </div>
 <#else>
-    <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value}"/>
+    <#if element.properties.readonly! != 'true'><input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value}"/></#if>
 </#if>
