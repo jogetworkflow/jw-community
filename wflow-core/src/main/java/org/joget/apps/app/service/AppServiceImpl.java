@@ -359,7 +359,7 @@ public class AppServiceImpl implements AppService {
             Map<String, String> errors = formResult.getFormErrors();
             if (errors == null || errors.isEmpty()) {
                 // start process
-                result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, false);
+                result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
                 String processId = result.getProcess().getInstanceId();
                 String originId = (originProcessId != null && originProcessId.trim().length() > 0) ? originProcessId : processId;
                 originId = getOriginProcessId(originId);
@@ -376,6 +376,7 @@ public class AppServiceImpl implements AppService {
 
                 // submit form
                 formResult = formService.submitForm(startForm, formData, true);
+                result = workflowManager.processStartWithInstanceId(processDefId, processId, workflowVariableMap);
             }
         }
         return result;
