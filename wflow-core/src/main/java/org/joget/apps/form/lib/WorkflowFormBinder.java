@@ -86,24 +86,18 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
             if (!rows.isMultiRow()) {
                 String processId = element.getPrimaryKeyValue(formData);
                 if (processId != null) {
-                    // find root form
-                    Element form = FormUtil.findRootForm(element);
-                    
-                    // check form, disallow subforms from setting variables
-                    if (form == element) {
-                        WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+                    WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
 
-                        // recursively find element(s) mapped to workflow variable
-                        FormRow row = rows.iterator().next();
-                        Map<String, String> variableMap = new HashMap<String, String>();
-                        variableMap = storeWorkflowVariables(form, row, variableMap);
+                    // recursively find element(s) mapped to workflow variable
+                    FormRow row = rows.iterator().next();
+                    Map<String, String> variableMap = new HashMap<String, String>();
+                    variableMap = storeWorkflowVariables(element, row, variableMap);
 
-                        // save variable values
-                        for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
-                            String variableName = i.next();
-                            String variableValue = variableMap.get(variableName);
-                            workflowManager.processVariable(processId, variableName, variableValue);
-                        }
+                    // save variable values
+                    for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
+                        String variableName = i.next();
+                        String variableValue = variableMap.get(variableName);
+                        workflowManager.processVariable(processId, variableName, variableValue);
                     }
                 }
             }
