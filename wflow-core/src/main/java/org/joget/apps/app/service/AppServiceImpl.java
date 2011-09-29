@@ -364,19 +364,19 @@ public class AppServiceImpl implements AppService {
                 String originId = (originProcessId != null && originProcessId.trim().length() > 0) ? originProcessId : processId;
                 originId = getOriginProcessId(originId);
 
+                // set primary key
+                formResult.setPrimaryKeyValue(originId);
+
+                // submit form
+                formResult = formService.submitForm(startForm, formData, true);
+                result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
+                
                 // set next activity if configured
                 boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
                 if (!autoContinue) {
                     // clear next activities
                     result.setActivities(new ArrayList<WorkflowActivity>());
                 }
-
-                // set primary key
-                formResult.setPrimaryKeyValue(originId);
-
-                // submit form
-                formResult = formService.submitForm(startForm, formData, true);
-                result = workflowManager.processStartWithInstanceId(processDefId, processId, workflowVariableMap);
             }
         }
         return result;
