@@ -54,15 +54,16 @@ public class AppWebController {
 
         // clean process def
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        WorkflowProcess processDef = appService.getWorkflowProcessForApp(appId, appDef.getVersion().toString(), processDefId);
 
         // check for permission
-        if (!workflowManager.isUserInWhiteList(processDefId)) {
+        if (!workflowManager.isUserInWhiteList(processDef.getId())) {
             return "client/app/processUnauthorized";
         }
 
         // set app and process details
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        WorkflowProcess processDef = appService.getWorkflowProcessForApp(appId, version, processDefId);
         model.addAttribute("appId", appId);
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
@@ -105,7 +106,7 @@ public class AppWebController {
 
         // set app and process details
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        WorkflowProcess processDef = appService.getWorkflowProcessForApp(appId, version, processDefId);
+        WorkflowProcess processDef = appService.getWorkflowProcessForApp(appId, appDef.getVersion().toString(), processDefId);
         String processDefIdWithVersion = processDef.getId();
         model.addAttribute("appId", appId);
         model.addAttribute("appVersion", appDef.getVersion());
@@ -113,7 +114,7 @@ public class AppWebController {
         model.addAttribute("process", processDef);
 
         // check for permission
-        if (!workflowManager.isUserInWhiteList(processDefId)) {
+        if (!workflowManager.isUserInWhiteList(processDef.getId())) {
             return "client/app/processUnauthorized";
         }
 

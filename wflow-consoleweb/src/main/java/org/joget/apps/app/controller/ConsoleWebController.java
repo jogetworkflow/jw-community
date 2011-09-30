@@ -2872,7 +2872,16 @@ public class ConsoleWebController {
             if (packageDefList != null && !packageDefList.isEmpty()) {
                 PackageDefinition packageDef = packageDefList.iterator().next();
                 Collection<WorkflowProcess> processList = workflowManager.getProcessList(packageDef.getId(), packageDef.getVersion().toString());
-                appProcessMap.put(appDef, processList);
+                
+                Collection<WorkflowProcess> processListWithPermission = new ArrayList<WorkflowProcess>();
+                
+                for (WorkflowProcess process : processList) {
+                    if (workflowManager.isUserInWhiteList(process.getId())) {
+                        processListWithPermission.add(process);
+                    }
+                }
+                
+                appProcessMap.put(appDef, processListWithPermission);
             } else {
                 i.remove();
             }
