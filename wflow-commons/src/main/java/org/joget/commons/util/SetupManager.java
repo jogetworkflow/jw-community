@@ -7,6 +7,7 @@ import java.util.Collection;
 public class SetupManager {
 
     public static final String SYSTEM_PROPERTY_WFLOW_HOME = "wflow.home";
+    public static final String DIRECTORY_PROFILES = "app_profiles";
 
     private static String BASE_DIRECTORY;
 
@@ -26,7 +27,7 @@ public class SetupManager {
             if (currentProfile == null || currentProfile.trim().length() == 0) {
                 currentProfile = "default";
             }
-            String baseDirectory = BASE_DIRECTORY + File.separator + "app_profiles" + File.separator + currentProfile + File.separator;
+            String baseDirectory = BASE_DIRECTORY + File.separator + DIRECTORY_PROFILES + File.separator + currentProfile + File.separator;
             return baseDirectory;
         }
         else {

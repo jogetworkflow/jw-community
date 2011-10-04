@@ -52,7 +52,7 @@
                        hrefDialogWidth="600px"
                        hrefDialogHeight="400px"
                        hrefDialogTitle="Process Dialog"
-                       checkbox="${!isVirtualHostEnabled}"
+                       checkbox="true"
                        checkboxButton2="console.setting.plugin.unintall.label"
                        checkboxCallback2="uninstall"
                        fields="['id','name','description','version']"

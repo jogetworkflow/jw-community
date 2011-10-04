@@ -35,6 +35,7 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.form.lib.SubForm;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -62,8 +63,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public static final int ACTION_TYPE_LOAD_LIST = 0;
     public static final int ACTION_TYPE_NORMAL = 1;
     
-    Map<String, HibernateTemplate> templateCache = new HashMap<String, HibernateTemplate>();
-    Map<String, PersistentClass> persistentClassCache = new HashMap<String, PersistentClass>();
+    Map<String, Map<String, HibernateTemplate>> templateCacheMap = new HashMap<String, Map<String, HibernateTemplate>>();
+    Map<String, Map<String, PersistentClass>> persistentClassCacheMap = new HashMap<String, Map<String, PersistentClass>>();
     ThreadLocal currentThreadForm = new ThreadLocal();
     private FormDefinitionDao formDefinitionDao;
     private FormService formService;
@@ -378,6 +379,34 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return tableName;
     }
 
+    protected Map<String, HibernateTemplate> getTemplateCache() {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        Map<String, HibernateTemplate> templateCache = templateCacheMap.get(profile);
+        if (templateCache == null) {
+            templateCache = new HashMap<String, HibernateTemplate>();
+            templateCacheMap.put(profile, templateCache);
+        }
+        return templateCache;
+    }
+
+    protected Map<String, PersistentClass> getPersistentClassCache() {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        Map<String, PersistentClass> persistentClassCache = persistentClassCacheMap.get(profile);
+        if (persistentClassCache == null) {
+            persistentClassCache = new HashMap<String, PersistentClass>();
+            persistentClassCacheMap.put(profile, persistentClassCache);
+        }
+        return persistentClassCache;
+    }
+    
+    /**
+     * Clears in-memory cache of generated hibernate templates
+     */
+    public void clearCache() {
+        templateCacheMap.clear();
+        persistentClassCacheMap.clear();
+    }
+    
     /**
      * Gets the hibernate template for the form
      * @param form
@@ -396,12 +425,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
 
         // lookup existing mapping from cache
+        Map<String, HibernateTemplate> templateCache = getTemplateCache();
         HibernateTemplate template = templateCache.get(entityName);
         if (template != null) {
             ht = template;
             Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template found in cache", entityName);
 
             // lookup existing PersistentClass from cache
+            Map<String, PersistentClass> persistentClassCache = getPersistentClassCache();
             PersistentClass pc = persistentClassCache.get(entityName);
             String filename = entityName + ".hbm.xml";
             if(pc == null){

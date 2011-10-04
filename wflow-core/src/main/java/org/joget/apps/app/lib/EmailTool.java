@@ -11,6 +11,8 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.MultiPartEmail;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
@@ -119,11 +121,13 @@ public class EmailTool extends DefaultApplicationPlugin {
             }
 
             final String to = emailToOutput;
+            final String profile = DynamicDataSourceManager.getCurrentProfile();
 
             Thread emailThread = new Thread(new Runnable() {
 
                 public void run() {
                     try {
+                        HostManager.setCurrentProfile(profile);
                         LogUtil.info(getClass().getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", subject=" + email.getSubject());
                         email.send();
                         LogUtil.info(getClass().getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());

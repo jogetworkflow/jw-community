@@ -56,7 +56,9 @@ import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileStore;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.PluginManager;
@@ -1150,9 +1152,11 @@ public class AppServiceImpl implements AppService {
      * @param toVersion 
      */
     protected void updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion) {
+        final String profile = DynamicDataSourceManager.getCurrentProfile();
         Thread backgroundThread = new Thread(new Runnable() {
 
             public void run() {
+                HostManager.setCurrentProfile(profile);
                 LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion);
                 Collection<WorkflowProcess> runningProcessList = workflowManager.getRunningProcessList(packageId, null, null, fromVersion.toString(), null, null, 0, null);
 

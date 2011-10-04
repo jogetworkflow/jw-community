@@ -112,4 +112,10 @@ public class PluginResourceServlet extends HttpServlet {
         }
 
     }
+
+    @Override
+    public void destroy() {
+        pluginManager.shutdown();
+    }
+    
 }
