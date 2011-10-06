@@ -337,30 +337,30 @@ public class AppWorkflowHelper implements WorkflowHelper {
             if (va.getName() != null && va.getName().equals(variableName)) {
                 String variableValue = (String) va.getVal();
 
-                if (PackageParticipant.TYPE_GROUP.equals(variableType)) {
-                    Collection<User> users = directoryManager.getUserByGroupId(variableValue);
-                    for (User user : users) {
-                        if (user != null && user.getActive() == User.ACTIVE) {
-                            resultList.add(user.getUsername());
-                        }
+                StringTokenizer valueST = new StringTokenizer(variableValue, ";");
+                Collection<User> users = new ArrayList<User>();
+
+                while (valueST.hasMoreTokens()) {
+                    String value = valueST.nextToken();
+                    value = value.trim();
+
+                    if (PackageParticipant.TYPE_GROUP.equals(variableType)) {
+                        Collection<User> tempUsers = directoryManager.getUserByGroupId(value);
+                        users.addAll(tempUsers);
+                    } else if (PackageParticipant.TYPE_USER.equals(variableType)) {
+                        User user = directoryManager.getUserByUsername(value);
+                        users.add(user);
+                    } else if (PackageParticipant.TYPE_HOD.equals(variableType)) {
+                        User user = directoryManager.getDepartmentHod(value);
+                        users.add(user);
+                    } else if (PackageParticipant.TYPE_DEPARTMENT.equals(variableType)) {
+                        Collection<User> tempUsers = directoryManager.getUserByDepartmentId(value);
+                        users.addAll(tempUsers);
                     }
-                } else if (PackageParticipant.TYPE_USER.equals(variableType)) {
-                    User user = directoryManager.getUserByUsername(variableValue);
+                }
+                for (User user : users) {
                     if (user != null && user.getActive() == User.ACTIVE) {
                         resultList.add(user.getUsername());
-                    }
-                } else if (PackageParticipant.TYPE_HOD.equals(variableType)) {
-                    resultList = new ArrayList<String>();
-                    User user = directoryManager.getDepartmentHod(variableValue);
-                    if (user != null && user.getActive() == User.ACTIVE) {
-                        resultList.add(user.getUsername());
-                    }
-                } else if (PackageParticipant.TYPE_DEPARTMENT.equals(variableType)) {
-                    Collection<User> users = directoryManager.getUserByDepartmentId(variableValue);
-                    for (User user : users) {
-                        if (user != null && user.getActive() == User.ACTIVE) {
-                            resultList.add(user.getUsername());
-                        }
                     }
                 }
                 break;
