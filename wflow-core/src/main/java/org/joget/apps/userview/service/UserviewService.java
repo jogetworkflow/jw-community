@@ -41,6 +41,15 @@ public class UserviewService {
      * @return
      */
     public Userview createUserview(String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key) {
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        return createUserview(appDef, json, menuId, preview, contextPath, requestParameters, key);
+    }
+
+    /**
+     * Create userview fron json
+     * @return
+     */
+    public Userview createUserview(AppDefinition appDef, String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key) {
         if (key != null && key.trim().length() == 0) {
             key = null;
         }
@@ -50,14 +59,17 @@ public class UserviewService {
 
         User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
 
+        if (requestParameters == null) {
+            requestParameters = new HashMap<String, Object>();
+        }
         requestParameters = convertRequestParamMap(requestParameters);
         requestParameters.put("contextPath", contextPath);
         requestParameters.put("isPreview", Boolean.toString(preview));
 
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId = appDef.getId();
         String appVersion = appDef.getVersion().toString();
         Userview userview = new Userview();
+
         try {
             //set userview properties
             JSONObject userviewObj = new JSONObject(json);
@@ -156,8 +168,8 @@ public class UserviewService {
                             }
 
                             //set Current, if current menu id is empty, search the 1st valid menu
-                            if ((("".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported()) ||
-                                    (menuId != null && menuId.equals(mId))) {
+                            if ((("".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())
+                                    || (menuId != null && menuId.equals(mId))) {
                                 userview.setCurrent(menu);
                                 userview.setCurrentCategory(category);
                             }

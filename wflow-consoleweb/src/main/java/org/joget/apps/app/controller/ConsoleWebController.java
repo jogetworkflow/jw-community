@@ -53,6 +53,8 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
@@ -143,6 +145,8 @@ public class ConsoleWebController {
     Validator validator;
     @Autowired
     AppService appService;
+    @Autowired
+    UserviewService userviewService;
     @Autowired
     FormService formService;
     @Autowired
@@ -2844,18 +2848,34 @@ public class ConsoleWebController {
     @RequestMapping("/console/run/apps")
     public String consoleRunApps(ModelMap model) {
         // get list of published apps.
+        Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
 
-        // filter based on availability of userviews to run. TODO: filter by userview permission
+        // filter based on availability and permission of userviews to run.
         for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
             AppDefinition appDef = i.next();
+            
             Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
-            if (uvDefList == null || uvDefList.isEmpty()) {
-                i.remove();
+            Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
+            
+            for (UserviewDefinition uvDef : uvDefList) {
+                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null);
+                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))) {
+                    newUvDefList.add(uvDef);
+                }
+            }
+
+            if (newUvDefList != null && !newUvDefList.isEmpty()) {
+                AppDefinition tempAppDef = new AppDefinition();
+                tempAppDef.setAppId(appDef.getId());
+                tempAppDef.setVersion(appDef.getVersion());
+                tempAppDef.setName(appDef.getName());
+                tempAppDef.setUserviewDefinitionList(newUvDefList);
+                resultAppDefinitionList.add(tempAppDef);
             }
         }
-
-        model.addAttribute("appDefinitionList", appDefinitionList);
+        
+        model.addAttribute("appDefinitionList", resultAppDefinitionList);
         return "console/run/runApps";
     }
 
