@@ -170,7 +170,13 @@ public class ConsoleWebController {
 
     @RequestMapping("/index")
     public String index() {
-        return "redirect:/web/console/home";
+        String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
+        
+        if ("".equals(landingPage)) {
+            landingPage = "/web/console/home";
+        }
+        
+        return "redirect:" + landingPage;
     }
 
     @RequestMapping("/console/home")

@@ -106,17 +106,6 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
-                <span class="row-content">
-                    <div class="form-row">
-                        <label for="welcomeMessageDelay"><fmt:message key="console.setting.general.label.welcomeMessageDelay"/></label>
-                        <span class="form-input">
-                            <input id="welcomeMessageDelay" type="text" name="welcomeMessageDelay" value="${settingMap['welcomeMessageDelay']}"/>
-                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 3</i>
-                        </span>
-                    </div>
-                </span>
-            </div>
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.saSettings"/></span>
             </div>
@@ -137,6 +126,17 @@
                         <span class="form-input">
                             <input id="masterLoginPassword" type="password" name="masterLoginPassword" value="${settingMap['masterLoginPassword']}"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.masterLoginHash"/></span><span id="masterLoginHash">-</span></i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
+                        <span class="form-input">
+                            <input id="defaultLandingPage" type="text" name="landingPage" value="${settingMap['landingPage']}"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span><span> /web/console/home</span></i>
                         </span>
                     </div>
                 </span>
