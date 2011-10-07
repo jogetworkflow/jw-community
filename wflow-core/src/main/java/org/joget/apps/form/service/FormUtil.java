@@ -714,7 +714,8 @@ public class FormUtil implements ApplicationContextAware {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
         
-        if(!formData.getPrimaryKeyValue().equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))){
+        String primaryKeyValue = formData.getPrimaryKeyValue();
+        if(primaryKeyValue != null && !primaryKeyValue.equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))){
             return true;
         }
         
