@@ -7,10 +7,13 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.displaytag.util.ParamEncoder;
@@ -170,7 +173,16 @@ public class DatalistBuilderWebController {
         }
 
         DataListColumn[] sourceColumns = binder.getColumns();
-        Collection<DataListColumn> binderColumnList = new ArrayList<DataListColumn>(Arrays.asList(sourceColumns));
+ 
+        // sort columns by name
+        List<DataListColumn> binderColumnList = Arrays.asList(sourceColumns);
+        Collections.sort(binderColumnList, new Comparator<DataListColumn>() {
+
+            public int compare(DataListColumn o1, DataListColumn o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        
         Collection<String> columnNameList = new HashSet<String>();
         DataListColumn[] targetColumns = dataList.getColumns();
         if (targetColumns != null) {
@@ -187,7 +199,6 @@ public class DatalistBuilderWebController {
         sourceColumns = (DataListColumn[]) binderColumnList.toArray(new DataListColumn[0]);
         DataList sourceDataList = new DataList();
         sourceDataList.setColumns(sourceColumns);
-        //String sourceColumnsJson = "";//dataListService.toJson(sourceDataList);
 
         Collection<Object> collection = new ArrayList<Object>();
         for (DataListColumn sourceColumn : sourceColumns) {

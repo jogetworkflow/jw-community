@@ -3,8 +3,6 @@ package org.joget.apps.datalist.lib;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -92,14 +90,6 @@ public class FormRowDataListBinder extends DataListBinderDefault {
                 }
             }
         }
-
-        // sort columns by name
-        Collections.sort(columns, new Comparator<DataListColumn>() {
-
-            public int compare(DataListColumn o1, DataListColumn o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
 
         // add default metadata fields
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_DATE_MODIFIED, "Date Modified", true));
