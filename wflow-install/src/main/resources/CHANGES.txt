@@ -1,5 +1,43 @@
+3.0-BETA 3
+==========
+165		Fixed: wflow-wfengine - Package ID does not match App ID error while deploy in non-unicode OS (#362)
+164		Fixed: wflow-consoleweb - Visibility control on Run Apps based on userview's permission (#359)
+163		Fixed: wflow-core - Multiple participants on workflow variable mapping (#360)
+162		Modified: General - Various updates and fixes for caching implementation in profiles.
+161		Fixed: wflow-consoleweb - App Management: White List Not Working (#338) 
+		Fixed: wflow-consoleweb - Published Processes: Process listing no check with start process white list.
+160		Modified: wflow-core - Allowed sub form to set workflow variable after refactored on Form Data Storing (r154) (#331)
+158		Fixed: wflow-core - Workflow Variable: Workflow Variable Value Can't be Set from Run Process Activity (#350)
+157		Fixed: wflow-core - List Menu : Button and checkbox position not working (#349
+155		Fixed: wflow-core - Inbox Menu sorting should be order by latest created date show on top. (#354)
+154		Fixed: wflow-core - Hidden Field's value still submitted when it is readonly. 
+		Modified: wflow-core - Refactored on Form Data Storing 
+		Modified: wflow-core - Refactored on Hibernate Mapping of form data
+152		Modified: wflow-commons / wflow-consoleweb - Refactored on URL path matching logic.
+151		Modified: wflow-core - FormRowDataListBinder - List subform field that in the same table for available columns. (#332)
+150		Fixed: wflow-core - Submit button still showing when Form Menu set as read-only. (#336)
+149		Added: wflow-consoleweb - Form Builder: Display list of existing tables, when user creating a new form (#255)
+148		Fixed: wflow-consoleweb - Form builder auto scroll to top when property editor close (#320)
+147		Modified: wflow-core - Set DefaultTheme as Userview Theme default value. 
+		Fixed: wflow-core - Page auto scroll to top when click on add or delete link of Grid
+146		Fixed: wflow-consoleweb - Guider not defined error when ui.js is included without include guider js file.
+145		Fixed: wflow-plugin-base - Javascript error when property name contain special character.
+144		Fixed: wflow-core - Duplicate Value Validator prevents update of existing record #328 
+		Added: wflow-core - Form utility method to check element value changes. 
+		Fixed: wflow-core - FormMenu not allow to modify id value when id field hit error. 
+		Added: wflow-core - Added a hidden field in form to keep the original record id.
+143		Fixed: wflow-consoleweb - Cannot update user password from Setup Users (#330).
+142		Fixed: wflow-consoleweb - Removing of element select properties page is not handle properly in Property Editor.
+141		Added: wflow-core - Added LoggedInUserPermission for userview permission type
+140		Fixed: wflow-plugin-base - Plugin message can't show after changes on r120
+139		Added: wflow-core - Added Password Form Field.
+138		Fixed: wflow-core - Data List action not working. (#323)
+137		Added: wflow-consoleweb - Show current working item in builder quick navigator. 
+		Added: wflow-consoleweb - Added create feature in builder quick navigator.
+
 3.0-BETA 2
 ==========
+134		Modified: wflow-consoleweb - Keep system session alive.
 132		Fixed: wflow-consoleweb - Guider help show error when the object attached to does not exist.
 131		Fixed: wflow-consoleweb - Plugin resource (eg. css) retrieve from servlet cannot render properly in IE.
 130		Fixed: wflow-core - Fixed NullPointerException when viewing an assignment with empty workflow variable value on Oracle.
