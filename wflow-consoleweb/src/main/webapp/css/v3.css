@@ -596,7 +596,20 @@ img {
 #main #main-body-sublist li {
     padding: 3px;
 }
-
+#footer-profile {
+    position: absolute;
+    bottom: 0px;
+    left: 50px;
+    text-align: center;
+    padding: 5px 10px;
+    color: blue;
+    background: yellow;
+    opacity: .3;
+    -moz-opacity: .3;
+    filter: alpha(opacity=30);
+    -moz-border-radius: 20px 20px 0px 0px;
+    -webkit-border-radius: 20px 20px 0px 0px;
+}
 #footer {
     position: relative;
     top: 20px;
@@ -605,7 +618,6 @@ img {
     padding: 20px;
     color: #999999;
 }
-
 #main #main-body-content-subheader, .main-body-content-subheader {
     clear: both;
     margin-top: 20px;

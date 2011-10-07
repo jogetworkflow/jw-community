@@ -72,7 +72,7 @@
                                 ${username}
                             </c:when>
                             <c:otherwise>
-                                <a href="javascript: editUserProfile()"><fmt:message key="console.header.top.label.profile"/> (${username})</a>
+                                <a href="javascript: editUserProfile()"><fmt:message key="console.header.top.label.userProfile"/> (${username})</a>
 
                                 <script>
                                     <ui:popupdialog var="userProfilePopupDialog" src="${pageContext.request.contextPath}/web/console/profile"/>
