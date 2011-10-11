@@ -189,8 +189,10 @@ public class AppServiceImpl implements AppService {
         // get mapped form
         if (formData == null) {
             formData = new FormData();
-            formData.setPrimaryKeyValue(originProcessId);
         }
+        formData.setProcessId(processId);
+        formData.setPrimaryKeyValue(originProcessId);
+        
         Form form = retrieveForm(appDef, activityForm, formData, assignment);
         if (form == null) {
             form = createDefaultForm(processId, formData);
@@ -269,6 +271,7 @@ public class AppServiceImpl implements AppService {
             if (formDefId != null && !formDefId.isEmpty()) {
                 String originProcessId = getOriginProcessId(processId);
                 formData.setPrimaryKeyValue(originProcessId);
+                formData.setProcessId(processId);
                 formData = submitForm(appId, version, formDefId, formData, false);
             }
         }
@@ -368,6 +371,7 @@ public class AppServiceImpl implements AppService {
 
                 // set primary key
                 formResult.setPrimaryKeyValue(originId);
+                formResult.setProcessId(processId);
 
                 // submit form
                 formResult = formService.submitForm(startForm, formData, true);
@@ -923,7 +927,7 @@ public class AppServiceImpl implements AppService {
                 if (row != null) {
                     results.add(row);
                 }
-                Logger.getLogger(getClass().getName()).log(Level.INFO, "  -- Loaded form data row [{0}] for form [{1}] from table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
+                Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Loaded form data row [{0}] for form [{1}] from table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
             }
         }
         return results;
@@ -1003,7 +1007,7 @@ public class AppServiceImpl implements AppService {
 
             // save data
             formDataDao.saveOrUpdate(form, results);
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "  -- Saved form data row [{0}] for form [{1}] into table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
+            Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Saved form data row [{0}] for form [{1}] into table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
 
             if (!rows.isMultiRow()) {
                 // handle file uploads (only for a single row)
@@ -1015,7 +1019,7 @@ public class AppServiceImpl implements AppService {
                         if (file != null && !file.isEmpty()) {
                             // save file in folder
                             FileUtil.storeFile(file, form, primaryKeyValue);
-                            Logger.getLogger(getClass().getName()).log(Level.INFO, "  -- Uploaded file: {0}; {1}", new Object[]{fileName, file.getOriginalFilename()});
+                            Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Uploaded file: {0}; {1}", new Object[]{fileName, file.getOriginalFilename()});
                         }
                     }
                 }

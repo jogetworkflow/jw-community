@@ -50,7 +50,7 @@ public class AppWebController {
     FormDefinitionDao formDefinitionDao;
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
-    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String start) {
+    public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
 
         // clean process def
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -72,7 +72,11 @@ public class AppWebController {
 
         // check for start mapped form
         FormData formData = new FormData();
+        formData.setPrimaryKeyValue(recordId);
         String formUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
+        if (recordId != null) {
+            formUrl += "?recordId=" + recordId;
+        }
         String formUrlWithContextPath = AppUtil.getRequestContextPath() + formUrl;
         PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
         if (startFormDef != null && startFormDef.getForm() != null) {
@@ -99,7 +103,7 @@ public class AppWebController {
     }
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)/start")
-    public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId) {
+    public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String recordId, @RequestParam String processDefId) {
 
         // clean process def
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
@@ -120,13 +124,17 @@ public class AppWebController {
 
         // extract form values from request
         FormData formData = new FormData();
+        formData.setPrimaryKeyValue(recordId);
         formData = formService.retrieveFormDataFromRequest(formData, request);
 
         // get workflow variables
         Map<String, String> variableMap = AppUtil.retrieveVariableDataFromRequest(request);
         String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
+        if (recordId != null) {
+            formUrl += "?recordId=" + recordId;
+        }
         PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrl);
-        WorkflowProcessResult result = appService.submitFormToStartProcess(appId, version, processDefId, formData, variableMap, null, formUrl);
+        WorkflowProcessResult result = appService.submitFormToStartProcess(appId, version, processDefId, formData, variableMap, recordId, formUrl);
         if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
             if (result == null) {
                 // validation error, get form
@@ -145,7 +153,7 @@ public class AppWebController {
             }
         } else {
             // start process - TODO: handle process linking
-            result = workflowManager.processStart(processDefIdWithVersion, variableMap);
+            result = workflowManager.processStart(processDefIdWithVersion, null, variableMap, null, recordId, false);
         }
 
         // set result
@@ -185,13 +193,8 @@ public class AppWebController {
                 }
             }
 
-            // set process instance ID as primary key
             FormData formData = new FormData();
             formData = formService.retrieveFormDataFromRequest(formData, request);
-            String processId = assignment.getProcessId();
-            String originProcessId = appService.getOriginProcessId(processId);
-            String primaryKey = originProcessId;
-            formData.setPrimaryKeyValue(primaryKey);
 
             // get form
             Long appVersion = (appDef != null) ? appDef.getVersion() : null;
@@ -238,19 +241,12 @@ public class AppWebController {
 
         // set process instance ID as primary key
         String processId = assignment.getProcessId();
-        String originProcessId = appService.getOriginProcessId(processId);
-        String primaryKey = originProcessId;
-        formData.setPrimaryKeyValue(primaryKey);
 
         // load form
         Long appVersion = (appDef != null) ? appDef.getVersion() : null;
         String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
         PackageActivityForm activityForm = appService.viewAssignmentForm(appId, version, activityId, formData, formUrl);
         Form form = activityForm.getForm();
-
-        // TODO: determine foreign key?
-        String foreignKeyValue = null;
-        formData.setForeignKeyValue(foreignKeyValue);
 
         // submit form
         FormData formResult = formService.executeFormActions(form, formData);
@@ -299,7 +295,6 @@ public class AppWebController {
         model.addAttribute("errorCount", errorCount);
         model.addAttribute("submitted", Boolean.TRUE);
         model.addAttribute("closeDialog", Boolean.TRUE);
-        model.addAttribute("primaryKey", primaryKey);
 
         return "client/app/assignmentView";
     }

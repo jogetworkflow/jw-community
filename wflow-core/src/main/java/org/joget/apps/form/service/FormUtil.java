@@ -274,10 +274,12 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static FormData executeOptionBinders(Element element, FormData formData) {
+        if (formData == null) {
+            formData = new FormData();
+        }
         FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
-        String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
         if (binder != null) {
-            FormRowSet data = binder.load(element, primaryKeyValue);
+            FormRowSet data = binder.load(element, formData);
             if (data != null) {
                 formData.setOptionsBinderData(binder, data);
             }
@@ -298,10 +300,12 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static FormData executeLoadBinders(Element element, FormData formData) {
+        if (formData == null) {
+            formData = new FormData();
+        }
         FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
-        String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
         if (binder != null) {
-            FormRowSet data = binder.load(element, primaryKeyValue);
+            FormRowSet data = binder.load(element, formData);
             if (data != null) {
                 formData.setLoadBinderData(binder, data);
             }

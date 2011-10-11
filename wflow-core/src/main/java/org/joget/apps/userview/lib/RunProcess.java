@@ -265,7 +265,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("activityForm", startFormDef);
                 }
             } else {
-                // start process - TODO: handle process linking
+                // start process 
                 WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
                 result = workflowManager.processStart(process.getId(), null, variableMap, null, recordId, false);
             }
@@ -295,10 +295,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
                 // set process instance ID as primary key
                 FormData formData = new FormData();
-                String processId = assignment.getProcessId();
-                String primaryKey = appService.getOriginProcessId(processId);
-                ;
-                formData.setPrimaryKeyValue(primaryKey);
 
                 formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
@@ -341,8 +337,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 FormData formData = new FormData();
                 formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
                 String processId = assignment.getProcessId();
-                String primaryKey = processId;
-                formData.setPrimaryKeyValue(primaryKey);
 
                 // get form
                 String formUrl = getUrl() + "?action=assignmentSubmit&activityId=" + activityId;
@@ -351,10 +345,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 }
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
-
-                // TODO: determine foreign key?
-                String foreignKeyValue = null;
-                formData.setForeignKeyValue(foreignKeyValue);
 
                 // submit form
                 FormData formResult = formService.executeFormActions(form, formData);

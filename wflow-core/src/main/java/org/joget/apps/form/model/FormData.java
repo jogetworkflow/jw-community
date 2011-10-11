@@ -12,7 +12,7 @@ import org.joget.apps.form.service.FormUtil;
 public class FormData {
 
     private String primaryKeyValue;
-    private String foreignKeyValue;
+    private String processId;
     protected Map<FormLoadBinder, FormRowSet> loadBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<FormLoadBinder, FormRowSet> optionsBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<String, String> errorMap = new ListOrderedMap();
@@ -28,12 +28,12 @@ public class FormData {
         this.primaryKeyValue = primaryKeyValue;
     }
 
-    public String getForeignKeyValue() {
-        return foreignKeyValue;
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setForeignKeyValue(String foreignKeyValue) {
-        this.foreignKeyValue = foreignKeyValue;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     /**

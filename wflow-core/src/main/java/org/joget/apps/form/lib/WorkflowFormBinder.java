@@ -47,9 +47,9 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
     }
 
     @Override
-    public FormRowSet load(Element element, String primaryKey) {
+    public FormRowSet load(Element element, FormData formData) {
         // load form data from DB
-        FormRowSet rows = super.load(element, primaryKey);
+        FormRowSet rows = super.load(element, formData);
         if (rows != null) {
             FormRow row = null;
             if (rows.isEmpty()) {
@@ -60,7 +60,7 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
             }
 
             // handle workflow variables
-            String processId = primaryKey;
+            String processId = formData.getProcessId();
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
             Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableList(processId);
             Map<String, String> variableMap = new HashMap<String, String>();
@@ -84,7 +84,7 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
 
             // handle workflow variables
             if (!rows.isMultiRow()) {
-                String processId = element.getPrimaryKeyValue(formData);
+                String processId = formData.getProcessId();
                 if (processId != null) {
                     WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
 

@@ -275,9 +275,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected PackageActivityForm retrieveAssignmentForm(FormData formData, WorkflowAssignment assignment) {
-        String processId = assignment.getProcessId();
         String activityId = assignment.getActivityId();
-        formData.setPrimaryKeyValue(processId);
         String formUrl = addParamToUrl(getUrl(), "action", "submit");
         formUrl = addParamToUrl(formUrl, "mode", "assignment");
         formUrl = addParamToUrl(formUrl, "activityId", activityId);

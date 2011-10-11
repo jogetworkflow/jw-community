@@ -47,7 +47,9 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
     }
 
     @Override
-    public FormRowSet load(Element element, String primaryKey) {
+    public FormRowSet load(Element element, FormData formData) {
+        String primaryKey = formData.getPrimaryKeyValue();
+        
         FormRowSet results = null;
         if (primaryKey != null && primaryKey.trim().length() > 0) {
             AppService appService = (AppService) FormUtil.getApplicationContext().getBean("appService");

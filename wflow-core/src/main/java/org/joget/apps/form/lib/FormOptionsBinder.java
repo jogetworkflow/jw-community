@@ -7,6 +7,7 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
@@ -58,7 +59,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     }
 
     @Override
-    public FormRowSet load(Element element, String primaryKey) {
+    public FormRowSet load(Element element, FormData formData) {
         FormRowSet results = new FormRowSet();
         results.setMultiRow(true);
         //Using filtered formset to ensure the returned result is clean with no unnecessary nulls

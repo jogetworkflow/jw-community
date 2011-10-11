@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBinder;
-import org.joget.apps.form.model.FormBuilderEditable;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormLoadElementBinder;
@@ -36,11 +35,11 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         return "Executes standard Java syntax";
     }
 
-    public FormRowSet load(Element element, String primaryKey) {
+    public FormRowSet load(Element element, FormData formData) {
         Map properties = new HashMap();
         properties.putAll(getProperties());
         properties.put("element", element);
-        properties.put("primaryKey", primaryKey);
+        properties.put("formData", formData);
         return executeScript(getPropertyString("script"), properties);
     }
 
