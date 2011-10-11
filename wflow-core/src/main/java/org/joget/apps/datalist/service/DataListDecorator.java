@@ -91,7 +91,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String text = formatColumn(column, row, columnValue);
 
         //strip tags if media type is not HTML
-        if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+        if (text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
             text = text.replaceAll("\\<.*?>", "");
         }
 
