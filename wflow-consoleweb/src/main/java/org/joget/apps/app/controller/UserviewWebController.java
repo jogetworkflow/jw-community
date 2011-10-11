@@ -23,7 +23,7 @@ public class UserviewWebController {
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
 
-    @RequestMapping({"/userview/(*:appId)/(*:userviewId)","/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(~:key)","/userview/(*:appId)/(*:userviewId)","/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String view(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key) throws Exception {
 
         Long appVersion = appService.getPublishedVersion(appId);
