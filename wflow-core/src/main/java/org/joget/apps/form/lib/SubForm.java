@@ -73,7 +73,8 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
         Collection<Element> childElements = getChildren();
         Form subForm = (childElements.size() > 0) ? (Form) getChildren().iterator().next() : null;
         String label = getPropertyString("label");
-        String html = "<div class='form-cell' " + elementMetaData + "><div class='subform-container' style='border: 5px solid #dfdfdf; padding: 3px;margin-top:5px;'>";
+        String cellClass = ((Boolean) dataModel.get("includeMetaData")) ? "form-cell" : "subform-cell";
+        String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container' style='border: 5px solid #dfdfdf; padding: 3px;margin-top:5px;'>";
         html += "<span class='subform-title' style='background: #efefef;position:relative;top:-12px;'>" + label + "</span>";
         if (subForm != null) {
             String subFormHtml = subForm.render(formData, false);
