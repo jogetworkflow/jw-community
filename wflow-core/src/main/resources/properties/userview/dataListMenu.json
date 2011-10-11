@@ -73,6 +73,12 @@
         },{
             value : 'right',
             label : '@@userview.datalistmenu.checkboxPosition.right@@'
+        },{
+            value : 'both',
+            label : '@@userview.datalistmenu.checkboxPosition.both@@'
+        },{
+            value : 'no',
+            label : '@@userview.datalistmenu.checkboxPosition.no@@'
         }]
     },{
         name : 'customHeader',
