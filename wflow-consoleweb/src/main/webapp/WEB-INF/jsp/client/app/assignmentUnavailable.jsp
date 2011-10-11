@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
+<commons:popupHeader />
+
 <style>
     #assignment-body h3 {
         margin-top: 50px;
@@ -24,3 +26,5 @@
         <fmt:message key="client.app.run.process.label.assignment.unavailable.explanation" />
     </div>
 </div>
+    
+<commons:popupFooter />

@@ -1,6 +1,5 @@
 package org.joget.commons.spring.web;
 
-import java.io.UnsupportedEncodingException;
 import org.joget.commons.util.FileStore;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -11,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.HostManager;
-import org.joget.commons.util.LogUtil;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
@@ -76,26 +74,7 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
 
         @Override
         public String[] getParameterValues(String string) {
-            //return parameters.get(string);
-            String[] values = parameters.get(string);
-            if (values != null && values.length > 0) {
-                if (getRequest() instanceof MultipartHttpServletRequest) {
-                    // workaround for encoding bug in Spring https://jira.springframework.org/browse/SPR-6247
-                    String[] encodedValues = new String[values.length];
-                    for (int i=0; i<values.length; i++) {
-                        try {
-                            encodedValues[i] = new String(values[i].getBytes("ISO-8859-1"), "UTF-8");
-                        } catch (UnsupportedEncodingException ex) {
-                            LogUtil.warn(getClass().getName(), "Unsupported encoding for " + string + ": " + ex.toString());
-                        }
-                    }
-                    return encodedValues;
-                } else {
-                    return values;
-                }
-            }
-
-            return super.getParameterValues(string);
+            return parameters.get(string);
         }
 
         @Override

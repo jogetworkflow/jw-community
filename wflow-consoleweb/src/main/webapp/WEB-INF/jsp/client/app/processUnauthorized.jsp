@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
+<commons:popupHeader />
+
 <style>
     #pocess-body h3 {
         margin-top: 50px;
@@ -24,3 +26,5 @@
         <fmt:message key="client.app.run.process.label.start.unauthorized.explanation" />
     </div>
 </div>
+
+<commons:popupFooter />
