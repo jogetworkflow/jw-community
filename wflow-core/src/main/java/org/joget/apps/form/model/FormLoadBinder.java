@@ -11,5 +11,5 @@ public interface FormLoadBinder {
      * @param rowId
      * @return A Collection of Map objects. Each Map object contains property=value pairs to represent a data row.
      */
-    public FormRowSet load(Element element, FormData formData);
+    public FormRowSet load(Element element, String primaryKey, FormData formData);
 }

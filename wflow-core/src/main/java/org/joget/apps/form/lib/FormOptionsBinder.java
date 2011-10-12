@@ -59,7 +59,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     }
 
     @Override
-    public FormRowSet load(Element element, FormData formData) {
+    public FormRowSet load(Element element, String primaryKey, FormData formData) {
         FormRowSet results = new FormRowSet();
         results.setMultiRow(true);
         //Using filtered formset to ensure the returned result is clean with no unnecessary nulls

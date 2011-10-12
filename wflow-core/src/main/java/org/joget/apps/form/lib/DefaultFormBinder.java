@@ -47,8 +47,7 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
     }
 
     @Override
-    public FormRowSet load(Element element, FormData formData) {
-        String primaryKey = formData.getPrimaryKeyValue();
+    public FormRowSet load(Element element, String primaryKey, FormData formData) {
         
         FormRowSet results = null;
         if (primaryKey != null && primaryKey.trim().length() > 0) {

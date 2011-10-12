@@ -47,9 +47,9 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
     }
 
     @Override
-    public FormRowSet load(Element element, FormData formData) {
+    public FormRowSet load(Element element, String primaryKey, FormData formData) {
         // load form data from DB
-        FormRowSet rows = super.load(element, formData);
+        FormRowSet rows = super.load(element, primaryKey, formData);
         if (rows != null) {
             FormRow row = null;
             if (rows.isEmpty()) {

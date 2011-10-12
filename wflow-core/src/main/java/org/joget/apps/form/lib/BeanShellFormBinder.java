@@ -35,10 +35,11 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         return "Executes standard Java syntax";
     }
 
-    public FormRowSet load(Element element, FormData formData) {
+    public FormRowSet load(Element element, String primaryKey, FormData formData) {
         Map properties = new HashMap();
         properties.putAll(getProperties());
         properties.put("element", element);
+        properties.put("primaryKey", primaryKey);
         properties.put("formData", formData);
         return executeScript(getPropertyString("script"), properties);
     }

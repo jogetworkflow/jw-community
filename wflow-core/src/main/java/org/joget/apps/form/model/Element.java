@@ -142,6 +142,13 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             primaryKeyValue = FormUtil.getElementPropertyValue(primaryElement, formData);
         }
         if ((primaryKeyValue == null || primaryKeyValue.trim().isEmpty()) && formData != null) {
+            // ID field not available, use parent primary key
+            Element parent = this.getParent();
+            if (parent != null) {
+                primaryKeyValue = parent.getPrimaryKeyValue(formData);
+            }
+        }
+        if ((primaryKeyValue == null || primaryKeyValue.trim().isEmpty()) && formData != null) {
             // ID field not available, use default form primary key
             primaryKeyValue = formData.getPrimaryKeyValue();
         }
