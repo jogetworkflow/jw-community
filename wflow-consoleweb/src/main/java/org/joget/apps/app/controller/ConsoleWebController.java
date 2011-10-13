@@ -2865,7 +2865,7 @@ public class ConsoleWebController {
             Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
             
             for (UserviewDefinition uvDef : uvDefList) {
-                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null);
+                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null, false);
                 if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))) {
                     newUvDefList.add(uvDef);
                 }

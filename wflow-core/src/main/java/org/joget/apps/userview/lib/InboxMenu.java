@@ -101,10 +101,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     public String getJspPage() {
         String mode = getRequestParameterString("mode");
 
-        if ("true".equalsIgnoreCase(getRequestParameterString("embed"))) {
-            setUrl(addParamToUrl(getUrl(), "embed", "true"));
-        }
-
         if ("assignment".equals(mode)) {
             setProperty("customHeader", getPropertyString(mode + "-customHeader"));
             setProperty("customFooter", getPropertyString(mode + "-customFooter"));

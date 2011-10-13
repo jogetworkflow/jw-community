@@ -35,23 +35,50 @@ public class LoginWebController {
             savedUrl = request.getHeader("referer");
         }
 
-        if (savedUrl.contains("/web/userview")) {
-            savedUrl = savedUrl.substring(savedUrl.indexOf("/web/userview"));
+        if (savedUrl.contains("/web/userview") || savedUrl.contains("/web/embed/userview")) {
+            String embedPrefix = "";
+            if (savedUrl.contains("/web/userview")) {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/userview"));
+                savedUrl = savedUrl.replace("/web/userview/", "");
+            } else {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/embed/userview"));
+                savedUrl = savedUrl.replace("/web/embed/userview/", "");
+                embedPrefix = "embed/";
+            }
+            
+            if (request.getParameter("embed") != null && Boolean.parseBoolean((String) request.getParameter("embed"))) {
+                embedPrefix = "embed/";
+            }
+            
             String[] urlKey = savedUrl.split("/");
-            String appId = urlKey[3];
-            String userviewId = urlKey[4];
+            String appId = urlKey[0];
+            String userviewId = urlKey[1];
 
             if (savedRequest == null) { //for userview logout
-                return "redirect:/web/userview/" + appId + "/" + userviewId;
+                return "redirect:/web/" + embedPrefix + "userview/" + appId + "/" + userviewId;
             }
-        } else if (savedUrl.contains("/web/ulogin")) {
-            savedUrl = savedUrl.substring(savedUrl.indexOf("/web/ulogin"));
+        } else if (savedUrl.contains("/web/ulogin") || savedUrl.contains("/web/embed/ulogin")) {
+            Boolean embed = false;
+            if (savedUrl.contains("/web/ulogin")) {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/ulogin"));
+                savedUrl = savedUrl.replace("/web/ulogin/", "");
+            } else {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/embed/ulogin"));
+                savedUrl = savedUrl.replace("/web/embed/ulogin/", "");
+                embed = true;
+            }
+            
             String[] urlKey = savedUrl.split("/");
-            String appId = urlKey[3];
-            String userviewId = urlKey[4];
+            String appId = urlKey[0];
+            String userviewId = urlKey[1];
             String key = null;
-            if (urlKey.length > 5) {
-                key = urlKey[5];
+            String menuId = null;
+            if (urlKey.length > 2) {
+                key = urlKey[2];
+                
+                if (urlKey.length > 3) {
+                    menuId = urlKey[3];
+                }
             }
 
             Long appVersion = appService.getPublishedVersion(appId);
@@ -68,10 +95,13 @@ public class LoginWebController {
             map.addAttribute("appId", appId);
             map.addAttribute("appDefinition", appDef);
             map.addAttribute("appVersion", appDef.getVersion());
+            map.addAttribute("key", key);
+            map.addAttribute("menuId", menuId);
+            map.addAttribute("embed", embed);
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
             if (userview != null) {
                 String json = userview.getJson();
-                map.addAttribute("userview", userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key));
+                map.addAttribute("userview", userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key, embed));
             }
 
             return "ubuilder/login";

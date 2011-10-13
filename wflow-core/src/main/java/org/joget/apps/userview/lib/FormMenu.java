@@ -308,9 +308,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
     protected PackageActivityForm retrieveAssignmentForm(FormData formData, WorkflowAssignment assignment) {
         String activityId = assignment.getActivityId();
         String formUrl = getUrl() + "?action=submit&activityId=" + activityId;
-        if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-            formUrl += "&embed=true";
-        }
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
@@ -347,9 +344,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
         // retrieve form
         String formUrl = getUrl() + "?action=submit";
-        if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-            formUrl += "&embed=true";
-        }
         if (primaryKeyValue != null) {
             try {
                 formUrl += "&" + FormUtil.PROPERTY_ID + "=" + URLEncoder.encode(primaryKeyValue, "UTF-8");

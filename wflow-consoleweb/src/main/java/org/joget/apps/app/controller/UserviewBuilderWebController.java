@@ -92,7 +92,7 @@ public class UserviewBuilderWebController {
         map.addAttribute("appVersion", appDef.getVersion());
 
         // get the userview
-        map.addAttribute("userview", userviewService.createUserview(json, menuId, true, request.getContextPath(), request.getParameterMap(), null));
+        map.addAttribute("userview", userviewService.createUserview(json, menuId, true, request.getContextPath(), request.getParameterMap(), null, false));
         map.addAttribute("json", json);
         return "ubuilder/preview";
     }

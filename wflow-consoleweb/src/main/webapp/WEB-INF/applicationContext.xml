@@ -33,6 +33,8 @@
         <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN" />
         <security:intercept-url pattern="/**" filters="none"/>
         <security:form-login login-page="/web/login" authentication-failure-url="/web/login?login_error=1" default-target-url="/index.jsp" />

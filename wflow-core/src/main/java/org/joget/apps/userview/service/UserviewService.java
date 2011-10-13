@@ -40,16 +40,16 @@ public class UserviewService {
      * Create userview fron json
      * @return
      */
-    public Userview createUserview(String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key) {
+    public Userview createUserview(String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key, Boolean embed) {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        return createUserview(appDef, json, menuId, preview, contextPath, requestParameters, key);
+        return createUserview(appDef, json, menuId, preview, contextPath, requestParameters, key, embed);
     }
 
     /**
      * Create userview fron json
      * @return
      */
-    public Userview createUserview(AppDefinition appDef, String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key) {
+    public Userview createUserview(AppDefinition appDef, String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key, Boolean embed) {
         if (key != null && key.trim().length() == 0) {
             key = null;
         }
@@ -164,7 +164,13 @@ public class UserviewService {
                                 menu.setUrl(contextPath + "/web/console/app/" + appId + "/" + appVersion + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + mId);
                             } else {
                                 menu.setKey(key);
-                                menu.setUrl(contextPath + "/web/userview/" + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? key : "") + "/" + mId);
+                                String prefix = "/web/userview/";
+                                
+                                if (embed) {
+                                    prefix = "/web/embed/userview/";
+                                }
+                                
+                                menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? key : "") + "/" + mId);
                             }
 
                             //set Current, if current menu id is empty, search the 1st valid menu

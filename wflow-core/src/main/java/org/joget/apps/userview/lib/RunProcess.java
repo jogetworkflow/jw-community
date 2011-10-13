@@ -169,9 +169,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         if (isUnauthorized()) {
             // check for start mapped form
             String formUrl = getUrl() + "?action=start";
-            if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-                formUrl += "&embed=true";
-            }
             FormData formData = new FormData();
             formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
@@ -245,9 +242,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
             String formUrl = getUrl() + "?action=start";
-            if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-                formUrl += "&embed=true";
-            }
             WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
             if (startFormDef != null && startFormDef.getForm() != null) {
@@ -304,9 +298,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                 // get form
                 String formUrl = getUrl() + "?action=assignmentSubmit&activityId=" + activityId;
-                if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-                    formUrl += "&embed=true";
-                }
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
 
@@ -340,9 +331,6 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                 // get form
                 String formUrl = getUrl() + "?action=assignmentSubmit&activityId=" + activityId;
-                if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-                    formUrl += "&embed=true";
-                }
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
 

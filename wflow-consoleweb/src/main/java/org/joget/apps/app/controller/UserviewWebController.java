@@ -24,8 +24,19 @@ public class UserviewWebController {
     UserviewDefinitionDao userviewDefinitionDao;
 
     @RequestMapping({"/userview/(*:appId)/(*:userviewId)/(~:key)","/userview/(*:appId)/(*:userviewId)","/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
-    public String view(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key) throws Exception {
-
+    public String view(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, @RequestParam(value = "embed", required = false) Boolean embed) throws Exception {
+        if (embed == null) {
+            embed = false;
+        }
+        return embedView(map, request, response, appId, userviewId, menuId, key, embed);
+    }
+    
+    @RequestMapping({"/embed/userview/(*:appId)/(*:userviewId)/(~:key)","/embed/userview/(*:appId)/(*:userviewId)","/embed/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
+    public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed) throws Exception {
+        if (embed == null) {
+            embed = true;
+        }
+        
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0) {
             return "error404";
@@ -41,17 +52,30 @@ public class UserviewWebController {
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("key", key);
+        map.addAttribute("menuId", menuId);
+        map.addAttribute("embed", embed);
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         if (userview != null) {
             String json = userview.getJson();
-            map.addAttribute("userview", userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key));
+            map.addAttribute("userview", userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, embed));
         }
         return "ubuilder/view";
     }
+    
+    @RequestMapping({"/ulogin/(*:appId)/(*:userviewId)/(~:key)","/ulogin/(*:appId)/(*:userviewId)","/ulogin/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
+    public String login(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, @RequestParam(value = "embed", required = false) Boolean embed) throws Exception {
+        if (embed == null) {
+            embed = false;
+        }
+        return embedLogin(map, request, response, appId, userviewId, menuId, key, embed);
+    }
 
-    @RequestMapping({"/ulogin/(*:appId)/(*:userviewId)/(~:key)","/ulogin/(*:appId)/(*:userviewId)"})
-    public String login(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key) throws Exception {
-
+    @RequestMapping({"/embed/ulogin/(*:appId)/(*:userviewId)/(~:key)","/embed/ulogin/(*:appId)/(*:userviewId)","/embed/ulogin/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
+    public String embedLogin(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed) throws Exception {
+        if (embed == null) {
+            embed = true;
+        }
+        
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0) {
             return "error404";
@@ -67,10 +91,12 @@ public class UserviewWebController {
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("key", key);
+        map.addAttribute("menuId", menuId);
+        map.addAttribute("embed", embed);
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         if (userview != null) {
             String json = userview.getJson();
-            map.addAttribute("userview", userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key));
+            map.addAttribute("userview", userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key, embed));
         }
 
         return "ubuilder/login";

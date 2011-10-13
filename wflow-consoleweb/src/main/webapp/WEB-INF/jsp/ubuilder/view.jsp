@@ -12,7 +12,27 @@
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!empty userview.setting.permission && !userview.setting.permission.authorize && isAnonymous}">
-    <c:redirect url="/web/ulogin/${appId}/${userview.properties.id}/${key}"/>
+    <c:set var="redirectUrl" scope="request" value="/web/"/>
+    <c:choose>
+        <c:when test="${embed}">
+            <c:set var="redirectUrl" scope="request" value="${redirectUrl}embed/ulogin/${appId}/${userview.properties.id}/"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="redirectUrl" scope="request" value="${redirectUrl}ulogin/${appId}/${userview.properties.id}/"/>
+        </c:otherwise>
+    </c:choose>
+    <c:choose>
+        <c:when test="${!empty key}">
+            <c:set var="redirectUrl" scope="request" value="${redirectUrl}${key}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="redirectUrl" scope="request" value="${redirectUrl}______"/>
+        </c:otherwise>
+    </c:choose>
+    <c:if test="${!empty menuId}">
+        <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
+    </c:if>
+    <c:redirect url="${redirectUrl}"/>
 </c:if>
 
 <html>
@@ -68,7 +88,7 @@
         </c:otherwise>
     </c:choose>
 
-    <body id="${bodyId}" class="<c:if test="${param.embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
+    <body id="${bodyId}" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
         <div id="page">
             <div id="header">
 
