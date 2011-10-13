@@ -168,7 +168,7 @@ public class AppUtil implements ApplicationContextAware {
     public static String getAppLocale() {
         SetupManager setupManager = (SetupManager) appContext.getBean("setupManager");
         String locale = setupManager.getSettingValue("systemLocale");
-        if (locale == null) {
+        if (locale == null || (locale != null && locale.isEmpty())) {
             locale = "en_US";
         }
         return locale;
