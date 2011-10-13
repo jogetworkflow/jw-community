@@ -31,8 +31,14 @@
     </div>
     <div id="main-body">
         <dl>
+            <dt><fmt:message key="console.app.activity.common.label.id"/></dt>
+            <dd>${activity.id}&nbsp;</dd>
+            <dt><fmt:message key="console.app.activity.common.label.definitionId"/></dt>
+            <dd>${activity.activityDefId}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.name"/></dt>
             <dd>${activity.name}&nbsp;</dd>
+            <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
+            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}">${activity.processId}</a>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.state"/></dt>
             <dd>${activity.state}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.serviceLevelMonitor"/></dt>

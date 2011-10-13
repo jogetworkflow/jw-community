@@ -26,6 +26,8 @@
         <dl>
             <dt><fmt:message key="console.app.process.common.label.id"/></dt>
             <dd>${wfProcess.instanceId}&nbsp;</dd>
+            <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
+            <dd>${wfProcess.id}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.version"/></dt>
             <dd>${wfProcess.version}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.name"/></dt>
