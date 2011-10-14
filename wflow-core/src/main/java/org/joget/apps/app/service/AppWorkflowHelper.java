@@ -45,7 +45,23 @@ public class AppWorkflowHelper implements WorkflowHelper {
     public boolean executeTool(WorkflowAssignment assignment) {
         ApplicationContext appContext = AppUtil.getApplicationContext();
         PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        AppDefinition appDef = null;
+        
+        if (assignment != null) {
+            WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) appContext.getBean("packageDefinitionDao");
+            
+            String processDefId = assignment.getProcessDefId();
+            WorkflowProcess process = workflowManager.getProcess(processDefId);
+            if (process != null) {
+                String packageId = process.getPackageId();
+                Long packageVersion = Long.parseLong(process.getVersion());
+                PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+                if (packageDef != null) {
+                    appDef = packageDef.getAppDefinition();
+                }
+            }
+        }
 
         if (appDef != null && appDef.getPackageDefinition() != null) {
             PackageDefinition packageDef = appDef.getPackageDefinition();
