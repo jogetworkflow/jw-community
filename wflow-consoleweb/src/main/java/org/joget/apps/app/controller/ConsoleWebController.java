@@ -172,10 +172,9 @@ public class ConsoleWebController {
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
         
-        if (landingPage == null || "".equals(landingPage)) {
-            landingPage = "/web/console/home";
+        if (landingPage == null || landingPage.trim().isEmpty()) {
+            landingPage = "/home";
         }
-        
         return "redirect:" + landingPage;
     }
 

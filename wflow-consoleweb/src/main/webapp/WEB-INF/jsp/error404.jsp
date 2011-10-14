@@ -2,38 +2,21 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8">
-        <title></title>
-        <link rel="stylesheet" type="text/css" href="<%= request.getContextPath()%>/css/v3.css">
-        <style>
-            #main {
-                width: 90%;
-                margin: auto;
-                float: none;
-            }
-        </style>
+        <title>Joget Workflow</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/home/style.css"/>
     </head>
     <body>
-
-        <div id="header">
-            <div id="topbar">
-
-                <div id="logo">Joget Workflow</div>
-                <div id="account"><a href="#">System Settings</a> | <a href="#">Profile</a> | <a href="#">Logout</a></div>
+        <div id="container">
+            <div id="logo">
+                <a href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/home/logo.png" border="0" height="60" /></a>
             </div>
-            <div id="menu">
-                <ul id="menu-items">
-                    <li id="menu-home" class="first-inactive"><a href="/jw/web/console/home"><span class="menu-bg"><span class="title">Home</span><span class="subtitle">Welcome Page</span></span></a></li>
-                    <li id="menu-last" class="last-inactive"><a href="#"><span class="menu-bg"><span class="title">Error</span><span class="subtitle">Error Page</span></span></a></li>
-                </ul>
+            <div id="title">
+                Sorry, page not found (Code 404)
             </div>
-        </div>
-
-        <div id="main">
-            <div id="main-body">
-
-                <h3>Page Not Found (Code 404)</h3>
-
+            <div id="content">
+                <br><br>
                 Sorry, the page requested is not found.
                 <br><br>
                 If you have been brought to this page unintentionally, please report the previous URL for troubleshooting purposes.
@@ -42,13 +25,10 @@
                 <p>
                     <a href="${pageContext.request.contextPath}/">Click here to go back to the main page</a>
                 </p>
-
+            </div>
+            <div id="footer">
+                <a href="http://www.joget.com">&copy; Joget Workflow - Open Dynamics Inc</a>
             </div>
         </div>
-
-        <div id="footer">
-            www.joget.org
-        </div>
-
     </body>
 </html>

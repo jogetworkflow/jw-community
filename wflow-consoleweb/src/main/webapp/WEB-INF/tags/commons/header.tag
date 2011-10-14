@@ -56,6 +56,7 @@
         </script>
         <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
     </head>
     <body>
 
