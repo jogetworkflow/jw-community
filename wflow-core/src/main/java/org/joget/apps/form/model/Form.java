@@ -1,10 +1,13 @@
 package org.joget.apps.form.model;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
 public class Form extends Element implements FormBuilderEditable {
+
+    private Map<String, String[]> formMetas = new HashMap<String, String[]>();
 
     @Override
     public String getName() {
@@ -24,13 +27,19 @@ public class Form extends Element implements FormBuilderEditable {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
-        
-        if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
-            setProperty("form_meta_original_id", formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID));
-        } else if (formData.getPrimaryKeyValue() != null) {
-            setProperty("form_meta_original_id", formData.getPrimaryKeyValue());
+
+        if (getParent() == null) {
+            setFormMeta("_SUBMITTED", new String[]{"true"});
+
+            if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
+                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
+            } else if (formData.getPrimaryKeyValue() != null) {
+                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getPrimaryKeyValue()});
+            }
         }
-        
+
+        dataModel.put("formMeta", formMetas);
+
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
     }
@@ -49,9 +58,21 @@ public class Form extends Element implements FormBuilderEditable {
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/form.json", null, true, "message/form/Form");
     }
-    
+
     @Override
     public String getFormBuilderTemplate() {
         return "";
+    }
+
+    public void setFormMeta(String name, String[] values) {
+        formMetas.put(name, values);
+    }
+
+    public String[] getFormMeta(String name) {
+        return formMetas.get(name);
+    }
+
+    public Map getFormMetas() {
+        return formMetas;
     }
 }

@@ -200,6 +200,7 @@ public class FormService {
                         formData.addRequestParameterValues(foreignKey, values);
                         if (!editable) {
                             readOnlyForeignKeySet.add(foreignKey);
+                            form.setFormMeta(paramName, values);
                         }
                     }
                 }
