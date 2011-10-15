@@ -208,6 +208,21 @@ public class DataList {
     }
 
     public DataListAction[] getRowActions() {
+        if (getBinder() != null) {
+            String key = getBinder().getPrimaryKeyColumnName();
+            String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+            for (int i = 0; i <  rowActions.length; i++) {
+                DataListAction r = rowActions[i];
+                if (r.getHref() == null || (r.getHref() != null && r.getHref().isEmpty())) {
+                    r.setProperty("href", "?" + getActionParamName() + "=" + r.getPropertyString("id"));
+                    r.setProperty("target", "_self");
+                    r.setProperty("hrefParam", keyParam);
+                    r.setProperty("hrefColumn", key);
+                }
+                rowActions[i] = r;
+            }
+        }
+        
         return rowActions;
     }
 
@@ -391,6 +406,17 @@ public class DataList {
                     break;
                 }
             }
+            
+            //look from row action as well
+            for (DataListAction action : getRowActions()) {
+                String actionId = action.getPropertyString("id");
+                if (actionParamValue.equals(actionId)) {
+                    // invoke action
+                    actionResult = action.executeAction(this, selectedKeys);
+                    break;
+                }
+            }
+            
         }
         return actionResult;
     }

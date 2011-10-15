@@ -184,6 +184,7 @@ public class JsonUtil {
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
                         dataListAction.setProperties(PropertyUtil.getPropertiesValueFromJson(action.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                        dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
                         property.add(dataListAction);
                     }
                 }

@@ -41,19 +41,19 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     }
 
     public String getHref() {
-        return "";
+        return getPropertyString("href");
     }
 
     public String getTarget() {
-        return "";
+        return getPropertyString("target");
     }
 
     public String getHrefParam() {
-        return "";
+        return getPropertyString("hrefParam");
     }
 
     public String getHrefColumn() {
-        return "";
+        return getPropertyString("hrefColumn");
     }
 
     public String getConfirmation() {
