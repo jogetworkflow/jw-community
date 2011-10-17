@@ -1,5 +1,8 @@
 3.0-BETA 3
 ==========
+190		Added: wflow-install - Bundle CRM sample app in installer.
+189		Modified: wflow-consoleweb - Exclude not harmful NullPointerException thrown from dbcp in log4j (#247)
+188		Fixed: wflow-core - Delete not working at row level in Datalist (#379)
 186		Fixed: wflow-core - Tool not executed on deadline (#378)
 185		Modified: wflow-consoleweb - Minor text changes to the home/landing page.
 184		Added: wflow-consoleweb - Added new home/landing page, favicon and error pages.
