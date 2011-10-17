@@ -36,7 +36,7 @@
     title : '@@app.emailtool.email@@',
     properties : [{
         name : 'from',
-        label : '@@app.emailtool.form@@',
+        label : '@@app.emailtool.from@@',
         type : 'textfield',
         required : 'True'
     },
