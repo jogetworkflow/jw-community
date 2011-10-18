@@ -29,11 +29,11 @@ public class ListOrderedHash extends SimpleHash {
 
     @Override
     protected Map copyMap(Map map) {
-        if (map instanceof ListOrderedMap) {
+        if (map instanceof ListOrderedMap || map.getClass().getName().equals(ListOrderedMap.class.getName())) {
             Map newMap = new ListOrderedMap();
             newMap.putAll(map);
             return newMap;
-        } else if (map instanceof SequencedHashMap) {
+        } else if (map instanceof SequencedHashMap || map.getClass().getName().equals(SequencedHashMap.class.getName())) {
             Map newMap = new SequencedHashMap();
             newMap.putAll(map);
             return newMap;
