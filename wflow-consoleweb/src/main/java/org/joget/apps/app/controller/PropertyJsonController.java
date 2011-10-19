@@ -1,9 +1,11 @@
 package org.joget.apps.app.controller;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -19,6 +21,9 @@ public class PropertyJsonController {
 
     @Autowired
     PluginManager pluginManager;
+    
+    @Autowired
+    AppService appService;
 
     @RequestMapping("/property/json/getElements")
     public void getElements(Writer writer, @RequestParam("classname") String className) throws Exception {
@@ -56,4 +61,20 @@ public class PropertyJsonController {
 
         writer.write(json);
     }
+    
+    @RequestMapping("/property/json/(*:appId)/(~:version)/getPropertyOptions")
+    public void getProperties(Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
+        if (appId != null && !appId.trim().isEmpty()) {
+            appService.getAppDefinition(appId, version);
+        }
+
+        String json = "";
+        PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        if (element != null) {
+            json = element.getPropertyOptions();
+        }
+
+        writer.write(json);        
+    }
+    
 }

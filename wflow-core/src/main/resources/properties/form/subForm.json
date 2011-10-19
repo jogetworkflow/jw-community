@@ -54,7 +54,7 @@
                 label:'@@form.subform.loadBinder@@',
                 type:'elementselect',
                 options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
-                url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
                 value:'org.joget.apps.form.lib.WorkflowFormBinder',
                 required:'True'
             }
@@ -68,7 +68,7 @@
                 label:'@@form.subform.storeBinder@@',
                 type:'elementselect',
                 options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
-                url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
                 value:'org.joget.apps.form.lib.WorkflowFormBinder',
                 required: 'True'
             }
