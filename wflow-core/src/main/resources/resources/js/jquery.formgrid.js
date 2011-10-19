@@ -51,6 +51,11 @@
             if (value == "") {
                 value = "Click to edit";
             }
+            // trigger change
+            var el = $(this).parent().parent().parent().parent().parent();
+            setTimeout(function() {
+                $(el).trigger("change");
+            }, 100);
             return value;
         },
 
@@ -73,6 +78,9 @@
                 table.append(newRow);
 
                 methods.initCells.apply(this);
+
+                // trigger change
+                $(this).trigger("change");
             });
         },
 
@@ -96,6 +104,10 @@
                 table.find(".grid-row").each(function(rowIndex, row) {
                     methods.updateInput(row, rowIndex);
                 });
+
+                // trigger change
+                var el = table.parent();
+                $(el).trigger("change");
             }
             return false;
         }
