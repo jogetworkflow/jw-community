@@ -223,6 +223,15 @@ public class AppUtil implements ApplicationContextAware {
             PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
             output = pluginManager.readPluginResourceAsString(pluginName, resourceUrl, arguments, removeNewLines, translationFileName);
         }
+        // replace app path
+        if (output != null && !output.isEmpty()) {
+            String appPath = "";
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            if (appDef != null) {
+                appPath = "/" + appDef.getAppId() + "/" + appDef.getVersion();
+            }
+            output = output.replaceAll("\\[APP_PATH\\]", appPath);
+        }
         return output;
     }
 
