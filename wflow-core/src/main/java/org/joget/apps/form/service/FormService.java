@@ -17,6 +17,7 @@ import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.commons.util.FileStore;
+import org.joget.commons.util.UuidGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -235,6 +236,13 @@ public class FormService {
         }
         Map<String, String> errors = updatedFormData.getFormErrors();
         if (errors == null || errors.isEmpty()) {
+            // generate primary key if necessary
+            String primaryKeyValue = form.getPrimaryKeyValue(updatedFormData);
+            if (primaryKeyValue == null || primaryKeyValue.trim().length() == 0) {
+                // no primary key value specified, generate new primary key value
+                primaryKeyValue = UuidGenerator.getInstance().getUuid();
+                updatedFormData.setPrimaryKeyValue(primaryKeyValue);
+            }
             // no errors, save form data
             updatedFormData = executeFormStoreBinders(form, updatedFormData);
         }
