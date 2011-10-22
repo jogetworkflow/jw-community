@@ -3072,6 +3072,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 WMSessionHandle sessionHandle = sc.getSessionHandle();
                 WMEntity ent = admin.getActivityDefinitionInfo(sessionHandle, process.key(), activity.key());
                 ass.setActivityDefId(ent.getId());
+                ass.setProcessRequesterId(getUserByProcessIdAndActivityDefId(ass.getProcessDefId(), ass.getProcessId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
 
                 WfRequester requester = process.requester();
                 if (requester != null) {
@@ -3079,7 +3080,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     if (isSubflow) {
                         WfActivity act = (WfActivity) requester;
                         ass.setSubflow(true);
-                        ass.setProcessRequesterId(act.container().key());
                         if (getWorkflowProcessLink(process.key()) == null) {
                             internalAddWorkflowProcessLink(act.container().key(), process.key());
                         }
