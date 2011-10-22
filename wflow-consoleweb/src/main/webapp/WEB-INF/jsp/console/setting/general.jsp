@@ -209,15 +209,25 @@
     //masterLoginHash
     var loginHashDeliminator = '<%= org.joget.directory.model.User.LOGIN_HASH_DELIMINATOR %>';
     if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
-        $('#masterLoginHash').text($.md5($('#masterLoginUsername').val() + loginHashDeliminator + $('#masterLoginPassword').val()));
+	    getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
     }
     $('#masterLoginUsername, #masterLoginPassword').keyup(function(){
         if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
-            $('#masterLoginHash').text($.md5($('#masterLoginUsername').val() + loginHashDeliminator + $('#masterLoginPassword').val()));
+            getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
         }else{
             $('#masterLoginHash').text("-");
         }
     });
+    function getLoginHash(username, password) {
+        var callback = {
+            success : function(o) {
+	            var o = eval("(" + o + ")");
+                $('#masterLoginHash').text(o.hash);
+            }
+        }
+        var params = "username=" + username + "&password=" + password;
+        ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
+    }
 </script>
 
 <script>

@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
@@ -65,10 +66,10 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
 
                     User master = new User();
                     master.setUsername(masterLoginUsername.trim());
-                    master.setPassword(masterLoginPassword.trim());
+                    master.setPassword(StringUtil.md5Base16(masterLoginPassword.trim()));
 
                     if (username.trim().equals(master.getUsername()) &&
-                            ((password != null && password.trim().equals(master.getPassword())) ||
+                            ((password != null && StringUtil.md5Base16(password.trim()).equalsIgnoreCase(master.getPassword())) ||
                             (loginHash != null && loginHash.trim().equalsIgnoreCase(master.getLoginHash())))) {
                         currentUser = directoryManager.getUserByUsername(loginAs);
                     }

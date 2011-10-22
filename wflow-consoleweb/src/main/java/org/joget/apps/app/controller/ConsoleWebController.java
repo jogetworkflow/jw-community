@@ -2952,6 +2952,17 @@ public class ConsoleWebController {
 
         return "console/setting/general";
     }
+    
+    @RequestMapping("/console/setting/general/loginHash")
+    public void packageList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(StringUtil.md5Base16(password));
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("hash", user.getLoginHash());
+
+        writeJson(writer, jsonObject, callback);
+    }
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
