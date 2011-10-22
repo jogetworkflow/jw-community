@@ -56,7 +56,7 @@
                         <div class="form-row">
                             <label for="externalFormUrl"><fmt:message key="console.process.config.label.mapActivities.formExternal.url"/></label>
                             <span class="form-input">
-                                <input id="externalFormUrl" type="text" name="externalFormUrl" size="70" value="${externalFormUrl}"/>
+                                <input id="externalFormUrl" type="text" name="externalFormUrl" size="60" value="${externalFormUrl}"/>
                             </span>
                         </div>
                         <div class="form-row">

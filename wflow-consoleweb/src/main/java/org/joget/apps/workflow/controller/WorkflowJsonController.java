@@ -914,6 +914,10 @@ public class WorkflowJsonController {
     public void assignmentCompleteWithVariable(HttpServletRequest request, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         String processId = (assignment != null) ? assignment.getProcessId() : "";
+        
+        if (assignment != null && !assignment.isAccepted()) {
+            workflowManager.assignmentAccept(activityId);
+        }
 
         Map<String, String> workflowVariableMap = AppUtil.retrieveVariableDataFromRequest(request);
         workflowManager.assignmentComplete(activityId, workflowVariableMap);
@@ -946,11 +950,9 @@ public class WorkflowJsonController {
 
         String processId = (assignment != null) ? assignment.getProcessId() : "";
 
-//        // set to origin process id if available
-//        WorkflowProcessLink wfProcessLink = workflowManager.getWorkflowProcessLink(processId);
-//        if (wfProcessLink != null) {
-//            processId = wfProcessLink.getOriginProcessId();
-//        }
+        if (assignment != null && !assignment.isAccepted()) {
+            workflowManager.assignmentAccept(activityId);
+        }
 
         workflowManager.assignmentComplete(activityId);
         LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
