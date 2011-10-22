@@ -85,7 +85,7 @@ AssignmentManager = {
                     var url = baseUrl + "/web/json/directory/user/sso?username=" + username + "&password=" + password;
                     ConnectionManager.ajaxJsonp(url, callback, null);
                 }else
-                    callback.success();
+                    callback.success(o);
 			}
 		};
 
