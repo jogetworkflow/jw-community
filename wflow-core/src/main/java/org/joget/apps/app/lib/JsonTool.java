@@ -94,7 +94,7 @@ public class JsonTool extends DefaultApplicationPlugin {
         if (formDefId != null && formDefId.trim().length() > 0) {
             ApplicationContext ac = AppUtil.getApplicationContext();
             AppService appService = (AppService) ac.getBean("appService");
-            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            AppDefinition appDef = (AppDefinition) properties.get("appDef");
 
             Object[] fieldMapping = (Object[]) properties.get("fieldMapping");
             String multirowBaseObjectName = (String) properties.get("multirowBaseObject");

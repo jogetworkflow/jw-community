@@ -78,6 +78,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef);
                 propertiesMap.put("workflowAssignment", assignment);
                 propertiesMap.put("pluginManager", pluginManager);
+                propertiesMap.put("appDef", appDef);
 
                 // add HttpServletRequest into the property map
                 try {
