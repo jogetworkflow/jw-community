@@ -3470,21 +3470,7 @@ public class ConsoleWebController {
 
         double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(processId);
 
-        if (serviceLevelMonitor > 0) {
-            if (serviceLevelMonitor < 25) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-            } else {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-            }
-        } else {
-            map.addAttribute("serviceLevelMonitor", "-");
-        }
+        map.addAttribute("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
         WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
         map.addAttribute("wfProcess", wfProcess);
@@ -3535,22 +3521,7 @@ public class ConsoleWebController {
             data.put("startedTime", workflowProcess.getStartedTime());
             data.put("requesterId", workflowProcess.getRequesterId());
             data.put("due", workflowProcess.getDue() != null ? workflowProcess.getDue() : "-");
-
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
             jsonObject.accumulate("data", data);
         }
@@ -3568,21 +3539,7 @@ public class ConsoleWebController {
 
         double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(processId);
 
-        if (serviceLevelMonitor > 0) {
-            if (serviceLevelMonitor < 25) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-            } else {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-            }
-        } else {
-            map.addAttribute("serviceLevelMonitor", "-");
-        }
+        map.addAttribute("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
         WorkflowProcess trackWflowProcess = workflowManager.getRunningProcessInfo(processId);
         map.addAttribute("wfProcess", wfProcess);
