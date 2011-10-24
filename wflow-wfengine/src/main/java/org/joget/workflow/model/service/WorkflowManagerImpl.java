@@ -1874,7 +1874,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                             limitInSecond = limit * 24 * 60 * 60;
                             wfProcess.setLimit(limit + " day");
                         } else if (durationUnit.equals("h")) {
-                            limitInSecond = limit * 24 * 60;
+                            limitInSecond = limit * 60 * 60;
                             wfProcess.setLimit(limit + " hour(s)");
                         } else if (durationUnit.equals("m")) {
                             limitInSecond = limit * 60;
@@ -2181,7 +2181,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         wfAct.setLimitInSeconds(limit * 24 * 60 * 60);
                         wfAct.setLimit(limit + " day");
                     } else if (durationUnit.equals("h")) {
-                        wfAct.setLimitInSeconds(limit * 24 * 60);
+                        wfAct.setLimitInSeconds(limit * 60 * 60);
                         wfAct.setLimit(limit + " hour(s)");
                     } else if (durationUnit.equals("m")) {
                         wfAct.setLimitInSeconds(limit * 60);
