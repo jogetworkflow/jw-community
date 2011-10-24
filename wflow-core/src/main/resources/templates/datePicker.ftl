@@ -9,9 +9,9 @@
                         buttonImage: "${request.contextPath}/css/images/calendar.png",
                         buttonImageOnly: true,
                         changeMonth: true,
-                        changeYear: true,
+                        changeYear: true
                         <#if element.properties.format! != ''>
-                        dateFormat: "${element.properties.format}"
+                        ,dateFormat: "${element.properties.format}"
                         </#if>
         });
     });
