@@ -42,5 +42,13 @@
         label : '@@datalist.hyperlinkdatalistaction.confirmationMessage@@',
         name : 'confirmation',
         type : 'textfield'
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.visible@@',
+        name : 'visible',
+        type : 'checkbox',
+        options : [
+            {'value' : 'true', 'label' : ''}
+        ]
     }]
 }]

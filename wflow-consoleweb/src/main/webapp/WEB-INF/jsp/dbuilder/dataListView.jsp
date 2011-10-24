@@ -72,7 +72,7 @@
             <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                 <div class="actions bottom ${buttonFloat}">
                     <c:forEach items="${dataList.actions}" var="action">
-                        <c:if test="${!empty dataListRows[0] || action.visibleOnNoRecord}">
+                        <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
@@ -105,7 +105,7 @@
             <c:if test="${buttonPosition eq 'bottomLeft' || buttonPosition eq 'bottomRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                 <div class="actions bottom ${buttonFloat}">
                     <c:forEach items="${dataList.actions}" var="action">
-                        <c:if test="${!empty dataListRows[0] || action.visibleOnNoRecord}">
+                        <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
