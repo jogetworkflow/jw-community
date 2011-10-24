@@ -2954,7 +2954,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping("/console/setting/general/loginHash")
-    public void packageList(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
+    public void loginHash(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
         User user = new User();
         user.setUsername(username);
         user.setPassword(StringUtil.md5Base16(password));
