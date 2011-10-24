@@ -44,8 +44,6 @@
             <dd>${trackWflowProcess.delay}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.finishTime"/></dt>
             <dd>${trackWflowProcess.finishTime}&nbsp;</dd>
-            <dt><fmt:message key="console.app.process.common.label.timeConsumingFromDateCreated"/></dt>
-            <dd>${trackWflowProcess.timeConsumingFromDateCreated}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.timeConsumingFromDateStarted"/></dt>
             <dd>${trackWflowProcess.timeConsumingFromDateStarted}&nbsp;</dd>
         </dl>

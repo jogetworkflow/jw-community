@@ -1904,78 +1904,32 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     dueCal.setTime(wfProcess.getDue());
                     long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
-                    long delayInMinutes = (long) delayInSeconds / 60;
-                    long delayInHours = (long) delayInMinutes / 60;
-                    long delayInDays = (long) delayInHours / 24;
                     
                     wfProcess.setDelayInSeconds(delayInSeconds);
-
-                    if (delayInSeconds < 60) {
-                        wfProcess.setDelay(delayInSeconds + " second(s)");
-                    } else if (delayInSeconds > 60 && delayInMinutes < 60) {
-                        wfProcess.setDelay(delayInMinutes + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                    } else if (delayInMinutes > 60 && delayInHours < 60) {
-                        wfProcess.setDelay(delayInHours + " hour(s) " + (delayInMinutes % 60) + " minute(s) " + (delayInSeconds % 60) + " second(s)");
-                    } else if (delayInHours > 24) {
-                        wfProcess.setDelay(delayInDays + " day(s) " + (delayInHours % 24) + " hour(s) " + (delayInMinutes % 60) + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                    }
+                    wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
                 }
 
 
                 //time taken for completion from date started
                 long timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getStartedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getStartedTime().getTime() : 0;
                 long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                long timeTakenInMinutes = (long) timeTakenInSeconds / 60;
-                long timeTakenInHours = (long) timeTakenInMinutes / 60;
-                long timeTakenInDays = (long) timeTakenInHours / 24;
 
-                if (timeTakenInSeconds < 60) {
-                    wfProcess.setTimeConsumingFromDateStarted(timeTakenInSeconds + " second(s)");
-                } else if (timeTakenInSeconds > 60 && timeTakenInMinutes < 60) {
-                    wfProcess.setTimeConsumingFromDateStarted(timeTakenInMinutes + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInMinutes > 60 && timeTakenInHours < 60) {
-                    wfProcess.setTimeConsumingFromDateStarted(timeTakenInHours + " hour(s) " + (timeTakenInMinutes % 60) + " minute(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInHours > 24) {
-                    wfProcess.setTimeConsumingFromDateStarted(timeTakenInDays + " day(s) " + (timeTakenInHours % 24) + " hour(s) " + (timeTakenInMinutes % 60) + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                }
-                
                 wfProcess.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+                wfProcess.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
 
                 //time taken for completion from date created
                 timeTakenInMilliSeconds = (wfProcess != null && wfProcess.getFinishTime() != null && wfProcess.getCreatedTime() != null) ? wfProcess.getFinishTime().getTime() - wfProcess.getCreatedTime().getTime() : 0;
                 timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                timeTakenInMinutes = (long) timeTakenInSeconds / 60;
-                timeTakenInHours = (long) timeTakenInMinutes / 60;
-                timeTakenInDays = (long) timeTakenInHours / 24;
                 
                 wfProcess.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
-
-                if (timeTakenInSeconds < 60) {
-                    wfProcess.setTimeConsumingFromDateCreated(timeTakenInSeconds + " second(s)");
-                } else if (timeTakenInSeconds > 60 && timeTakenInMinutes < 60) {
-                    wfProcess.setTimeConsumingFromDateCreated(timeTakenInMinutes + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInMinutes > 60 && timeTakenInHours < 60) {
-                    wfProcess.setTimeConsumingFromDateCreated(timeTakenInHours + " hour(s) " + (timeTakenInMinutes % 60) + " minute(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInHours > 24) {
-                    wfProcess.setTimeConsumingFromDateCreated(timeTakenInDays + " day(s) " + (timeTakenInHours % 24) + " hour(s) " + (timeTakenInMinutes % 60) + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                }
+                wfProcess.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
 
             } else if (wfProcess.getDue() != null && currentDate.after(wfProcess.getDue())) {
                 long delayInMilliseconds = ((wfProcess != null && wfProcess.getDue() != null) ? currentDate.getTime() - wfProcess.getDue().getTime() : 0);
                 long delayInSeconds = (long) delayInMilliseconds / 1000;
-                long delayInMinutes = (long) delayInSeconds / 60;
-                long delayInHours = (long) delayInMinutes / 60;
-                long delayInDays = (long) delayInHours / 24;
 
-                if (delayInSeconds < 60) {
-                    wfProcess.setDelay(delayInSeconds + " second(s)");
-                } else if (delayInSeconds > 60 && delayInMinutes < 60) {
-                    wfProcess.setDelay(delayInMinutes + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                } else if (delayInMinutes > 60 && delayInHours < 60) {
-                    wfProcess.setDelay(delayInHours + " hour(s) " + (delayInMinutes % 60) + " minute(s) " + (delayInSeconds % 60) + " second(s)");
-                } else if (delayInHours > 24) {
-                    wfProcess.setDelay(delayInDays + " day(s) " + (delayInHours % 24) + " hour(s) " + (delayInMinutes % 60) + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                }
+                wfProcess.setDelayInSeconds(delayInSeconds);
+                wfProcess.setDelay(convertTimeInSecondsToString(delayInSeconds));
             }
 
             return wfProcess;
@@ -2209,84 +2163,35 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     dueCal.setTime(wfAct.getDue());
                     long delayInMilliseconds = completionCal.getTimeInMillis() - dueCal.getTimeInMillis();
                     long delayInSeconds = (long) delayInMilliseconds / 1000;
-                    long delayInMinutes = (long) delayInSeconds / 60;
-                    long delayInHours = (long) delayInMinutes / 60;
-                    long delayInDays = (long) delayInHours / 24;
 
                     //set delay in seconds
                     wfAct.setDelayInSeconds(delayInSeconds);
-
-                    if (delayInSeconds < 60) {
-                        wfAct.setDelay(delayInSeconds + " second(s)");
-                    } else if (delayInSeconds > 60 && delayInMinutes < 60) {
-                        wfAct.setDelay(delayInMinutes + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                    } else if (delayInMinutes > 60 && delayInHours < 60) {
-                        wfAct.setDelay(delayInHours + " hour(s) " + (delayInMinutes % 60) + " minute(s) " + (delayInSeconds % 60) + " second(s)");
-                    } else if (delayInHours > 24) {
-                        wfAct.setDelay(delayInDays + " day(s) " + (delayInHours % 24) + " hour(s) " + (delayInMinutes % 60) + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                    }
+                    wfAct.setDelay(convertTimeInSecondsToString(delayInSeconds));
                 }
 
                 //time taken for completion from date started
                 long timeTakenInMilliSeconds = (wfAct != null && wfAct.getFinishTime() != null && wfAct.getStartedTime() != null) ? wfAct.getFinishTime().getTime() - wfAct.getStartedTime().getTime() : 0;
                 long timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                long timeTakenInMinutes = (long) timeTakenInSeconds / 60;
-                long timeTakenInHours = (long) timeTakenInMinutes / 60;
-                long timeTakenInDays = (long) timeTakenInHours / 24;
 
                 //set time consuming from date started in seconds
                 wfAct.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
-
-                if (timeTakenInSeconds < 60) {
-                    wfAct.setTimeConsumingFromDateStarted(timeTakenInSeconds + " second(s)");
-                } else if (timeTakenInSeconds > 60 && timeTakenInMinutes < 60) {
-                    wfAct.setTimeConsumingFromDateStarted(timeTakenInMinutes + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInMinutes > 60 && timeTakenInHours < 60) {
-                    wfAct.setTimeConsumingFromDateStarted(timeTakenInHours + " hour(s) " + (timeTakenInMinutes % 60) + " minute(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInHours > 24) {
-                    wfAct.setTimeConsumingFromDateStarted(timeTakenInDays + " day(s) " + (timeTakenInHours % 24) + " hour(s) " + (timeTakenInMinutes % 60) + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                }
+                wfAct.setTimeConsumingFromDateStarted(convertTimeInSecondsToString(timeTakenInSeconds));
 
                 //time taken for completion from date created
                 timeTakenInMilliSeconds = (wfAct != null && wfAct.getFinishTime() != null && wfAct.getCreatedTime() != null) ? wfAct.getFinishTime().getTime() - wfAct.getCreatedTime().getTime() : 0;
                 timeTakenInSeconds = (long) timeTakenInMilliSeconds / 1000;
-                timeTakenInMinutes = (long) timeTakenInSeconds / 60;
-                timeTakenInHours = (long) timeTakenInMinutes / 60;
-                timeTakenInDays = (long) timeTakenInHours / 24;
 
                 //set time consuming from date created in seconds
                 wfAct.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
-
-                if (timeTakenInSeconds < 60) {
-                    wfAct.setTimeConsumingFromDateCreated(timeTakenInSeconds + " second(s)");
-                } else if (timeTakenInSeconds > 60 && timeTakenInMinutes < 60) {
-                    wfAct.setTimeConsumingFromDateCreated(timeTakenInMinutes + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInMinutes > 60 && timeTakenInHours < 60) {
-                    wfAct.setTimeConsumingFromDateCreated(timeTakenInHours + " hour(s) " + (timeTakenInMinutes % 60) + " minute(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                } else if (timeTakenInHours > 24) {
-                    wfAct.setTimeConsumingFromDateCreated(timeTakenInDays + " day(s) " + (timeTakenInHours % 24) + " hour(s) " + (timeTakenInMinutes % 60) + " minutes(s) " + (timeTakenInSeconds % 60) + " second(s)");
-                }
-
+                wfAct.setTimeConsumingFromDateCreated(convertTimeInSecondsToString(timeTakenInSeconds));
 
             } else if (wfAct.getDue() != null && currentDate.after(wfAct.getDue())) {
                 long delayInMilliseconds = currentDate.getTime() - wfAct.getDue().getTime();
                 long delayInSeconds = (long) delayInMilliseconds / 1000;
-                long delayInMinutes = (long) delayInSeconds / 60;
-                long delayInHours = (long) delayInMinutes / 60;
-                long delayInDays = (long) delayInHours / 24;
 
                 //set delay in seconds
                 wfAct.setDelayInSeconds(delayInSeconds);
-
-                if (delayInSeconds < 60) {
-                    wfAct.setDelay(delayInSeconds + " second(s)");
-                } else if (delayInSeconds > 60 && delayInMinutes < 60) {
-                    wfAct.setDelay(delayInMinutes + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                } else if (delayInMinutes > 60 && delayInHours < 60) {
-                    wfAct.setDelay(delayInHours + " hour(s) " + (delayInMinutes % 60) + " minute(s) " + (delayInSeconds % 60) + " second(s)");
-                } else if (delayInHours > 24) {
-                    wfAct.setDelay(delayInDays + " day(s) " + (delayInHours % 24) + " hour(s) " + (delayInMinutes % 60) + " minutes(s) " + (delayInSeconds % 60) + " second(s)");
-                }
+                wfAct.setDelay(convertTimeInSecondsToString(delayInSeconds));
             }
 
             short priority = wfActivity.priority();
@@ -4682,5 +4587,25 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return -1;
+    }
+    
+    protected String convertTimeInSecondsToString(long timeInSeconds) {
+        long timeInMinutes = (long) timeInSeconds / 60;
+        long timeInHours = (long) timeInMinutes / 60;
+        long timeInDays = (long) timeInHours / 24;
+                    
+        String temp = "";
+        
+        if (timeInSeconds < 60) {
+            temp = timeInSeconds + " second(s)";
+        } else if (timeInSeconds >= 60 && timeInMinutes < 60) {
+            temp = timeInMinutes + " minutes(s) " + (timeInSeconds % 60) + " second(s)";
+        } else if (timeInMinutes >= 60 && timeInHours < 24) {
+            temp = timeInHours + " hour(s) " + (timeInMinutes % 60) + " minute(s) " + (timeInSeconds % 60) + " second(s)";
+        } else if (timeInHours >= 24) {
+            temp = timeInDays + " day(s) " + (timeInHours % 24) + " hour(s) " + (timeInMinutes % 60) + " minutes(s) " + (timeInSeconds % 60) + " second(s)";
+        }
+        
+        return temp;
     }
 }

@@ -79,8 +79,6 @@
             <dd>${trackWflowActivity.priority}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.createdTime"/></dt>
             <dd>${trackWflowActivity.createdTime}&nbsp;</dd>
-            <dt><fmt:message key="console.app.activity.common.label.startedTime"/></dt>
-            <dd>${trackWflowActivity.startedTime}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dateLimit"/></dt>
             <dd>${trackWflowActivity.limit}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dueDate"/></dt>
@@ -91,8 +89,6 @@
             <dd>${trackWflowActivity.finishTime}&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.timeConsumingFromDateCreated"/></dt>
             <dd>${trackWflowActivity.timeConsumingFromDateCreated}&nbsp;</dd>
-            <dt><fmt:message key="console.app.activity.common.label.timeConsumingFromDateStarted"/><dt>
-            <dd>${trackWflowActivity.timeConsumingFromDateStarted}&nbsp;</dd>
         </dl>
         <div id="reevaluateForUser" style="display: none">
             <div style="width:650px;margin:20px auto;">
