@@ -123,7 +123,7 @@
     </c:when>
     <c:when test="${properties.view eq 'assignmentUnavailable'}">
         <p>
-            <fmt:message key="client.app.run.process.label.unavailable" />
+            <fmt:message key="client.app.run.process.label.assignment.unavailable" />
         </p>
     </c:when>
 </c:choose>
