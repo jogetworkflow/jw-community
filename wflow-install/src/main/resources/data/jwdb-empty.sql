@@ -2509,7 +2509,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_department` WRITE;
 /*!40000 ALTER TABLE `dir_department` DISABLE KEYS */;
-INSERT INTO `dir_department` VALUES ('D-001','CEO\'s Office','','ORG-001','4028808127f4ef840127f5efdbfb004f',NULL),('D-002','Human Resource & Admin','','ORG-001','4028808127f4ef840127f5f41d4b0091',NULL),('D-003','Finance','','ORG-001','4028808127f4ef840127f606242400b3',NULL),('D-004','Marketing','','ORG-001','4028808127f4ef840127f5f20f36007a',NULL),('D-005','Product Development','','ORG-001','4028808127f4ef840127f5f04dc2005a',NULL),('D-006','Training & Consulting','','ORG-001','4028808127f4ef840127f5f7c5b500a5',NULL),('D-007','Support & Services','','ORG-001','4028808127fb4d350127ff78d63300d1',NULL);
 /*!40000 ALTER TABLE `dir_department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2548,7 +2547,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_employment` WRITE;
 /*!40000 ALTER TABLE `dir_employment` DISABLE KEYS */;
-INSERT INTO `dir_employment` VALUES ('4028808127f4ef840127f5efdbfb004f','terry',NULL,NULL,NULL,NULL,'G-001','D-001','ORG-001'),('4028808127f4ef840127f5f04dc2005a','clark',NULL,NULL,NULL,NULL,'G-002','D-005','ORG-001'),('4028808127f4ef840127f5f11cf60068','cat',NULL,NULL,NULL,NULL,'G-003','D-005','ORG-001'),('4028808127f4ef840127f5f194e20071','tana',NULL,NULL,NULL,NULL,'G-003','D-005','ORG-001'),('4028808127f4ef840127f5f20f36007a','roy',NULL,NULL,NULL,NULL,'G-002','D-004','ORG-001'),('4028808127f4ef840127f5f319720088','etta',NULL,NULL,NULL,NULL,'G-003','D-004','ORG-001'),('4028808127f4ef840127f5f41d4b0091','sasha',NULL,NULL,NULL,NULL,'G-002','D-002','ORG-001'),('4028808127f4ef840127f5f7c5b500a5','jack',NULL,NULL,NULL,NULL,'G-002','D-006','ORG-001'),('4028808127f4ef840127f606242400b3','tina',NULL,NULL,NULL,NULL,'G-002','D-003','ORG-001'),('4028808127fb4d350127ff78d63300d1','david',NULL,NULL,NULL,NULL,'G-002','D-007','ORG-001'),('4028808127fb4d350127ff84074600f2','julia',NULL,NULL,NULL,NULL,'G-003','D-002','ORG-001');
 /*!40000 ALTER TABLE `dir_employment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2577,7 +2575,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_employment_report_to` WRITE;
 /*!40000 ALTER TABLE `dir_employment_report_to` DISABLE KEYS */;
-INSERT INTO `dir_employment_report_to` VALUES ('4028808127f4ef840127f5f04dc2005a','4028808127f4ef840127f5efdbfb004f','4028808127f4ef840127f5f04e9b005f'),('4028808127f4ef840127f5f20f36007a','4028808127f4ef840127f5efdbfb004f','4028808127f4ef840127f5f20fb7007f'),('4028808127f4ef840127f5f41d4b0091','4028808127f4ef840127f5efdbfb004f','4028808127f4ef840127f5f48eda009e'),('4028808127f4ef840127f5f7c5b500a5','4028808127f4ef840127f5efdbfb004f','4028808127f4ef840127f5f7c60b00aa'),('4028808127f4ef840127f606242400b3','4028808127f4ef840127f5efdbfb004f','4028808127f4ef840127f60624c100b8'),('4028808127fb4d350127ff78d63300d1','4028808127f4ef840127f5efdbfb004f','4028808127fb4d350127ff78d6fe00d6');
 /*!40000 ALTER TABLE `dir_employment_report_to` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2605,7 +2602,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_grade` WRITE;
 /*!40000 ALTER TABLE `dir_grade` DISABLE KEYS */;
-INSERT INTO `dir_grade` VALUES ('G-001','Board Members','','ORG-001'),('G-002','Managers','','ORG-001'),('G-003','Executives','','ORG-001');
 /*!40000 ALTER TABLE `dir_grade` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2633,7 +2629,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_group` WRITE;
 /*!40000 ALTER TABLE `dir_group` DISABLE KEYS */;
-INSERT INTO `dir_group` VALUES ('G-001','Managers','',NULL),('G-002','CxO','',NULL),('G-003','hrAdmin','',NULL);
 /*!40000 ALTER TABLE `dir_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2661,7 +2656,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_organization` WRITE;
 /*!40000 ALTER TABLE `dir_organization` DISABLE KEYS */;
-INSERT INTO `dir_organization` VALUES ('ORG-001','Joget.Org','',NULL);
 /*!40000 ALTER TABLE `dir_organization` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2716,7 +2710,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_user` WRITE;
 /*!40000 ALTER TABLE `dir_user` DISABLE KEYS */;
-INSERT INTO `dir_user` VALUES ('admin','admin','21232f297a57a5a743894a0e4a801fc3','Admin','Admin',NULL,1,'0'),('cat','cat','5f4dcc3b5aa765d61d8327deb882cf99','Cat','Grant','',1,'0'),('clark','clark','5f4dcc3b5aa765d61d8327deb882cf99','Clark','Kent','',1,'0'),('david','david','5f4dcc3b5aa765d61d8327deb882cf99','David','Cain','',1,'0'),('etta','etta','5f4dcc3b5aa765d61d8327deb882cf99','Etta','Candy','',1,'0'),('jack','jack','5f4dcc3b5aa765d61d8327deb882cf99','Jack','Drake','',1,'0'),('julia','julia','5f4dcc3b5aa765d61d8327deb882cf99','Julia','Kapatelis','',1,'0'),('roy','roy','5f4dcc3b5aa765d61d8327deb882cf99','Roy','Harper','',1,'0'),('sasha','sasha','5f4dcc3b5aa765d61d8327deb882cf99','Sasha','Bordeaux','',1,'0'),('tana','tana','5f4dcc3b5aa765d61d8327deb882cf99','Tana','Moon','',1,'0'),('terry','terry','5f4dcc3b5aa765d61d8327deb882cf99','Terry','Berg','',1,'0'),('tina','tina','5f4dcc3b5aa765d61d8327deb882cf99','Tina','Magee','',1,'0');
+INSERT INTO `dir_user` VALUES ('admin','admin','21232f297a57a5a743894a0e4a801fc3','Admin','Admin',NULL,1,'0');
 /*!40000 ALTER TABLE `dir_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2744,7 +2738,6 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_user_group` WRITE;
 /*!40000 ALTER TABLE `dir_user_group` DISABLE KEYS */;
-INSERT INTO `dir_user_group` VALUES ('G-001','clark'),('G-001','david'),('G-001','jack'),('G-001','roy'),('G-001','sasha'),('G-001','tina'),('G-002','terry'),('G-003','julia'),('G-003','sasha');
 /*!40000 ALTER TABLE `dir_user_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2772,7 +2765,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_user_role` WRITE;
 /*!40000 ALTER TABLE `dir_user_role` DISABLE KEYS */;
-INSERT INTO `dir_user_role` VALUES ('ROLE_ADMIN','admin'),('ROLE_USER','cat'),('ROLE_USER','clark'),('ROLE_USER','david'),('ROLE_USER','etta'),('ROLE_USER','jack'),('ROLE_USER','julia'),('ROLE_USER','roy'),('ROLE_USER','sasha'),('ROLE_USER','tana'),('ROLE_USER','terry'),('ROLE_USER','tina');
+INSERT INTO `dir_user_role` VALUES ('ROLE_ADMIN','admin');
 /*!40000 ALTER TABLE `dir_user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
