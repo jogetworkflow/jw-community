@@ -4,7 +4,7 @@ if ""%1"" == """" goto usage
 if ""%2"" == """" goto usage
 
 :create
-mvn archetype:generate -DarchetypeGroupId=org.joget -DarchetypeArtifactId=wflow-plugin-archetype -DarchetypeVersion=3.0-BETA -DgroupId=%1 -DartifactId=%2
+mvn archetype:generate -DarchetypeGroupId=org.joget -DarchetypeArtifactId=wflow-plugin-archetype -DarchetypeVersion=3.0-SNAPSHOT -DgroupId=%1 -DartifactId=%2
 goto end
 
 :usage

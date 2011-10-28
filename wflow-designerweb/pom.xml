@@ -4,14 +4,14 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-designerweb</artifactId>
     <packaging>war</packaging>
-    <version>3.0-BETA</version>
+    <version>3.0-SNAPSHOT</version>
     <name>wflow-designerweb</name>
     <url>http://www.joget.org</url>
     <dependencies>
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-designer</artifactId>
-            <version>3.0-BETA</version>
+            <version>3.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.sun.java.jnlp</groupId>
@@ -99,7 +99,7 @@
                                 <artifactItem>
                                     <groupId>org.joget</groupId>
                                     <artifactId>wflow-designer</artifactId>
-                                    <version>3.0-BETA</version>
+                                    <version>3.0-SNAPSHOT</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/jwdesigner/WEB-INF/lib</outputDirectory>
@@ -157,7 +157,7 @@
                                 <jarResource>
                                     <groupId>org.joget</groupId>
                                     <artifactId>wflow-designer</artifactId>
-                                    <version>3.0-BETA</version>
+                                    <version>3.0-SNAPSHOT</version>
                                     <mainClass>org.joget.designer.Designer</mainClass>
                                 </jarResource>
                                 <jarResource>

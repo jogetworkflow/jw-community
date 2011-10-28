@@ -7,6 +7,6 @@ elif [ -z $plugin ]; then
 	echo "Usage: create-plugin.sh $package (plugin name)"
 else 
 	clear
-	mvn archetype:generate -DarchetypeGroupId=org.joget -DarchetypeArtifactId=wflow-plugin-archetype -DarchetypeVersion=3.0-BETA -DgroupId=$package -DartifactId=$plugin
+	mvn archetype:generate -DarchetypeGroupId=org.joget -DarchetypeArtifactId=wflow-plugin-archetype -DarchetypeVersion=3.0-SNAPSHOT -DgroupId=$package -DartifactId=$plugin
 fi
 exit 1
