@@ -1,5 +1,28 @@
-3.0-BETA 3
-==========
+3.0.0
+=====
+216		Modified: wflow-install - Modified linux setup script to use the sample database instead of the empty one.
+215		Added: wflow-install - Added sample SQL for database containing org chart and sample CRM app.
+214		Modified: wflow-consoleweb - Modified home page open console in same window.
+213		Modified: wflow-install - Change installation directory for v3
+212		Modified: wflow-install - Removed sample org chart data from jwdb-empty.sql
+211		Fixed: wflow-consoleweb - Form Builder - Grid data not keep when submit data by pressing Enter key in Chrome (#397)
+210		Fixed: wflow-consoleweb - Fixed wrong resource bundle key when an assignment is unavailable.
+208		Added: wflow-consoleweb - Add option to hide or show list level action when no record or no checkbox (#392)
+207		Fixed: wflow-wfengine - Delay & time taken displaying wrong value(#393)
+206		Fixed: wflow-wfengine - Wrong SLA limit calculation when duration unit set to Hour (#392)
+205		Fixed: wflow-core - Datepicker doesn't show up in IE (#381)
+204		Fixed: wflow-consoleweb - SLA not showing in monitor processes (#380)
+203		Added: wflow-plugin-archetype - To generate a base plugin maven project
+202		Fixed: wflow-wfengine - AppUtil.getCurrentAppDefinition() should not use in tool (#387)
+201		Fixed: wflow-wfengine - processRequesterId is not passes over to external form (#385)
+200		Fixed: wflow-consoleweb - Complete assignment api not working if the assignment is not yet accept (#386)
+199		Fixed: wflow-consoleweb - AssignmentManager.login no return username after first time successful login (#384)
+198		Fixed: wflow-consoleweb - Hash password is not working (#383)
+197		Modified: wflow-core - Modified form grid element to trigger a change event when adding, editing and deleting a row.
+196		Modified: wflow-core - Updated form service to automatically generate a unique ID if the ID is empty before invoking store binders.
+194		Fixed: wflow-core, wflow-consoleweb - Fixed problem in property editor where form options may be shown from a different app.
+193		Fixed: wflow-plugin-base - Map ordering in element templates are messed up when loaded via an OSGI plugin.
+192		Fixed: wflow-consoleweb - email plugin - Typo in label
 190		Added: wflow-install - Bundle CRM sample app in installer.
 189		Modified: wflow-consoleweb - Exclude not harmful NullPointerException thrown from dbcp in log4j (#247)
 188		Fixed: wflow-core - Delete not working at row level in Datalist (#379)
@@ -12,8 +35,8 @@
 180		Modified: wflow-consoleweb - Show activity definition ID & process instance in Monitor Processes's activity view. (#374)
 179		Modified: wflow-core/wflow-consoleweb - Refactor on userview embed mode support.
 177		Modified: wflow-core - Refactored on FormLoadBinder
-                Fixed: wflow-core/wflow-consoleweb - Incorrect process instance id retrieved in form when start a process with a record id (#357)
-                Modified: wflow-consoleweb - Add support for start process with record id
+		Fixed: wflow-core/wflow-consoleweb - Incorrect process instance id retrieved in form when start a process with a record id (#357)
+		Modified: wflow-consoleweb - Add support for start process with record id
 176		Modified: wflow-core - Add setting to set no checkbox or display checkbox in both side for List Menu.
 175		Fixed: wflow-core - NullPointerException when export datalist and the column data is null. (#370)
 174		Fixed: wflow-core - Subform inside subform element is editable (#368)
@@ -23,7 +46,7 @@
 170		Fixed: wflow-core - Fixed possible NullPointerException when submitting a form.
 169		Modified: wflow-core/wflow-consoleweb - Order fields alphabetically in Datalist Builder (#363)
 167		Modified: wflow-consoleweb - Removed unused "Welcome Message Delay" System Setting.
-                Added: wflow-consoleweb - Added "Landing Page" System Setting for redirect user to specified page (#361)
+		Added: wflow-consoleweb - Added "Landing Page" System Setting for redirect user to specified page (#361)
 165		Fixed: wflow-wfengine - Package ID does not match App ID error while deploy in non-unicode OS (#362)
 164		Fixed: wflow-consoleweb - Visibility control on Run Apps based on userview's permission (#359)
 163		Fixed: wflow-core - Multiple participants on workflow variable mapping (#360)
