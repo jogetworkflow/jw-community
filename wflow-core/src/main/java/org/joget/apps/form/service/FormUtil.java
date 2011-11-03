@@ -26,7 +26,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.plugin.base.PluginManager;
-import org.joget.workflow.util.WorkflowUtil;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -125,42 +125,24 @@ public class FormUtil implements ApplicationContextAware {
 
         if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
             JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
+            property = PropertyUtil.getPropertiesValueFromJson(objProperty.toString());
 
-            Iterator<String> i = objProperty.keys();
-            while (i.hasNext()) {
-                String key = i.next();
+            if (property.containsKey(FormUtil.PROPERTY_OPTIONS)) {
+                FormRowSet options = new FormRowSet();
+                Object[] objs = (Object[]) property.get(FormUtil.PROPERTY_OPTIONS);
 
-                //if it's dropdownlist options
-                if (key.equals(FormUtil.PROPERTY_OPTIONS)) {
-                    FormRowSet options = new FormRowSet();
-                    JSONArray objArray = objProperty.getJSONArray(key);
-
-                    for (int j = 0; j < objArray.length(); j++) {
-                        FormRow option = new FormRow();
-                        JSONObject objOption = (JSONObject) objArray.get(j);
-                        if (objOption.length() > 0) {
-                            JSONArray fields = objOption.names();
-                            if (fields != null && fields.length() > 0) {
-                                for (int k = 0; k < fields.length(); k++) {
-                                    String fieldName = fields.getString(k);
-                                    String value = objOption.getString(fieldName);
-                                    option.setProperty(fieldName, value);
-
-                                }
-                            }
-                            options.add(option);
-                        }
+                for (Object o : objs) {
+                    Map temp = (HashMap) o;
+                    FormRow option = new FormRow();
+                    for (String key : (Set<String>) temp.keySet()) {
+                        option.setProperty(key, (String) temp.get(key));
                     }
-                    property.put(FormUtil.PROPERTY_OPTIONS, options);
-
-                } else {
-                    String value = objProperty.getString(key);
-                    if (value != null) {
-                        property.put(key, value);
-                    }
+                    options.add(option);
                 }
+                property.put(FormUtil.PROPERTY_OPTIONS, options);
             }
         }
+
         return property;
     }
 
@@ -562,7 +544,7 @@ public class FormUtil implements ApplicationContextAware {
     public static Element findElement(String id, Element rootElement, FormData formData) {
         return findElement(id, rootElement, formData, false);
     }
-    
+
     /**
      * Utility method to recursively find an element by ID.
      * @param id
@@ -579,7 +561,7 @@ public class FormUtil implements ApplicationContextAware {
         if (elementId != null && elementId.equals(id)) {
             result = rootElement;
             return result;
-        } else if (!(rootElement instanceof SubForm) || ((rootElement instanceof SubForm) && includeSubForm)) { 
+        } else if (!(rootElement instanceof SubForm) || ((rootElement instanceof SubForm) && includeSubForm)) {
             Collection<Element> children = rootElement.getChildren();
             if (children != null) {
                 for (Element child : children) {
@@ -715,18 +697,18 @@ public class FormUtil implements ApplicationContextAware {
         String[] result = (String[]) values.toArray(new String[0]);
         return result;
     }
-    
-    public static boolean isElementPropertyValuesChanges(Element element, FormData formData, String[] updatedValues){
+
+    public static boolean isElementPropertyValuesChanges(Element element, FormData formData, String[] updatedValues) {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-        
+
         String primaryKeyValue = formData.getPrimaryKeyValue();
-        if(primaryKeyValue != null && !primaryKeyValue.equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))){
+        if (primaryKeyValue != null && !primaryKeyValue.equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
             return true;
         }
-        
+
         List<String> values = new ArrayList<String>();
-        
+
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
 
         // handle multiple values
@@ -737,7 +719,7 @@ public class FormUtil implements ApplicationContextAware {
                 values.add(val);
             }
         }
-        
+
         // load from binder if available
         if (formData != null) {
             String binderValue = formData.getLoadBinderDataProperty(element, id);
@@ -750,11 +732,11 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         String[] loadedValues = (String[]) values.toArray(new String[0]);
-        
-        if(loadedValues != null && updatedValues != null && loadedValues.length == updatedValues.length){
+
+        if (loadedValues != null && updatedValues != null && loadedValues.length == updatedValues.length) {
             return !Arrays.equals(loadedValues, updatedValues);
         }
-        
+
         return true;
     }
 
@@ -911,15 +893,20 @@ public class FormUtil implements ApplicationContextAware {
                         jsonArray.put(jo);
                     }
                     jsonObject.put(propertyName, jsonArray);
+                } else if (objValue != null && objValue instanceof Object[]) { 
+                    Object[] mapArray = (Object[]) objValue;
+                    JSONArray jsonArray = new JSONArray();
+                    for (Object row :  mapArray) {
+                        Map m = (Map) row;
+                        JSONObject jo = new JSONObject(m);
+                        jsonArray.put(jo);
+                    }
+                    jsonObject.put(propertyName, jsonArray);
+                } else if (objValue != null && objValue instanceof Map) {
+                    jsonObject.put(propertyName, (Map) objValue);
                 } else {
                     String value = (objValue != null) ? objValue.toString() : "";
-                    // check for binders or validators
-                    if (FormUtil.PROPERTY_VALIDATOR.equals(propertyName) || FormBinder.FORM_LOAD_BINDER.equals(propertyName) || FormBinder.FORM_OPTIONS_BINDER.endsWith(propertyName) || FormBinder.FORM_STORE_BINDER.equals(propertyName)) {
-                        JSONObject propertyObj = new JSONObject(value);
-                        jsonObject.accumulate(propertyName, propertyObj);
-                    } else {
-                        jsonObject.accumulate(propertyName, value);
-                    }
+                    jsonObject.accumulate(propertyName, value);
                 }
             }
         }
