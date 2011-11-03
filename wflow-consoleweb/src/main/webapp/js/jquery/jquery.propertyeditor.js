@@ -1091,7 +1091,7 @@
                         var obj = new Object();
 
                         $.each(property.columns, function(i, column){
-                            obj[column.key] = $(row).find('input[name='+ column.key +']').val();
+                            obj[column.key] = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
                         });
                         gridValue.push(obj);
                     }
