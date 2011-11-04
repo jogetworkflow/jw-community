@@ -228,16 +228,28 @@ FormBuilder = {
                 tempCount =  $(this).children(".ui-sortable-helper").length; // ignore sortable placeholder
             }
             var columnCount = $(this).children(".form-column").length - tempCount;
+            var autoWidth = true;
+            $(this).children(".form-column").each(function(index, column) {
+                var prop = column.dom.properties;
+                var customWidth = prop.customWidth;
+                if (customWidth && customWidth != "") {
+                    autoWidth = false;
+                    return false;
+                }
+            });            
             var columnWidth = Math.floor(100 / columnCount)-1;
             var columnWidthStr = columnWidth + "%";
 
-            // set column width css
-            $(this).children(".form-column").css("width", columnWidthStr);
-
             // set column width property
             $(this).children(".form-column").each(function(index, column) {
+                var width = (autoWidth) ? columnWidthStr : "";
                 var prop = column.dom.properties;
-                prop.width = columnWidthStr;
+                var customWidth = prop.customWidth;
+                if (customWidth && customWidth != "") {
+                    width = customWidth;
+                }
+                $(column).css("width", width);
+                prop.width = width;
                 FormBuilder.updateElementProperties(column, prop);
             });
         })

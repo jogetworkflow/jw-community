@@ -3,6 +3,13 @@
         title:'@@form.column.editColumn@@',
         properties:[
             {
+                name : 'customWidth',
+                label : '@@form.column.width@@',
+                type : 'textfield',
+                required : 'False',
+                value : ''
+            },
+            {
                 name:'horizontal',
                 label:'@@form.column.horizontalLayout@@',
                 type:'checkbox',
