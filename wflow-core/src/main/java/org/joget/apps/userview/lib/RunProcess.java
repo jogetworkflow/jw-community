@@ -138,6 +138,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     public String getJspPage() {
         if ("start".equals(getRequestParameterString("action"))) {
             startProcess();
+        } else if ("assignmentView".equals(getRequestParameterString("action"))) {
+            assignmentView();
         } else if ("assignmentSubmit".equals(getRequestParameterString("action"))) {
             assignmentSubmit();
         } else {
@@ -270,7 +272,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 Collection<WorkflowActivity> activities = result.getActivities();
                 if (activities != null && !activities.isEmpty()) {
                     WorkflowActivity nextActivity = activities.iterator().next();
-                    assignmentView(nextActivity.getId());
+                    setProperty("view", "redirect");
+                    setProperty("messageShowAfterComplete", "");
+                    String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getId();
+                    setProperty("redirectURL", redirectUrl);
+                    return;
                 } else {
                     processStarted();
                 }
@@ -278,7 +284,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         }
     }
 
-    private void assignmentView(String activityId) {
+    private void assignmentView() {
+        String activityId = getRequestParameterString("activityId");
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -351,7 +358,10 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                         // redirect to next activity if available
                         WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                         if (nextActivity != null) {
-                            assignmentView(nextActivity.getActivityId());
+                            setProperty("view", "redirect");
+                            setProperty("messageShowAfterComplete", "");
+                            String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getActivityId();
+                            setProperty("redirectURL", redirectUrl);
                             return;
                         }
                     }

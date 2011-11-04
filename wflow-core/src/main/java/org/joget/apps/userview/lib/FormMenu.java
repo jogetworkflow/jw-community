@@ -404,7 +404,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
      * @return
      */
     protected Form submitAssignmentForm(FormData formData, WorkflowAssignment assignment, PackageActivityForm activityForm) {
-        Form nextForm = null;
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -421,7 +420,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         // submit form
         formData = formService.executeFormActions(currentForm, formData);
 
-        // check for validation errors
         if (formData.getFormResult(AssignmentWithdrawButton.DEFAULT_ID) != null) {
             // withdraw assignment
             workflowManager.assignmentWithdraw(activityId);
@@ -431,30 +429,17 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             formData = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
 
             Map<String, String> errors = formData.getFormErrors();
-            if (!errors.isEmpty()) {
-                nextForm = currentForm;
-            } else if (errors.isEmpty() && activityForm.isAutoContinue()) {
-                // redirect to next activity if available
-                WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                if (nextActivity != null) {
-                    PackageActivityForm nextActivityForm = retrieveAssignmentForm(formData, nextActivity);
-                    if (nextActivityForm != null) {
-                        nextForm = nextActivityForm.getForm();
-                    }
-                }
-            }
-        }
-
-        if (nextForm == null) {
+            
             setProperty("submitted", Boolean.TRUE);
             setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
-        } else {
-            setProperty("submitted", Boolean.FALSE);
-            setProperty("redirectUrlAfterComplete", "");
+            if (errors.isEmpty() && activityForm.isAutoContinue()) {
+                // redirect to next activity if available
+                WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
+                setProperty("messageShowAfterComplete", "");
+                setProperty("redirectUrlAfterComplete", getUrl() + "?activityId=" + nextActivity.getActivityId());
+            }
         }
-
-        return nextForm;
-
+        return currentForm;
     }
 
     /**
