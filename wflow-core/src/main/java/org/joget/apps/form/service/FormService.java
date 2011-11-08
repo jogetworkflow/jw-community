@@ -81,6 +81,8 @@ public class FormService {
             if (processHashVariable) {
                 processedJson = AppUtil.processHashVariable(elementJson, null, null, null);
             }
+            
+            processedJson = processedJson.replaceAll("\\\"\\{\\}\\\"", "{}");
 
             // instantiate element
             Element element = FormUtil.parseElementFromJson(processedJson);
