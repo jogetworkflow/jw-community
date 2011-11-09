@@ -65,6 +65,9 @@ public class UserviewService {
         requestParameters = convertRequestParamMap(requestParameters);
         requestParameters.put("contextPath", contextPath);
         requestParameters.put("isPreview", Boolean.toString(preview));
+        requestParameters.put("embed", Boolean.toString(embed));
+        requestParameters.put("appId", appDef.getAppId());
+        requestParameters.put("appVersion", appDef.getVersion().toString());
 
         String appId = appDef.getId();
         String appVersion = appDef.getVersion().toString();
