@@ -86,6 +86,7 @@ public class UserviewService {
                 UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
                 theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeObj.getJSONObject("properties").toString()));
                 theme.setRequestParameters(requestParameters);
+                theme.setUserview(userview);
                 setting.setTheme(theme);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");

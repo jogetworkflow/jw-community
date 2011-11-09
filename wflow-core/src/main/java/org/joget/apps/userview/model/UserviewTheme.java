@@ -1,12 +1,16 @@
 package org.joget.apps.userview.model;
 
-import java.util.Map;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
-import org.joget.plugin.property.model.PropertyEditable;
-
 public abstract class UserviewTheme extends ExtElement {
+    private Userview userview;
 
+    public Userview getUserview() {
+        return userview;
+    }
+
+    public void setUserview(Userview userview) {
+        this.userview = userview;
+    }
+    
     /**
      * Return css in string
      * @return
