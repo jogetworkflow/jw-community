@@ -47,6 +47,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_VALUE = "value";
     public static final String PROPERTY_LABEL = "label";
     public static final String PROPERTY_OPTIONS = "options";
+    public static final String PROPERTY_SELECTED = "selected";
     public static final String PROPERTY_OPTIONS_DELIMITER = ";";
     public static final String PROPERTY_CLASS_NAME = "className";
     public static final String PROPERTY_ELEMENTS = "elements";
@@ -624,6 +625,28 @@ public class FormUtil implements ApplicationContextAware {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        
+        if (formData != null) { // handle default value from options binder
+            FormRowSet rowSet = formData.getOptionsBinderData(element, id);
+            if (rowSet != null) {
+                
+                for (FormRow row : rowSet) {
+                    Iterator<String> it = row.stringPropertyNames().iterator();
+                    // get the key based on the "value" property
+                    String optionValue = row.getProperty(PROPERTY_VALUE);
+                    if (optionValue == null) {
+                        // no "value" property, use first property instead
+                        String key = it.next();
+                        optionValue = row.getProperty(key);
+                    }
+                    
+                    if(row.getProperty(PROPERTY_SELECTED) != null && (row.getProperty(PROPERTY_SELECTED).equalsIgnoreCase("true"))){
+                        value = optionValue;
+                        break;
+                    }
+                }
+            }
+        }
 
         // read from request if available, TODO: handle null values e.g. no options selected in a checkbox
         String paramValue = FormUtil.getRequestParameter(element, formData);
@@ -667,7 +690,28 @@ public class FormUtil implements ApplicationContextAware {
                 values.add(val);
             }
         }
-
+        
+        if (formData != null) { // handle default value from options binder
+            FormRowSet rowSet = formData.getOptionsBinderData(element, id);
+            if (rowSet != null) {
+                
+                for (FormRow row : rowSet) {
+                    Iterator<String> it = row.stringPropertyNames().iterator();
+                    // get the key based on the "value" property
+                    String optionValue = row.getProperty(PROPERTY_VALUE);
+                    if (optionValue == null) {
+                        // no "value" property, use first property instead
+                        String key = it.next();
+                        optionValue = row.getProperty(key);
+                    }
+                    
+                    if(row.getProperty(PROPERTY_SELECTED) != null && (row.getProperty(PROPERTY_SELECTED).equalsIgnoreCase("true"))){
+                        values.add(optionValue);
+                    }
+                }
+            }
+        }
+        
         // read from request if available, TODO: handle null values e.g. checkbox
         if (id != null) {
             String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
