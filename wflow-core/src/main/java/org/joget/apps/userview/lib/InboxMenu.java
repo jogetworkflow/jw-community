@@ -330,7 +330,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("errorCount", errorCount);
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
-            setProperty("redirectUrlAfterComplete", getUrl());
             if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
@@ -374,27 +373,17 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             formData = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
 
             Map<String, String> errors = formData.getFormErrors();
-            if (!errors.isEmpty()) {
-                nextForm = currentForm;
-            } else if (errors.isEmpty() && activityForm.isAutoContinue()) {
+            
+            setProperty("submitted", Boolean.TRUE);
+            setProperty("redirectUrlAfterComplete", getUrl());
+            if (errors.isEmpty() && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                if (nextActivity != null) {
-                    PackageActivityForm nextActivityForm = retrieveAssignmentForm(formData, nextActivity);
-                    if (nextActivityForm != null) {
-                        nextForm = nextActivityForm.getForm();
-                    }
-                }
+                setProperty("messageShowAfterComplete", "");
+                setProperty("redirectUrlAfterComplete", getUrl() + "?mode=assignment&activityId=" + nextActivity.getActivityId());
             }
         }
-
-        if (nextForm == null) {
-            setProperty("submitted", Boolean.TRUE);
-        } else {
-            setProperty("submitted", Boolean.FALSE);
-        }
-
-        return nextForm;
+        return currentForm;
 
     }
 
