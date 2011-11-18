@@ -272,10 +272,12 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 Collection<WorkflowActivity> activities = result.getActivities();
                 if (activities != null && !activities.isEmpty()) {
                     WorkflowActivity nextActivity = activities.iterator().next();
-                    setProperty("view", "redirect");
-                    setProperty("messageShowAfterComplete", "");
-                    String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getId();
-                    setProperty("redirectURL", redirectUrl);
+                    if (nextActivity != null) {
+                        setProperty("view", "redirect");
+                        setProperty("messageShowAfterComplete", "");
+                        String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getId();
+                        setProperty("redirectURL", redirectUrl);
+                    }
                     return;
                 } else {
                     processStarted();

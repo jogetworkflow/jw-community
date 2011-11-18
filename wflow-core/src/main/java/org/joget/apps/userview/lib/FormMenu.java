@@ -435,8 +435,10 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             if (errors.isEmpty() && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                setProperty("messageShowAfterComplete", "");
-                setProperty("redirectUrlAfterComplete", getUrl() + "?activityId=" + nextActivity.getActivityId());
+                if (nextActivity != null) {
+                    setProperty("messageShowAfterComplete", "");
+                    setProperty("redirectUrlAfterComplete", getUrl() + "?activityId=" + nextActivity.getActivityId());
+                }
             }
         }
         return currentForm;

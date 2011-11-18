@@ -362,6 +362,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
         // submit form
         formData = formService.executeFormActions(currentForm, formData);
+        
+        setProperty("submitted", Boolean.TRUE);
+        setProperty("redirectUrlAfterComplete", getUrl());
 
         // check for validation errors
         if (formData.getFormResult(AssignmentWithdrawButton.DEFAULT_ID) != null) {
@@ -374,13 +377,13 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
             Map<String, String> errors = formData.getFormErrors();
             
-            setProperty("submitted", Boolean.TRUE);
-            setProperty("redirectUrlAfterComplete", getUrl());
             if (errors.isEmpty() && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                setProperty("messageShowAfterComplete", "");
-                setProperty("redirectUrlAfterComplete", getUrl() + "?mode=assignment&activityId=" + nextActivity.getActivityId());
+                if (nextActivity != null) { 
+                    setProperty("messageShowAfterComplete", "");
+                    setProperty("redirectUrlAfterComplete", getUrl() + "?mode=assignment&activityId=" + nextActivity.getActivityId());
+                }
             }
         }
         return currentForm;
