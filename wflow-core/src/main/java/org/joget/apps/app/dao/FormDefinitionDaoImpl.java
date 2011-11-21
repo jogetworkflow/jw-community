@@ -9,6 +9,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.form.model.FormColumnCache;
 import org.joget.commons.util.LogUtil;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -18,6 +19,16 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDefinition> implements FormDefinitionDao {
 
     public static final String ENTITY_NAME = "FormDefinition";
+    
+    private FormColumnCache formColumnCache;
+    
+    public FormColumnCache getFormColumnCache() {
+        return formColumnCache;
+    }
+
+    public void setFormColumnCache(FormColumnCache formColumnCache) {
+        this.formColumnCache = formColumnCache;
+    }
 
     @Override
     public String getEntityName() {
@@ -77,6 +88,10 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
 
     @Override
     public boolean update(FormDefinition object) {
+        // clear from cache
+        formColumnCache.remove(object.getTableName());
+        
+        // update object
         object.setDateModified(new Date());
         return super.update(object);
     }
@@ -101,6 +116,9 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
                 // delete obj
                 super.delete(getEntityName(), obj);
                 result = true;
+                
+                // clear from cache
+                formColumnCache.remove(obj.getTableName());
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

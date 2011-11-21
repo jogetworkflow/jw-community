@@ -15,11 +15,20 @@
     <bean id="formService" class="org.joget.apps.form.service.FormService">
     </bean>
 
+    <bean id="formColumnCacheBean" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+    
+    <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache">
+        <property name="cache" ref="formColumnCacheBean"/>
+    </bean>
+    
     <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" >
         <property name="sessionFactory" ref="formDataSessionFactory" />
         <lookup-method name="loadCustomSessionFactory" bean="customFormDataSessionFactory" />
         <property name="formDefinitionDao" ref="formDefinitionDao" />
         <property name="formService" ref="formService" />
+        <property name="formColumnCache" ref="formColumnCache" />
     </bean>
     
     <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -58,6 +67,7 @@
     <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
+        <property name="formColumnCache" ref="formColumnCache" />
     </bean>
 
     <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl">
@@ -194,5 +204,5 @@
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
     </aop:config>
-    
+
 </beans>

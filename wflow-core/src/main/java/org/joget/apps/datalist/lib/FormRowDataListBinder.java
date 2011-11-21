@@ -26,6 +26,9 @@ import org.joget.apps.userview.model.Userview;
 
 public class FormRowDataListBinder extends DataListBinderDefault {
 
+    private Form cachedForm = null;
+    private String cachedFormDefId = null;
+    
     @Override
     public String getClassName() {
         return this.getClass().getName();
@@ -141,14 +144,19 @@ public class FormRowDataListBinder extends DataListBinderDefault {
         FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
         String formDefId = getPropertyString("formDefId");
         if (formDefId != null) {
-            Long version = null;
-            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
-            if (formDef != null) {
-                String formJson = formDef.getJson();
-                if (formJson != null) {
-                    form = (Form) formService.createElementFromJson(formJson);
+            if (cachedForm == null || !formDefId.equals(cachedFormDefId)) {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
+                if (formDef != null) {
+                    String formJson = formDef.getJson();
+                    if (formJson != null) {
+                        form = (Form) formService.createElementFromJson(formJson);
+                        cachedFormDefId = formDefId;
+                        cachedForm = form;
+                    }
                 }
+            } else {
+                form = cachedForm;
             }
         }
         return form;

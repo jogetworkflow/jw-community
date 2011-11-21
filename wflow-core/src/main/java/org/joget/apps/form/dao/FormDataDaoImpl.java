@@ -33,6 +33,7 @@ import org.hibernate.type.Type;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.form.lib.SubForm;
+import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
@@ -68,6 +69,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     ThreadLocal currentThreadForm = new ThreadLocal();
     private FormDefinitionDao formDefinitionDao;
     private FormService formService;
+    private FormColumnCache formColumnCache;
 
     public FormDefinitionDao getFormDefinitionDao() {
         return formDefinitionDao;
@@ -83,6 +85,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setFormService(FormService formService) {
         this.formService = formService;
+    }
+
+    public FormColumnCache getFormColumnCache() {
+        return formColumnCache;
+    }
+
+    public void setFormColumnCache(FormColumnCache formColumnCache) {
+        this.formColumnCache = formColumnCache;
     }
 
     /**
@@ -578,14 +588,19 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
 
         // get forms mapped to the table name
-        Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
-        for (FormDefinition formDef : formList) {
-            // get JSON
-            String json = formDef.getJson();
-            if (json != null) {
-                Form form = (Form) getFormService().createElementFromJson(json);
-                findAllElementIds(form, columnList);
+        columnList = formColumnCache.get(tableName);
+        if (columnList == null) {
+            columnList = new HashSet<String>();
+            Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
+            for (FormDefinition formDef : formList) {
+                // get JSON
+                String json = formDef.getJson();
+                if (json != null) {
+                    Form form = (Form) getFormService().createElementFromJson(json);
+                    findAllElementIds(form, columnList);
+                }
             }
+            formColumnCache.put(tableName, columnList);
         }
         return columnList;
     }
