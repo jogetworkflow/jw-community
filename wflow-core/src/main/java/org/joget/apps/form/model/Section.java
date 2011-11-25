@@ -85,4 +85,9 @@ public class Section extends Element implements FormBuilderEditable {
     public String getFormBuilderTemplate() {
         return "";
     }
+    
+    @Override
+    public FormRowSet formatData(FormData formData) {
+        return null;
+    }
 }

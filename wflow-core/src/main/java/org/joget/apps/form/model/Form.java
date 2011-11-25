@@ -75,4 +75,9 @@ public class Form extends Element implements FormBuilderEditable {
     public Map getFormMetas() {
         return formMetas;
     }
+    
+    @Override
+    public FormRowSet formatData(FormData formData) {
+        return null;
+    }
 }
