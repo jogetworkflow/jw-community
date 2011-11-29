@@ -1066,7 +1066,7 @@
                 var element = new Object();
                 element['className'] = "";
                 if($(editor).find('#'+editorId+'_'+parent+property.name).val() != null){
-                    element['className'] = $(editor).find('#'+editorId+'_'+property.name).val();
+                    element['className'] = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                 }
                 element['properties'] = new Object();
 
