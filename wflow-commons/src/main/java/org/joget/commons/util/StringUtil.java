@@ -4,9 +4,11 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
 
@@ -89,11 +91,19 @@ public class StringUtil {
                 for (String a : params) {
                     if (!a.isEmpty()) {
                         String[] param = a.split("=");
-                        String[] values = param[1].split(",");
-                        for (int i = 0; i < values.length; i++) {
-                            values[i] = URLDecoder.decode(values[i], "UTF-8");
+                        String key = URLDecoder.decode(param[1], "UTF-8");
+                        String value = URLDecoder.decode(param[1], "UTF-8");
+                        
+                        String[] values = (String[]) result.get(key);
+                        if (values != null) {
+                            List temp = Arrays.asList(values);
+                            temp.add(value);
+                            values = (String[]) temp.toArray(new String[0]);
+                        } else {
+                            values = new String[]{value};
                         }
-                        result.put(URLDecoder.decode(param[0], "UTF-8"), values);
+                        
+                        result.put(key, values);
                     }
                 }
             }
@@ -107,17 +117,9 @@ public class StringUtil {
         try {
             for (String key : params.keySet()) {
                 String[] values = params.get(key);
-                queryString += URLEncoder.encode(key, "UTF-8") + "=";
-
-                String paramValues = "";
                 for (String value : values) {
-                    paramValues += URLEncoder.encode(value, "UTF-8") + ",";
+                    queryString += URLEncoder.encode(key, "UTF-8") + "=" + URLEncoder.encode(value, "UTF-8") + "&";
                 }
-                if (paramValues.endsWith(",")) {
-                    paramValues = paramValues.substring(0, paramValues.length()-1);
-                }
-
-                queryString += paramValues + "&";
             }
             if (queryString.endsWith("&")) {
                 queryString = queryString.substring(0, queryString.length()-1);

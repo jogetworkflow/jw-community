@@ -178,11 +178,15 @@ UrlUtil = {
                     for(a in params) {
                         if(params[a] != ""){
                             var param = params[a].split("=");
-                            var values = param[1].split(",");
-                            for (var i = 0; i < values.length; i++) {
-                                values[i] = decodeURIComponent(values[i]);
+                            var key = decodeURIComponent(param[0]);
+                            var value = decodeURIComponent(param[1]);
+                            var values = result[key];
+                            if(values == undefined){
+                                values = new Array();
                             }
-                            result[decodeURIComponent(param[0])] = values;
+                            values.push(value);
+                            
+                            result[key] = values;
                         }
                     }
                 }
@@ -196,17 +200,9 @@ UrlUtil = {
         try {
             for (key in params) {
                 var values = params[key];
-                queryString += encodeURIComponent(key) + "=";
-
-                var paramValues = "";
                 for (value in values) {
-                    paramValues += encodeURIComponent(values[value]) + ",";
+                    queryString += encodeURIComponent(key) + "=" + encodeURIComponent(values[value]) + "&";
                 }
-                if (paramValues != "") {
-                    paramValues = paramValues.substring(0, paramValues.length-1);
-                }
-
-                queryString += paramValues + "&";
             }
             if (queryString != "") {
                 queryString = queryString.substring(0, queryString.length-1);
