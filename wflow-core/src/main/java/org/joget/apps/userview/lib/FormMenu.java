@@ -332,9 +332,12 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
         //if primary key is null, look up for primary key using userview key
         if (primaryKeyValue == null && getPropertyString("keyName") != null && (getPropertyString("loadDataWithKey") != null && "Yes".equalsIgnoreCase(getPropertyString("loadDataWithKey"))) && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-            primaryKeyValue = appService.getPrimaryKeyWithForeignKey(appDef.getId(), appDef.getVersion().toString(), formId, getPropertyString("keyName"), getKey());
+            if (FormUtil.PROPERTY_ID.equals(getPropertyString("keyName"))) {
+                primaryKeyValue = getKey();
+            } else {
+                primaryKeyValue = appService.getPrimaryKeyWithForeignKey(appDef.getId(), appDef.getVersion().toString(), formId, getPropertyString("keyName"), getKey());
+            }
         }
-
         // set primary key
         formData.setPrimaryKeyValue(primaryKeyValue);
 
