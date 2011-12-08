@@ -62,7 +62,7 @@ public class ParameterizedPathMatcher implements PathMatcher {
         return getOrCreatePattern(pattern).namedGroups(path);
     }
 
-    private NamedPattern getOrCreatePattern(String pattern) {
+    private synchronized NamedPattern getOrCreatePattern(String pattern) {
         NamedPattern compiledPattern = patternCache.get(pattern);
         if (compiledPattern == null) {
             compiledPattern = new NamedPattern(pattern);
