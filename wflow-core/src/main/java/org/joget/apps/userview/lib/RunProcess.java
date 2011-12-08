@@ -136,11 +136,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getJspPage() {
-        if ("start".equals(getRequestParameterString("action"))) {
+        if ("start".equals(getRequestParameterString("_action"))) {
             startProcess();
-        } else if ("assignmentView".equals(getRequestParameterString("action"))) {
+        } else if ("assignmentView".equals(getRequestParameterString("_action"))) {
             assignmentView();
-        } else if ("assignmentSubmit".equals(getRequestParameterString("action"))) {
+        } else if ("assignmentSubmit".equals(getRequestParameterString("_action"))) {
             assignmentSubmit();
         } else {
             ApplicationContext ac = AppUtil.getApplicationContext();
@@ -170,7 +170,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
         if (isUnauthorized()) {
             // check for start mapped form
-            String formUrl = getUrl() + "?action=start";
+            String formUrl = getUrl() + "?_action=start";
             FormData formData = new FormData();
             formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
@@ -243,7 +243,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            String formUrl = getUrl() + "?action=start";
+            String formUrl = getUrl() + "?_action=start";
             WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
             if (startFormDef != null && startFormDef.getForm() != null) {
@@ -275,7 +275,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     if (nextActivity != null) {
                         setProperty("view", "redirect");
                         setProperty("messageShowAfterComplete", "");
-                        String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getId();
+                        String redirectUrl = getUrl() + "?_action=assignmentView&activityId=" + nextActivity.getId();
                         setProperty("redirectURL", redirectUrl);
                     }
                     return;
@@ -306,7 +306,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 }
 
                 // get form
-                String formUrl = getUrl() + "?action=assignmentSubmit&activityId=" + activityId;
+                String formUrl = getUrl() + "?_action=assignmentSubmit&activityId=" + activityId;
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
 
@@ -339,7 +339,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 String processId = assignment.getProcessId();
 
                 // get form
-                String formUrl = getUrl() + "?action=assignmentSubmit&activityId=" + activityId;
+                String formUrl = getUrl() + "?_action=assignmentSubmit&activityId=" + activityId;
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
 
@@ -362,7 +362,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                         if (nextActivity != null) {
                             setProperty("view", "redirect");
                             setProperty("messageShowAfterComplete", "");
-                            String redirectUrl = getUrl() + "?action=assignmentView&activityId=" + nextActivity.getActivityId();
+                            String redirectUrl = getUrl() + "?_action=assignmentView&activityId=" + nextActivity.getActivityId();
                             setProperty("redirectURL", redirectUrl);
                             return;
                         }
