@@ -99,7 +99,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getJspPage() {
-        String mode = getRequestParameterString("mode");
+        String mode = getRequestParameterString("_mode");
 
         if ("assignment".equals(mode)) {
             setProperty("customHeader", getPropertyString(mode + "-customHeader"));
@@ -219,7 +219,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected String handleForm() {
-        if ("submit".equals(getRequestParameterString("action"))) {
+        if ("submit".equals(getRequestParameterString("_action"))) {
             // submit form
             submitForm();
         } else {
@@ -272,8 +272,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
     protected PackageActivityForm retrieveAssignmentForm(FormData formData, WorkflowAssignment assignment) {
         String activityId = assignment.getActivityId();
-        String formUrl = addParamToUrl(getUrl(), "action", "submit");
-        formUrl = addParamToUrl(formUrl, "mode", "assignment");
+        String formUrl = addParamToUrl(getUrl(), "_action", "submit");
+        formUrl = addParamToUrl(formUrl, "_mode", "assignment");
         formUrl = addParamToUrl(formUrl, "activityId", activityId);
 
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
@@ -382,7 +382,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) { 
                     setProperty("messageShowAfterComplete", "");
-                    setProperty("redirectUrlAfterComplete", getUrl() + "?mode=assignment&activityId=" + nextActivity.getActivityId());
+                    setProperty("redirectUrlAfterComplete", getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId());
                 }
             }
         }

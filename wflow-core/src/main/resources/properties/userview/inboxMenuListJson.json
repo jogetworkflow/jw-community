@@ -25,7 +25,7 @@
         "action" : {
             "className" : "org.joget.apps.datalist.lib.HyperlinkDataListAction",
             "properties" : {
-                "href" : "?mode=assignment",
+                "href" : "?_mode=assignment",
                 "target" : "_self",
                 "hrefParam" : "activityId",
                 "hrefColumn" : "activityId",

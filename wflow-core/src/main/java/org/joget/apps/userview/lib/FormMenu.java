@@ -126,7 +126,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getJspPage() {
-        if ("submit".equals(getRequestParameterString("action"))) {
+        if ("submit".equals(getRequestParameterString("_action"))) {
             // submit form
             submitForm();
         } else {
@@ -307,7 +307,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
      */
     protected PackageActivityForm retrieveAssignmentForm(FormData formData, WorkflowAssignment assignment) {
         String activityId = assignment.getActivityId();
-        String formUrl = getUrl() + "?action=submit&activityId=" + activityId;
+        String formUrl = getUrl() + "?_action=submit&activityId=" + activityId;
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
@@ -346,7 +346,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         }
 
         // retrieve form
-        String formUrl = getUrl() + "?action=submit";
+        String formUrl = getUrl() + "?_action=submit";
         if (primaryKeyValue != null) {
             try {
                 formUrl += "&" + FormUtil.PROPERTY_ID + "=" + URLEncoder.encode(primaryKeyValue, "UTF-8");
