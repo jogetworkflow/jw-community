@@ -7,6 +7,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginProperty;
@@ -125,6 +128,39 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
                 + "});"
                 + "</script>";
         return content;
+    }
+    
+    /**
+     * Returns information regarding an app.
+     * @param appId
+     * @param version
+     * @return 
+     */
+    public String getAppInfo(String appId, String version) {
+        return "";
+    }
+    
+    /**
+     * Verify valid app license, to return the appropriate page.
+     * @param appId
+     * @param version
+     * @return 
+     */
+    public String verifyAppVersion(String appId, String version) {
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef != null) {
+            return null;
+        }
+        // get latest version
+        Long latestVersion = appDefinitionDao.getLatestVersion(appId);
+        if (latestVersion != null && latestVersion != 0) {
+            return "redirect:/web/console/app/" + appId + "/processes";
+        } else {
+            // no version found, redirect to home page
+            return "redirect:/web/console/home";
+        }
     }
     
 }

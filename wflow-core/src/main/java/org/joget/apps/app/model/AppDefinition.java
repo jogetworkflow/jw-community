@@ -1,6 +1,7 @@
 package org.joget.apps.app.model;
 
 import java.util.Collection;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -25,6 +26,8 @@ public class AppDefinition extends AbstractVersionedObject {
     @ElementList(required = false)
     private Collection<Message> messageList;
     private Boolean published;
+    @Element(required = false)
+    private String license;
 
     /**
      * For an App, the package ID is equivalent to the ID.
@@ -119,5 +122,13 @@ public class AppDefinition extends AbstractVersionedObject {
 
     public void setPublished(Boolean published) {
         this.published = published;
+    }
+
+    public String getLicense() {
+        return license;
+    }
+
+    public void setLicense(String license) {
+        this.license = license;
     }
 }

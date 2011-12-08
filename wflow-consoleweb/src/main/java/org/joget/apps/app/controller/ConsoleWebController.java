@@ -50,6 +50,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormService;
@@ -1383,7 +1384,7 @@ public class ConsoleWebController {
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/processes", "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)"})
     public String consoleProcessView(ModelMap map, @RequestParam("appId") String appId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "version", required = false) String version) {
-        String result = checkVersionExist(appId, version);
+        String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
         }
@@ -1392,7 +1393,7 @@ public class ConsoleWebController {
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-
+        
         //for launching workflow designer
         User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
         map.addAttribute("loginHash", user.getLoginHash());
@@ -2043,7 +2044,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/datalists")
     public String consoleDatalistList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(appId, version);
+        String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
         }
@@ -2153,7 +2154,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/userviews")
     public String consoleUserviewList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(appId, version);
+        String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
         }
@@ -2263,7 +2264,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/properties")
     public String consoleProperties(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(appId, version);
+        String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
         }
@@ -2683,7 +2684,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/forms")
     public String consoleFormList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(appId, version);
+        String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
         }
@@ -3811,19 +3812,17 @@ public class ConsoleWebController {
         return localeStringList;
     }
 
-    protected String checkVersionExist(String appId, String version) {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-
-        if (appDef != null) {
-            return null;
-        }
-
-        Long latestVersion = appDefinitionDao.getLatestVersion(appId);
-
-        if (latestVersion != null && latestVersion != 0) {
-            return "redirect:/web/console/app/" + appId + "/processes";
-        }
-
-        return "redirect:/web/console/home";
+    protected String checkVersionExist(ModelMap map, String appId, String version) {
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        
+        // get app info
+        String appInfo = consoleWebPlugin.getAppInfo(appId, version);
+        map.put("appInfo", appInfo);
+        
+        // verify app license
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        //LogUtil.debug(getClass().getName(), "App info: " + consoleWebPlugin.getAppInfo(appId, version));
+        return page;
     }
+
 }

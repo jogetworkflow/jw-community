@@ -42,6 +42,9 @@ body {
 #content a {
     color: darkgreen;
 }
+#content a.content-link {
+    font-size: 15px;
+}
 #content .column a {
     text-decoration: none;
     color: #696969;

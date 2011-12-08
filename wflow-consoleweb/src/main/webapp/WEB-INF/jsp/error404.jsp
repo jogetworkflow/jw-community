@@ -23,7 +23,7 @@
                 <p>&nbsp;</p>
                 <p>&nbsp;</p>
                 <p>
-                    <a href="${pageContext.request.contextPath}/">Click here to go back to the main page</a>
+                    <a class="content-link" href="${pageContext.request.contextPath}/">Click here to go back to the main page</a>
                 </p>
             </div>
             <div id="footer">

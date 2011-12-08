@@ -80,6 +80,11 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     }
 
     @Override
+    public FormDefinition loadById(String id, AppDefinition appDefinition) {
+        return super.loadById(id, appDefinition);
+    }
+    
+    @Override
     public boolean add(FormDefinition object) {
         object.setDateCreated(new Date());
         object.setDateModified(new Date());

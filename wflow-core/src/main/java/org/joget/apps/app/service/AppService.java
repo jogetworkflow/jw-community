@@ -265,6 +265,37 @@ public interface AppService {
     AppDefinition importApp(byte[] zip);
 
     /**
+     * Reads app XML from zip content.
+     * @param zip
+     * @return 
+     */
+    byte[] getAppDataXmlFromZip(byte[] zip) throws Exception;    
+
+    /**
+     * Reads XPDL from zip content.
+     * @param zip
+     * @return
+     * @throws Exception 
+     */
+    byte[] getXpdlFromZip(byte[] zip) throws Exception;
+    
+    /**
+     * Import an app definition object and XPDL content into the system.
+     * @param appDef
+     * @param appVersion
+     * @param xpdl
+     * @return 
+     */
+    AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl);
+    
+    /**
+     * Import plugins (JAR) from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    void importPlugins(byte[] zip) throws Exception;
+    
+    /**
      * Get version of published app
      * @param appId
      * @return

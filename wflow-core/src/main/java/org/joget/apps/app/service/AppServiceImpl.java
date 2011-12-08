@@ -689,7 +689,7 @@ public class AppServiceImpl implements AppService {
         byte[] xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
 
         Long newAppVersion = newAppDef.getVersion() + 1;
-        return importingAppDefinition(newAppDef, newAppVersion, xpdl);
+        return importAppDefinition(newAppDef, newAppVersion, xpdl);
     }
 
     @Override
@@ -1130,9 +1130,9 @@ public class AppServiceImpl implements AppService {
 
             //Store appDef
             long newAppVersion = appVersion + 1;
-            AppDefinition newAppDef = importingAppDefinition(appDef, newAppVersion, xpdl);
+            AppDefinition newAppDef = importAppDefinition(appDef, newAppVersion, xpdl);
 
-            importingPlugin(zip);
+            importPlugins(zip);
 
             return newAppDef;
         } catch (Exception e) {
@@ -1182,7 +1182,15 @@ public class AppServiceImpl implements AppService {
         backgroundThread.start();
     }
 
-    protected AppDefinition importingAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) {
+    /**
+     * Import an app definition object and XPDL content into the system.
+     * @param appDef
+     * @param appVersion
+     * @param xpdl
+     * @return 
+     */
+    @Override
+    public AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) {
         AppDefinition newAppDef = new AppDefinition();
         newAppDef.setAppId(appDef.getAppId());
         newAppDef.setVersion(appVersion);
@@ -1191,6 +1199,7 @@ public class AppServiceImpl implements AppService {
         newAppDef.setPublished(Boolean.FALSE);
         newAppDef.setDateCreated(new Date());
         newAppDef.setDateModified(new Date());
+        newAppDef.setLicense(appDef.getLicense());
         appDefinitionDao.saveOrUpdate(newAppDef);
 
         if (appDef.getDatalistDefinitionList() != null) {
@@ -1296,7 +1305,13 @@ public class AppServiceImpl implements AppService {
         return designerwebBaseUrl;
     }
 
-    protected void importingPlugin(byte[] zip) throws Exception {
+    /**
+     * Import plugins (JAR) from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    @Override
+    public void importPlugins(byte[] zip) throws Exception {
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -1318,7 +1333,13 @@ public class AppServiceImpl implements AppService {
         in.close();
     }
 
-    protected byte[] getAppDataXmlFromZip(byte[] zip) throws Exception {
+    /**
+     * Reads app XML from zip content.
+     * @param zip
+     * @return 
+     */
+    @Override
+    public byte[] getAppDataXmlFromZip(byte[] zip) throws Exception {
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -1342,7 +1363,14 @@ public class AppServiceImpl implements AppService {
         return null;
     }
 
-    protected byte[] getXpdlFromZip(byte[] zip) throws Exception {
+    /**
+     * Reads XPDL from zip content.
+     * @param zip
+     * @return
+     * @throws Exception 
+     */
+    @Override
+    public byte[] getXpdlFromZip(byte[] zip) throws Exception {
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
