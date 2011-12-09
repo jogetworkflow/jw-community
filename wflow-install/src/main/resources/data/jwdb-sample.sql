@@ -2078,6 +2078,7 @@ CREATE TABLE `app_app` (
   `published` bit(1) default NULL,
   `dateCreated` datetime default NULL,
   `dateModified` datetime default NULL,
+  `license` text default NULL,
   PRIMARY KEY  (`appId`,`appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
@@ -2088,7 +2089,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `app_app` WRITE;
 /*!40000 ALTER TABLE `app_app` DISABLE KEYS */;
-INSERT INTO `app_app` VALUES ('crm',1,'CRM','','2011-10-17 11:23:12','2011-10-17 11:32:00');
+INSERT INTO `app_app` VALUES ('crm',1,'CRM','','2011-10-17 11:23:12','2011-10-17 11:32:00','');
 /*!40000 ALTER TABLE `app_app` ENABLE KEYS */;
 UNLOCK TABLES;
 

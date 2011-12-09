@@ -2139,6 +2139,7 @@ CREATE TABLE `app_app` (
   `published` bit(1) default NULL,
   `dateCreated` datetime default NULL,
   `dateModified` datetime default NULL,
+  `license` text default NULL,
   PRIMARY KEY  (`appId`,`appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SET character_set_client = @saved_cs_client;
