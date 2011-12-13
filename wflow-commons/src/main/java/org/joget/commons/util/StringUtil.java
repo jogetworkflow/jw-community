@@ -91,7 +91,7 @@ public class StringUtil {
                 for (String a : params) {
                     if (!a.isEmpty()) {
                         String[] param = a.split("=");
-                        String key = URLDecoder.decode(param[1], "UTF-8");
+                        String key = URLDecoder.decode(param[0], "UTF-8");
                         String value = URLDecoder.decode(param[1], "UTF-8");
                         
                         String[] values = (String[]) result.get(key);
