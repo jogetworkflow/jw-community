@@ -714,7 +714,7 @@ public class AppServiceImpl implements AppService {
 
         PackageDefinition packageDef = null;
         AppDefinition appDef = null;
-        String packageId = workflowManager.parsePackageIdFromDefinition(packageXpdl);
+        String packageId = workflowManager.getPackageIdFromDefinition(packageXpdl);
 
         // get app version
         if (appId != null && !appId.isEmpty()) {

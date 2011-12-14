@@ -159,7 +159,7 @@ public interface WorkflowManager {
 
     String processUpload(String packageId, byte[] processDefinitionData) throws Exception;
 
-    String parsePackageIdFromDefinition(byte[] processDefinitionData);
+    String getPackageIdFromDefinition(byte[] processDefinitionData);
 
     void reevaluateAssignmentsForActivity(String activityInstanceId);
 

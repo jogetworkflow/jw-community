@@ -924,7 +924,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param processDefinitionData
      * @return
      */
-    public String parsePackageIdFromDefinition(byte[] processDefinitionData) {
+    public String getPackageIdFromDefinition(byte[] processDefinitionData) {
         try {
             String packageId = XMLUtil.getIdFromFile(new String(processDefinitionData, "UTF-8"));
             return packageId;
