@@ -612,7 +612,7 @@ public class WorkflowJsonController {
             data.put("processVersion", assignment.getProcessVersion());
             data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
             data.put("acceptedStatus", assignment.isAccepted());
-            data.put("due", assignment.getDueDate() != null ? assignment.getDueDate() : "-");
+            data.put("due", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
 
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
