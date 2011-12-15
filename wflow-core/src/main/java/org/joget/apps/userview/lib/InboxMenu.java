@@ -27,10 +27,14 @@ import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
@@ -107,7 +111,15 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("messageShowAfterComplete", getPropertyString(mode + "-messageShowAfterComplete"));
             return handleForm();
         } else {
-            setProperty("customHeader", getPropertyString("list-customHeader"));
+            String customHeader = "<style>";
+            customHeader += "span.dot_red{background-color: red;display: block;height: 15px;text-align: left;width: 15px;}";
+            customHeader += "span.dot_green{background-color: green;display: block;height: 15px;text-align: left;width: 15px;}";
+            customHeader += "span.dot_yellow{background-color: yellow;display: block;height: 15px;text-align: left;width: 15px;}";
+            customHeader += "</style>\n";
+            if (getPropertyString("list-customHeader") != null) {
+                customHeader += getPropertyString("list-customHeader");
+            }
+            setProperty("customHeader", customHeader);
             setProperty("customFooter", getPropertyString("list-customFooter"));
             return handleList();
         }
@@ -182,8 +194,33 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
             PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
 
-            // set results
-            resultList.addAll(assignmentList);
+            DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+            String gmt = "";
+            if (user != null) {
+                gmt = user.getTimeZone();
+            }
+            for (WorkflowAssignment assignment : assignmentList) {
+                Map data = new HashMap();
+                data.put("processId", assignment.getProcessId());
+                data.put("processRequesterId", assignment.getProcessRequesterId());
+                data.put("activityId", assignment.getActivityId());
+                data.put("processName", assignment.getProcessName());
+                data.put("activityName", assignment.getActivityName());
+                data.put("processVersion", assignment.getProcessVersion());
+                data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+                data.put("acceptedStatus", assignment.isAccepted());
+                data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
+
+                double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
+
+                data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+
+                // set results
+                resultList.add(data);
+            }
+            
             return resultList;
         } catch (Exception e) {
             return null;

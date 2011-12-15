@@ -42,6 +42,12 @@
     },
     {
         "id" : "column_3",
+        "label" : "@@userview.inboxmenu.serviceLevelMonitor@@",
+        "name" : "serviceLevelMonitor",
+        "sortable" : "false"
+    },
+    {
+        "id" : "column_4",
         "label" : "@@userview.inboxmenu.dueDate@@",
         "name" : "dueDate",
         "sortable" : "true"
