@@ -227,7 +227,9 @@ public class DatalistBuilderWebController {
             Map typeMap = (Map) obj.get("type");
             DataListFilterType type = (DataListFilterType) pluginManager.getPlugin(typeMap.get("className").toString());
             if (type != null) {
-                type.setProperties((Map) typeMap.get("properties"));
+                if (!"{}".equals(typeMap.get("properties"))) {
+                    type.setProperties((Map) typeMap.get("properties"));
+                }
                 filter.setType(type);
             }
         }
