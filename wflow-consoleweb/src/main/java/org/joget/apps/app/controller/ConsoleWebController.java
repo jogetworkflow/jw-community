@@ -944,6 +944,7 @@ public class ConsoleWebController {
                 LogUtil.error(getClass().getName(), e, "Set Employee Date error");
             }
             if (employment.getId() == null) {
+                employment.setUser(user);
                 employmentDao.addEmployment(employment);
             } else {
                 employmentDao.updateEmployment(employment);
@@ -956,6 +957,11 @@ public class ConsoleWebController {
                     employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), employeeDepartment);
                 }
                 employmentDao.assignUserAsDepartmentHOD(user.getId(), employeeDepartment);
+            } else {
+                User prevHod = userDao.getHodByDepartmentId(employeeDepartment);
+                if (prevHod != null && prevHod.getId().equals(user.getId())) {
+                    employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), employeeDepartment);
+                }
             }
 
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();

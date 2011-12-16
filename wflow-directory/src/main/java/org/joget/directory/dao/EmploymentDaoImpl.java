@@ -2,6 +2,7 @@ package org.joget.directory.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
@@ -62,6 +63,13 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
 
     public Boolean addEmployment(Employment employment) {
         try {
+            User user = employment.getUser();
+            if (user != null) {
+                employment.setHods(new HashSet());
+                Set<Employment> employments = new HashSet<Employment>();
+                employments.add(employment);
+                user.setEmployments(employments);
+            }
             save("Employment", employment);
             return true;
         } catch (Exception e) {
@@ -85,6 +93,17 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             Employment employment = getEmployment(id);
 
             if (employment != null) {
+                // clear department HOD
+                Department dept = employment.getDepartment();
+                if (dept != null) {
+                    Employment hod = dept.getHod();
+                    if (hod != null && id.equals(hod.getId())) {
+                        dept.setHod(null);
+                        departmentDao.updateDepartment(dept);
+                    }
+                }
+                
+                // clear employment
                 employment.setOrganization(null);
                 employment.setDepartment(null);
                 employment.setGrade(null);
@@ -215,8 +234,8 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
-                employment.getHods().clear();
-                employment.getHods().add(department);
+                    employment.getHods().clear();
+                    employment.getHods().add(department);
                 saveOrUpdate("Employment", employment);
                 department.setHod(employment);
                 departmentDao.updateDepartment(department);
