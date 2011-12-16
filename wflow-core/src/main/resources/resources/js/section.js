@@ -11,7 +11,7 @@ VisibilityMonitor.prototype.control = null; // the control element (where value 
 VisibilityMonitor.prototype.controlValue = null; // the value in the control element which will trigger the change
 
 VisibilityMonitor.prototype.init = function() {
-    var targetEl = $("#" + this.target);
+    var targetEl = $(this.target);
     var controlEl = $("#" + this.control + " ");
     var controlVal = this.controlValue;
     var match = this.checkValue(controlEl, controlVal);

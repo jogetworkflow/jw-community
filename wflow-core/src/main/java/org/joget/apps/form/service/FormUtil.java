@@ -43,6 +43,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Service("appsFormUtil")
 public class FormUtil implements ApplicationContextAware {
 
+    public static final String PROPERTY_ELEMENT_UNIQUE_KEY = "elementUniqueKey";
     public static final String PROPERTY_ID = "id";
     public static final String PROPERTY_VALUE = "value";
     public static final String PROPERTY_LABEL = "label";
@@ -60,6 +61,8 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_TABLE_NAME = "tableName";
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
     static ApplicationContext appContext;
+    
+    public static Long runningNumber = 0L;
 
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         appContext = ac;
@@ -88,6 +91,7 @@ public class FormUtil implements ApplicationContextAware {
             // set element properties
             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(obj);
             element.setProperties(properties);
+            element.setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, FormUtil.getUniqueKey());
 
             // recurse into child elements
             Collection<Element> childElements = FormUtil.parseChildElementsFromJsonObject(obj);
@@ -1113,5 +1117,13 @@ public class FormUtil implements ApplicationContextAware {
             return true;
         }
         return false;
+    }
+    
+    public static String getUniqueKey() {
+        if (runningNumber == Long.MAX_VALUE) {
+            runningNumber = 0L;
+        }
+        runningNumber++;
+        return Long.toString(runningNumber);
     }
 }

@@ -24,14 +24,14 @@
 <#if element.properties.readonly! != 'true'>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#${elementParamName!}").formgrid();
+            $(".grid_${element.properties.elementUniqueKey!}").formgrid();
         });
     </script>
 </#if>
 
     <label class="label">${element.properties.label!} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <div class="form-clear"></div>
-    <div class="grid" id="${elementParamName!}">
+    <div class="grid grid_${element.properties.elementUniqueKey!}" id="${elementParamName!}">
         <table cellspacing="0">
             <tr>
             <#list headers?keys as header>
