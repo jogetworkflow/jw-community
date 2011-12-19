@@ -835,7 +835,7 @@ public class PluginManager implements ApplicationContextAware {
         shutdown();
     }
 
-    public void testPlugin(String name, String location, Map properties, boolean override) {
+    public Object testPlugin(String name, String location, Map properties, boolean override) {
         LogUtil.info(PluginManager.class.getName(), "====testPlugin====");
         // check for existing plugin
         Plugin plugin = getPlugin(name);
@@ -877,6 +877,7 @@ public class PluginManager implements ApplicationContextAware {
         }
         LogUtil.info(PluginManager.class.getName(), "====testPlugin end====");
 
+        return result;
     }
 
     public static void main(String[] args) {
