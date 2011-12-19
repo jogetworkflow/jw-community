@@ -12,7 +12,7 @@ VisibilityMonitor.prototype.controlValue = null; // the value in the control ele
 
 VisibilityMonitor.prototype.init = function() {
     var targetEl = $(this.target);
-    var controlEl = $("#" + this.control + " ");
+    var controlEl = $("[name=" + this.control + "]");
     var controlVal = this.controlValue;
     var match = this.checkValue(controlEl, controlVal);
     if (!match) {
@@ -24,7 +24,7 @@ VisibilityMonitor.prototype.init = function() {
     }
     var thisObject = this;
     controlEl.change(function() {
-        var controlEl = $("#" + thisObject.control + " ");
+        var controlEl = $("[name=" + thisObject.control + "]");
         var controlVal = thisObject.controlValue;
         var match  = thisObject.checkValue(controlEl, controlVal);
         if (match) {
@@ -37,22 +37,29 @@ VisibilityMonitor.prototype.init = function() {
     });
 }
 VisibilityMonitor.prototype.checkValue = function(controlEl, controlValue) {
+    //get enabled input field oni
+    if ($(controlEl).length > 1) {
+        controlEl = $(controlEl).filter(":enabled").get(0);
+    }
+    
     var match = false;
-    if (controlEl.attr("type") == "checkbox" || controlEl.attr("type") == "radio") {
-        controlEl.filter(":checked").each(function() {
-            match = $(this).val() == controlValue;
-            if (match) {
-                return false;
-            }
-        });
-    } else {
-        match = controlEl.val() == controlValue;
+    if (controlEl && $(controlEl).is(":enabled")) {
+        if ($(controlEl).attr("type") == "checkbox" || $(controlEl).attr("type") == "radio") {
+            $(controlEl).filter(":checked").each(function() {
+                match = $(this).val() == controlValue;
+                if (match) {
+                    return false;
+                }
+            });
+        } else {
+            match = $(controlEl).val() == controlValue;
+        }
     }
     return match;
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea').attr("disabled", true); 
+    $(targetEl).find('input, select, textarea').attr("disabled", true).trigger("change"); 
 }
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea').removeAttr("disabled"); 
+    $(targetEl).find('input, select, textarea').removeAttr("disabled").trigger("change"); 
 }
