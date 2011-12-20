@@ -58,8 +58,8 @@ VisibilityMonitor.prototype.checkValue = function(controlEl, controlValue) {
     return match;
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea').attr("disabled", true).trigger("change"); 
+    $(targetEl).find('input, select, textarea, .form-element').attr("disabled", true).trigger("change"); 
 }
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea').removeAttr("disabled").trigger("change"); 
+    $(targetEl).find('input, select, textarea, .form-element').removeAttr("disabled").trigger("change"); 
 }
