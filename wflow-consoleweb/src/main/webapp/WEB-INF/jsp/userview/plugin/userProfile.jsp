@@ -106,7 +106,9 @@
                     <span class="form-input">
                         <select id="timeZone" name="timeZone">
                             <c:forEach items="${properties.timezones}" var="timezone">
-                                <option value="${timezone.key}">${timezone.value}</option>
+                                <c:set var="selected" value=""/>
+                                <c:if test="${timezone.key == properties.user.timeZone}"><c:set var="selected" value="selected"/></c:if>
+                                <option value="${timezone.key}" ${selected}>${timezone.value}</option>
                             </c:forEach>
                         </select>
                     </span>
@@ -140,18 +142,6 @@
                 }
             }
         </script>
-    </c:when>
-    <c:when test="${properties.view eq 'saved'}">
-        <p>
-            <c:choose>
-                <c:when test="${!empty properties.message}">
-                    ${properties.message}
-                </c:when>
-                <c:otherwise>
-                    Profile updated.
-                </c:otherwise>
-            </c:choose>
-        </p>
     </c:when>
 </c:choose>
 </div>

@@ -56,14 +56,6 @@
         ${properties.headerTitle}
     </div>
 <c:choose>
-    <c:when test="${properties.view eq 'redirect'}">
-        <script>
-            <c:if test="${!empty properties.messageShowAfterComplete}">
-                alert('${properties.messageShowAfterComplete}');
-            </c:if>
-            window.location = "${properties.redirectURL}";
-        </script>
-    </c:when>
     <c:when test="${properties.view eq 'unauthorized' or properties.view eq 'featureDisabled'}">
         <p>
             <fmt:message key="general.content.unauthorized" />

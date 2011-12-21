@@ -268,6 +268,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
             // set result
             if (result != null) {
+                setAlertMessage(getPropertyString("messageShowAfterComplete"));
                 // Show next activity if available
                 Collection<WorkflowActivity> activities = result.getActivities();
                 if (activities != null && !activities.isEmpty()) {
@@ -276,7 +277,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                         setProperty("view", "redirect");
                         setProperty("messageShowAfterComplete", "");
                         String redirectUrl = getUrl() + "?_action=assignmentView&activityId=" + nextActivity.getId();
-                        setProperty("redirectURL", redirectUrl);
+                        setAlertMessage("");
+                        setRedirectUrl(redirectUrl);
                     }
                     return;
                 } else {
@@ -357,13 +359,15 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                     Map<String, String> errors = formResult.getFormErrors();
                     if (errors.isEmpty() && activityForm.isAutoContinue()) {
+                        setAlertMessage(getPropertyString("messageShowAfterComplete"));
                         // redirect to next activity if available
                         WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                         if (nextActivity != null) {
                             setProperty("view", "redirect");
                             setProperty("messageShowAfterComplete", "");
                             String redirectUrl = getUrl() + "?_action=assignmentView&activityId=" + nextActivity.getActivityId();
-                            setProperty("redirectURL", redirectUrl);
+                            setAlertMessage("");
+                            setRedirectUrl(redirectUrl);
                             return;
                         }
                     }
@@ -388,7 +392,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 if (errorCount == 0) {
                     if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
                         setProperty("view", "redirect");
-                        setProperty("redirectURL", getPropertyString("redirectUrlAfterComplete"));
+                        boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
+                        setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
                     } else {
                         setProperty("view", "assignmentUpdated");
                     }
@@ -434,9 +439,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     }
 
     private void processStarted() {
+        setAlertMessage(getPropertyString("messageShowAfterComplete"));
         if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
             setProperty("view", "redirect");
-            setProperty("redirectURL", getPropertyString("redirectUrlAfterComplete"));
+            boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));            
+            setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
         } else {
             setProperty("headerTitle", "Process Started");
             setProperty("view", "processStarted");

@@ -2,6 +2,10 @@ package org.joget.apps.userview.model;
 
 public abstract class UserviewMenu extends ExtElement{
 
+    public static final String REDIRECT_URL_PROPERTY = "userviewRedirectUrl";
+    public static final String REDIRECT_PARENT_PROPERTY = "userviewRedirectParent";
+    public static final String ALERT_MESSAGE_PROPERTY = "userviewAlertMessage";
+    
     private String url;
     private String key;
     private String readyJspPage;
@@ -95,5 +99,31 @@ public abstract class UserviewMenu extends ExtElement{
 
     public void setUserview(Userview userview) {
         this.userview = userview;
+    }
+    
+    /**
+     * Set this property to force the userview to redirect to a specific URL.
+     * @param redirectUrl 
+     */
+    public void setRedirectUrl(String redirectUrl) {
+        setRedirectUrl(redirectUrl, false);
+    }
+    
+    /**
+     * Set this property to force the userview to redirect to a specific URL.
+     * @param redirectUrl 
+     * @param redirectToParent set true to force redirection in parent frame.
+     */
+    public void setRedirectUrl(String redirectUrl, boolean redirectToParent) {
+        setProperty(REDIRECT_URL_PROPERTY, redirectUrl);
+        setProperty(REDIRECT_PARENT_PROPERTY, Boolean.valueOf(redirectToParent).toString());
+    }
+    
+    /**
+     * Set this property to display an alert message/prompt.
+     * @param message
+     */
+    public void setAlertMessage(String message) {
+        setProperty(ALERT_MESSAGE_PROPERTY, message);
     }
 }

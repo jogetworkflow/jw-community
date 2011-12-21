@@ -62,20 +62,6 @@
         </c:otherwise>
     </c:choose>
     <c:choose>
-        <c:when test="${properties.submitted && properties.errorCount==0}">
-            <c:if test="${!empty properties.messageShowAfterComplete}">
-                <script>
-                alert("${properties.messageShowAfterComplete}");
-                </script>
-            </c:if>
-            <c:if test="${!empty properties.redirectUrlAfterComplete}">
-                <script>
-                parent.location = "${properties.redirectUrlAfterComplete}";
-                </script>
-            </c:if>
-        </c:when>
-    </c:choose>
-    <c:choose>
         <c:when test="${properties.view eq 'unauthorized'}">
             <p>
                 <fmt:message key="general.body.unauthorized" />

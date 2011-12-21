@@ -109,6 +109,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("customHeader", getPropertyString(mode + "-customHeader"));
             setProperty("customFooter", getPropertyString(mode + "-customFooter"));
             setProperty("messageShowAfterComplete", getPropertyString(mode + "-messageShowAfterComplete"));
+            setAlertMessage(getPropertyString(mode + "-messageShowAfterComplete"));
             return handleForm();
         } else {
             String customHeader = "<style>";
@@ -375,6 +376,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("errorCount", 0);
             setProperty("submitted", Boolean.TRUE);
             setProperty("redirectUrlAfterComplete", getUrl());
+            setRedirectUrl(getUrl());
         } else {
             setProperty("headerTitle", "Assignment Unavailable");
             setProperty("view", "assignmentFormUnavailable");
@@ -402,6 +404,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         
         setProperty("submitted", Boolean.TRUE);
         setProperty("redirectUrlAfterComplete", getUrl());
+        setRedirectUrl(getUrl());
 
         // check for validation errors
         if (formData.getFormResult(AssignmentWithdrawButton.DEFAULT_ID) != null) {
@@ -418,8 +421,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) { 
+                    String redirectUrl = getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");
-                    setProperty("redirectUrlAfterComplete", getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId());
+                    setProperty("redirectUrlAfterComplete", redirectUrl);
+                    setAlertMessage("");
+                    setRedirectUrl(redirectUrl);
                 }
             }
         }

@@ -279,6 +279,9 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
             setProperty("redirectUrlAfterComplete", redirectUrl);
+            setAlertMessage(getPropertyString("messageShowAfterComplete"));
+            boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
+            setRedirectUrl(redirectUrl, redirectToParent);
             if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
@@ -286,8 +289,11 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             setProperty("errorCount", 0);
             setProperty("submitted", Boolean.TRUE);
+            setAlertMessage(getPropertyString("messageShowAfterComplete"));
             if (redirectUrl != null && !redirectUrl.trim().isEmpty()) {
                 setProperty("redirectUrlAfterComplete", redirectUrl);
+                boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
+                setRedirectUrl(redirectUrl, redirectToParent);
             } else {
                 setProperty("view", "assignmentUpdated");
             }
@@ -435,12 +441,16 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             
             setProperty("submitted", Boolean.TRUE);
             setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
+            setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
             if (errors.isEmpty() && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
+                    String redirectUrl = getUrl() + "?activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");
-                    setProperty("redirectUrlAfterComplete", getUrl() + "?activityId=" + nextActivity.getActivityId());
+                    setProperty("redirectUrlAfterComplete", redirectUrl);
+                    setAlertMessage("");
+                    setRedirectUrl(redirectUrl);
                 }
             }
         }
@@ -458,6 +468,8 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
         setProperty("submitted", Boolean.TRUE);
         setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
+        boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
+        setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
 
         return form;
     }

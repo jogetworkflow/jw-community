@@ -1,3 +1,4 @@
+<%@page import="org.joget.apps.userview.model.UserviewMenu"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
@@ -35,6 +36,96 @@
     <c:redirect url="${redirectUrl}"/>
 </c:if>
 
+<c:set var="bodyId" scope="request" value=""/>
+<c:choose>
+    <c:when test="${!empty userview.setting.permission && !userview.setting.permission.authorize}">
+        <c:set var="bodyId" scope="request" value="unauthorize"/>
+    </c:when>
+    <c:when test="${!empty userview.current}">
+        <c:choose>
+            <c:when test="${!empty userview.current.properties.customId}">
+                <c:set var="bodyId" scope="request" value="${userview.current.properties.customId}"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="bodyId" scope="request" value="${userview.current.properties.id}"/>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:otherwise>
+        <c:set var="bodyId" scope="request" value="pageNotFound"/>
+    </c:otherwise>
+</c:choose>
+
+<c:catch var="bodyError">
+<c:set var="bodyContent">
+    <c:if test="${!empty userview.setting.theme.beforeContent}">
+        ${userview.setting.theme.beforeContent}
+    </c:if>
+    <c:choose>
+        <c:when test="${!empty userview.current}">
+            <c:set var="properties" scope="request" value="${userview.current.properties}"/>
+            <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
+            <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
+            <c:choose>
+                <c:when test="${!empty readyJspPage}">
+                    <jsp:include page="../${readyJspPage}" flush="true"/>
+                </c:when>
+                <c:otherwise>
+                    ${userview.current.readyRenderPage}
+                </c:otherwise>
+            </c:choose>
+        </c:when>
+        <c:otherwise>
+            <h3><fmt:message key="ubuilder.pageNotFound"/></h3>
+
+            <fmt:message key="ubuilder.pageNotFound.message"/>
+            <br><br>
+            <fmt:message key="ubuilder.pageNotFound.explanation"/>
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+            <p>
+                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
+            </p>
+        </c:otherwise>
+    </c:choose>
+    <c:if test="${!empty userview.setting.theme.pageBottom}">
+        ${userview.setting.theme.pageBottom}
+    </c:if>
+</c:set>
+
+<c:set var="alertMessageProperty" value="<%= UserviewMenu.ALERT_MESSAGE_PROPERTY %>"/>
+<c:set var="alertMessageValue" value="${userview.current.properties[alertMessageProperty]}"/>
+<c:set var="redirectUrlProperty" value="<%= UserviewMenu.REDIRECT_URL_PROPERTY %>"/>
+<c:set var="redirectUrlValue" value="${userview.current.properties[redirectUrlProperty]}"/>
+<c:set var="redirectParentProperty" value="<%= UserviewMenu.REDIRECT_PARENT_PROPERTY %>"/>
+<c:set var="redirectParentValue" value="${userview.current.properties[redirectParentProperty]}"/>
+<c:choose>
+<c:when test="${!empty alertMessageValue}">
+    <script>
+        alert("${alertMessageValue}");
+    <c:if test="${!empty redirectUrlValue}">
+        <c:if test="${redirectParentValue}">parent.</c:if>location.href = "${redirectUrlValue}";
+    </c:if>
+    </script>
+</c:when>
+<c:when test="${!empty redirectUrlValue}">
+    <c:choose>
+        <c:when test="${redirectParentValue}">
+            <script>
+                parent.location.href = "${redirectUrlValue}";
+            </script>
+        </c:when>
+        <c:otherwise>
+            <%
+                String redirectUrl = (String)pageContext.getAttribute("redirectUrlValue");
+                response.sendRedirect(redirectUrl);
+            %>
+        </c:otherwise>
+    </c:choose>
+</c:when>
+</c:choose>
+</c:catch>
+    
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -67,26 +158,6 @@
             ${userview.setting.theme.css}
         </style>
     </head>
-
-    <c:set var="bodyId" scope="request" value=""/>
-    <c:choose>
-        <c:when test="${!empty userview.setting.permission && !userview.setting.permission.authorize}">
-            <c:set var="bodyId" scope="request" value="unauthorize"/>
-        </c:when>
-        <c:when test="${!empty userview.current}">
-            <c:choose>
-                <c:when test="${!empty userview.current.properties.customId}">
-                    <c:set var="bodyId" scope="request" value="${userview.current.properties.customId}"/>
-                </c:when>
-                <c:otherwise>
-                    <c:set var="bodyId" scope="request" value="${userview.current.properties.id}"/>
-                </c:otherwise>
-            </c:choose>
-        </c:when>
-        <c:otherwise>
-            <c:set var="bodyId" scope="request" value="pageNotFound"/>
-        </c:otherwise>
-    </c:choose>
 
     <body id="${bodyId}" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
         <div id="page">
@@ -152,7 +223,7 @@
                                         <c:if test="${!empty userview.currentCategory && category.properties.id eq userview.currentCategory.properties.id}">
                                             <c:set var="c_class" value="${c_class} current-category"/>
                                         </c:if>
-                                        
+
                                         <div id="${category.properties.id}" class="category ${c_class}">
                                             <div class="category-label">
                                                 <c:set var="firstMenuItem" value="${category.menus[0]}"/>
@@ -194,41 +265,10 @@
                                 </c:forEach>
                             </div>
                         </div>
-                        <c:if test="${!empty userview.setting.theme.beforeContent}">
-                            ${userview.setting.theme.beforeContent}
-                        </c:if>
                         <div id="content">
-                            <c:choose>
-                                <c:when test="${!empty userview.current}">
-                                    <c:set var="properties" scope="request" value="${userview.current.properties}"/>
-                                    <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
-                                    <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
-                                    <c:choose>
-                                        <c:when test="${!empty readyJspPage}">
-                                            <jsp:include page="../${readyJspPage}" flush="true"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            ${userview.current.readyRenderPage}
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:when>
-                                <c:otherwise>
-                                    <h3><fmt:message key="ubuilder.pageNotFound"/></h3>
-
-                                    <fmt:message key="ubuilder.pageNotFound.message"/>
-                                    <br><br>
-                                    <fmt:message key="ubuilder.pageNotFound.explanation"/>
-                                    <p>&nbsp;</p>
-                                    <p>&nbsp;</p>
-                                    <p>
-                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
-                                    </p>
-                                </c:otherwise>
-                            </c:choose>
+                        ${bodyContent}
+                        <c:if test="${!empty bodyError}">${bodyError}</c:if>
                         </div>
-                        <c:if test="${!empty userview.setting.theme.pageBottom}">
-                            ${userview.setting.theme.pageBottom}
-                        </c:if>
                     </c:otherwise>
                 </c:choose>
                 <div class="clear"></div>
