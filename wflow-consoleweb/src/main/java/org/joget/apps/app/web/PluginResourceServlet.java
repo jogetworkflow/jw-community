@@ -65,6 +65,24 @@ public class PluginResourceServlet extends HttpServlet {
                     // set header for download
 //                    response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
 
+                    // set expires header for caching
+                    long expires = DEFAULT_HEADER_CACHE_EXPIRY;
+                    try {
+                        String expireStr = config.getInitParameter("expires");
+                        if (expireStr != null && !expireStr.trim().isEmpty()) {
+                            expires = Long.parseLong(expireStr);
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+
+                    response.addDateHeader("Expires", System.currentTimeMillis() + expires);
+
+                    String contentType = request.getSession().getServletContext().getMimeType(resourceUrl);
+                    if (contentType != null) {
+                        response.setContentType(contentType);
+                    }
+                    
                     // write output
                     stream = response.getOutputStream();
                     byte[] bbuf = new byte[BUFFER_SIZE];
@@ -73,24 +91,6 @@ public class PluginResourceServlet extends HttpServlet {
                         stream.write(bbuf, 0, length);
                     }
                     found = true;
-                }
-
-                // set expires header for caching
-                long expires = DEFAULT_HEADER_CACHE_EXPIRY;
-                try {
-                    String expireStr = config.getInitParameter("expires");
-                    if (expireStr != null && !expireStr.trim().isEmpty()) {
-                        expires = Long.parseLong(expireStr);
-                    }
-                } catch (Exception e) {
-                    // ignore
-                }
-
-                response.setDateHeader("Expires", System.currentTimeMillis() + expires);
-
-                String contentType = request.getSession().getServletContext().getMimeType(resourceUrl);
-                if (contentType != null) {
-                    response.setContentType(contentType);
                 }
 
             } catch (Exception e) {
