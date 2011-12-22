@@ -1,4 +1,5 @@
 <%@page import="org.joget.apps.userview.model.UserviewMenu"%>
+<%@page import="org.springframework.util.StopWatch"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
@@ -6,6 +7,9 @@
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
     pageContext.setAttribute("rightToLeft", rightToLeft);
+    
+    StopWatch sw = new StopWatch(request.getRequestURI());
+    sw.start("userview");
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -208,6 +212,7 @@
                         <c:if test="${!empty userview.setting.theme.pageTop}">
                             ${userview.setting.theme.pageTop}
                         </c:if>
+                        <c:if test="${!embed}">
                         <div id="navigation">
                             <div id="category-container">
                                 <c:forEach items="${userview.categories}" var="category" varStatus="cStatus">
@@ -265,6 +270,7 @@
                                 </c:forEach>
                             </div>
                         </div>
+                        </c:if>
                         <div id="content">
                         ${bodyContent}
                         <c:if test="${!empty bodyError}">${bodyError}</c:if>
@@ -294,5 +300,13 @@
             HelpGuide.key = "help.web.userview.${appId}.${userview.properties.id}.${bodyId}";
             HelpGuide.show();
         </script>
+
+        <%
+            sw.stop();
+            long duration = sw.getTotalTimeMillis();
+            pageContext.setAttribute("duration", duration);
+        %>    
+        <%--div class="small">[${duration}ms]</div--%>
     </body>
+    
 </html>

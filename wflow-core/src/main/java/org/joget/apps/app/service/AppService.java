@@ -184,6 +184,13 @@ public interface AppService {
     PackageActivityForm viewStartProcessForm(String appId, String version, String processDefId, FormData formData, String formUrl);
 
     /**
+     * Returns the form definition ID for the form mapped to the specified activity definition ID.
+     * @param activityDefId
+     * @return
+     */
+    PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId);
+    
+    /**
      * Use case for form submission by ID
      * @param formDefId
      * @param formData

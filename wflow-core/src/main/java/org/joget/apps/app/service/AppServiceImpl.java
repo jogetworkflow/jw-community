@@ -414,7 +414,7 @@ public class AppServiceImpl implements AppService {
      * @param activityDefId
      * @return
      */
-    protected PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId) {
+    public PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId) {
         String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         AppDefinition appDef = getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();

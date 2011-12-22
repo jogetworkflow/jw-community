@@ -29,6 +29,7 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
@@ -145,7 +146,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         } else {
             ApplicationContext ac = AppUtil.getApplicationContext();
             AppService appService = (AppService) ac.getBean("appService");
-            PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), null, "");
+            PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
 
             if ("Yes".equals(getPropertyString("runProcessDirectly")) && !(startFormDef != null && startFormDef.getForm() != null)) {
                 if ("true".equals(getRequestParameter("isPreview"))) {

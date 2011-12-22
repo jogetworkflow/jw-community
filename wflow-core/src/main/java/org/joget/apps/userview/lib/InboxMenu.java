@@ -427,6 +427,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                     setAlertMessage("");
                     setRedirectUrl(redirectUrl);
                 }
+            } else {
+                setRedirectUrl(null);
             }
         }
         return currentForm;

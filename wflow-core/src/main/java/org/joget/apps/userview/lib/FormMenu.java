@@ -266,6 +266,9 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             if (errors == null || errors.isEmpty()) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
+                setAlertMessage(getPropertyString("messageShowAfterComplete"));
+                boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
+                setRedirectUrl(redirectUrl, redirectToParent);
             } else {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
@@ -279,9 +282,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
             setProperty("redirectUrlAfterComplete", redirectUrl);
-            setAlertMessage(getPropertyString("messageShowAfterComplete"));
-            boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-            setRedirectUrl(redirectUrl, redirectToParent);
             if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
@@ -440,9 +440,9 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             Map<String, String> errors = formData.getFormErrors();
             
             setProperty("submitted", Boolean.TRUE);
-            setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
-            setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
             if (errors.isEmpty() && activityForm.isAutoContinue()) {
+                setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
+                setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
@@ -468,8 +468,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
 
         setProperty("submitted", Boolean.TRUE);
         setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
-        boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-        setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
 
         return form;
     }
