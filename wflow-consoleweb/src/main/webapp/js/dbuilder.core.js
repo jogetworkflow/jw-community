@@ -1020,8 +1020,8 @@ DatalistBuilder = {
             DatalistBuilder.renderAction(obj.actions[e].id);
         }
 
-        //load filters
-        for(e in obj.filters){
+        //load filters & reverse filter for correct order
+        for(e in obj.filters.reverse()){
             DatalistBuilder.chosenFilters[obj.filters[e].id] = obj.filters[e];
             DatalistBuilder.renderFilter(obj.filters[e].id);
         }
