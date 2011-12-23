@@ -148,7 +148,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
 
-            if ("Yes".equals(getPropertyString("runProcessDirectly")) && !(startFormDef != null && startFormDef.getForm() != null)) {
+            if ("Yes".equals(getPropertyString("runProcessDirectly")) && !(startFormDef != null && startFormDef.getFormId() != null)) {
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     setProperty("view", "featureDisabled");
                 } else {
