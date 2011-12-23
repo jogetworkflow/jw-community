@@ -185,6 +185,9 @@ public class AppWebController {
             // get app
             AppDefinition appDef = null;
             if (appId != null && !appId.isEmpty()) {
+                if (version == null || version.isEmpty()) {
+                    version = appService.getPublishedVersion(appId).toString();
+                }
                 appDef = appService.getAppDefinition(appId, version);
             } else {
                 appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -197,9 +200,9 @@ public class AppWebController {
             formData = formService.retrieveFormDataFromRequest(formData, request);
 
             // get form
-            Long appVersion = (appDef != null) ? appDef.getVersion() : null;
+            String appVersion = (appDef != null) ? appDef.getVersion().toString() : "";
             String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
-            PackageActivityForm activityForm = appService.viewAssignmentForm(appId, version, activityId, formData, formUrl);
+            PackageActivityForm activityForm = appService.viewAssignmentForm(appId, appVersion.toString(), activityId, formData, formUrl);
             Form form = activityForm.getForm();
 
             // generate form HTML
