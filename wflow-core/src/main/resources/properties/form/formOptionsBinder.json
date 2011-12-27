@@ -19,5 +19,15 @@
         type : 'textarea',
         rows : '5',
         cols : '50'
+    },
+    {
+        name : 'addEmptyOption',
+        label : '@@form.defaultformoptionbinder.addEmptyOption@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]

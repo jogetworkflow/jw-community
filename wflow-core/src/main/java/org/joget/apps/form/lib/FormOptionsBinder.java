@@ -81,6 +81,13 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
             results = formDataDao.find(form, condition, null, null, null, null, null);
 
             if (results != null) {
+                if ("true".equals(getPropertyString("addEmptyOption"))) {
+                    FormRow emptyRow = new FormRow();
+                    emptyRow.setProperty(FormUtil.PROPERTY_VALUE, "");
+                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, "");
+                    filtered.add(emptyRow);
+                }
+                
                 String labelColumn = (String) getProperty("labelColumn");
                 //Determine id column. Setting to default if not specified
                 String idColumn = (String) getProperty("idColumn");
