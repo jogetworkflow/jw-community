@@ -1,7 +1,8 @@
-var VisibilityMonitor = function(targetEl, controlEl, controlValue) {
+var VisibilityMonitor = function(targetEl, controlEl, controlValue, isRegex) {
     this.target = targetEl;
     this.control = controlEl;
     this.controlValue = controlValue;
+    this.isRegex = isRegex;
 }
 
 VisibilityMonitor.prototype.target = null; // the target element (to be shown or hidden)
@@ -10,11 +11,14 @@ VisibilityMonitor.prototype.control = null; // the control element (where value 
 
 VisibilityMonitor.prototype.controlValue = null; // the value in the control element which will trigger the change
 
+VisibilityMonitor.prototype.isRegex = null; // the flag decide control value is a regex or not
+
 VisibilityMonitor.prototype.init = function() {
     var targetEl = $(this.target);
     var controlEl = $("[name=" + this.control + "]");
     var controlVal = this.controlValue;
-    var match = this.checkValue(controlEl, controlVal);
+    var isRegex = this.isRegex;
+    var match = this.checkValue(this, controlEl, controlVal, isRegex);
     if (!match) {
         targetEl.css("display", "none");
         this.disableInputField(targetEl);
@@ -23,10 +27,11 @@ VisibilityMonitor.prototype.init = function() {
         this.enableInputField(targetEl);
     }
     var thisObject = this;
-    controlEl.change(function() {
+    controlEl.live("change", function() {
         var controlEl = $("[name=" + thisObject.control + "]");
         var controlVal = thisObject.controlValue;
-        var match  = thisObject.checkValue(controlEl, controlVal);
+        var isRegex = thisObject.isRegex;
+        var match  = thisObject.checkValue(thisObject, controlEl, controlVal, isRegex);
         if (match) {
             targetEl.css("display", "block");
             thisObject.enableInputField(targetEl);
@@ -36,7 +41,7 @@ VisibilityMonitor.prototype.init = function() {
         }
     });
 }
-VisibilityMonitor.prototype.checkValue = function(controlEl, controlValue) {
+VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, isRegex) {
     //get enabled input field oni
     if ($(controlEl).length > 1) {
         controlEl = $(controlEl).filter(":enabled").get(0);
@@ -46,16 +51,24 @@ VisibilityMonitor.prototype.checkValue = function(controlEl, controlValue) {
     if (controlEl && $(controlEl).is(":enabled")) {
         if ($(controlEl).attr("type") == "checkbox" || $(controlEl).attr("type") == "radio") {
             $(controlEl).filter(":checked").each(function() {
-                match = $(this).val() == controlValue;
+                match = thisObject.isMatch($(this).val(), controlValue, isRegex);
                 if (match) {
                     return false;
                 }
             });
         } else {
-            match = $(controlEl).val() == controlValue;
+            match = thisObject.isMatch($(controlEl).val(), controlValue, isRegex);
         }
     }
     return match;
+}
+VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
+    if (isRegex != undefined && "true" == isRegex) {
+        var regex = new RegExp(controlValue);
+        return regex.exec(value);
+    } else {
+        return value == controlValue;
+    }
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     $(targetEl).find('input, select, textarea, .form-element').attr("disabled", true).trigger("change"); 

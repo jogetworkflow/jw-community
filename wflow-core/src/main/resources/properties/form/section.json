@@ -55,6 +55,16 @@
                 label:'@@form.section.fieldValueControl@@',
                 type:'textfield',
                 required:'False'
+            },
+            {
+                name : 'regex',
+                label : '@@form.section.regex@@',
+                type : 'checkbox',
+                value : 'false',
+                options : [{
+                    value : 'true',
+                    label : ''
+                }]
             }
         ]
     }
