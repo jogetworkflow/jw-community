@@ -68,6 +68,7 @@
                         script_url : o.tinyMceScript,
 
                         // General options
+                        convert_urls : false,
                         theme : "advanced",
                         plugins : "layer,table,save,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,contextmenu,paste,noneditable,xhtmlxtras,template,advlist",
 
@@ -1352,6 +1353,7 @@
                 script_url : optionsStack[editorId].tinyMceScript,
 
                 // General options
+                convert_urls : false,
                 theme : "advanced",
                 plugins : "layer,table,save,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,contextmenu,paste,noneditable,xhtmlxtras,template,advlist",
 
