@@ -384,27 +384,30 @@ public class FormService {
     }
     
     private FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
-        //load child element store binder to store before the main form
-        Collection<Element> children = element.getChildren();
-        if (children != null) {
-            for (Element child : children) {
-                formData = recursiveExecuteFormStoreBinders(form, child, formData);
-            }
-        }
+        if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
         
-        //if store binder exist && element is not readonly, run it
-        FormStoreBinder binder = element.getStoreBinder();
-        if (binder != null && !Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
-            FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
-            
-            // execute binder
-            try {
-                FormRowSet binderResult = binder.store(form, rowSet, formData);
-                formData.setStoreBinderData(binder, binderResult);
-            } catch (Exception e) {
-                String formId = FormUtil.getElementParameterName(form);
-                formData.addFormError(formId, "Error storing data: " + e.getMessage());
-                Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error executing store binder", e);
+            //load child element store binder to store before the main form
+            Collection<Element> children = element.getChildren();
+            if (children != null) {
+                for (Element child : children) {
+                    formData = recursiveExecuteFormStoreBinders(form, child, formData);
+                }
+            }
+
+            //if store binder exist && element is not readonly, run it
+            FormStoreBinder binder = element.getStoreBinder();
+            if (binder != null) {
+                FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
+
+                // execute binder
+                try {
+                    FormRowSet binderResult = binder.store(form, rowSet, formData);
+                    formData.setStoreBinderData(binder, binderResult);
+                } catch (Exception e) {
+                    String formId = FormUtil.getElementParameterName(form);
+                    formData.addFormError(formId, "Error storing data: " + e.getMessage());
+                    Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error executing store binder", e);
+                }
             }
         }
         
