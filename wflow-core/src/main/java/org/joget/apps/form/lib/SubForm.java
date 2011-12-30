@@ -113,6 +113,16 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
             // use the json definition to create the subform
             try {
                 subForm = (Form) formService.createElementFromJson(json);
+                
+                //if id field not exist, automatically add an id hidden field
+                Element idElement = FormUtil.findElement(FormUtil.PROPERTY_ID, subForm, formData);
+                if (idElement == null) {
+                    Collection<Element> subFormElements = subForm.getChildren();
+                    idElement = new HiddenField();
+                    idElement.setProperty(FormUtil.PROPERTY_ID, FormUtil.PROPERTY_ID);
+                    idElement.setParent(subForm);
+                    subFormElements.add(idElement);
+                }
             } catch (Exception e) {
                 Logger.getLogger(SubForm.class.getName()).log(Level.SEVERE, null, e);
             }
@@ -162,7 +172,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
                     subFormPrimaryElement.formatData(formData);
                     subFormPrimaryKeyValue = FormUtil.getElementPropertyValue(subFormPrimaryElement, formData);
                 }
-
+                
                 // generate new ID if empty
                 if (subFormPrimaryKeyValue == null || subFormPrimaryKeyValue.trim().isEmpty()) {
                     // generate new ID
