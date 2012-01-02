@@ -43,22 +43,22 @@ VisibilityMonitor.prototype.init = function() {
 }
 VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, isRegex) {
     //get enabled input field oni
-    if ($(controlEl).length > 1) {
-        controlEl = $(controlEl).filter(":enabled").get(0);
-    }
+    controlEl = $(controlEl).filter(":enabled, [disabled=false]");
     
     var match = false;
-    if (controlEl && $(controlEl).is(":enabled")) {
+    if ($(controlEl).length > 0) {
         if ($(controlEl).attr("type") == "checkbox" || $(controlEl).attr("type") == "radio") {
-            $(controlEl).filter(":checked").each(function() {
-                match = thisObject.isMatch($(this).val(), controlValue, isRegex);
-                if (match) {
-                    return false;
-                }
-            });
-        } else {
-            match = thisObject.isMatch($(controlEl).val(), controlValue, isRegex);
+            controlEl = $(controlEl).filter(":checked");
+        } else if ($(controlEl).is("select")) {
+            controlEl = $(controlEl).find("option:selected");
         }
+        
+        $(controlEl).each(function() {
+            match = thisObject.isMatch($(this).val(), controlValue, isRegex);
+            if (match) {
+                return false;
+            }
+        });
     }
     return match;
 }
