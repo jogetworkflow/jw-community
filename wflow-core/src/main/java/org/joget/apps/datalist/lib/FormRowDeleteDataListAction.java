@@ -1,14 +1,12 @@
 package org.joget.apps.datalist.lib;
 
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.form.dao.FormDataDao;
-import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 
 /**
@@ -67,10 +65,11 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     public DataListActionResult executeAction(DataList dataList, String[] rowKeys) {
         DataListActionResult result = null;
 
-        Form form = getSelectedForm();
-        if (form != null) {
+        String formDefId = getPropertyString("formDefId");
+        String tableName = getSelectedFormTableName(formDefId);
+        if (tableName != null) {
             FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-            formDataDao.delete(form, rowKeys);
+            formDataDao.delete(formDefId, tableName, rowKeys);
 
             result = new DataListActionResult();
             result.setType(DataListActionResult.TYPE_REDIRECT);
@@ -94,15 +93,14 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
         return json;
     }
 
-    protected Form getSelectedForm() {
-        Form form = null;
+    protected String getSelectedFormTableName(String formDefId) {
+        String tableName = null;
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        String formDefId = getPropertyString("formDefId");
         if (formDefId != null) {
-            form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
+            tableName = appService.getFormTableName(appDef, formDefId);
         }
-        return form;
+        return tableName;
     }
 
     public String getClassName() {

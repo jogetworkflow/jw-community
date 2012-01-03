@@ -7,7 +7,6 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.form.dao.FormDataDao;
-import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.commons.util.LogUtil;
 import org.springframework.context.ApplicationContext;
@@ -30,11 +29,11 @@ public class DefaultFormatter extends DataListColumnFormatDefault {
                 ApplicationContext ac = AppUtil.getApplicationContext();
                 AppService appService = (AppService) ac.getBean("appService");
                 if (formDefId != null) {
-                    Form form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
+                    String tableName = appService.getFormTableName(appDef, formDefId);
 
                     FormDataDao dao = (FormDataDao) ac.getBean("formDataDao");
 
-                    FormRow formRow = dao.load(form, value.toString());
+                    FormRow formRow = dao.load(formDefId, tableName, value.toString());
 
                     if (formRow != null && formRow.getCustomProperties() != null && formRow.getCustomProperties().get(field) != null) {
                         value = formRow.getCustomProperties().get(field);

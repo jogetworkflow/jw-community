@@ -310,4 +310,8 @@ public interface AppService {
     public Long getPublishedVersion(String appId);
 
     public String getPrimaryKeyWithForeignKey(String appId, String appVersion, String formId, String foreignKeyName, String foreignKeyValue);
+
+    public String getFormTableName(String appId, String appVersion, String formDefID);
+    
+    public String getFormTableName(AppDefinition appDef, String formDefID);
 }

@@ -5,7 +5,6 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
@@ -17,7 +16,7 @@ import org.joget.apps.form.service.FormUtil;
  * Form load binder that loads the data rows of a form.
  */
 public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBinder {
-
+    
     @Override
     public String getName() {
         return "Default Form Options Binder";
@@ -67,8 +66,8 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
         filtered.setMultiRow(true);
         // get form
         String formDefId = (String) getProperty("formDefId");
-        Form form = getSelectedForm(formDefId);
-        if (form != null) {
+        String tableName = getTableName(formDefId);
+        if (tableName != null) {
 
             String condition = null;
             String extraCondition = (String) getProperty("extraCondition");
@@ -78,7 +77,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
             // get form data
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            results = formDataDao.find(form, condition, null, null, null, null, null);
+            results = formDataDao.find(formDefId, tableName, condition, null, null, null, null, null);
 
             if (results != null) {
                 if ("true".equals(getPropertyString("addEmptyOption"))) {
@@ -108,17 +107,17 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
     }
 
     /**
-     * Retrieves the Form object for a specific form ID.
+     * Retrieves table name for a specific form ID.
      * @param formDefId
      * @return 
      */
-    protected Form getSelectedForm(String formDefId) {
-        Form form = null;
+    protected String getTableName(String formDefId) {
+        String tableName = null;
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if (appDef != null && formDefId != null) {
             AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-            form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
+            tableName = appService.getFormTableName(appDef, formDefId);
         }
-        return form;
+        return tableName;
     }
 }

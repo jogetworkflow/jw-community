@@ -106,7 +106,21 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow load(Form form, String primaryKey) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        return load(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey);
+    }
+    
+    /**
+     * Loads a data row for a form based on the primary key
+     * @param form
+     * @param primaryKey
+     * @return null if the row does not exist
+     */
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public FormRow load(String formDefId, String tableName, String primaryKey) {
+        String entityName = getFormEntityName(formDefId);
+        tableName = getFormTableName(formDefId, tableName);
+        return internalLoad(entityName, tableName, primaryKey);
     }
 
     /**
@@ -121,7 +135,22 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public FormRow loadWithoutTransaction(Form form, String primaryKey) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        return load(entityName, tableName, primaryKey);
+        return internalLoad(entityName, tableName, primaryKey);
+    }
+    
+    /**
+     * Loads a data row for a form based on the primary key. 
+     * This method runs outside of a db transaction, to cater to hibernate's auto schema update requirement.
+     * @param form
+     * @param primaryKey
+     * @return 
+     */
+    @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public FormRow loadWithoutTransaction(String formDefId, String tableName, String primaryKey) {
+        String entityName = getFormEntityName(formDefId);
+        tableName = getFormTableName(formDefId, tableName);
+        return internalLoad(entityName, tableName, primaryKey);
     }
 
     /**
@@ -131,9 +160,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param primaryKey
      * @return null if the row does not exist
      */
-    @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
-    public FormRow load(String entityName, String tableName, String primaryKey) {
+    protected FormRow internalLoad(String entityName, String tableName, String primaryKey) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_NORMAL);
 
@@ -184,10 +211,45 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @return
      */
     @Override
+    public FormRowSet find(String formDefId, String tableName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFind(entityName, newTableName, condition, params, sort, desc, start, rows);
+    }
+    
+    /**
+     * Query to find a list of matching form rows.
+     * @param form
+     * @param condition
+     * @param params
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    @Override
     public FormRowSet find(Form form, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
+        return internalFind(entityName, tableName, condition, params, sort, desc, start, rows);
+    }
+    
+    /**
+     * Query to find a list of matching form rows.
+     * @param entityName
+     * @param tableName
+     * @param condition
+     * @param params
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    protected FormRowSet internalFind(final String entityName, final String tableName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD_LIST);
 
@@ -248,11 +310,39 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @return
      */
     @Override
+    public Long count(String formDefId, String tableName, final String condition, final Object[] params) {
+
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalCount(entityName, newTableName, condition, params);
+    }
+    
+    /**
+     * Query total row count for a form.
+     * @param form
+     * @param condition
+     * @param params
+     * @return
+     */
+    @Override
     public Long count(Form form, final String condition, final Object[] params) {
 
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
+        return internalCount(entityName, tableName, condition, params);
+    }
+    
+    /**
+     * Query total row count for a form.
+     * @param entityName
+     * @param tableName
+     * @param condition
+     * @param params
+     * @return
+     */
+    protected Long internalCount(final String entityName, final String tableName, final String condition, final Object[] params) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_LOAD_LIST);
 
@@ -289,6 +379,34 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         final String entityName = getFormEntityName(form);
         final String tableName = getFormTableName(form);
 
+        return internalFindPrimaryKey(entityName, tableName, fieldName, value);
+    }
+    
+    /**
+     * Query to find find primary key based on a field name and it's value.
+     * @param formDefId
+     * @param tableName
+     * @param fieldName
+     * @param value
+     * @return
+     */
+    @Override
+    public String findPrimaryKey(String formDefId, String tableName, final String fieldName, final String value) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFindPrimaryKey(entityName, newTableName, fieldName, value);
+    }
+    
+    /**
+     * Query to find find primary key based on a field name and it's value.
+     * @param entityName
+     * @param tableName
+     * @param fieldName
+     * @param value
+     * @return
+     */
+    protected String internalFindPrimaryKey(final String entityName, final String tableName, final String fieldName, final String value) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_NORMAL);
 
@@ -322,15 +440,26 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public void saveOrUpdate(Form form, FormRowSet rowSet) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        saveOrUpdate(entityName, tableName, rowSet);
+        internalSaveOrUpdate(entityName, tableName, rowSet);
+    }
+    
+    /**
+     * Saves (creates or updates) form data
+     * @param formDefId
+     * @param tableName
+     */
+    @Override
+    public void saveOrUpdate(String formDefId, String tableName, FormRowSet rowSet) {
+        String entityName = getFormEntityName(formDefId);
+        String newTableName = getFormTableName(formDefId, tableName);
+        internalSaveOrUpdate(entityName, newTableName, rowSet);
     }
 
     /**
      * Saves (creates or updates) form data
      * @param form
      */
-    @Override
-    public void saveOrUpdate(String entityName, String tableName, FormRowSet rowSet) {
+    protected void internalSaveOrUpdate(String entityName, String tableName, FormRowSet rowSet) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_NORMAL);
 
@@ -350,6 +479,29 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
 
+        internalDelete(entityName, tableName, primaryKeyValues);
+    }
+    
+    /**
+     * Delete form data by primary keys
+     * @param formDefId
+     * @param tableName
+     * @param primaryKeyValues 
+     */
+    @Override
+    public void delete(String formDefId, String tableName, String[] primaryKeyValues) {
+        String entityName = getFormEntityName(formDefId);
+        String newTableName = getFormTableName(formDefId, tableName);
+
+        internalDelete(entityName, newTableName, primaryKeyValues);
+    }
+    
+    /**
+     * Delete form data by primary keys
+     * @param form
+     * @param primaryKeyValues 
+     */
+    protected void internalDelete(String entityName, String tableName, String[] primaryKeyValues) {
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_NORMAL);
 
@@ -371,6 +523,17 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String entityName = FormDataDaoImpl.FORM_PREFIX_ENTITY + formDefId;
         return entityName;
     }
+    
+    /**
+     * Gets the generated hibernate entity name for the form
+     * @param form
+     * @return
+     */
+    @Override
+    public String getFormEntityName(String formDefId) {
+        String entityName = FormDataDaoImpl.FORM_PREFIX_ENTITY + formDefId;
+        return entityName;
+    }
 
     /**
      * Gets the defined table name for the form
@@ -383,6 +546,21 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (tableName == null || tableName.trim().length() == 0) {
             // no table name specified, temp use ID
             String formDefId = form.getPropertyString(FormUtil.PROPERTY_ID);
+            tableName = formDefId;
+        }
+        tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
+        return tableName;
+    }
+    
+    /**
+     * Gets the defined table name for the form
+     * @param form
+     */
+    @Override
+    public String getFormTableName(String formDefId, String tableName) {
+        // determine table name
+        if (tableName == null || tableName.trim().length() == 0) {
+            // no table name specified, temp use ID
             tableName = formDefId;
         }
         tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;

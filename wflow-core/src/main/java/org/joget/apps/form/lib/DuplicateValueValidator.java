@@ -1,15 +1,13 @@
 package org.joget.apps.form.lib;
 
-import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
-import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 
 public class DuplicateValueValidator extends FormValidator {
@@ -95,20 +93,13 @@ public class DuplicateValueValidator extends FormValidator {
             } else {
                 //check for duplicate value
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                Form form = null;
-                FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
-                FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
+                String tableName = null;
+                AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
 
                 if (formDefId != null) {
-                    FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
-                    if (formDef != null) {
-                        String formJson = formDef.getJson();
-                        if (formJson != null) {
-                            form = (Form) formService.createElementFromJson(formJson);
-                        }
-                    }
+                    tableName = appService.getFormTableName(appDef, formDefId);
                 }
-                if (isDuplicate(form, element, data, fieldId, values)) {
+                if (isDuplicate(formDefId, tableName, element, data, fieldId, values)) {
                     result = false;
                     data.addFormError(id, "Value already exist.");
                 }
@@ -150,7 +141,7 @@ public class DuplicateValueValidator extends FormValidator {
         return result;
     }
 
-    protected boolean isDuplicate(Form form, Element element, FormData formData, String fieldId, String[] values) {
+    protected boolean isDuplicate(String formDefId, String tableName, Element element, FormData formData, String fieldId, String[] values) {
         boolean result = false;
         FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
 
@@ -159,9 +150,9 @@ public class DuplicateValueValidator extends FormValidator {
                 String key = null;
 
                 if (!FormUtil.PROPERTY_ID.equals(fieldId)) {
-                    key = formDataDao.findPrimaryKey(form, fieldId, val);
+                    key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val);
                 } else {
-                    if (formDataDao.load(form, val) != null) {
+                    if (formDataDao.load(formDefId, tableName, val) != null) {
                         key = val;
                     }
                 }

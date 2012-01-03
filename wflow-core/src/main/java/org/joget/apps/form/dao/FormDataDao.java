@@ -22,6 +22,15 @@ public interface FormDataDao {
      * @return null if the row does not exist
      */
     public FormRow load(Form form, String primaryKey);
+    
+    /**
+     * Loads a data row for a form based on the primary key
+     * @param formDefId
+     * @param tableName
+     * @param primaryKey
+     * @return null if the row does not exist
+     */
+    public FormRow load(String formDefId, String tableName, String primaryKey);
 
     /**
      * Loads a data row for a form based on the primary key. 
@@ -33,13 +42,14 @@ public interface FormDataDao {
     public FormRow loadWithoutTransaction(Form form, String primaryKey);
 
     /**
-     * Loads a data row for an entity and table based on the primary key
-     * @param entityName
+     * Loads a data row for a form based on the primary key. 
+     * This method runs outside of a db transaction, to cater to hibernate's auto schema update requirement.
+     * @param formDefId
      * @param tableName
      * @param primaryKey
-     * @return null if the row does not exist
+     * @return 
      */
-    public FormRow load(String entityName, String tableName, String primaryKey);
+    public FormRow loadWithoutTransaction(String formDefID, String tableName, String primaryKey);
 
     /**
      * Loads a data row for a table based on the primary key
@@ -63,6 +73,20 @@ public interface FormDataDao {
     public FormRowSet find(Form form, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows);
 
     /**
+     * Query to find a list of matching form rows.
+     * @param formDefId
+     * @param tableName
+     * @param condition
+     * @param params
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    public FormRowSet find(String formDefId, String tableName, final String condition, final Object[] params, final String sort, final Boolean desc, final Integer start, final Integer rows);
+
+    /**
      * Query total row count for a form.
      * @param form
      * @param condition
@@ -72,6 +96,15 @@ public interface FormDataDao {
     public Long count(Form form, final String condition, final Object[] params);
 
     /**
+     * Query total row count for a form.
+     * @param form
+     * @param condition
+     * @param params
+     * @return
+     */
+    public Long count(String formDefId, String tableName, final String condition, final Object[] params);
+
+    /**
      * Query to find find primary key based on a field name and it's value.
      * @param form
      * @param fieldName
@@ -79,6 +112,17 @@ public interface FormDataDao {
      * @return
      */
     public String findPrimaryKey(Form form, final String fieldName, final String value);
+
+    
+    /**
+     * Query to find find primary key based on a field name and it's value.
+     * @param formDefId
+     * @param tableName
+     * @param fieldName
+     * @param value
+     * @return
+     */
+    public String findPrimaryKey(String formDefId, String tableName, final String fieldName, final String value);
 
     /**
      * Saves (creates or updates) form data
@@ -90,7 +134,7 @@ public interface FormDataDao {
      * Saves (creates or updates) form data
      * @param form
      */
-    public void saveOrUpdate(String entityName, String tableName, FormRowSet rowSet);
+    public void saveOrUpdate(String formDefId, String tableName, FormRowSet rowSet);
 
     /**
      * Delete form data by primary keys
@@ -99,18 +143,38 @@ public interface FormDataDao {
      */
     public void delete(Form form, String[] primaryKeyValues);
 
+        /**
+     * Delete form data by primary keys
+     * @param form
+     * @param primaryKeyValues 
+     */
+    public void delete(String formDefId, String tableName, String[] primaryKeyValues);
+
     /**
      * Gets the generated hibernate entity name for the form
      * @param form
      * @return
      */
     public String getFormEntityName(Form form);
+    
+    /**
+     * Gets the generated hibernate entity name for the form
+     * @param form
+     * @return
+     */
+    public String getFormEntityName(String formDefId);
 
     /**
      * Gets the defined table name for the form
      * @param form
      */
     public String getFormTableName(Form form);
+    
+    /**
+     * Gets the defined table name for the form
+     * @param form
+     */
+    public String getFormTableName(String formDefId, String tableName);
 
     /**
      * Returns collection of all column names to be saved

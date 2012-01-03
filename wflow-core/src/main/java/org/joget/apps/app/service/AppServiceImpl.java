@@ -1393,4 +1393,17 @@ public class AppServiceImpl implements AppService {
 
         return null;
     }
+    
+    public String getFormTableName(String appId, String appVersion, String formDefId) {
+        AppDefinition appDef = getAppDefinition(appId, appVersion);
+        return getFormTableName(appDef, formDefId);
+    }
+    
+    public String getFormTableName(AppDefinition appDef, String formDefId) {
+        FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
+        if (formDef != null) {
+            return formDef.getTableName();
+        }
+        return null;
+    }
 }
