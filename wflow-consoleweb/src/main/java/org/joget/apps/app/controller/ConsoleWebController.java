@@ -2709,7 +2709,7 @@ public class ConsoleWebController {
         Long count = null;
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
+        formDefinitionList = formDefinitionDao.getFormDefinitionList(name, appDef, sort, desc, start, rows);
         count = formDefinitionDao.getFormDefinitionListCount(null, appDef);
 
         JSONObject jsonObject = new JSONObject();

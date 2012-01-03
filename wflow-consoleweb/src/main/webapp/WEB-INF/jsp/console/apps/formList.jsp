@@ -52,6 +52,10 @@
 </div>
 
 <script>
+    $(document).ready(function(){
+        $('#JsonDataTable_searchTerm').hide();
+    });
+    
     <ui:popupdialog var="formCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/create"/>
     function formCreate(){
         formCreateDialog.init();
