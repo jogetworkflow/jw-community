@@ -11,6 +11,10 @@ a {
     font-size: 13px;
     position: relative;
 }
+#header-info {
+    margin: 0 50px 10px;
+    min-height: 90px;
+}
 #header {
     background: url("@@contextPath@@/plugin/org.joget.apps.userview.lib.DefaultTheme/themes/default/bg-header.png") no-repeat scroll 0 0 transparent;
     height: 130px;
@@ -111,7 +115,4 @@ body#login #content, body#unauthorize #content {
 }
 #navigation {
     background-color: #F2F2F2;
-}
-#header-message {
-    margin: 45px 50px 5px;
 }
