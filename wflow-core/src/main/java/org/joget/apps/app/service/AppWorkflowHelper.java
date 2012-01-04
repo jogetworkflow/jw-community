@@ -112,6 +112,11 @@ public class AppWorkflowHelper implements WorkflowHelper {
             PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
             PackageParticipant participant = packageDef.getPackageParticipant(procDefId, participantId);
 
+            //Set app definition
+            if (packageDef != null) {
+                AppUtil.setCurrentAppDefinition(packageDef.getAppDefinition());
+            }
+                
             if (participant != null) {
                 if (PackageParticipant.TYPE_USER.equals(participant.getType())) {
                     resultList = getParticipantsByUsers(participant);

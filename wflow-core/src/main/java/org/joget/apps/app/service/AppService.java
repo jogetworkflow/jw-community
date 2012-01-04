@@ -105,7 +105,21 @@ public interface AppService {
      * @return
      */
     AppDefinition getAppDefinitionForWorkflowActivity(String activityId);
+    
+    /**
+     * Retrieves the app definition for a specific workflow process.
+     * @param processId
+     * @return
+     */
+    AppDefinition getAppDefinitionForWorkflowProcess(String processId);
 
+    /**
+     * Retrieves the app definition for a specific workflow process definition id.
+     * @param processDefId
+     * @return
+     */
+    AppDefinition getAppDefinitionWithProcessDefId(String processDefId); 
+            
     /**
      * Check to see whether an activity is configured to automatically continue on to the next activity.
      * @param packageId

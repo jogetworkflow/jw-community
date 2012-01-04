@@ -27,6 +27,7 @@ import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -269,11 +270,13 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/activity/reevaluate", method = RequestMethod.POST)
     public void activityReevaluate(Writer writer, @RequestParam("activityId") String activityId) {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.reevaluateAssignmentsForActivity(activityId);
     }
 
     @RequestMapping(value = "/json/monitoring/activity/abort/(*:processId)/(*:activityDefId)")
     public void activityAbort(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId, @RequestParam("activityDefId") String activityDefId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         workflowManager.activityAbort(processId, activityDefId);
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("processId", processId);
@@ -285,6 +288,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/activity/start/(*:processId)/(*:activityDefId)")
     public void activityStart(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId, @RequestParam("activityDefId") String activityDefId, @RequestParam(value = "abortCurrent", required = false) Boolean abortCurrent) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         boolean abortFlag = (abortCurrent != null) ? abortCurrent : false;
         boolean result = workflowManager.activityStart(processId, activityDefId, abortFlag);
         JSONObject jsonObject = new JSONObject();
@@ -297,6 +301,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/process/copy/(*:processId)/(*:processDefId)")
     public void processCopy(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId, @RequestParam("processDefId") String processDefId, @RequestParam(value = "abortCurrent", required = false) Boolean abortCurrent) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         boolean abortFlag = (abortCurrent != null) ? abortCurrent : false;
         processDefId = processDefId.replaceAll(":", "#");
         WorkflowProcessResult processResult = workflowManager.processCopyFromInstanceId(processId, processDefId, abortFlag);
@@ -327,6 +332,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/activity/variable/(*:activityId)/(*:variable)")
     public void activityVariable(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam("variable") String variable, @RequestParam("value") String value) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.activityVariable(activityId, variable, value);
         LogUtil.info(getClass().getName(), "Activity variable " + variable + " set to " + value);
         JSONObject jsonObject = new JSONObject();
@@ -337,6 +343,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/process/variable/(*:processId)/(*:variable)")
     public void processVariable(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId, @RequestParam("variable") String variable, @RequestParam("value") String value) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         workflowManager.processVariable(processId, variable, value);
         LogUtil.info(getClass().getName(), "Activity variable " + variable + " set to " + value);
         JSONObject jsonObject = new JSONObject();
@@ -467,7 +474,7 @@ public class WorkflowJsonController {
 
         if (workflowManager.isUserInWhiteList(processDefId)) {
             WorkflowProcessResult result;
-
+            appService.getAppDefinitionWithProcessDefId(processDefId);
             if (processInstanceId != null && processInstanceId.trim().length() > 0) {
                 result = workflowManager.processStartWithInstanceId(processDefId, processInstanceId, variables);
             } else {
@@ -498,6 +505,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/process/abort/(*:processId)")
     public void processAbort(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowProcess(processId);
         boolean aborted = workflowManager.processAbort(processId);
         LogUtil.info(getClass().getName(), "Process " + processId + " aborted: " + aborted);
         JSONObject jsonObject = new JSONObject();
@@ -878,6 +886,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/accept/(*:activityId)")
     public void assignmentAccept(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentAccept(activityId);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         LogUtil.info(getClass().getName(), "Assignment " + activityId + " accepted");
@@ -890,6 +899,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/withdraw/(*:activityId)")
     public void assignmentWithdraw(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentWithdraw(activityId);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         LogUtil.info(getClass().getName(), "Assignment " + activityId + " withdrawn");
@@ -902,6 +912,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/variable/(*:activityId)/(*:variable)")
     public void assignmentVariable(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam("variable") String variable, @RequestParam("value") String value) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentVariable(activityId, variable, value);
         LogUtil.info(getClass().getName(), "Assignment variable " + variable + " set to " + value);
         JSONObject jsonObject = new JSONObject();
@@ -912,6 +923,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/completeWithVariable/(*:activityId)")
     public void assignmentCompleteWithVariable(HttpServletRequest request, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         String processId = (assignment != null) ? assignment.getProcessId() : "";
         
@@ -946,6 +958,7 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/workflow/assignment/complete/(*:activityId)")
     public void assignmentComplete(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
 
         String processId = (assignment != null) ? assignment.getProcessId() : "";
@@ -1006,12 +1019,14 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/monitoring/running/activity/reassign", method = RequestMethod.POST)
     public void assignmentReassign(Writer writer, @RequestParam("state") String state, @RequestParam("processDefId") String processDefId, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) {
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentReassign(processDefId, processId, activityId, username, replaceUser);
     }
 
     @RequestMapping("/monitoring/running/activity/complete")
     public void completeProcess(Writer writer, @RequestParam("state") String state, @RequestParam("processDefId") String processDefId, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) {
         String username = workflowUserManager.getCurrentUsername();
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentForceComplete(processDefId, processId, activityId, username);
     }
 }

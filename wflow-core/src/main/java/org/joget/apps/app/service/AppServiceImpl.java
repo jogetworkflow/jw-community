@@ -147,10 +147,9 @@ public class AppServiceImpl implements AppService {
     public AppDefinition getAppDefinitionForWorkflowActivity(String activityId) {
         AppDefinition appDef = null;
 
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
-        if (assignment != null) {
-            String processDefId = assignment.getProcessDefId();
-            String activityDefId = assignment.getActivityDefId();
+        WorkflowActivity activity = workflowManager.getActivityById(activityId);
+        if (activity != null) {
+            String processDefId = activity.getProcessDefId();
             WorkflowProcess process = workflowManager.getProcess(processDefId);
             if (process != null) {
                 String packageId = process.getPackageId();
@@ -161,7 +160,55 @@ public class AppServiceImpl implements AppService {
                 }
             }
         }
+        // set into thread
+        AppUtil.setCurrentAppDefinition(appDef);
+        return appDef;
+    }
+    
+    /**
+     * Retrieves the app definition for a specific workflow process.
+     * @param processId
+     * @return
+     */
+    @Override
+    public AppDefinition getAppDefinitionForWorkflowProcess(String processId) {
+        AppDefinition appDef = null;
 
+        WorkflowProcess process = workflowManager.getRunningProcessById(processId);
+        if (process != null) {
+            String packageId = process.getPackageId();
+            Long packageVersion = Long.parseLong(process.getVersion());
+            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+            if (packageDef != null) {
+                appDef = packageDef.getAppDefinition();
+            }
+        }
+        // set into thread
+        AppUtil.setCurrentAppDefinition(appDef);
+        return appDef;
+    }
+    
+    /**
+     * Retrieves the app definition for a specific workflow process definition id.
+     * @param processDefId
+     * @return
+     */
+    @Override
+    public AppDefinition getAppDefinitionWithProcessDefId(String processDefId) {
+        AppDefinition appDef = null;
+
+        processDefId = workflowManager.getConvertedLatestProcessDefId(processDefId);
+        String[] params = processDefId.split("#");
+        String packageId = params[0];
+        Long packageVersion = Long.parseLong(params[1]);
+        
+        PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+        if (packageDef != null) {
+            appDef = packageDef.getAppDefinition();
+        }
+        
+        // set into thread
+        AppUtil.setCurrentAppDefinition(appDef);
         return appDef;
     }
 
