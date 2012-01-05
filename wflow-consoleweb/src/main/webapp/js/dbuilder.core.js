@@ -70,7 +70,7 @@ DatalistBuilder = {
                     label : get_dbuilder_msg('dbuilder.selectDataSource'),
                     type : 'elementselect',
                     options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListBinder',
-                    url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                    url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
                 }]
             }
         ];
@@ -688,7 +688,7 @@ DatalistBuilder = {
                 label : get_dbuilder_msg('dbuilder.action'),
                 type : 'elementselect',
                 options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListAction',
-                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         },{
             title : get_dbuilder_msg('dbuilder.formatter'),
@@ -698,7 +698,7 @@ DatalistBuilder = {
                 label : get_dbuilder_msg('dbuilder.formatter'),
                 type : 'elementselect',
                 options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListColumnFormat',
-                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         }];
 
@@ -762,7 +762,7 @@ DatalistBuilder = {
                 type : 'elementselect',
                 value : 'org.joget.apps.datalist.lib.TextFieldDataListFilterType',
                 options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListFilterType',
-                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         }];
 
