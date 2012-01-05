@@ -15,6 +15,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
 
+<c:if test="${empty menuId && !empty userview.properties.homeMenuId}">
+    <c:set var="homeRedirectUrl" scope="request" value="/web/"/>
+    <c:if test="${embed}">
+        <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}embed/"/>
+    </c:if>
+    <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"/>
+    <c:redirect url="${homeRedirectUrl}"/>
+</c:if>
+
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!empty userview.setting.permission && !userview.setting.permission.authorize && isAnonymous}">
     <c:set var="redirectUrl" scope="request" value="/web/"/>
@@ -88,7 +97,7 @@
             <p>&nbsp;</p>
             <p>&nbsp;</p>
             <p>
-                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
+                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
             </p>
         </c:otherwise>
     </c:choose>
@@ -174,7 +183,7 @@
                     <c:otherwise>
                         <div id="header-info">
                             <div id="header-name">
-                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}" id="header-link"><span id="name">${userview.properties.name}</span></a>
+                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}" id="header-link"><span id="name">${userview.properties.name}</span></a>
                             </div>
                             <div id="header-description">
                                 <span id="description">${userview.properties.description}</span>
@@ -234,10 +243,7 @@
                                                 <c:set var="firstMenuItem" value="${category.menus[0]}"/>
                                                 <c:choose>
                                                     <c:when test="${!empty firstMenuItem && firstMenuItem.homePageSupported}">
-                                                        <c:set var="menuItemId" value="${firstMenuItem.properties.customId}"/>
-                                                        <c:if test="${empty menuItemId}">
-                                                            <c:set var="menuItemId" value="${firstMenuItem.properties.id}"/>
-                                                        </c:if>
+                                                        <c:set var="menuItemId" value="${firstMenuItem.properties.menuId}"/>
                                                         <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${menuItemId}"><span>${category.properties.label}</span></a>
                                                     </c:when>
                                                     <c:otherwise>

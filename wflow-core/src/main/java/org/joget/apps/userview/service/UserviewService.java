@@ -163,6 +163,7 @@ public class UserviewService {
                             menu.setRequestParameters(requestParameters);
                             menu.setUserview(userview);
                             String mId = getMenuId(menu);
+                            menu.setProperty("menuId", mId);
 
                             if (preview) {
                                 menu.setUrl(contextPath + "/web/console/app/" + appId + "/" + appVersion + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + mId);
@@ -182,6 +183,11 @@ public class UserviewService {
                                     || (menuId != null && menuId.equals(mId))) {
                                 userview.setCurrent(menu);
                                 userview.setCurrentCategory(category);
+                            }
+                            
+                            //set home menu Id
+                            if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
+                                userview.setProperty("homeMenuId", mId);
                             }
 
                             menus.add(menu);
