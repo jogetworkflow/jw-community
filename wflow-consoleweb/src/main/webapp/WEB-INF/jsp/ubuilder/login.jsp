@@ -64,7 +64,7 @@
                     <c:otherwise>
                         <div id="header-info">
                             <div id="header-name">
-                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${appVersion}/${userview.properties.id}" id="header-link"><span id="name">${userview.properties.name}</span></a>
+                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}" id="header-link"><span id="name">${userview.properties.name}</span></a>
                             </div>
                             <div id="header-description">
                                 <span id="description">${userview.properties.description}</span>
