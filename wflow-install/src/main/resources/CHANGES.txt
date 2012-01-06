@@ -1,3 +1,64 @@
+3.0.1
+=====
+278		Fixed: wflow-consoleweb - Fixed incorrect link in the userview login page header.
+277		Fixed: wflow-consoleweb - Datalist Builder - App id and app version are not pass over to retrieve plugin properties.
+276		Fixed: wflow-core/wflow-consoleweb - Userview redirection not work correctly.
+275		Modified: wflow-core - DefaultTheme - Change css.
+274		Fixed: wflow-consoleweb - Userview default theme is not set.
+273		Fixed: wflow-core/wflow-consoleweb - currentAppDefinition not set from WorkflowJsonController methods. Partially contributed by Yudhi Widyatama.
+272		Fixed: wflow-consoleweb - Form list filter not working.
+271		Modified: wflow-core - Refactoring FormDataDao to increase performance.
+270		Fixed: wflow-core - Section - Visibility Control not working for hidden field and multivalue element.
+269		Fixed: wflow-core - Sub Form store a new record if form definition does not contain a id field. (#435)
+268		Fixed: wflow-core - Subform still store when set to readonly.
+267		Added: wflow-core/wflow-consoleweb - Allow section visibility control using regex.
+		Modified: wflow-core/wflow-consoleweb - Allow section visibility control by dynamic added element.
+266		Fixed: wflow-consoleweb - Properties Editor - HTML property type convert url to unusable relative url .
+265		Added: wflow-core/wflow-consoleweb - Allow DefaultFormOptionsBinder to has an empty option on top of others.
+264		Fixed: wflow-consoleweb - Fixed assignment in inbox or email notification not displaying the correct form version.
+261		Modified: wflow-core, wflow-consoleweb - Updated userview to improve rendering performance.
+260		Fixed: wflow-consoleweb - Fixed plugin resource servlet not setting the correct response expiry header.
+259		Fixed: wflow-consoleweb - Datalist Builder - Sequence of filter in actual list is not same with datalist builder (#431)
+258		Modified: wflow-core, wflow-consoleweb - Modified userviews to prevent double page loading when redirecting after form submission.
+257		Modified: wflow-core - Modified Section and Grid for changes in r254
+256		Modified: wflow-core - Form Builder - Enhanced Section visibility control feature.
+255		Modified: wflow-plugin-base - Updated PluginManager testPlugin method to return the execution result.
+254		Modified: wflow-core - Assign an unique key to every element to use in template.
+		Fixed: wflow-core - Form Builder - Datepicker not working when multiple field have same id. (#419)
+253		Fixed: wflow-core - Form Builder - Input data in invisible section still submitted (#428).
+252		Fixed: wflow-directory, wflow-consoleweb - Fixed deleting users, setting HOD on user creation, and unsetting HOD (#418 and #426).
+251		Modified: wflow-core - SubForm - Get binder from actual form if subform binder is no set.
+250		Fixed: wflow-core - Inbox Menu - Date is not following user time zone (#425)
+		Fixed: wflow-core - Service Level Monitor Column missing in Inbox menu (#423)
+249		Fixed: wflow-consoleweb - Inbox - Date Format of Date Created and Due Date is difference (#424)
+248		Fixed: wflow-consoleweb - DataList Builder - Filter template fail to load after edit properties (#421)
+247		Modified: wflow-wfengine, wflow-core - Minor refactoring in WorkflowManager to prevent unneeded audit trail record.
+246		Fixed: wflow-commons - StringUtil - Error parsing url parameter.
+245		Modified: wflow-core - SubForm - Check for null value.
+244		Fixed: wflow-consoleweb - Fixed console header menu wrapping when translated labels are too long.
+243		Modified: wflow-install - Updated SQL for empty and sample databases.
+242		Fixed: wflow-core - FormMenu - Form cannot submit when having field with id called "action".
+		Fixed: wflow-core - InboxMenu - Form cannot submit when having field with id called "action" and "mode".
+241		Fixed: wflow-commons - Problem with heavy api calls just after startup. Contributed by Yudhi Widyatama.
+240		Fixed: wflow-core - RunProcess - Form cannot submit when having field with id called "action".
+239		Modified: wflow-core, wflow-consoleweb - Minor refactoring and dependency updates.
+238		Modified: wflow-consoleweb - Improve and correct messages in properties files
+237		Fixed: wflow-core: FormMenu - Cannot load form using primary key (ID) using Userview Key
+236		Fixed: wflow-commons/wflow-consoleweb - Wrong handling on multivalue parameter in StringUtil and util.js.
+235		Fixed: wflow-consoleweb - Datalist Builder - Error retrieve filter template in design mode.
+234		Fixed: wflow-consoleweb - Property Editor - Error retrieve second level element select value.
+233		Fixed: wflow-core - Extra column is created in database table for Form Id & Section Id
+232		Modified: wflow-core - Added caching when retrieving form column names.
+231		Fixed: wflow-core - Fixed NullPointerException in FormMenu, InboxMenu & RunProcess after changes done in r225 & r230
+230		Fixed: wflow-core - Changed InboxMenu to redirect to next assignment in stead of directly showing the next assignment form.
+229		Modified: wflow-core - Form Builder - Able to set selected value in form options binder (#410)
+227		Modified: wflow-core - Userview Builder - Allow theme to get information from userview object
+226		Fixed: wflow-core - Form Builder - Not able to preview due to Incorrect form definition json
+225		Fixed: wflow-core - Changed RunProcessMenu & FormMenu to redirect to next assignment in stead of directly showing the next assignment form.
+224		Added: Form Builder - Column width need to be configurable #340
+223		Fixed: wflow-core - Form Builder - Grid value from property editor is not correctly handle (#403)
+222		Fixed: wflow-consoleweb - Property Editor - Select box value in grid not save
+
 3.0.0
 =====
 216		Modified: wflow-install - Modified linux setup script to use the sample database instead of the empty one.
