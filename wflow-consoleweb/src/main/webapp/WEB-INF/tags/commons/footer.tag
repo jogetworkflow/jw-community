@@ -34,7 +34,7 @@
 </div>
 
 <div id="footer">
-    <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=footer" flush="true" />
+    <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=footer" />
     <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
     <c:if test="${isVirtualHostEnabled}">
         <div id="footer-profile">

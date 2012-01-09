@@ -62,7 +62,7 @@
 
         <div id="header">
             <div id="topbar">
-                <div id="logo"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" flush="true" /></div>
+                <div id="logo"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" /></div>
                 <div id="account">
                     <c:if test="${isAdmin}">
                         <a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a> |
@@ -171,7 +171,7 @@
                         </c:choose>
                     </li>
                     <li id="menu-apps"><a href="#"><span class="menu-bg"><span class="steps">2</span><span class="title"><fmt:message key="console.header.menu.label.apps"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.apps"/></span></span></a>
-                        <jsp:include page="/web/console/app/menu" flush="true" />
+                        <jsp:include page="/web/console/app/menu" />
                     </li>
                     <li id="menu-run">
                         <a href="${pageContext.request.contextPath}/web/console/run/apps"><span class="menu-bg"><span class="steps">3</span><span class="title"><fmt:message key="console.header.menu.label.run"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.run"/></span></span></a>
@@ -238,5 +238,5 @@
             </div>
             <div class="clear"></div>   
         </div>
-        <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=body" flush="true" />
+        <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=body" />
         <div id="container">
