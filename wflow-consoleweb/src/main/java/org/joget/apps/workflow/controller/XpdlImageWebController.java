@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class XpdlImageWebController {
 
-    @RequestMapping("/images/xpdl/thumbnail/(*:processDefId)")
+    @RequestMapping("/console/images/xpdl/thumbnail/(*:processDefId)")
     public void getXpdlThumbnail(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) {
         try {
             response.setContentType("image/jpeg");
@@ -40,7 +40,7 @@ public class XpdlImageWebController {
         }
     }
 
-    @RequestMapping("/images/xpdl/(*:processDefId)")
+    @RequestMapping("/console/images/xpdl/(*:processDefId)")
     public void getXpdlImage(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) {
         try {
             response.setContentType("image/jpeg");

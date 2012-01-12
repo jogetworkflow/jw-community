@@ -121,7 +121,7 @@
     Thumbnail = {
         load: function(el) {
             var image = new Image();
-            image.src = "${pageContext.request.contextPath}/web/images/xpdl/thumbnail/" + el.id + "?rnd=" + new Date().valueOf().toString();
+            image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/thumbnail/" + el.id + "?rnd=" + new Date().valueOf().toString();
             $(image).load(function(){
                 $(el).children("a").append(image);
                 $(image).each(function() {

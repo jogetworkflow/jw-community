@@ -36,7 +36,7 @@
                 <fmt:message key="console.process.config.label.xpdlThumbnailLoading"/>
             </div>
             <div id="thumbnailDiv" style="display:block; overflow:hidden; height:250px">
-                <a id="xpdlThumbnail" href="${pageContext.request.contextPath}/web/images/xpdl/${process.encodedId}" target="_blank"></a>
+                <a id="xpdlThumbnail" href="${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}" target="_blank"></a>
             </div>
             <div id="advancedView" style="display: none">
                 <dl>
@@ -326,7 +326,7 @@
 
     <script>
         var image = new Image();
-        image.src = "${pageContext.request.contextPath}/web/images/xpdl/${process.encodedId}?rnd=" + new Date().valueOf().toString();
+        image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}?rnd=" + new Date().valueOf().toString();
         $(image).load(function(){
             $('#xpdlThumbnail').append(image);
             $(image).each(function() {
@@ -536,7 +536,7 @@
             }
 
             function showXpdlImage(){
-                popupDialog.src = "${pageContext.request.contextPath}/web/images/xpdl/${process.encodedId}";
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}";
                 popupDialog.init();
 
             }
