@@ -64,7 +64,11 @@ PopupDialog.prototype = {
 
       if (this.windowName) {
           var opts = (this.width && this.height) ? "width=" + this.width + ",height=" + this.height + ",resizable=1,scrollbars=1,top=50,left=50" : null;
-          this.popupWindow = window.open(this.src, this.windowName, opts);
+          if (opts) {
+            this.popupWindow = window.open(this.src, this.windowName, opts);
+          } else {
+            this.popupWindow = window.open(this.src, this.windowName);  
+          }
           return;
       }
       var thisObject = this;
