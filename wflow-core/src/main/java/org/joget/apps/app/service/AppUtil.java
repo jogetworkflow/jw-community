@@ -277,7 +277,7 @@ public class AppUtil implements ApplicationContextAware {
                                 //get result from plugin
                                 String value = hashVariablePlugin.processHashVariable(tempVar);
                                 
-                                if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
+                                if (value != null && !StringUtil.TYPE_REGEX.equals(escapeFormat)) {
                                     value = StringUtil.escapeRegex(value);
                                 }
                                 
