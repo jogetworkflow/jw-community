@@ -100,6 +100,8 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
                     if (!children.isEmpty()) {
                         form = (Form) children.iterator().next();
                     }
+                } else if (element instanceof Form) {
+                    form = (Form) element;
                 }
             } else {
                 for (Element child : element.getChildren()) {
@@ -125,6 +127,8 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
                     if (!children.isEmpty()) {
                         form = (Form) children.iterator().next();
                     }
+                } else if (element instanceof Form) {
+                    form = (Form) element;
                 }
             } else {
                 for (Element child : element.getChildren()) {
