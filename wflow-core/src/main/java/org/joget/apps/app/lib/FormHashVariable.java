@@ -4,6 +4,7 @@ import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.FormRow;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -24,32 +25,37 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         } else {
             columnName = temp[1];
         }
+        try {
+            if (tableName != null && tableName.length() != 0) {
+                ApplicationContext appContext = AppUtil.getApplicationContext();
+                FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
 
-        if (tableName != null && tableName.length() != 0) {
-            ApplicationContext appContext = AppUtil.getApplicationContext();
-            FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
+                WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
+                if (wfAssignment != null) {
 
-            WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
-            if (wfAssignment != null) {
+                    WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+                    WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
 
-                WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
-                WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
+                    if (link != null) {
+                        primaryKey = link.getOriginProcessId();
+                    } else if (primaryKey.isEmpty()) {
+                        primaryKey = wfAssignment.getProcessId();
+                    }
+                }
 
-                if (link != null) {
-                    primaryKey = link.getOriginProcessId();
-                } else if (primaryKey.isEmpty()) {
-                    primaryKey = wfAssignment.getProcessId();
+                FormRow row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
+
+                if (row != null && row.getCustomProperties() != null) {
+                    Object val = row.getCustomProperties().get(columnName);
+                    if (val != null) {
+                        return val.toString();
+                    } else {
+                        LogUtil.info(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
+                        return "";
+                    }
                 }
             }
-
-            FormRow row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
-
-            if (row != null && row.getCustomProperties() != null) {
-                Object val = row.getCustomProperties().get(columnName);
-                String value = (val != null) ? val.toString() : null;
-                return value;
-            }
-        }
+        } catch (Exception ex) {}
         return null;
     }
 
