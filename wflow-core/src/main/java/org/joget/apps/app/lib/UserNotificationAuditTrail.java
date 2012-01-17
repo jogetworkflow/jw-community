@@ -259,7 +259,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     for (WorkflowProcess p : processList) {
                         Collection<WorkflowActivity> activityList = workflowManager.getProcessActivityDefinitionList(p.getId());
                         for (WorkflowActivity a : activityList) {
-                            if (!a.getType().equals(WorkflowActivity.TYPE_ROUTE)) {
+                            if (!a.getType().equals(WorkflowActivity.TYPE_ROUTE) && !a.getType().equals(WorkflowActivity.TYPE_TOOL)) {
                                 Map<String, String> option = new HashMap<String, String>();
                                 option.put("value", p.getIdWithoutVersion() + "-" + a.getActivityDefId());
                                 option.put("label", p.getName() + " - " + a.getName());
