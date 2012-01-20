@@ -35,6 +35,8 @@ public class Section extends Element implements FormBuilderEditable {
                 dataModel.put("visibilityControlParam", visibilityControlParam);
             }
         }
+        
+        dataModel.put("visible", isMatch(formData));
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
@@ -47,19 +49,8 @@ public class Section extends Element implements FormBuilderEditable {
         // get the control element (where value changes the target)
         String visibilityControl = getPropertyString("visibilityControl");
 
-        // get the value in the control element which will trigger the change
-        String visibilityValue = getPropertyString("visibilityValue");
-
         if (visibilityControl != null && !visibilityControl.isEmpty()) {
-            // find the control element
-            Form rootForm = FormUtil.findRootForm(this);
-            Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
-            if (controlElement != null) {
-                // check for matching values
-                String paramName = FormUtil.getElementParameterName(controlElement);
-                String paramValue = formData.getRequestParameter(paramName);
-                continueValidation = (paramValue != null && paramValue.equals(visibilityValue));
-            }
+            continueValidation = isMatch(formData);
         } else {
             continueValidation = super.continueValidation(formData);
         }
@@ -89,5 +80,38 @@ public class Section extends Element implements FormBuilderEditable {
     @Override
     public FormRowSet formatData(FormData formData) {
         return null;
+    }
+    
+    protected Boolean isMatch(FormData formData) {
+        // get the control element (where value changes the target)
+        String visibilityControl = getPropertyString("visibilityControl");
+
+        // get the value in the control element which will trigger the change
+        String visibilityValue = getPropertyString("visibilityValue");
+        
+        String isRegex = getPropertyString("regex");
+        
+        if (visibilityControl != null && !visibilityControl.isEmpty() && visibilityValue != null && !visibilityValue.isEmpty()) {
+            // find the control element
+            Form rootForm = FormUtil.findRootForm(this);
+            Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
+            if (controlElement != null) {
+                // check for matching values
+                String[] paramValue = FormUtil.getElementPropertyValues(controlElement, formData);
+                
+                if (paramValue != null) {
+                    for (String value : paramValue) {
+                        if (isRegex != null && "true".equals(isRegex)) {
+                            return value.matches(visibilityValue);
+                        } else {
+                            return value.equals(visibilityValue);
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

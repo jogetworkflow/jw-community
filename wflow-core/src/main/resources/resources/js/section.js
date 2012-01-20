@@ -71,8 +71,12 @@ VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
     }
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea, .form-element').attr("disabled", true).trigger("change"); 
+    $(targetEl).find('input, select, textarea, .form-element').each(function(){
+        if($(this).is(":enabled, [disabled=false]")){
+            $(this).addClass("section-visibility-disabled").attr("disabled", true).trigger("change");
+        } 
+    });
 }
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
-    $(targetEl).find('input, select, textarea, .form-element').removeAttr("disabled").trigger("change"); 
+    $(targetEl).find('.section-visibility-disabled').removeClass(".section-visibility-disabled").removeAttr("disabled").trigger("change"); 
 }
