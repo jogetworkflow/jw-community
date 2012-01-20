@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -733,16 +734,20 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         Collection<String> columnList = new ArrayList<String>();
         Collection<String> lowerCaseColumnSet = new HashSet<String>();
         if (rowSet != null && !rowSet.isEmpty()) {
-            // get properties in the rowset
-            FormRow row = rowSet.get(0);
-
-            // iterate thru to add property (with checking for duplicates)
-            for (String propName : row.stringPropertyNames()) {
-                // ignore fixed meta data; TODO: find more efficient method; TODO: ignore button values
-                if (!FormUtil.PROPERTY_ID.equals(propName) && !FormUtil.PROPERTY_DATE_CREATED.equals(propName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(propName)) {
-                    String lowerCasePropName = propName.toLowerCase();
+            Set columnsName = new HashSet();
+            
+            for (FormRow row : rowSet) {
+                if (row != null && !row.isEmpty()) {
+                    columnsName.addAll(row.keySet());
+                }
+            }
+            
+            for (Object column : columnsName) {
+                String columnName = (String) column;
+                if (columnName != null && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)) {
+                    String lowerCasePropName = columnName.toLowerCase();
                     if (!lowerCaseColumnSet.contains(lowerCasePropName)) {
-                        columnList.add(propName);
+                        columnList.add(columnName);
                         lowerCaseColumnSet.add(lowerCasePropName);
                     }
                 }
