@@ -24,14 +24,20 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
     @Override
     public boolean isAuthorize() {
         User user = getCurrentUser();
-
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        ExtDirectoryManager directoryManager = (ExtDirectoryManager) ac.getBean("directoryManager");
+        
         if (user != null) {
-            StringTokenizer strToken = new StringTokenizer(getPropertyString("allowedGroupIds"), ";");
-            while (strToken.hasMoreTokens()) {
-                String groupId = (String) strToken.nextElement();
-                for (Group g : (Collection<Group>) user.getGroups()) {
-                    if (groupId.equals(g.getId())) {
-                        return true;
+            Collection<Group> groups = directoryManager.getGroupByUsername(user.getUsername());
+            
+            if (groups != null) {
+                StringTokenizer strToken = new StringTokenizer(getPropertyString("allowedGroupIds"), ";");
+                while (strToken.hasMoreTokens()) {
+                    String groupId = (String) strToken.nextElement();
+                    for (Group g : groups) {
+                        if (groupId.equals(g.getId())) {
+                            return true;
+                        }
                     }
                 }
             }
