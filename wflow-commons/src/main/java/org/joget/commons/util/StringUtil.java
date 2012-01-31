@@ -130,7 +130,7 @@ public class StringUtil {
     }
 
     public static String escapeRegex(String inStr) {
-        return inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1");
+        return (inStr != null) ?  inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1") : null;
     }
 
     public static String escapeString(String inStr, String format, Map<String, String> replaceMap) {
