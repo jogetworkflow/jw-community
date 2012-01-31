@@ -1,5 +1,7 @@
 package org.joget.apps.app.lib;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
@@ -11,6 +13,7 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
 
 public class FormHashVariable extends DefaultHashVariablePlugin {
+    Map<String, FormRow> formDataCache = new HashMap<String, FormRow>();
 
     @Override
     public String processHashVariable(String variableKey) {
@@ -43,7 +46,12 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                     }
                 }
 
-                FormRow row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
+                String cacheKey = tableName + "##" + primaryKey;
+                FormRow row = formDataCache.get(cacheKey);
+                if (row == null) {        
+                    row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
+                    formDataCache.put(cacheKey, row);
+                }
 
                 if (row != null && row.getCustomProperties() != null) {
                     Object val = row.getCustomProperties().get(columnName);

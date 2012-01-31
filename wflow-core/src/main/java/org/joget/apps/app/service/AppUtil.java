@@ -255,6 +255,7 @@ public class AppUtil implements ApplicationContextAware {
                     PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
                     PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) appContext.getBean("pluginDefaultPropertiesDao");
                     Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
+                    Map <String, HashVariablePlugin> hashVariablePluginCache = new HashMap<String, HashVariablePlugin>();
 
                     for (String var : varList) {
                         String tempVar = var.replaceAll("#", "");
@@ -262,27 +263,32 @@ public class AppUtil implements ApplicationContextAware {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix())) {
                                 tempVar = tempVar.replace(hashVariablePlugin.getPrefix() + ".", "");
+                                
+                                HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
+                                if (cachedPlugin == null) {
+                                    cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
+                                    //get default plugin properties
+                                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                                    PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(cachedPlugin.getClassName(), appDef);
+                                    if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
+                                        cachedPlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));
+                                    }
 
-                                //get default plugin properties
-                                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                                PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(hashVariablePlugin.getClass().getName(), appDef);
-                                if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-                                    hashVariablePlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));
+                                    //put appDef & wfAssignment to properties
+                                    cachedPlugin.setProperty("appDefinition", appDef);
+                                    cachedPlugin.setProperty("workflowAssignment", wfAssignment);
+                                    hashVariablePluginCache.put(hashVariablePlugin.getClassName(), cachedPlugin);
                                 }
 
-                                //put appDef & wfAssignment to properties
-                                hashVariablePlugin.setProperty("appDefinition", appDef);
-                                hashVariablePlugin.setProperty("workflowAssignment", wfAssignment);
-
                                 //get result from plugin
-                                String value = hashVariablePlugin.processHashVariable(tempVar);
+                                String value = cachedPlugin.processHashVariable(tempVar);
                                 
                                 if (value != null && !StringUtil.TYPE_REGEX.equals(escapeFormat)) {
                                     value = StringUtil.escapeRegex(value);
                                 }
                                 
                                 //escape special char in HashVariable
-                                var = hashVariablePlugin.escapeHashVariable(var);
+                                var = cachedPlugin.escapeHashVariable(var);
 
                                 //replace
                                 if (value != null) {

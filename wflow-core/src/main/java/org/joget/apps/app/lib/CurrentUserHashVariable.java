@@ -10,7 +10,8 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.ApplicationContext;
 
 public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
-
+    private User user = null;
+    
     @Override
     public String processHashVariable(String variableKey) {
         ApplicationContext appContext = AppUtil.getApplicationContext();
@@ -42,10 +43,12 @@ public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
         String attributeValue = null;
 
         try {
-            ApplicationContext appContext = AppUtil.getApplicationContext();
-            DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-            User user = directoryManager.getUserByUsername(username);
-
+            if (user == null) {
+                ApplicationContext appContext = AppUtil.getApplicationContext();
+                DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+                user = directoryManager.getUserByUsername(username);
+            }
+            
             if (user != null) {
                 //convert first character to upper case
                 char firstChar = attribute.charAt(0);

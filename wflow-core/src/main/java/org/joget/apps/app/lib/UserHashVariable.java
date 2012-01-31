@@ -1,6 +1,8 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
@@ -9,7 +11,8 @@ import org.joget.directory.model.service.DirectoryManager;
 import org.springframework.context.ApplicationContext;
 
 public class UserHashVariable extends DefaultHashVariablePlugin {
-
+    private Map<String, User> userCache = new HashMap<String, User>();
+    
     @Override
     public String processHashVariable(String variableKey) {
         String username = variableKey.substring(0, variableKey.indexOf("."));
@@ -38,10 +41,13 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
         String attributeValue = null;
 
         try {
-            ApplicationContext appContext = AppUtil.getApplicationContext();
-            DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-            User user = directoryManager.getUserByUsername(username);
-
+            User user = userCache.get(username);
+            if (user == null) {
+                ApplicationContext appContext = AppUtil.getApplicationContext();
+                DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+                user = directoryManager.getUserByUsername(username);
+                userCache.put(username, user);
+            }
             if (user != null) {
                 //convert first character to upper case
                 char firstChar = attribute.charAt(0);
