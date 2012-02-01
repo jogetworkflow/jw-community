@@ -114,7 +114,12 @@
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                     <c:choose>
-                                                                        <c:when test="${!isExtDirectoryManager}">
+                                                                        <c:when test="${!isExtDirectoryManager || empty participantDisplayName}">
+                                                                            <c:if test="${empty participantDisplayName}">
+                                                                                <c:set var="participantDisplayName">
+                                                                                    <span style="color:gray;">${participantValue} <fmt:message key="console.process.config.label.mapParticipants.unavailable"/></span>
+                                                                                </c:set>
+                                                                            </c:if>  
                                                                             ${participantDisplayName}
                                                                         </c:when>
                                                                         <c:otherwise>
@@ -126,7 +131,19 @@
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'hod' || participantMap[participantUid].type eq 'department'}">
                                                             <c:set var="participantDisplayName" value="${departmentsMap[participantMap[participantUid].value].name}"/>
-                                                            <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${participantMap[participantUid].value}">${participantDisplayName}</a>
+                                                            <c:choose>
+                                                                <c:when test="${!isExtDirectoryManager || empty participantDisplayName}">
+                                                                    <c:if test="${empty participantDisplayName}">
+                                                                        <c:set var="participantDisplayName">
+                                                                            <span style="color:gray;">${participantMap[participantUid].value} <fmt:message key="console.process.config.label.mapParticipants.unavailable"/></span>
+                                                                        </c:set>
+                                                                    </c:if>  
+                                                                    ${participantDisplayName}
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${participantMap[participantUid].value}">${participantDisplayName}</a>
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'workflowVariable'}">
                                                             <font class="ftl_label"><fmt:message key="console.app.process.common.label.variableId"/> :</font> <c:out value="${fn:substring(participantMap[participantUid].value, 0, fn:indexOf(participantMap[participantUid].value, ','))}"/><br/>
