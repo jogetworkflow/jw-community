@@ -105,13 +105,20 @@ DatalistBuilder = {
         for(e in DatalistBuilder.binderProperties.properties){
             temp['binder_' + e] = DatalistBuilder.binderProperties.properties[e];
         }
-        $.getJSON(
-            DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns?' + $.param(temp),
-            {   id: DatalistBuilder.datalistProperties.id,
+        $.ajax({
+            type : "GET",
+            contentType : "application/json; charset=utf-8",
+            url : DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns?' + $.param(temp),
+            data : {   
+                id: DatalistBuilder.datalistProperties.id,
                 binderId : DatalistBuilder.binderProperties.className
             },
-            DatalistBuilder.updateBinderPropertiesCallBack
-        );
+            dataType : "json",
+            success : DatalistBuilder.updateBinderPropertiesCallBack,
+            error : function () {
+                alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
+            }
+        });
         
         if(mode == DatalistBuilder.UPDATE){
             //reset all fields
