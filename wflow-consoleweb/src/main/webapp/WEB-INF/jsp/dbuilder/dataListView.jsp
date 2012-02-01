@@ -126,6 +126,7 @@
         submitForm: function(form) {
             var params = $(form).serialize();
             var queryStr = window.location.search;
+            params = params.replace(/\+/g, " ");
             var newUrl = UrlUtil.mergeRequestQueryString(queryStr, params);
             window.location.href = "?" + newUrl;
             return false;
