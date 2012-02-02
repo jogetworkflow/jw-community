@@ -28,42 +28,45 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         } else {
             columnName = temp[1];
         }
-        try {
-            if (tableName != null && tableName.length() != 0) {
-                ApplicationContext appContext = AppUtil.getApplicationContext();
-                FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
+        
+        WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
+        if (!primaryKey.isEmpty() || wfAssignment != null) {
+            try {
+                if (tableName != null && tableName.length() != 0) {
+                    ApplicationContext appContext = AppUtil.getApplicationContext();
+                    FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
 
-                WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
-                if (wfAssignment != null) {
+                    if (wfAssignment != null) {
 
-                    WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
-                    WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
+                        WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+                        WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
 
-                    if (link != null) {
-                        primaryKey = link.getOriginProcessId();
-                    } else if (primaryKey.isEmpty()) {
-                        primaryKey = wfAssignment.getProcessId();
+                        if (link != null) {
+                            primaryKey = link.getOriginProcessId();
+                        } else if (primaryKey.isEmpty()) {
+                            primaryKey = wfAssignment.getProcessId();
+                        }
+                    }
+
+                    String cacheKey = tableName + "##" + primaryKey;
+                    FormRow row = formDataCache.get(cacheKey);
+                    if (row == null) {        
+                        row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
+                        formDataCache.put(cacheKey, row);
+                    }
+
+                    if (row != null && row.getCustomProperties() != null) {
+                        Object val = row.getCustomProperties().get(columnName);
+                        if (val != null) {
+                            return val.toString();
+                        } else {
+                            LogUtil.info(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
+                            return "";
+                        }
                     }
                 }
-
-                String cacheKey = tableName + "##" + primaryKey;
-                FormRow row = formDataCache.get(cacheKey);
-                if (row == null) {        
-                    row = formDataDao.loadByTableNameAndColumnName(tableName, columnName, primaryKey);
-                    formDataCache.put(cacheKey, row);
-                }
-
-                if (row != null && row.getCustomProperties() != null) {
-                    Object val = row.getCustomProperties().get(columnName);
-                    if (val != null) {
-                        return val.toString();
-                    } else {
-                        LogUtil.info(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
-                        return "";
-                    }
-                }
-            }
-        } catch (Exception ex) {}
+            } catch (Exception ex) {}
+        }
         return null;
     }
 

@@ -182,18 +182,19 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @return null if the row does not exist
      */
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public FormRow loadByTableNameAndColumnName(String tableName, String columnName, String primaryKey) {
-        String entityName = this.getEntityName(tableName, columnName);
-
-        if (!tableName.startsWith(FORM_PREFIX_TABLE_NAME))
+        if (!tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
             tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
+        }
+        
         // get hibernate template
-        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_NORMAL);
+        HibernateTemplate ht = getHibernateTemplate(tableName, tableName, null, ACTION_TYPE_LOAD_LIST);
 
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) ht.load(entityName, primaryKey);
+            row = (FormRow) ht.load(tableName, primaryKey);
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         }
