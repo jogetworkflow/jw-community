@@ -244,7 +244,7 @@ public class ReportManager {
     }
 
     protected double[] getMinMaxValues(double[] values) {
-        double min = values[0];
+        double min = (values.length > 0) ? values[0] : 0;
         double max = min;
 
         for (int i = 0; i < values.length; i++) {
