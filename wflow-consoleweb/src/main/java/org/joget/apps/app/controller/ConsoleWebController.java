@@ -1377,7 +1377,7 @@ public class ConsoleWebController {
     }
 
     protected String getDesignerwebBaseUrl(HttpServletRequest request) {
-        String designerwebBaseUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+        String designerwebBaseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
             designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
         }

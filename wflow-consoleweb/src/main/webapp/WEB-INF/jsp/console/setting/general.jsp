@@ -158,7 +158,7 @@
                         <label for="designerwebBaseUrl"><fmt:message key="console.setting.general.label.designerwebBaseUrl"/></label>
                         <span class="form-input">
                             <input id="designerwebBaseUrl" type="text" name="designerwebBaseUrl" value="${settingMap['designerwebBaseUrl']}"/>
-                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> http://${pageContext.request.serverName}:${pageContext.request.serverPort}</i>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}</i>
                         </span>
                     </div>
                 </span>

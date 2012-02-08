@@ -8,7 +8,7 @@
         </p>
 
         <%
-            String designerwebBaseUrl = "http://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
+            String designerwebBaseUrl = pageContext.getRequest().getScheme() + "://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
             if(WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0)
                 designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
 

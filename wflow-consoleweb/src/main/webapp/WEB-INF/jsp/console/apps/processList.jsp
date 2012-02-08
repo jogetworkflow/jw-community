@@ -91,7 +91,7 @@
 
     function launchDesigner(){
         <%
-                String designerwebBaseUrl = "http://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
+                String designerwebBaseUrl = pageContext.getRequest().getScheme() + "://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
                 if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
                     designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
                 }
@@ -107,7 +107,7 @@
         %>
         $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
         $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
-        var base = 'http://${pageContext.request.serverName}:${pageContext.request.serverPort}';
+        var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
         var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
         var path = base + '${pageContext.request.contextPath}';
         document.location = '<%= designerwebBaseUrl%>/jwdesigner/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&hash=${loginHash}';

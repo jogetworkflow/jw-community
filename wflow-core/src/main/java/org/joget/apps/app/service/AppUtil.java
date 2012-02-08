@@ -109,7 +109,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static String getDesignerWebBaseUrl() {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String designerwebBaseUrl = (request != null) ? "http://" + request.getServerName() + ":" + request.getServerPort() : "";
+        String designerwebBaseUrl = (request != null) ? request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() : "";
         if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
             designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
         }
