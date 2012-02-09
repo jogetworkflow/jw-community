@@ -102,9 +102,13 @@ public class Section extends Element implements FormBuilderEditable {
                 if (paramValue != null) {
                     for (String value : paramValue) {
                         if (isRegex != null && "true".equals(isRegex)) {
-                            return value.matches(visibilityValue);
+                            if (value.matches(visibilityValue)) {
+                                return true;
+                            }
                         } else {
-                            return value.equals(visibilityValue);
+                            if (value.equals(visibilityValue)) {
+                                return true;
+                            }
                         }
                     }
                 }
