@@ -38,8 +38,10 @@ public class DirectoryUtil implements ApplicationContextAware {
         DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
         Collection<User> users = directoryManager.getUserList(null, "username", false, null, null);
         Map<String, User> usersMap = new HashMap<String, User>();
-        for (User user : users) {
-            usersMap.put(user.getId(), user);
+        if (users != null) {
+            for (User user : users) {
+                usersMap.put(user.getId(), user);
+            }
         }
         return usersMap;
     }
@@ -48,8 +50,10 @@ public class DirectoryUtil implements ApplicationContextAware {
         DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
         Collection<Group> groups = directoryManager.getGroupList(null, "name", false, null, null);
         Map<String, Group> groupsMap = new HashMap<String, Group>();
-        for (Group group : groups) {
-            groupsMap.put(group.getId(), group);
+        if (groups != null) {
+            for (Group group : groups) {
+                groupsMap.put(group.getId(), group);
+            }
         }
         return groupsMap;
     }
@@ -58,8 +62,10 @@ public class DirectoryUtil implements ApplicationContextAware {
         DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
         Collection<Department> departments = directoryManager.getDepartmentList("name", false, null, null);
         Map<String, Department> departmentsMap = new HashMap<String, Department>();
-        for (Department department : departments) {
-            departmentsMap.put(department.getId(), department);
+        if (departments != null) {
+            for (Department department : departments) {
+                departmentsMap.put(department.getId(), department);
+            }
         }
         return departmentsMap;
     }
