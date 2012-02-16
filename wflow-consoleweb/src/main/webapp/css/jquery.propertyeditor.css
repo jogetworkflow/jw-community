@@ -108,6 +108,10 @@
     width:90px;
 }
 
+.property-input select{
+    background:#fff;
+}
+
 .property-gridinputelement{
     padding:5px 0px;
 }
