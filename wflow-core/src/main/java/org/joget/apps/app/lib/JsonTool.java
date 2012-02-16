@@ -75,7 +75,7 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             Map object = PropertyUtil.getPropertiesValueFromJson(jsonResponse);
 
-            storeToForm(properties, object);
+            storeToForm(wfAssignment, properties, object);
             storeToWorkflowVariable(wfAssignment, properties, object);
 
         } catch (Exception ex) {
@@ -89,7 +89,7 @@ public class JsonTool extends DefaultApplicationPlugin {
         return null;
     }
 
-    protected void storeToForm(Map properties, Map object) {
+    protected void storeToForm(WorkflowAssignment wfAssignment, Map properties, Map object) {
         String formDefId = (String) properties.get("formDefId");
         if (formDefId != null && formDefId.trim().length() > 0) {
             ApplicationContext ac = AppUtil.getApplicationContext();
@@ -106,11 +106,11 @@ public class JsonTool extends DefaultApplicationPlugin {
                 if (baseObjectArray != null && baseObjectArray.length > 0) {
                     rowSet.setMultiRow(true);
                     for (int i = 0; i < baseObjectArray.length; i++) {
-                        rowSet.add(getRow(multirowBaseObjectName, i, fieldMapping, object));
+                        rowSet.add(getRow(wfAssignment, multirowBaseObjectName, i, fieldMapping, object));
                     }
                 }
             } else {
-                rowSet.add(getRow(null, null, fieldMapping, object));
+                rowSet.add(getRow(wfAssignment, null, null, fieldMapping, object));
             }
 
             if (rowSet.size() > 0) {
@@ -164,13 +164,13 @@ public class JsonTool extends DefaultApplicationPlugin {
         return null;
     }
 
-    protected FormRow getRow(String multirowBaseObjectName, Integer rowNumber, Object[] fieldMapping, Map object) {
+    protected FormRow getRow(WorkflowAssignment wfAssignment, String multirowBaseObjectName, Integer rowNumber, Object[] fieldMapping, Map object) {
         FormRow row = new FormRow();
 
         for (Object o : fieldMapping) {
             Map mapping = (HashMap) o;
             String fieldName = mapping.get("field").toString();
-            String jsonObjectName = mapping.get("jsonObjectName").toString();
+            String jsonObjectName = WorkflowUtil.processVariable(mapping.get("jsonObjectName").toString(), null, wfAssignment, null, null);
 
             if (multirowBaseObjectName != null) {
                 jsonObjectName = jsonObjectName.replace(multirowBaseObjectName, multirowBaseObjectName + "[" + rowNumber + "]");
@@ -178,17 +178,23 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             String value = (String) getObjectFromMap(jsonObjectName, object);
 
-            if (value != null) {
-                if (FormUtil.PROPERTY_ID.equals(fieldName)) {
-                    row.setId(value);
-                } else {
-                    row.put(fieldName, value);
-                }
+            if (value == null) {
+                value = jsonObjectName;
+            }
+
+            if (FormUtil.PROPERTY_ID.equals(fieldName)) {
+                row.setId(value);
+            } else {
+                row.put(fieldName, value);
             }
         }
 
         if (row.getId() == null || (row.getId() != null && row.getId().trim().length() == 0)) {
-            row.setId(UuidGenerator.getInstance().getUuid());
+            if (multirowBaseObjectName == null) {
+                row.setId(wfAssignment.getProcessId());
+            } else {
+                row.setId(UuidGenerator.getInstance().getUuid());
+            }
         }
 
         Date currentDate = new Date();
