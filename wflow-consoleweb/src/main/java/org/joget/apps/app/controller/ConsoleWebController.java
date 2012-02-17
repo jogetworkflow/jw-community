@@ -54,7 +54,6 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormService;
-import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
@@ -2860,66 +2859,16 @@ public class ConsoleWebController {
     @RequestMapping("/console/run/apps")
     public String consoleRunApps(ModelMap model) {
         // get list of published apps.
-        Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
-
-        // filter based on availability and permission of userviews to run.
-        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
-            AppDefinition appDef = i.next();
-            
-            Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
-            Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
-            
-            for (UserviewDefinition uvDef : uvDefList) {
-                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null, false);
-                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))) {
-                    newUvDefList.add(uvDef);
-                }
-            }
-
-            if (newUvDefList != null && !newUvDefList.isEmpty()) {
-                AppDefinition tempAppDef = new AppDefinition();
-                tempAppDef.setAppId(appDef.getId());
-                tempAppDef.setVersion(appDef.getVersion());
-                tempAppDef.setName(appDef.getName());
-                tempAppDef.setUserviewDefinitionList(newUvDefList);
-                resultAppDefinitionList.add(tempAppDef);
-            }
-        }
-        
+        Collection<AppDefinition> resultAppDefinitionList = appService.getPublishedApps(null);
         model.addAttribute("appDefinitionList", resultAppDefinitionList);
         return "console/run/runApps";
     }
 
     @RequestMapping("/console/run/processes")
     public String consoleRunProcesses(ModelMap model) {
-        // get list of published apps.
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
-        Map<AppDefinition, Collection<WorkflowProcess>> appProcessMap = new ListOrderedMap();
-
-        // filter based on availability of processes to run.
-        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
-            AppDefinition appDef = i.next();
-            Collection<PackageDefinition> packageDefList = appDef.getPackageDefinitionList();
-            if (packageDefList != null && !packageDefList.isEmpty()) {
-                PackageDefinition packageDef = packageDefList.iterator().next();
-                Collection<WorkflowProcess> processList = workflowManager.getProcessList(packageDef.getId(), packageDef.getVersion().toString());
-                
-                Collection<WorkflowProcess> processListWithPermission = new ArrayList<WorkflowProcess>();
-                
-                for (WorkflowProcess process : processList) {
-                    if (workflowManager.isUserInWhiteList(process.getId())) {
-                        processListWithPermission.add(process);
-                    }
-                }
-                
-                appProcessMap.put(appDef, processListWithPermission);
-            } else {
-                i.remove();
-            }
-        }
-
-        model.addAttribute("appDefinitionList", appDefinitionList);
+        // get list of published processes
+        Map<AppDefinition, Collection<WorkflowProcess>> appProcessMap = appService.getPublishedProcesses(null);
+        model.addAttribute("appDefinitionList", appProcessMap.keySet());
         model.addAttribute("appProcessMap", appProcessMap);
         return "console/run/runProcesses";
     }

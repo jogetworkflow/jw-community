@@ -18,6 +18,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
@@ -55,6 +56,8 @@ import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileStore;
@@ -105,6 +108,8 @@ public class AppServiceImpl implements AppService {
     PluginManager pluginManager;
     @Autowired
     FormDataDao formDataDao;
+    @Autowired
+    UserviewService userviewService;
     //----- Workflow use cases ------
 
     /**
@@ -1453,4 +1458,106 @@ public class AppServiceImpl implements AppService {
         }
         return null;
     }
+
+    /**
+     * Retrieve list of published apps available to the current user
+     * @param appId Optional filter by appId
+     * @return 
+     */
+    public Collection<AppDefinition> getPublishedApps(String appId) {
+        Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
+        Collection<AppDefinition> appDefinitionList = null;
+        if (appId == null || appId.trim().isEmpty()) {
+            // get list of published apps.
+            appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+        } else {
+            // get specific app
+            appDefinitionList = new ArrayList<AppDefinition>();
+            Long version = getPublishedVersion(appId);
+            if (version != null && version > 0) {
+                AppDefinition appDef = getAppDefinition(appId, version.toString());
+                if (appDef != null) {
+                    appDefinitionList.add(appDef);
+                }
+            }
+        }
+
+        // filter based on availability and permission of userviews to run.
+        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
+            AppDefinition appDef = i.next();
+            
+            Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
+            Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
+            
+            for (UserviewDefinition uvDef : uvDefList) {
+                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null, false);
+                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))) {
+                    newUvDefList.add(uvDef);
+                }
+            }
+
+            if (newUvDefList != null && !newUvDefList.isEmpty()) {
+                AppDefinition tempAppDef = new AppDefinition();
+                tempAppDef.setAppId(appDef.getId());
+                tempAppDef.setVersion(appDef.getVersion());
+                tempAppDef.setName(appDef.getName());
+                tempAppDef.setUserviewDefinitionList(newUvDefList);
+                resultAppDefinitionList.add(tempAppDef);
+            }
+        }
+        return resultAppDefinitionList;
+    }
+
+    /**
+     * Retrieve list of published processes available to the current user
+     * @param appId Optional filter by appId
+     * @return 
+     */
+    public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId) {
+        Map<AppDefinition, Collection<WorkflowProcess>> appProcessMap = new ListOrderedMap();
+
+        // get list of published apps.
+        Collection<AppDefinition> appDefinitionList = null;
+        if (appId == null || appId.trim().isEmpty()) {
+            // get list of published apps.
+            appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+        } else {
+            // get specific app
+            appDefinitionList = new ArrayList<AppDefinition>();
+            Long version = getPublishedVersion(appId);
+            if (version != null && version > 0) {
+                AppDefinition appDef = getAppDefinition(appId, version.toString());
+                if (appDef != null) {
+                    appDefinitionList.add(appDef);
+                }
+            }
+        }
+
+        // filter based on availability of processes to run.
+        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
+            AppDefinition appDef = i.next();
+            Collection<PackageDefinition> packageDefList = appDef.getPackageDefinitionList();
+            if (packageDefList != null && !packageDefList.isEmpty()) {
+                PackageDefinition packageDef = packageDefList.iterator().next();
+                Collection<WorkflowProcess> processList = workflowManager.getProcessList(packageDef.getId(), packageDef.getVersion().toString());
+                
+                Collection<WorkflowProcess> processListWithPermission = new ArrayList<WorkflowProcess>();
+                
+                for (WorkflowProcess process : processList) {
+                    if (workflowManager.isUserInWhiteList(process.getId())) {
+                        processListWithPermission.add(process);
+                    }
+                }
+                
+                if (!processListWithPermission.isEmpty()) {
+                    appProcessMap.put(appDef, processListWithPermission);
+                }
+            } else {
+                i.remove();
+            }
+        }
+        
+        return appProcessMap;
+    }
+    
 }

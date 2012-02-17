@@ -328,4 +328,19 @@ public interface AppService {
     public String getFormTableName(String appId, String appVersion, String formDefID);
     
     public String getFormTableName(AppDefinition appDef, String formDefID);
+
+    /**
+     * Retrieve list of published apps available to the current user
+     * @param appId Optional filter by appId
+     * @return 
+     */
+    public Collection<AppDefinition> getPublishedApps(String appId);
+
+    /**
+     * Retrieve list of published processes available to the current user
+     * @param appId Optional filter by appId
+     * @return 
+     */
+    public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId);
+        
 }

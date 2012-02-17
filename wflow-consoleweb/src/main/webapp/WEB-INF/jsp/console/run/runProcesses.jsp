@@ -31,7 +31,7 @@
     <div id="main-body">
 
         <div>
-            <c:if test="${empty appDefinitionList[0]}">
+            <c:if test="${empty appDefinitionList}">
                 <fmt:message key="console.run.apps.none"/>
             </c:if>
         </div>

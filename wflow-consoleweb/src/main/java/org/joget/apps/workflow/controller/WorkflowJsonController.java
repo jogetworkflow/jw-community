@@ -28,6 +28,7 @@ import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -40,6 +41,7 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.joget.workflow.util.XpdlImageUtil;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ui.ModelMap;
@@ -1029,4 +1031,64 @@ public class WorkflowJsonController {
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentForceComplete(processDefId, processId, activityId, username);
     }
+    
+    @RequestMapping("/json/apps/published/userviews")
+    public void publishedApps(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId) throws JSONException, IOException {
+        Collection<AppDefinition> appDefinitionList = appService.getPublishedApps(appId);
+        JSONObject root = new JSONObject();
+        JSONArray apps = new JSONArray();
+        for (AppDefinition appDef: appDefinitionList) {
+            JSONObject app = new JSONObject();
+            app.accumulate("id", appDef.getAppId());
+            app.accumulate("name", appDef.getName());
+            app.accumulate("version", appDef.getVersion());
+            JSONArray userviews = new JSONArray();
+            for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
+                JSONObject userview = new JSONObject();
+                userview.accumulate("id", userviewDef.getId());
+                userview.accumulate("name", userviewDef.getName());
+                userview.accumulate("version", userviewDef.getAppVersion());
+                String url = WorkflowUtil.getHttpServletRequest().getContextPath() + "/web/userview/" + appDef.getId() + "/" + userviewDef.getId();
+                userview.accumulate("url", url);
+                userviews.put(userview);
+            }
+            app.put("userviews", userviews);
+            apps.put(app);
+        }
+        root.put("apps", apps);
+        writeJson(writer, root, callback);
+    }
+
+    @RequestMapping("/json/apps/published/processes")
+    public void publishedProcesses(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId) throws JSONException, IOException {
+        // get list of published processes
+        Map<AppDefinition, Collection<WorkflowProcess>> appProcessMap = appService.getPublishedProcesses(appId);
+        JSONObject root = new JSONObject();
+        JSONArray apps = new JSONArray();
+        for (Iterator<AppDefinition> i=appProcessMap.keySet().iterator(); i.hasNext();) {
+            AppDefinition appDef = i.next();
+            Collection<WorkflowProcess> processList = appProcessMap.get(appDef);
+            JSONObject app = new JSONObject();
+            app.accumulate("id", appDef.getAppId());
+            app.accumulate("name", appDef.getName());
+            app.accumulate("version", appDef.getVersion());
+            JSONArray processes = new JSONArray();
+            for (WorkflowProcess processDef: processList) {
+                JSONObject process = new JSONObject();
+                process.accumulate("id", processDef.getId());
+                process.accumulate("idWithoutVersion", processDef.getIdWithoutVersion());
+                process.accumulate("name", processDef.getName());
+                process.accumulate("processVersion", processDef.getVersion());
+                process.accumulate("appVersion", appDef.getVersion());
+                String url = WorkflowUtil.getHttpServletRequest().getContextPath() + "/web/client/app/" + appDef.getId() + "/" + appDef.getVersion() + "/process/" + processDef.getIdWithoutVersion() + "?start=true";
+                process.accumulate("url", url);
+                processes.put(process);
+            }
+            app.put("processes", processes);
+            apps.put(app);
+        }
+        root.put("apps", apps);
+        writeJson(writer, root, callback);
+    }
+    
 }
