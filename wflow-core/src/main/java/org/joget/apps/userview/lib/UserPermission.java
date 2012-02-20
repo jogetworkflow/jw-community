@@ -76,7 +76,7 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
                 empty.put("label", "All");
                 jsonArray.put(empty);
 
-                Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, null, null, null, null);
+                Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
 
                 for (Organization o : orgList) {
                     Map<String, String> option = new HashMap<String, String>();
@@ -102,7 +102,7 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
                 ApplicationContext ac = AppUtil.getApplicationContext();
                 ExtDirectoryManager directoryManager = (ExtDirectoryManager) ac.getBean("directoryManager");
 
-                Collection<User> userList = directoryManager.getUsers(null, orgId, null, null, null, null, null, null, null, null, null);
+                Collection<User> userList = directoryManager.getUsers(null, orgId, null, null, null, null, null, "firstName", false, null, null);
 
                 for (User u : userList) {
                     Map<String, String> option = new HashMap<String, String>();

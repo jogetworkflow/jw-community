@@ -85,7 +85,7 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
                 empty.put("label", "All");
                 jsonArray.put(empty);
 
-                Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, null, null, null, null);
+                Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
 
                 for (Organization o : orgList) {
                     Map<String, String> option = new HashMap<String, String>();
@@ -111,7 +111,7 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
                 ApplicationContext ac = AppUtil.getApplicationContext();
                 ExtDirectoryManager directoryManager = (ExtDirectoryManager) ac.getBean("directoryManager");
 
-                Collection<Group> groupList = directoryManager.getGroupsByOrganizationId(null, orgId, null, null, null, null);
+                Collection<Group> groupList = directoryManager.getGroupsByOrganizationId(null, orgId, "name", false, null, null);
 
                 for (Group g : groupList) {
                     Map<String, String> option = new HashMap<String, String>();
