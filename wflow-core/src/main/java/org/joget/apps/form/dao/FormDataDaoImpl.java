@@ -597,6 +597,22 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         persistentClassCacheMap.clear();
     }
     
+    public void clearFormCache(Form form) {
+        String entityName = getFormEntityName(form);
+        String tableName = getFormTableName(form);
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        Map<String, HibernateTemplate> templateCache = templateCacheMap.get(profile);
+        if (templateCache != null) {
+            templateCache.remove(entityName);
+            templateCache.remove(tableName);
+        }
+        Map<String, PersistentClass> persistentClassCache = persistentClassCacheMap.get(profile);
+        if (persistentClassCache != null) {
+            persistentClassCache.remove(entityName);
+            persistentClassCache.remove(tableName);
+        }
+    }
+    
     /**
      * Gets the hibernate template for the form
      * @param form
@@ -895,85 +911,88 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         Integer actionType = (Integer) metaData[3];
         String path = getFormMappingPath();
         String filename = entityName + ".hbm.xml";
+        
         File mappingFile = new File(path, filename);
-        if (!mappingFile.exists()) {
-            InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
-            Document document = XMLUtil.loadDocument(is);
-
-            // set entity name for form
-            FormRowSet rowSet = (FormRowSet) metaData[2];
-            pc.setEntityName(entityName);
-
-            // set column names
-            Collection<String> formFields = null;
-            if (rowSet != null) {
-                // column names from submitted fields
-                formFields = getFormRowColumnNames(rowSet);
-            } else {
-                // column names from all forms mapped to this table
-                formFields = getFormDefinitionColumnNames(tableName);
-            }
-            
-            for (String field : formFields) {
-                SimpleValue simpleValue = new SimpleValue();
-                String columnName = FORM_PREFIX_COLUMN + field;
-                simpleValue.addColumn(new Column(columnName));
-                simpleValue.setTypeName("text");
-                Property property = new Property();
-                property.setName(field);
-                property.setValue(simpleValue);
-                customComponent.addProperty(property);
-            }
-
-            // update entity-name
-            NodeList classTags = document.getElementsByTagName("class");
-            Node classNode = classTags.item(0);
-            NamedNodeMap attributeMap = classNode.getAttributes();
-            Node entityNameNode = attributeMap.getNamedItem("entity-name");
-            entityNameNode.setNodeValue(entityName);
-            attributeMap.setNamedItem(entityNameNode);
-
-            // update table name
-            Node tableNameNode = attributeMap.getNamedItem("table");
-            tableNameNode.setNodeValue(tableName);
-            attributeMap.setNamedItem(tableNameNode);
-
-            // remove existing dynamic components
-            NodeList componentTags = document.getElementsByTagName("dynamic-component");
-            Node node = componentTags.item(0);
-            XMLUtil.removeChildren(node);
-
-            // add dynamic components
-            Iterator propertyIterator = customComponent.getPropertyIterator();
-            while (propertyIterator.hasNext()) {
-                Property prop = (Property) propertyIterator.next();
-                Element element = document.createElement("property");
-                Type type = prop.getType();
-                String propName = prop.getName();
-                Column column = (Column) prop.getColumnIterator().next();
-                if (propName != null && !propName.isEmpty()) {
-                    String propType = "";
-                    if (type.getReturnedClass().getName().equals("java.lang.String")) {
-                        if (column != null && column.getName().startsWith(FORM_PREFIX_COLUMN)) {
-                            propType = "text";
-                        } else {
-                            propType = "string";
-                        }
-                    } else {
-                        propType = type.getReturnedClass().getName();
-                    }
-                    element.setAttribute("name", propName);
-                    element.setAttribute("column", column.getName());
-                    element.setAttribute("type", propType);
-                    element.setAttribute("not-null", String.valueOf(false));
-                    node.appendChild(element);
-                }
-            }
-
-            // save xml
-            XMLUtil.saveDocument(document, mappingFile.getPath());
-
+        if (mappingFile.exists()) {
+            mappingFile.delete();
         }
+        
+        InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
+        Document document = XMLUtil.loadDocument(is);
+
+        // set entity name for form
+        FormRowSet rowSet = (FormRowSet) metaData[2];
+        pc.setEntityName(entityName);
+
+        // set column names
+        Collection<String> formFields = null;
+        if (rowSet != null) {
+            // column names from submitted fields
+            formFields = getFormRowColumnNames(rowSet);
+        } else {
+            // column names from all forms mapped to this table
+            formFields = getFormDefinitionColumnNames(tableName);
+        }
+
+        for (String field : formFields) {
+            SimpleValue simpleValue = new SimpleValue();
+            String columnName = FORM_PREFIX_COLUMN + field;
+            simpleValue.addColumn(new Column(columnName));
+            simpleValue.setTypeName("text");
+            Property property = new Property();
+            property.setName(field);
+            property.setValue(simpleValue);
+            customComponent.addProperty(property);
+        }
+
+        // update entity-name
+        NodeList classTags = document.getElementsByTagName("class");
+        Node classNode = classTags.item(0);
+        NamedNodeMap attributeMap = classNode.getAttributes();
+        Node entityNameNode = attributeMap.getNamedItem("entity-name");
+        entityNameNode.setNodeValue(entityName);
+        attributeMap.setNamedItem(entityNameNode);
+
+        // update table name
+        Node tableNameNode = attributeMap.getNamedItem("table");
+        tableNameNode.setNodeValue(tableName);
+        attributeMap.setNamedItem(tableNameNode);
+
+        // remove existing dynamic components
+        NodeList componentTags = document.getElementsByTagName("dynamic-component");
+        Node node = componentTags.item(0);
+        XMLUtil.removeChildren(node);
+
+        // add dynamic components
+        Iterator propertyIterator = customComponent.getPropertyIterator();
+        while (propertyIterator.hasNext()) {
+            Property prop = (Property) propertyIterator.next();
+            Element element = document.createElement("property");
+            Type type = prop.getType();
+            String propName = prop.getName();
+            Column column = (Column) prop.getColumnIterator().next();
+            if (propName != null && !propName.isEmpty()) {
+                String propType = "";
+                if (type.getReturnedClass().getName().equals("java.lang.String")) {
+                    if (column != null && column.getName().startsWith(FORM_PREFIX_COLUMN)) {
+                        propType = "text";
+                    } else {
+                        propType = "string";
+                    }
+                } else {
+                    propType = type.getReturnedClass().getName();
+                }
+                element.setAttribute("name", propName);
+                element.setAttribute("column", column.getName());
+                element.setAttribute("type", propType);
+                element.setAttribute("not-null", String.valueOf(false));
+                node.appendChild(element);
+            }
+        }
+
+        // save xml
+        XMLUtil.saveDocument(document, mappingFile.getPath());
+
         // add mapping to config
         config.addFile(mappingFile);
         return config;

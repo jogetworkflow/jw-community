@@ -16,6 +16,12 @@ import org.xml.sax.SAXException;
 public interface FormDataDao {
 
     /**
+     * clear cache for a form
+     * @param form
+     */
+    public void clearFormCache(Form form);
+    
+    /**
      * Loads a data row for a form based on the primary key
      * @param form
      * @param primaryKey

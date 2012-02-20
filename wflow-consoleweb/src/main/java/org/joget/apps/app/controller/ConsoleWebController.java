@@ -51,6 +51,7 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormService;
@@ -167,6 +168,8 @@ public class ConsoleWebController {
     UserviewDefinitionDao userviewDefinitionDao;
     @Resource
     DatalistDefinitionDao datalistDefinitionDao;
+    @Resource
+    FormDataDao formDataDao;
 
     @RequestMapping("/index")
     public String index() {
@@ -2841,6 +2844,7 @@ public class ConsoleWebController {
 
         // update
         formDefinitionDao.update(formDef);
+        formDataDao.clearFormCache(form);
         return "console/apps/dialogClose";
     }
 
