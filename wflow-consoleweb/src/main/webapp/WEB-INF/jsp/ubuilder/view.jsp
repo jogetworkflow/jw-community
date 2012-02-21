@@ -129,10 +129,15 @@
             </script>
         </c:when>
         <c:otherwise>
-            <%
-                String redirectUrl = (String)pageContext.getAttribute("redirectUrlValue");
-                response.sendRedirect(redirectUrl);
-            %>
+            <c:if test="${!fn:containsIgnoreCase(redirectUrlValue, 'http') && !fn:startsWith(redirectUrlValue, '/')}">
+                <c:set var="redirectBaseUrlValue" scope="request" value="/web/"/>
+                <c:if test="${embed}">
+                    <c:set var="redirectBaseUrlValue" scope="request" value="${redirectBaseUrlValue}embed/"/>
+                </c:if>
+                <c:set var="redirectBaseUrlValue" scope="request" value="${redirectBaseUrlValue}userview/${appId}/${userview.properties.id}/${key}/"/>
+                <c:set var="redirectUrlValue" value="${redirectBaseUrlValue}${redirectUrlValue}"/>
+            </c:if>
+            <c:redirect url="${redirectUrlValue}"/>
         </c:otherwise>
     </c:choose>
 </c:when>
