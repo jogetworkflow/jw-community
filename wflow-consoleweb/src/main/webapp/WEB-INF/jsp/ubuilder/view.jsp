@@ -137,6 +137,9 @@
                 <c:set var="redirectBaseUrlValue" scope="request" value="${redirectBaseUrlValue}userview/${appId}/${userview.properties.id}/${key}/"/>
                 <c:set var="redirectUrlValue" value="${redirectBaseUrlValue}${redirectUrlValue}"/>
             </c:if>
+            <c:if test="${fn:startsWith(redirectUrlValue, pageContext.request.contextPath)}">
+                <c:set var="redirectUrlValue" value="${fn:replace(redirectUrlValue, pageContext.request.contextPath, '')}"/>
+            </c:if>
             <c:redirect url="${redirectUrlValue}"/>
         </c:otherwise>
     </c:choose>
