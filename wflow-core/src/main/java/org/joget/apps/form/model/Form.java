@@ -35,6 +35,8 @@ public class Form extends Element implements FormBuilderEditable {
                 setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
             } else if (formData.getPrimaryKeyValue() != null) {
                 setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getPrimaryKeyValue()});
+            } else {
+                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{""});
             }
         }
 
