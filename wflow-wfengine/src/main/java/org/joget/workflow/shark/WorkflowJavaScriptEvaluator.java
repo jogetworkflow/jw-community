@@ -84,12 +84,17 @@ import org.springframework.context.ApplicationContext;
             ApplicationContext appContext = WorkflowUtil.getApplicationContext();
             WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
             
-            WorkflowDeadline workflowDeadline = new WorkflowDeadline();
-            workflowDeadline.setDeadlineExpression(expr);
-                        
-            WorkflowDeadline newDeadline = workflowMapper.executeDeadlinePlugin(procId, actId, workflowDeadline, (Date) context.get(SharkConstants.PROCESS_STARTED_TIME), (Date) context.get(SharkConstants.ACTIVITY_ACCEPTED_TIME), (Date) context.get(SharkConstants.ACTIVITY_ACTIVATED_TIME));
+            try {
+                WorkflowDeadline workflowDeadline = new WorkflowDeadline();
+                workflowDeadline.setContext(context);
+                workflowDeadline.setDeadlineExpression(expr);
 
-            expr = newDeadline.getDeadlineExpression();
+                WorkflowDeadline newDeadline = workflowMapper.executeDeadlinePlugin(procId, actId, workflowDeadline, (Date) context.get(SharkConstants.PROCESS_STARTED_TIME), (Date) context.get(SharkConstants.ACTIVITY_ACCEPTED_TIME), (Date) context.get(SharkConstants.ACTIVITY_ACTIVATED_TIME));
+
+                expr = newDeadline.getDeadlineExpression();
+            } catch (Exception e) {
+                //ignore
+            }
         }
 
         org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();

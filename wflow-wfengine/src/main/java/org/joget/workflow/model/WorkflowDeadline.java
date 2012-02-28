@@ -1,5 +1,6 @@
 package org.joget.workflow.model;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -7,6 +8,7 @@ public class WorkflowDeadline {
 
     private int deadlineLimit;
     private String deadlineExpression;
+    private Map context;
 
     public int getDeadlineLimit() {
         return deadlineLimit;
@@ -21,30 +23,37 @@ public class WorkflowDeadline {
         return deadlineExpression;
     }
 
-    public void setDeadlineExpression(String deadlineExpression) {
+    public void setDeadlineExpression(String deadlineExpression) throws Exception {
         this.deadlineExpression = deadlineExpression;
         setLimitFromExpression();
     }
 
-    private void setLimitFromExpression() {
+    private void setLimitFromExpression() throws Exception {
         if (deadlineExpression != null) {
             Pattern pattern = Pattern.compile("\\+(.+)\\);");
             Matcher matcher = pattern.matcher(deadlineExpression);
 
-            while (matcher.find()) {
+            if (matcher.find()) {
                 try {
-                    String value = matcher.group(1);
-                    value = value.replace("(", "");
-                    value = value.replace(")", "");
+                    String matchedValue = matcher.group(1);
+                    matchedValue = matchedValue.replace("(", "");
+                    matchedValue = matchedValue.replace(")", "");
                     
-                    String number[] = value.split("\\*");
-                    deadlineLimit = Integer.parseInt(number[0]);
+                    String number[] = matchedValue.split("\\*");
+                    String value = getWorkflowVariable(number[0]);
+                    deadlineLimit = Integer.parseInt(value);
                     if (number.length > 1) {
                         deadlineLimit *= Integer.parseInt(number[1]);
                     }
                 } catch (NumberFormatException nfe) {
-                    deadlineLimit = 0;
+                    //limit is incorrect
+                    //throw exception to stop deadline plugin
+                    throw new Exception();
                 }
+            } else {
+                //no limit found
+                //throw exception to stop deadline plugin
+                throw new Exception();
             }
         }
     }
@@ -58,5 +67,20 @@ public class WorkflowDeadline {
                 deadlineExpression = matcher.replaceFirst("+" + deadlineLimit + ");");
             }
         }
+    }
+
+    public Map getContext() {
+        return context;
+    }
+
+    public void setContext(Map context) {
+        this.context = context;
+    }
+    
+    private String getWorkflowVariable(String key) {
+        if (context != null && context.containsKey(key)) {
+            return context.get(key).toString();
+        }
+        return key;
     }
 }
