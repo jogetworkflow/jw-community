@@ -116,7 +116,9 @@ DatalistBuilder = {
             dataType : "json",
             success : DatalistBuilder.updateBinderPropertiesCallBack,
             error : function () {
-                alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
+                if (DatalistBuilder.binderProperties.className != undefined && DatalistBuilder.binderProperties.className != "") {
+                    alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
+                }
             }
         });
         
