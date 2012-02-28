@@ -10,7 +10,9 @@ import org.enhydra.shark.xpdl.XMLElementChangeListener;
 import org.enhydra.shark.xpdl.XPDLConstants;
 
 public class Deadline extends XMLComplexElement implements XMLElementChangeListener {
-
+    public static String DURATION_UNIT_DATETIME = "t";
+    public static String DURATION_UNIT_DATE = "d";
+    
     private DeadlineLimit refDeadlineLimit;
     private XMLAttribute attrDurationUnit;
     private DeadlineCondition refDeadlineCondition;
@@ -37,7 +39,9 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
                     XPDLConstants.DURATION_UNIT_D,
                     XPDLConstants.DURATION_UNIT_h,
                     XPDLConstants.DURATION_UNIT_m,
-                    XPDLConstants.DURATION_UNIT_s
+                    XPDLConstants.DURATION_UNIT_s,
+                    DURATION_UNIT_DATETIME,
+                    DURATION_UNIT_DATE
                 }, 0);
 
         add(attrExecution);
@@ -128,10 +132,19 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
                         case 's':
                             variableCondition += 1000;
                     }
-                    variableCondition = "(" + changedDeadlineLimit + "*" + variableCondition + ")";
+                    
+                    if (durationUnitChar != 'd' && durationUnitChar != 't') {
+                        variableCondition = "(" + changedDeadlineLimit + "*" + variableCondition + ")";
 
-                    set("DeadlineCondition",
-                            "var " + durationUnitChar + "=new java.util.Date(); " + durationUnitChar + ".setTime(ACTIVITY_ACTIVATED_TIME.getTime()+" + variableCondition + "); " + durationUnitChar + ";");
+                        set("DeadlineCondition",
+                                "var " + durationUnitChar + "=new java.util.Date(); " + durationUnitChar + ".setTime(ACTIVITY_ACTIVATED_TIME.getTime()+" + variableCondition + "); " + durationUnitChar + ";");
+                    } else if (durationUnitChar == 'd') {
+                        String condition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy'); d.parse(" + changedDeadlineLimit + ");";
+                        set("DeadlineCondition", condition);
+                    } else if (durationUnitChar == 't') {
+                        String condition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy HH:mm'); d.parse(" + changedDeadlineLimit + ");";
+                        set("DeadlineCondition", condition);
+                    }
                 }
             }
 
@@ -147,34 +160,50 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
     public void hideCustomElements() {
         // set deadline limit from deadline condition
         String deadlineCondition = getDeadlineCondition();
-        String deadlineLimit = "";
-        Pattern pattern = Pattern.compile("\\+\\(.+\\*");
-        Matcher matcher = pattern.matcher(deadlineCondition);
-        if (matcher.find()) {
-            String match = matcher.group();
-            deadlineLimit = match.substring(2, match.length()-1);
-        }
-        refDeadlineLimit.setValue(deadlineLimit);
         
-        // set duration unit from deadline condition
-        String durationUnit = XPDLConstants.DURATION_UNIT_D;
-        pattern = Pattern.compile("\\*\\d+\\)");
-        matcher = pattern.matcher(deadlineCondition);
-        if (matcher.find()) {
-            String match = matcher.group();
-            String millis = match.substring(1, match.length()-1);
-            if ("1000".equals(millis)) {
-                durationUnit = XPDLConstants.DURATION_UNIT_s;
-            } else if ("60000".equals(millis)) {
-                durationUnit = XPDLConstants.DURATION_UNIT_m;
-            } else if ("3600000".equals(millis)) {
-                durationUnit = XPDLConstants.DURATION_UNIT_h;
-            } else {
-                durationUnit = XPDLConstants.DURATION_UNIT_D;
+        if (deadlineCondition.contains("java.text.SimpleDateFormat")) {
+            String deadlineLimit = "";
+            Pattern pattern = Pattern.compile("d.parse\\((.+)\\);");
+            Matcher matcher = pattern.matcher(deadlineCondition);
+            if (matcher.find()) {
+                deadlineLimit = matcher.group(1);
             }
-        }
-        attrDurationUnit.setValue(durationUnit);
+            refDeadlineLimit.setValue(deadlineLimit);
+            
+            if (deadlineCondition.contains("dd/MM/yyyy HH:mm")) {
+                attrDurationUnit.setValue(DURATION_UNIT_DATETIME);
+            } else {
+                attrDurationUnit.setValue(DURATION_UNIT_DATE);
+            }
+        } else {
+            String deadlineLimit = "";
+            Pattern pattern = Pattern.compile("\\+\\(.+\\*");
+            Matcher matcher = pattern.matcher(deadlineCondition);
+            if (matcher.find()) {
+                String match = matcher.group();
+                deadlineLimit = match.substring(2, match.length()-1);
+            }
+            refDeadlineLimit.setValue(deadlineLimit);
 
+            // set duration unit from deadline condition
+            String durationUnit = XPDLConstants.DURATION_UNIT_D;
+            pattern = Pattern.compile("\\*\\d+\\)");
+            matcher = pattern.matcher(deadlineCondition);
+            if (matcher.find()) {
+                String match = matcher.group();
+                String millis = match.substring(1, match.length()-1);
+                if ("1000".equals(millis)) {
+                    durationUnit = XPDLConstants.DURATION_UNIT_s;
+                } else if ("60000".equals(millis)) {
+                    durationUnit = XPDLConstants.DURATION_UNIT_m;
+                } else if ("3600000".equals(millis)) {
+                    durationUnit = XPDLConstants.DURATION_UNIT_h;
+                } else {
+                    durationUnit = XPDLConstants.DURATION_UNIT_D;
+                }
+            }
+            attrDurationUnit.setValue(durationUnit);
+        }
         // remove elements
         elements.remove(refDeadlineLimit);
         elements.remove(attrDurationUnit);
