@@ -3565,23 +3565,8 @@ public class ConsoleWebController {
             data.put("name", workflowActivity.getName());
             data.put("state", workflowActivity.getState());
             data.put("dateCreated", workflowActivity.getCreatedTime());
-
-            if (serviceLevelMonitor > 0) {
-                if (serviceLevelMonitor < 25) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-                } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-                } else {
-                    data.put("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-                }
-            } else {
-                data.put("serviceLevelMonitor", "-");
-            }
-
+            data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+            
             jsonObject.accumulate("data", data);
         }
 
@@ -3601,23 +3586,8 @@ public class ConsoleWebController {
 
         map.addAttribute("activity", wflowActivity);
         map.addAttribute("variableList", variableList);
-
-        if (serviceLevelMonitor > 0) {
-            if (serviceLevelMonitor < 25) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 25 && serviceLevelMonitor < 50) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_green_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 50 && serviceLevelMonitor < 75) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow\">&nbsp;</span>");
-            } else if (serviceLevelMonitor >= 75 && serviceLevelMonitor < 100) {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_yellow_red\">&nbsp;</span>");
-            } else {
-                map.addAttribute("serviceLevelMonitor", "<span class=\"dot_red\">&nbsp;</span>");
-            }
-        } else {
-            map.addAttribute("serviceLevelMonitor", "-");
-        }
-
+        map.addAttribute("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+    
         if (trackWflowActivity != null) {
             map.addAttribute("trackWflowActivity", trackWflowActivity);
             String[] assignmentUsers = trackWflowActivity.getAssignmentUsers();
