@@ -447,8 +447,13 @@ public class WorkflowJsonController {
 
         WorkflowProcess process = workflowManager.getProcess(processId);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("processId", process.getId());
-
+        if (process != null) {
+            jsonObject.accumulate("processId", process.getId());
+            jsonObject.accumulate("packageId", process.getPackageId());
+            jsonObject.accumulate("packageName", process.getPackageName());
+            jsonObject.accumulate("name", process.getName());
+            jsonObject.accumulate("version", process.getVersion());
+        }
         writeJson(writer, jsonObject, callback);
     }
 
@@ -517,62 +522,6 @@ public class WorkflowJsonController {
         writeJson(writer, jsonObject, callback);
     }
 
-    @RequestMapping(value = "/json/workflow/package/deploy", method = RequestMethod.POST)
-    public void packageDeploy(Writer writer, HttpServletRequest request) throws JSONException, IOException {
-        MultipartFile packageXpdl = FileStore.getFile("packageXpdl");
-        JSONObject jsonObject = new JSONObject();
-
-        boolean authenticated = !workflowUserManager.isCurrentUserAnonymous();
-
-        if (authenticated) {
-            try {
-                String packageId = workflowManager.processUpload(null, packageXpdl.getBytes());
-
-                List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageId, Boolean.FALSE, Boolean.FALSE);
-                for (WorkflowProcess process : processList) {
-                    XpdlImageUtil.generateXpdlImage(AppUtil.getDesignerWebBaseUrl(), process.getId(), true);
-                }
-
-                jsonObject.accumulate("status", "complete");
-            } catch (Exception e) {
-                jsonObject.accumulate("errorMsg", e.getMessage().replace(":", ""));
-            }
-        } else {
-            jsonObject.accumulate("errorMsg", "unauthenticated");
-        }
-        writeJson(writer, jsonObject, null);
-    }
-
-    @RequestMapping(value = "/json/workflow/package/update", method = RequestMethod.POST)
-    public void packageUpdate(Writer writer, @RequestParam("packageId") String packageId, HttpServletRequest request) throws JSONException, IOException {
-        MultipartFile packageXpdl = FileStore.getFile("packageXpdlUpdate");
-        JSONObject jsonObject = new JSONObject();
-
-        boolean authenticated = !workflowUserManager.isCurrentUserAnonymous();
-
-        if (authenticated) {
-            try {
-                if (!workflowManager.isPackageIdExist(packageId)) {
-                    jsonObject.accumulate("status", "error");
-                } else {
-                    workflowManager.processUpload(packageId, packageXpdl.getBytes());
-
-                    List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageId, Boolean.FALSE, Boolean.FALSE);
-                    for (WorkflowProcess process : processList) {
-                        XpdlImageUtil.generateXpdlImage(AppUtil.getDesignerWebBaseUrl(), process.getId(), true);
-                    }
-
-                    jsonObject.accumulate("status", "complete");
-                }
-            } catch (Exception e) {
-                jsonObject.accumulate("errorMsg", e.getMessage().replace(":", ""));
-            }
-        } else {
-            jsonObject.accumulate("errorMsg", "unauthenticated");
-        }
-        writeJson(writer, jsonObject, null);
-    }
-
     @RequestMapping("/json/workflow/assignment/list/count")
     public void assignmentPendingAndAcceptedListCount(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "packageId", required = false) String packageId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "processId", required = false) String processId) throws JSONException, IOException {
         Integer total = new Integer(workflowManager.getAssignmentSize(packageId, processDefId, processId));
@@ -615,7 +564,6 @@ public class WorkflowJsonController {
         for (WorkflowAssignment assignment : assignmentList) {
             Map data = new HashMap();
             data.put("processId", assignment.getProcessId());
-            data.put("processRequesterId", assignment.getProcessRequesterId());
             data.put("activityId", assignment.getActivityId());
             data.put("processName", assignment.getProcessName());
             data.put("activityName", assignment.getActivityName());
@@ -725,11 +673,9 @@ public class WorkflowJsonController {
                 String label = process.getName() + " ver " + process.getVersion() + " (" + size + ")";
                 Map data = new HashMap();
                 data.put("processDefId", process.getId());
-                data.put("processId", process.getInstanceId());
                 data.put("processName", process.getName());
                 data.put("processVersion", process.getVersion());
 
-                data.put("id", process.getInstanceId());
                 data.put("label", label);
 
                 String url = "/json/workflow/assignment/list/pending?processId=" + process.getEncodedId();
@@ -764,11 +710,9 @@ public class WorkflowJsonController {
                 String label = process.getName() + " ver " + process.getVersion() + " (" + size + ")";
                 Map data = new HashMap();
                 data.put("processDefId", process.getId());
-                data.put("processId", process.getInstanceId());
                 data.put("processName", process.getName());
                 data.put("processVersion", process.getVersion());
 
-                data.put("id", process.getInstanceId());
                 data.put("label", label);
 
                 String url = "/json/workflow/assignment/list/accepted?processId=" + process.getEncodedId();
