@@ -236,6 +236,10 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
+        return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
+    }
+    
+    public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
         // check for hash # to avoid unnecessary processing
         if (!containsHashVariable(content)) {
             return content;
@@ -268,7 +272,10 @@ public class AppUtil implements ApplicationContextAware {
                                 if (cachedPlugin == null) {
                                     cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
                                     //get default plugin properties
-                                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                                    
+                                    if (appDef == null) {
+                                        appDef = AppUtil.getCurrentAppDefinition();
+                                    }
                                     PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(cachedPlugin.getClassName(), appDef);
                                     if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
                                         cachedPlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));

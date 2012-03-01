@@ -28,9 +28,11 @@ public class AppPluginUtil implements ApplicationContextAware {
     }
 
     public static Map getDefaultProperties(Plugin plugin, String properties, AppDefinition appDef) {
+        
         Map propertyMap = new HashMap();
 
         try {
+            properties = AppUtil.processHashVariable(properties, null, null, null, appDef);
             if (!(plugin instanceof PropertyEditable)) {
                 propertyMap = CsvUtil.getPluginPropertyMap(properties);
             } else {
@@ -49,7 +51,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                     String json = pluginDefaultProperties.getPluginProperties();
 
                     //process basic hash variable
-                    json = AppUtil.processHashVariable(json, null, null, null);
+                    json = AppUtil.processHashVariable(json, null, null, null, appDef);
 
                     defaultPropertyMap = PropertyUtil.getPropertiesValueFromJson(json);
                 }
