@@ -179,7 +179,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     Thread.sleep(2000);
                     int maxAttempt = 5;
                     int numOfAttempt = 0;
-                    while (userList.size() == 0 && numOfAttempt < maxAttempt) {
+                    while ((userList == null || userList.isEmpty()) && numOfAttempt < maxAttempt) {
                         LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
                         userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
                         Thread.sleep(2000);
@@ -191,8 +191,10 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
                 }
                 String assignmentUsers = "";
-                for (String username : userList) {
-                    assignmentUsers += username + ",";
+                if (userList != null) {
+                    for (String username : userList) {
+                        assignmentUsers += username + ",";
+                    }
                 }
                 if (assignmentUsers.endsWith(",")) {
                     assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
