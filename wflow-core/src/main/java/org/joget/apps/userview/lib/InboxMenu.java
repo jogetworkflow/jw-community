@@ -181,7 +181,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             } else if (PROPERTY_FILTER_PROCESS.equals(appFilter)) {
                 String processId = getPropertyString("processId");
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                if (appDef != null) {
+                if (appDef != null && processId != null && !processId.isEmpty()) {
                     ApplicationContext ac = AppUtil.getApplicationContext();
                     AppService appService = (AppService) ac.getBean("appService");
                     WorkflowProcess process = appService.getWorkflowProcessForApp(appDef.getId(), appDef.getVersion().toString(), processId);
@@ -189,37 +189,39 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 }
             }
 
-            DataListQueryParam param = dataList.getQueryParam(null, null);
+            if (packageId != null || processDefId != null) {
+                DataListQueryParam param = dataList.getQueryParam(null, null);
 
-            // get assignments
-            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+                // get assignments
+                WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+                PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
 
-            DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
-            WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-            User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
-            String gmt = "";
-            if (user != null) {
-                gmt = user.getTimeZone();
-            }
-            for (WorkflowAssignment assignment : assignmentList) {
-                Map data = new HashMap();
-                data.put("processId", assignment.getProcessId());
-                data.put("processRequesterId", assignment.getProcessRequesterId());
-                data.put("activityId", assignment.getActivityId());
-                data.put("processName", assignment.getProcessName());
-                data.put("activityName", assignment.getActivityName());
-                data.put("processVersion", assignment.getProcessVersion());
-                data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
-                data.put("acceptedStatus", assignment.isAccepted());
-                data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
+                DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+                WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+                String gmt = "";
+                if (user != null) {
+                    gmt = user.getTimeZone();
+                }
+                for (WorkflowAssignment assignment : assignmentList) {
+                    Map data = new HashMap();
+                    data.put("processId", assignment.getProcessId());
+                    data.put("processRequesterId", assignment.getProcessRequesterId());
+                    data.put("activityId", assignment.getActivityId());
+                    data.put("processName", assignment.getProcessName());
+                    data.put("activityName", assignment.getActivityName());
+                    data.put("processVersion", assignment.getProcessVersion());
+                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+                    data.put("acceptedStatus", assignment.isAccepted());
+                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
 
-                double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
+                    double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
-                data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+                    data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-                // set results
-                resultList.add(data);
+                    // set results
+                    resultList.add(data);
+                }
             }
             
             return resultList;
@@ -240,19 +242,24 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 PackageDefinition packageDef = appDef.getPackageDefinition();
                 if (packageDef != null) {
                     packageId = packageDef.getId();
-                }
+                } 
             }
         } else if (PROPERTY_FILTER_PROCESS.equals(appFilter)) {
             String processId = getPropertyString("processId");
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            if (appDef != null) {
+            if (appDef != null && processId != null && !processId.isEmpty()) {
                 ApplicationContext ac = AppUtil.getApplicationContext();
                 AppService appService = (AppService) ac.getBean("appService");
                 WorkflowProcess process = appService.getWorkflowProcessForApp(appDef.getId(), appDef.getVersion().toString(), processId);
                 processDefId = process.getId();
             }
         }
-        int count = workflowManager.getAssignmentSize(packageId, processDefId, null);
+        int count = 0;
+        
+        if (packageId != null || processDefId != null) {
+            count = workflowManager.getAssignmentSize(packageId, processDefId, null);
+        }
+        
         return count;
     }
 
