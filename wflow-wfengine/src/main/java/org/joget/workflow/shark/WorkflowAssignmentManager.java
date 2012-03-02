@@ -10,8 +10,6 @@ import java.util.Set;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.internal.assignment.PerformerData;
 import org.enhydra.shark.assignment.HistoryRelatedAssignmentManager;
-import org.joget.workflow.model.WorkflowActivity;
-import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.ApplicationContext;
 
@@ -29,7 +27,6 @@ public class WorkflowAssignmentManager extends HistoryRelatedAssignmentManager {
 
         String procDefId = workflowManager.getProcessDefIdByInstanceId(instanceId);
         WorkflowProcess process = workflowManager.getProcess(procDefId);
-        WorkflowActivity activity = workflowManager.getActivityById(actId);
         String currentUsername = (String) shandle.getVendorData();
 
         if (currentUsername.equals(WorkflowUserManager.ROLE_ANONYMOUS)) {
