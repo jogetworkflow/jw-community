@@ -1,3 +1,51 @@
+3.0.2
+=====
+325		Modified: wflow-wfengine - Removed unnecessary call to retrieve activity info when getting assignments.
+324		Fixed: wflow-core - Inbox showing tasks of other apps when current app does not have any process (#572)
+323		Fixed: wflow-core - Process Data Collector - Null Pointer Exception
+322		Fixed: wflow-core - Hash Variable - Some Hash Variable is not process for process tool plugin property. (#570)
+321		Fixed: wflow-consoleweb - json/console/monitor/activity/list SLA logic outdated #568
+320		Fixed: wflow-consoleweb - Fixed not working JSON API and remove unsupported JSON API
+319		Added: wflow-designer - Add deadline support for date & datetime.
+318		Fixed: wflow-consoleweb - Error message of fail to retrieve columns shown when create new list.
+317		Fixed: wflow-wfengine - Workflow variable in deadline is not work correctly with deadline plugin .
+316		Fixed: wflow-wfengine - Deadline re-calculation is not working. (#559)
+315		Fixed: wflow-core - Duplicate Value Validator doesn't work when click twice due to Form Data id is not track correctly. (#529)
+313		Fixed: wflow-consoleweb - Userview redirection not working correctly.(#533)
+312		Fixed: wflow-core - Options in Organization/Deparment/Group/User Permission are not sorted in aphabetical order. (#552)
+311		Fixed: wflow-core/wflow-consoleweb - Form data from previous form not displayed although mapped to same table. (#548)
+310		Added: wflow-core, wflow-consoleweb- Added JSON API for Published Apps and Published Processes #537
+309		Modified: Hidden Field - Remove readonly check in template because it break section visibility control. Readonly check already done on submission.
+308		Modified: JSON Tool - Allow to set external data with JSON Object Name field
+		Modified: JSON Tool - Set process id automatically if id and "Base JSON Object Name for Multirow Data" are not specific.
+307		Fixed : Property Editor - Selected value in multi select element is hardly see the different in some browser.
+306		Fixed: wflow-directory - Fixed possible NullPointerException when there are no groups or departments.
+305		Fixed: Form Builder - Section - Visibility Control by Multiple Value Field is not proper handling. (#527)
+304		Added: wflow-core, wflow-consoleweb - Added HTTPS support for communication between the Web Console and Workflow Designer.
+303		Modified: wflow-core - Form Hash Variable - Process hash variable only when primary key is not empty.
+		Modified: wflow-core - Form Data Dao - Refactored on LoadByTableNameAndColumnName method.
+302		Fixed: wflow-core - Fixed possible ArrayIndexOutOfBoundsException in ReportManager.
+301		Modified: wflow-consoleweb - Participant Mapping - Display some indicator to show a mapping object is not exist in Directory. (#496)
+300		Modified: wflow-consoleweb - Datalist Builder - Prompt user a message when columns cannot retrieve. (#484)
+299		Fixed: wflow-consoleweb - DataList Builder - Submitted filter value that contains space is not working (#510)
+298		Fixed: wflow-commons - Fixed possible NullPointerException in StringUtil.escapeRegex.
+297		Modified: wflow-core - Reduced redundant database call when process hash variable.
+296		Modified: wflow-wfengine - Process Hash Variable on activity name when creating activity instance.
+295		Fixed : wflow-core - Group Userview Permission - Implementation tied to default Directory Manager (#499)
+294		Fixed: wflow-core -FormDataDaoImpl - getFormRowColumnNames method return an incomplete columns list. (#474)
+293		Fixed: wflow-core - Form Builder - Section - Visibility Control break the readonly feature (#471)
+		Fixed: wflow-core - Form Builder - Section - continueValidation method is not implement for regex checking (#470)
+		Modified: wflow-core - Form Builder - Section - Hide section that should be process in server side.
+292		Modified: wflow-core - FormHashVariable - If value returned is null, replace it with empty String. (#450)
+290		Modified: wflow-core/wlow-consoleweb - User Notification - Exclude activity from sending email notification (#444)
+		Modified: wflow-core/wlow-consoleweb - User Notification - Customizable assignment link (#449)
+289		Modified: wflow-core - DefaultFormBinder - Return the correct form for the binder.
+287		Fixed: wflow-core - Hash Variable - Fail to process Hash Variable when the return value contains REGEX escape character. (#443)
+286		Modified: wflow-consoleweb - Modified process image URL #442.
+285		Fixed: wflow-consoleweb - IE9 - Form Builder, Datalist Builder, Userview Builder windows are fixed at a small size (#440)
+284		Modified: wflow-consoleweb - Redirect to process listing page if there are multiple processes after deploying a process.
+283		Modified: wflow-consoleweb - Minor changes in header and footer tags that causes problems in Weblogic.
+
 3.0.1
 =====
 278		Fixed: wflow-consoleweb - Fixed incorrect link in the userview login page header.
