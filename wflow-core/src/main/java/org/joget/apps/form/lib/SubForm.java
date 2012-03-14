@@ -26,6 +26,8 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.PluginWebSupport;
+import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.beans.BeansException;
 
 public class SubForm extends Element implements FormBuilderPaletteElement, PluginWebSupport {
@@ -49,12 +51,12 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
     }
 
     @Override
-    public Collection<Element> getChildren() {
+    public Collection<Element> getChildren(FormData formData) {
         Collection<Element> children = super.getChildren();
         if (children == null || children.isEmpty()) {
             // override getChildren to return the subform
             if (checkForRecursiveForm(this, getPropertyString("formDefId"))) {
-                Form subForm = loadSubForm(null);
+                Form subForm = loadSubForm(formData);
 
                 if (subForm != null) {
                     children = new ArrayList<Element>();
@@ -68,6 +70,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
+        
         // set subform html
         String elementMetaData = ((Boolean) dataModel.get("includeMetaData")) ? FormUtil.generateElementMetaData(this) : "";
         Collection<Element> childElements = getChildren();
@@ -94,7 +97,8 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
      * @return
      * @throws BeansException
      */
-    protected Form loadSubForm(FormData formData) throws BeansException {
+    protected Form loadSubForm(FormData parentFormData) throws BeansException {
+        FormData formData = new FormData();
         Form subForm = null;
         FormService formService = (FormService) FormUtil.getApplicationContext().getBean("formService");
 
@@ -110,6 +114,13 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
             }
         }
         if (json != null && json.trim().length() > 0) {
+            if (parentFormData.getProcessId() != null && !parentFormData.getProcessId().isEmpty()) {
+                formData.setProcessId(parentFormData.getProcessId());
+                WorkflowManager wm = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                WorkflowAssignment wfAssignment = wm.getAssignmentByProcess(parentFormData.getProcessId());
+                json = AppUtil.processHashVariable(json, wfAssignment, null, null);
+            }
+            
             // use the json definition to create the subform
             try {
                 subForm = (Form) formService.createElementFromJson(json);

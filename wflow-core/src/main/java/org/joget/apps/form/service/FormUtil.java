@@ -59,6 +59,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_DATE_MODIFIED = "dateModified";
     public static final String PROPERTY_CUSTOM_PROPERTIES = "customProperties";
     public static final String PROPERTY_TABLE_NAME = "tableName";
+    public static final String PROPERTY_TEMP_FILE_PATH = "_tempFilePathMap";
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
     static ApplicationContext appContext;
     
@@ -272,7 +273,7 @@ public class FormUtil implements ApplicationContextAware {
                 formData.setOptionsBinderData(binder, data);
             }
         }
-        Collection<Element> children = element.getChildren();
+        Collection<Element> children = element.getChildren(formData);
         if (children != null) {
             for (Element child : children) {
                 FormUtil.executeOptionBinders(child, formData);
@@ -299,7 +300,7 @@ public class FormUtil implements ApplicationContextAware {
                 formData.setLoadBinderData(binder, data);
             }
         }
-        Collection<Element> children = element.getChildren();
+        Collection<Element> children = element.getChildren(formData);
         if (children != null) {
             for (Element child : children) {
                 FormUtil.executeLoadBinders(child, formData);
@@ -322,7 +323,7 @@ public class FormUtil implements ApplicationContextAware {
                 String[] values = FormUtil.getElementPropertyValues(element, formData);
                 result = validator.validate(element, formData, values) && result;
             }
-            Collection<Element> children = element.getChildren();
+            Collection<Element> children = element.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
                     result = FormUtil.executeValidators(child, formData) && result;
@@ -376,6 +377,9 @@ public class FormUtil implements ApplicationContextAware {
                                     String value = (String) entry.getValue();
                                     jsonObject.put(key, value);
                                 }
+                                
+                                //File upload is not support when no binder is set.
+                                
                                 jsonArray.put(jsonObject);
                             }
 
@@ -408,7 +412,7 @@ public class FormUtil implements ApplicationContextAware {
 
         if (element.continueValidation(formData)) {
             // recurse into children
-            Collection<Element> children = element.getChildren();
+            Collection<Element> children = element.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
                     FormUtil.executeElementFormatData(child, formData);
@@ -426,7 +430,7 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static FormData executeElementFormatDataForValidation(Element element, FormData formData) {
         // recurse into children
-        Collection<Element> children = element.getChildren();
+        Collection<Element> children = element.getChildren(formData);
         if (children != null) {
             for (Element child : children) {
                 formData = FormUtil.executeElementFormatDataForValidation(child, formData);
@@ -458,7 +462,7 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         // recurse into children
-        Collection<Element> children = element.getChildren();
+        Collection<Element> children = element.getChildren(formData);
         if (children != null) {
             for (Element child : children) {
                 updatedFormData = FormUtil.executeActions(form, child, formData);
@@ -567,7 +571,7 @@ public class FormUtil implements ApplicationContextAware {
             result = rootElement;
             return result;
         } else if (!(rootElement instanceof SubForm) || ((rootElement instanceof SubForm) && includeSubForm)) {
-            Collection<Element> children = rootElement.getChildren();
+            Collection<Element> children = rootElement.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
                     result = FormUtil.findElement(id, child, formData, includeSubForm);

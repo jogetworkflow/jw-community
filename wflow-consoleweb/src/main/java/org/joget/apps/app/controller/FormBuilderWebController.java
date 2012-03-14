@@ -137,12 +137,22 @@ public class FormBuilderWebController {
         form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
 
         if(form != null){
+            //if id field not exist, automatically add an id hidden field
+            Element idElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
+            if (idElement == null) {
+                Collection<Element> formElements = form.getChildren();
+                idElement = new HiddenField();
+                idElement.setProperty(FormUtil.PROPERTY_ID, FormUtil.PROPERTY_ID);
+                idElement.setParent(form);
+                formElements.add(idElement);
+            }
+            
             // create new section for buttons
             Section section = new Section();
             section.setProperty(FormUtil.PROPERTY_ID, "section-actions");
             Collection<Element> sectionChildren = new ArrayList<Element>();
             section.setChildren(sectionChildren);
-            Collection<Element> formChildren = form.getChildren();
+            Collection<Element> formChildren = form.getChildren(formData);
             if (formChildren == null) {
                 formChildren = new ArrayList<Element>();
             }
@@ -192,6 +202,10 @@ public class FormBuilderWebController {
                 for(FormRow row : rows){
                     for(Object o : row.keySet()){
                         jsonResult.accumulate(o.toString(), row.get(o));
+                    }
+                    Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+                    if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
+                        jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
                     }
                 }
             }

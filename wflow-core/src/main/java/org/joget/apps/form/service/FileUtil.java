@@ -5,8 +5,13 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
+import org.joget.commons.util.FileManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -22,6 +27,27 @@ public class FileUtil implements ApplicationContextAware {
         return appContext;
     }
 
+    public static void storeFileFromFormRowSet(FormRowSet results, Element element, String primaryKeyValue) {
+        for (int i = 0; i < results.size(); i++) {
+            FormRow row = results.get(i);
+            String id = row.getId();
+            Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+            if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
+                for (Iterator<String> j = tempFilePathMap.keySet().iterator(); j.hasNext();) {
+                    String fieldId = j.next();
+                    String path = tempFilePathMap.get(fieldId);
+                    File file = FileManager.getFileByPath(path);
+                    if (file != null) {
+                        File tempFileDirectory = file.getParentFile();
+                        FileUtil.storeFile(file, element, id);
+
+                        FileManager.deleteFile(tempFileDirectory);
+                    }
+                }
+            }
+        }
+    }
+    
     public static void storeFile(MultipartFile file, Element element, String primaryKeyValue) {
         FileOutputStream out = null;
         try {
@@ -45,6 +71,18 @@ public class FileUtil implements ApplicationContextAware {
                 } catch (Exception ex) {
                 }
             }
+        }
+    }
+    
+    public static void storeFile(File file, Element element, String primaryKeyValue) {
+        if (file != null && file.exists()) {
+            String path = getUploadPath(element, primaryKeyValue);
+            File newDirectory = new File(path);
+            if (!newDirectory.exists()) {
+                newDirectory.mkdirs();
+            }
+                
+            file.renameTo(new File(newDirectory, file.getName()));
         }
     }
 

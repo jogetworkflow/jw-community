@@ -1,6 +1,7 @@
 package org.joget.apps.form.model;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import org.joget.apps.form.service.FormUtil;
  * Represents a row of form data
  */
 public class FormRow extends Properties {
+    Map<String, String> tempFilePathMap;
 
     public FormRow() {
         super();
@@ -105,5 +107,38 @@ public class FormRow extends Properties {
             return true;
         }
         return false;
+    }
+    
+    public Map<String, String> getTempFilePathMap() {
+        return tempFilePathMap;
+    }
+    
+    public void setTempFilePathMap(Map<String, String> tempFilePathMap) {
+        this.tempFilePathMap = tempFilePathMap;
+    }
+    
+    public void putTempFilePath(String fieldId, String path) {
+        if (tempFilePathMap == null) {
+            tempFilePathMap = new HashMap<String, String>();
+        }
+        tempFilePathMap.put(fieldId, path);
+    }
+    
+    public String getTempFilePath(String fieldId) {
+        if (tempFilePathMap != null) {
+            return tempFilePathMap.get(fieldId);
+        }
+        return null;
+    }
+    
+    public void putAll(FormRow row) {
+        super.putAll(row);
+        Map files = row.getTempFilePathMap();
+        if (files != null && !files.isEmpty()) {
+            if (tempFilePathMap == null) {
+                tempFilePathMap = new HashMap<String, String>();
+            }
+            tempFilePathMap.putAll(files);
+        }
     }
 }

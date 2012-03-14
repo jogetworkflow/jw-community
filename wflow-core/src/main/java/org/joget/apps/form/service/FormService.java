@@ -16,6 +16,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.UuidGenerator;
 import org.springframework.stereotype.Service;
@@ -282,12 +283,13 @@ public class FormService {
         Map<String, MultipartFile> fileMap = FileStore.getFileMap();
         if (fileMap != null) {
             for (String paramName : fileMap.keySet()) {
-                MultipartFile file = fileMap.get(paramName);
-                String fileName = file.getOriginalFilename();
-                if (!fileName.isEmpty()) {
-                    formData.addRequestParameterValues(paramName, new String[]{fileName});
+                MultipartFile file = FileStore.getFile(paramName);
+                if (file != null) {
+                    String path = FileManager.storeFile(file);
+                    formData.addRequestParameterValues(paramName, new String[]{path});
                 }
             }
+            FileStore.clear();
         }
         return formData;
     }
@@ -310,12 +312,13 @@ public class FormService {
         Map<String, MultipartFile> fileMap = FileStore.getFileMap();
         if (fileMap != null) {
             for (String paramName : fileMap.keySet()) {
-                MultipartFile file = fileMap.get(paramName);
-                String fileName = file.getOriginalFilename();
-                if (!fileName.isEmpty()) {
-                    formData.addRequestParameterValues(paramName, new String[]{fileName});
+                MultipartFile file = FileStore.getFile(paramName);
+                if (file != null) {
+                    String path = FileManager.storeFile(file);
+                    formData.addRequestParameterValues(paramName, new String[]{path});
                 }
             }
+            FileStore.clear();
         }
         return formData;
     }
@@ -387,7 +390,7 @@ public class FormService {
         if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
         
             //load child element store binder to store before the main form
-            Collection<Element> children = element.getChildren();
+            Collection<Element> children = element.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
                     formData = recursiveExecuteFormStoreBinders(form, child, formData);

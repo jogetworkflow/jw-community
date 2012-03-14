@@ -53,6 +53,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         this.validator = validator;
     }
 
+    public Collection<Element> getChildren(FormData formData) {
+        return getChildren();
+    }
+    
     public Collection<Element> getChildren() {
         return children;
     }
@@ -129,7 +133,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
 
         return rowSet;
     }
-
+    
     /**
      * Returns the primary key value for the current element.
      * Defaults to the primary key value of the form.

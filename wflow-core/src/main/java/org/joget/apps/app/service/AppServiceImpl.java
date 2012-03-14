@@ -2,6 +2,7 @@ package org.joget.apps.app.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.FileStore;
+import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.UuidGenerator;
@@ -81,7 +82,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service("appService")
 public class AppServiceImpl implements AppService {
@@ -527,7 +527,7 @@ public class AppServiceImpl implements AppService {
         form = formService.loadFormFromJson(json, formData);
 
         // set workflow variable parameter names
-        Collection<Element> formFields = form.getChildren();
+        Collection<Element> formFields = form.getChildren(formData);
         for (Element element : formFields) {
             if (element instanceof TextField) {
                 element.setCustomParameterName(AppUtil.PREFIX_WORKFLOW_VARIABLE + element.getProperty(FormUtil.PROPERTY_ID));
@@ -1061,22 +1061,7 @@ public class AppServiceImpl implements AppService {
             formDataDao.saveOrUpdate(form, results);
             Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Saved form data row [{0}] for form [{1}] into table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
 
-            if (!rows.isMultiRow()) {
-                // handle file uploads (only for a single row)
-                Map<String, MultipartFile> uploadedFileMap = FileStore.getFileMap();
-                if (uploadedFileMap != null) {
-                    for (Iterator<String> i = uploadedFileMap.keySet().iterator(); i.hasNext();) {
-                        String fileName = i.next();
-                        MultipartFile file = uploadedFileMap.get(fileName);
-                        if (file != null && !file.isEmpty()) {
-                            // save file in folder
-                            FileUtil.storeFile(file, form, primaryKeyValue);
-                            Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Uploaded file: {0}; {1}", new Object[]{fileName, file.getOriginalFilename()});
-                        }
-                    }
-                }
-            }
-
+            FileUtil.storeFileFromFormRowSet(results, form, primaryKeyValue);
         }
         return results;
     }

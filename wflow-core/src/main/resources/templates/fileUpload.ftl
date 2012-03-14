@@ -6,7 +6,13 @@
     </#if>
     <#if value??>
         <span class="form-fileupload-value">
-            <a href="${request.contextPath}${filePath}">${value}</a>
+            <#if tempFilePath??>
+                ${value}
+                <input type="hidden" name="${elementParamName!}_path" value="${tempFilePath}"/>
+            <#else>
+                <a href="${request.contextPath}${filePath}">${value}</a>
+                <input type="hidden" name="${elementParamName!}_path" value="${value}"/>
+            </#if>
             <#if value != '' && element.properties.readonly! != 'true'>
                 <input type="checkbox" name="${elementParamName!}_remove" /> <span style="font-size:smaller">@@form.fileupload.remove@@</span>
             </#if>
