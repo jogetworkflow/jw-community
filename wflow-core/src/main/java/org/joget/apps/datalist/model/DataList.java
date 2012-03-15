@@ -483,6 +483,9 @@ public class DataList {
         if (filterTemplates == null) {
             Collection<String> templates = new ArrayList<String>();
 
+            //reset page value when filter is submit
+            templates.add("<input type='hidden' id='" + getDataListEncodedParamName(TableTagParameters.PARAMETER_PAGE) + "' name='" + getDataListEncodedParamName(TableTagParameters.PARAMETER_PAGE) + "' value='1'/>");
+            
             if (isShowPageSizeSelector()) {
                 templates.add(getPageSizeSelectorTemplate());
             }
