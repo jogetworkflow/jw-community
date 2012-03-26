@@ -114,7 +114,7 @@ public class SubForm extends Element implements FormBuilderPaletteElement, Plugi
             }
         }
         if (json != null && json.trim().length() > 0) {
-            if (parentFormData.getProcessId() != null && !parentFormData.getProcessId().isEmpty()) {
+            if (parentFormData != null && parentFormData.getProcessId() != null && !parentFormData.getProcessId().isEmpty()) {
                 formData.setProcessId(parentFormData.getProcessId());
                 WorkflowManager wm = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
                 WorkflowAssignment wfAssignment = wm.getAssignmentByProcess(parentFormData.getProcessId());
