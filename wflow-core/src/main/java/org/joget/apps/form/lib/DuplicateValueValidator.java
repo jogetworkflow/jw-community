@@ -150,7 +150,11 @@ public class DuplicateValueValidator extends FormValidator {
                 String key = null;
 
                 if (!FormUtil.PROPERTY_ID.equals(fieldId)) {
-                    key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val);
+                    try {
+                        key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val);
+                    } catch (Exception e) {
+                        key = null;
+                    }
                 } else {
                     if (formDataDao.load(formDefId, tableName, val) != null) {
                         key = val;
