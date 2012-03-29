@@ -428,7 +428,7 @@ UserviewBuilder = {
                 }else{
                     alert(get_ubuilder_msg('ubuilder.saveFailed'));
                 }
-            });
+            }, "text");
         }
     },
 

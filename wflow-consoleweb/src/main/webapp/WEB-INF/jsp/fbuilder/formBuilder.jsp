@@ -58,6 +58,7 @@
                         type: "POST",
                         data: {"json": json },
                         url: saveUrl,
+                        dateType : "text",
                         success: function(response) {
                             FormBuilder.originalJson = FormBuilder.generateJSON();
                             alert("<fmt:message key="fbuilder.saved"/>");

@@ -155,7 +155,7 @@ public class DatalistBuilderWebController {
         jsonObject.write(writer);
     }
 
-    @RequestMapping("/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns")
+    @RequestMapping(value = "/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns", method = RequestMethod.POST)
     public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, HttpServletRequest request) throws Exception {
         appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();

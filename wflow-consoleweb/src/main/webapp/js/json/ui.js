@@ -687,6 +687,7 @@ HelpGuide = {
             data: {
                 "key": helpKey
             },
+            dataType : "text",
             url: HelpGuide.base + HelpGuide.url,
             success: function(response) {
                 var helpDef = response;

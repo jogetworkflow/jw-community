@@ -853,6 +853,7 @@
                 defaultValue : loadOptionsStack[key].defaultValue,
                 value: loadOptionsStack[key].value
             },
+            dataType: "text",
             success: function(data) {
                 if(data != undefined && data != null){
                     var options = $.parseJSON(data);
@@ -1010,6 +1011,7 @@
                     value : value
                 },
                 data : "value="+escape(value),
+                dataType : "text",
                 success: function(response) {
                     if(response != null && response != undefined && response != ""){
                         var d = eval(response);
@@ -1190,6 +1192,7 @@
                                 value : value
                             },
                             data : "value="+escape(value.className),
+                            dataType : "text",
                             success: function(response) {
                                 if(response != null && response != undefined && response != ""){
                                     var d = eval(response);
@@ -1242,6 +1245,7 @@
         $.ajax({
             url: replaceContextPath(validator.url, optionsStack[editorId].contextPath),
             data : $.param( data ),
+            dataType : "text",
             success: function(response) {
                 var errors = new Array();
 

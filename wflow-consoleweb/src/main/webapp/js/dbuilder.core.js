@@ -105,22 +105,21 @@ DatalistBuilder = {
         for(e in DatalistBuilder.binderProperties.properties){
             temp['binder_' + e] = DatalistBuilder.binderProperties.properties[e];
         }
-        $.ajax({
-            type : "GET",
-            contentType : "application/json; charset=utf-8",
-            url : DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns?' + $.param(temp),
-            data : {   
-                id: DatalistBuilder.datalistProperties.id,
-                binderId : DatalistBuilder.binderProperties.className
-            },
-            dataType : "json",
-            success : DatalistBuilder.updateBinderPropertiesCallBack,
-            error : function () {
+        temp['id'] = DatalistBuilder.datalistProperties.id;
+        temp['binderId'] = DatalistBuilder.binderProperties.className;
+        
+        $.post(
+            DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns',
+            temp,
+            DatalistBuilder.updateBinderPropertiesCallBack,
+            "json"
+        ).error(
+            function () {
                 if (DatalistBuilder.binderProperties.className != undefined && DatalistBuilder.binderProperties.className != "") {
                     alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
                 }
             }
-        });
+        );
         
         if(mode == DatalistBuilder.UPDATE){
             //reset all fields
@@ -368,6 +367,7 @@ DatalistBuilder = {
             type: "POST",
             data: {"json": jsonStr },
             url: DatalistBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
+            dateType : "text",
             success: function(response) {
                 var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + response + '</div></li>');
 
@@ -1053,7 +1053,7 @@ DatalistBuilder = {
             }else{
                 alert(get_dbuilder_msg('dbuilder.errorSaving'));
             }
-        });
+        }, "text");
     },
 
     cloneObject : function(obj){

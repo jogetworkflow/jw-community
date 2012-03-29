@@ -2,7 +2,7 @@
 
 
 <script>
-    autoDetectJSLibrary(typeof jQuery == 'undefined', '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/js/jquery/jquery-1.4.4.min.js');
+    autoDetectJSLibrary(typeof jQuery == 'undefined', '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/js/jquery/jquery-1.7.2.min.js');
 
     function autoDetectJSLibrary(jsObjUndefined, src){
         if (jsObjUndefined) {
