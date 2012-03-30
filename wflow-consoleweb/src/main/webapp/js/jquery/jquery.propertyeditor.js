@@ -910,11 +910,25 @@
                             });
 
                             if(type == 'checkbox'){
-                                $('#'+id+'_input').append('<label><input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+option.value+'"'+checked+'/>'+option.label+'</label>');
+                                var opt = $('<input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+option.value+'"/>');
+                                if (checked == "checked") {
+                                    $(opt).prop("checked", true);
+                                }
+                                var l = $('<label></label>').append(opt).append(option.label);
+                                $('#'+id+'_input').append(l);
                             }else if(type == 'radio'){
-                                $('#'+id+'_input').append('<label><input type="radio" id="'+ id +'" name="'+ id +'" value="'+option.value+'"'+checked+'/>'+option.label+'</label>');
+                                opt = $('<input type="radio" id="'+ id + '" name="'+ id + '" value="'+option.value+'"/>');
+                                if (checked == "checked") {
+                                    $(opt).prop("checked", true);
+                                }
+                                l = $('<label></label>').append(opt).append(option.label);
+                                $('#'+id+'_input').append(l);
                             }else{
-                                $('#'+id).append('<option value="'+option.value+'"'+checked+'>'+option.label+'</option>');
+                                opt = $('<option value="'+option.value+'">'+option.label+'</option>');
+                                if (checked == "selected") {
+                                    $(opt).prop("selected", true);
+                                }
+                                $('#'+id).append(opt);
                             }
                         });
 
@@ -923,7 +937,7 @@
                             appendElementPropertiesPage($('#'+id));
                         }
                     }
-
+                    
                     $('#'+id+'_input div.default').remove();
                     if(defaultValueText != ''){
                         defaultValueText = defaultValueText.substring(0, defaultValueText.length - 2);
