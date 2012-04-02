@@ -91,13 +91,23 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                 //Determine id column. Setting to default if not specified
                 String idColumn = (String) getProperty("idColumn");
                 idColumn = (idColumn == null || "".equals(idColumn)) ? FormUtil.PROPERTY_ID : idColumn;
+                
+                String groupingColumn = (String) getProperty("groupingColumn");
+                
                 // loop thru results to set value and label
                 for (FormRow row : results) {
                     String id = row.getProperty(idColumn);
                     String label = row.getProperty(labelColumn);
+                    String grouping = "";
+                    if (groupingColumn != null && !groupingColumn.isEmpty() && row.containsKey(groupingColumn)) {
+                        grouping = row.getProperty(groupingColumn);
+                    }
+                    
                     if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
                         row.setProperty(FormUtil.PROPERTY_VALUE, id);
                         row.setProperty(FormUtil.PROPERTY_LABEL, label);
+                        row.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
+                        
                         filtered.add(row);
                     }
                 }

@@ -1,6 +1,7 @@
 package org.joget.apps.form.lib;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
@@ -26,17 +27,6 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
     @Override
     public String getDescription() {
         return "CheckBox Element";
-    }
-
-    /**
-     * Returns the option key=value pairs for this select box.
-     * @param formData
-     * @return
-     */
-    @Override
-    public Map<String, String> getOptionMap(FormData formData) {
-        Map<String, String> optionMap = FormUtil.getElementPropertyOptions(this, formData);
-        return optionMap;
     }
 
     @Override
@@ -78,7 +68,7 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
         dataModel.put("values", values);
 
         // set options
-        Map<String, String> optionMap = getOptionMap(formData);
+        Collection<Map> optionMap = getOptionMap(formData);
         dataModel.put("options", optionMap);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);

@@ -49,6 +49,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_LABEL = "label";
     public static final String PROPERTY_OPTIONS = "options";
     public static final String PROPERTY_SELECTED = "selected";
+    public static final String PROPERTY_GROUPING = "grouping";
     public static final String PROPERTY_OPTIONS_DELIMITER = ";";
     public static final String PROPERTY_CLASS_NAME = "className";
     public static final String PROPERTY_ELEMENTS = "elements";
@@ -799,18 +800,14 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      * @return
      */
-    public static Map<String, String> getElementPropertyOptions(Element element, FormData formData) {
-        Map<String, String> optionMap = new ListOrderedMap();
+    public static Collection<Map> getElementPropertyOptionsMap(Element element, FormData formData) {
+        Collection<Map> optionsMap = new ArrayList<Map>();
 
         // load from "options" property
         Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
         if (optionProperty != null && optionProperty instanceof Collection) {
             for (Map opt : (FormRowSet) optionProperty) {
-                Object value = opt.get(PROPERTY_VALUE);
-                Object label = opt.get(PROPERTY_LABEL);
-                if (value != null && label != null) {
-                    optionMap.put(value.toString(), label.toString());
-                }
+                optionsMap.add(opt);
             }
         }
 
@@ -819,29 +816,14 @@ public class FormUtil implements ApplicationContextAware {
             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
             FormRowSet rowSet = formData.getOptionsBinderData(element, id);
             if (rowSet != null) {
-                optionMap = new ListOrderedMap();
-                for (FormRow row : rowSet) {
-                    Iterator<String> it = row.stringPropertyNames().iterator();
-                    // get the key based on the "value" property
-                    String value = row.getProperty(PROPERTY_VALUE);
-                    if (value == null) {
-                        // no "value" property, use first property instead
-                        String key = it.next();
-                        value = row.getProperty(key);
-                    }
-                    // get the label based on the "label" property
-                    String label = row.getProperty(PROPERTY_LABEL);
-                    if (label == null) {
-                        // no "label" property, use next property instead
-                        String key = it.next();
-                        label = row.getProperty(key);
-                    }
-                    optionMap.put(value, label);
+                optionsMap = new ArrayList<Map>();
+                for (Map row : rowSet) {
+                    optionsMap.add(row);
                 }
             }
         }
 
-        return optionMap;
+        return optionsMap;
     }
 
     /**

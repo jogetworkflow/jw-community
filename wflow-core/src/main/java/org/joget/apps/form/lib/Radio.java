@@ -1,5 +1,6 @@
 package org.joget.apps.form.lib;
 
+import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
@@ -24,17 +25,6 @@ public class Radio extends SelectBox implements FormBuilderPaletteElement {
     @Override
     public String getDescription() {
         return "Radio Element";
-    }
-
-    /**
-     * Returns the option key=value pairs for this select box.
-     * @param formData
-     * @return
-     */
-    @Override
-    public Map<String, String> getOptionMap(FormData formData) {
-        Map<String, String> optionMap = FormUtil.getElementPropertyOptions(this, formData);
-        return optionMap;
     }
 
     @Override
@@ -75,7 +65,7 @@ public class Radio extends SelectBox implements FormBuilderPaletteElement {
         dataModel.put("value", value);
 
         // set options
-        Map<String, String> optionMap = getOptionMap(formData);
+        Collection<Map> optionMap = getOptionMap(formData);
         dataModel.put("options", optionMap);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);

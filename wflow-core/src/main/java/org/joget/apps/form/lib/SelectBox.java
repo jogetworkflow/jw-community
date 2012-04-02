@@ -1,6 +1,7 @@
 package org.joget.apps.form.lib;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
@@ -34,8 +35,8 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
      * @param formData
      * @return
      */
-    public Map<String, String> getOptionMap(FormData formData) {
-        Map<String, String> optionMap = FormUtil.getElementPropertyOptions(this, formData);
+    public Collection<Map> getOptionMap(FormData formData) {
+        Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
         return optionMap;
     }
 
@@ -78,7 +79,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
         dataModel.put("values", values);
 
         // set options
-        Map<String, String> optionMap = getOptionMap(formData);
+        Collection<Map> optionMap = getOptionMap(formData);
         dataModel.put("options", optionMap);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);

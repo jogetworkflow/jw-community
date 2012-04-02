@@ -14,6 +14,11 @@
         required : 'True'
     },
     {
+        name : 'groupingColumn',
+        label : '@@form.defaultformoptionbinder.groupingColumn@@',
+        type : 'textfield'
+    },
+    {
         name : 'extraCondition',
         label : '@@form.defaultformoptionbinder.extraFilter@@',
         type : 'textarea',

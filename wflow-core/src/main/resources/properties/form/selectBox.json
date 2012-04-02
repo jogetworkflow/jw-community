@@ -56,7 +56,16 @@
         {
             key : 'label',
             label : '@@form.selectbox.label@@'
+        },
+        {
+            key : 'grouping',
+            label : '@@form.selectbox.grouping@@'
         }]
+    },
+    {
+        name : 'controlField',
+        label : '@@form.selectbox.controlField@@',
+        type : 'textfield'
     }]
 },
 {

@@ -40,7 +40,16 @@
         {
             key : 'label',
             label : '@@form.radio.label@@'
+        },
+        {
+            key : 'grouping',
+            label : '@@form.radio.grouping@@'
         }]
+    },
+    {
+        name : 'controlField',
+        label : '@@form.radio.controlField@@',
+        type : 'textfield'
     }]
 },
 {
