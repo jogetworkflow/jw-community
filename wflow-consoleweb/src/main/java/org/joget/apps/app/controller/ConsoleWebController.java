@@ -3383,7 +3383,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/monitor/running")
     public String consoleMonitorRunning(ModelMap map) {
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, null, null, null, null);
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", false, null, null);
         map.addAttribute("appDefinitionList", appDefinitionList);
         return "console/monitor/running";
     }
@@ -3453,7 +3453,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/monitor/completed")
     public String consoleMonitorCompleted(ModelMap map) {
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, null, null, null, null);
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", false, null, null);
         map.addAttribute("appDefinitionList", appDefinitionList);
         return "console/monitor/completed";
     }
