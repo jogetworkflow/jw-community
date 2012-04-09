@@ -62,43 +62,52 @@ public class DefaultValidator extends FormValidator {
         String label = element.getPropertyString("label");
         String mandatory = (String) getProperty("mandatory");
         String type = (String) getProperty("type");
+        String message = (String) getProperty("message");
 
         if ("true".equals(mandatory)) {
-            result = validateMandatory(data, id, label, values);
+            result = validateMandatory(data, id, label, values, message);
         }
         if (type != null) {
             type = ";" + type;
             if (type.indexOf(";mandatory") >= 0) {
-                result = validateMandatory(data, id, label, values);
+                result = validateMandatory(data, id, label, values, message);
             }
             if (type.indexOf(";alphanumeric") >= 0) {
-                result = validateAlphaNumeric(data, id, label, values);
+                result = validateAlphaNumeric(data, id, label, values, message);
             }
             if (type.indexOf(";alphabet") >= 0) {
-                result = validateAlphabet(data, id, label, values);
+                result = validateAlphabet(data, id, label, values, message);
             }
             if (type.indexOf(";numeric") >= 0) {
-                result = validateNumeric(data, id, label, values);
+                result = validateNumeric(data, id, label, values, message);
             }
             if (type.indexOf(";email") >= 0) {
-                result = validateEmail(data, id, label, values);
+                result = validateEmail(data, id, label, values, message);
+            }
+            if (type.indexOf(";custom") >= 0) {
+                String regex = (String) getProperty("custom-regex");
+                result = validateCustom(data, id, label, values, regex, message);
             }
         }
         return result;
     }
 
-    protected boolean validateMandatory(FormData data, String id, String label, String[] values) {
+    protected boolean validateMandatory(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Missing required value";
+        }
+        
         if (values == null || values.length == 0) {
             result = false;
             if (id != null) {
-                data.addFormError(id, "Missing required value");
+                data.addFormError(id, message);
             }
         } else {
             for (String val : values) {
                 if (val == null || val.trim().length() == 0) {
                     result = false;
-                    data.addFormError(id, "Missing required value");
+                    data.addFormError(id, message);
                     break;
                 }
             }
@@ -106,13 +115,17 @@ public class DefaultValidator extends FormValidator {
         return result;
     }
 
-    protected boolean validateAlphaNumeric(FormData data, String id, String label, String[] values) {
+    protected boolean validateAlphaNumeric(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Only alphanumeric allowed";
+        }
+        
         if (values != null && values.length > 0) {
             for (String val : values) {
                 if (val != null && !val.matches("^[a-zA-Z0-9]*$")) {
                     result = false;
-                    data.addFormError(id, "Only alphanumeric allowed");
+                    data.addFormError(id, message);
                     break;
                 }
             }
@@ -120,13 +133,17 @@ public class DefaultValidator extends FormValidator {
         return result;
     }
 
-    protected boolean validateAlphabet(FormData data, String id, String label, String[] values) {
+    protected boolean validateAlphabet(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Only alphabets allowed";
+        }
+        
         if (values != null && values.length > 0) {
             for (String val : values) {
                 if (val != null && !val.matches("^[a-zA-Z]*$")) {
                     result = false;
-                    data.addFormError(id, "Only alphabets allowed");
+                    data.addFormError(id, message);
                     break;
                 }
             }
@@ -134,13 +151,17 @@ public class DefaultValidator extends FormValidator {
         return result;
     }
 
-    protected boolean validateNumeric(FormData data, String id, String label, String[] values) {
+    protected boolean validateNumeric(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Only numbers allowed";
+        }
+        
         if (values != null && values.length > 0) {
             for (String val : values) {
-                if (val != null && !val.matches("^[0-9.]*$")) {
+                if (val != null && !val.matches("^[-]*[0-9.]*$")) {
                     result = false;
-                    data.addFormError(id, "Only numbers allowed");
+                    data.addFormError(id, message);
                     break;
                 }
             }
@@ -148,8 +169,12 @@ public class DefaultValidator extends FormValidator {
         return result;
     }
 
-    protected boolean validateEmail(FormData data, String id, String label, String[] values) {
+    protected boolean validateEmail(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Only emails allowed";
+        }
+
         if (values != null && values.length > 0) {
             for (String val : values) {
                 if (val != null && !val.isEmpty()) {
@@ -158,7 +183,30 @@ public class DefaultValidator extends FormValidator {
                     Matcher matcher = pattern.matcher(val);
                     if (!matcher.matches()) {
                         result = false;
-                        data.addFormError(id, "Only emails allowed");
+                        data.addFormError(id, message);
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    protected boolean validateCustom(FormData data, String id, String label, String[] values, String regex, String message) {
+        boolean result = true;
+        if (message == null || message.isEmpty()) {
+            message = "Invalid value";
+        }
+        
+        if (values != null && values.length > 0) {
+            for (String val : values) {
+                if (val != null && !val.isEmpty()) {
+                    String expression = regex;
+                    Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+                    Matcher matcher = pattern.matcher(val);
+                    if (!matcher.matches()) {
+                        result = false;
+                        data.addFormError(id, message);
                         break;
                     }
                 }

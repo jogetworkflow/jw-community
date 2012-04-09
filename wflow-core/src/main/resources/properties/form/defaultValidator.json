@@ -33,6 +33,20 @@
         {
             label : '@@form.defaultvalidator.email@@',
             value : 'email'
+        },
+        {
+            label : '@@form.defaultvalidator.custom@@',
+            value : 'custom'
         }]
+    },
+    {
+        name : 'custom-regex',
+        label : '@@form.defaultvalidator.custom.regex@@',
+        type : 'textfield'
+    },
+    {
+        name : 'message',
+        label : '@@form.defaultvalidator.message@@',
+        type : 'textfield'
     }]
 }]
