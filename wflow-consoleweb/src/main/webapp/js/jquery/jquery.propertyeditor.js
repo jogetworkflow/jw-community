@@ -419,7 +419,7 @@
         if(value == null){
             value = "";
         }
-        return '<input type="hidden" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+ value +'" />';
+        return '<input type="hidden" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+ escapeHtmlTag(value) +'" />';
     }
 
     function renderReadonly(id, property, value){
@@ -431,7 +431,7 @@
             size = ' size="'+ size +'"';
         }
 
-        return '<input type="text" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size +' value="'+ value +'" disabled />';
+        return '<input type="text" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size +' value="'+ escapeHtmlTag(value) +'" disabled />';
     }
 
     function renderTextfield(id, property, value, defaultValue){
@@ -449,10 +449,10 @@
 
         var defaultValueLabel = '';
         if(defaultValue != null){
-            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+defaultValue+'</span><div class="clear"></div></div>';
+            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+escapeHtmlTag(defaultValue)+'</span><div class="clear"></div></div>';
         }
 
-        return '<input type="text" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ value +'"/>'+defaultValueLabel;
+        return '<input type="text" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ escapeHtmlTag(value) +'"/>'+defaultValueLabel;
     }
 
     function renderPassword(id, property, value, defaultValue){
@@ -471,10 +471,10 @@
         var defaultValueLabel = '';
         if(defaultValue != null){
             defaultValue = defaultValue.replace(/./g, '*');
-            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+defaultValue+'</span><div class="clear"></div></div>';
+            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+escapeHtmlTag(defaultValue)+'</span><div class="clear"></div></div>';
         }
 
-        return '<input type="password" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ value +'"/>'+defaultValueLabel;
+        return '<input type="password" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ escapeHtmlTag(value) +'"/>'+defaultValueLabel;
     }
 
     function renderTextarea(id, property, value, defaultValue){
@@ -492,10 +492,10 @@
 
         var defaultValueLabel = '';
         if(defaultValue != null){
-            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+ nl2br(defaultValue) +'</span><div class="clear"></div></div>';
+            defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+ nl2br(escapeHtmlTag(defaultValue)) +'</span><div class="clear"></div></div>';
         }
 
-        return '<textarea id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ rows + cols +'>'+ value +'</textarea>'+defaultValueLabel;
+        return '<textarea id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ rows + cols +'>'+ escapeHtmlTag(value) +'</textarea>'+defaultValueLabel;
     }
 
     function renderCheckbox(id, property, value, defaultValue){
@@ -522,13 +522,13 @@
                         defaultValueText += option.label + ', ';
                     }
                 });
-                html += '<label><input type="checkbox" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+option.value+'"'+checked+'/>'+option.label+'</label>';
+                html += '<label><input type="checkbox" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>';
             });
         }
 
         if(defaultValueText != ''){
             defaultValueText = defaultValueText.substring(0, defaultValueText.length - 2);
-            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + defaultValueText + '</span><div class="clear"></div></div>';
+            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
         }
 
         return html + defaultValueText;
@@ -554,12 +554,12 @@
                 if(defaultValue == option.value){
                     defaultValueText = option.label;
                 }
-                html += '<label><input type="radio" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+option.value+'"'+checked+'/>'+option.label+'</label>';
+                html += '<label><input type="radio" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>';
             });
         }
 
         if(defaultValueText != ''){
-            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + defaultValueText + '</span><div class="clear"></div></div>';
+            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
         }
 
         return html + defaultValueText;
@@ -585,12 +585,12 @@
                 if(defaultValue != "" && defaultValue == option.value){
                     defaultValueText = option.label;
                 }
-                html += '<option value="'+option.value+'"'+selected+'>'+option.label+'</option>';
+                html += '<option value="'+escapeHtmlTag(option.value)+'"'+selected+'>'+option.label+'</option>';
             });
         }
         html += '</select>';
         if(defaultValueText != ''){
-            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + defaultValueText + '</span><div class="clear"></div></div>';
+            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
         }
         return html + defaultValueText;
     }
@@ -624,14 +624,14 @@
                         defaultValueText += option.label + ', ';
                     }
                 });
-                html += '<option value="'+option.value+'"'+selected+'>'+option.label+'</option>';
+                html += '<option value="'+escapeHtmlTag(option.value)+'"'+selected+'>'+option.label+'</option>';
             });
         }
         html += '</select>';
 
         if(defaultValueText != ''){
             defaultValueText = defaultValueText.substring(0, defaultValueText.length - 2);
-            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + defaultValueText + '</span><div class="clear"></div></div>';
+            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
         }
 
         return html + defaultValueText;
@@ -652,7 +652,7 @@
             if(column.options != undefined){
                 html += '<select name="'+ column.key +'" value="">';
                     $.each(column.options, function(i, option){
-                        html += '<option value="'+option.value+'">'+option.label+'</option>';
+                        html += '<option value="'+escapeHtmlTag(option.value)+'">'+option.label+'</option>';
                 });
                 html += '</select>';
             }else{
@@ -684,11 +684,11 @@
                             if(columnValue == option.value){
                                 selected = " selected";
                             }
-                            html += '<option value="'+option.value+'"'+selected+'>'+option.label+'</option>';
+                            html += '<option value="'+escapeHtmlTag(option.value)+'"'+selected+'>'+option.label+'</option>';
                         });
                         html += '</select>';
                     }else{
-                        html += '<input name="'+ column.key +'" size="10" value="'+columnValue+'"/>';
+                        html += '<input name="'+ column.key +'" size="10" value="'+escapeHtmlTag(columnValue)+'"/>';
                     }
                     html += '</span></td>';
                 });
@@ -713,7 +713,7 @@
                     if(column.options != undefined){
                         $.each(column.options, function(i, option){
                             if(columnValue == option.value){
-                                defaultValueText +=  option.label + '; ';
+                                defaultValueText +=  escapeHtmlTag(option.label) + '; ';
                             }
                         });
                     }else{
@@ -748,7 +748,7 @@
         if(defaultValue != null){
             defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+ escapeHtmlTag(defaultValue) +'</span><div class="clear"></div></div>';
         }
-        return '<textarea id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" class="tinymce"'+rows +cols+'>'+ value +'</textarea>'+defaultValueLabel;
+        return '<textarea id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" class="tinymce"'+rows +cols+'>'+ escapeHtmlTag(value) +'</textarea>'+defaultValueLabel;
     }
 
     function renderElementSelect(id, property, value, defaultValue){
@@ -803,6 +803,10 @@
 
         regX = />/g;
         replaceString = '&gt;';
+        string = string.replace(regX, replaceString);
+
+        regX = /"/g;
+        replaceString = '&quot;';
         return string.replace(regX, replaceString);
     }
 
@@ -910,9 +914,9 @@
                             });
 
                             if(type == 'checkbox'){
-                                $('#'+id+'_input').append('<label><input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+option.value+'"'+checked+'/>'+option.label+'</label>');
+                                $('#'+id+'_input').append('<label><input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>');
                             }else if(type == 'radio'){
-                                $('#'+id+'_input').append('<label><input type="radio" id="'+ id +'" name="'+ id +'" value="'+option.value+'"'+checked+'/>'+option.label+'</label>');
+                                $('#'+id+'_input').append('<label><input type="radio" id="'+ id +'" name="'+ id +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>');
                             }else{
                                 $('#'+id).append('<option value="'+option.value+'"'+checked+'>'+option.label+'</option>');
                             }
@@ -927,7 +931,7 @@
                     $('#'+id+'_input div.default').remove();
                     if(defaultValueText != ''){
                         defaultValueText = defaultValueText.substring(0, defaultValueText.length - 2);
-                        defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + defaultValueText + '</span><div class="clear"></div></div>';
+                        defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
                     }
                     $('#'+id+'_input').append(defaultValueText);
                 }
