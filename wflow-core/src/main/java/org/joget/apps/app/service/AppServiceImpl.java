@@ -415,6 +415,10 @@ public class AppServiceImpl implements AppService {
             FormData formResult = formService.validateFormData(startForm, formData);
             Map<String, String> errors = formResult.getFormErrors();
             if (errors == null || errors.isEmpty()) {
+                if (originProcessId == null && formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null && !formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                    originProcessId = formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID);
+                }
+                
                 // start process
                 result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
                 String processId = result.getProcess().getInstanceId();
