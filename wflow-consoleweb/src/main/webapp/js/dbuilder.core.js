@@ -367,7 +367,7 @@ DatalistBuilder = {
             type: "POST",
             data: {"json": jsonStr },
             url: DatalistBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
-            dateType : "text",
+            dataType : "text",
             success: function(response) {
                 var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + response + '</div></li>');
 

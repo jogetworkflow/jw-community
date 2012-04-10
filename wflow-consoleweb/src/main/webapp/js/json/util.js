@@ -5,7 +5,7 @@ ConnectionManager = {
                  type: 'POST',
                  url: url,
                  data: params,
-                 dateType : "text",
+                 dataType : "text",
                  success: function(data) {
                      callback.success.call(thisWindow, data);
                  },
@@ -51,7 +51,7 @@ ConnectionManager = {
                  type: 'GET',
                  url: url,
                  data: params,
-                 dateType : "text",
+                 dataType : "text",
                  success: function(data) {
                      callback.success(data)
                  },

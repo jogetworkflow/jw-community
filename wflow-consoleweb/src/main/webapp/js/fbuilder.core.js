@@ -573,7 +573,7 @@ FormBuilder = {
                 type: "POST",
                 data: {"json": jsonStr },
                 url: FormBuilder.contextPath + FormBuilder.elementPreviewUrl,
-                dateType : "text",
+                dataType : "text",
                 success: function(response) {
                     var newElement = $(response);
 
