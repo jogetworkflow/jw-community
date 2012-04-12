@@ -265,8 +265,8 @@ public class AppUtil implements ApplicationContextAware {
                         String tempVar = var.replaceAll("#", "");
                         for (Plugin p : pluginList) {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
-                            if (tempVar.startsWith(hashVariablePlugin.getPrefix())) {
-                                tempVar = tempVar.replace(hashVariablePlugin.getPrefix() + ".", "");
+                            if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
+                                tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
                                 
                                 HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
                                 if (cachedPlugin == null) {

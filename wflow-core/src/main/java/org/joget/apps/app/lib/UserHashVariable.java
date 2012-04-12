@@ -26,7 +26,7 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
     }
 
     public String getPrefix() {
-        return "user.";
+        return "user";
     }
 
     public String getVersion() {
