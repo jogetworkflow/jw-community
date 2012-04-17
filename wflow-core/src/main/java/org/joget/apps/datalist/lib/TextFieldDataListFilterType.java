@@ -47,7 +47,7 @@ public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
 
     public DataListFilterQueryObject getQueryObject(DataList datalist, String name) {
         DataListFilterQueryObject queryObject = new DataListFilterQueryObject();
-        if (datalist != null && datalist.getBinder() != null && getValue(datalist, name) != null) {
+        if (datalist != null && datalist.getBinder() != null && getValue(datalist, name) != null && !getValue(datalist, name).isEmpty()) {
             queryObject.setQuery(datalist.getBinder().getColumnName(name) + " like ?");
             queryObject.setValues(new String[]{'%' + getValue(datalist, name) + '%'});
 
