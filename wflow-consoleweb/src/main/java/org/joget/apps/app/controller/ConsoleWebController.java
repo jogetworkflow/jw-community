@@ -2097,7 +2097,7 @@ public class ConsoleWebController {
             if (datalistDefinitionDao.loadById(datalistDefinition.getId(), appDef) != null) {
                 errors.add("console.datalist.error.label.exists");
             } else {
-                datalistDefinition.setJson("{\"id\":\"" + datalistDefinition.getId() + "\",\"name\":\"" + datalistDefinition.getName() + "\",\"pageSize\":10,\"order\":\"\",\"orderBy\":\"\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}");
+                datalistDefinition.setJson("{\"id\":\"" + datalistDefinition.getId() + "\",\"name\":\"" + datalistDefinition.getName() + "\",\"pageSize\":\"10\",\"order\":\"\",\"orderBy\":\"\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}");
                 invalid = !datalistDefinitionDao.add(datalistDefinition);
             }
 

@@ -797,6 +797,7 @@
     }
 
     function escapeHtmlTag(string){
+        string = String(string);
         var regX = /</g;
         var replaceString = '&lt;';
         string = string.replace(regX, replaceString);
