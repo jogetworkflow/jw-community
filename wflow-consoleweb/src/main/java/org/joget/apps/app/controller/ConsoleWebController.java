@@ -2737,6 +2737,11 @@ public class ConsoleWebController {
     public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<FormDefinition> formDefinitionList = null;
+        
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, sort, desc, start, rows);
