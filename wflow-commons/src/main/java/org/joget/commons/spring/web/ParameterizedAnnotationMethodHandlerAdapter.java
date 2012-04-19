@@ -42,7 +42,10 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
 
             if (request instanceof MultipartHttpServletRequest) {
                 MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
+                FileStore.clear();
                 FileStore.setFileMap(req.getFileMap());
+            } else {
+                FileStore.clear();
             }
 
             Map<String, String> pathParameters = (Map<String, String>) super.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS);
