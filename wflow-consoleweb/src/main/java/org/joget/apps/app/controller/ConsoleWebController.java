@@ -3370,7 +3370,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/message/import/submit", method = RequestMethod.POST)
     public String consoleSettingMessagePOFileUpload(ModelMap map) throws Exception {
-        String systemLocale = setupManager.getSettingByProperty("systemLocale").getValue();
+        Setting setting = setupManager.getSettingByProperty("systemLocale");
+        String systemLocale = (setting != null) ? setting.getValue() : null;
         if (systemLocale == null || systemLocale.equalsIgnoreCase("")) {
             systemLocale = "en_US";
         }
