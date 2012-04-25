@@ -39,6 +39,16 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
         Collection<Map> optionMap = FormUtil.getElementPropertyOptionsMap(this, formData);
         return optionMap;
     }
+    
+    @Override
+    public FormData formatDataForValidation(FormData formData) {
+        String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
+        if (paramValues == null || paramValues.length == 0) {
+            String paramName = FormUtil.getElementParameterName(this);
+            formData.addRequestParameterValues(paramName, new String[]{""});
+        }
+        return formData;
+    }
 
     @Override
     public FormRowSet formatData(FormData formData) {
