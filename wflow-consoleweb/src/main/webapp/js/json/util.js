@@ -28,20 +28,9 @@ ConnectionManager = {
 	        dataType:    'jsonp',
 	        data:        params,
 	        processData: false,
-            dataFilter:  function(data, type){
-                //unwrap jsonp callback function
-                if(/^jsonp[\d]+\(/.test(data)){
-                    data = data.replace(/^jsonp[\d]+\(/, '');
-                    data = data.replace(/\)$/, '');
-                    var obj = eval('(' + data + ')');
-                    callback.success(obj);
-                    return obj;
-                }else
-                    callback.success(data);
-            },
 	        success:     function(data) {
-                callback.success(data);
-            }
+                    callback.success(data);
+                }
 	    });
     },
 
