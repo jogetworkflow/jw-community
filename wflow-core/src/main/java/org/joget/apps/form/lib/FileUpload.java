@@ -45,7 +45,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
         if (file != null) {
             dataModel.put("tempFilePath", value);
             dataModel.put("value", file.getName());
-        } else {
+        } else if (value != null && !value.isEmpty()) {
             dataModel.put("value", value);
             
             // determine actual path for the file uploads
