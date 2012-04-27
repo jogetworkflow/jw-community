@@ -284,7 +284,7 @@ public class FormService {
         if (fileMap != null) {
             for (String paramName : fileMap.keySet()) {
                 MultipartFile file = FileStore.getFile(paramName);
-                if (file != null) {
+                if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
                     String path = FileManager.storeFile(file);
                     formData.addRequestParameterValues(paramName, new String[]{path});
                 }
@@ -313,7 +313,7 @@ public class FormService {
         if (fileMap != null) {
             for (String paramName : fileMap.keySet()) {
                 MultipartFile file = FileStore.getFile(paramName);
-                if (file != null) {
+                if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
                     String path = FileManager.storeFile(file);
                     formData.addRequestParameterValues(paramName, new String[]{path});
                 }
