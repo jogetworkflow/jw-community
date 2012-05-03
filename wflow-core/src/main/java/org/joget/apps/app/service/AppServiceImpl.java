@@ -412,6 +412,7 @@ public class AppServiceImpl implements AppService {
             Form startForm = startFormDef.getForm();
 
             // validate form
+            formData = FormUtil.executeElementFormatDataForValidation(startForm, formData);
             FormData formResult = formService.validateFormData(startForm, formData);
             Map<String, String> errors = formResult.getFormErrors();
             if (errors == null || errors.isEmpty()) {
