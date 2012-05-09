@@ -34,8 +34,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
         this.dataList = (DataList) pageContext.findAttribute("dataList");
 
         // set values to fix DisplayTag bug later
-        String[] params = pageContext.getRequest().getParameterValues(fieldName);
-        checkedIds = params != null ? new ArrayList(Arrays.asList(params)) : new ArrayList(0); // used to fix DisplayTag bug
+        if (fieldName != null) {
+            String[] params = pageContext.getRequest().getParameterValues(fieldName);
+            checkedIds = params != null ? new ArrayList(Arrays.asList(params)) : new ArrayList(0); // used to fix DisplayTag bug
+        } else {
+            checkedIds = new ArrayList(0);
+        }
     }
 
     @Override

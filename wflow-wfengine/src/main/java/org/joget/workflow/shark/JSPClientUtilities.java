@@ -87,6 +87,10 @@ public class JSPClientUtilities {
       }      
    }
 
+   public static void setProperty(String property, String value) throws Exception {
+       p.setProperty(property, value);
+   }
+   
    public static void init() throws Exception {
       if (!sharkConfigured) {
          Shark.configure(p);

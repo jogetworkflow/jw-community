@@ -151,13 +151,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 if (this.dataSource != null) {
                     // set Spring datasource, hardcoded to Shark's JNDI binding
                     ic = new InitialContext();
+                    String jndiName = "jwdb";
                     try {
-                        // create jdbc subcontext for non-app server environment
-                        ic.createSubcontext("jdbc");
-                    } catch (Exception ie) {
-                        // ignore
+                        ic.rebind(jndiName, this.dataSource);
+                    } catch(Exception ne) {
+                        // workaround for Websphere as it does not allow non-serializable object binding, so bind to java:comp/
+                        jndiName = "java:comp/jwdb";
+                        ic.rebind(jndiName, this.dataSource);
                     }
-                    ic.rebind("jdbc/sharkdb", this.dataSource);
+                    // set shark datasource name
+                    JSPClientUtilities.setProperty("DatabaseManager.DB.sharkdb.Connection.DataSourceName", jndiName);
+                    LogUtil.info(getClass().getName(), "Datasource bound to " + jndiName);
                 }
 
                 if (this.transactionManager != null) {
@@ -380,7 +384,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (packageId != null && packageId.trim().length() > 0) {
                 String sql = " /*sql PackageId='" + packageId + "'";
                 if (version != null && version.trim().length() > 0) {
-                    sql += " AND ProcessDefinitionVersion=" + version + "";
+                    sql += " AND ProcessDefinitionVersion='" + version + "'";
                 }
                 sql += " sql*/";
                 pmi.set_query_expression(sql);
