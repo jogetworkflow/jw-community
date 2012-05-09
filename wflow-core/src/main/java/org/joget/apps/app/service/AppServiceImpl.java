@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -419,7 +420,7 @@ public class AppServiceImpl implements AppService {
                 if (originProcessId == null && formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null && !formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
                     originProcessId = formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID);
                 }
-                
+
                 // start process
                 result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
                 String processId = result.getProcess().getInstanceId();
@@ -433,7 +434,7 @@ public class AppServiceImpl implements AppService {
                 // submit form
                 formResult = formService.submitForm(startForm, formData, true);
                 result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
-                
+
                 // set next activity if configured
                 boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
                 if (!autoContinue) {
@@ -730,6 +731,9 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public AppDefinition createNewAppDefinitionVersion(String appId) {
+        TimeZone current = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
+        
         Long version = appDefinitionDao.getLatestVersion(appId);
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, version);
 
@@ -740,6 +744,8 @@ public class AppServiceImpl implements AppService {
             newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(getAppDefinitionXml(appId, version)), "UTF-8");
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
+        } finally {
+            TimeZone.setDefault(current);
         }
 
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1084,6 +1090,10 @@ public class AppServiceImpl implements AppService {
         byte[] appDefinitionXml = null;
 
         ByteArrayOutputStream baos = null;
+        
+        TimeZone current = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
+        
         try {
             baos = new ByteArrayOutputStream();
 
@@ -1110,6 +1120,8 @@ public class AppServiceImpl implements AppService {
                     LogUtil.error(getClass().getName(), e, "");
                 }
             }
+            
+            TimeZone.setDefault(current);
         }
         return null;
     }
@@ -1161,6 +1173,9 @@ public class AppServiceImpl implements AppService {
     
     @Override
     public AppDefinition importApp(byte[] zip) {
+        TimeZone current = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
+        
         try {
             byte[] appData = getAppDataXmlFromZip(zip);
             byte[] xpdl = getXpdlFromZip(zip);
@@ -1179,6 +1194,8 @@ public class AppServiceImpl implements AppService {
             return newAppDef;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
+        } finally {
+            TimeZone.setDefault(current);
         }
         return null;
     }
