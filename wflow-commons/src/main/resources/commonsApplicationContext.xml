@@ -48,6 +48,14 @@
         <property name="maxActive" value="-1" />
         <property name="datasourceName" value="workflow" />
     </bean>
+<!--
+    <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="jwdb"/>
+        <property name="lookupOnStartup" value="false"/>
+        <property name="cache" value="true" />
+        <property name="proxyInterface"  value="javax.sql.DataSource" />
+    </bean>
+-->
 
     <!-- Hibernate SessionFactory -->
     <bean id="setupSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" autowire-candidate="false">

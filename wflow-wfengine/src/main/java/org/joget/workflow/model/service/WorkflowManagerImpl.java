@@ -56,6 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 
 import org.enhydra.shark.CustomWfActivityWrapper;
@@ -156,8 +157,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         ic.rebind(jndiName, this.dataSource);
                     } catch(Exception ne) {
                         // workaround for Websphere as it does not allow non-serializable object binding, so bind to java:comp/
-                        jndiName = "java:comp/jwdb";
-                        ic.rebind(jndiName, this.dataSource);
+                        try {
+                            jndiName = "java:comp/jwdb";
+                            ic.rebind(jndiName, this.dataSource);
+                        } catch(Exception nee) {
+                            jndiName = "jwdb";
+                        }
                     }
                     // set shark datasource name
                     JSPClientUtilities.setProperty("DatabaseManager.DB.sharkdb.Connection.DataSourceName", jndiName);
@@ -166,7 +171,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 if (this.transactionManager != null) {
                     // set Spring tx manager, hardcoded to Shark's JNDI binding
-                    ic.rebind("javax.transaction.TransactionManager", this.transactionManager.getTransactionManager());
+                    TransactionManager tm = this.transactionManager.getTransactionManager();
+                    if (tm != null) {
+                        ic.rebind("javax.transaction.TransactionManager", tm);
+                    }
                 }
 
                 // configure shark
