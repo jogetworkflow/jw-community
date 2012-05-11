@@ -30,6 +30,24 @@
                     <input id="appZip" type="file" name="appZip"/>
                 </span>
             </div>
+            <div class="form-row">
+                
+                <span class="form-input">
+                    <label for="overrideEnvVariable">
+                        <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
+                        <fmt:message key="console.app.import.label.overrideEnvVariable"/>
+                    </label>
+                </span>
+            </div>
+            <div class="form-row">
+                
+                <span class="form-input">
+                    <label for="overridePluginDefault" class="upload">
+                        <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
+                        <fmt:message key="console.app.import.label.overridePluginDefault"/>
+                    </label>
+                </span>
+            </div>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
             </div>

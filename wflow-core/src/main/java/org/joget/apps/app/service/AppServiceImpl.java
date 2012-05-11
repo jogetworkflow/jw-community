@@ -1250,6 +1250,22 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) {
+        Boolean overrideEnvVariable = false;
+        Boolean overridePluginDefault = false;
+        
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null && request.getParameterValues("overrideEnvVariable") != null) {
+            overrideEnvVariable = true;
+        }
+        if (request != null && request.getParameterValues("overridePluginDefault") != null) {
+            overridePluginDefault = true;
+        }
+        
+        AppDefinition orgAppDef = null;
+        if (!overrideEnvVariable || !overridePluginDefault) {
+            orgAppDef = getAppDefinition(appDef.getAppId(), null);
+        }
+        
         AppDefinition newAppDef = new AppDefinition();
         newAppDef.setAppId(appDef.getAppId());
         newAppDef.setVersion(appVersion);
@@ -1284,11 +1300,19 @@ public class AppServiceImpl implements AppService {
 
         if (appDef.getEnvironmentVariableList() != null) {
             for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
+                    EnvironmentVariable temp = environmentVariableDao.loadById(o.getId(), orgAppDef);
+                    if (temp != null) {
+                        o.setValue(temp.getValue());
+                    }
+                }
+                
                 o.setAppDefinition(newAppDef);
+                
                 environmentVariableDao.add(o);
             }
         }
-
+        
         if (appDef.getMessageList() != null) {
             for (Message o : appDef.getMessageList()) {
                 o.setAppDefinition(newAppDef);
@@ -1298,6 +1322,13 @@ public class AppServiceImpl implements AppService {
 
         if (appDef.getPluginDefaultPropertiesList() != null) {
             for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
+                if (!overridePluginDefault && orgAppDef != null && orgAppDef.getPluginDefaultPropertiesList() != null) {
+                    PluginDefaultProperties temp = pluginDefaultPropertiesDao.loadById(o.getId(), orgAppDef);
+                    if (temp != null) {
+                        o.setPluginProperties(temp.getPluginProperties());
+                    }
+                }
+                
                 o.setAppDefinition(newAppDef);
                 pluginDefaultPropertiesDao.add(o);
             }
