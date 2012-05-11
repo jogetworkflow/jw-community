@@ -29,9 +29,12 @@
             <list>
                 <ref bean="openSessionInViewInterceptor"/>
                 <ref bean="appOpenSessionInViewInterceptor"/>
+                <ref bean="multipartHandlerInterceptor"/>
             </list>
        </property>
     </bean>
+    
+    <bean id="multipartHandlerInterceptor" class="org.joget.commons.spring.web.MultipartHandlerInterceptor" />
     
     <bean name="openSessionInViewInterceptor"
           class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">  
