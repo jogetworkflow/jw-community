@@ -65,6 +65,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
@@ -259,12 +260,12 @@ public class AppServiceImpl implements AppService {
         if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty()) {
             Element saveButton = (Element) pluginManager.getPlugin(SaveAsDraftButton.class.getName());
             saveButton.setProperty(FormUtil.PROPERTY_ID, "saveAsDraft");
-            saveButton.setProperty("label", "Save As Draft");
+            saveButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.saveAsDraft"));
             formActionList.add((FormAction) saveButton);
         }
         Element completeButton = (Element) pluginManager.getPlugin(AssignmentCompleteButton.class.getName());
         completeButton.setProperty(FormUtil.PROPERTY_ID, AssignmentCompleteButton.DEFAULT_ID);
-        completeButton.setProperty("label", "Complete");
+        completeButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.complete"));
         formActionList.add((FormAction) completeButton);
         FormAction[] formActions = formActionList.toArray(new FormAction[0]);
         form = decorateFormActions(form, formActions);
@@ -361,7 +362,7 @@ public class AppServiceImpl implements AppService {
                     // decorate form with actions
                     Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
                     submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
-                    submitButton.setProperty("label", "Submit");
+                    submitButton.setProperty("label",  ResourceBundleUtil.getMessage("form.button.submit"));
                     FormAction[] formActions = {(FormAction) submitButton};
                     startForm = decorateFormActions(startForm, formActions);
 
