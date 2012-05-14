@@ -2,7 +2,6 @@ package org.joget.apps.app.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -1069,6 +1067,9 @@ public class AppServiceImpl implements AppService {
                 row.setDateCreated(dateCreated);
             }
 
+            // update DB schema
+            formDataDao.updateSchema(form, rows);
+            
             // save data
             formDataDao.saveOrUpdate(form, results);
             Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Saved form data row [{0}] for form [{1}] into table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
@@ -1370,8 +1371,11 @@ public class AppServiceImpl implements AppService {
 
                 // generate image for each process
                 List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
-                for (WorkflowProcess process : processList) {
-                    XpdlImageUtil.generateXpdlImage(getDesignerwebBaseUrl(WorkflowUtil.getHttpServletRequest()), process.getId(), true);
+                String designerBaseUrl = getDesignerwebBaseUrl(WorkflowUtil.getHttpServletRequest());
+                if (designerBaseUrl != null && !designerBaseUrl.isEmpty()) {
+                    for (WorkflowProcess process : processList) {
+                        XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -1385,7 +1389,10 @@ public class AppServiceImpl implements AppService {
     }
 
     protected String getDesignerwebBaseUrl(HttpServletRequest request) {
-        String designerwebBaseUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+        String designerwebBaseUrl = null;
+        if (request != null) {
+            designerwebBaseUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
+        }
         if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
             designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
         }

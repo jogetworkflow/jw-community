@@ -143,6 +143,13 @@ public interface FormDataDao {
     public void saveOrUpdate(String formDefId, String tableName, FormRowSet rowSet);
 
     /**
+     * Call Hibernate to update DB schema
+     * @param form
+     * @param rowSet
+     */
+    public void updateSchema(Form form, FormRowSet rowSet);
+    
+    /**
      * Delete form data by primary keys
      * @param form
      * @param primaryKeyValues 

@@ -472,6 +472,19 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     }
 
     /**
+     * Call Hibernate to update DB schema
+     * @param form
+     * @param rowSet
+     */
+    @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void updateSchema(Form form, FormRowSet rowSet) {
+        String entityName = getFormEntityName(form);
+        String tableName = getFormTableName(form);
+        getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_NORMAL);
+    }
+
+    /**
      * Delete form data by primary keys
      * @param form
      * @param primaryKeyValues 
@@ -796,7 +809,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 // get JSON
                 String json = formDef.getJson();
                 if (json != null) {
-                    Form form = (Form) getFormService().createElementFromJson(json);
+                    Form form = (Form) getFormService().createElementFromJson(json, true);
                     findAllElementIds(form, columnList);
                 }
             }
