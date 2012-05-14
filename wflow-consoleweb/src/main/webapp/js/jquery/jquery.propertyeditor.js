@@ -761,6 +761,11 @@
         elementStack[id +'_'+ property.name]['name'] = property.name;
         elementStack[id +'_'+ property.name]['url'] = property.url;
 
+        if(property.keep_value_on_change != undefined && property.keep_value_on_change.toLowerCase() == "true"){
+            elementStack[id +'_'+ property.name]['keep_value_on_change'] = "true";
+        }else{
+            elementStack[id +'_'+ property.name]['keep_value_on_change'] = "false";
+        }
         if(value != null){
             valueString = value.className;
             elementStack[id +'_'+ property.name]['value'] = value.className;
@@ -1001,6 +1006,11 @@
         var currentPage = $(object).parent().parent().parent().parent();
         var editor = $(currentPage).parent();
         var editorId = $(editor).attr('id');
+        
+        var properties = null;
+        if (elementStack[id].keep_value_on_change != undefined && elementStack[id].keep_value_on_change.toLowerCase() == "true") {
+            properties = getElementPageData(editorId, id);
+        }
 
         //check if value is different, remove all the related properties page
         if($(editor).find('.property-editor-page[elementId='+id+']:first').attr('elementValue') != value){
@@ -1013,7 +1023,8 @@
                 url: replaceContextPath(elementStack[id].url, optionsStack[$(editor).attr('id')].contextPath),
                 context: {
                     id : id,
-                    value : value
+                    value : value,
+                    properties : properties
                 },
                 data : "value="+escape(value),
                 dataType : "text",
@@ -1023,6 +1034,7 @@
                         var pagehtml = '';
                         var id = this.id;
                         var value = this.value;
+                        var properties = this.properties;
 
                         elementStack[id]['propertiesDefinition'] = d;
 
@@ -1031,7 +1043,7 @@
                         if(value == elementStack[this.id].value){
                             option['propertyValues'] = elementStack[id].properties;
                         }else{
-                            option['propertyValues'] = null;
+                            option['propertyValues'] = properties;
                         }
 
                         $.each(d, function(i, page){
@@ -1076,19 +1088,7 @@
                 if($(editor).find('#'+editorId+'_'+parent+property.name).val() != null){
                     element['className'] = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                 }
-                element['properties'] = new Object();
-
-                if(elementStack[editorId+'_'+parent+property.name].propertiesDefinition != undefined){
-                    //get properties value
-                    $.each(elementStack[editorId+'_'+parent+property.name].propertiesDefinition, function(i, page){
-                        if(page.properties != undefined){
-                            if(validationProgressStack[editorId] != undefined){
-                                validationProgressStack[editorId].count += 1;
-                            }
-                            element['properties'] = $.extend(element['properties'], getPageData(editorId, page.properties, editorId+'_'+parent+property.name+'_'));
-                        }
-                    });
-                }
+                element['properties'] = getElementPageData(editorId, editorId+'_'+parent+property.name);
 
                 properties[property.name] = element;
             }else if(property.type.toLowerCase() == "grid"){
@@ -1135,6 +1135,23 @@
                 properties[property.name] = value;
             }
         });
+        return properties;
+    }
+    
+    function getElementPageData(editorId, elementId){
+        var properties = new Object();
+
+        if(elementStack[elementId].propertiesDefinition != undefined){
+            //get properties value
+            $.each(elementStack[elementId].propertiesDefinition, function(i, page){
+                if(page.properties != undefined){
+                    if(validationProgressStack[editorId] != undefined){
+                        validationProgressStack[editorId].count += 1;
+                    }
+                    properties = $.extend(properties, getPageData(editorId, page.properties, elementId+'_'));
+                }
+            });
+        }
         return properties;
     }
 
