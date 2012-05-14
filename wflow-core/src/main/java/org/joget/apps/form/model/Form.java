@@ -5,7 +5,7 @@ import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
-public class Form extends Element implements FormBuilderEditable {
+public class Form extends Element implements FormBuilderEditable, FormContainer {
 
     private Map<String, String[]> formMetas = new HashMap<String, String[]>();
 
@@ -28,9 +28,10 @@ public class Form extends Element implements FormBuilderEditable {
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
 
+        String paramName = FormUtil.getElementParameterName(this);
+        setFormMeta(paramName+"_SUBMITTED", new String[]{"true"});
+        
         if (getParent() == null) {
-            setFormMeta("_SUBMITTED", new String[]{"true"});
-
             if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
                 setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
             } else if (formData.getPrimaryKeyValue() != null) {

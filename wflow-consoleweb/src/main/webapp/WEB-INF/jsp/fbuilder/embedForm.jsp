@@ -21,9 +21,10 @@
         <c:set var="formHtml" scope="request" value="${formHtml}"/>
         <c:set var="errorCount" scope="request" value="${errorCount}"/>
         <c:set var="submitted" scope="request" value="${submitted}"/>
+        <c:set var="stay" scope="request" value="${stay}"/>
         <jsp:include page="../client/app/formView.jsp" flush="true" />
         
-        <c:if test="${submitted && errorCount == 0}">
+        <c:if test="${!stay && submitted && errorCount == 0}">
             <script type="text/javascript">
                 var setting = ${setting};
                 setting['result'] = '${jsonResult}';

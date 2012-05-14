@@ -100,6 +100,7 @@
     font-size: smaller;
     display: block;
 }
+.subform-cell-validator,
 .form-cell-validator {
     color: red;
     font-size: smaller;

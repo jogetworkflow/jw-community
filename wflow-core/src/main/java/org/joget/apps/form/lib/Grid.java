@@ -104,7 +104,7 @@ public class Grid extends Element implements FormBuilderPaletteElement {
             }
         }
             
-        if (!FormUtil.isFormSubmitted(formData)) {
+        if (!FormUtil.isFormSubmitted(this, formData)) {
             // load from binder if available
             FormRowSet binderRowSet = formData.getLoadBinderData(this);
             if (binderRowSet != null) {

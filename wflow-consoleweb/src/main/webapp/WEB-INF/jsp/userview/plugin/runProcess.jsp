@@ -84,6 +84,7 @@
     <c:when test="${properties.view eq 'formView'}">
         <c:set var="activityForm" scope="request" value="${properties.activityForm}"/>
         <c:set var="formHtml" scope="request" value="${properties.formHtml}"/>
+        <c:set var="stay" scope="request" value="${properties.stay}"/>
         <c:set var="errorCount" scope="request" value="${properties.errorCount}"/>
         <c:set var="submitted" scope="request" value="${properties.submitted}"/>
         <c:set var="closeDialog" scope="request" value="${properties.closeDialog}"/>

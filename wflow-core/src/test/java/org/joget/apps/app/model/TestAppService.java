@@ -14,6 +14,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessResult;
@@ -269,7 +270,10 @@ public class TestAppService {
             assertTrue(TEST_FORM_ID.equals(startForm.getFormId()));
 
             // start process
-            WorkflowProcessResult result = appService.submitFormToStartProcess(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, null, null, null, null);
+            FormData data = new FormData();
+            data.addRequestParameterValues(AssignmentCompleteButton.DEFAULT_ID, new String[]{AssignmentCompleteButton.DEFAULT_ID});
+            
+            WorkflowProcessResult result = appService.submitFormToStartProcess(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, data, null, null, null);
             String processId = result.getProcess().getInstanceId();
             Collection<WorkflowActivity> activityList = result.getActivities();
             assertTrue(activityList != null && activityList.size() == 1);

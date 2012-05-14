@@ -4,7 +4,7 @@ import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
-public class Column extends Element implements FormBuilderEditable {
+public class Column extends Element implements FormBuilderEditable, FormContainer {
 
     @Override
     public String getName() {

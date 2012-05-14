@@ -226,4 +226,22 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     public String toString() {
         return "Element {" + "className=" + getClassName() + ", properties=" + getProperties() + '}';
     }
+    
+    public Boolean hasError(FormData formData) {
+        String error = FormUtil.getElementError(this, formData);
+        if (error != null && !error.isEmpty()) {
+            return true;
+        }
+        
+        Collection<Element> childs = getChildren(formData);
+        if (childs != null && !childs.isEmpty()) {
+            for (Element child : childs) {
+                if (child.hasError(formData)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }

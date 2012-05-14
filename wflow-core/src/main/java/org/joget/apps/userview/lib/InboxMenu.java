@@ -360,7 +360,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && errors == null || errors.isEmpty()) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
             } else {
@@ -372,6 +372,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // show form
             String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
+            setProperty("stay", formData.getStay());
+            setProperty("submitted", Boolean.TRUE);
             setProperty("errorCount", errorCount);
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);

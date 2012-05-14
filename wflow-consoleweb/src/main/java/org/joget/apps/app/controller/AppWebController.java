@@ -148,6 +148,9 @@ public class AppWebController {
                 model.addAttribute("form", startForm);
                 model.addAttribute("formJson", formJson);
                 model.addAttribute("formHtml", formHtml);
+                model.addAttribute("stay", formData.getStay());
+                model.addAttribute("errorCount", formData.getFormErrors().size());
+                model.addAttribute("submitted", Boolean.TRUE);
                 model.addAttribute("activityForm", startFormDef);
                 return "client/app/processFormStart";
             }
@@ -265,7 +268,7 @@ public class AppWebController {
             formResult = appService.completeAssignmentForm(appId, version, activityId, formData, variableMap);
 
             Map<String, String> errors = formResult.getFormErrors();
-            if (errors.isEmpty() && activityForm.isAutoContinue()) {
+            if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
@@ -280,7 +283,7 @@ public class AppWebController {
         // check for validation errors
         Map<String, String> errors = formResult.getFormErrors();
         int errorCount = 0;
-        if (errors == null || errors.isEmpty()) {
+        if (!formResult.getStay() && errors == null || errors.isEmpty()) {
             // render normal template
             html = formService.generateElementHtml(form, formResult);
         } else {
@@ -295,6 +298,7 @@ public class AppWebController {
         model.addAttribute("formHtml", html);
         model.addAttribute("formJson", formJson);
         model.addAttribute("formResult", formResult);
+        model.addAttribute("stay", formResult.getStay());
         model.addAttribute("errorCount", errorCount);
         model.addAttribute("submitted", Boolean.TRUE);
         model.addAttribute("closeDialog", Boolean.TRUE);

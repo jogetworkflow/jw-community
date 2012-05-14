@@ -329,7 +329,7 @@ public class AppServiceImpl implements AppService {
         }
 
         Map<String, String> errors = formData.getFormErrors();
-        if (errors == null || errors.isEmpty()) {
+        if (!formData.getStay() && errors == null || errors.isEmpty()) {
             // complete assignment
             workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
@@ -358,8 +358,8 @@ public class AppServiceImpl implements AppService {
                     startForm.setProperty("url", formUrl);
 
                     // decorate form with actions
-                    Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
-                    submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
+                    Element submitButton = (Element) pluginManager.getPlugin(AssignmentCompleteButton.class.getName());
+                    submitButton.setProperty(FormUtil.PROPERTY_ID, AssignmentCompleteButton.DEFAULT_ID);
                     submitButton.setProperty("label",  ResourceBundleUtil.getMessage("form.button.submit"));
                     FormAction[] formActions = {(FormAction) submitButton};
                     startForm = decorateFormActions(startForm, formActions);
@@ -411,34 +411,38 @@ public class AppServiceImpl implements AppService {
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
 
-            // validate form
-            formData = FormUtil.executeElementFormatDataForValidation(startForm, formData);
-            FormData formResult = formService.validateFormData(startForm, formData);
-            Map<String, String> errors = formResult.getFormErrors();
-            if (errors == null || errors.isEmpty()) {
-                if (originProcessId == null && formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null && !formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
-                    originProcessId = formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID);
-                }
+            FormData formResult = formService.executeFormActions(startForm, formData);
+            if (formResult.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
+                // validate form
+                formData = FormUtil.executeElementFormatDataForValidation(startForm, formData);
+                formResult = formService.validateFormData(startForm, formData);
 
-                // start process
-                result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
-                String processId = result.getProcess().getInstanceId();
-                String originId = (originProcessId != null && originProcessId.trim().length() > 0) ? originProcessId : processId;
-                originId = getOriginProcessId(originId);
+                Map<String, String> errors = formResult.getFormErrors();
+                if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
+                    if (originProcessId == null && formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null && !formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                        originProcessId = formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID);
+                    }
 
-                // set primary key
-                formResult.setPrimaryKeyValue(originId);
-                formResult.setProcessId(processId);
+                    // start process
+                    result = workflowManager.processStart(processDefIdWithVersion, null, workflowVariableMap, null, originProcessId, true);
+                    String processId = result.getProcess().getInstanceId();
+                    String originId = (originProcessId != null && originProcessId.trim().length() > 0) ? originProcessId : processId;
+                    originId = getOriginProcessId(originId);
 
-                // submit form
-                formResult = formService.submitForm(startForm, formData, true);
-                result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
+                    // set primary key
+                    formResult.setPrimaryKeyValue(originId);
+                    formResult.setProcessId(processId);
 
-                // set next activity if configured
-                boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
-                if (!autoContinue) {
-                    // clear next activities
-                    result.setActivities(new ArrayList<WorkflowActivity>());
+                    // submit form
+                    formResult = formService.submitForm(startForm, formData, true);
+                    result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
+
+                    // set next activity if configured
+                    boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
+                    if (!autoContinue) {
+                        // clear next activities
+                        result.setActivities(new ArrayList<WorkflowActivity>());
+                    }
                 }
             }
         }

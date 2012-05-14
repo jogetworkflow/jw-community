@@ -21,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
@@ -33,9 +32,9 @@ import org.hibernate.mapping.SimpleValue;
 import org.hibernate.type.Type;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.form.lib.SubForm;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.FormColumnCache;
-import org.joget.apps.form.model.Section;
+import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.springframework.orm.ObjectRetrievalFailureException;
@@ -44,7 +43,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -853,13 +851,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param columnList
      */
     protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
-        if (!(element instanceof Form) && !(element instanceof SubForm) && !(element instanceof Section) && element.getProperties() != null) {
+        if (!(element instanceof FormContainer) && element.getProperties() != null) {
             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
             if (id != null && !id.isEmpty()) {
                 columnList.add(id);
             }
         }
-        if (!(element instanceof SubForm)) { // do not recurse into subforms
+        if (!(element instanceof AbstractSubForm)) { // do not recurse into subforms
             Collection<org.joget.apps.form.model.Element> children = element.getChildren();
             if (children != null) {
                 for (org.joget.apps.form.model.Element child : children) {

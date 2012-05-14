@@ -42,24 +42,24 @@
 
         <fieldset id="form-canvas">
 
-            <c:if test="${submitted && errorCount > 0}">
-                <div class="form-message"><fmt:message key="client.app.run.process.label.validationError" /></div>
-            </c:if>
-            <c:if test="${submitted && errorCount <= 0}">
-                <div class="form-message"><fmt:message key="client.app.run.process.label.formSubmitted" /></div>
-                <c:if test="${closeDialog}">
-                <script type="text/javascript">
-                    if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
-                        parent.PopupDialog.closeDialog();
-                    }else if (opener) {
-                        window.close();
-                    }
-                    if (parent && parent.closeDialog) {
-                        parent.closeDialog();
-                    } 
-                </script>
+                <c:if test="${submitted && errorCount > 0}">
+                    <div class="form-message"><fmt:message key="client.app.run.process.label.validationError" /></div>
                 </c:if>
-            </c:if>
+                <c:if test="${!stay && submitted && errorCount <= 0}">
+                    <div class="form-message"><fmt:message key="client.app.run.process.label.formSubmitted" /></div>
+                    <c:if test="${closeDialog}">
+                    <script type="text/javascript">
+                        if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
+                            parent.PopupDialog.closeDialog();
+                        }else if (opener) {
+                            window.close();
+                        }
+                        if (parent && parent.closeDialog) {
+                            parent.closeDialog();
+                        } 
+                    </script>
+                    </c:if>
+                </c:if>
             <c:out value="${formHtml}" escapeXml="false" />
             
         </fieldset>

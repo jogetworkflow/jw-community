@@ -15,11 +15,10 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.form.dao.FormDataDao;
-import org.joget.apps.form.model.Column;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormRowSet;
-import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
@@ -81,7 +80,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(tableName);
             for (String columnName : columnNames) {
                 Element element = FormUtil.findElement(columnName, form, null, true);
-                if (element != null && !(element instanceof Form) && !(element instanceof Column) && !(element instanceof Section)) {
+                if (element != null && !(element instanceof FormContainer)) {
                     String id = element.getPropertyString(FormUtil.PROPERTY_ID);
                     String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
                     if (id != null && !id.isEmpty()) {

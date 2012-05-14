@@ -19,6 +19,15 @@ public class FormData {
     protected Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
     protected Map<FormStoreBinder, FormRowSet> binderRowSetMap = new ListOrderedMap();
     protected Map<String, String> resultMap = new ListOrderedMap();
+    protected Boolean stay = false;
+
+    public Boolean getStay() {
+        return stay;
+    }
+
+    public void setStay(Boolean stay) {
+        this.stay = stay;
+    }
 
     public String getPrimaryKeyValue() {
         return primaryKeyValue;

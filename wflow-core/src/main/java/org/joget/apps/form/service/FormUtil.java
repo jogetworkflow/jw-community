@@ -12,9 +12,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.joget.apps.form.lib.SubForm;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormAction;
@@ -571,7 +570,7 @@ public class FormUtil implements ApplicationContextAware {
         if (elementId != null && elementId.equals(id)) {
             result = rootElement;
             return result;
-        } else if (!(rootElement instanceof SubForm) || ((rootElement instanceof SubForm) && includeSubForm)) {
+        } else if (!(rootElement instanceof AbstractSubForm) || ((rootElement instanceof AbstractSubForm) && includeSubForm)) {
             Collection<Element> children = rootElement.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
@@ -1098,9 +1097,13 @@ public class FormUtil implements ApplicationContextAware {
      * Check a form is submitted or not
      * @param formData
      */
-    public static boolean isFormSubmitted(FormData formData) {
-        if (formData.getRequestParameter("_SUBMITTED") != null) {
-            return true;
+    public static boolean isFormSubmitted(Element element, FormData formData) {
+        Form form = findRootForm(element);
+        if (form != null) {
+            String paramName = FormUtil.getElementParameterName(form);
+            if (formData.getRequestParameter(paramName+"_SUBMITTED") != null) {
+                return true;
+            }
         }
         return false;
     }

@@ -186,35 +186,37 @@ public class FormBuilderWebController {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && errors == null || errors.isEmpty()) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
+                
+                //convert submitted 
+                JSONObject jsonResult = new JSONObject();
+                for(FormStoreBinder binder: formData.getStoreBinders()){
+                    FormRowSet rows = formData.getStoreBinderData(binder);
+                    for(FormRow row : rows){
+                        for(Object o : row.keySet()){
+                            jsonResult.accumulate(o.toString(), row.get(o));
+                        }
+                        Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+                        if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
+                            jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
+                        }
+                    }
+                }
+
+                model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
             } else {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
-
-            //convert submitted 
-            JSONObject jsonResult = new JSONObject();
-            for(FormStoreBinder binder: formData.getStoreBinders()){
-                FormRowSet rows = formData.getStoreBinderData(binder);
-                for(FormRow row : rows){
-                    for(Object o : row.keySet()){
-                        jsonResult.accumulate(o.toString(), row.get(o));
-                    }
-                    Map<String, String> tempFilePathMap = row.getTempFilePathMap();
-                    if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
-                        jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
-                    }
-                }
-            }
-
-            model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
+            
             model.addAttribute("setting", callbackSetting);
             model.addAttribute("callback", callback);
             model.addAttribute("submitted", Boolean.TRUE);
             model.addAttribute("errorCount", errorCount);
+            model.addAttribute("stay", formData.getStay());
         }else{
             formHtml = formService.retrieveFormHtml(form, formData);
         }

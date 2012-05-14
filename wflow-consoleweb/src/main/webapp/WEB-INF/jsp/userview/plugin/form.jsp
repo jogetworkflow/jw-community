@@ -73,6 +73,7 @@
             <c:set var="formJson" scope="request" value="${properties.formJson}"/>
             <c:set var="errorCount" scope="request" value="${properties.errorCount}"/>
             <c:set var="submitted" scope="request" value="${properties.submitted}"/>
+            <c:set var="stay" scope="request" value="${properties.stay}"/>
             <c:set var="closeDialog" scope="request" value="${properties.closeDialog}"/>
             <jsp:include page="../../client/app/formView.jsp" flush="true" />
         </c:when>

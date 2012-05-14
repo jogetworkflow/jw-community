@@ -263,7 +263,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && errors == null || errors.isEmpty()) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
                 setAlertMessage(getPropertyString("messageShowAfterComplete"));
@@ -279,6 +279,8 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
             setProperty("errorCount", errorCount);
+            setProperty("stay", formData.getStay());
+            setProperty("submitted", Boolean.TRUE);
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
             setProperty("redirectUrlAfterComplete", redirectUrl);
@@ -440,7 +442,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             Map<String, String> errors = formData.getFormErrors();
             
             setProperty("submitted", Boolean.TRUE);
-            if (errors.isEmpty() && activityForm.isAutoContinue()) {
+            if (!formData.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
                 setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
                 setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
                 // redirect to next activity if available

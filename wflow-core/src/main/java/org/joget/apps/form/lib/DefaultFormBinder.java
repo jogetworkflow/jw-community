@@ -2,6 +2,7 @@ package org.joget.apps.form.lib;
 
 import java.util.Collection;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBinder;
@@ -95,7 +96,7 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
         Form form = null;
         if (element != null) {
             if (element.getLoadBinder() == this) {
-                if (element instanceof SubForm) {
+                if (element instanceof AbstractSubForm) {
                     Collection<Element> children = element.getChildren();
                     if (!children.isEmpty()) {
                         form = (Form) children.iterator().next();
@@ -122,7 +123,7 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
         Form form = null;
         if (element != null) {
             if (element.getStoreBinder() == this) {
-                if (element instanceof SubForm) {
+                if (element instanceof AbstractSubForm) {
                     Collection<Element> children = element.getChildren();
                     if (!children.isEmpty()) {
                         form = (Form) children.iterator().next();

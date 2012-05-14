@@ -238,7 +238,7 @@ public class FormService {
             updatedFormData = validateFormData(form, formData);
         }
         Map<String, String> errors = updatedFormData.getFormErrors();
-        if (errors == null || errors.isEmpty()) {
+        if (!updatedFormData.getStay() && errors == null || errors.isEmpty()) {
             // generate primary key if necessary
             String primaryKeyValue = form.getPrimaryKeyValue(updatedFormData);
             if (primaryKeyValue == null || primaryKeyValue.trim().length() == 0) {
@@ -404,7 +404,7 @@ public class FormService {
 
                 // execute binder
                 try {
-                    FormRowSet binderResult = binder.store(form, rowSet, formData);
+                    FormRowSet binderResult = binder.store(element, rowSet, formData);
                     formData.setStoreBinderData(binder, binderResult);
                 } catch (Exception e) {
                     String formId = FormUtil.getElementParameterName(form);

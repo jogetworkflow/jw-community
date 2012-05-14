@@ -259,6 +259,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("headerTitle", process.getName());
                     setProperty("view", "formView");
                     setProperty("formHtml", formHtml);
+                    setProperty("stay", formData.getStay());
+                    setProperty("errorCount", formData.getFormErrors().size());
+                    setProperty("submitted", Boolean.TRUE);
                     setProperty("activityForm", startFormDef);
                 }
             } else {
@@ -359,7 +362,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     formResult = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
 
                     Map<String, String> errors = formResult.getFormErrors();
-                    if (errors.isEmpty() && activityForm.isAutoContinue()) {
+                    if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
                         setAlertMessage(getPropertyString("messageShowAfterComplete"));
                         // redirect to next activity if available
                         WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
@@ -379,7 +382,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 // check for validation errors
                 Map<String, String> errors = formResult.getFormErrors();
                 int errorCount = 0;
-                if (errors == null || errors.isEmpty()) {
+                if (!formResult.getStay() && errors == null || errors.isEmpty()) {
                     // render normal template
                     html = formService.generateElementHtml(form, formResult);
                 } else {
@@ -390,7 +393,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                 // show form
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
-                if (errorCount == 0) {
+                if (!formResult.getStay() &&errorCount == 0) {
                     if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
                         setProperty("view", "redirect");
                         boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
@@ -401,6 +404,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 } else {
                     setProperty("view", "formView");
                 }
+                setProperty("stay", formResult.getStay());
                 setProperty("errorCount", errorCount);
                 setProperty("submitted", Boolean.TRUE);
                 setProperty("formHtml", html);
