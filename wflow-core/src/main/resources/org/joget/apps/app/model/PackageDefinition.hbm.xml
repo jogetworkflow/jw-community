@@ -13,7 +13,7 @@
             <column name="appId"/>
             <column name="appVersion"/>
         </many-to-one>
-        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityFormMap">
+        <map cascade="all-delete-orphan" inverse="true" lazy="true" name="packageActivityFormMap">
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>
@@ -21,7 +21,7 @@
             <map-key column="ouid" type="string"/>
             <one-to-many entity-name="PackageActivityForm"/>
         </map>
-        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityPluginMap">
+        <map cascade="all-delete-orphan" inverse="true" lazy="true" name="packageActivityPluginMap">
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>
@@ -29,7 +29,7 @@
             <map-key column="ouid" type="string"/>
             <one-to-many entity-name="PackageActivityPlugin"/>
         </map>
-        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageParticipantMap">
+        <map cascade="all-delete-orphan" inverse="true" lazy="true" name="packageParticipantMap">
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>

@@ -11,21 +11,21 @@
         <property name="license" type="text"/>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="formDefinitionList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="formDefinitionList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
             </key>
             <one-to-many entity-name="FormDefinition"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="datalistDefinitionList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="datalistDefinitionList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
             </key>
             <one-to-many entity-name="DatalistDefinition"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="userviewDefinitionList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="userviewDefinitionList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -39,21 +39,21 @@
             </key>
             <one-to-many entity-name="PackageDefinition"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="pluginDefaultPropertiesList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="pluginDefaultPropertiesList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
             </key>
             <one-to-many entity-name="PluginDefaultProperties"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="environmentVariableList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="environmentVariableList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
             </key>
             <one-to-many entity-name="EnvironmentVariable"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="messageList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="messageList">
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
