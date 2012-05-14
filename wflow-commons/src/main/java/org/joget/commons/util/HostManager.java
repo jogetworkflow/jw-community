@@ -55,10 +55,13 @@ public class HostManager implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {
         if (appContext instanceof WebApplicationContext) {
             String realContextPath = ((WebApplicationContext)appContext).getServletContext().getRealPath("/");
-            File contextPathFile = new File(realContextPath);
-            String cPath = contextPathFile.getName();
-            if (!cPath.startsWith("/")) {
-                cPath = "/" + cPath;
+            String cPath = "/jw";
+            if (realContextPath != null) {
+                File contextPathFile = new File(realContextPath);
+                cPath = contextPathFile.getName();
+                if (!cPath.startsWith("/")) {
+                    cPath = "/" + cPath;
+                }
             }
             HostManager.contextPath = cPath;
         }
