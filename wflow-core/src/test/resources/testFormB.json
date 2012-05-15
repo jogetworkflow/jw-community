@@ -85,14 +85,13 @@
                     "subFormParentId":"bid",
                     "id":"formA",
                     "formDefId":"testFormA",
-                    "loadBinder":{
-                        "className":"org.joget.apps.form.lib.DefaultFormBinder",
-                        "properties":{}
+                    "loadBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
                     },
-                    "json":"",
-                    "storeBinder":{
-                        "className":"org.joget.apps.form.lib.DefaultFormBinder",
-                        "properties":{}
+                    "storeBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
                     },
                     "label":"",
                     "readonly":""

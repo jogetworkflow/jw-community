@@ -1,10 +1,12 @@
 package org.joget.apps.app.model;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import org.joget.apps.form.dao.FormDataDao;
+import org.springframework.transaction.annotation.Propagation;
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -50,6 +52,8 @@ public class TestAppService {
     private PackageDefinitionDao packageDefinitionDao;
     @Autowired
     private WorkflowManager workflowManager;
+    @Autowired
+    private FormDataDao formDataDao;
 
     public TestAppService() {
     }
@@ -215,6 +219,8 @@ public class TestAppService {
     @Transactional
     @Rollback(true)
     public void testRunProcess() throws Exception {
+        String processId = null;
+        
         try {
             AppDefinition appDef = null;
             PackageDefinition packageDef = null;
@@ -274,7 +280,7 @@ public class TestAppService {
             data.addRequestParameterValues(AssignmentCompleteButton.DEFAULT_ID, new String[]{AssignmentCompleteButton.DEFAULT_ID});
             
             WorkflowProcessResult result = appService.submitFormToStartProcess(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, data, null, null, null);
-            String processId = result.getProcess().getInstanceId();
+            processId = result.getProcess().getInstanceId();
             Collection<WorkflowActivity> activityList = result.getActivities();
             assertTrue(activityList != null && activityList.size() == 1);
 
@@ -305,6 +311,8 @@ public class TestAppService {
             assertTrue(formResult.getFormErrors().isEmpty());
 
         } finally {
+            // delete form data
+            formDataDao.delete(TEST_FORM_ID, TEST_FORM_ID, new String[]{processId});
 
             // existing delete package
             deleteXpdlPackage(TEST_APP_ID);
@@ -315,8 +323,8 @@ public class TestAppService {
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Rollback(false)
     public void testFormData() throws Exception {
         try {
             AppDefinition appDef = null;
@@ -348,6 +356,8 @@ public class TestAppService {
             assertTrue(name.equals(loadedRow.getProperty("name")));
 
         } finally {
+            // delete form data
+            formDataDao.delete(TEST_FORM_ID, TEST_FORM_ID, new String[]{"row1"});
 
             // delete app
             deleteAppDefinition(TEST_APP_ID);
@@ -355,9 +365,13 @@ public class TestAppService {
     }
 
     @Test
-    @Transactional
-    @Rollback(true)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Rollback(false)
     public void testSubForms() throws Exception {
+        String aId = null;
+        String bId = null;
+        String cId = null;
+        String dId = null;
         try {
             AppDefinition appDef = null;
 
@@ -406,28 +420,42 @@ public class TestAppService {
             FormRowSet rowSetD = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_D, valueD);
             FormRow rowD = rowSetD.iterator().next();
             boolean verifyD = valueD.equals(rowD.get("id")) && valueD.equals(rowD.get("d1")) && valueD.equals(rowD.get("d2"));
-
+            dId = rowD.get("id").toString();
+                
             // load and verify data for form C
             String generatedIdForC = (String) rowD.get("cid");
             FormRowSet rowSetC = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_C, generatedIdForC);
             FormRow rowC = rowSetC.iterator().next();
             boolean verifyC = generatedIdForC.equals(rowC.get("id")) && valueC.equals(rowC.get("c1")) && valueB.equals(rowC.get("bid")) && generatedIdForC.equals(rowD.get("cid"));
-
+            cId = rowC.get("id").toString();
+            
             // load and verify values for form B
             FormRowSet rowSetB = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_B, valueB);
             FormRow rowB = rowSetB.iterator().next();
             boolean verifyB = valueB.equals(rowB.get("id")) && valueB.equals(rowB.get("b1")) && generatedIdForC.equals(rowB.get("cid"));
-
+            bId = rowB.get("id").toString();
+            
             // load and verify data for form A
             String generatedIdForA = (String) rowB.get("aid");
             FormRowSet rowSetA = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_A, generatedIdForA);
             FormRow rowA = rowSetA.iterator().next();
             boolean verifyA = generatedIdForA.equals(rowA.get("id")) && valueA.equals(rowA.get("a1")) && valueB.equals(rowA.get("bid"));
-
+            aId = rowA.get("id").toString();
+            
             assertTrue(verifyA && verifyB && verifyC && verifyD);
 
-        } finally {
-
+        } catch(Exception ex) {
+            System.err.println(ex);
+        }finally {
+            try {
+                // delete form data
+                formDataDao.delete(TEST_FORM_A, TEST_FORM_A, new String[]{aId});
+                formDataDao.delete(TEST_FORM_B, TEST_FORM_B, new String[]{bId});
+                formDataDao.delete(TEST_FORM_C, TEST_FORM_C, new String[]{cId});
+                formDataDao.delete(TEST_FORM_D, TEST_FORM_D, new String[]{dId});
+            
+            } catch(Exception e){}
+            
             // delete app
             deleteAppDefinition(TEST_APP_ID);
         }

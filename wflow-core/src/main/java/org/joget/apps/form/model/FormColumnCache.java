@@ -47,4 +47,7 @@ public class FormColumnCache {
         return cacheKey;
     }
    
+    public void clear() {
+        cache.removeAll();
+    }
 }

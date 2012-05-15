@@ -74,14 +74,14 @@
                     "formDefId":"testFormC",
                     "json":"",
                     "readonly":"",
-                    "loadBinder":{
-                        "className":"org.joget.apps.form.lib.DefaultFormBinder",
-                        "properties":{}
+                    "loadBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
                     },
-                    "storeBinder":{
-                        "className":"org.joget.apps.form.lib.DefaultFormBinder",
-                        "properties":{}
-                    }
+                    "storeBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
+                    },
                 }
             }],
             "className":"org.joget.apps.form.model.Column",
