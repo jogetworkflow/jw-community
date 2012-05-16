@@ -12,5 +12,5 @@
     });
 </script>
 </#if>
-
+<div style="clear:both"></div>
 </div>
