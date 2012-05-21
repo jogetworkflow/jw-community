@@ -32,7 +32,13 @@ public abstract class ExtElement extends ExtDefaultPlugin implements PropertyEdi
      * @return Empty string instead of null.
      */
     public String getRequestParameterString(String requestParameter) {
-        String value = (requestParameters != null) ? (String) requestParameters.get(requestParameter) : "";
-        return value;
+        String result = null;
+        Object value = (requestParameters != null) ? requestParameters.get(requestParameter) : "";
+        if (value instanceof String) {
+            result = (String)value;
+        } else if (value instanceof String[] && ((String[])value).length > 0) {
+            result = ((String[])value)[0];
+        }
+        return result;
     }
 }
