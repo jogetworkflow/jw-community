@@ -33,7 +33,9 @@
                          <c:otherwise>
                              <li><fmt:message key="general.method.label.noItemAvailable"/></li>
                          </c:otherwise>           
-                    </c:choose>     
+                    </c:choose>
+                </ul>
+                <ul>
                     <li class="buttons"><button onclick="navCreate('form')"><fmt:message key="console.form.create.label"/></button></li>
                 </ul>
             </div>
@@ -66,6 +68,8 @@
                              <li><fmt:message key="general.method.label.noItemAvailable"/></li>
                          </c:otherwise>           
                     </c:choose>
+                </ul>
+                <ul>
                     <li class="buttons"><button onclick="navCreate('datalist')"><fmt:message key="console.datalist.create.label"/></button></li>
                 </ul>
             </div>
@@ -98,6 +102,8 @@
                              <li><fmt:message key="general.method.label.noItemAvailable"/></li>
                          </c:otherwise>           
                     </c:choose>
+                </ul>
+                <ul>
                     <li class="buttons"><button onclick="navCreate('userview')"><fmt:message key="console.userview.create.label"/></button></li>
                 </ul>
             </div>
