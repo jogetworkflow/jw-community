@@ -12,5 +12,7 @@
     });
 </script>
 </#if>
+<#if includeMetaData == false>
 <div style="clear:both"></div>
+</#if>
 </div>
