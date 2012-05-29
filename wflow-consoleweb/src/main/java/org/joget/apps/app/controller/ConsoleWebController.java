@@ -968,7 +968,7 @@ public class ConsoleWebController {
 
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath;
-            url += "/web/console/directory/user/view/" + user.getId();
+            url += "/web/console/directory/user/view/" + user.getId() + ".";
             model.addAttribute("url", url);
             return "console/dialogClose";
         }

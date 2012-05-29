@@ -12,6 +12,7 @@
 <%@ attribute name="href"  %>
 <%@ attribute name="hrefParam"  %>
 <%@ attribute name="hrefQuery"  %>
+<%@ attribute name="hrefSuffix"  %>
 <%@ attribute name="hrefDialog"  %>
 <%@ attribute name="hrefDialogWidth"  %>
 <%@ attribute name="hrefDialogHeight"  %>
@@ -250,6 +251,9 @@
     </c:if>
     <c:if test="${!empty href}">
         ${var}.link = new Link("${href}", "${hrefParam}", ${hrefQuery}, ${var}_popupDialog);
+        <c:if test="${!empty hrefSuffix}">
+            ${var}.link.suffix = "${hrefSuffix}";
+        </c:if>
     </c:if>
     <c:if test="${empty hrefDialogWidth}">${var}_popupDialog.width="${hrefDialogWidth}";</c:if>
     <c:if test="${empty hrefDialogHeight}">${var}_popupDialog.height="${hrefDialogHeight}";</c:if>

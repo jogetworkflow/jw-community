@@ -123,7 +123,7 @@
                                                                             ${participantDisplayName}
                                                                         </c:when>
                                                                         <c:otherwise>
-                                                                            <a href="${pageContext.request.contextPath}/web/console/directory/${participantMap[participantUid].type}/view/${participantValue}">${participantDisplayName}</a>
+                                                                            <a href="${pageContext.request.contextPath}/web/console/directory/${participantMap[participantUid].type}/view/${participantValue}.">${participantDisplayName}</a>
                                                                         </c:otherwise>
                                                                     </c:choose>
                                                                 </span>

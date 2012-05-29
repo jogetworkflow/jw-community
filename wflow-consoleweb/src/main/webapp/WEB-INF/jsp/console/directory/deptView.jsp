@@ -56,7 +56,7 @@
                 <label for="field1"><fmt:message key="console.directory.department.common.label.hod"/></label>
                 <span class="form-input">
                     <c:if test="${!empty hod}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${hod.id}">${hod.username}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${hod.id}.">${hod.username}</a>
                     </c:if>
                 </span>
             </div>
@@ -114,6 +114,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/user/view"
                        hrefParam="user.id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"

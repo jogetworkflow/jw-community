@@ -125,7 +125,7 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.reportTo"/></label>
                 <span class="form-input">
                     <c:if test="${!empty employment.employmentReportTo && !empty employment.employmentReportTo.reportTo && !empty employment.employmentReportTo.reportTo.user}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${employment.employmentReportTo.reportTo.user.id}">${employment.employmentReportTo.reportTo.user.firstName} ${employment.employmentReportTo.reportTo.user.lastName}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${employment.employmentReportTo.reportTo.user.id}.">${employment.employmentReportTo.reportTo.user.firstName} ${employment.employmentReportTo.reportTo.user.lastName}</a>
                     </c:if>
                 </span>
             </div>
@@ -184,7 +184,7 @@
         </c:if>
     });
     
-    <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/directory/user/edit/${user.id}"/>
+    <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/directory/user/edit/${user.id}."/>
     <ui:popupdialog var="popupDialog2" src="${pageContext.request.contextPath}/web/console/directory/user/${user.id}/group/assign/view"/>
     <ui:popupdialog var="popupDialog3" src="${pageContext.request.contextPath}/web/console/directory/user/${user.id}/reportTo/assign/view"/>
 
@@ -221,7 +221,7 @@
          if (confirm('<fmt:message key="console.directory.user.reportTo.unassign.label.confirmation"/>')) {
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}';
+                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}.';
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${user.id}/reportTo/unassign', callback, '');
@@ -232,7 +232,7 @@
          if (confirm('<fmt:message key="console.directory.user.group.unassign.label.confirmation"/>')) {
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}';
+                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${user.id}.';
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${user.id}/group/unassign', callback, 'ids='+ selectedIds);

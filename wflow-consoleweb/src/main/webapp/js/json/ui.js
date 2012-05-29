@@ -157,6 +157,7 @@ Link.prototype = {
     href: null,
     param: null,
     value: null,
+    suffix: null,
     queryString: false,
     popupDialog: null,
 
@@ -169,6 +170,9 @@ Link.prototype = {
                     link += "/";
                 }
                 link += escape(this.value);
+                if (this.suffix) {
+                    link += this.suffix;
+                }
             }
             else {
                 var hasQueryString = link.indexOf("?") >= 0;

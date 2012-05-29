@@ -27,6 +27,7 @@
                       desc="false"
                       href=""
                       hrefParam="username"
+                      hrefSuffix="."
                       hrefQuery="false"
                       hrefDialog="false"
                       hrefDialogWidth="600px"

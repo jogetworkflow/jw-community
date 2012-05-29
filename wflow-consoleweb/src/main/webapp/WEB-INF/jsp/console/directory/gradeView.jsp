@@ -66,6 +66,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/user/view"
                        hrefParam="user.id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"
