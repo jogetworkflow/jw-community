@@ -13,5 +13,5 @@
     <c:set var="queryStr" value="${jsonParam}=${jsonEncoded}"/>    
 </c:if>
 
-<jsp:include page="/web/client/app/datalist/${id}?${queryStr}" flush="true" />
+<jsp:include page="/web/client/app/~~/1/datalist/${id}?${queryStr}" flush="true" />
 
