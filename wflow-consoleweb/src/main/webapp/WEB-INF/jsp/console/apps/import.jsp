@@ -31,22 +31,26 @@
                 </span>
             </div>
             <div class="form-row">
-                
-                <span class="form-input">
-                    <label for="overrideEnvVariable">
-                        <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
-                        <fmt:message key="console.app.import.label.overrideEnvVariable"/>
-                    </label>
-                </span>
+                <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
+                <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
             </div>
-            <div class="form-row">
-                
-                <span class="form-input">
-                    <label for="overridePluginDefault" class="upload">
-                        <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
-                        <fmt:message key="console.app.import.label.overridePluginDefault"/>
-                    </label>
-                </span>
+            <div id="advancedView" style="display:none">
+                <div class="form-row">                
+                    <span class="form-input">
+                        <label for="overrideEnvVariable">
+                            <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
+                            <fmt:message key="console.app.import.label.overrideEnvVariable"/>
+                        </label>
+                    </span>
+                </div>
+                <div class="form-row">                
+                    <span class="form-input">
+                        <label for="overridePluginDefault" class="upload">
+                            <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
+                            <fmt:message key="console.app.import.label.overridePluginDefault"/>
+                        </label>
+                    </span>
+                </div>
             </div>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
@@ -54,4 +58,18 @@
         </form>
     </div>
 
+    <script>
+        function showAdvancedInfo(){
+            $('#advancedView').slideToggle('slow');
+            $('#showAdvancedInfo').hide();
+            $('#hideAdvancedInfo').show();
+        }
+
+        function hideAdvancedInfo(){
+            $('#advancedView').slideToggle('slow');
+            $('#showAdvancedInfo').show();
+            $('#hideAdvancedInfo').hide();
+        }
+    </script>
+                    
 <commons:popupFooter />
