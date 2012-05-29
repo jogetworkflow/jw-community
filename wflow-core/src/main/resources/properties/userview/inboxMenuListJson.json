@@ -12,12 +12,6 @@
         "properties" : {}
     },
     "columns" : [{
-        "id" : "column_0",
-        "label" : "@@userview.inboxmenu.processName@@",
-        "name" : "processName",
-        "sortable" : "true"
-    },
-    {
         "id" : "column_1",
         "name" : "activityName",
         "label" : "@@userview.inboxmenu.activityName@@",
@@ -33,6 +27,12 @@
                 "confirmation" : ""
             }
         }
+    },
+    {
+        "id" : "column_0",
+        "label" : "@@userview.inboxmenu.processName@@",
+        "name" : "processName",
+        "sortable" : "true"
     },
     {
         "id" : "column_2",
