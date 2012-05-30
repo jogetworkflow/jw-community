@@ -7,12 +7,13 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 
-public class CustomHTML extends Element implements FormBuilderPaletteElement {
+public class CustomHTML extends Element implements FormBuilderPaletteElement, FormContainer {
 
     @Override
     public String getName() {
