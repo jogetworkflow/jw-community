@@ -14,17 +14,17 @@
     
     function showHideOption(target, o){
         var controlValue = $('[name$='+o.controlField+']').filter(":enabled, [disabled=false]").val();
-        
         if ($(target).is("select")) {
+            if ($(target).next('.dynamic_option_container').length == 0) {
+                $(target).after('<div class="dynamic_option_container" style="display:none;">'+$(target).html()+'</div>');
+            }
+            
+            $(target).html($(target).next('.dynamic_option_container').html());
+            
             $(target).find("option").each(function(){
                 var option = $(this);
-                if ($(option).attr("grouping") == controlValue) {
-                    $(option).show();
-                } else {
-                    if ($(option).is(":selected")) {
-                        $(option).removeAttr("selected");
-                    }
-                    $(option).hide();
+                if ($(option).attr("grouping") != controlValue) {
+                    $(option).remove();
                 }
             });
         } else {
