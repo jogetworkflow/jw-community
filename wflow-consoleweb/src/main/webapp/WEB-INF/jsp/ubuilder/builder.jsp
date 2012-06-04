@@ -1,3 +1,4 @@
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@page contentType="text/html" pageEncoding="windows-1252"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
@@ -7,8 +8,6 @@
 %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
-<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <html>
     <head>
