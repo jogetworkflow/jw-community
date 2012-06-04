@@ -23,7 +23,7 @@
             
             $(target).find("option").each(function(){
                 var option = $(this);
-                if ($(option).attr("grouping") != controlValue) {
+                if ($(option).attr("grouping") != "" && $(option).attr("grouping") != controlValue) {
                     $(option).remove();
                 }
             });
@@ -31,7 +31,7 @@
             $(target).each(function(){
                 var option = $(this);
                 var label = $(option).parent();
-                if ($(option).attr("grouping") == controlValue) {
+                if ($(option).attr("grouping") == "" || $(option).attr("grouping") == controlValue) {
                     $(label).show();
                 } else {
                     if ($(option).is(":checked")) {
