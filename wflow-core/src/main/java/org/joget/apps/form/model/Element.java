@@ -92,10 +92,14 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return If non-null, this is to be used as the HTML input name for the element
      */
     public String getCustomParameterName() {
+        if (customParameterName == null && this.getPropertyString("customParameterName") != null && !this.getPropertyString("customParameterName").isEmpty()) {
+            customParameterName = this.getPropertyString("customParameterName");
+        }
         return customParameterName;
     }
 
     public void setCustomParameterName(String customParameterName) {
+        setProperty("customParameterName", customParameterName);
         this.customParameterName = customParameterName;
     }
 
