@@ -192,19 +192,21 @@ public class FormBuilderWebController {
                 
                 //convert submitted 
                 JSONObject jsonResult = new JSONObject();
-                for(FormStoreBinder binder: formData.getStoreBinders()){
-                    FormRowSet rows = formData.getStoreBinderData(binder);
-                    for(FormRow row : rows){
-                        for(Object o : row.keySet()){
-                            jsonResult.accumulate(o.toString(), row.get(o));
-                        }
-                        Map<String, String> tempFilePathMap = row.getTempFilePathMap();
-                        if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
-                            jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
-                        }
+                
+                //get binder of main form
+                FormStoreBinder mainBinder = form.getStoreBinder();
+                FormRowSet rows = formData.getStoreBinderData(mainBinder);
+                
+                for (FormRow row : rows) {
+                    for (Object o : row.keySet()) {
+                        jsonResult.accumulate(o.toString(), row.get(o));
+                    }
+                    Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+                    if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
+                        jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
                     }
                 }
-
+                
                 model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
             } else {
                 // render error template
