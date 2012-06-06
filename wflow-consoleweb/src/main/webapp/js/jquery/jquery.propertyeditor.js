@@ -80,6 +80,8 @@
                         theme_advanced_toolbar_location : "top",
                         theme_advanced_toolbar_align : "left",
                         theme_advanced_statusbar_location : "bottom",
+                        
+                        extended_valid_elements : "iframe[src|width|height|name|align]",
 
                         height : "300px",
                         width : "500px"
@@ -1391,6 +1393,8 @@
                 theme_advanced_toolbar_location : "top",
                 theme_advanced_toolbar_align : "left",
                 theme_advanced_statusbar_location : "bottom",
+                
+                extended_valid_elements : "iframe[src|width|height|name|align]",
 
                 height : "300px",
                 width : "500px"
