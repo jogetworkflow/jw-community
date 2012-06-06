@@ -94,7 +94,9 @@
                             <fmt:message key="ubuilder.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
                         </div>
                     </c:if>
-
+                    <c:if test="${!empty userview.setting.properties.loginPageTop}">
+                        ${userview.setting.properties.loginPageTop}
+                    </c:if>
                     <form id="loginForm" name="loginForm" action="<c:url value='/j_spring_security_check'/>" method="POST">
                         <table align="center">
                             <tr><td><fmt:message key="ubuilder.login.username" />: </td><td><input type='text' id='j_username' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
@@ -102,7 +104,9 @@
                             <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="<fmt:message key="ubuilder.login" />" /></td></tr>
                         </table>
                     </form>
-
+                    <c:if test="${!empty userview.setting.properties.loginPageBottom}">
+                        ${userview.setting.properties.loginPageBottom}
+                    </c:if>
                     <script type="text/javascript">
                         $(document).ready(
                             function() {
