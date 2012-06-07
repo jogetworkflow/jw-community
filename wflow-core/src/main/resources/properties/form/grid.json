@@ -39,6 +39,25 @@
     }]
 },
 {
+    title : '@@form.grid.validation@@',
+    properties : [{
+        name : 'validateMinRow',
+        label : '@@form.grid.validateMinRow@@',
+        type : 'textfield'
+    },
+    {
+        name : 'validateMaxRow',
+        label : '@@form.grid.validateMaxRow@@',
+        type : 'textfield'
+    },
+    {
+        name : 'errorMessage',
+        label : '@@form.grid.errorMessage@@',
+        type : 'textfield',
+        value : '@@form.grid.invalidNumberOfRow@@'
+    }]
+},
+{
     title : '@@form.grid.chooseLoadBinder@@',
     properties : [{
         name : 'loadBinder',

@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Grid extends Element implements FormBuilderPaletteElement {
+    private FormRowSet cachedRowSet;
 
     @Override
     public String getName() {
@@ -62,72 +63,74 @@ public class Grid extends Element implements FormBuilderPaletteElement {
      * @return A FormRowSet containing the grid cell data.
      */
     protected FormRowSet getRows(FormData formData) {
+        if (cachedRowSet == null) {
+            String id = getPropertyString(FormUtil.PROPERTY_ID);
+            String param = FormUtil.getElementParameterName(this);
+            FormRowSet rowSet = new FormRowSet();
+            rowSet.setMultiRow(true);
 
-        String id = getPropertyString(FormUtil.PROPERTY_ID);
-        String param = FormUtil.getElementParameterName(this);
-        FormRowSet rowSet = new FormRowSet();
-        rowSet.setMultiRow(true);
+            // get headers
+            Map<String, String> headerMap = getHeaderMap(formData);
 
-        // get headers
-        Map<String, String> headerMap = getHeaderMap(formData);
-
-        // read from 'value' property
-        String json = getPropertyString(FormUtil.PROPERTY_VALUE);
-        try {
-            rowSet = parseFormRowSetFromJson(json);
-        } catch (Exception ex) {
-            Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
-        }
-
-        // read from request if available.
-        boolean continueLoop = true;
-        int i = 0;
-        while (continueLoop) {
-            FormRow row = new FormRow();
-            for (String header : headerMap.keySet()) {
-                String paramName = param + "_" + header + "_" + i;
-                String paramValue = formData.getRequestParameter(paramName);
-                if (paramValue != null) {
-                    row.setProperty(header, paramValue);
-                }
+            // read from 'value' property
+            String json = getPropertyString(FormUtil.PROPERTY_VALUE);
+            try {
+                rowSet = parseFormRowSetFromJson(json);
+            } catch (Exception ex) {
+                Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
             }
-            i++;
-            if (!row.isEmpty()) {
-                if (i == 0) {
-                    // reset rowset
-                    rowSet = new FormRowSet();
-                }
-                rowSet.add(row);
-            } else {
-                // no more rows, stop looping
-                continueLoop = false;
-            }
-        }
-            
-        if (!FormUtil.isFormSubmitted(this, formData)) {
-            // load from binder if available
-            FormRowSet binderRowSet = formData.getLoadBinderData(this);
-            if (binderRowSet != null) {
-                if (!binderRowSet.isMultiRow()) {
-                    // parse from String
-                    if (!binderRowSet.isEmpty()) {
-                        FormRow row = binderRowSet.get(0);
-                        String jsonValue = row.getProperty(id);
-                        try {
-                            rowSet = parseFormRowSetFromJson(jsonValue);
-                        } catch (Exception ex) {
-                            Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
-                        }
+
+            // read from request if available.
+            boolean continueLoop = true;
+            int i = 0;
+            while (continueLoop) {
+                FormRow row = new FormRow();
+                for (String header : headerMap.keySet()) {
+                    String paramName = param + "_" + header + "_" + i;
+                    String paramValue = formData.getRequestParameter(paramName);
+                    if (paramValue != null) {
+                        row.setProperty(header, paramValue);
                     }
-
+                }
+                i++;
+                if (!row.isEmpty()) {
+                    if (i == 0) {
+                        // reset rowset
+                        rowSet = new FormRowSet();
+                    }
+                    rowSet.add(row);
                 } else {
-                    rowSet = binderRowSet;
+                    // no more rows, stop looping
+                    continueLoop = false;
                 }
             }
 
+            if (!FormUtil.isFormSubmitted(this, formData)) {
+                // load from binder if available
+                FormRowSet binderRowSet = formData.getLoadBinderData(this);
+                if (binderRowSet != null) {
+                    if (!binderRowSet.isMultiRow()) {
+                        // parse from String
+                        if (!binderRowSet.isEmpty()) {
+                            FormRow row = binderRowSet.get(0);
+                            String jsonValue = row.getProperty(id);
+                            try {
+                                rowSet = parseFormRowSetFromJson(jsonValue);
+                            } catch (Exception ex) {
+                                Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
+                            }
+                        }
+
+                    } else {
+                        rowSet = binderRowSet;
+                    }
+                }
+
+            }
+            cachedRowSet = rowSet;
         }
 
-        return rowSet;
+        return cachedRowSet;
     }
 
     /**
@@ -193,6 +196,8 @@ public class Grid extends Element implements FormBuilderPaletteElement {
         // set rows
         FormRowSet rows = getRows(formData);
         dataModel.put("rows", rows);
+        
+        dataModel.put("customDecorator", getDecorator());
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
@@ -231,6 +236,56 @@ public class Grid extends Element implements FormBuilderPaletteElement {
     @Override
     public String getFormBuilderIcon() {
         return "/plugin/org.joget.apps.form.lib.Grid/images/grid_icon.gif";
+    }
+     
+    @Override
+    public Boolean selfValidate(FormData formData) {
+        Boolean valid = true;
+        
+        FormRowSet rowSet = getRows(formData);
+        String id = FormUtil.getElementParameterName(this);
+        String errorMsg = getPropertyString("errorMessage");
+        
+        String min = getPropertyString("validateMinRow");
+        if (min != null && !min.isEmpty()) {
+            try {
+                int minNumber = Integer.parseInt(min);
+                if (rowSet.size() < minNumber) {
+                    valid = false;
+                }
+            } catch (Exception e) {}
+        }
+        
+        String max = getPropertyString("validateMaxRow");
+        if (max != null && !max.isEmpty()) {
+            try {
+                int maxNumber = Integer.parseInt(max);
+                if (rowSet.size() > maxNumber) {
+                    valid = false;
+                }
+            } catch (Exception e) {}
+        }
+        
+        if (!valid) {
+            formData.addFormError(id, errorMsg);
+        }
+        
+        return valid;
+    }
+    
+    protected String getDecorator() {
+        String decorator = "";
+        
+        try {
+            String min = getPropertyString("validateMinRow");
+            String max = getPropertyString("validateMaxRow");
+            
+            if ((min != null && !min.isEmpty()) || (max != null && !max.isEmpty())) {
+                decorator = "*";
+            }
+        } catch (Exception e) {}
+        
+        return decorator;
     }
 }
 
