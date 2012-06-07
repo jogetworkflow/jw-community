@@ -7,6 +7,7 @@
     position:absolute;
     right:0;
     top:4px;
+    z-index: 2000;
 }
 
 .builder_qn_label{
