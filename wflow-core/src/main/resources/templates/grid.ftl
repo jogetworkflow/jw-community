@@ -38,7 +38,7 @@
                 <th id="${elementParamName!}_${header}">${headers[header]}</th>
             </#list>
             </tr>
-            <tr class="grid-row-template">
+            <tr class="grid-row-template" style="display:none;">
             <#list headers?keys as header>
                 <td><span id="${elementParamName!}_${header}" name="${elementParamName!}_${header}" class="grid-cell">Click to edit</span> <input class="grid-input" type="hidden" value="" /></td>
             </#list>

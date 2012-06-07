@@ -69,6 +69,7 @@
                 var newRow = $(template).clone();
                 newRow.removeClass("grid-row-template");
                 newRow.addClass("grid-row");
+                newRow.removeAttr("style");
 
                 // set input names and values
                 var rowIndex = $(table).find("tr").length - 2;
