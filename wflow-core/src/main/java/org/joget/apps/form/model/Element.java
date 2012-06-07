@@ -112,6 +112,11 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         //do nothing
         return formData;
     }
+    
+    public Boolean selfValidate(FormData formData) {
+        //do nothing
+        return true;
+    }
 
     /**
      * Method that retrieves loaded or submitted form data, and formats it for a store binder.

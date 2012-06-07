@@ -323,6 +323,8 @@ public class FormUtil implements ApplicationContextAware {
                 String[] values = FormUtil.getElementPropertyValues(element, formData);
                 result = validator.validate(element, formData, values) && result;
             }
+            result = element.selfValidate(formData) && result;
+            
             Collection<Element> children = element.getChildren(formData);
             if (children != null) {
                 for (Element child : children) {
