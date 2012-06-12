@@ -1,11 +1,17 @@
 package org.joget.commons.util;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLDecoder;
+import javax.imageio.ImageIO;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileManager {
+    public final static Integer THUMBNAIL_SIZE = 60; 
+    public final static String THUMBNAIL_EXT = ".thumb.jpg"; 
     
     public static String getBaseDirectory() {
         return SetupManager.getBaseDirectory() + File.separator + "app_tempfile" + File.separator;
@@ -77,5 +83,53 @@ public class FileManager {
             }
         }
         file.delete();
+    }
+    
+    public static void createThumbnail(String path, Integer thumbWidth, Integer thumbHeight) {
+        if (thumbWidth == null) {
+            thumbWidth = THUMBNAIL_SIZE;
+        }
+        if (thumbHeight == null) {
+            thumbHeight = THUMBNAIL_SIZE;
+        }
+        
+        BufferedOutputStream out = null;
+
+        try{
+            Image image = Toolkit.getDefaultToolkit().getImage(getBaseDirectory() + URLDecoder.decode(path, "UTF-8"));
+            MediaTracker mediaTracker = new MediaTracker(new Container());
+            mediaTracker.addImage(image, 0);
+            mediaTracker.waitForID(0);
+
+            double thumbRatio = (double) thumbWidth / (double) thumbHeight;
+            int imageWidth = image.getWidth(null);
+            int imageHeight = image.getHeight(null);
+            double imageRatio = (double) imageWidth / (double) imageHeight;
+            if (thumbRatio < imageRatio) {
+                thumbHeight = (int) (thumbWidth / imageRatio);
+            } else {
+                thumbWidth = (int) (thumbHeight * imageRatio);
+            }
+
+            BufferedImage thumbImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics2D = thumbImage.createGraphics();
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
+            
+            out = new BufferedOutputStream(new FileOutputStream(getBaseDirectory() + URLDecoder.decode(path, "UTF-8") + THUMBNAIL_EXT));
+            ImageIO.write(thumbImage, "jpeg", out);
+
+            out.flush();
+        } catch (Exception ex) {
+            LogUtil.error(FileManager.class.getName(), ex, "");
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (Exception ex) {
+                LogUtil.error(FileManager.class.getName(), ex, "");
+            }
+        }
     }
 }
