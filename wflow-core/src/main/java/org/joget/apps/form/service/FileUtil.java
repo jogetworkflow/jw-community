@@ -40,8 +40,11 @@ public class FileUtil implements ApplicationContextAware {
                     if (file != null) {
                         File tempFileDirectory = file.getParentFile();
                         FileUtil.storeFile(file, element, id);
-
-                        FileManager.deleteFile(tempFileDirectory);
+                        
+                        //check if directory is empty
+                        if (tempFileDirectory.listFiles().length == 0) {
+                            FileManager.deleteFile(tempFileDirectory);
+                        }
                     }
                 }
             }
