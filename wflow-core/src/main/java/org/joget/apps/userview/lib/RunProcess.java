@@ -204,7 +204,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 Map requestParam = getRequestParameters();
                 for (Object k : requestParam.keySet()) {
                     String key = (String) k;
-                    if (key.startsWith(FormService.PREFIX_FOREIGN_KEY) || key.startsWith(FormService.PREFIX_FOREIGN_KEY_EDITABLE)) {
+                    if (key.startsWith(FormService.PREFIX_FOREIGN_KEY) || key.startsWith(FormService.PREFIX_FOREIGN_KEY_EDITABLE) || key.startsWith(AppUtil.PREFIX_WORKFLOW_VARIABLE)) {
                         try {
                             formUrl += "&" + key + "=" + URLEncoder.encode(requestParam.get(k).toString(), "UTF-8");
                         } catch (Exception e) {
