@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,8 +24,10 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.userview.lib.RunProcess;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
@@ -72,12 +75,15 @@ public class AppWebController {
 
         // check for start mapped form
         FormData formData = new FormData();
+        formData = formService.retrieveFormDataFromRequest(formData, request);
         formData.setPrimaryKeyValue(recordId);
+        
         String formUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
         if (recordId != null) {
             formUrl += "?recordId=" + recordId;
         }
         String formUrlWithContextPath = AppUtil.getRequestContextPath() + formUrl;
+        
         PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
@@ -93,6 +99,23 @@ public class AppWebController {
             return "client/app/processFormStart";
         } else {
             if (Boolean.valueOf(start).booleanValue()) {
+                Map requestParam = formData.getRequestParams();
+                for (Object k : requestParam.keySet()) {
+                    String key = (String) k;
+                    if (key.startsWith(FormService.PREFIX_FOREIGN_KEY) || key.startsWith(FormService.PREFIX_FOREIGN_KEY_EDITABLE) || key.startsWith(AppUtil.PREFIX_WORKFLOW_VARIABLE)) {
+                        try {
+                            if (formUrl.contains("?")) {
+                                formUrl += "&";
+                            } else {
+                                formUrl += "?";
+                            }
+                            
+                            formUrl += key + "=" + URLEncoder.encode(requestParam.get(k).toString(), "UTF-8");
+                        } catch (Exception e) {
+                            LogUtil.info(RunProcess.class.getName(), "Paramter:" + key + "cannot be append to URL");
+                        }
+                    }
+                }
                 // redirect to start URL
                 return "redirect:" + formUrl;
             } else {
