@@ -163,3 +163,42 @@
 .dataList .actions.bottom{
     margin-top:15px;
 }
+
+.pagelinks .pc{
+    display:inline-block;
+    width:20px;
+    height:20px;
+    padding: 0 2px;
+}
+
+.pagelinks .pc.first{
+    background:url("../images/v3/ic_first.png") no-repeat;
+}
+
+.pagelinks .pc.prev{
+    background:url("../images/v3/ic_previous.png") no-repeat;
+}
+
+.pagelinks .pc.next{
+    background:url("../images/v3/ic_next.png") no-repeat;
+}
+
+.pagelinks .pc.last{
+    background:url("../images/v3/ic_last.png") no-repeat;
+}
+
+.pagelinks .pc.first-disabled{
+    background:url("../images/v3/ic_first_dis.png") no-repeat;
+}
+
+.pagelinks .pc.prev-disabled{
+    background:url("../images/v3/ic_previous_dis.png") no-repeat;
+}
+
+.pagelinks .pc.next-disabled{
+    background:url("../images/v3/ic_next_dis.png") no-repeat;
+}
+
+.pagelinks .pc.last-disabled{
+    background:url("../images/v3/ic_last_dis.png") no-repeat;
+}
