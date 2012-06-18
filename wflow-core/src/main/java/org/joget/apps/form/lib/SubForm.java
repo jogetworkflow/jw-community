@@ -44,8 +44,8 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
         Form subForm = (childElements.size() > 0) ? (Form) getChildren().iterator().next() : null;
         String label = getPropertyString("label");
         String cellClass = ((Boolean) dataModel.get("includeMetaData")) ? "form-cell" : "subform-cell";
-        String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container' style='border: 5px solid #dfdfdf; padding: 3px;margin-top:5px;'>";
-        html += "<span class='subform-title' style='background: #efefef;position:relative;top:-12px;'>" + label + "</span>";
+        String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container'>";
+        html += "<span class='subform-title'>" + label + "</span>";
         if (subForm != null) {
             String subFormHtml = subForm.render(formData, false);
             subFormHtml = subFormHtml.replaceAll("\"form-section", "\"subform-section");
@@ -66,7 +66,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<div class='subform-container' style='border: 5px solid #dfdfdf; padding: 3px;margin-top:5px;'><span class='subform-title' style='background: #efefef;position:relative;top:-12px;'>SubForm</span></div>";
+        return "<div class='subform-container'><span class='subform-title'>SubForm</span></div>";
     }
 
     @Override

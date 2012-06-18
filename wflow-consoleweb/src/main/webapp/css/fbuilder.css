@@ -375,8 +375,18 @@ div, label, input, button, select, th, td, a, span {
     margin: 0px;
     padding: 3px;
 }
+.subform-container{
+    border: 5px solid #dfdfdf; 
+    padding: 3px;
+    margin-top:5px;
+}
 .subform-container, .subform-section {
     background: #efefef;
+}
+.subform-title{
+    background: #efefef;
+    position:relative;
+    top:-12px;
 }
 #form-properties {
     min-height: 320px;
