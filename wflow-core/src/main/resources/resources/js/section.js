@@ -65,7 +65,7 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
 VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
     if (isRegex != undefined && "true" == isRegex) {
         var regex = new RegExp(controlValue);
-        return regex.exec(value);
+        return regex.exec(value) == value;
     } else {
         return value == controlValue;
     }
