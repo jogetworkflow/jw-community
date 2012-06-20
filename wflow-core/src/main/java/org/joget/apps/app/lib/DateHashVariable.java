@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.commons.util.StringUtil;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
@@ -43,7 +44,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String escapeHashVariable(String variable) {
-        return variable.replace("+", "\\+");
+        return StringUtil.escapeString(variable, StringUtil.TYPE_REGEX, null);
     }
 
     public String getName() {
