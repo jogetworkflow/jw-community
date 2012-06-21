@@ -752,8 +752,12 @@ public class AppServiceImpl implements AppService {
         }
 
         PackageDefinition packageDef = appDef.getPackageDefinition();
-        byte[] xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-
+        byte[] xpdl = null;
+        
+        if (packageDef != null) {
+            xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+        }
+        
         Long newAppVersion = newAppDef.getVersion() + 1;
         return importAppDefinition(newAppDef, newAppVersion, xpdl);
     }
@@ -1341,44 +1345,46 @@ public class AppServiceImpl implements AppService {
         }
 
         try {
-            PackageDefinition oldPackageDef = appDef.getPackageDefinition();
+            if (xpdl != null) {
+                PackageDefinition oldPackageDef = appDef.getPackageDefinition();
 
-            //deploy package
-            PackageDefinition packageDef = deployWorkflowPackage(newAppDef.getAppId(), newAppDef.getVersion().toString(), xpdl, false);
+                //deploy package
+                PackageDefinition packageDef = deployWorkflowPackage(newAppDef.getAppId(), newAppDef.getVersion().toString(), xpdl, false);
 
-            if (packageDef != null) {
-                if (oldPackageDef != null) {
-                    if (oldPackageDef.getPackageActivityFormMap() != null) {
-                        for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
-                            PackageActivityForm form = (PackageActivityForm) e.getValue();
-                            form.setPackageDefinition(packageDef);
-                            packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
+                if (packageDef != null) {
+                    if (oldPackageDef != null) {
+                        if (oldPackageDef.getPackageActivityFormMap() != null) {
+                            for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
+                                PackageActivityForm form = (PackageActivityForm) e.getValue();
+                                form.setPackageDefinition(packageDef);
+                                packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
+                            }
+                        }
+
+                        if (oldPackageDef.getPackageActivityPluginMap() != null) {
+                            for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
+                                PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
+                                plugin.setPackageDefinition(packageDef);
+                                packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
+                            }
+                        }
+
+                        if (oldPackageDef.getPackageParticipantMap() != null) {
+                            for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
+                                PackageParticipant participant = (PackageParticipant) e.getValue();
+                                participant.setPackageDefinition(packageDef);
+                                packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
+                            }
                         }
                     }
 
-                    if (oldPackageDef.getPackageActivityPluginMap() != null) {
-                        for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
-                            PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
-                            plugin.setPackageDefinition(packageDef);
-                            packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
+                    // generate image for each process
+                    List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
+                    String designerBaseUrl = getDesignerwebBaseUrl(WorkflowUtil.getHttpServletRequest());
+                    if (designerBaseUrl != null && !designerBaseUrl.isEmpty()) {
+                        for (WorkflowProcess process : processList) {
+                            XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
                         }
-                    }
-
-                    if (oldPackageDef.getPackageParticipantMap() != null) {
-                        for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
-                            PackageParticipant participant = (PackageParticipant) e.getValue();
-                            participant.setPackageDefinition(packageDef);
-                            packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
-                        }
-                    }
-                }
-
-                // generate image for each process
-                List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
-                String designerBaseUrl = getDesignerwebBaseUrl(WorkflowUtil.getHttpServletRequest());
-                if (designerBaseUrl != null && !designerBaseUrl.isEmpty()) {
-                    for (WorkflowProcess process : processList) {
-                        XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
                     }
                 }
             }
