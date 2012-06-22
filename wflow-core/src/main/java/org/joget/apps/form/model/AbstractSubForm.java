@@ -156,11 +156,23 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                     subFormPrimaryKeyValue = FormUtil.getElementPropertyValue(subFormPrimaryElement, formData);
                 }
                 
+                //try get value from parent field
+                Form rootForm = FormUtil.findRootForm(this);
+                Element parentSubFormIdElement = FormUtil.findElement(parentSubFormId, rootForm, formData);
+                String parentSubFormIdElementValue = "";
+                if (parentSubFormIdElement != null) {
+                    parentSubFormIdElementValue = FormUtil.getElementPropertyValue(parentSubFormIdElement, formData);
+                }
+                
                 // generate new ID if empty
                 if (subFormPrimaryKeyValue == null || subFormPrimaryKeyValue.trim().isEmpty()) {
                     // generate new ID
-                    subFormPrimaryKeyValue = UuidGenerator.getInstance().getUuid();
-
+                    if (parentSubFormIdElementValue != null && !parentSubFormIdElementValue.isEmpty()) {
+                        subFormPrimaryKeyValue = parentSubFormIdElementValue;
+                    } else {
+                        subFormPrimaryKeyValue = UuidGenerator.getInstance().getUuid();
+                    }
+                    
                     if (subFormPrimaryElement != null) {
                         // add into form data
                         String paramName = FormUtil.getElementParameterName(subFormPrimaryElement);
@@ -186,8 +198,8 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 }
 
                 // set value into root form's data
-                if (subFormPrimaryKeyValue != null && !subFormPrimaryKeyValue.isEmpty()) {
-                    Form rootForm = FormUtil.findRootForm(this);
+                if (subFormPrimaryKeyValue != null && !subFormPrimaryKeyValue.isEmpty() && !parentSubFormIdElementValue.equals(subFormPrimaryKeyValue)) {
+                    
                     FormStoreBinder rootStoreBinder = rootForm.getStoreBinder();
                     if (rootStoreBinder != null) {
                         FormRowSet rootFormRowSet = formData.getStoreBinderData(rootStoreBinder);
@@ -197,10 +209,14 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                         }
                     }
                     //add to request param to prevent overwrite
-                    Element parentSubFormIdElement = FormUtil.findElement(parentSubFormId, rootForm, formData);
                     if (parentSubFormIdElement != null) {
                         String paramName = FormUtil.getElementParameterName(parentSubFormIdElement);
                         formData.addRequestParameterValues(paramName, new String[]{subFormPrimaryKeyValue});
+                    }
+                    
+                    //set to form data primary key if the parent field is id field and the parent form is root form
+                    if (FormUtil.PROPERTY_ID.equals(parentSubFormId) && rootForm.getParent() == null) {
+                        formData.setPrimaryKeyValue(subFormPrimaryKeyValue);
                     }
                 }
             }
