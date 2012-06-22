@@ -3224,6 +3224,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        
         SharkConnection sc = null;
         Collection<WorkflowAssignment> assignmentList = new ArrayList<WorkflowAssignment>();
 
@@ -3647,6 +3651,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        
         SharkConnection sc = null;
         int size = 0;
 
@@ -4501,6 +4509,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     public String getConvertedLatestProcessDefId(String processDefId) {
+        if (processDefId.contains(":")) {
+            processDefId = processDefId.replaceAll(":", "#");
+        }
+        
         if (processDefId != null && processDefId.contains(LATEST)) {
             String currentVersion = getCurrentPackageVersion(processDefId.split("#")[0]);
 
