@@ -42,11 +42,6 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
         }
     }
 
-    @Override
-    public String escapeHashVariable(String variable) {
-        return StringUtil.escapeString(variable, StringUtil.TYPE_REGEX, null);
-    }
-
     public String getName() {
         return "Date Hash Variable";
     }

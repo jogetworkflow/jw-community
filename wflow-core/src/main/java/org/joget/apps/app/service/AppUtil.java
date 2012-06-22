@@ -263,6 +263,21 @@ public class AppUtil implements ApplicationContextAware {
 
                     for (String var : varList) {
                         String tempVar = var.replaceAll("#", "");
+                        
+                        //check for nested hash variable
+                        while (tempVar.contains("{") || tempVar.contains("}")) {
+                            Pattern nestedPattern = Pattern.compile("\\{([^\\{^\\}])*\\}");
+                            Matcher nestedMatcher = nestedPattern.matcher(tempVar);
+                            while (nestedMatcher.find()) {
+                                String nestedHash = nestedMatcher.group();
+                                String nestedHashString = nestedHash.replace("{", "#");
+                                nestedHashString = nestedHashString.replace("}", "#");
+                                
+                                String processedNestedHashValue = processHashVariable(nestedHashString, wfAssignment, escapeFormat, replaceMap, appDef);
+                                tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
+                            }
+                        }
+                        
                         for (Plugin p : pluginList) {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
