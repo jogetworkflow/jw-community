@@ -18,12 +18,12 @@
     {
         name : 'value',
         label : '@@form.textfield.value@@',
-        type : 'textfield',
+        type : 'textfield'
     },
     {
         name : 'maxlength',
         label : '@@form.textfield.maxlength@@',
-        type : 'textfield',
+        type : 'textfield'
     },
     {
         name : 'size',
