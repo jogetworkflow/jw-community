@@ -17,6 +17,7 @@ import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.xml.XMLSerializer;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.property.model.PropertyOptions;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -116,30 +117,35 @@ public class PropertyUtil {
      * Parse default properties string from json
      */
     public static String getDefaultPropertyValues(String json) {
-        JSONArray pages = (JSONArray) JSONSerializer.toJSON(json);
-        String defaultProperties = "{";
+        try {
+            JSONArray pages = (JSONArray) JSONSerializer.toJSON(json);
+            String defaultProperties = "{";
 
-        //loop page
-        if (!JSONUtils.isNull(pages)) {
-            for (int i = 0; i < pages.size(); i++) {
-                JSONObject page = (JSONObject) pages.get(i);
-                if (!JSONUtils.isNull(page)) {
-                    //loop properties
-                    JSONArray properties = (JSONArray) page.get("properties");
-                    for (int j = 0; j < properties.size(); j++) {
-                        JSONObject property = (JSONObject) properties.get(j);
-                        if (property.containsKey("value")) {
-                            defaultProperties += "'" + property.getString("name") + "':'" + property.getString("value") + "',";
+            //loop page
+            if (!JSONUtils.isNull(pages)) {
+                for (int i = 0; i < pages.size(); i++) {
+                    JSONObject page = (JSONObject) pages.get(i);
+                    if (!JSONUtils.isNull(page)) {
+                        //loop properties
+                        JSONArray properties = (JSONArray) page.get("properties");
+                        for (int j = 0; j < properties.size(); j++) {
+                            JSONObject property = (JSONObject) properties.get(j);
+                            if (property.containsKey("value")) {
+                                defaultProperties += "'" + property.getString("name") + "':'" + property.getString("value") + "',";
+                            }
                         }
                     }
                 }
             }
+            if (defaultProperties.endsWith(",")) {
+                defaultProperties = defaultProperties.substring(0, defaultProperties.length() - 1);
+            }
+            defaultProperties += "}";
+            return defaultProperties;
+        }catch(Exception ex){
+            LogUtil.error("PropertyUtil", ex, json);
         }
-        if (defaultProperties.endsWith(",")) {
-            defaultProperties = defaultProperties.substring(0, defaultProperties.length() - 1);
-        }
-        defaultProperties += "}";
-        return defaultProperties;
+        return "{}";
     }
 
     /**
