@@ -49,7 +49,7 @@
                         <Bundle-Activator>${groupId}.Activator</Bundle-Activator>
                         <Import-Package>!*,org.joget.report.dao,org.joget.report.model,org.joget.report.service,org.joget.commons.util,org.joget.plugin.base,org.joget.plugin.property.model,org.joget.plugin.property.service,org.joget.directory.model,org.joget.directory.model.service,org.joget.directory.dao,org.joget.workflow.model,org.joget.workflow.model.dao,org.joget.workflow.model.service,org.joget.workflow.util,org.joget.apps.app.dao,org.joget.apps.app.lib,org.joget.apps.app.model,org.joget.apps.app.service,org.joget.apps.datalist.lib,org.joget.apps.datalist.model,org.joget.apps.datalist.service,org.joget.apps.form.lib,org.joget.apps.form.dao,org.joget.apps.form.model,org.joget.apps.form.service,org.joget.apps.list.service,org.joget.apps.userview.lib,org.joget.apps.userview.model,org.joget.apps.userview.service,org.joget.apps.workflow.lib,javax.servlet,javax.servlet.http,org.osgi.framework;version="1.3.0"</Import-Package>
                         <!-- End change package and plugin class here -->
-                        <Embed-Dependency>!org.apache.felix*;scope=compile|runtime;inline=false</Embed-Dependency>
+                        <Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Embed-Directory>dependency</Embed-Directory>
                         <Embed-StripGroup>true</Embed-StripGroup>
