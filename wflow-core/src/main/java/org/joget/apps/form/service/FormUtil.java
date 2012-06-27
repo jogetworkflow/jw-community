@@ -26,6 +26,7 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +34,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Utility methods for the Form module.
@@ -1074,8 +1073,10 @@ public class FormUtil implements ApplicationContextAware {
         // add request into data model
         if (!dataModel.containsKey("request")) {
             try {
-                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-                dataModel.put("request", request);
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                if (request != null) {
+                    dataModel.put("request", request);
+                }
             } catch (NoClassDefFoundError e) {
                 // ignore if servlet request is not available
             }
