@@ -13,7 +13,7 @@
             label : '@@app.databaseupdatetool.oracle@@'
         },
         {
-            value : 'com.microsoft.jdbc.sqlserver.SQLServerDriver',
+            value : 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
             label : '@@app.databaseupdatetool.msSqlServer@@'
         }],
         required : 'True'
