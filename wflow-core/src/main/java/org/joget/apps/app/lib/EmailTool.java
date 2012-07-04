@@ -88,33 +88,37 @@ public class EmailTool extends DefaultApplicationPlugin {
             email.setMsg(emailMessage);
             String emailToOutput = "";
 
-            if (toParticipantId != null && toParticipantId.trim().length() != 0) {
-                WorkflowManager workflowManager = (WorkflowManager) pluginManager.getBean("workflowManager");
-                WorkflowProcess process = workflowManager.getProcess(wfAssignment.getProcessDefId());
-                String pIds[] = toParticipantId.split(",");
+            if ((toParticipantId != null && toParticipantId.trim().length() != 0) || (toSpecific != null && toSpecific.trim().length() != 0)) {
+                if (toParticipantId != null && toParticipantId.trim().length() != 0) {
+                    WorkflowManager workflowManager = (WorkflowManager) pluginManager.getBean("workflowManager");
+                    WorkflowProcess process = workflowManager.getProcess(wfAssignment.getProcessDefId());
+                    String pIds[] = toParticipantId.split(",");
 
 
-                for (String pId : pIds) {
-                    List<String> userList = null;
-                    userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
+                    for (String pId : pIds) {
+                        List<String> userList = null;
+                        userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
 
-                    if (userList != null && userList.size() > 0) {
-                        for (String username : userList) {
-                            User user = directoryManager.getUserByUsername(username);
-                            String userEmail = user.getEmail();
-                            if (userEmail != null && userEmail.trim().length() > 0) {
-                                email.addTo(userEmail);
-                                emailToOutput += userEmail + ", ";
+                        if (userList != null && userList.size() > 0) {
+                            for (String username : userList) {
+                                User user = directoryManager.getUserByUsername(username);
+                                String userEmail = user.getEmail();
+                                if (userEmail != null && userEmail.trim().length() > 0) {
+                                    email.addTo(userEmail);
+                                    emailToOutput += userEmail + ", ";
+                                }
                             }
                         }
                     }
                 }
-            } else if (toSpecific != null && toSpecific.trim().length() != 0) {
-                String toSpecificStr = WorkflowUtil.processVariable(toSpecific, formDataTable, wfAssignment);
-                Collection<String> tss = convertStringToInternetRecipientsList(toSpecificStr);
-                for (String address : tss) {
-                    email.addTo(address);
-                    emailToOutput += address + ", ";
+                
+                if (toSpecific != null && toSpecific.trim().length() != 0) {
+                    String toSpecificStr = WorkflowUtil.processVariable(toSpecific, formDataTable, wfAssignment);
+                    Collection<String> tss = convertStringToInternetRecipientsList(toSpecificStr);
+                    for (String address : tss) {
+                        email.addTo(address);
+                        emailToOutput += address + ", ";
+                    }
                 }
             } else {
                 throw new PluginException("no email specified");
