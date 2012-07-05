@@ -169,6 +169,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME));
             if (columnNames.contains(name) && !FormUtil.PROPERTY_ID.equals(name)) {
                 name = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + name;
+            } else if (FormUtil.PROPERTY_DATE_CREATED.equals(name) || FormUtil.PROPERTY_DATE_MODIFIED.equals(name)) {
+                name = "cast(" + name + " as string)";
             }
         }
         return name;
