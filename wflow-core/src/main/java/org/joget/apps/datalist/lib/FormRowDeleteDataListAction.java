@@ -65,15 +65,17 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     public DataListActionResult executeAction(DataList dataList, String[] rowKeys) {
         DataListActionResult result = null;
 
-        String formDefId = getPropertyString("formDefId");
-        String tableName = getSelectedFormTableName(formDefId);
-        if (tableName != null) {
-            FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-            formDataDao.delete(formDefId, tableName, rowKeys);
+        if (rowKeys != null && rowKeys.length > 0) {
+            String formDefId = getPropertyString("formDefId");
+            String tableName = getSelectedFormTableName(formDefId);
+            if (tableName != null) {
+                FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
+                formDataDao.delete(formDefId, tableName, rowKeys);
 
-            result = new DataListActionResult();
-            result.setType(DataListActionResult.TYPE_REDIRECT);
-            result.setUrl("REFERER");
+                result = new DataListActionResult();
+                result.setType(DataListActionResult.TYPE_REDIRECT);
+                result.setUrl("REFERER");
+            }
         }
 
         return result;
