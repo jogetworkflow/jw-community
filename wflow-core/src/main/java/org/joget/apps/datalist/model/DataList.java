@@ -64,6 +64,7 @@ public class DataList {
     private String actionPosition = ACTION_POSITION_BOTTOM_LEFT;
     private String checkboxPosition = CHECKBOX_POSITION_LEFT;
     private Collection<DataListFilterQueryObject> dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
+    private boolean filterQueryBuild = false;
 
     //Required when using session
     public void init() {
@@ -422,16 +423,19 @@ public class DataList {
     }
 
     public DataListFilterQueryObject[] getFilterQueryObjects() {
-        DataListFilter[] filterList = getFilters();
-        if (filterList != null) {
-            for (int i = 0; i < filterList.length; i++) {
-                DataListFilter filter = filterList[i];
-                DataListFilterQueryObject temp = filter.getType().getQueryObject(this, filter.getName());
-                if (temp != null) {
-                    temp.setOperator(filter.getOperator());
-                    dataListFilterQueryObjectList.add(temp);
+        if (!filterQueryBuild) {
+            DataListFilter[] filterList = getFilters();
+            if (filterList != null) {
+                for (int i = 0; i < filterList.length; i++) {
+                    DataListFilter filter = filterList[i];
+                    DataListFilterQueryObject temp = filter.getType().getQueryObject(this, filter.getName());
+                    if (temp != null) {
+                        temp.setOperator(filter.getOperator());
+                        dataListFilterQueryObjectList.add(temp);
+                    }
                 }
             }
+            filterQueryBuild = true;
         }
         return dataListFilterQueryObjectList.toArray(new DataListFilterQueryObject[dataListFilterQueryObjectList.size()]);
     }
