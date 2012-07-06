@@ -20,6 +20,10 @@ public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
         String username = workflowUserManager.getCurrentUsername();
         String attribute = variableKey;
 
+        if (WorkflowUserManager.ROLE_ANONYMOUS.equals(username)) {
+            return "";
+        }
+        
         return getUserAttribute(username, attribute);
     }
 
