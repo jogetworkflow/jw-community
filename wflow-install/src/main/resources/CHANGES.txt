@@ -1,5 +1,13 @@
 3.0.3
 =====
+435		Modified: wflow-consoleweb, wflow-install - Updated icons and images to the new logo.
+434		Fixed: wflow-core - Current User Hash Variable - Display empty when user is anonymous.
+433		Fixed: wflow-consoleweb - Userview Builder - Userview does not have default font setting.
+432		Fixed: wflow-core - Form Row Data List Binder - "dateCreated" and "dateModified" are not filterable.
+431		Fixed: wflow-core - Data List Builder - Filter query is duplicated when get record count.
+430		Fixed: wflow-core - Form Row Delete Datalist Action - Error when no record is selected. (#801)
+429		Fixed: wflow-core - Email Tool - Send email to those email configured in both "To (specific email address)" and "To (participant ID)"
+428		Fixed: wflow-core - Default Validator - Email validation is not working correctly. (#793)
 427		Fixed: wflow-core - Database Update Tool - Can't connect MSSQL (#787)
 426		Fixed: wflow-core - Form Util - prevent null pointer exception.
 425		Fixed: wflow-plugin-archetype - Plugin Pom - Included unnecessary lib in the jar .
