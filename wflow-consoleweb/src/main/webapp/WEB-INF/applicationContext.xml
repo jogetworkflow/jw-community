@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.2.xsd">
+
+    <import resource="classpath:appsApplicationContext.xml" />
+
+    <!-- START Spring Security -->
+    <bean id="springSecurityFilterChain" class="org.springframework.security.util.FilterChainProxy">
+        <security:filter-chain-map path-type="ant">
+            <security:filter-chain pattern="/**" filters="workflowHttpAuthFilter"/>
+        </security:filter-chain-map>
+    </bean>
+
+    <security:authentication-manager alias="authenticationManager"/>
+
+    <security:http auto-config="false" access-denied-page="/web/unauthorized" servlet-api-provision="false">
+        <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/console/profile/**" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/profile" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/app/**/package/xpdl" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <security:intercept-url pattern="/web/console/run/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/**" filters="none"/>
+        <security:form-login login-page="/web/login" authentication-failure-url="/web/login?login_error=1" default-target-url="/index.jsp" />
+        <security:logout logout-success-url="/web/login"/>
+        <security:anonymous />
+    </security:http>
+
+    <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
+        <security:custom-authentication-provider />
+        <property name="directoryManager" ref="directoryManager"/>
+    </bean>
+
+    <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
+        <security:custom-filter before="AUTHENTICATION_PROCESSING_FILTER" />
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="authenticationFailureUrl" value="/web/login?login_error=1" />
+        <property name="defaultTargetUrl" value="/" />
+        <property name="workflowUserManager" ref="workflowUserManager"/>
+        <property name="directoryManager" ref="directoryManager"/>
+        <property name="setupManager" ref="setupManager"/>
+    </bean>
+
+    <!-- END Spring Security -->
+</beans>
