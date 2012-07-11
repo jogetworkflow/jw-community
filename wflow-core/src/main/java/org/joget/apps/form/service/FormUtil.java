@@ -54,6 +54,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_PROPERTIES = "properties";
     public static final String PROPERTY_VALIDATOR = "validator";
     public static final String PROPERTY_READONLY = "readonly";
+    public static final String PROPERTY_READONLY_LABEL = "readonlyLabel";
     public static final String PROPERTY_DATE_CREATED = "dateCreated";
     public static final String PROPERTY_DATE_MODIFIED = "dateModified";
     public static final String PROPERTY_CUSTOM_PROPERTIES = "customProperties";
@@ -1089,10 +1090,23 @@ public class FormUtil implements ApplicationContextAware {
      * @param element
      */
     public static void setReadOnlyProperty(Element element) {
-        element.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        setReadOnlyProperty(element, true, null);
+    }
+    
+    /**
+     * Recursively set the readonly property for all descendent elements.
+     * @param element
+     */
+    public static void setReadOnlyProperty(Element element, Boolean readonly, Boolean label) {
+        if (readonly != null && readonly) {
+            element.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        }
+        if (label != null && label) {
+            element.setProperty(FormUtil.PROPERTY_READONLY_LABEL, "true");
+        }
         Collection<Element> children = element.getChildren();
         for (Element child : children) {
-            setReadOnlyProperty(child);
+            setReadOnlyProperty(child, readonly, label);
         }
     }
 

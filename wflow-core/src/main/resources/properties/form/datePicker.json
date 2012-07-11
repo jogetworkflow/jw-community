@@ -35,6 +35,16 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.datepicker.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

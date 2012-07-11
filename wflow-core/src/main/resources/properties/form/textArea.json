@@ -40,6 +40,16 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.textarea.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

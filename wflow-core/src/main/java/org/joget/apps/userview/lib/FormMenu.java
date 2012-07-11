@@ -388,6 +388,8 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
                 cancelLabel = "Cancel";
             }
         }
+        
+        Boolean readonlyLabel = "true".equalsIgnoreCase(getPropertyString("readonlyLabel"));
 
         form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, formData, formUrl, cancelUrl);
         if (form != null) {
@@ -397,22 +399,22 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             if (el != null) {
                 String idValue = FormUtil.getElementPropertyValue(el, formData);
                 if (idValue != null && !idValue.trim().isEmpty() && !"".equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
-                    el.setProperty(FormUtil.PROPERTY_READONLY, "true");
+                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
                 }
             }
 
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
                 el = FormUtil.findElement(getPropertyString("keyName"), form, formData);
                 if (el != null) {
-                    FormUtil.setReadOnlyProperty(el);
+                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
                 }
             }
         }
 
         // set form to read-only if required
-        String readonly = getPropertyString("readonly");
-        if ("Yes".equals(readonly)) {
-            FormUtil.setReadOnlyProperty(form);
+        Boolean readonly = "Yes".equalsIgnoreCase(getPropertyString("readonly"));
+        if (readonly || readonlyLabel) {
+            FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel);
         }
         return form;
     }

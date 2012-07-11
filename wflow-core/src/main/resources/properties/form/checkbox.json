@@ -31,6 +31,16 @@
         }]
     },
     {
+        name : 'readonlyLabel',
+        label : '@@form.checkbox.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'options',
         label : '@@form.checkbox.options@@',
         type : 'grid',

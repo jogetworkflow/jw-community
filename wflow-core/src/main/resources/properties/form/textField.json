@@ -39,6 +39,16 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.textfield.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

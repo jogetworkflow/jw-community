@@ -28,6 +28,18 @@
                         label:''
                     }
                 ]
+            },
+            {
+                name:'readonlyLabel',
+                label:'@@form.subform.readonlyLabel@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
             }
         ]
     },

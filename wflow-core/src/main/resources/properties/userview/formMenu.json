@@ -45,6 +45,16 @@
             value : 'Yes',
             label : ''
         }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@userview.formmenu.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

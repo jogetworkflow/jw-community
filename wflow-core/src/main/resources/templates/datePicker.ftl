@@ -18,5 +18,10 @@
 </script>
 </#if>
     <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" class="${elementParamName!} <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'>readonly</#if> />
+    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+        <span>${value!?html}</span>
+        <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
+    <#else>
+        <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" class="${elementParamName!} <#if error??>form-error-cell</#if>" readonly />
+    </#if>
 </div>
