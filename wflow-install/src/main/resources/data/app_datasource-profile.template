@@ -1,0 +1,5 @@
+workflowDriver=com.mysql.jdbc.Driver
+workflowUrl=jdbc\:mysql\://@@db.host@@\:@@db.port@@/@@db.name@@?characterEncoding\=UTF-8
+workflowUser=@@db.user@@
+workflowPassword=@@db.password@@
+profileName=
