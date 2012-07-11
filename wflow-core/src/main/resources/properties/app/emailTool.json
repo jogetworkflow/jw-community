@@ -1,0 +1,70 @@
+[{
+    title : '@@app.emailtool.config@@',
+    properties : [{
+        name : 'host',
+        label : '@@app.emailtool.host@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'port',
+        label : '@@app.emailtool.port@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'needAuthentication',
+        label : '@@app.emailtool.authentication@@',
+        type : 'checkbox',
+        options : [{
+            value : 'yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'username',
+        label : '@@app.emailtool.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.emailtool.password@@',
+        type : 'password'
+    }]
+},
+{
+    title : '@@app.emailtool.email@@',
+    properties : [{
+        name : 'from',
+        label : '@@app.emailtool.from@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'toSpecific',
+        label : '@@app.emailtool.toEmail@@',
+        type : 'textfield'
+    },
+    {
+        name : 'toParticipantId',
+        label : '@@app.emailtool.toPid@@',
+        type : 'textfield'
+    },
+    {
+        name : 'cc',
+        label : '@@app.emailtool.cc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'subject',
+        label : '@@app.emailtool.subject@@',
+        type : 'textfield'
+    },
+    {
+        name : 'message',
+        label : '@@app.emailtool.message@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15'
+    }]
+}]

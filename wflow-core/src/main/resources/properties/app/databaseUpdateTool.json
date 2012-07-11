@@ -1,0 +1,48 @@
+[{
+    title : '@@app.databaseupdatetool.config@@',
+    properties : [{
+        name : 'driverClassName',
+        label : '@@app.databaseupdatetool.databaseType@@',
+        type : 'selectbox',
+        options : [{
+            value : 'com.mysql.jdbc.Driver',
+            label : '@@app.databaseupdatetool.mySql@@'
+        },
+        {
+            value : 'oracle.jdbc.driver.OracleDriver',
+            label : '@@app.databaseupdatetool.oracle@@'
+        },
+        {
+            value : 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
+            label : '@@app.databaseupdatetool.msSqlServer@@'
+        }],
+        required : 'True'
+    },
+    {
+        name : 'url',
+        label : '@@app.databaseupdatetool.targetDbUrl@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'username',
+        label : '@@app.databaseupdatetool.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.databaseupdatetool.password@@',
+        type : 'password'
+    }]
+},
+{
+    title : '@@app.databaseupdatetool.query@@',
+    properties : [{
+        name : 'query',
+        label : '@@app.databaseupdatetool.query@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15',
+        required : 'True'
+    }]
+}]

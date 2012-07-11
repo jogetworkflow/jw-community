@@ -1,0 +1,10 @@
+[{
+    title : '@@datalist.formrowdatalistbinder.selectForm@@',
+    properties : [%s,{
+        name : 'extraCondition',
+        label : '@@datalist.formrowdatalistbinder.extraCondition@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '50'
+    }]
+}]
