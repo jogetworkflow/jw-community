@@ -12,7 +12,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp codebase="${serverPath}/webstart">
     <information>
-        <title>jwdesigner-3.0-SNAPSHOT</title>
+        <title>jwdesigner-3.1-SNAPSHOT</title>
         <vendor>joget.org</vendor>
         <homepage href="http://www.joget.org/"/>
         <description>joget.org wfdesigner</description>
@@ -27,7 +27,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
     <update check="background" policy="prompt-update"/>
     <resources>
         <j2se version="1.5+"/>
-        <jar href="wflow-designer.jar" version="3.0-SNAPSHOT" main="true"/>
+        <jar href="wflow-designer.jar" version="3.1-SNAPSHOT" main="true"/>
         <jar href="jped.jar" version="2.0"/>
         <jar href="jped-highlight.jar" version="2.0"/>
         <jar href="jgraph.jar" version="5.10.2.0"/>
