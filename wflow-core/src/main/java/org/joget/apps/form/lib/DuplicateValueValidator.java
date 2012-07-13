@@ -5,10 +5,10 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.plugin.base.PluginManager;
 
 public class DuplicateValueValidator extends FormValidator {
 
@@ -75,19 +75,21 @@ public class DuplicateValueValidator extends FormValidator {
         String mandatory = (String) getProperty("mandatory");
         String regex = (String) getProperty("regex");
         String errorMsg = (String) getProperty("errorMsg");
+        
+        PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
 
         //Check is empty or not
         if (isEmptyValues(values)) {
             if ("true".equals(mandatory)) {
                 result = false;
-                data.addFormError(id, "Missing required value");
+                data.addFormError(id, pm.getMessage("form.duplicatevaluevalidator.e.missingValue", this.getClassName(), null));
             }
         } else {
             //check value format with regex
             if (!isFormatCorrect(regex, values)) {
                 result = false;
                 if (errorMsg != null && errorMsg.trim().length() == 0) {
-                    errorMsg = "Format invalid.";
+                    errorMsg = pm.getMessage("form.duplicatevaluevalidator.e.formatInvalid", this.getClassName(), null); 
                 }
                 data.addFormError(id, errorMsg);
             } else {
@@ -101,7 +103,7 @@ public class DuplicateValueValidator extends FormValidator {
                 }
                 if (isDuplicate(formDefId, tableName, element, data, fieldId, values)) {
                     result = false;
-                    data.addFormError(id, "Value already exist.");
+                    data.addFormError(id, pm.getMessage("form.duplicatevaluevalidator.e.valueAlreadyExist", this.getClassName(), null));
                 }
             }
         }
