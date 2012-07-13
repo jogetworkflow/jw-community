@@ -23,6 +23,7 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -437,7 +438,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         if (assignment != null) {
             return true;
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentUnavailable");
             return false;
         }

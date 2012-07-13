@@ -27,6 +27,7 @@ import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
@@ -309,9 +310,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentFormUnavailable");
-            setProperty("formHtml", "Assignment Unavailable");
+            setProperty("formHtml", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
         }
     }
 
@@ -387,9 +388,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("redirectUrlAfterComplete", getUrl());
             setRedirectUrl(getUrl());
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentFormUnavailable");
-            setProperty("formHtml", "Assignment Unavailable");
+            setProperty("formHtml", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
         }
 
     }
