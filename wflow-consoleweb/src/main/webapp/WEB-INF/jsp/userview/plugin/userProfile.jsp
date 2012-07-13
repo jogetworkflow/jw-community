@@ -64,6 +64,12 @@
         </script>
     </c:when>
     <c:when test="${properties.view eq 'formView'}">
+        <c:if test="${!empty properties.saved && properties.saved eq 'true'}">
+            <p class="form-message" style="display:block;color:blue;">
+                <span><fmt:message key="console.directory.user.message.saved"/></span>
+            </p>
+        </c:if>
+        
         <form id="profile" action="${properties.actionUrl}" method="POST" class="form">
             <input type="hidden" name="id" value="${properties.user.id}">
             <input type="hidden" name="username" value="${properties.user.username}">
