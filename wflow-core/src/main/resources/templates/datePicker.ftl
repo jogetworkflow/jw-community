@@ -13,6 +13,9 @@
                         <#if element.properties.format! != ''>
                         ,dateFormat: "${element.properties.format}"
                         </#if>
+                        <#if element.properties.yearRange! != ''>
+                        ,yearRange: "${element.properties.yearRange}"
+                        </#if>
         });
     });
 </script>
