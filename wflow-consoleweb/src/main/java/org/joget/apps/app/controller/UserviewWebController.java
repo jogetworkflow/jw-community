@@ -28,12 +28,15 @@ public class UserviewWebController {
         if (embed == null) {
             embed = false;
         }
-        return embedView(map, request, response, appId, userviewId, menuId, key, embed);
+        return embedView(map, request, response, appId, userviewId, menuId, key, embed, null);
     }
     
     @RequestMapping({"/embed/userview/(*:appId)/(*:userviewId)/(~:key)","/embed/userview/(*:appId)/(*:userviewId)","/embed/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
-    public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed) throws Exception {
-        if (embed == null) {
+    public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed, @RequestParam(value = "embed", required = false) Boolean embedParam) throws Exception {
+        if (embedParam != null && !embedParam) {
+            //exit embed mode by param
+            return "redirect:/web/userview/" + appId + "/" + userviewId + "/" + ((key != null )?key:"") + "/" + menuId + '?' +request.getQueryString();
+        } else if (embed == null) {
             embed = true;
         }
         
