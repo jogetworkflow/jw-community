@@ -16,7 +16,7 @@
         var controlValue = $('[name$='+o.controlField+']').filter(":enabled, [disabled=false]").val();
         if ($(target).is("select")) {
             if ($(target).next('.dynamic_option_container').length == 0) {
-                $(target).after('<div class="dynamic_option_container" style="display:none;">'+$(target).html()+'</div>');
+                $(target).after('<select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select>');
             }
             
             $(target).html($(target).next('.dynamic_option_container').html());
