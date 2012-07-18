@@ -4514,7 +4514,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         if (processDefId != null && processDefId.contains(LATEST)) {
-            String currentVersion = getCurrentPackageVersion(processDefId.split("#")[0]);
+            ApplicationContext appContext = WorkflowUtil.getApplicationContext();
+            WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+        
+            String currentVersion = workflowMapper.getPublishedPackageVersion(processDefId.split("#")[0]);
 
             if (currentVersion != null && currentVersion.trim().length() > 0) {
                 processDefId = processDefId.replace(LATEST, currentVersion);

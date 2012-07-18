@@ -62,4 +62,11 @@ public interface WorkflowHelper {
      * @return
      */
     WorkflowDeadline executeDeadlinePlugin(String processId, String activityId, WorkflowDeadline deadline, Date processStartedTime, Date activityAcceptedTime, Date activityActivatedTime);
+        
+    /**
+     * Get published package version 
+     * @param packageId
+     * @return
+     */
+    String getPublishedPackageVersion(String packageId);
 }

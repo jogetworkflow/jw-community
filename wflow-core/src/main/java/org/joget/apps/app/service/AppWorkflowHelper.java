@@ -493,4 +493,19 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         return deadline;
     }
+    
+    @Override
+    public String getPublishedPackageVersion(String packageId) {
+        //appID same with packageId
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        Long version = appService.getPublishedVersion(packageId);
+        
+        AppDefinition appDef = appService.getAppDefinition(packageId, version.toString());
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        
+        if (packageDef != null && packageDef.getVersion() != null) {
+            return packageDef.getVersion().toString();
+        }
+        return null;
+    }
 }
