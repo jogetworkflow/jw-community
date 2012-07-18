@@ -27,7 +27,7 @@
 
         <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/css/ui-lightness/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css" rel="stylesheet" type="text/css" />
 
         <c:if test="${rightToLeft == 'true'}">
@@ -81,7 +81,7 @@
     <body id="userviewbuilder">
         <div id="builder-container">
             <div id="builder-header">
-                <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
+                <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
                 <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />
             </div>
             <div id="builder-body">
@@ -92,6 +92,7 @@
                         <li id="step-preview"><a onclick="UserviewBuilder.preview();" title="<fmt:message key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
                         <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.save();" title="<fmt:message key="ubuilder.save.disabled.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
                     </ul>
+                    <div id="builder-bg"></div>
                 </div>
                 <div id="builder-content">
                     <div id="step-design-container">

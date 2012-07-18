@@ -61,8 +61,10 @@
     <body>
 
         <div id="header">
+            <div id="header-bg"></div>
+            <div id="header-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" /></div>
             <div id="topbar">
-                <div id="logo"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" /></div>
+                <a href="${pageContext.request.contextPath}/web/console/home"><div id="logo"></div><div id="logo-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=logo" /></div></a>
                 <div id="account">
                     <c:if test="${isAdmin}">
                         <a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a> |

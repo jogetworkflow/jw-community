@@ -79,6 +79,12 @@ body{
     float: left !important;
 }
 
+#builder-palette {
+    position: fixed;
+    right: -5px;
+    left: auto;
+}
+
 /*Form Builder*/
 #formbuilder .form-palette-options{
     text-align:left;
@@ -106,12 +112,6 @@ body{
 }
 
 /*Datalist Builder*/
-#datalistbuilder #form-canvas {
-    float: left;
-    left: auto;
-    right: 240px;
-}
-
 #datalistbuilder td#tdDatabuilderContentRowActions {
     float:right;
 }
@@ -131,7 +131,7 @@ body{
 
 /*Userview Builder*/
 #userviewbuilder #canvas {
-    float:left;
+    right: 185px;
 }
 
 #userviewbuilder #header-welcome-message {
