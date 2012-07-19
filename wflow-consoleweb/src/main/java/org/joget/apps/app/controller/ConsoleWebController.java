@@ -2159,6 +2159,33 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/options")
+    public void consoleDatalistOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        Collection<DatalistDefinition> datalistDefinitionList = null;
+        
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        for (DatalistDefinition datalistDef : datalistDefinitionList) {
+            Map data = new HashMap();
+            data.put("value", datalistDef.getId());
+            data.put("label", datalistDef.getName());
+            jsonArray.put(data);
+        }
+        writeJson(writer, jsonArray, callback);
+    }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/userviews")
     public String consoleUserviewList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
