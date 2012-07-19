@@ -3,7 +3,12 @@ body{
 }
 
 #builder-title {
-    float: left;
+    float: right;
+}
+
+#builder_quick_navigator {
+    right: 621px;
+    left: auto;
 }
 
 .form-palette-element,
@@ -109,6 +114,10 @@ body{
     float:right;
     border-right: 2px dashed #DDDDDD;
     border-left:0px;
+}
+
+.form-floating-label {
+    left: 10px;
 }
 
 /*Datalist Builder*/
