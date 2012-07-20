@@ -26,6 +26,9 @@
 <c:set var="packageId" value="-1"/>
 <c:if test="${!empty param.packageId}"><c:set var="packageId" value="${param.packageId}"/></c:if>
 
+<c:set var="processDefId" value="processDefId="/>
+<c:if test="${!empty param.processDefId}"><c:set var="processDefId" value="processDefId=${param.processDefId}"/></c:if>
+
 <script>
             var assignmentArray_${id};
 
@@ -108,13 +111,13 @@
 
             if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') {
                 inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?packageId='+inboxPackageId_${id}, assignmentCountCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?packageId='+inboxPackageId_${id}+'&${processDefId}', assignmentCountCallback_${id}, null);
             } else {
                 inboxPaging_${id}='start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count', assignmentCountCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?${processDefId}', assignmentCountCallback_${id}, null);
             }
 
-            ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
+            ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
 
             function doInboxRefresh_${id}(){
                 $('#inboxRefresh_${id}').attr("disabled", true);
@@ -129,8 +132,8 @@
                 if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
                 else inboxPaging_${id}='start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count', assignmentCountCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?${processDefId}', assignmentCountCallback_${id}, null);
             }
 
             function doInboxNext_${id}(){
@@ -149,7 +152,7 @@
                     if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
                     else inboxPaging_${id}='start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
 
-                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
+                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
                 } else $('#inboxNext_${id}').attr("disabled", true);
             }
 
@@ -169,7 +172,7 @@
                     if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
                     else inboxPaging_${id}='start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
 
-                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
+                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
                 } else $('#inboxPrevious_${id}').attr("disabled", true);
             }
 
@@ -191,7 +194,7 @@
                 if(inboxNext_${id}!=1) $('#inboxNext_${id}').attr("disabled", false);
                 $('#inboxPrevious_${id}').attr("disabled", true);
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
             }
 
             function doInboxPage_${id}(){
@@ -219,7 +222,7 @@
                     inboxNext_${id}=inboxNoOfPaging_${id}-inboxPrevious_${id};
                 }
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}, assignmentListCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
             }
 
             function inboxPopupDialog_${id}(activityId){
