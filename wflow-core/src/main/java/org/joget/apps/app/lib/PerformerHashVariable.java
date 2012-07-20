@@ -76,7 +76,7 @@ public class PerformerHashVariable extends DefaultHashVariablePlugin {
                 attribute = firstChar + attribute.substring(1, attribute.length());
 
                 Method method = User.class.getDeclaredMethod("get" + attribute, new Class[]{});
-                String returnResult = (String) method.invoke(user, new Object[]{});
+                String returnResult = ((Object) method.invoke(user, new Object[]{})).toString();
                 if (returnResult == null || attribute.equals("Password")) {
                     returnResult = "";
                 }
