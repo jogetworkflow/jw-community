@@ -765,15 +765,6 @@ public class FormUtil implements ApplicationContextAware {
 
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
 
-        // handle multiple values
-        if (value != null) {
-            StringTokenizer st = new StringTokenizer(value, FormUtil.PROPERTY_OPTIONS_DELIMITER);
-            while (st.hasMoreTokens()) {
-                String val = st.nextToken();
-                values.add(val);
-            }
-        }
-
         // load from binder if available
         if (formData != null) {
             String binderValue = formData.getLoadBinderDataProperty(element, id);
