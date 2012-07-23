@@ -13,6 +13,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/themeroller/jquery-ui-themeroller.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css" />
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
         <script src="${pageContext.request.contextPath}/js/json/util.js"></script>      
@@ -49,10 +50,12 @@
                 }
 
                 // get selected rows
-                var results = new Array();
+                // formulate result
+                var setting = ${setting};
                 $("#listGridPopup tbody tr").each(function(idx, row) {
                     if (selected.indexOf(idx) >= 0) {
                         var result = new Object();
+                        var id = $(row).find('input:checkbox').val();
                         $(this).find("td").each(function(idx2, col) {
                             if (idx2 > 0) {
                                 if (columns[idx2-1]) {
@@ -62,25 +65,20 @@
                                 }
                             }
                         });
-                        results.push(result);
+                        var json = JSON.stringify(result);
+                        setting['id'] = id;
+                        setting['result'] = json;
+                        if (window.parent && window.parent.${callback}) {
+                            window.parent.${callback}(setting);        
+                        }
                     }
                 });
-
-                // formulate result
-                var setting = ${setting};
-                for (i=0; i<results.length; i++) {
-                    var setting = {};
-                    var json = JSON.stringify(results[i]);
-                    setting['result'] = json;
-                    if (window.parent && window.parent.${callback}) {
-                        window.parent.${callback}(setting);        
-                    }
-                }
             });
         });
         </script>
         <style>
             .exportlinks { display: none }
+            .body{font-size:13px;}
         </style>
     </head>
     <body>
