@@ -58,4 +58,6 @@
     </bean>
 
     <!-- END Spring Security -->
+    
+    <import resource="classpath:webApplicationContext.xml" />
 </beans>

@@ -15,7 +15,6 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -28,6 +27,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
 
 @Service("appUtil")
 public class AppUtil implements ApplicationContextAware {
@@ -166,12 +166,8 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String getAppLocale() {
-        SetupManager setupManager = (SetupManager) appContext.getBean("setupManager");
-        String locale = setupManager.getSettingValue("systemLocale");
-        if (locale == null || (locale != null && locale.isEmpty())) {
-            locale = "en_US";
-        }
-        return locale;
+        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");  
+        return localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest()).toString();
     }
 
     /**
