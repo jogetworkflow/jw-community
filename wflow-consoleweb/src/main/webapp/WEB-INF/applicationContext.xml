@@ -55,6 +55,7 @@
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="directoryManager" ref="directoryManager"/>
         <property name="setupManager" ref="setupManager"/>
+        <property name="localeResolver" ref="localeResolver"/>
     </bean>
 
     <!-- END Spring Security -->

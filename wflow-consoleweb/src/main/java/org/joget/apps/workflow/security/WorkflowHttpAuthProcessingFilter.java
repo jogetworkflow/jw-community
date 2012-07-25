@@ -4,6 +4,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import java.io.IOException;
+import java.util.Locale;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,17 +12,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.BadCredentialsException;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
+import org.springframework.web.servlet.LocaleResolver;
 
 public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFilter {
 
     private WorkflowUserManager workflowUserManager;
     private DirectoryManager directoryManager;
     private SetupManager setupManager;
+    private LocaleResolver localeResolver;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
@@ -31,6 +35,11 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
     @Override
     public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
+            if (localeResolver != null) {
+                Locale locale = localeResolver.resolveLocale(request);
+                LocaleContextHolder.setLocale(locale);
+            }
+            
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
 
@@ -41,6 +50,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
         } finally {
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
+            LocaleContextHolder.resetLocaleContext();
         }
     }
 
@@ -125,5 +135,13 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
 
     public void setSetupManager(SetupManager setupManager) {
         this.setupManager = setupManager;
+    }
+    
+    public LocaleResolver getLocaleResolver() {
+        return localeResolver;
+    }
+
+    public void setLocaleResolver(LocaleResolver localeResolver) {
+        this.localeResolver = localeResolver;
     }
 }

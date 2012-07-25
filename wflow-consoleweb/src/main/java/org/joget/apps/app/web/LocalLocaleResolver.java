@@ -17,6 +17,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public static final String UNDEFINED_KEY = "???"; //$NON-NLS-1$
     public static final String PARAM_NAME = "_lang";
     public static final Locale DEFAULT = new Locale("en", "US");
+    public String paramValue;
     
     @Override
     protected Locale determineDefaultLocale(HttpServletRequest request){
@@ -47,9 +48,10 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        if (request != null && request.getParameter(PARAM_NAME) != null) {
+        if (request != null && request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
             Locale locale = null;
-            String[] temp = request.getParameter(PARAM_NAME).split("_");
+            paramValue = request.getParameter(PARAM_NAME);
+            String[] temp = paramValue.split("_");
   
             if (temp.length == 1 && !temp[0].isEmpty()) {
                 locale = new Locale(temp[0]);
