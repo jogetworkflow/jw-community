@@ -24,7 +24,6 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
-import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
 import org.joget.plugin.base.PluginManager;
@@ -79,6 +78,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String parameterName = (String) properties.get("parameterName");
             final String passoverMethod = (String) properties.get("passoverMethod");
             final String exclusion = (String) properties.get("exclusion");
+            
+            String appId = auditTrail.getAppId();
+            String appVersion = auditTrail.getAppVersion();
+            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+            final AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
             if (smtpHost == null || smtpHost.trim().length() == 0) {
                 return null;
@@ -117,8 +121,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         workflowUserManager.setCurrentThreadUser(username);
                                         WorkflowAssignment wfAssignment = workflowManager.getAssignment(activityInstanceId);
                                         
-                                        final User user = directoryManager.getUserByUsername(username);
-                                        if (user.getEmail() != null && user.getEmail().trim().length() > 0) {
+                                        Collection<String> addresses = AppUtil.getEmailList(null, username, null, null);
+                                        
+                                        if (addresses != null && addresses.size() > 0) {
                                             // create the email message
                                             final MultiPartEmail email = new MultiPartEmail();
                                             email.setHostName(smtpHost);
@@ -136,13 +141,17 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                 }
                                             }
                                             if (cc != null && cc.length() != 0) {
-                                                Collection<String> ccs = convertStringToInternetRecipientsList(cc);
+                                                Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);
                                                 for (String address : ccs) {
                                                     email.addCc(address);
                                                 }
                                             }
 
-                                            email.addTo(user.getEmail());
+                                            String emailToOutput = "";
+                                            for (String address : addresses) {
+                                                email.addTo(address);
+                                                emailToOutput += address + ", ";
+                                            }
                                             email.setFrom(from);
 
                                             if (subject != null && subject.length() != 0) {
@@ -182,7 +191,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             }
 
                                             try {
-                                                LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + user.getEmail() + ", subject=Workflow - Pending Task Notification");
+                                                LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
                                                 email.send();
                                                 LogUtil.info(getClass().getName(), "Sending email completed for subject=" + email.getSubject());
                                             } catch (EmailException ex) {
@@ -216,35 +225,6 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/app/userNotificationAuditTrail.json", null, true, null);
-    }
-
-    private Collection<String> convertStringToInternetRecipientsList(String s) throws AddressException {
-        InternetAddress[] addresses;
-        InternetAddress address;
-        Collection<String> recipients = new ArrayList<String>();
-        Set emailSet = new HashSet(); // to detect duplicate emails
-        String addrStr;
-
-        if (!("".equals(s) || s == null)) {
-            addresses = InternetAddress.parse(s);
-            for (int i = 0; i < addresses.length; i++) {
-                address = addresses[i];
-                addrStr = address.getAddress();
-
-                if (addrStr == null || addrStr.trim().length() == 0) {
-                    // ignore
-                    continue;
-                }
-                // allow invalid RFC email addresses. Uncomment to check - but not recommended
-                // address.validate();
-                if (!emailSet.contains(addrStr)) {
-                    emailSet.add(addrStr);
-                    recipients.add(addrStr);
-                }
-            }
-        }
-
-        return recipients;
     }
     
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

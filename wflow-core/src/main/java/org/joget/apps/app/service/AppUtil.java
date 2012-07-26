@@ -1,12 +1,6 @@
 package org.joget.apps.app.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +10,14 @@ import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowProcess;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -326,5 +324,71 @@ public class AppUtil implements ApplicationContextAware {
     public static boolean containsHashVariable(String content) {
         boolean result = (content != null && content.indexOf("#") >= 0);
         return result;
+    }
+    
+    public static Collection<String> getEmailList(String toParticipantId, String toSpecific, WorkflowAssignment wfAssignment, AppDefinition appDef) {
+        Collection<String> addresses = new HashSet<String>();
+        Collection<String> users = new HashSet<String>();
+        
+        if (toParticipantId != null && !toParticipantId.isEmpty() && wfAssignment != null) {
+            WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+            WorkflowProcess process = workflowManager.getProcess(wfAssignment.getProcessDefId());
+            toParticipantId = toParticipantId.replace(";", ",");
+            String pIds[] = toParticipantId.split(",");
+            for (String pId : pIds) {
+                pId = pId.trim();
+                if (pId.length() == 0) {
+                    continue;
+                }
+                
+                Collection<String> userList = null;
+                userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
+
+                if (userList != null && userList.size() > 0) {
+                    users.addAll(userList);
+                }
+            }
+        }
+        
+        if (toSpecific != null && toSpecific.trim().length() != 0) {
+            toSpecific = AppUtil.processHashVariable(toSpecific, wfAssignment, null, null, appDef);
+            toSpecific = toSpecific.replace(";", ","); // add support for MS-style semi-colon (;) as a delimiter
+            String emailList[] = toSpecific.split(",");
+            for (String email : emailList) {
+                email = email.trim();
+                if (email.length() == 0) {
+                    continue;
+                }
+                
+                //to support retrieve email by putting username
+                if (!email.contains("@")) {
+                    users.add(email);
+                } else {
+                    addresses.add(email);
+                }
+            }
+        }
+        
+        if (!users.isEmpty()) {
+            DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+            for (String username : users) {
+                try {
+                    User user = directoryManager.getUserByUsername(username);
+                    if (user != null) {
+                        String userEmail = user.getEmail().replace(";", ",");
+                        String userEmails[] = userEmail.split(",");
+                        for (String email : userEmails) {
+                            email = email.trim();
+                            if (email.length() == 0) {
+                                continue;
+                            }
+                            addresses.add(email);
+                        }
+                    }
+                } catch (Exception e) {}
+            } 
+        }
+        
+        return addresses;
     }
 }
