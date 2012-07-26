@@ -20,6 +20,23 @@
         required : 'True'
     },
     {
+        name : 'security',
+        label : '@@app.usernotificationaudittrail.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.usernotificationaudittrail.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.usernotificationaudittrail.security.ssl@@'
+        }]
+    },
+    {
         name : 'needAuthentication',
         label : '@@app.usernotificationaudittrail.authentication@@',
         type : 'checkbox',

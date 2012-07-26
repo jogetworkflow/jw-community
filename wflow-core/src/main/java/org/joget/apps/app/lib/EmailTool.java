@@ -50,7 +50,8 @@ public class EmailTool extends DefaultApplicationPlugin {
         String needAuthentication = (String) properties.get("needAuthentication");
         String smtpUsername = (String) properties.get("username");
         String smtpPassword = (String) properties.get("password");
-
+        String security = (String) properties.get("security");
+        
         final String from = (String) properties.get("from");
         final String cc = (String) properties.get("cc");
         String toParticipantId = (String) properties.get("toParticipantId");
@@ -73,6 +74,13 @@ public class EmailTool extends DefaultApplicationPlugin {
             }
             if (needAuthentication != null && needAuthentication.length() != 0 && needAuthentication.equals("yes")) {
                 email.setAuthentication(smtpUsername, smtpPassword);
+            }
+            if(security!= null){
+                if(security.equalsIgnoreCase("SSL") ){
+                    email.setSSL(true);
+                }else if(security.equalsIgnoreCase("TLS")){
+                    email.setTLS(true);
+                }
             }
             if (cc != null && cc.length() != 0) {
                 String ccStr = WorkflowUtil.processVariable(cc, formDataTable, wfAssignment);
