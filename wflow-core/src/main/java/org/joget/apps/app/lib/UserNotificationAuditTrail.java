@@ -67,6 +67,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String needAuthentication = (String) properties.get("needAuthentication");
             final String smtpUsername = (String) properties.get("username");
             final String smtpPassword = (String) properties.get("password");
+            final String security = (String) properties.get("security");
 
             final String from = (String) properties.get("from");
             final String cc = (String) properties.get("cc");
@@ -126,6 +127,13 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             }
                                             if (needAuthentication != null && needAuthentication.length() != 0 && needAuthentication.equals("yes")) {
                                                 email.setAuthentication(smtpUsername, smtpPassword);
+                                            }
+                                            if(security!= null){
+                                                if(security.equalsIgnoreCase("SSL") ){
+                                                    email.setSSL(true);
+                                                }else if(security.equalsIgnoreCase("TLS")){
+                                                    email.setTLS(true);
+                                                }
                                             }
                                             if (cc != null && cc.length() != 0) {
                                                 Collection<String> ccs = convertStringToInternetRecipientsList(cc);

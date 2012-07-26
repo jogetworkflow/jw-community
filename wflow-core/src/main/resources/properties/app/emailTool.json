@@ -13,6 +13,23 @@
         required : 'True'
     },
     {
+        name : 'security',
+        label : '@@app.emailtool.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.emailtool.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.emailtool.security.ssl@@'
+        }]
+    },
+    {
         name : 'needAuthentication',
         label : '@@app.emailtool.authentication@@',
         type : 'checkbox',
