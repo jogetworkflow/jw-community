@@ -1034,7 +1034,25 @@ public class ConsoleWebController {
         User user = userDao.getUser(workflowUserManager.getCurrentUsername());
         map.addAttribute("user", user);
         map.addAttribute("timezones", TimeZoneUtil.getList());
-
+        
+        String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
+        Map<String, String> localeStringList = new TreeMap<String, String>();
+        if(enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
+            String userLocale = setupManager.getSettingValue("userLocale");
+            Collection<String> locales = new HashSet();
+            locales.addAll(Arrays.asList(userLocale.split(",")));
+            
+            Locale[] localeList = Locale.getAvailableLocales();
+            for (int x = 0; x < localeList.length; x++) {
+                String code = localeList[x].toString();
+                if (locales.contains(code)) {
+                    localeStringList.put(code, code + " - " +localeList[x].getDisplayName(localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest())));
+                }
+            }
+        }
+        map.addAttribute("enableUserLocale", enableUserLocale);
+        map.addAttribute("localeStringList", localeStringList);
+        
         return "console/profile";
     }
 
@@ -1047,6 +1065,7 @@ public class ConsoleWebController {
             currentUser.setLastName(user.getLastName());
             currentUser.setEmail(user.getEmail());
             currentUser.setTimeZone(user.getTimeZone());
+            currentUser.setLocale(user.getLocale());
             if (user.getPassword() != null && user.getConfirmPassword() != null && user.getPassword().length() > 0 && user.getPassword().equals(user.getConfirmPassword())) {
                 currentUser.setPassword(StringUtil.md5Base16(user.getPassword()));
             }
@@ -2950,6 +2969,7 @@ public class ConsoleWebController {
         boolean deleteProcessOnCompletionIsNull = true;
         boolean enableNtlmIsNull = true;
         boolean rightToLeftIsNull = true;
+        boolean enableUserLocale = true;
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -2969,6 +2989,11 @@ public class ConsoleWebController {
 
             if (paramName.equals("rightToLeft")) {
                 rightToLeftIsNull = false;
+                paramValue = "true";
+            }
+            
+            if (paramName.equals("enableUserLocale")) {
+                enableUserLocale = false;
                 paramValue = "true";
             }
 
@@ -3008,6 +3033,16 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty("rightToLeft");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
+        if (enableUserLocale) {
+            Setting setting = setupManager.getSettingByProperty("enableUserLocale");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("enableUserLocale");
             }
             setting.setValue("false");
             setupManager.saveSetting(setting);

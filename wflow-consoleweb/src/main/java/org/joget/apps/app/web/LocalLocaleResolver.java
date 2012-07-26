@@ -11,36 +11,62 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.directory.dao.UserDao;
+import org.joget.directory.model.User;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 public class LocalLocaleResolver extends SessionLocaleResolver implements LocaleResolver, I18nResourceProvider{
     public static final String UNDEFINED_KEY = "???"; //$NON-NLS-1$
     public static final String PARAM_NAME = "_lang";
     public static final Locale DEFAULT = new Locale("en", "US");
-    public String paramValue;
+    private String paramValue;
     
     @Override
     protected Locale determineDefaultLocale(HttpServletRequest request){
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
         
-        Locale locale = DEFAULT;
-        try {
-            String systemLocale = setupManager.getSettingValue("systemLocale");
-            if (systemLocale != null && systemLocale.trim().length() > 0) {
-                String[] temp = systemLocale.split("_");
-                
-                if(temp.length == 1){
-                    locale = new Locale(temp[0]);
-                }else if (temp.length == 2){
-                    locale = new Locale(temp[0], temp[1]);
-                }else if (temp.length == 3){
-                    locale = new Locale(temp[0], temp[1], temp[2]);
+        Locale locale = (Locale) request.getAttribute("defaultLocale");
+        
+        if (locale == null) {
+            locale = DEFAULT;
+            try {
+                String systemLocale = "";
+
+                String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
+                if (enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
+                    WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                    UserDao userDao = (UserDao) AppUtil.getApplicationContext().getBean("userDao");
+
+                    String username = workflowUserManager.getCurrentUsername();
+                    User user = userDao.getUser(username);
+                    if (user != null && user.getLocale() != null && !user.getLocale().isEmpty()) {
+                        systemLocale = user.getLocale();
+                    }
                 }
 
-                Locale.setDefault(DEFAULT);
+                if (systemLocale == null || systemLocale.isEmpty()) {
+                    systemLocale = setupManager.getSettingValue("systemLocale");
+                }
+
+                if (systemLocale != null && systemLocale.trim().length() > 0) {
+                    String[] temp = systemLocale.split("_");
+
+                    if(temp.length == 1){
+                        locale = new Locale(temp[0]);
+                    }else if (temp.length == 2){
+                        locale = new Locale(temp[0], temp[1]);
+                    }else if (temp.length == 3){
+                        locale = new Locale(temp[0], temp[1], temp[2]);
+                    }
+
+                    Locale.setDefault(DEFAULT);
+                }
+                
+                request.setAttribute("defaultLocale", locale);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error setting system locale from setting, using default locale");
             }
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error setting system locale from setting, using default locale");
         }
         
         return locale;

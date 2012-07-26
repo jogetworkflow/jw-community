@@ -83,6 +83,28 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
+                        <label for="enableUserLocale"><fmt:message key="console.setting.general.label.enableUserLocale"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['enableUserLocale'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="enableUserLocale" name="enableUserLocale" ${checked} />
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="userLocale"><fmt:message key="console.setting.general.label.userLocale"/></label>
+                        <span class="form-input">
+                            <input id="userLocale" type="text" name="userLocale" value="${settingMap['userLocale']}"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
                         <label for="rightToLeft"><fmt:message key="console.setting.general.label.rightToLeft"/></label>
                         <c:set var="checked"></c:set>
                         <c:if test="${settingMap['rightToLeft'] == 'true'}">
