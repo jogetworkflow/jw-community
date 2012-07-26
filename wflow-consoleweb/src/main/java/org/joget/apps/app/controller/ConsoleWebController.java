@@ -10,20 +10,7 @@ import java.io.Writer;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -112,6 +99,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.LocaleResolver;
 
 @Controller
 public class ConsoleWebController {
@@ -170,6 +158,8 @@ public class ConsoleWebController {
     DatalistDefinitionDao datalistDefinitionDao;
     @Resource
     FormDataDao formDataDao;
+    @Autowired
+    LocaleResolver localeResolver;
 
     @RequestMapping("/index")
     public String index() {
@@ -2933,11 +2923,10 @@ public class ConsoleWebController {
         }
 
         Locale[] localeList = Locale.getAvailableLocales();
-        String[] localeStringList = new String[localeList.length];
+        Map<String, String> localeStringList = new TreeMap<String, String>();
         for (int x = 0; x < localeList.length; x++) {
-            localeStringList[x] = localeList[x].toString();
+            localeStringList.put(localeList[x].toString(), localeList[x].toString() + " - " +localeList[x].getDisplayName(localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest())));
         }
-        Arrays.sort(localeStringList);
 
         map.addAttribute("localeList", localeStringList);
         map.addAttribute("settingMap", settingMap);
