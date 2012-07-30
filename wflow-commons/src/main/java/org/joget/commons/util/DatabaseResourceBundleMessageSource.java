@@ -22,7 +22,7 @@ public class DatabaseResourceBundleMessageSource extends ResourceBundleMessageSo
         try {
             resourceBundleMessage = resourceBundleMessageDao.getMessage(code, localeToUse);
         } catch (Exception e) {
-            LogUtil.error(getClass().getName(), null, "Error retrieving resource bundle message for " + code);
+            //LogUtil.error(getClass().getName(), null, "Error retrieving resource bundle message for " + code);
         }
 
         if (resourceBundleMessage != null) {

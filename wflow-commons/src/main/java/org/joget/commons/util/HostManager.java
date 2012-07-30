@@ -4,8 +4,10 @@ import java.io.File;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+@Service
 public class HostManager implements ApplicationContextAware {
 
     public static final String SYSTEM_PROPERTY_VIRTUALHOST = "wflow.virtualhost";
