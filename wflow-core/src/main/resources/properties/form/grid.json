@@ -63,7 +63,7 @@
         name : 'loadBinder',
         label : '@@form.grid.loadBinder@@',
         type : 'elementselect',
-        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder',
         url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
     }]
 },
@@ -73,7 +73,7 @@
         name : 'storeBinder',
         label : '@@form.grid.storeBinder@@',
         type : 'elementselect',
-        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder',
         url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
     }]
 }]
