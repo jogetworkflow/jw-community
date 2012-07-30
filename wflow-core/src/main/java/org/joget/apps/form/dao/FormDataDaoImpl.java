@@ -872,6 +872,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param columnList
      */
     protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
+        Collection<String> fieldNames = element.getDynamicFieldNames();
+        if (fieldNames != null && !fieldNames.isEmpty()) {
+            columnList.addAll(fieldNames);
+        }
         if (!(element instanceof FormContainer) && element.getProperties() != null) {
             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
             if (id != null && !id.isEmpty()) {

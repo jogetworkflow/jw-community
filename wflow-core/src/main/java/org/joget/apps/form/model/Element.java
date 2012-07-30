@@ -230,6 +230,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     public String getDefaultPropertyValues(){
         return PropertyUtil.getDefaultPropertyValues(getPropertyOptions());
     }
+    
+    public Collection<String> getDynamicFieldNames() {
+        return null;
+    }
 
     @Override
     public String toString() {
