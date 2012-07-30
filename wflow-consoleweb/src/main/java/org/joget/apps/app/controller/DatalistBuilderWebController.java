@@ -175,12 +175,12 @@ public class DatalistBuilderWebController {
 
         DataListColumn[] sourceColumns = binder.getColumns();
  
-        // sort columns by name
+        // sort columns by label
         List<DataListColumn> binderColumnList = Arrays.asList(sourceColumns);
         Collections.sort(binderColumnList, new Comparator<DataListColumn>() {
 
             public int compare(DataListColumn o1, DataListColumn o2) {
-                return o1.getName().compareTo(o2.getName());
+                return o1.getLabel().toLowerCase().compareTo(o2.getLabel().toLowerCase());
             }
         });
         

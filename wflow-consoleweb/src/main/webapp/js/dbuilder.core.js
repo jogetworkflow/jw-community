@@ -173,7 +173,11 @@ DatalistBuilder = {
         $('#builder-palettle-items').html('');
         for(var e in fields){
             var field = fields[e];
-            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label">' + field.label + '</label></div></li>';
+            var cssClass = "";
+            if (field.id == field.label) {
+                cssClass = " key";
+            }
+            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + field.label + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
     },

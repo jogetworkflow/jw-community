@@ -89,6 +89,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
                         }
                         columns.add(new DataListColumn(id, label, true));
                     }
+                } else {
+                    columns.add(new DataListColumn(columnName, columnName, true));
                 }
             }
         }
