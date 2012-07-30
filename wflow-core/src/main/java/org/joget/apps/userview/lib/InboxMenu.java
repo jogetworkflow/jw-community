@@ -369,6 +369,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
+            
+            if (formData.getStay()) {
+                setAlertMessage("");
+                setRedirectUrl("");
+            }
 
             // show form
             String formJson = formService.generateElementJson(form);
