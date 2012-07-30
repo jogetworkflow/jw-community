@@ -20,6 +20,16 @@
         type : 'textarea',
         cols : '60',
         rows : '10'
+    },
+    {
+        name : 'autoPopulate',
+        label : '@@form.customhtml.autoPopulate@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
