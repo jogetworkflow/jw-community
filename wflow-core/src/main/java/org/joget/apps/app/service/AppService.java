@@ -13,6 +13,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -342,5 +343,8 @@ public interface AppService {
      * @return 
      */
     public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId);
-        
+    
+    public void generatePO(String appId, String version, String locale, OutputStream output) throws IOException; 
+    
+    public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException;   
 }

@@ -2446,6 +2446,70 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo")
+    public String consoleAppMessageGeneratePO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appId);
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        map.addAttribute("localeList", getSortedLocalList());
+        map.addAttribute("locale", AppUtil.getAppLocale());
+        
+        return "console/apps/messageGeneratePO";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo/download")
+    public void consoleAppMessageGeneratePODownload(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "locale", required = false) String locale) throws IOException {
+        ServletOutputStream output = null;
+        try {
+            // determine output filename
+            String filename = appId + "_" + version + "_" + locale + ".po";
+
+            // set response headers
+            response.setContentType("text/plain");
+            response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+            output = response.getOutputStream();
+
+            appService.generatePO(appId, version, locale, output);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            if (output != null) {
+                output.flush();
+            }
+        }
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/importpo")
+    public String consoleAppMessageImportPO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appId);
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        
+        return "console/apps/messageImportPO";
+    }
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/importpo/submit", method = RequestMethod.POST)
+    public String consoleAppMessageInportPOUpload(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) throws Exception {
+        Setting setting = setupManager.getSettingByProperty("systemLocale");
+        String systemLocale = (setting != null) ? setting.getValue() : null;
+        if (systemLocale == null || systemLocale.equalsIgnoreCase("")) {
+            systemLocale = "en_US";
+        }
+
+        try {
+            MultipartFile multiPartfile = FileStore.getFile("localeFile");
+            appService.importPO(appId, version, systemLocale, multiPartfile);
+        } catch (IOException e) {
+        }
+        String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+        String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=message";
+        map.addAttribute("url", url);
+        return "console/dialogClose";
+    }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable/create")
     public String consoleAppEnvVariableCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
