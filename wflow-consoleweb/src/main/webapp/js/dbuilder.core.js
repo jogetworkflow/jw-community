@@ -670,8 +670,7 @@ DatalistBuilder = {
             {
                 label : 'Name',
                 name  : 'name',
-                required : 'true',
-                type : 'hidden'
+                type : 'label'
             },
             {
                 label : get_dbuilder_msg('dbuilder.label'),
@@ -760,8 +759,7 @@ DatalistBuilder = {
             {
                 label : 'Name',
                 name  : 'name',
-                required : 'true',
-                type : 'hidden'
+                type : 'label'
             },
             {
                 label : get_dbuilder_msg('dbuilder.label'),

@@ -384,6 +384,8 @@
 
         if(property.type.toLowerCase() == "hidden"){
             html += renderHidden(id, property, value);
+        }else if(property.type.toLowerCase() == "label"){
+            html += renderLabel(id, property, value);
         }else if(property.type.toLowerCase() == "readonly"){
             html += renderReadonly(id, property, value);
         }else if(property.type.toLowerCase() == "textfield"){
@@ -422,6 +424,13 @@
             value = "";
         }
         return '<input type="hidden" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+ escapeHtmlTag(value) +'" />';
+    }
+    
+    function renderLabel(id, property, value){
+        if(value == null){
+            value = "";
+        }
+        return '<input type="hidden" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+ escapeHtmlTag(value) +'" /><label>'+escapeHtmlTag(value)+'</label>';
     }
 
     function renderReadonly(id, property, value){
