@@ -66,6 +66,7 @@
                         </ul>-->
                     </div>
                 </div>
+                <div class="clear"></div>
             </li>
             </c:forEach>
         </ul>

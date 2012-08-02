@@ -1362,3 +1362,6 @@ span.dot_yellow{
 #login-box .buttons input {
     font-size: 16px;
 }
+.clear{
+    clear:both;
+}
