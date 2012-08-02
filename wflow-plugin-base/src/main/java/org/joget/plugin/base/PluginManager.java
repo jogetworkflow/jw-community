@@ -49,6 +49,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -715,7 +716,7 @@ public class PluginManager implements ApplicationContextAware {
                 }
 
                 if (label != null) {
-                    content = content.replaceAll(key, label);
+                    content = content.replaceAll(StringUtil.escapeRegex(key), StringUtil.escapeRegex(label));
                 }
             }
         }
