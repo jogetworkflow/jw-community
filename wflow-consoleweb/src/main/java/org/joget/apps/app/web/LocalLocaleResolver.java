@@ -74,25 +74,31 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        if (request != null && request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
-            Locale locale = null;
-            paramValue = request.getParameter(PARAM_NAME);
-            String[] temp = paramValue.split("_");
-  
-            if (temp.length == 1 && !temp[0].isEmpty()) {
-                locale = new Locale(temp[0]);
-            } else if (temp.length == 2) {
-                locale = new Locale(temp[0], temp[1]);
-            } else if (temp.length == 3) {
-                locale = new Locale(temp[0], temp[1], temp[2]);
+        Locale locale = (Locale) request.getAttribute("currentLocale");
+        
+        if (locale == null) {
+            if (request != null && request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
+                locale = null;
+                paramValue = request.getParameter(PARAM_NAME);
+                String[] temp = paramValue.split("_");
+
+                if (temp.length == 1 && !temp[0].isEmpty()) {
+                    locale = new Locale(temp[0]);
+                } else if (temp.length == 2) {
+                    locale = new Locale(temp[0], temp[1]);
+                } else if (temp.length == 3) {
+                    locale = new Locale(temp[0], temp[1], temp[2]);
+                }
+                if (locale != null) {
+                    setLocale(request, null, locale);
+                } else {
+                    setLocale(request, null, null);
+                }
             }
-            if (locale != null) {
-                setLocale(request, null, locale);
-            } else {
-                setLocale(request, null, determineDefaultLocale(request));
-            }
+            locale = super.resolveLocale(request);
+            request.setAttribute("currentLocale", locale);
         }
-        return super.resolveLocale(request);
+        return locale;
     }
     
     @Override
