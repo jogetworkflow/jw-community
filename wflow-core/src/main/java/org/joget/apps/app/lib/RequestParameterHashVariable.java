@@ -1,7 +1,9 @@
 package org.joget.apps.app.lib;
 
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.commons.spring.web.ParameterizedUrlHandlerMapping;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class RequestParameterHashVariable extends DefaultHashVariablePlugin {
@@ -15,6 +17,12 @@ public class RequestParameterHashVariable extends DefaultHashVariablePlugin {
         if (value != null) {
             return value;
         } else {
+            //get path parameter
+            Map<String, String> params = (Map) request.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS);
+            if (params != null && params.containsKey(variableKey)) {
+                return params.get(variableKey);
+            }
+            
             return "";
         }
     }
