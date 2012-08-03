@@ -294,7 +294,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
         String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-        if (binder != null) {
+        if (!(element instanceof AbstractSubForm) && binder != null) {
             FormRowSet data = binder.load(element, primaryKeyValue, formData);
             if (data != null) {
                 formData.setLoadBinderData(binder, data);

@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
@@ -399,7 +400,7 @@ public class FormService {
 
             //if store binder exist && element is not readonly, run it
             FormStoreBinder binder = element.getStoreBinder();
-            if (binder != null) {
+            if (!(element instanceof AbstractSubForm) && binder != null) {
                 FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
 
                 // execute binder
