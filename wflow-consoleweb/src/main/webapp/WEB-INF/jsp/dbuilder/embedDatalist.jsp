@@ -42,7 +42,7 @@
 
                 // find columns in datalist
                 var columns = new Array();
-                var json = '(${json})';
+                var json = '(${fn:replace(json, '\\', '\\\\')})';
                 var list = eval(json);
                 for (i=0; i<list.columns.length; i++) {
                     var column = list.columns[i];
