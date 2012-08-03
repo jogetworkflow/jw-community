@@ -6,7 +6,7 @@
     pageContext.setAttribute("rightToLeft", rightToLeft);
 %>
     
-<c:if test="${rightToLeft == 'true'}">
+<c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css">
     <script type="text/javascript">
         $(document).ready(function(){

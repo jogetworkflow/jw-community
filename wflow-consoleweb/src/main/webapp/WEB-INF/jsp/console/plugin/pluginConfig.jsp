@@ -14,7 +14,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js"></script>
     <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" rel="stylesheet" type="text/css" />
-    <c:if test="${rightToLeft == 'true'}">
+    <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
     </c:if>
 </c:if>

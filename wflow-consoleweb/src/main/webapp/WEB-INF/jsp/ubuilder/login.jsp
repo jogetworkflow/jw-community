@@ -53,7 +53,7 @@
         </style>
     </head>
 
-    <body id="login" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
+    <body id="login" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}"> rtl</c:if>">
         <div id="page">
             <div id="header">
 

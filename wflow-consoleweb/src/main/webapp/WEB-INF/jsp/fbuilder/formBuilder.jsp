@@ -23,7 +23,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/fbuilder.css" />
         
-        <c:if test="${rightToLeft == 'true'}">
+        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
         </c:if>

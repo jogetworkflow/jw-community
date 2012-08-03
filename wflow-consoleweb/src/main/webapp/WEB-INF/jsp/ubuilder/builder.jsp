@@ -30,7 +30,7 @@
         <link href="${pageContext.request.contextPath}/css/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css" rel="stylesheet" type="text/css" />
 
-        <c:if test="${rightToLeft == 'true'}">
+        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
         </c:if>

@@ -13,7 +13,7 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css" />
         
-        <c:if test="${rightToLeft == 'true'}">
+        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css" />
         </c:if>
     </head>
