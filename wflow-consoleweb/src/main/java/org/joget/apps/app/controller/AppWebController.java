@@ -365,9 +365,6 @@ public class AppWebController {
             if (Boolean.valueOf(attachment).booleanValue()) {
                 response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
             }
-            // set expires header for caching
-            long expires = 300000; // 5 minutes
-            response.setDateHeader("Expires", System.currentTimeMillis() + expires);
 
             // send output
             int length = 0;
