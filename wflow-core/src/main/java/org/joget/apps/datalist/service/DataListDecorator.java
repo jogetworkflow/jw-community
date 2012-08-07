@@ -26,6 +26,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
     List checkedIds;
     String id;
     String fieldName;
+    
+    private int index = 0;
 
     @Override
     public void init(PageContext pageContext, Object decorated, TableModel tableModel) {
@@ -134,12 +136,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
         // get column, temporarily just iterate thru to find
         DataListColumn column = null;
         DataListColumn[] columns = dataList.getColumns();
-        for (DataListColumn col : columns) {
-            if (col.getName().equals(columnName)) {
-                column = col;
-                break;
-            }
+        column = columns[index];
+        if (index == columns.length - 1) {
+            index = 0;
+        } else {
+            index++;
         }
+        
         return column;
     }
 
