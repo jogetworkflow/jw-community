@@ -113,9 +113,9 @@ img {
     vertical-align: bottom;
     font-size: 11px;
     background: darkGreen;
-    -moz-border-radius: 0px 0px 10px 10px;
-    -webkit-border-radius: 0px 0px 10px 10px;
-    border-radius: 0px 0px 10px 10px;
+    -moz-border-radius: 0px 0px 6px 6px;
+    -webkit-border-radius: 0px 0px 6px 6px;
+    border-radius: 0px 0px 6px 6px;
     opacity: 0.7;
 }
 #header #account a {
@@ -251,6 +251,7 @@ img {
     line-height: 22px;
     padding: 2px 0 0 28px;
     font-weight: bold;
+    max-width: 130px;
 }
 #menu span.subtitle { 
     font-size: 11px;
