@@ -16,3 +16,7 @@
     float: right;
 }
 
+#ui-datepicker-div {
+    display:none;
+}
+

@@ -177,3 +177,7 @@ body{
     margin-left: 0px;
     margin-right: 220px;
 }
+
+#ui-datepicker-div {
+    display:none;
+}

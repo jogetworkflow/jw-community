@@ -208,3 +208,7 @@ body{
 #login-box td, #login-box .input {
     text-align: right;
 }
+
+#ui-datepicker-div {
+    display:none;
+}
