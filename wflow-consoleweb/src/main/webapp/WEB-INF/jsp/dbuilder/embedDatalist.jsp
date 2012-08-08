@@ -78,7 +78,10 @@
         </script>
         <style>
             .exportlinks { display: none }
-            .body{font-size:13px;}
+            body{font-size:13px;}
+            <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
+                body{direction:rtl;}
+            </c:if>
         </style>
     </head>
     <body>
