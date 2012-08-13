@@ -260,7 +260,8 @@ img {
     line-height: 10px;
     font-family: Arial, Helvetica, sans-serif;
     display: block;
-    padding: 0 0 0 26px
+    padding: 0 0 0 26px;
+    max-width: 136px;
 }
 
 #menu ul#menu-items li:hover .dropdown { 
