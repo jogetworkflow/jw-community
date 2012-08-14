@@ -535,7 +535,7 @@ img {
     padding: 0 0 0 15px;
     font-size: 14px;
     color: #4c4c4c;
-    width: 188px;
+    width: 175px;
 }
 #nav span.nav-subtitle a {
     color: #4c6b00;
@@ -1366,4 +1366,7 @@ span.dot_yellow{
 }
 .clear{
     clear:both;
+}
+#propertyEditor #header {
+    position: relative;
 }
