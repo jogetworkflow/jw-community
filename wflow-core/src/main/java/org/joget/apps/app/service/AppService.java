@@ -153,6 +153,8 @@ public interface AppService {
      * @return
      */
     Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, FormData formData, String formUrl, String cancelUrl);
+    
+    Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
 
     /**
      * Returns a Collection of form data for a process based on criteria

@@ -612,6 +612,11 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, FormData formData, String formUrl, String cancelUrl) {
+        return viewDataForm(appId, version, formDefId, saveButtonLabel, submitButtonLabel, cancelButtonLabel, null, formData, formUrl, cancelUrl);
+    }
+    
+    @Override
+    public Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl) {
         AppDefinition appDef = getAppDefinition(appId, version);
 
         if (formData == null) {
@@ -652,6 +657,9 @@ public class AppServiceImpl implements AppService {
             cancelButton.setProperty(FormUtil.PROPERTY_ID, "cancel");
             cancelButton.setProperty("label", cancelButtonLabel);
             cancelButton.setProperty("url", cancelUrl);
+            if (cancelButtonTarget != null) {
+                cancelButton.setProperty("target", cancelButtonTarget);
+            }
             formActionList.add((FormAction) cancelButton);
         }
         FormAction[] formActions = formActionList.toArray(new FormAction[0]);

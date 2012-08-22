@@ -75,6 +75,20 @@
         type : 'textfield'
     },
     {
+        name : 'redirectTargetOnCancel',
+        label : '@@userview.formmenu.redirectTargetOnCancel@@',
+        type : 'selectbox',
+        value : 'top',
+        options : [{
+            value : 'top',
+            label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'window',
+            label : '@@userview.formmenu.target.window@@'
+        }]
+    },
+    {
         name : 'fieldPassover',
         label : '@@userview.formmenu.fieldNamePassover@@',
         type : 'textfield'

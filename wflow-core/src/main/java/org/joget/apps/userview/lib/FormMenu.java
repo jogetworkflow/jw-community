@@ -391,7 +391,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         
         Boolean readonlyLabel = "true".equalsIgnoreCase(getPropertyString("readonlyLabel"));
 
-        form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, formData, formUrl, cancelUrl);
+        form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, getPropertyString("redirectTargetOnCancel"), formData, formUrl, cancelUrl);
         if (form != null) {
 
             // make primary key read-only
