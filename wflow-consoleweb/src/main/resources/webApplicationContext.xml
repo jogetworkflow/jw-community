@@ -29,6 +29,7 @@
                 <value>help</value>
              </list>
         </property>
+        <property name="resourceBundleMessageDao" ref="resourceBundleMessageDao"/>
     </bean>
     <!-- END web relevant bean-->
 </beans>

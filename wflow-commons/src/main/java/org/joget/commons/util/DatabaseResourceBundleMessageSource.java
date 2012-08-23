@@ -8,12 +8,16 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class DatabaseResourceBundleMessageSource extends ResourceBundleMessageSource {
 
-    @Autowired
     private ResourceBundleMessageDao resourceBundleMessageDao;
-    
-    @Autowired
-    private SetupManager setupManager;
 
+    public ResourceBundleMessageDao getResourceBundleMessageDao() {
+        return resourceBundleMessageDao;
+    }
+
+    public void setResourceBundleMessageDao(ResourceBundleMessageDao resourceBundleMessageDao) {
+        this.resourceBundleMessageDao = resourceBundleMessageDao;
+    }
+    
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
         String localeToUse = locale.toString();
