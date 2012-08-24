@@ -349,7 +349,8 @@ img {
     text-shadow: none;
     display: block;
     line-height: 22px;
-    paddingx: 12px 0 0 26px
+    paddingx: 12px 0 0 26px;
+    max-width: 200px;
 }
 #menu .dropdown span.subsubtitle {
     font-size: 10px;
