@@ -345,6 +345,17 @@ FormBuilder = {
             if ($(obj).siblings(".form-column").length > 0) {
                 optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</button>";
             }
+            
+            //Update column label
+            var label = $(obj)[0].dom.properties.label;
+            if (label != undefined && label != "") {
+                $(obj).find(".form-column-label").remove();
+                var hint = $(obj).find(".hint");
+                $(hint).after("<h3 class=\"form-column-label\">"+label+"</h3>");
+            }else{
+                $(obj).find(".form-column-label").remove();
+            }
+            
         } else  {
             // add buttons for other elements
             optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'>"+get_fbuilder_msg("fbuilder.edit")+"</button>";

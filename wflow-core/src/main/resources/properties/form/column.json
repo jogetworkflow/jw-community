@@ -3,6 +3,11 @@
         title:'@@form.column.editColumn@@',
         properties:[
             {
+                name : 'label',
+                label : '@@form.column.label@@',
+                type : 'textfield',
+            },
+            {
                 name : 'customWidth',
                 label : '@@form.column.width@@',
                 type : 'textfield',
