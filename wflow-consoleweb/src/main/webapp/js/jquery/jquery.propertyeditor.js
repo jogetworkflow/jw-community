@@ -305,10 +305,12 @@
         var html = '';
 
         $(editor).find('.property-page-show').each(function(i){
+            var pageId = $(this).attr("id");
+            
             if($(this).hasClass("current")){
                 html += '<span class="step active">';
             }else{
-                html += '<span class="step">';
+                html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
             }
             html += $(this).find('.property-editor-page-title').html() + '</span>';
             if(i < $(editor).find('.property-page-show').length - 1){
@@ -317,6 +319,10 @@
         });
         html += '<div style="clear:both;"></div>';
         $(currentPage).find('.property-editor-page-step-indicator').html(html);
+        
+        $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
+            changePage(currentPage, $(this).attr("rel"));
+        });
     }
 
     function renderButtonPanel(options, showNavButton){
@@ -962,6 +968,24 @@
     }
 
     function nextPage(currentPage){
+        var next = $(currentPage).next();
+        while(!$(next).hasClass("property-page-show")){
+            next = $(next).next();
+        }
+        
+        changePage(currentPage, $(next).attr('id'));
+    }
+
+    function prevPage(currentPage){
+        var prev = $(currentPage).prev();
+        while(!$(prev).hasClass("property-page-show")){
+            prev = $(prev).prev();
+        }
+        
+        changePage(currentPage, $(prev).attr('id'));
+    }
+    
+    function changePage(currentPage, nextPageId){
         var pageId = $(currentPage).attr('id');
         var editorId = $(currentPage).parent().attr('id');
         validationProgressStack[pageId] = new Object();
@@ -979,33 +1003,17 @@
                 }
             }
         }else{
-            nextPageAction(pageId);
+            changePageAction(pageId, nextPageId);
         }
     }
-
-    function prevPage(currentPage){
-        $(currentPage).hide();
-        $(currentPage).removeClass("current");
-        var prev = $(currentPage).prev();
-        while(!$(prev).hasClass("property-page-show")){
-            prev = $(prev).prev();
-        }
-        $(prev).show();
-        $(prev).addClass("current");
-        renderStepsIndicator(prev);
-        $(prev).find('.property-editor-property-container .property-editor-property:first .property-input').find('input, select, textarea').focus();
-    }
-
-    function nextPageAction(pageId){
+    
+    function changePageAction(pageId, nextPageId){
         var currentPage = $('#'+pageId);
         if(validationProgressStack[pageId].count == 0 && validationProgressStack[pageId].valid){
             $(currentPage).hide();
             $(currentPage).removeClass("current");
 
-            var next = $(currentPage).next();
-            while(!$(next).hasClass("property-page-show")){
-                next = $(next).next();
-            }
+            var next = $('#'+nextPageId);
             $(next).show();
             $(next).addClass("current");
             renderStepsIndicator(next);
