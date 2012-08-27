@@ -29,6 +29,15 @@
         type : 'textfield',
         required : 'True',
         value : 'ID-??????'
+    },
+    {
+        name : 'hidden',
+        label : '@@form.idgeneratorfield.hidden@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
