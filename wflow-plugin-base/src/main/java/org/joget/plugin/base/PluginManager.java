@@ -755,6 +755,12 @@ public class PluginManager implements ApplicationContextAware {
                     URL url = getPluginResourceURL(pluginName, templatePath);
                     return url;
                 }
+
+                @Override
+                public long getLastModified(Object templateSource) {
+                    return 0;
+                }
+                
             });
 
             // Get or create a template
