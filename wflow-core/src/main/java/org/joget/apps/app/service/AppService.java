@@ -84,12 +84,20 @@ public interface AppService {
     PackageDefinition deployWorkflowPackage(String appId, String version, byte[] packageXpdl, boolean createNewApp) throws Exception;
 
     /**
-     * Finds the app definition based on the appId and version
+     * Finds the app definition based on the appId and version, cached where possible
      * @param appId
      * @param version If null, empty or equals to AppDefinition.VERSION_LATEST, the latest version is returned.
      * @return null if the specific app definition is not found
      */
     AppDefinition getAppDefinition(String appId, String version);
+
+    /**
+     * Loads the app definition based on the appId and version
+     * @param appId
+     * @param version If null, empty or equals to AppDefinition.VERSION_LATEST, the latest version is returned.
+     * @return null if the specific app definition is not found
+     */
+    AppDefinition loadAppDefinition(String appId, String version);
 
     /**
      * Retrieves the workflow process definition for a specific app version.

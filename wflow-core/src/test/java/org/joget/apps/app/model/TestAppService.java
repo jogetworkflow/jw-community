@@ -99,7 +99,7 @@ public class TestAppService {
 
             // verify package versions
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
-            AppDefinition loadedApp = appService.getAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
+            AppDefinition loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
             PackageDefinition loadedPackage = loadedApp.getPackageDefinition();
             assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
 
@@ -118,7 +118,7 @@ public class TestAppService {
 
             // verify new package version
             currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
-            loadedApp = appService.getAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
+            loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
             loadedPackage = loadedApp.getPackageDefinition();
             assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
 
@@ -241,7 +241,7 @@ public class TestAppService {
 
             // verify package versions
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
-            AppDefinition loadedApp = appService.getAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
+            AppDefinition loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
             PackageDefinition loadedPackage = loadedApp.getPackageDefinition();
             assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
 
@@ -500,12 +500,12 @@ public class TestAppService {
     }
 
     protected AppDefinition loadAppDefinitionVersion(String id, Long version) {
-        AppDefinition appDef = appService.getAppDefinition(id, version.toString());
+        AppDefinition appDef = appService.loadAppDefinition(id, version.toString());
         return appDef;
     }
 
     protected AppDefinition loadAppDefinition(String id) {
-        AppDefinition appDef = appService.getAppDefinition(id, null);
+        AppDefinition appDef = appService.loadAppDefinition(id, null);
         return appDef;
     }
 

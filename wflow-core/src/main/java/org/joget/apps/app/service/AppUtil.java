@@ -34,6 +34,7 @@ public class AppUtil implements ApplicationContextAware {
     public static final String PROPERTY_WORKFLOW_VARIABLE = "workflowVariable";
     static ApplicationContext appContext;
     static ThreadLocal currentAppDefinition = new ThreadLocal();
+    static ThreadLocal resetAppDefinition = new ThreadLocal();
 
     @Override
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
@@ -51,6 +52,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void setCurrentAppDefinition(AppDefinition appDef) throws BeansException {
         currentAppDefinition.set(appDef);
+        resetAppDefinition.set(null);
     }
 
     /**
@@ -60,6 +62,14 @@ public class AppUtil implements ApplicationContextAware {
     public static AppDefinition getCurrentAppDefinition() {
         AppDefinition appDef = (AppDefinition) currentAppDefinition.get();
         return appDef;
+    }
+
+    public static void resetAppDefinition() throws BeansException {
+        resetAppDefinition.set(Boolean.TRUE);
+    }
+
+    public static boolean isAppDefinitionReset() throws BeansException {
+        return resetAppDefinition.get() != null;
     }
 
     /**

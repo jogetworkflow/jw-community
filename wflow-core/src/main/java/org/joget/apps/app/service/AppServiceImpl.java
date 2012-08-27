@@ -697,14 +697,33 @@ public class AppServiceImpl implements AppService {
 
     //----- Console app management use cases ------
     /**
-     * Finds the app definition based on the appId and version
+     * Finds the app definition based on the appId and version, cached where possible
      * @param appId
      * @param version If null, empty or equals to AppDefinition.VERSION_LATEST, the latest version is returned.
      * @return null if the specific app definition is not found
      */
     @Override
     public AppDefinition getAppDefinition(String appId, String version) {
-        // get app
+        // get app from thread
+        boolean isAppDefReset = AppUtil.isAppDefinitionReset();
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        Long versionLong = AppUtil.convertVersionToLong(version);
+        if (isAppDefReset || appDef == null || !appDef.getId().equals(appId) || (versionLong != null && !appDef.getVersion().equals(versionLong))) {
+            // no matching app in thread, load from DAO
+            appDef = loadAppDefinition(appId, version);
+        }
+        return appDef;
+    }
+
+    /**
+     * Finds the app definition based on the appId and version
+     * @param appId
+     * @param version If null, empty or equals to AppDefinition.VERSION_LATEST, the latest version is returned.
+     * @return null if the specific app definition is not found
+     */
+    @Override
+    public AppDefinition loadAppDefinition(String appId, String version) {
+        // get app from thread
         AppDefinition appDef = null;
         Long versionLong = AppUtil.convertVersionToLong(version);
         if (versionLong == null) {
@@ -725,7 +744,7 @@ public class AppServiceImpl implements AppService {
         AppUtil.setCurrentAppDefinition(appDef);
         return appDef;
     }
-
+    
     /**
      *
      * @param appDefinition
@@ -804,14 +823,14 @@ public class AppServiceImpl implements AppService {
 
         // get app version
         if (appId != null && !appId.isEmpty()) {
-            appDef = getAppDefinition(appId, version);
+            appDef = loadAppDefinition(appId, version);
 
             // verify packageId
             if (appDef != null && !packageId.equals(appDef.getAppId())) {
                 throw new UnsupportedOperationException("Package ID does not match App ID");
             }
         } else {
-            appDef = getAppDefinition(packageId, null);
+            appDef = loadAppDefinition(packageId, null);
         }
 
         if (appDef != null || createNewApp) {
@@ -1167,7 +1186,7 @@ public class AppServiceImpl implements AppService {
             output = new ByteArrayOutputStream();
         }
         try {
-            AppDefinition appDef = getAppDefinition(appId, version);
+            AppDefinition appDef = loadAppDefinition(appId, version);
             if (appDef != null && output != null) {
                 zip = new ZipOutputStream(output);
 
@@ -1289,7 +1308,7 @@ public class AppServiceImpl implements AppService {
         
         AppDefinition orgAppDef = null;
         if (!overrideEnvVariable || !overridePluginDefault) {
-            orgAppDef = getAppDefinition(appDef.getAppId(), null);
+            orgAppDef = loadAppDefinition(appDef.getAppId(), null);
         }
         
         AppDefinition newAppDef = new AppDefinition();
@@ -1409,7 +1428,7 @@ public class AppServiceImpl implements AppService {
         }
 
         // reload app from DB
-        newAppDef = getAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
+        newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
         
         return newAppDef;
     }
@@ -1422,7 +1441,7 @@ public class AppServiceImpl implements AppService {
         if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
             designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
         }
-        if (designerwebBaseUrl.endsWith("/")) {
+        if (designerwebBaseUrl != null && designerwebBaseUrl.endsWith("/")) {
             designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
         }
 

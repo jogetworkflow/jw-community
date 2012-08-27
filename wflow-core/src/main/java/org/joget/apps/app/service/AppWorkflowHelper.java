@@ -456,7 +456,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
                 if (process != null) {
                     PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
-                    appDef = packageDef.getAppDefinition();
+                    if (packageDef != null) {
+                        appDef = packageDef.getAppDefinition();
+                    }
                 }
 
                 if (appDef != null) {

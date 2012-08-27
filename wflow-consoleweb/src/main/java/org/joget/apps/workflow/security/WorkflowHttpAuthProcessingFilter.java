@@ -1,17 +1,18 @@
 package org.joget.apps.workflow.security;
 
-import org.joget.commons.util.LogUtil;
-import org.joget.directory.model.service.DirectoryManager;
-import org.joget.workflow.model.service.WorkflowUserManager;
 import java.io.IOException;
 import java.util.Locale;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
@@ -39,6 +40,9 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 Locale locale = localeResolver.resolveLocale(request);
                 LocaleContextHolder.setLocale(locale);
             }
+            
+            // clear current app in thread
+            AppUtil.resetAppDefinition();
             
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
