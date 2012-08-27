@@ -45,7 +45,7 @@
             ${userview.setting.theme.javascript}
         </script>
 
-        <link href="${pageContext.request.contextPath}/css/userview.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
         <style type="text/css">
             <c:if test="${param.embed}">

@@ -8,7 +8,7 @@
         css = temp;
 %>
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/joget/joget.ico"/>
-    <link rel="stylesheet" type="text/css" href="<%= css %>">
+    <link rel="stylesheet" type="text/css" href="<%= css %>?build=<fmt:message key="build.number"/>">
     <style>
         <%= WorkflowUtil.getSystemSetupValue("customCss") %>
     </style>

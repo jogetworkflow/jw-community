@@ -9,8 +9,8 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/flexigrid/flexigrid.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js?build=<fmt:message key="build.number"/>"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/autocomplete/lib/jquery.bgiframe.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/autocomplete/jquery.autocomplete.pack.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/md5/jquery.md5.js"></script>

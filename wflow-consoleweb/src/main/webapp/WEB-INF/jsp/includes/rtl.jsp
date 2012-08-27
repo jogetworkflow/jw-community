@@ -7,7 +7,7 @@
 %>
     
 <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/rtl.css?build=<fmt:message key="build.number"/>">
     <script type="text/javascript">
         $(document).ready(function(){
             $(".row-content").append("<div style=\"clear:both\"></div>");
