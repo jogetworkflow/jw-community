@@ -50,12 +50,10 @@ import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
-@Service
 public class PluginManager implements ApplicationContextAware {
 
     private Felix felix = null;
