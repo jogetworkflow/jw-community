@@ -1,0 +1,11 @@
+[{
+    title : '@@userview.beanshellpermission.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@userview.beanshellpermission.script@@',
+        type : 'textarea',
+        required : 'True',
+        cols : '60',
+        rows : '20'
+    }]
+}]
