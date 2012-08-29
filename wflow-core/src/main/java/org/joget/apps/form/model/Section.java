@@ -23,7 +23,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
-        if (isAuthorize(formData)) {
+        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             String template = "section.ftl";
 
             // set visibility attributes - currently working for textfield, textarea and selectbox. TODO: ensure it works for checkbox and radio.

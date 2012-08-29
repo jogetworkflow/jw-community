@@ -28,7 +28,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
 
-        if (isAuthorize(formData)) {
+        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             dataModel.put("isAuthorize", true);
             
             String paramName = FormUtil.getElementParameterName(this);
