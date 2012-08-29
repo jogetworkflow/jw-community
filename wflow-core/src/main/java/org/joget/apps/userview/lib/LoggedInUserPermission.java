@@ -1,9 +1,10 @@
 package org.joget.apps.userview.lib;
 
+import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.directory.model.User;
 
-public class LoggedInUserPermission extends UserviewPermission {
+public class LoggedInUserPermission extends UserviewPermission implements FormPermission {
 
     @Override
     public boolean isAuthorize() {

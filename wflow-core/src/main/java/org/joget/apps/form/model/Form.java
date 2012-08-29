@@ -28,20 +28,26 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
 
-        String paramName = FormUtil.getElementParameterName(this);
-        setFormMeta(paramName+"_SUBMITTED", new String[]{"true"});
-        
-        if (getParent() == null) {
-            if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
-                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
-            } else if (formData.getPrimaryKeyValue() != null) {
-                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getPrimaryKeyValue()});
-            } else {
-                setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{""});
-            }
-        }
+        if (isAuthorize(formData)) {
+            dataModel.put("isAuthorize", true);
+            
+            String paramName = FormUtil.getElementParameterName(this);
+            setFormMeta(paramName+"_SUBMITTED", new String[]{"true"});
 
-        dataModel.put("formMeta", formMetas);
+            if (getParent() == null) {
+                if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
+                    setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
+                } else if (formData.getPrimaryKeyValue() != null) {
+                    setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getPrimaryKeyValue()});
+                } else {
+                    setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{""});
+                }
+            }
+
+            dataModel.put("formMeta", formMetas);
+        } else {
+            dataModel.put("isAuthorize", false);
+        }
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
