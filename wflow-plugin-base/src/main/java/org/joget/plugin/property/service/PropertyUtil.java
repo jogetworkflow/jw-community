@@ -171,6 +171,8 @@ public class PropertyUtil {
                         properties.put(key.toString(), getProperties((JSONArray) value));
                     } else if (value instanceof JSONObject && !((JSONObject) value).keySet().isEmpty()) {
                         properties.put(key.toString(), getProperties((JSONObject) value));
+                    } else if ("{}".equals(obj.getString(key.toString()))) {
+                        properties.put(key.toString(), new HashMap<String, Object>());
                     } else {
                         properties.put(key.toString(), obj.getString(key.toString()));
                     }
