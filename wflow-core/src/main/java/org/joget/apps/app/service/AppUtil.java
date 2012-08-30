@@ -253,7 +253,7 @@ public class AppUtil implements ApplicationContextAware {
         if (content != null) {
             Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
             Matcher matcher = pattern.matcher(content);
-            List<String> varList = new ArrayList<String>();
+            Set<String> varList = new HashSet<String>();
             while (matcher.find()) {
                 varList.add(matcher.group());
             }
