@@ -108,6 +108,11 @@
                                     </label>
                                     </div>
                                     <div class="form-row">
+                                    <label for="requesterHodIgnoreReportTo">
+                                        <input id="requesterHodIgnoreReportTo" type="radio" name="participantType" value="requesterHodIgnoreReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod.ignoreReportTo"/>
+                                    </label>
+                                    </div>
+                                    <div class="form-row">
                                     <label for="requesterSubordinates">
                                         <input id="requesterSubordinates" type="radio" name="participantType" value="requesterSubordinates"> <fmt:message key="console.process.config.label.mapParticipants.performer.subordinate"/>
                                     </label>
