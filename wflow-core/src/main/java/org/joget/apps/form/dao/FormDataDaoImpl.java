@@ -827,7 +827,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     // get JSON
                     String json = formDef.getJson();
                     if (json != null) {
-                        Form form = (Form) getFormService().createElementFromJson(json, true);
+                        Form form = (Form) getFormService().createElementFromJson(json, false);
                         findAllElementIds(form, columnList);
                     }
                 }
