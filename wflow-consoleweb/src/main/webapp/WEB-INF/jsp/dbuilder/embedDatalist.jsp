@@ -52,27 +52,27 @@
                 // get selected rows
                 // formulate result
                 var setting = ${setting};
-                $("#listGridPopup tbody tr").each(function(idx, row) {
-                    if (selected.indexOf(idx) >= 0) {
-                        var result = new Object();
-                        var id = $(row).find('input:checkbox').val();
-                        $(this).find("td").each(function(idx2, col) {
-                            if (idx2 > 0) {
-                                if (columns[idx2-1]) {
-                                    var prop = columns[idx2-1].name;
-                                    var val = $(col).text();
-                                    result[prop] = val;
-                                }
+                for (var i = 0; i < selected.length; i++) {
+                    var idx = selected[i];
+                    var row = $("#listGridPopup tbody tr:eq("+idx+")");
+                    var result = new Object();
+                    var id = $(row).find('input:checkbox').val();
+                    $(row).find("td").each(function(idx2, col) {
+                        if (idx2 > 0) {
+                            if (columns[idx2-1]) {
+                                var prop = columns[idx2-1].name;
+                                var val = $(col).text();
+                                result[prop] = val;
                             }
-                        });
-                        var json = JSON.stringify(result);
-                        setting['id'] = id;
-                        setting['result'] = json;
-                        if (window.parent && window.parent.${callback}) {
-                            window.parent.${callback}(setting);        
                         }
+                    });
+                    var json = JSON.stringify(result);
+                    setting['id'] = id;
+                    setting['result'] = json;
+                    if (window.parent && window.parent.${callback}) {
+                        window.parent.${callback}(setting);        
                     }
-                });
+                }
             });
         });
         </script>
