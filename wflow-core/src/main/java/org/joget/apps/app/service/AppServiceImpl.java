@@ -238,10 +238,24 @@ public class AppServiceImpl implements AppService {
     public PackageActivityForm viewAssignmentForm(String appId, String version, String activityId, FormData formData, String formUrl) {
         AppDefinition appDef = getAppDefinition(appId, version);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        return viewAssignmentForm(appDef, assignment, formData, formUrl);
+    }
+    
+    /**
+     * Retrieve a form for a specific activity instance
+     * @param appId
+     * @param version
+     * @param activityId
+     * @param formData
+     * @param formUrl
+     * @return
+     */
+    @Override
+    public PackageActivityForm viewAssignmentForm(AppDefinition appDef, WorkflowAssignment assignment, FormData formData, String formUrl) {
         String processId = assignment.getProcessId();
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
-        PackageActivityForm activityForm = retrieveMappedForm(appId, version, processDefId, activityDefId);
+        PackageActivityForm activityForm = retrieveMappedForm(appDef.getAppId(), appDef.getVersion().toString(), processDefId, activityDefId);
 
         // get origin process id
         String originProcessId = getOriginProcessId(processId);
@@ -297,6 +311,36 @@ public class AppServiceImpl implements AppService {
         
         return activityForm;
     }
+    
+    @Override
+    public FormData completeAssignmentForm(Form form, WorkflowAssignment assignment, FormData formData, Map<String, String> workflowVariableMap) {
+        if (formData == null) {
+            formData = new FormData();
+        }
+
+        // get assignment
+        String activityId = assignment.getActivityId();
+        String processId = assignment.getProcessId();
+        String processDefId = assignment.getProcessDefId();
+        String activityDefId = assignment.getActivityDefId();
+
+        // accept assignment if necessary
+        if (!assignment.isAccepted()) {
+            workflowManager.assignmentAccept(activityId);
+        }
+
+        // get and submit mapped form
+        if (form != null) {
+            formData = submitForm(form, formData, false);
+        }
+
+        Map<String, String> errors = formData.getFormErrors();
+        if (!formData.getStay() && errors == null || errors.isEmpty()) {
+            // complete assignment
+            workflowManager.assignmentComplete(activityId, workflowVariableMap);
+        }
+        return formData;
+    }
 
     /**
      * Process a submitted form to complete an assignment
@@ -332,7 +376,10 @@ public class AppServiceImpl implements AppService {
                 String originProcessId = getOriginProcessId(processId);
                 formData.setPrimaryKeyValue(originProcessId);
                 formData.setProcessId(processId);
-                formData = submitForm(appId, version, formDefId, formData, false);
+                
+                AppDefinition appDef = getAppDefinition(appId, version);
+                Form form = retrieveForm(appDef, paf, formData, assignment);
+                formData = submitForm(form, formData, false);
             }
         }
 
@@ -966,6 +1013,22 @@ public class AppServiceImpl implements AppService {
     @Override
     public FormData submitForm(String appId, String version, String formDefId, FormData formData, boolean ignoreValidation) {
         Form form = loadFormByFormDefId(appId, version, formDefId, formData, null);
+        if (form != null) {
+            return formService.submitForm(form, formData, ignoreValidation);
+        } else {
+            return formData;
+        }
+    }
+    
+    /**
+     * Use case for form submission by ID
+     * @param form
+     * @param formData
+     * @param ignoreValidation
+     * @return
+     */
+    @Override
+    public FormData submitForm(Form form, FormData formData, boolean ignoreValidation) {
         if (form != null) {
             return formService.submitForm(form, formData, ignoreValidation);
         } else {

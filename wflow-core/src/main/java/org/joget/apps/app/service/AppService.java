@@ -11,6 +11,7 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,15 @@ public interface AppService {
      * @return
      */
     FormData completeAssignmentForm(String appId, String version, String activityId, FormData formData, Map<String, String> workflowVariableMap);
+
+    /**
+     * Process a submitted form to complete an assignment
+     * @param activityId
+     * @param formData
+     * @param workflowVariableMap
+     * @return
+     */
+    FormData completeAssignmentForm(Form form, WorkflowAssignment assignment, FormData formData, Map<String, String> workflowVariableMap);
 
     /**
      * Create a new version of an app from an existing version
@@ -198,6 +208,16 @@ public interface AppService {
     PackageActivityForm viewAssignmentForm(String appId, String version, String activityId, FormData formData, String formUrl);
 
     /**
+     * Retrieve a form for a specific activity instance
+     * @param appDef
+     * @param assignment
+     * @param formData
+     * @param formUrl
+     * @return
+     */
+    PackageActivityForm viewAssignmentForm(AppDefinition appDef, WorkflowAssignment assignment, FormData formData, String formUrl);
+    
+    /**
      * Retrieve form mapped to start a process
      * @param appId
      * @param version
@@ -223,6 +243,15 @@ public interface AppService {
      * @return
      */
     FormData submitForm(String appId, String version, String formDefId, FormData formData, boolean ignoreValidation);
+    
+    /**
+     * Use case for form submission by ID
+     * @param form
+     * @param formData
+     * @param ignoreValidation
+     * @return
+     */
+    FormData submitForm(Form form, FormData formData, boolean ignoreValidation);
 
     /**
      * Load specific data row (record) by primary key value

@@ -329,7 +329,11 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
-        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appDef.getVersion().toString(), activityId, formData, formUrl);
+        FormService formService = (FormService) ac.getBean("formService");
+        
+        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
+        
+        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
         return activityForm;
     }
 
@@ -433,10 +437,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
         String activityId = assignment.getActivityId();
         String processId = assignment.getProcessId();
-
-        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
-        formData.setProcessId(processId);
-
+        
         // get form
         Form currentForm = activityForm.getForm();
 
@@ -449,7 +450,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         } else if (formData.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
             // complete assignment
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            formData = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
+            formData = appService.completeAssignmentForm(currentForm, assignment, formData, variableMap);
 
             Map<String, String> errors = formData.getFormErrors();
             

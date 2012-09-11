@@ -360,7 +360,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 } else if (formResult.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
                     // complete assignment
                     Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-                    formResult = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
+                    formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
                     Map<String, String> errors = formResult.getFormErrors();
                     if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {

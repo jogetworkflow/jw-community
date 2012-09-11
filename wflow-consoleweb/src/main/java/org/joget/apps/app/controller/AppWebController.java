@@ -274,7 +274,7 @@ public class AppWebController {
         // load form
         Long appVersion = (appDef != null) ? appDef.getVersion() : null;
         String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
-        PackageActivityForm activityForm = appService.viewAssignmentForm(appId, version, activityId, formData, formUrl);
+        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
         Form form = activityForm.getForm();
 
         // submit form
@@ -288,7 +288,7 @@ public class AppWebController {
         } else if (formResult.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
             // complete assignment
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromRequest(request);
-            formResult = appService.completeAssignmentForm(appId, version, activityId, formData, variableMap);
+            formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
             Map<String, String> errors = formResult.getFormErrors();
             if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
