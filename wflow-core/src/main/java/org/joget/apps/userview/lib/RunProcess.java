@@ -170,7 +170,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         WorkflowProcess process = appService.getWorkflowProcessForApp(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"));
         setProperty("process", process);
 
-        if (isUnauthorized()) {
+        if (isUnauthorized(process.getId())) {
             // check for start mapped form
             String formUrl = getUrl() + "?_action=start";
             FormData formData = new FormData();
@@ -228,7 +228,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         WorkflowProcess process = appService.getWorkflowProcessForApp(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"));
         setProperty("process", process);
 
-        if (isUnauthorized()) {
+        if (isUnauthorized(process.getId())) {
             // extract form values from request
             FormData formData = new FormData();
 
@@ -417,11 +417,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         }
     }
 
-    private boolean isUnauthorized() {
+    private boolean isUnauthorized(String processDefId) {
         // check for permission
         ApplicationContext ac = AppUtil.getApplicationContext();
         WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
-        if (workflowManager.isUserInWhiteList(getPropertyString("processDefId"))) {
+        if (workflowManager.isUserInWhiteList(processDefId)) {
             return true;
         } else {
             setProperty("headerTitle", "Unauthorized");
