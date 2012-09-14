@@ -318,4 +318,13 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
         }
         return null;
     }
+    
+    @Override
+    public boolean continueValidation(FormData formData) {
+        if ("true".equalsIgnoreCase(getPropertyString(FormUtil.PROPERTY_READONLY))) {
+            return false;
+        }
+        
+        return true;
+    }
 }
