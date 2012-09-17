@@ -96,7 +96,11 @@
                         />
                 </c:forEach>
                 <c:if test="${!empty dataList.rowActions[0]}">
-                    <display:column property="actions" media="html" title="" />
+                    <c:set var="actionTitle" value="" />
+                    <c:forEach items="${dataList.rowActions}" var="rowAction" begin="1">
+                        <c:set var="actionTitle" value="${actionTitle}</th><th>" />
+                    </c:forEach>
+                    <display:column property="actions" media="html" title="${actionTitle}"/>
                 </c:if>
                 <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}"><display:column property="checkbox" media="html" title="" /></c:if>
             </display:table>

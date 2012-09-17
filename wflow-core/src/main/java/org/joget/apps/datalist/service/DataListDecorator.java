@@ -126,8 +126,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (actions != null) {
             for (DataListAction action : actions) {
                 String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), action.getLinkLabel(), action.getConfirmation());
-                output += " " + link + " &nbsp; ";
+                output += " " + link + " </td><td> ";
             }
+            output = output.substring(0, output.length() - 10);
         }
         return output;
     }
