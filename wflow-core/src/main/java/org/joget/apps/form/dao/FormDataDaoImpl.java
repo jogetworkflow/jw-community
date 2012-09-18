@@ -262,7 +262,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                             query += condition;
                         }
 
-                        if (sort != null && !sort.trim().isEmpty()) {
+                        if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
                             String sortProperty = sort;
                             if (!FormUtil.PROPERTY_ID.equals(sortProperty) && !FormUtil.PROPERTY_DATE_CREATED.equals(sortProperty) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(sortProperty)) {
                                 Collection<String> columnNames = getFormDefinitionColumnNames(tableName);
