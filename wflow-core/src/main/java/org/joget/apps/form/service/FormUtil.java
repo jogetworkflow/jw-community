@@ -1109,7 +1109,7 @@ public class FormUtil implements ApplicationContextAware {
         Form form = findRootForm(element);
         if (form != null) {
             String paramName = FormUtil.getElementParameterName(form);
-            if (formData.getRequestParameter(paramName+"_SUBMITTED") != null) {
+            if (formData != null && formData.getRequestParameter(paramName+"_SUBMITTED") != null) {
                 return true;
             }
         }
