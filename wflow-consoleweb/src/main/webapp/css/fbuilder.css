@@ -66,11 +66,11 @@
 }
 .form-section .form-palette-options {
     top: 0px;
-    right: 0px;
+    right: 5px;
 }
 .form-column .form-palette-options {
     top: 0px;
-    right: -5px;
+    right: 5px;
 }
 .form-cell .form-palette-options {
     top: 0px;
@@ -196,13 +196,27 @@
     padding: 3px;
     margin-top:5px;
 }
+.subform-container.no-frame{
+    border: 0; 
+    padding: 10px 0 0 0;
+    margin-top:5px;
+}
 .subform-container, .subform-section {
     background: #efefef;
+}
+.subform-container.no-frame, .subform-container.no-frame .subform-section {
+    background: #fafafa;
 }
 .subform-title{
     background: #efefef;
     position:relative;
     top:-12px;
+}
+.subform-container.no-frame .subform-title{
+    background: transparent;
+    position:relative;
+    top:-10px;
+    font-weight: bold;
 }
 #form-properties {
     min-height: 320px;

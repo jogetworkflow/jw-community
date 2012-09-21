@@ -237,7 +237,7 @@ FormBuilder = {
                     return false;
                 }
             });            
-            var columnWidth = Math.floor(100 / columnCount)-1;
+            var columnWidth = (columnCount != 1) ? (Math.floor(100 / columnCount)-1) : 100;
             var columnWidthStr = columnWidth + "%";
 
             // set column width property
