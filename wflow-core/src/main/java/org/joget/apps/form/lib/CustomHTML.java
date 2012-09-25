@@ -39,7 +39,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
         
         String customHTML = (String) getProperty("value");
 
-        Pattern pattern = Pattern.compile("name=\\\"([^\\\"]*)\\\"");
+        Pattern pattern = Pattern.compile("name=\\\"([a-zA-Z0-9_-]*)\\\"");
         Matcher matcher = pattern.matcher(customHTML);
 
         while (matcher.find()) {
@@ -56,7 +56,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
 
         String customHTML = (String) getProperty("value");
 
-        Pattern pattern = Pattern.compile("name=\\\"([^\\\"]*)\\\"");
+        Pattern pattern = Pattern.compile("name=\\\"([a-zA-Z0-9_-]*)\\\"");
         Matcher matcher = pattern.matcher(customHTML);
 
         while (matcher.find()) {
