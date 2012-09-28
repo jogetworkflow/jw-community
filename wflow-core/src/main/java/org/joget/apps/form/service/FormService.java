@@ -302,11 +302,15 @@ public class FormService {
         // handle standard parameters
         for (String key : (Set<String>) requestMap.keySet()) {
             Object paramValue = requestMap.get(key);
-            Class type = paramValue.getClass();
-            if (type.isArray()) {
-                formData.addRequestParameterValues(key, (String[]) paramValue);
+            if (paramValue != null) {
+                Class type = paramValue.getClass();
+                if (type.isArray()) {
+                    formData.addRequestParameterValues(key, (String[]) paramValue);
+                } else {
+                    formData.addRequestParameterValues(key, new String[]{paramValue.toString()});
+                }
             } else {
-                formData.addRequestParameterValues(key, new String[]{paramValue.toString()});
+                formData.addRequestParameterValues(key, new String[]{""});
             }
         }
         // handle multipart files
