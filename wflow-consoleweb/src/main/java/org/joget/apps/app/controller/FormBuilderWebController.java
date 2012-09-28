@@ -167,7 +167,7 @@ public class FormBuilderWebController {
 
             Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
             hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
-            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, StringEscapeUtils.escapeHtml(json));
+            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, json);
             columnChildren.add((Element) hiddenField);
 
             Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());
