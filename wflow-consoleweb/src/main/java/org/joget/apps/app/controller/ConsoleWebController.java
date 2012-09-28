@@ -16,6 +16,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -2880,7 +2881,7 @@ public class ConsoleWebController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("tableName", tableNameList);
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -3833,7 +3834,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {
@@ -3843,7 +3844,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONArray jsonArray, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonArray.write(writer);
         if (callback != null && callback.trim().length() > 0) {

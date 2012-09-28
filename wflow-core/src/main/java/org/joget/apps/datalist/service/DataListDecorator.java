@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.decorator.CheckboxTableDecorator;
 import org.displaytag.model.TableModel;
 import org.displaytag.properties.MediaTypeEnum;
@@ -72,7 +73,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         buffer.append("<input type=\"checkbox\" name=\"");
         buffer.append(fieldName);
         buffer.append("\" value=\"");
-        buffer.append(evaluatedId);
+        buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));
         buffer.append("\"");
         if (checked) {
             checkedIds.remove(evaluatedId);

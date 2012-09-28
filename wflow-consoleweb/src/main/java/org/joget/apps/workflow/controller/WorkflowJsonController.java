@@ -27,6 +27,7 @@ import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -955,7 +956,7 @@ public class WorkflowJsonController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {

@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -121,12 +122,13 @@ public class WorkflowJavaScriptController {
         PrintWriter writer = response.getWriter();
 
         if (request.getParameter("divId") != null && request.getParameter("divId").trim().length() > 0) {
-            writer.print("$('#" + request.getParameter("divId") + "').html(\"");
+            writer.print("$(\"#" + StringEscapeUtils.escapeHtml(request.getParameter("divId")) + "\").html(\"");
         } else {
             writer.print("document.write(\"");
         }
 
         HttpServletResponse unicodeResponse = new UnicodeHttpServletResponse(response);
+        unicodeResponse.setContentType("application/javascript; charset=UTF-8");
         request.getRequestDispatcher(url).include(request, unicodeResponse);
         writer.println("\")");
     }

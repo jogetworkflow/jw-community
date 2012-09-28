@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
@@ -159,7 +160,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                     element.setProperty("id", name);
                     element.setParent(this);
                     String value = FormUtil.getElementPropertyValue(element, formData);
-                    newInputString = newInputString.replaceFirst("value=\"[^\\\"]*\"", "value=\"" + StringUtil.escapeRegex(value) + "\"");
+                    newInputString = newInputString.replaceFirst("value=\"[^\\\"]*\"", "value=\"" + StringUtil.escapeRegex(StringEscapeUtils.escapeHtml(value)) + "\"");
                 }
                 
                 customHTML = customHTML.replaceFirst(StringUtil.escapeRegex(inputString), StringUtil.escapeRegex(newInputString));
@@ -185,7 +186,7 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                 element.setParent(this);
                 String value = FormUtil.getElementPropertyValue(element, formData);
                 
-                newTextareaString = newTextareaString.replaceFirst(">.*?</", ">" + StringUtil.escapeRegex(value) + "</");
+                newTextareaString = newTextareaString.replaceFirst(">.*?</", ">" + StringUtil.escapeRegex(StringEscapeUtils.escapeHtml(value)) + "</");
                 
                 customHTML = customHTML.replaceFirst(StringUtil.escapeRegex(textareaString), StringUtil.escapeRegex(newTextareaString));
             }

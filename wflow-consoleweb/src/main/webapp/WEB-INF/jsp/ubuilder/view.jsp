@@ -287,7 +287,7 @@
                         </c:if>
                         <div id="content">
                         ${bodyContent}
-                        <c:if test="${!empty bodyError}">${bodyError}</c:if>
+                        <c:if test="${!empty bodyError}"><c:out value="${bodyError}" escapeXml="true"/></c:if>
                         </div>
                     </c:otherwise>
                 </c:choose>

@@ -30,31 +30,31 @@
 <c:if test="${!empty param.processDefId}"><c:set var="processDefId" value="processDefId=${param.processDefId}"/></c:if>
 
 <script>
-            var assignmentArray_${id};
+            var assignmentArray_${fn:escapeXml(id)};
 
-            var inboxUrlPath_${id}='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}';
-            var inboxNumber_${id}=0;
-            var inboxPrevious_${id}=0;
-            var inboxNext_${id};
-            var inboxNoOfPaging_${id};
-            var inboxTotal_${id};
-            var inboxRows_${id}='${rowsPerPage}';
-            var inboxPackageId_${id}='${packageId}';
-            var inboxSort_${id}='sort';
-            var inboxDesc_${id}=true;
+            var inboxUrlPath_${fn:escapeXml(id)}='${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}';
+            var inboxNumber_${fn:escapeXml(id)}=0;
+            var inboxPrevious_${fn:escapeXml(id)}=0;
+            var inboxNext_${fn:escapeXml(id)};
+            var inboxNoOfPaging_${fn:escapeXml(id)};
+            var inboxTotal_${fn:escapeXml(id)};
+            var inboxRows_${fn:escapeXml(id)}='${fn:escapeXml(rowsPerPage)}';
+            var inboxPackageId_${fn:escapeXml(id)}='${fn:escapeXml(packageId)}';
+            var inboxSort_${fn:escapeXml(id)}='sort';
+            var inboxDesc_${fn:escapeXml(id)}=true;
 
-            var assignmentListCallback_${id} = {
+            var assignmentListCallback_${fn:escapeXml(id)} = {
                 success : function(data) {
                     var data = data.data;
 
-                    $('#assignmentList_${id}').html('');
+                    $('#assignmentList_${fn:escapeXml(id)}').html('');
 
 
                     if(data!=null){
                         if(!data.length) {
                             data = [data];
                         }
-                        assignmentArray_${id} = data;
+                        assignmentArray_${fn:escapeXml(id)} = data;
                         for(i=0; i<data.length; i++){
                             var assignmentObj = data[i];
 
@@ -65,17 +65,17 @@
                             var dateCreated = assignmentObj.dateCreated;
                             var acceptedStatus = assignmentObj.acceptedStatus;
 
-                            inboxNumber_${id}++;
+                            inboxNumber_${fn:escapeXml(id)}++;
 
                             var inbox = '<div class="portlet_table_data">';
-                            inbox += '    <span class="portlet_table_number">' + inboxNumber_${id} + '.</span>';
+                            inbox += '    <span class="portlet_table_number">' + inboxNumber_${fn:escapeXml(id)} + '.</span>';
 
                             var cssClass = '';
 
-                            var assignmentCallback = "inboxPopupDialog_${id}('" + activityId + "')";
+                            var assignmentCallback = "inboxPopupDialog_${fn:escapeXml(id)}('" + activityId + "')";
 
                             <c:if test="${!empty param.assignmentCallback}">
-                                assignmentCallback = "${param.assignmentCallback}.success(assignmentArray_${id}[" + i + "])";
+                                assignmentCallback = "${param.assignmentCallback}.success(assignmentArray_${fn:escapeXml(id)}[" + i + "])";
                             </c:if>
 
                             inbox += '    <a href="javascript: ' + assignmentCallback + ';" class="' + cssClass + '">' + activityName + '</a>';
@@ -84,183 +84,183 @@
                             inbox += '    <div class="portlet_table_process">'+processName+' - version '+processVersion+'</div>';
                             inbox += '</div>';
 
-                            $('#assignmentList_${id}').append(inbox);
+                            $('#assignmentList_${fn:escapeXml(id)}').append(inbox);
                         }
                     }
-                    $('#inboxRefresh_${id}').attr("disabled", false);
+                    $('#inboxRefresh_${fn:escapeXml(id)}').attr("disabled", false);
                 }
             }
 
-            var assignmentCountCallback_${id} = {
+            var assignmentCountCallback_${fn:escapeXml(id)} = {
                 success : function(data) {
                     var count = data.total;
-                    inboxTotal_${id} = count;
-                    inboxNoOfPaging_${id} = count / inboxRows_${id};
-                    if(inboxNoOfPaging_${id} > parseInt(count/inboxRows_${id})) inboxNoOfPaging_${id} = parseInt(count/inboxRows_${id}) + 1;
-                    inboxNext_${id}=inboxNoOfPaging_${id};
+                    inboxTotal_${fn:escapeXml(id)} = count;
+                    inboxNoOfPaging_${fn:escapeXml(id)} = count / inboxRows_${fn:escapeXml(id)};
+                    if(inboxNoOfPaging_${fn:escapeXml(id)} > parseInt(count/inboxRows_${fn:escapeXml(id)})) inboxNoOfPaging_${fn:escapeXml(id)} = parseInt(count/inboxRows_${fn:escapeXml(id)}) + 1;
+                    inboxNext_${fn:escapeXml(id)}=inboxNoOfPaging_${fn:escapeXml(id)};
 
-                    if(inboxNext_${id}==1) $('#inboxNext_${id}').attr("disabled", true);
+                    if(inboxNext_${fn:escapeXml(id)}==1) $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", true);
 
                     /*Reload page selection*/
-                    $('#inboxPageTo_${id}').html('');
-                    for(i=1; i<=inboxNoOfPaging_${id}; i++){
-                        $('#inboxPageTo_${id}').append('<option value="'+i+'">' + i + '</option>');
+                    $('#inboxPageTo_${fn:escapeXml(id)}').html('');
+                    for(i=1; i<=inboxNoOfPaging_${fn:escapeXml(id)}; i++){
+                        $('#inboxPageTo_${fn:escapeXml(id)}').append('<option value="'+i+'">' + i + '</option>');
                     }
                 }
             }
 
-            if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') {
-                inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?packageId='+inboxPackageId_${id}+'&${processDefId}', assignmentCountCallback_${id}, null);
+            if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') {
+                inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list/count?packageId='+inboxPackageId_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentCountCallback_${fn:escapeXml(id)}, null);
             } else {
-                inboxPaging_${id}='start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?${processDefId}', assignmentCountCallback_${id}, null);
+                inboxPaging_${fn:escapeXml(id)}='start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list/count?${fn:escapeXml(processDefId)}', assignmentCountCallback_${fn:escapeXml(id)}, null);
             }
 
-            ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
+            ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
 
-            function doInboxRefresh_${id}(){
-                $('#inboxRefresh_${id}').attr("disabled", true);
+            function doInboxRefresh_${fn:escapeXml(id)}(){
+                $('#inboxRefresh_${fn:escapeXml(id)}').attr("disabled", true);
 
-                inboxNumber_${id}=0;
-                inboxPrevious_${id}=0;
-                inboxDesc_${id}=true;
-                $('#inboxNext_${id}').attr("disabled", false);
-                $('#inboxPrevious_${id}').attr("disabled", true);
-                $('#inboxFilterByDateCreated_${id}').val("newest");
+                inboxNumber_${fn:escapeXml(id)}=0;
+                inboxPrevious_${fn:escapeXml(id)}=0;
+                inboxDesc_${fn:escapeXml(id)}=true;
+                $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", true);
+                $('#inboxFilterByDateCreated_${fn:escapeXml(id)}').val("newest");
 
-                if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                else inboxPaging_${id}='start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
+                if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                else inboxPaging_${fn:escapeXml(id)}='start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list/count?${processDefId}', assignmentCountCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list/count?${fn:escapeXml(processDefId)}', assignmentCountCallback_${fn:escapeXml(id)}, null);
             }
 
-            function doInboxNext_${id}(){
-                if(inboxNext_${id}>0 && inboxNext_${id}<=inboxNoOfPaging_${id}) {
-                    inboxPrevious_${id}++;
-                    inboxNext_${id}--;
-                    inboxNumber_${id}=inboxPrevious_${id}*inboxRows_${id};
+            function doInboxNext_${fn:escapeXml(id)}(){
+                if(inboxNext_${fn:escapeXml(id)}>0 && inboxNext_${fn:escapeXml(id)}<=inboxNoOfPaging_${fn:escapeXml(id)}) {
+                    inboxPrevious_${fn:escapeXml(id)}++;
+                    inboxNext_${fn:escapeXml(id)}--;
+                    inboxNumber_${fn:escapeXml(id)}=inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)};
 
-                    $('#inboxNext_${id}').attr("disabled", false);
-                    $('#inboxPrevious_${id}').attr("disabled", false);
+                    $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                    $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", false);
 
-                    $('#inboxPageTo_${id}').val(inboxPrevious_${id}+1);
+                    $('#inboxPageTo_${fn:escapeXml(id)}').val(inboxPrevious_${fn:escapeXml(id)}+1);
 
-                    if(inboxNext_${id}==1) $('#inboxNext_${id}').attr("disabled", true);
+                    if(inboxNext_${fn:escapeXml(id)}==1) $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", true);
 
-                    if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                    else inboxPaging_${id}='start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
+                    if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start='+(inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                    else inboxPaging_${fn:escapeXml(id)}='start='+(inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
 
-                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
-                } else $('#inboxNext_${id}').attr("disabled", true);
+                    ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
+                } else $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", true);
             }
 
-            function doInboxPrevious_${id}(){
-                if(inboxPrevious_${id}>0 && inboxPrevious_${id}<=inboxNoOfPaging_${id}) {
-                    inboxNext_${id}++;
-                    inboxPrevious_${id}--;
-                    inboxNumber_${id}=inboxPrevious_${id}*inboxRows_${id};
+            function doInboxPrevious_${fn:escapeXml(id)}(){
+                if(inboxPrevious_${fn:escapeXml(id)}>0 && inboxPrevious_${fn:escapeXml(id)}<=inboxNoOfPaging_${fn:escapeXml(id)}) {
+                    inboxNext_${fn:escapeXml(id)}++;
+                    inboxPrevious_${fn:escapeXml(id)}--;
+                    inboxNumber_${fn:escapeXml(id)}=inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)};
 
-                    $('#inboxNext_${id}').attr("disabled", false);
-                    $('#inboxPrevious_${id}').attr("disabled", false);
+                    $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                    $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", false);
 
-                    $('#inboxPageTo_${id}').val(inboxPrevious_${id}+1);
+                    $('#inboxPageTo_${fn:escapeXml(id)}').val(inboxPrevious_${fn:escapeXml(id)}+1);
 
-                    if(inboxPrevious_${id}==0) $('#inboxPrevious_${id}').attr("disabled", true);
+                    if(inboxPrevious_${fn:escapeXml(id)}==0) $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", true);
 
-                    if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                    else inboxPaging_${id}='start='+(inboxPrevious_${id}*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
+                    if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start='+(inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                    else inboxPaging_${fn:escapeXml(id)}='start='+(inboxPrevious_${fn:escapeXml(id)}*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
 
-                    ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
-                } else $('#inboxPrevious_${id}').attr("disabled", true);
+                    ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
+                } else $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", true);
             }
 
-            function inboxSortedByDateCreated_${id}(){
-                var filterByDateCreated = $('#inboxFilterByDateCreated_${id}').val();
+            function inboxSortedByDateCreated_${fn:escapeXml(id)}(){
+                var filterByDateCreated = $('#inboxFilterByDateCreated_${fn:escapeXml(id)}').val();
 
-                inboxNumber_${id}=0;
+                inboxNumber_${fn:escapeXml(id)}=0;
 
-                if(filterByDateCreated=='newest') inboxDesc_${id}=true;
-                else inboxDesc_${id}=false;
+                if(filterByDateCreated=='newest') inboxDesc_${fn:escapeXml(id)}=true;
+                else inboxDesc_${fn:escapeXml(id)}=false;
 
-                $('#inboxPageTo_${id}').val("0");
+                $('#inboxPageTo_${fn:escapeXml(id)}').val("0");
 
-                if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                else inboxPaging_${id}='start=0&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
+                if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                else inboxPaging_${fn:escapeXml(id)}='start=0&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
 
-                inboxPrevious_${id}=0;
-                inboxNext_${id}=inboxNoOfPaging_${id};
-                if(inboxNext_${id}!=1) $('#inboxNext_${id}').attr("disabled", false);
-                $('#inboxPrevious_${id}').attr("disabled", true);
+                inboxPrevious_${fn:escapeXml(id)}=0;
+                inboxNext_${fn:escapeXml(id)}=inboxNoOfPaging_${fn:escapeXml(id)};
+                if(inboxNext_${fn:escapeXml(id)}!=1) $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", true);
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
             }
 
-            function doInboxPage_${id}(){
-                var pageOf = $('#inboxPageTo_${id}').val();
+            function doInboxPage_${fn:escapeXml(id)}(){
+                var pageOf = $('#inboxPageTo_${fn:escapeXml(id)}').val();
 
-                inboxNumber_${id}=(pageOf-1)*inboxRows_${id};
+                inboxNumber_${fn:escapeXml(id)}=(pageOf-1)*inboxRows_${fn:escapeXml(id)};
 
-                if(inboxPackageId_${id}!=-1 && inboxPackageId_${id}!='') inboxPaging_${id}='packageId='+inboxPackageId_${id}+'&start='+((pageOf-1)*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
-                else inboxPaging_${id}='start='+((pageOf-1)*inboxRows_${id})+'&rows='+inboxRows_${id}+'&sort='+inboxSort_${id}+'&desc='+inboxDesc_${id};
+                if(inboxPackageId_${fn:escapeXml(id)}!=-1 && inboxPackageId_${fn:escapeXml(id)}!='') inboxPaging_${fn:escapeXml(id)}='packageId='+inboxPackageId_${fn:escapeXml(id)}+'&start='+((pageOf-1)*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
+                else inboxPaging_${fn:escapeXml(id)}='start='+((pageOf-1)*inboxRows_${fn:escapeXml(id)})+'&rows='+inboxRows_${fn:escapeXml(id)}+'&sort='+inboxSort_${fn:escapeXml(id)}+'&desc='+inboxDesc_${fn:escapeXml(id)};
 
-                if(pageOf == inboxNoOfPaging_${id}) {
-                    $('#inboxNext_${id}').attr("disabled", true);
-                    $('#inboxPrevious_${id}').attr("disabled", false);
-                    inboxNext_${id}=1;
-                    inboxPrevious_${id}=inboxNoOfPaging_${id}-1;
+                if(pageOf == inboxNoOfPaging_${fn:escapeXml(id)}) {
+                    $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", true);
+                    $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", false);
+                    inboxNext_${fn:escapeXml(id)}=1;
+                    inboxPrevious_${fn:escapeXml(id)}=inboxNoOfPaging_${fn:escapeXml(id)}-1;
                 } else if(pageOf == 1) {
-                    $('#inboxPrevious_${id}').attr("disabled", true);
-                    $('#inboxNext_${id}').attr("disabled", false);
-                    inboxPrevious_${id}=0;
-                    inboxNext_${id}=inboxNoOfPaging_${id};
+                    $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", true);
+                    $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                    inboxPrevious_${fn:escapeXml(id)}=0;
+                    inboxNext_${fn:escapeXml(id)}=inboxNoOfPaging_${fn:escapeXml(id)};
                 } else {
-                    $('#inboxPrevious_${id}').attr("disabled", false);
-                    $('#inboxNext_${id}').attr("disabled", false);
-                    inboxPrevious_${id}=pageOf-1;
-                    inboxNext_${id}=inboxNoOfPaging_${id}-inboxPrevious_${id};
+                    $('#inboxPrevious_${fn:escapeXml(id)}').attr("disabled", false);
+                    $('#inboxNext_${fn:escapeXml(id)}').attr("disabled", false);
+                    inboxPrevious_${fn:escapeXml(id)}=pageOf-1;
+                    inboxNext_${fn:escapeXml(id)}=inboxNoOfPaging_${fn:escapeXml(id)}-inboxPrevious_${fn:escapeXml(id)};
                 }
 
-                ConnectionManager.ajaxJsonp(inboxUrlPath_${id}+'/web/json/workflow/assignment/list?'+inboxPaging_${id}+'&${processDefId}', assignmentListCallback_${id}, null);
+                ConnectionManager.ajaxJsonp(inboxUrlPath_${fn:escapeXml(id)}+'/web/json/workflow/assignment/list?'+inboxPaging_${fn:escapeXml(id)}+'&${fn:escapeXml(processDefId)}', assignmentListCallback_${fn:escapeXml(id)}, null);
             }
 
-            function inboxPopupDialog_${id}(activityId){
-                var url = inboxUrlPath_${id}+"/web/client/app/assignment/"+activityId;
+            function inboxPopupDialog_${fn:escapeXml(id)}(activityId){
+                var url = inboxUrlPath_${fn:escapeXml(id)}+"/web/client/app/assignment/"+activityId;
 
                 window.open(url,'_blank','height=500,width=800,scrollbars=1');
             }
 
             function closeDialog() {
-                doInboxRefresh_${id}();
+                doInboxRefresh_${fn:escapeXml(id)}();
             }
 
 </script>
 
-<div id="portlet_inbox_${id}">
+<div id="portlet_inbox_${fn:escapeXml(id)}">
     <div class="portlet_div_search">
         <div class="portlet_div_sorting">
             <span class="portlet_label"><fmt:message key="client.protlet.inbox.label.sortedBy"/></span>
             <span class="portlet_input">
-                <select id="inboxFilterByDateCreated_${id}" name="dateCreated" onchange="inboxSortedByDateCreated_${id}()">
+                <select id="inboxFilterByDateCreated_${fn:escapeXml(id)}" name="dateCreated" onchange="inboxSortedByDateCreated_${fn:escapeXml(id)}()">
                     <option value="newest"><fmt:message key="client.protlet.inbox.label.newest"/></option>
                     <option value="oldest"><fmt:message key="client.protlet.inbox.label.oldest"/></option>
                 </select>
             </span>
             <span>
-                <input class="button" type="button" id="inboxRefresh_${id}" value="<fmt:message key='general.method.label.refresh'/>" onclick="doInboxRefresh_${id}();">
+                <input class="button" type="button" id="inboxRefresh_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.refresh'/>" onclick="doInboxRefresh_${fn:escapeXml(id)}();">
             </span>
         </div>
 
         <div class="portlet_div_paging">
             <span class="portlet_label"><fmt:message key="client.protlet.inbox.label.page"/></span>
             <span class="portlet_input">
-                <select id="inboxPageTo_${id}" name="pageTo" onchange="doInboxPage_${id}()"></select>
+                <select id="inboxPageTo_${fn:escapeXml(id)}" name="pageTo" onchange="doInboxPage_${fn:escapeXml(id)}()"></select>
             </span>
-            <span><input class="button" type="button" id="inboxPrevious_${id}" value="<fmt:message key='general.method.label.previous'/>" onclick="doInboxPrevious_${id}();" disabled></span>
-            <span><input class="button" type="button" id="inboxNext_${id}" value="<fmt:message key='general.method.label.next'/>" onclick="doInboxNext_${id}();"></span>
+            <span><input class="button" type="button" id="inboxPrevious_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.previous'/>" onclick="doInboxPrevious_${fn:escapeXml(id)}();" disabled></span>
+            <span><input class="button" type="button" id="inboxNext_${fn:escapeXml(id)}" value="<fmt:message key='general.method.label.next'/>" onclick="doInboxNext_${fn:escapeXml(id)}();"></span>
         </div>
     </div>
 
-    <div class="portlet_table_list" id="assignmentList_${id}"></div>
+    <div class="portlet_table_list" id="assignmentList_${fn:escapeXml(id)}"></div>
 </div>
