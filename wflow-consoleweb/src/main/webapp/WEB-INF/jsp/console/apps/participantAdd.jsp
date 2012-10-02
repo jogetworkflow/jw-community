@@ -2,7 +2,7 @@
 
 <commons:popupHeader />
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapParticipants"/>
+        <fmt:message key="console.process.config.label.mapParticipants"/> - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />
     </div>
     <div id="main-body-content" style="text-align: left">
         <div id="userTabView">
@@ -323,7 +323,7 @@
         }
 
         function submitPlugin(id){
-            document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+id;
+            document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
         }
 
         function post(type, params){

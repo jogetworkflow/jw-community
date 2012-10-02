@@ -20,7 +20,7 @@
 </c:if>
 
 <div id="main-body-header">
-    <fmt:message key="console.plugin.label.pluginConfiguration"/>
+    <fmt:message key="console.plugin.label.pluginConfiguration"/> <c:out value=" ${param.title}" escapeXml="true" />
 </div>
 
 <div id="main-body-content" style="text-align: left;">
