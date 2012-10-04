@@ -2832,67 +2832,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 AdminMisc admin = shark.getAdminMisc();
                 WMSessionHandle sessionHandle = sc.getSessionHandle();
 
-                boolean found = false;
-                WfActivity[] activityList = wfProcess.get_sequence_step(0);
                 XPDLBrowser xpdl = shark.getXPDLBrowser();
-                int index = 0;
-                String activityId = "";
-                WMEntity activityEntity = null;
-                while (!found && activityList.length > index) {
-                    WfActivity activity = activityList[index];
-                    activityId = activity.key();
-                    activityEntity = admin.getActivityDefinitionInfo(sessionHandle, wfProcess.key(), activityId);
+                
+                WfActivity[] activityList = wfProcess.get_sequence_step(0);
+                WorkflowActivity activity = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), activityList);
 
-                    //check for tool
-                    WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, activityEntity, null, true);
-                    found = true;
-                    while (activityEntityIterator.hasNext()) {
-                        WMEntity entity = (WMEntity) activityEntityIterator.next();
-                        if (entity.getType().equalsIgnoreCase("tool") || entity.getType().equalsIgnoreCase("route")) {
-                            found = false;
-                            break;
-                        }
-
-                        //redirect to the first activity id from sub flow
-                        if (entity.getType().equalsIgnoreCase("subflow")) {
-                            WfProcess[] wfProcesses = activity.get_sequence_performer(0);
-                            wfProcess = (wfProcesses.length > 0 ? wfProcesses[0] : null);
-
-                            if (wfProcess != null) {
-                                WfActivity[] wfActivityTemp = wfProcess.get_sequence_step(0);
-                                if (wfActivityTemp.length > 0) {
-                                    WfActivity wfAct = wfProcess.get_sequence_step(0)[0];
-                                    activityId = wfAct.key();
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    index++;
-                }
-
-                if (activityId != null && activityId.trim().length() > 0) {
-                    List<String> users = getAssignmentResourceIds(mgr.name(), wfProcess.key(), activityId);
-
-                    if (users != null && users.size() > 0) {
-                        String currentUsername = getWorkflowUserManager().getCurrentUsername();
-                        for (String username : users) {
-                            if (username.equals(currentUsername)) {
-                                WorkflowActivity activityStarted = new WorkflowActivity();
-                                activityStarted.setId(activityId);
-                                activitiesStarted.add(activityStarted);
-                                result.setActivities(activitiesStarted);
-                                break;
-                            }
-                        }
-                    }
+                if (activity != null) {
+                    activitiesStarted.add(activity);
+                    result.setActivities(activitiesStarted);
                 }
             }
-
-
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -4634,5 +4583,45 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         return temp;
+    }
+    
+    protected WorkflowActivity getNextActivity(WMSessionHandle sessionHandle, WfProcessMgr mgr, AdminMisc admin, XPDLBrowser xpdl, String processId, WfActivity[] activityList) {
+        try {
+            for (WfActivity wfAct : activityList) {
+                String activityId = wfAct.key();
+                WMEntity activityEntity = admin.getActivityDefinitionInfo(sessionHandle, processId, activityId);
+
+                //check for tool
+                WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, activityEntity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity entity = (WMEntity) activityEntityIterator.next();
+                    if (entity.getType().equalsIgnoreCase("tool") || entity.getType().equalsIgnoreCase("route")) {
+                        break;
+                    } else if (entity.getType().equalsIgnoreCase("subflow")) { //redirect to the first activity id from sub flow
+                        WfProcess[] wfProcesses = wfAct.get_sequence_performer(0);
+                        WfProcess wfProcess = (wfProcesses.length > 0 ? wfProcesses[0] : null);
+                        if (wfProcess != null) {
+                            WfActivity[] wfActivityTempList = wfProcess.get_sequence_step(0);
+                            return getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), wfActivityTempList);
+                        }
+                    } else {
+                        List<String> users = getAssignmentResourceIds(mgr.name(), processId, activityId);
+
+                        if (users != null && users.size() > 0) {
+                            String currentUsername = getWorkflowUserManager().getCurrentUsername();
+                            for (String username : users) {
+                                if (username.equals(currentUsername)) {
+                                    WorkflowActivity activityStarted = new WorkflowActivity();
+                                    activityStarted.setId(activityId);
+                                    return activityStarted;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                }
+            }
+        } catch (Exception e) {}
+        return null;
     }
 }
