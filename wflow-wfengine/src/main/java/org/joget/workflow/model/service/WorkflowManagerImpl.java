@@ -3013,11 +3013,19 @@ public class WorkflowManagerImpl implements WorkflowManager {
         try {
 
             sc = connect();
+            
+            WfProcess wfProcess = sc.getProcess(processId);
 
-            WfAssignment wfa = getSharkAssignmentByProcess(sc, processId);
-            String activityId = (wfa != null ? wfa.activity().key() : null);
-            ass = (activityId != null ? getAssignment(activityId) : null);
-
+            Shark shark = Shark.getInstance();
+            AdminMisc admin = shark.getAdminMisc();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+            XPDLBrowser xpdl = shark.getXPDLBrowser();
+            
+            WfActivity[] activityList = wfProcess.get_sequence_step(0);
+            WorkflowActivity activity = getNextActivity(sessionHandle, wfProcess.manager(), admin, xpdl, wfProcess.key(), activityList);
+            if (activity != null) {
+                ass = getAssignment(activity.getId());
+            }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -4604,19 +4612,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                             return getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), wfActivityTempList);
                         }
                     } else {
-                        List<String> users = getAssignmentResourceIds(mgr.name(), processId, activityId);
-
-                        if (users != null && users.size() > 0) {
-                            String currentUsername = getWorkflowUserManager().getCurrentUsername();
-                            for (String username : users) {
-                                if (username.equals(currentUsername)) {
-                                    WorkflowActivity activityStarted = new WorkflowActivity();
-                                    activityStarted.setId(activityId);
-                                    return activityStarted;
-                                }
-                            }
+                        WfAssignment ass = getSharkAssignment(connect(), activityId);
+                        if (ass != null) {
+                            WorkflowActivity activityStarted = new WorkflowActivity();
+                            activityStarted.setId(activityId);
+                            return activityStarted;
                         }
-                        return null;
                     }
                 }
             }
