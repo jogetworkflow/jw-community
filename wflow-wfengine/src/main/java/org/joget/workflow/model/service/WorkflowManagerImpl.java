@@ -2832,8 +2832,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 AdminMisc admin = shark.getAdminMisc();
                 WMSessionHandle sessionHandle = sc.getSessionHandle();
 
-                XPDLBrowser xpdl = shark.getXPDLBrowser();
-                
+                XPDLBrowser xpdl = shark.getXPDLBrowser();                
                 WfActivity[] activityList = wfProcess.get_sequence_step(0);
                 WorkflowActivity activity = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), activityList);
 
@@ -3011,29 +3010,32 @@ public class WorkflowManagerImpl implements WorkflowManager {
         SharkConnection sc = null;
         WorkflowAssignment ass = null;
 
-        try {
-
-            sc = connect();
-
-            WfProcess wfProcess = sc.getProcess(processId);
-            
-            Shark shark = Shark.getInstance();
-            AdminMisc admin = shark.getAdminMisc();
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            XPDLBrowser xpdl = shark.getXPDLBrowser();
-            
-            WfActivity[] activityList = wfProcess.get_sequence_step(0);
-            WorkflowActivity activity = getNextActivity(sessionHandle, wfProcess.manager(), admin, xpdl, wfProcess.key(), activityList);
-            if (activity != null) {
-                ass = getAssignment(activity.getId());
-            }
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
+        if (processId != null && !processId.trim().isEmpty()) {
             try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
+
+                sc = connect();
+
+                WfProcess wfProcess = sc.getProcess(processId);
+                if (wfProcess != null) {
+                    Shark shark = Shark.getInstance();
+                    AdminMisc admin = shark.getAdminMisc();
+                    WMSessionHandle sessionHandle = sc.getSessionHandle();
+                    XPDLBrowser xpdl = shark.getXPDLBrowser();
+
+                    WfActivity[] activityList = wfProcess.get_sequence_step(0);
+                    WorkflowActivity activity = getNextActivity(sessionHandle, wfProcess.manager(), admin, xpdl, wfProcess.key(), activityList);
+                    if (activity != null) {
+                        ass = getAssignment(activity.getId());
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "");
+            } finally {
+                try {
+                    disconnect(sc);
+                } catch (Exception e) {
+                    LogUtil.error(getClass().getName(), e, "");
+                }
             }
         }
         return ass;
