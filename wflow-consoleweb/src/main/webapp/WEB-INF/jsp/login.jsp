@@ -15,7 +15,7 @@
         <div>
             <c:if test="${!empty param.login_error}">
                 <div id="main-body-message" class="form-errors">
-                    <fmt:message key="console.login.label.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
+                    <fmt:message key="console.login.label.loginError" /> ${SPRING_SECURITY_LAST_EXCEPTION.message}.
                 </div>
             </c:if>
 

@@ -91,7 +91,7 @@
                 <div id="content">
                     <c:if test="${!empty param.login_error}">
                         <div id="main-body-message" class="form-errors">
-                            <fmt:message key="ubuilder.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
+                            <fmt:message key="ubuilder.loginError" /> ${SPRING_SECURITY_LAST_EXCEPTION.message}.
                         </div>
                     </c:if>
                     <c:if test="${!empty userview.setting.properties.loginPageTop}">
