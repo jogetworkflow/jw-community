@@ -104,13 +104,17 @@ public class AppWebController {
                     String key = (String) k;
                     if (key.startsWith(FormService.PREFIX_FOREIGN_KEY) || key.startsWith(FormService.PREFIX_FOREIGN_KEY_EDITABLE) || key.startsWith(AppUtil.PREFIX_WORKFLOW_VARIABLE)) {
                         try {
-                            if (formUrl.contains("?")) {
-                                formUrl += "&";
-                            } else {
-                                formUrl += "?";
-                            }
+                            String[] values = (String[]) requestParam.get(k);
                             
-                            formUrl += key + "=" + URLEncoder.encode(requestParam.get(k).toString(), "UTF-8");
+                            for (String v : values) {
+                                if (formUrl.contains("?")) {
+                                    formUrl += "&";
+                                } else {
+                                    formUrl += "?";
+                                }
+                                
+                                formUrl += key + "=" + URLEncoder.encode(v, "UTF-8");
+                            }
                         } catch (Exception e) {
                             LogUtil.info(RunProcess.class.getName(), "Paramter:" + key + "cannot be append to URL");
                         }
