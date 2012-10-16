@@ -25,7 +25,7 @@
 </c:if>
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
-<c:if test="${!empty userview.setting.permission && !userview.setting.permission.authorize && isAnonymous}">
+<c:if test="${((!empty userview.setting.permission && !userview.setting.permission.authorize) || empty userview.current) && isAnonymous}">
     <c:set var="redirectUrl" scope="request" value="/web/"/>
     <c:choose>
         <c:when test="${embed}">
@@ -46,7 +46,7 @@
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
     </c:if>
-    <c:redirect url="${redirectUrl}"/>
+    <c:redirect url="${redirectUrl}?${queryString}"/>
 </c:if>
 
 <c:set var="bodyId" scope="request" value=""/>

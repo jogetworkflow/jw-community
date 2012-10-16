@@ -57,6 +57,7 @@ public class UserviewWebController {
         map.addAttribute("key", key);
         map.addAttribute("menuId", menuId);
         map.addAttribute("embed", embed);
+        map.addAttribute("queryString", request.getQueryString());
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         if (userview != null) {
             String json = userview.getJson();
@@ -96,6 +97,7 @@ public class UserviewWebController {
         map.addAttribute("key", key);
         map.addAttribute("menuId", menuId);
         map.addAttribute("embed", embed);
+        map.addAttribute("queryString", request.getQueryString());
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         if (userview != null) {
             String json = userview.getJson();
