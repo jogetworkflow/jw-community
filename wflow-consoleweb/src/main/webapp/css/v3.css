@@ -548,6 +548,10 @@ img {
 }
 #quickNav {
     display: none;
+    position: absolute;
+    right: 0px;
+    top: -30px;
+    padding: 4px 20px;
 }
 #guide {
     display: none;
@@ -1144,7 +1148,7 @@ img {
 
 #main .main-grid .main-grid-item {
     border: solid 1px #DFDFDF;
-    padding: 15px 15px 20px 15px;
+    padding: 15px 15px 40px 15px;
     margin: 1px 5px 10px 5px;
     width: 90%;
     display: block;    
