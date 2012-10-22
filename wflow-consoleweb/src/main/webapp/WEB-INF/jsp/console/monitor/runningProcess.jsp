@@ -36,6 +36,8 @@
             <dd>${wfProcess.state}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.serviceLevelMonitor"/></dt>
             <dd>${serviceLevelMonitor}&nbsp;</dd>
+            <dt><fmt:message key="console.app.process.common.label.requester"/></dt>
+            <dd>${wfProcess.requesterId}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.startedTime"/></dt>
             <dd>${trackWflowProcess.startedTime}&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.limit"/></dt>
