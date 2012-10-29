@@ -346,7 +346,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormOptionsBinders(Element element, FormData formData) {
+    public FormData executeFormOptionsBinders(Element element, FormData formData) {
         // create new form data if necessary
         if (formData == null) {
             formData = new FormData();
@@ -363,7 +363,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormLoadBinders(Element element, FormData formData) {
+    public FormData executeFormLoadBinders(Element element, FormData formData) {
         // create new form data if necessary
         if (formData == null) {
             formData = new FormData();
@@ -380,7 +380,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormStoreBinders(Form form, FormData formData) {
+    public FormData executeFormStoreBinders(Form form, FormData formData) {
 
         // get formatted data from all elements
         formData = FormUtil.executeElementFormatData(form, formData);
@@ -391,7 +391,7 @@ public class FormService {
         return formData;
     }
     
-    private FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
+    public FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
         if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
         
             //load child element store binder to store before the main form
