@@ -34,7 +34,7 @@
                 
                 // get selected checkboxes
                 var selected = new Array();
-                $("#listGridPopup input:checkbox").each(function(idx, row) {
+                $("#listGridPopup input:checkbox, #listGridPopup input:radio").each(function(idx, row) {
                     if ($(row).is(':checked')) {
                         selected.push(idx);
                     }
@@ -56,7 +56,7 @@
                     var idx = selected[i];
                     var row = $("#listGridPopup tbody tr:eq("+idx+")");
                     var result = new Object();
-                    var id = $(row).find('input:checkbox').val();
+                    var id = $(row).find('input:checkbox, input:radio').val();
                     $(row).find("td").each(function(idx2, col) {
                         if (idx2 > 0) {
                             if (columns[idx2-1]) {

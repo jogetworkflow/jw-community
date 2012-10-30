@@ -296,11 +296,12 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping("/app/(*:appId)/(~:appVersion)/datalist/embed")
-    public String embedDatalist(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId) throws JSONException {
+    public String embedDatalist(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(listId, appDef);
         String json = datalistDefinition.getJson();
         DataList dataList = dataListService.fromJson(json);
+        dataList.setSelectionType(selectionType);
         
         model.addAttribute("id", id);
         model.addAttribute("json", json);
