@@ -83,6 +83,30 @@ public class DataListDecorator extends CheckboxTableDecorator {
 
         return buffer.toString();
     }
+    
+    public String getRadio() {
+        // Override this method to fix DisplayTag bug
+        String evaluatedId = "";
+        boolean checked = false;
+        if (id != null) {
+            evaluatedId = ObjectUtils.toString(evaluate(id));
+            checked = checkedIds.contains(evaluatedId);
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<input type=\"radio\" name=\"");
+        buffer.append(fieldName);
+        buffer.append("\" value=\"");
+        buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));
+        buffer.append("\"");
+        if (checked) {
+            checkedIds.remove(evaluatedId);
+            buffer.append(" checked=\"checked\"");
+        }
+        buffer.append("/>");
+
+        return buffer.toString();
+    }
 
     /**
      * Decorator method for a column to display links. TODO: formatting?

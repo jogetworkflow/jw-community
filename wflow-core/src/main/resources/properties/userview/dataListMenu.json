@@ -63,6 +63,18 @@
             label : '@@userview.datalistmenu.buttonPosition.bothRight@@'
         }]
     },{
+        name : 'selectionType',
+        label : '@@userview.datalistmenu.selectionType@@',
+        type : 'selectbox',
+        value : 'multiple',
+        options : [{
+            value : 'multiple',
+            label : '@@userview.datalistmenu.selectionType.multiple@@'
+        },{
+            value : 'single',
+            label : '@@userview.datalistmenu.selectionType.single@@'
+        }]
+    },{
         name : 'checkboxPosition',
         label : '@@userview.datalistmenu.checkboxPosition@@',
         type : 'selectbox',

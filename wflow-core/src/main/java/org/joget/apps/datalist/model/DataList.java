@@ -29,6 +29,8 @@ public class DataList {
     public static final String CHECKBOX_POSITION_RIGHT = "right";
     public static final String CHECKBOX_POSITION_BOTH = "both";
     public static final String CHECKBOX_POSITION_NO = "no";
+    public static final String SELECTION_TYPE_SINGLE = "single";
+    public static final String SELECTION_TYPE_MULTIPLE = "multiple";
     public static final String PARAMETER_FILTER_PREFIX = "fn_";
     public static final String PARAMETER_PAGE_SIZE = "ps";
     public static final String PARAMETER_ACTION = "ac";
@@ -63,6 +65,7 @@ public class DataList {
     private String sessionKeyPrefix = "";
     private String actionPosition = ACTION_POSITION_BOTTOM_LEFT;
     private String checkboxPosition = CHECKBOX_POSITION_LEFT;
+    private String selectionType = SELECTION_TYPE_MULTIPLE;
     private Collection<DataListFilterQueryObject> dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
     private boolean filterQueryBuild = false;
 
@@ -130,6 +133,14 @@ public class DataList {
 
     public void setBinder(DataListBinder binder) {
         this.binder = binder;
+    }
+
+    public String getSelectionType() {
+        return selectionType;
+    }
+
+    public void setSelectionType(String selectionType) {
+        this.selectionType = selectionType;
     }
 
     public String getCheckboxPosition() {

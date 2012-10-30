@@ -155,6 +155,7 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
         }
         
         dataList.setActionPosition(getPropertyString("buttonPosition"));
+        dataList.setSelectionType(getPropertyString("selectionType"));
         dataList.setCheckboxPosition(getPropertyString("checkboxPosition"));
         
         return dataList;
