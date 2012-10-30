@@ -12,6 +12,7 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.Authentication;
@@ -112,6 +113,9 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             }
 
             LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + authenticated);
+            
+            WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+            workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + authenticated);
         }
 
         return authenticated;
