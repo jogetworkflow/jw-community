@@ -85,7 +85,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                 if ("true".equals(getPropertyString("addEmptyOption"))) {
                     FormRow emptyRow = new FormRow();
                     emptyRow.setProperty(FormUtil.PROPERTY_VALUE, "");
-                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, "");
+                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, getPropertyString("emptyLabel"));
                     filtered.add(emptyRow);
                 }
                 

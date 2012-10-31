@@ -34,5 +34,10 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'emptyLabel',
+        label : '@@form.defaultformoptionbinder.emptyLabel@@',
+        type : 'textfield'
     }]
 }]
