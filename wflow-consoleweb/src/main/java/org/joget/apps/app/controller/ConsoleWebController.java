@@ -2338,7 +2338,7 @@ public class ConsoleWebController {
         return "console/apps/messageCreate";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit/(*:id)")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit")
     public String consoleAppMessageEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);

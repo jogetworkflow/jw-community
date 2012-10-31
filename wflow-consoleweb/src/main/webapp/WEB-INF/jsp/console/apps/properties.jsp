@@ -81,7 +81,7 @@
                            desc="false"
                            href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/edit"
                            hrefParam="id"
-                           hrefQuery="false"
+                           hrefQuery="true"
                            hrefDialog="true"
                            hrefDialogTitle=""
                            checkbox="true"
