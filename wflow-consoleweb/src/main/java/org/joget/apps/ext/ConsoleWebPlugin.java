@@ -14,7 +14,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.base.PluginWebSupport;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.MessageSource;
 
 /**
  * Plugin to add content to the web console header, footer and body
@@ -77,7 +77,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      * @return 
      */
     public String getHeader(String path) {
-        ResourceBundleMessageSource messageSource = (ResourceBundleMessageSource)AppUtil.getApplicationContext().getBean("messageSource");
+        MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
         Locale locale = new Locale(AppUtil.getAppLocale());
         String header = messageSource.getMessage("console.header.top.subtitle", null, "", locale);
         return header;
@@ -89,7 +89,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      * @return 
      */
     public String getLogo(String path) {
-        ResourceBundleMessageSource messageSource = (ResourceBundleMessageSource)AppUtil.getApplicationContext().getBean("messageSource");
+        MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
         Locale locale = new Locale(AppUtil.getAppLocale());
         String header = messageSource.getMessage("console.header.top.logo", null, "", locale);
         return header;
@@ -101,7 +101,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      * @return 
      */
     public String getFooter(String path) {
-        ResourceBundleMessageSource messageSource = (ResourceBundleMessageSource)AppUtil.getApplicationContext().getBean("messageSource");
+        MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
         Locale locale = new Locale(AppUtil.getAppLocale());
         String revision = messageSource.getMessage("console.footer.label.revision", null, "", locale);
         String footer = "© Joget Workflow - Open Dynamics Inc. All Rights Reserved. " + revision;
