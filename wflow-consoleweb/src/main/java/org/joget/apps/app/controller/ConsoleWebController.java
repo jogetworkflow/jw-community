@@ -3806,13 +3806,16 @@ public class ConsoleWebController {
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListAction", "Data List Action");
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListBinder", "Data List Binder");
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListColumnFormat", "Data List Column Format");
+        pluginTypeMap.put("org.joget.apps.datalist.model.DataListFilterType", "Data List Filter Type");
         pluginTypeMap.put("org.joget.workflow.model.DeadlinePlugin", "Deadline");
         pluginTypeMap.put("org.joget.directory.model.service.DirectoryManagerPlugin", "Directory Manager");
         pluginTypeMap.put("org.joget.apps.form.model.Element", "Form Element");
         pluginTypeMap.put("org.joget.apps.form.model.FormLoadElementBinder", "Form Load Binder");
         pluginTypeMap.put("org.joget.apps.form.model.FormLoadOptionsBinder", "Form Options Binder");
         pluginTypeMap.put("org.joget.apps.form.model.FormStoreBinder", "Form Store Binder");
+        pluginTypeMap.put("org.joget.apps.form.model.FormPermission", "Form Permission");
         pluginTypeMap.put("org.joget.apps.form.model.FormValidator", "Form Validator");
+        pluginTypeMap.put("org.joget.apps.app.model.HashVariablePlugin", "Hash Variable");
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", "Process Participant");
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", "Process Tool");
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewMenu", "Userview Menu");
