@@ -6,7 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.MultiPartEmail;
+import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PackageDefinition;
@@ -69,6 +69,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String parameterName = (String) properties.get("parameterName");
             final String passoverMethod = (String) properties.get("passoverMethod");
             final String exclusion = (String) properties.get("exclusion");
+            final String isHtml = (String) properties.get("isHtml");
             
             String appId = auditTrail.getAppId();
             String appVersion = auditTrail.getAppVersion();
@@ -116,7 +117,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         
                                         if (addresses != null && addresses.size() > 0) {
                                             // create the email message
-                                            final MultiPartEmail email = new MultiPartEmail();
+                                            final HtmlEmail email = new HtmlEmail();
                                             email.setHostName(smtpHost);
                                             if (smtpPort != null && smtpPort.length() != 0) {
                                                 email.setSmtpPort(Integer.parseInt(smtpPort));
@@ -178,9 +179,14 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                     link = base + urlMapping + activityInstanceId;
                                                 }
 
-                                                email.setMsg(WorkflowUtil.processVariable(emailMessage + "\n\n\n" + link, null, wfAssignment));
+                                                String msg = WorkflowUtil.processVariable(emailMessage + "\n\n\n" + link, null, wfAssignment);
+                                                if ("true".equalsIgnoreCase(isHtml)) {
+                                                    email.setHtmlMsg(msg);
+                                                } else {
+                                                    email.setMsg(msg);
+                                                }
                                             }
-
+                                            
                                             try {
                                                 LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
                                                 email.send();

@@ -82,6 +82,15 @@
         cols : '60',
         rows : '15',
         value : 'A new task has been created by the process #assignment.processName#'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.usernotificationaudittrail.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
