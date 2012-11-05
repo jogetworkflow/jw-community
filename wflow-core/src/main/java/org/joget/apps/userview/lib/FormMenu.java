@@ -1,16 +1,9 @@
 package org.joget.apps.userview.lib;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -23,7 +16,6 @@ import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
-import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Represents a menu item that displays a data form and handles form submission.
  */
-public class FormMenu extends UserviewMenu implements PluginWebSupport {
+public class FormMenu extends UserviewMenu {
 
     @Override
     public String getIcon() {
@@ -103,25 +95,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             return menu;
         }
         return null;
-    }
-
-    @Override
-    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if ("getOptions".equals(action)) {
-            Collection<FormDefinition> formDefList = new ArrayList<FormDefinition>();
-            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            if (appDef != null) {
-                // load forms from current thread app version
-                formDefList = appDef.getFormDefinitionList();
-            }
-            String output = "[{\"value\":\"\",\"label\":\"\"}";
-            for (FormDefinition formDef : formDefList) {
-                output += ",{\"value\":\"" + formDef.getId() + "\",\"label\":\"" + formDef.getName() + "\"}";
-            }
-            output += "]";
-            response.getWriter().write(output);
-        }
     }
 
     @Override
