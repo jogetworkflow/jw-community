@@ -3035,6 +3035,7 @@ public class ConsoleWebController {
         boolean enableNtlmIsNull = true;
         boolean rightToLeftIsNull = true;
         boolean enableUserLocale = true;
+        boolean dateFormatFollowLocale = true;
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -3059,6 +3060,11 @@ public class ConsoleWebController {
             
             if (paramName.equals("enableUserLocale")) {
                 enableUserLocale = false;
+                paramValue = "true";
+            }
+            
+            if (paramName.equals("dateFormatFollowLocale")) {
+                dateFormatFollowLocale = false;
                 paramValue = "true";
             }
 
@@ -3108,6 +3114,16 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty("enableUserLocale");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
+        if (dateFormatFollowLocale) {
+            Setting setting = setupManager.getSettingByProperty("dateFormatFollowLocale");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("dateFormatFollowLocale");
             }
             setting.setValue("false");
             setupManager.saveSetting(setting);

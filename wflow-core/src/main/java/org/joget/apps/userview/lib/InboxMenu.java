@@ -204,6 +204,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 if (user != null) {
                     gmt = user.getTimeZone();
                 }
+                String format = AppUtil.getAppDateFormat();
                 for (WorkflowAssignment assignment : assignmentList) {
                     Map data = new HashMap();
                     data.put("processId", assignment.getProcessId());
@@ -212,9 +213,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                     data.put("processName", assignment.getProcessName());
                     data.put("activityName", assignment.getActivityName());
                     data.put("processVersion", assignment.getProcessVersion());
-                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
                     data.put("acceptedStatus", assignment.isAccepted());
-                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
+                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format) : "-");
 
                     double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 

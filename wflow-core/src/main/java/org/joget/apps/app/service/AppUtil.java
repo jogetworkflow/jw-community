@@ -1,5 +1,7 @@
 package org.joget.apps.app.service;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +11,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
@@ -176,6 +179,20 @@ public class AppUtil implements ApplicationContextAware {
     public static String getAppLocale() {
         LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");  
         return localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest()).toString();
+    }
+    
+    public static String getAppDateFormat() {
+        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+        
+        if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
+            Locale locale = new Locale(getAppLocale());
+            DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
+            if (dateInstance instanceof SimpleDateFormat) {
+                return ((SimpleDateFormat) dateInstance).toPattern();
+            }
+        }
+        
+        return null;
     }
 
     /**
