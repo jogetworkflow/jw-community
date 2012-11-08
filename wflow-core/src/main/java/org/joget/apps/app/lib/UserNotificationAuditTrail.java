@@ -70,7 +70,13 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String passoverMethod = (String) properties.get("passoverMethod");
             final String exclusion = (String) properties.get("exclusion");
             final String isHtml = (String) properties.get("isHtml");
-            
+            Map<String, String> replaceMap = null;
+            if ("true".equalsIgnoreCase(isHtml)) {
+                replaceMap = new HashMap<String, String>();
+                replaceMap.put("\\n", "<br/>");
+            }
+            final Map<String, String> replace = replaceMap;
+                    
             String appId = auditTrail.getAppId();
             String appVersion = auditTrail.getAppVersion();
             AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
@@ -179,7 +185,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                     link = base + urlMapping + activityInstanceId;
                                                 }
 
-                                                String msg = WorkflowUtil.processVariable(emailMessage + "\n\n\n" + link, null, wfAssignment);
+                                                String msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
                                                 if ("true".equalsIgnoreCase(isHtml)) {
                                                     email.setHtmlMsg(msg);
                                                 } else {

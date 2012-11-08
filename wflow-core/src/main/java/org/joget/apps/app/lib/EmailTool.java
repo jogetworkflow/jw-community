@@ -1,6 +1,7 @@
 package org.joget.apps.app.lib;
 
 import java.io.File;
+import java.lang.String;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -58,13 +59,21 @@ public class EmailTool extends DefaultApplicationPlugin {
 
         String emailSubject = (String) properties.get("subject");
         String emailMessage = (String) properties.get("message");
+        
+        String isHtml = (String) properties.get("isHtml");
 
         WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
         AppDefinition appDef = (AppDefinition) properties.get("appDef");
 
         try {
+            Map<String, String> replaceMap = null;
+            if ("true".equalsIgnoreCase(isHtml)) {
+                replaceMap = new HashMap<String, String>();
+                replaceMap.put("\\n", "<br/>");
+            }
+            
             emailSubject = WorkflowUtil.processVariable(emailSubject, formDataTable, wfAssignment);
-            emailMessage = WorkflowUtil.processVariable(emailMessage, formDataTable, wfAssignment);
+            emailMessage = AppUtil.processHashVariable(emailMessage, wfAssignment, null, replaceMap);
 
             // create the email message
             final HtmlEmail email = new HtmlEmail();
@@ -93,7 +102,6 @@ public class EmailTool extends DefaultApplicationPlugin {
             email.setFrom(fromStr);
             email.setSubject(emailSubject);
             
-            String isHtml = (String) properties.get("isHtml");
             if ("true".equalsIgnoreCase(isHtml)) {
                 email.setHtmlMsg(emailMessage);
             } else {
