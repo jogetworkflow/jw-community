@@ -39,6 +39,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
 
     @Override
     public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        Boolean requiresAuthentication = false;
         try {
             if (localeResolver != null) {
                 Locale locale = localeResolver.resolveLocale(request);
@@ -51,7 +52,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             
-            Boolean requiresAuthentication = requiresAuthentication(request, response);
+            requiresAuthentication = requiresAuthentication(request, response);
 
             super.doFilterHttp(request, response, chain);
             
@@ -60,6 +61,10 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 chain.doFilter(request, response);
             }
         } finally {
+            String uri = request.getRequestURL().toString();
+            if (requiresAuthentication && uri.contains("/web/json/")) {
+                SecurityContextHolder.getContext().setAuthentication(null);
+            }
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             LocaleContextHolder.resetLocaleContext();
