@@ -6,6 +6,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
@@ -18,8 +19,10 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.BadCredentialsException;
+import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
+import org.springframework.security.util.TextUtils;
 import org.springframework.web.servlet.LocaleResolver;
 
 public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFilter {
@@ -31,7 +34,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
-        return super.attemptAuthentication(request);
+        return authenticate(request);
     }
 
     @Override
@@ -47,20 +50,45 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
-
-            // authenticate from request
-            authenticate(request);
+            
+            Boolean requiresAuthentication = requiresAuthentication(request, response);
 
             super.doFilterHttp(request, response, chain);
+            
+            String uri = request.getRequestURL().toString();
+            if (requiresAuthentication && uri.contains("/web/json/")) {
+                chain.doFilter(request, response);
+            }
         } finally {
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             LocaleContextHolder.resetLocaleContext();
         }
     }
+    
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String uri = request.getRequestURI();
+        int pathParamIndex = uri.indexOf(';');
 
-    protected boolean authenticate(HttpServletRequest request) {
-        boolean authenticated = false;
+        if (pathParamIndex > 0) {
+            // strip everything after the first semi-colon
+            uri = uri.substring(0, pathParamIndex);
+        }
+
+        if ("".equals(request.getContextPath())) {
+            return uri.endsWith(getFilterProcessesUrl());
+        }
+        
+        if (uri.contains("/web/json/") && super.obtainUsername(request) != null && WorkflowUserManager.ROLE_ANONYMOUS.equals(workflowUserManager.getCurrentUsername())) {
+            return true;
+        }
+
+        return uri.endsWith(request.getContextPath() + getFilterProcessesUrl());
+    }
+
+    protected Authentication authenticate(HttpServletRequest request) throws AuthenticationException {
+        Authentication auth = null;
 
         // check for username/password in request
         String username = super.obtainUsername(request);
@@ -68,6 +96,13 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
 
         String loginAs = request.getParameter("loginAs");
         String loginHash = request.getParameter("hash");
+        
+        // Place the last username attempted into HttpSession for views
+        HttpSession session = request.getSession(false);
+
+        if (session != null || getAllowSessionCreation()) {
+            request.getSession().setAttribute(SPRING_SECURITY_LAST_USERNAME_KEY, TextUtils.escapeEntities(username));
+        }
 
         if (username != null && (password != null || loginHash != null)) {
             User currentUser = null;
@@ -87,6 +122,19 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                             ((password != null && StringUtil.md5Base16(password.trim()).equalsIgnoreCase(master.getPassword())) ||
                             (loginHash != null && loginHash.trim().equalsIgnoreCase(master.getLoginHash())))) {
                         currentUser = directoryManager.getUserByUsername(loginAs);
+                        if (currentUser != null) {
+                            WorkflowUserDetails user = new WorkflowUserDetails(currentUser);
+                            
+                            auth = new UsernamePasswordAuthenticationToken(user, user.getUsername(), user.getAuthorities());
+                            super.setDetails(request, (UsernamePasswordAuthenticationToken) auth);
+                        } else {
+                            LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+            
+                            WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+                            workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+                        
+                            throw new BadCredentialsException("");
+                        }
                     }
                 }
             } else {
@@ -97,30 +145,46 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                     // TODO: pluggable authentication, use existing authentication manager for now
                     try {
                         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username.trim(), password.trim());
-                        Authentication auth = getAuthenticationManager().authenticate(authRequest);
+                        super.setDetails(request, authRequest);
+
+                        auth = getAuthenticationManager().authenticate(authRequest);
                         if (auth.isAuthenticated()) {
                             currentUser = directoryManager.getUserByUsername(username);
                         }
                     } catch (BadCredentialsException be) {
-                        // ignore
+                        LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+            
+                        WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+                        workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+            
+                        throw be;
                     }
                 }
             }
 
             if (currentUser != null) {
                 workflowUserManager.setCurrentThreadUser(currentUser.getUsername());
-                authenticated = true;
             }
 
-            LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + authenticated);
+            LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true);
             
             WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-            workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + authenticated);
+            workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true);
         }
 
-        return authenticated;
+        return auth;
     }
-
+    
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
+        String uri = request.getRequestURL().toString();
+        if (uri.contains("/web/json/")) {
+            SecurityContextHolder.getContext().setAuthentication(authResult);
+        } else {
+            super.successfulAuthentication(request, response, authResult);
+        }
+    }
+    
     public WorkflowUserManager getWorkflowUserManager() {
         return workflowUserManager;
     }
