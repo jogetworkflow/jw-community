@@ -18,6 +18,8 @@
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
         <script src="${pageContext.request.contextPath}/js/json/util.js"></script>      
             
+        <c:set var="json" value="${fn:replace(json, '\\\\', '\\\\\\\\')}"/>
+        <c:set var="json" value="${fn:replace(json, '\"', '\\\\\"')}"/>
         <script>
         $(document).ready(function() {   
             // hide submit button and add insert button
@@ -35,14 +37,17 @@
                 // get selected checkboxes
                 var selected = new Array();
                 $("#listGridPopup input:checkbox, #listGridPopup input:radio").each(function(idx, row) {
-                    if ($(row).is(':checked')) {
+                    <c:if test="${dataList.selectionType != 'single'}">
+                    idx--; // offset to ignore first selectall checkbox
+                    </c:if>
+                    if ($(row).is(':checked') && idx >= 0) {
                         selected.push(idx);
                     }
                 });
 
                 // find columns in datalist
                 var columns = new Array();
-                var json = '(${fn:replace(json, '\\', '\\\\')})';
+                var json = "(${json})";
                 var list = eval(json);
                 for (i=0; i<list.columns.length; i++) {
                     var column = list.columns[i];
