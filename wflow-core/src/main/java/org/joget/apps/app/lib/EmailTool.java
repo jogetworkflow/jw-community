@@ -124,7 +124,10 @@ public class EmailTool extends DefaultApplicationPlugin {
             
             //handle file attachment
             String formDefId = (String) properties.get("formDefId");
-            Object[] fields = (Object[]) properties.get("fields");
+            Object[] fields = null;
+            if (properties.get("fields") instanceof Object[]){
+                fields = (Object[]) properties.get("fields");
+            }
             if (formDefId != null && !formDefId.isEmpty() && fields != null && fields.length > 0) {
                 AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
                 
@@ -154,7 +157,10 @@ public class EmailTool extends DefaultApplicationPlugin {
                 }
             }
             
-            Object[] files = (Object[]) properties.get("files");
+            Object[] files = null;
+            if (properties.get("files") instanceof Object[]){
+                files = (Object[]) properties.get("files");
+            }
             if (files != null && files.length > 0) {
                 for (Object o : files) {
                     Map mapping = (HashMap) o;
