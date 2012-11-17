@@ -115,6 +115,14 @@ public abstract class UserviewMenu extends ExtElement{
      * @param redirectToParent set true to force redirection in parent frame.
      */
     public void setRedirectUrl(String redirectUrl, boolean redirectToParent) {
+        if (redirectToParent && !redirectUrl.startsWith("/") && !redirectUrl.startsWith("http") && !redirectUrl.contains("embed=")) {
+            if (redirectUrl.contains("?")) {
+                redirectUrl += "&embed=false";
+            } else {
+                redirectUrl += "?embed=false";
+            }
+        }
+        
         setProperty(REDIRECT_URL_PROPERTY, redirectUrl);
         setProperty(REDIRECT_PARENT_PROPERTY, Boolean.valueOf(redirectToParent).toString());
     }

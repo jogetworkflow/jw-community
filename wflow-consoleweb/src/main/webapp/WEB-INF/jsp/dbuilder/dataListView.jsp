@@ -49,6 +49,11 @@
         <!-- set checkbox position if value is null -->
         <c:set var="checkboxPosition" value="${dataList.checkboxPosition}" />
         
+        <c:set var="selectionType" value="multiple" />
+        <c:if test="${dataList.selectionType eq 'single'}">
+            <c:set var="selectionType" value="single" />
+        </c:if>
+        
         <!-- Display Filters -->
         
         <c:if test="${!empty dataList.filterTemplates[0]}">
@@ -87,7 +92,16 @@
                 <input type="hidden" name="embed" id="embed" value="true"/>
             </c:if>
             <display:table id="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
-                <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}"><display:column property="checkbox" media="html" title="" /></c:if>
+                <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
+                    <c:choose>
+                        <c:when test="${selectionType eq 'single'}">
+                            <display:column property="radio" media="html" title="" />
+                        </c:when>
+                        <c:otherwise>
+                            <display:column property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
                 <c:forEach items="${dataList.columns}" var="column">
                     <display:column
                         property="column(${column.name})"
@@ -96,9 +110,22 @@
                         />
                 </c:forEach>
                 <c:if test="${!empty dataList.rowActions[0]}">
-                    <display:column property="actions" media="html" title="" />
+                    <c:set var="actionTitle" value="" />
+                    <c:forEach items="${dataList.rowActions}" var="rowAction" begin="1">
+                        <c:set var="actionTitle" value="${actionTitle}</th><th>" />
+                    </c:forEach>
+                    <display:column property="actions" media="html" title="${actionTitle}"/>
                 </c:if>
-                <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}"><display:column property="checkbox" media="html" title="" /></c:if>
+                <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
+                    <c:choose>
+                        <c:when test="${selectionType eq 'single'}">
+                            <display:column property="radio" media="html" title="" />
+                        </c:when>
+                        <c:otherwise>
+                            <display:column property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                        </c:otherwise>
+                    </c:choose>
+                </c:if>
             </display:table>
 
             <!-- Display Buttons -->
@@ -138,4 +165,12 @@
             DataListUtil.submitForm(this);
         });
     });
+    function toggleAll(element) {
+        var table = $(element).parent().parent().parent().parent();
+        if ($(element).is(":checked")) {
+            $(table).find("input[type=checkbox]").attr("checked", "checked");
+        } else {
+            $(table).find("input[type=checkbox]").removeAttr("checked");
+        }
+    }
 </script>

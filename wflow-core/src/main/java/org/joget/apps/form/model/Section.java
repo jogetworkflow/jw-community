@@ -23,36 +23,44 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
-        String template = "section.ftl";
+        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
+            String template = "section.ftl";
 
-        // set visibility attributes - currently working for textfield, textarea and selectbox. TODO: ensure it works for checkbox and radio.
-        String visibilityControl = getPropertyString("visibilityControl");
-        if (visibilityControl != null && !visibilityControl.isEmpty()) {
-            Form rootForm = FormUtil.findRootForm(this);
-            Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
-            if (controlElement != null) {
-                String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
-                dataModel.put("visibilityControlParam", visibilityControlParam);
+            // set visibility attributes - currently working for textfield, textarea and selectbox. TODO: ensure it works for checkbox and radio.
+            String visibilityControl = getPropertyString("visibilityControl");
+            if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                Form rootForm = FormUtil.findRootForm(this);
+                Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
+                if (controlElement != null) {
+                    String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
+                    dataModel.put("visibilityControlParam", visibilityControlParam);
+                }
             }
-        }
-        
-        dataModel.put("visible", isMatch(formData));
 
-        String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
-        return html;
+            dataModel.put("visible", isMatch(formData));
+
+            String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
+            return html;
+        } else {
+            return "";
+        }
     }
 
     @Override
     public boolean continueValidation(FormData formData) {
         boolean continueValidation = true;
 
-        // get the control element (where value changes the target)
-        String visibilityControl = getPropertyString("visibilityControl");
+        if (isAuthorize(formData)) {
+            // get the control element (where value changes the target)
+            String visibilityControl = getPropertyString("visibilityControl");
 
-        if (visibilityControl != null && !visibilityControl.isEmpty()) {
-            continueValidation = isMatch(formData);
+            if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                continueValidation = isMatch(formData);
+            } else {
+                continueValidation = super.continueValidation(formData);
+            }
         } else {
-            continueValidation = super.continueValidation(formData);
+            continueValidation = false;
         }
         return continueValidation;
     }

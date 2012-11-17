@@ -70,12 +70,46 @@
                             <select id="systemLocale" name="systemLocale">
                                 <option></option>
                                 <c:forEach var="locale" items="${localeList}">
-                                    <c:set var="selected"><c:if test="${locale == settingMap['systemLocale']}"> selected</c:if></c:set>
-                                    <option ${selected}>${locale}</option>
+                                    <c:set var="selected"><c:if test="${locale.key == settingMap['systemLocale']}"> selected</c:if></c:set>
+                                    <option value="${locale.key}" ${selected}>${locale.value}</option>
                                 </c:forEach>
                             </select>
                             <br>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> en_US</i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="dateFormatFollowLocale"><fmt:message key="console.setting.general.label.dateFormatFollowLocale"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['dateFormatFollowLocale'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="dateFormatFollowLocale" name="dateFormatFollowLocale" ${checked} />
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="enableUserLocale"><fmt:message key="console.setting.general.label.enableUserLocale"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['enableUserLocale'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="enableUserLocale" name="enableUserLocale" ${checked} />
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="userLocale"><fmt:message key="console.setting.general.label.userLocale"/></label>
+                        <span class="form-input">
+                            <input id="userLocale" type="text" name="userLocale" value="${settingMap['userLocale']}"/>
                         </span>
                     </div>
                 </span>

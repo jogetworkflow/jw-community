@@ -54,6 +54,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_PROPERTIES = "properties";
     public static final String PROPERTY_VALIDATOR = "validator";
     public static final String PROPERTY_READONLY = "readonly";
+    public static final String PROPERTY_READONLY_LABEL = "readonlyLabel";
     public static final String PROPERTY_DATE_CREATED = "dateCreated";
     public static final String PROPERTY_DATE_MODIFIED = "dateModified";
     public static final String PROPERTY_CUSTOM_PROPERTIES = "customProperties";
@@ -293,7 +294,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
         String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-        if (binder != null) {
+        if (!(element instanceof AbstractSubForm) && binder != null) {
             FormRowSet data = binder.load(element, primaryKeyValue, formData);
             if (data != null) {
                 formData.setLoadBinderData(binder, data);
@@ -764,15 +765,6 @@ public class FormUtil implements ApplicationContextAware {
 
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
 
-        // handle multiple values
-        if (value != null) {
-            StringTokenizer st = new StringTokenizer(value, FormUtil.PROPERTY_OPTIONS_DELIMITER);
-            while (st.hasMoreTokens()) {
-                String val = st.nextToken();
-                values.add(val);
-            }
-        }
-
         // load from binder if available
         if (formData != null) {
             String binderValue = formData.getLoadBinderDataProperty(element, id);
@@ -1089,10 +1081,23 @@ public class FormUtil implements ApplicationContextAware {
      * @param element
      */
     public static void setReadOnlyProperty(Element element) {
-        element.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        setReadOnlyProperty(element, true, null);
+    }
+    
+    /**
+     * Recursively set the readonly property for all descendent elements.
+     * @param element
+     */
+    public static void setReadOnlyProperty(Element element, Boolean readonly, Boolean label) {
+        if (readonly != null && readonly) {
+            element.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        }
+        if (label != null && label) {
+            element.setProperty(FormUtil.PROPERTY_READONLY_LABEL, "true");
+        }
         Collection<Element> children = element.getChildren();
         for (Element child : children) {
-            setReadOnlyProperty(child);
+            setReadOnlyProperty(child, readonly, label);
         }
     }
 
@@ -1104,7 +1109,7 @@ public class FormUtil implements ApplicationContextAware {
         Form form = findRootForm(element);
         if (form != null) {
             String paramName = FormUtil.getElementParameterName(form);
-            if (formData.getRequestParameter(paramName+"_SUBMITTED") != null) {
+            if (formData != null && formData.getRequestParameter(paramName+"_SUBMITTED") != null) {
                 return true;
             }
         }

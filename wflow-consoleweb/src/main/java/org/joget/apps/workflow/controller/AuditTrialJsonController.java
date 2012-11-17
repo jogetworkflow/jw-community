@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -76,7 +77,7 @@ public class AuditTrialJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }

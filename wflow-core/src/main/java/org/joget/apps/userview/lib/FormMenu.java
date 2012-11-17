@@ -1,16 +1,9 @@
 package org.joget.apps.userview.lib;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -23,7 +16,6 @@ import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
-import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 /**
  * Represents a menu item that displays a data form and handles form submission.
  */
-public class FormMenu extends UserviewMenu implements PluginWebSupport {
+public class FormMenu extends UserviewMenu {
 
     @Override
     public String getIcon() {
@@ -103,25 +95,6 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             return menu;
         }
         return null;
-    }
-
-    @Override
-    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-        if ("getOptions".equals(action)) {
-            Collection<FormDefinition> formDefList = new ArrayList<FormDefinition>();
-            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            if (appDef != null) {
-                // load forms from current thread app version
-                formDefList = appDef.getFormDefinitionList();
-            }
-            String output = "[{\"value\":\"\",\"label\":\"\"}";
-            for (FormDefinition formDef : formDefList) {
-                output += ",{\"value\":\"" + formDef.getId() + "\",\"label\":\"" + formDef.getName() + "\"}";
-            }
-            output += "]";
-            response.getWriter().write(output);
-        }
     }
 
     @Override
@@ -284,6 +257,11 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
+            
+            if (formData.getStay()) {
+                setAlertMessage("");
+                setRedirectUrl("");
+            }
 
             // show form
             String formJson = formService.generateElementJson(form);
@@ -329,7 +307,11 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
-        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appDef.getVersion().toString(), activityId, formData, formUrl);
+        FormService formService = (FormService) ac.getBean("formService");
+        
+        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
+        
+        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
         return activityForm;
     }
 
@@ -388,8 +370,10 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
                 cancelLabel = "Cancel";
             }
         }
+        
+        Boolean readonlyLabel = "true".equalsIgnoreCase(getPropertyString("readonlyLabel"));
 
-        form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, formData, formUrl, cancelUrl);
+        form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, getPropertyString("redirectTargetOnCancel"), formData, formUrl, cancelUrl);
         if (form != null) {
 
             // make primary key read-only
@@ -397,22 +381,22 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
             if (el != null) {
                 String idValue = FormUtil.getElementPropertyValue(el, formData);
                 if (idValue != null && !idValue.trim().isEmpty() && !"".equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
-                    el.setProperty(FormUtil.PROPERTY_READONLY, "true");
+                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
                 }
             }
 
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
                 el = FormUtil.findElement(getPropertyString("keyName"), form, formData);
                 if (el != null) {
-                    FormUtil.setReadOnlyProperty(el);
+                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
                 }
             }
         }
 
         // set form to read-only if required
-        String readonly = getPropertyString("readonly");
-        if ("Yes".equals(readonly)) {
-            FormUtil.setReadOnlyProperty(form);
+        Boolean readonly = "Yes".equalsIgnoreCase(getPropertyString("readonly"));
+        if (readonly || readonlyLabel) {
+            FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel);
         }
         return form;
     }
@@ -431,10 +415,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
         String activityId = assignment.getActivityId();
         String processId = assignment.getProcessId();
-
-        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
-        formData.setProcessId(processId);
-
+        
         // get form
         Form currentForm = activityForm.getForm();
 
@@ -447,7 +428,7 @@ public class FormMenu extends UserviewMenu implements PluginWebSupport {
         } else if (formData.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
             // complete assignment
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            formData = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
+            formData = appService.completeAssignmentForm(currentForm, assignment, formData, variableMap);
 
             Map<String, String> errors = formData.getFormErrors();
             

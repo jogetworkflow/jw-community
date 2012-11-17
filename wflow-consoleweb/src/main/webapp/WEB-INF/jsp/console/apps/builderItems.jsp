@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<link href="${pageContext.request.contextPath}/css/builder_navigator.css" rel="stylesheet" type="text/css" />
+<link href="${pageContext.request.contextPath}/css/builder_navigator.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
 <div id="builder_quick_navigator">
     <div class="builder_qn_label">

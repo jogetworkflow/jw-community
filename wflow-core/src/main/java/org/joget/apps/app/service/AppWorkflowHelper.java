@@ -18,6 +18,8 @@ import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.directory.model.Department;
+import org.joget.directory.model.Employment;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.ApplicationPlugin;
@@ -126,6 +128,8 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     resultList = getParticipantsByRequester(participant, procDefId, procId, requesterUsername);
                 } else if (PackageParticipant.TYPE_REQUESTER_HOD.equals(participant.getType())) {
                     resultList = getParticipantsByRequesterHod(participant, procDefId, procId, requesterUsername);
+                } else if (PackageParticipant.TYPE_REQUESTER_HOD_IGNORE_REPORT_TO.equals(participant.getType())) {
+                    resultList = getParticipantsByRequesterHodIgnoreReportTo(participant, procDefId, procId, requesterUsername);
                 } else if (PackageParticipant.TYPE_REQUESTER_SUBORDINATES.equals(participant.getType())) {
                     resultList = getParticipantsByRequesterSubordinates(participant, procDefId, procId, requesterUsername);
                 } else if (PackageParticipant.TYPE_REQUESTER_DEPARTMENT.equals(participant.getType())) {
@@ -240,6 +244,37 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 resultList.add(user.getUsername());
             }
         }
+        return resultList;
+    }
+    
+    protected List<String> getParticipantsByRequesterHodIgnoreReportTo(PackageParticipant participant, String processDefId, String processId, String requesterUsername) {
+        List<String> resultList = new ArrayList<String>();
+        ApplicationContext appContext = AppUtil.getApplicationContext();
+        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+        if (participant.getValue() != null && participant.getValue().trim().length() > 0) {
+            WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+            requesterUsername = workflowManager.getUserByProcessIdAndActivityDefId(processDefId, processId, participant.getValue());
+        }
+        
+        User requester = directoryManager.getUserByUsername(requesterUsername);
+        if (requester != null && requester.getEmployments() != null && !requester.getEmployments().isEmpty()) {
+            Employment employment = (Employment) requester.getEmployments().iterator().next();
+            if (employment != null && employment.getDepartment() != null) {
+                Department dept = employment.getDepartment();
+                User hod = directoryManager.getDepartmentHod(dept.getId());
+                while (dept != null && (hod == null || (hod.getUsername() != null && requesterUsername.equals(hod.getUsername())))) {
+                    // no HOD or user is HOD, so look for HOD of parent department
+                    dept = dept.getParent();
+                    if (dept != null) {
+                        hod = directoryManager.getDepartmentHod(dept.getId());
+                    }
+                }
+                if (hod != null) {
+                    resultList.add(hod.getUsername());
+                }
+            }
+        }
+        
         return resultList;
     }
 
@@ -456,7 +491,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
                 if (process != null) {
                     PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
-                    appDef = packageDef.getAppDefinition();
+                    if (packageDef != null) {
+                        appDef = packageDef.getAppDefinition();
+                    }
                 }
 
                 if (appDef != null) {
@@ -492,5 +529,20 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
         }
         return deadline;
+    }
+    
+    @Override
+    public String getPublishedPackageVersion(String packageId) {
+        //appID same with packageId
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        Long version = appService.getPublishedVersion(packageId);
+        
+        AppDefinition appDef = appService.getAppDefinition(packageId, version.toString());
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        
+        if (packageDef != null && packageDef.getVersion() != null) {
+            return packageDef.getVersion().toString();
+        }
+        return null;
     }
 }

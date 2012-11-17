@@ -1,12 +1,12 @@
 #builder-header{
-    position:relative;
+    positionx:relative;
 }
 
 #builder_quick_navigator{
     width:350px;
     position:absolute;
-    right:0;
-    top:4px;
+    left:621px;
+    top:-7px;
     z-index: 1100;
 }
 

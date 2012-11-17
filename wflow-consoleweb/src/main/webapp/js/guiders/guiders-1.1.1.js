@@ -72,9 +72,7 @@ var guiders = (function($){
 
         if (thisButton.onclick) {
           thisButtonElem.bind("click", thisButton.onclick);
-        } else if (!thisButton.onclick && thisButton.name.toLowerCase() === "close") {
-          thisButtonElem.bind("click", function() { guiders.hideAll(); });
-        } else if (!thisButton.onclick && thisButton.name.toLowerCase() === "next") {
+        } else if (!thisButton.onclick) {
           thisButtonElem.bind("click", function() { guiders.next(); });
         }
       }

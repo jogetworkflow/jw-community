@@ -8,58 +8,6 @@
 
 <commons:header />
 
-<style>
-#login-container {
-    -moz-box-shadow: 0 1px 3px #BFBFBF;
-    background-color: #FFFFFF;
-    border: 1px solid #E9E9E9;
-    margin: 0 auto;
-    padding: 70px 20px;
-    width: 90%;
-}
-#login-box {
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    background-color: #F3F9E0;
-    border: 1px solid #E9E9E9;
-    margin: 0 auto;
-    padding: 60px 20px;
-    text-align: center;
-    width: 500px;
-}
-#login-box td, #login-box .input {
-    font-family: 'Times New Roman', serif;
-    font-size: 16px;
-    color: #757575;
-    display: block;
-    text-align: left;
-}
-#login-box .input {
-    width: 250px;
-    height: 20px;
-    font-size: 18px;
-    color: #535353;
-    padding: 5px;
-}
-#login-box tr {
-    margin-top: 15px;
-    display: block;
-}
-#login-box h1 {
-    color: #617722;
-    font-family: Georgia,"Times New Roman",Times,serif;
-    font-size: 22px;
-    font-weight: normal;
-}
-#login-box .buttons {
-    text-align: right;
-    font-size: 18px;
-}
-#login-box .buttons input {
-    font-size: 16px;
-}
-</style>
-
 <div id="login-container">
     <span id="main-action-help" style="display:none"></span>
     <div id="login-box">
@@ -67,7 +15,7 @@
         <div>
             <c:if test="${!empty param.login_error}">
                 <div id="main-body-message" class="form-errors">
-                    <fmt:message key="console.login.label.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
+                    <fmt:message key="console.login.label.loginError" /> ${SPRING_SECURITY_LAST_EXCEPTION.message}.
                 </div>
             </c:if>
 

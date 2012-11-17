@@ -28,6 +28,30 @@
                         label:''
                     }
                 ]
+            },
+            {
+                name:'readonlyLabel',
+                label:'@@form.subform.readonlyLabel@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            },
+            {
+                name:'noframe',
+                label:'@@form.subform.noframe@@',
+                type:'checkbox',
+                value:'false',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
             }
         ]
     },

@@ -28,4 +28,8 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public WorkflowDeadline executeDeadlinePlugin(String processId, String activityId, WorkflowDeadline deadline, Date processStartedTime, Date activityAcceptedTime, Date activityActivatedTime) {
         return deadline;
     }
+    
+    public String getPublishedPackageVersion(String packageId){
+        return null;
+    }
 }

@@ -13,6 +13,23 @@
         required : 'True'
     },
     {
+        name : 'security',
+        label : '@@app.emailtool.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.emailtool.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.emailtool.security.ssl@@'
+        }]
+    },
+    {
         name : 'needAuthentication',
         label : '@@app.emailtool.authentication@@',
         type : 'checkbox',
@@ -66,5 +83,57 @@
         type : 'textarea',
         cols : '60',
         rows : '15'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.emailtool.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@app.emailtool.attachments@@',
+    properties : [{
+        name:'formDefId',
+        label:'@@app.emailtool.form@@',
+        type:'selectbox',
+        options_ajax:'[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options',
+    },
+    {
+        name:'fields',
+        label:'@@app.emailtool.fields@@',
+        type:'grid',
+        columns:[{
+            key:'field',
+            label:'@@app.emailtool.fieldId@@'
+        }]
+    },
+    {
+        name:'files',
+        label:'@@app.emailtool.files@@',
+        type:'grid',
+        columns:[{
+            key:'path',
+            label:'@@app.emailtool.path@@'
+        },
+        {
+            key:'type',
+            label:'@@app.emailtool.pathType@@',
+            options: [{
+                value : 'system',
+                label : '@@app.emailtool.pathType.system@@'
+            },
+            {
+                value : 'url',
+                label : '@@app.emailtool.pathType.url@@'
+            }]
+        },
+        {
+            key:'fileName',
+            label:'@@app.emailtool.fileName@@'
+        }]
     }]
 }]

@@ -34,6 +34,10 @@ public class LinkButton extends FormButton {
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
+        if (getPropertyString("target") == null || getPropertyString("target").isEmpty()) {
+            setProperty("target", "top");
+        }
+        
         String template = "linkButton.ftl";
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

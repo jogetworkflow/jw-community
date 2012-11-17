@@ -1,199 +1,17 @@
-* {
-    font-family: Tahoma,Arial,Helvetica,sans-serif;
-    font-size: 13px;
-}
-body, html {
-    margin: 0;
-    padding: 0;
-}
-ul{
-    padding: 0;
-}
-body {
-    background-color: #DCDCDC;
-}
-div, label, input, button, select, th, td, a {
-    font-size: 13px;
-}
-#builder-container {
-    width: 960px;
-    margin: 20px 20px 0;
-}
-#builder-header {
-    width: 920px;
-    height: 44px;
-    padding: 5px 20px 0;
-    background: url(../images/v3/builder/hd_bar_bg.gif) 0 0 repeat-x white;
-    border: 1px solid #bfbfbf;
-}
-#builder-title {
-    color: #AAA7A7;
-    font-size: 22px;
-    text-transform: uppercase;
-    line-height: 28px;
-    padding-top: 5px;
-}
-#builder-body {
-    width: 922px;
-    background-color: #FFFFFF;
-    padding: 0 20px 20px 20px;
-    min-height: 460px;
-}
-#builder-bar {
-    padding: 10px 20px;
-    background: #eee url(../images/v3/builder/tab_panel_bg.gif) left bottom repeat-x;
-    margin-bottom: 10px;
-}
-#builder-content {
-    min-height: 320px;
-}
-#builder-bar ul {
-    list-style: none outside;
-    padding: 0;
-    margin: 0;
-    height: 50px;
-}
-#builder-bar li {
-    background:url(../images/v3/builder/steps_inactive-bg.gif) left top repeat-x;
-    float: left;
-    margin: 0;
-}
-#builder-bar a {
-    display: block;
-    background: url(../images/v3/builder/steps_arrow_inactive.gif) right top no-repeat;
-    padding: 0 40px 0 25px;
-    text-decoration: none
-}
-#builder-bar a span.steps-bg {
-    width: 100px;
-    display: block;
-    font-size: 16px;
-    color: #acacac;
-    text-shadow: 1px 1px 0 #fff;
-    height:49px;
-    text-decoration: none;
-    cursor: pointer;
-}
+@import url("builder.css");
 
-#builder-bar span.title {
-    font-size: 22px;
-    height:22px;
-    color: #f1ffbf;
-    text-shadow: 1px 1px 0 #767676;
-    display:block;
-    padding: 3px 0 0 0
-}
-#builder-bar span.subtitle {
-    font-size: 11px;
-    color: #fff;
-    text-shadow: 1px 1px 0 #767676;
-    line-height: 10px;
-    font-family: Verdana, Arial, Helvetica, sans-serif
-}
-#builder-bar li.active {
-    background:url(../images/v3/builder/steps_active-bg.gif) left top repeat-x;
-}
-#builder-bar li.active a {
-    background: url(../images/v3/builder/steps_arrow_active.gif) right top no-repeat
-}
-#builder-bar li.active a span.steps-bg {
-    background:url(../images/v3/builder/steps_active-bg.gif) 0 0 repeat-x;
-}
-#builder-bar .first-active {
-    border-left: 1px solid #989898;
-}
-#builder-bar .first-inactive {
-    border-left: 1px solid #c2c1c1;
-}
-#builder-bar li.next a {
-    background:url(../images/v3/builder/steps_active_next.gif) right top no-repeat
-}
-#builder-bar li.last-inactive a {
-    border-right: 1px solid #c2c1c1; background: none; padding: 0 30px
-}
-#builder-bar li.last-active a {
-    border-right: 1px solid #989898; background: none; padding: 0 30px
-}
-#builder-footer {
-    text-align: center;
-    color: #868686;
-    text-shadow: 1px 1px 0 #fff;
-    padding: 20px 0 40px
-}
-#builder-palette {
-    display: block;
-    width: 170px;
-    border: 1px solid #D6D6D6;
-    padding: 0px;
-    margin: 5px;
-    float: left;
-    position: fixed;
-    z-index: 1000;
-    background: #ECECEC;
-    -moz-box-shadow: 0 0 6px gray;
-    -webkit-box-shadow: 0 0 6px gray;
-    -moz-border-radius: 6px 6px 6px 6px;
-    -webkit-border-radius: 6px;
-}
-#builder-palette legend {
-    display: none;
-}
-#builder-palette h3 {
-    background: url("../images/v3/builder/sidebar_hd_title_bg.gif") repeat-x scroll 0 0 transparent;
-    color: #fff;
-    text-shadow: 1px 1px 1px #4c4c4c;
-    padding: 5px;
-    margin: 5px 5px;
-}
-#builder-palette ul {
-    list-style: none outside;
-    padding: 0px 5px;
-    margin-left: 0px;
-    margin-top: 0px;
-}
-#builder-palette ul li {
-    padding-bottom: 2px;
-    width: 148px;
-    overflow: hidden;
-}
-#builder-palette-top {
-    background: url(../images/v3/builder/sidebar_bg.gif) 0 0 repeat-x;
-    width: 99%;
-    height: 13px;
-    display:block;
-    border-left: 1px solid #d6d6d6;
-    border-right: 1px solid #d6d6d6
-}
-#builder-palette-body {
-    height: 310px;
-    overflow: auto;
-}
-#builder-section {
-    width: 690px; 
-    height: 300px; 
-    overflow: visible;    
-}
 #form-canvas {
-    position: absolute;
-    left: 240px;
-    float: left;
-    display: block;
-    min-width: 700px;
     border: none;
     padding: 5px;
-    margin: 5px;
-    background: #ffffff;
     -moz-box-shadow: 0 0 6px gray;
     -webkit-box-shadow: 0 0 6px gray;
+    box-shadow: 0 0 6px gray;
     -moz-border-radius: 6px 6px 6px 6px;
     -webkit-border-radius: 6px;
+    border-radius: 6px;
     background: none repeat scroll 0 0 #FFFFFF;
     border: 1px solid #D6D6D6;    
 }
-#form-canvas legend {
-    display: none;
-}
-
 .builder-palette-column, .builder-palette-action, .form-palette-section, .form-palette-column {
     border: dotted 1px #dddddd;
     cursor: pointer;
@@ -217,7 +35,7 @@ div, label, input, button, select, th, td, a {
     position: relative;
     min-height: 30px;
     color: black;
-    min-width: 120px;
+    width: 120px;
     height: 30px;
 }
 .builder-palette-column .label {
@@ -225,10 +43,12 @@ div, label, input, button, select, th, td, a {
     display: block;
     float: left;
 }
-.form-cell-highlight {
-    padding-bottom: 0px;
-    background: #f0ffcc;
+
+.builder-palette-column .label.key {
+    color: gray;
+    font-style: italic;
 }
+
 .form-container .ui-sortable-placeholder {
     border: 1px dotted #111111;
     visibility: visible !important;
@@ -282,8 +102,10 @@ div, label, input, button, select, th, td, a {
     z-index: 300;
     -moz-box-shadow: 0 0 6px green;
     -webkit-box-shadow: 0 0 6px green;
+    box-shadow: 0 0 6px green;
     -moz-border-radius: 6px 6px 6px 6px;
     -webkit-border-radius: 6px;
+    border-radius: 6px;
 }
 .form-palette-options button:hover {
     background: lightgreen;
@@ -349,13 +171,6 @@ div, label, input, button, select, th, td, a {
     width: 30%;
     display: block;
     float: left;
-}
-.form-cell-highlight {
-    padding-bottom: 0px;
-    background: #f0ffcc;
-}
-.form-clear {
-    clear: both;
 }
 .form-error-cell {
     border: solid 1px red;
@@ -562,7 +377,7 @@ ul#databuilderContentActions li.databuilderAction div.databuilderItemTitle{
 #list-advanced {
     clear: both;
     margin-left: 220px;
-    margin-top: 390px;
+    margin-top: 100px;
 }
 #main-action-help {
     background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 

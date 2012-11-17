@@ -10,7 +10,7 @@
 </style>
 
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapActivities"/>
+        <fmt:message key="console.process.config.label.mapActivities"/> - <c:out value=" ${param.activityName} (${activity.id})" escapeXml="true" />
     </div>
 
     <div id="main-body-content" style="text-align: left">
@@ -21,6 +21,7 @@
             </ul>
             <div>
                 <div id="formList">
+                    <br/>
                     <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/forms?${pageContext.request.queryString}"
                                    var="JsonDataTable"
                                    divToUpdate="formList2"
@@ -38,6 +39,7 @@
                                    hrefDialogTitle="Form Dialog"
                                    checkboxButton1="console.form.create.label"
                                    checkboxCallback1="createForm"
+                                   searchItems="name|Form Name"
                                    fields="['id','name','dateCreated','dateModified']"
                                    column1="{key: 'name', label: 'console.form.common.label.name', sortable: true}"
                                    column2="{key: 'tableName', label: 'console.form.common.label.tableName', sortable: false}"
@@ -75,6 +77,10 @@
     </div>
 
     <script>
+        $(document).ready(function(){
+            $('#JsonDataTable_searchTerm').hide();
+        });
+    
         var tabView = new TabView('formTabView', 'top');
         tabView.init();
 

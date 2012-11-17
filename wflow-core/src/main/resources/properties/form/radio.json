@@ -30,6 +30,16 @@
         }]
     },
     {
+        name : 'readonlyLabel',
+        label : '@@form.radio.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'options',
         label : '@@form.radio.options@@',
         type : 'grid',

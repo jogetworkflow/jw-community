@@ -3,7 +3,12 @@ body{
 }
 
 #builder-title {
-    float: left;
+    float: right;
+}
+
+#builder_quick_navigator {
+    right: 621px;
+    left: auto;
 }
 
 .form-palette-element,
@@ -79,6 +84,12 @@ body{
     float: left !important;
 }
 
+#builder-palette {
+    position: fixed;
+    right: -5px;
+    left: auto;
+}
+
 /*Form Builder*/
 #formbuilder .form-palette-options{
     text-align:left;
@@ -105,13 +116,11 @@ body{
     border-left:0px;
 }
 
-/*Datalist Builder*/
-#datalistbuilder #form-canvas {
-    float: left;
-    left: auto;
-    right: 240px;
+.form-floating-label {
+    left: 10px;
 }
 
+/*Datalist Builder*/
 #datalistbuilder td#tdDatabuilderContentRowActions {
     float:right;
 }
@@ -131,7 +140,7 @@ body{
 
 /*Userview Builder*/
 #userviewbuilder #canvas {
-    float:left;
+    right: 185px;
 }
 
 #userviewbuilder #header-welcome-message {
@@ -167,4 +176,8 @@ body{
 #userviewbuilder #userview-advanced {
     margin-left: 0px;
     margin-right: 220px;
+}
+
+#ui-datepicker-div {
+    display:none;
 }

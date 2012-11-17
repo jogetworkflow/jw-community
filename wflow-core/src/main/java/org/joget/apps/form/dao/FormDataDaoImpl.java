@@ -262,7 +262,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                             query += condition;
                         }
 
-                        if (sort != null && !sort.trim().isEmpty()) {
+                        if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
                             String sortProperty = sort;
                             if (!FormUtil.PROPERTY_ID.equals(sortProperty) && !FormUtil.PROPERTY_DATE_CREATED.equals(sortProperty) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(sortProperty)) {
                                 Collection<String> columnNames = getFormDefinitionColumnNames(tableName);
@@ -791,7 +791,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             
             for (Object column : columnsName) {
                 String columnName = (String) column;
-                if (columnName != null && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)) {
+                if (columnName != null && !columnName.isEmpty() && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)) {
                     String lowerCasePropName = columnName.toLowerCase();
                     if (!lowerCaseColumnSet.contains(lowerCasePropName)) {
                         columnList.add(columnName);
@@ -827,7 +827,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     // get JSON
                     String json = formDef.getJson();
                     if (json != null) {
-                        Form form = (Form) getFormService().createElementFromJson(json, true);
+                        Form form = (Form) getFormService().createElementFromJson(json, false);
                         findAllElementIds(form, columnList);
                     }
                 }
@@ -872,6 +872,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * @param columnList
      */
     protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
+        Collection<String> fieldNames = element.getDynamicFieldNames();
+        if (fieldNames != null && !fieldNames.isEmpty()) {
+            columnList.addAll(fieldNames);
+        }
         if (!(element instanceof FormContainer) && element.getProperties() != null) {
             String id = element.getPropertyString(FormUtil.PROPERTY_ID);
             if (id != null && !id.isEmpty()) {

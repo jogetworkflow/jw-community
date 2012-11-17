@@ -47,7 +47,12 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import java.io.StringWriter;
 import java.io.Writer;
+import javax.servlet.http.HttpServletRequest;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
 
 public class PluginManager implements ApplicationContextAware {
 
@@ -665,14 +670,12 @@ public class PluginManager implements ApplicationContextAware {
         // get plugin
         Plugin plugin = getPlugin(pluginName);
         if (plugin != null) {
-            SetupManager setupManager = (SetupManager) applicationContext.getBean("setupManager");
-            String locale = setupManager.getSettingValue("systemLocale");
-            if (locale == null) {
-                locale = "en_US";
-            }
+            
+            LocaleResolver localeResolver = (LocaleResolver) getBean("localeResolver");  
+            Locale locale = localeResolver.resolveLocale(getHttpServletRequest());
 
             try {
-                bundle = ResourceBundle.getBundle(translationPath, new Locale(locale), plugin.getClass().getClassLoader());
+                bundle = ResourceBundle.getBundle(translationPath, locale, plugin.getClass().getClassLoader());
             } catch (Exception e) {
                 LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
             }
@@ -711,7 +714,7 @@ public class PluginManager implements ApplicationContextAware {
                 }
 
                 if (label != null) {
-                    content = content.replaceAll(key, label);
+                    content = content.replaceAll(StringUtil.escapeRegex(key), StringUtil.escapeRegex(label));
                 }
             }
         }
@@ -750,6 +753,12 @@ public class PluginManager implements ApplicationContextAware {
                     URL url = getPluginResourceURL(pluginName, templatePath);
                     return url;
                 }
+
+                @Override
+                public long getLastModified(Object templateSource) {
+                    return 0;
+                }
+                
             });
 
             // Get or create a template
@@ -890,7 +899,7 @@ public class PluginManager implements ApplicationContextAware {
             for (Plugin p : pm.list()) {
                 LogUtil.info(PluginManager.class.getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             }
-            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.0-SNAPSHOT.jar";
+            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.1-SNAPSHOT.jar";
             String samplePlugin = "org.joget.plugin.sample.SamplePlugin";
 
             try {
@@ -933,6 +942,19 @@ public class PluginManager implements ApplicationContextAware {
             pm.testPlugin(samplePlugin, samplePluginFile, null, true);
         } finally {
             pm.shutdown();
+        }
+    }
+    
+    public HttpServletRequest getHttpServletRequest() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            return request;
+        } catch (NoClassDefFoundError e) {
+            // ignore if servlet request class is not available
+            return null;
+        } catch (IllegalStateException e) {
+            // ignore if servlet request is not available, e.g. when triggered from a deadline
+            return null;
         }
     }
 

@@ -35,6 +35,7 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.ui.ModelMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,12 +175,12 @@ public class DatalistBuilderWebController {
 
         DataListColumn[] sourceColumns = binder.getColumns();
  
-        // sort columns by name
+        // sort columns by label
         List<DataListColumn> binderColumnList = Arrays.asList(sourceColumns);
         Collections.sort(binderColumnList, new Comparator<DataListColumn>() {
 
             public int compare(DataListColumn o1, DataListColumn o2) {
-                return o1.getName().compareTo(o2.getName());
+                return o1.getLabel().toLowerCase().compareTo(o2.getLabel().toLowerCase());
             }
         });
         
@@ -292,5 +293,22 @@ public class DatalistBuilderWebController {
         map.addAttribute("jsonEncoded", jsonEncoded);
         map.addAttribute("jsonParam", jsonParam);
         return dataList;
+    }
+    
+    @RequestMapping("/app/(*:appId)/(~:appVersion)/datalist/embed")
+    public String embedDatalist(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(listId, appDef);
+        String json = datalistDefinition.getJson();
+        DataList dataList = dataListService.fromJson(json);
+        dataList.setSelectionType(selectionType);
+        
+        model.addAttribute("id", id);
+        model.addAttribute("json", json);
+        model.addAttribute("buttonLabel", buttonLabel);
+        model.addAttribute("dataList", dataList);
+        model.addAttribute("setting", callbackSetting);
+        model.addAttribute("callback", callback);
+        return "dbuilder/embedDatalist";
     }
 }

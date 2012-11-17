@@ -1,21 +1,12 @@
 package org.joget.apps.app.lib;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.MultiPartEmail;
+import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PackageDefinition;
@@ -24,7 +15,6 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
-import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
 import org.joget.plugin.base.PluginManager;
@@ -67,6 +57,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String needAuthentication = (String) properties.get("needAuthentication");
             final String smtpUsername = (String) properties.get("username");
             final String smtpPassword = (String) properties.get("password");
+            final String security = (String) properties.get("security");
 
             final String from = (String) properties.get("from");
             final String cc = (String) properties.get("cc");
@@ -78,6 +69,18 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String parameterName = (String) properties.get("parameterName");
             final String passoverMethod = (String) properties.get("passoverMethod");
             final String exclusion = (String) properties.get("exclusion");
+            final String isHtml = (String) properties.get("isHtml");
+            Map<String, String> replaceMap = null;
+            if ("true".equalsIgnoreCase(isHtml)) {
+                replaceMap = new HashMap<String, String>();
+                replaceMap.put("\\n", "<br/>");
+            }
+            final Map<String, String> replace = replaceMap;
+                    
+            String appId = auditTrail.getAppId();
+            String appVersion = auditTrail.getAppVersion();
+            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+            final AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
             if (smtpHost == null || smtpHost.trim().length() == 0) {
                 return null;
@@ -116,10 +119,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         workflowUserManager.setCurrentThreadUser(username);
                                         WorkflowAssignment wfAssignment = workflowManager.getAssignment(activityInstanceId);
                                         
-                                        final User user = directoryManager.getUserByUsername(username);
-                                        if (user.getEmail() != null && user.getEmail().trim().length() > 0) {
+                                        Collection<String> addresses = AppUtil.getEmailList(null, username, null, null);
+                                        
+                                        if (addresses != null && addresses.size() > 0) {
                                             // create the email message
-                                            final MultiPartEmail email = new MultiPartEmail();
+                                            final HtmlEmail email = new HtmlEmail();
                                             email.setHostName(smtpHost);
                                             if (smtpPort != null && smtpPort.length() != 0) {
                                                 email.setSmtpPort(Integer.parseInt(smtpPort));
@@ -127,14 +131,25 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             if (needAuthentication != null && needAuthentication.length() != 0 && needAuthentication.equals("yes")) {
                                                 email.setAuthentication(smtpUsername, smtpPassword);
                                             }
+                                            if(security!= null){
+                                                if(security.equalsIgnoreCase("SSL") ){
+                                                    email.setSSL(true);
+                                                }else if(security.equalsIgnoreCase("TLS")){
+                                                    email.setTLS(true);
+                                                }
+                                            }
                                             if (cc != null && cc.length() != 0) {
-                                                Collection<String> ccs = convertStringToInternetRecipientsList(cc);
+                                                Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);
                                                 for (String address : ccs) {
                                                     email.addCc(address);
                                                 }
                                             }
 
-                                            email.addTo(user.getEmail());
+                                            String emailToOutput = "";
+                                            for (String address : addresses) {
+                                                email.addTo(address);
+                                                emailToOutput += address + ", ";
+                                            }
                                             email.setFrom(from);
 
                                             if (subject != null && subject.length() != 0) {
@@ -170,11 +185,16 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                     link = base + urlMapping + activityInstanceId;
                                                 }
 
-                                                email.setMsg(WorkflowUtil.processVariable(emailMessage + "\n\n\n" + link, null, wfAssignment));
+                                                String msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
+                                                if ("true".equalsIgnoreCase(isHtml)) {
+                                                    email.setHtmlMsg(msg);
+                                                } else {
+                                                    email.setMsg(msg);
+                                                }
                                             }
-
+                                            
                                             try {
-                                                LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + user.getEmail() + ", subject=Workflow - Pending Task Notification");
+                                                LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
                                                 email.send();
                                                 LogUtil.info(getClass().getName(), "Sending email completed for subject=" + email.getSubject());
                                             } catch (EmailException ex) {
@@ -208,35 +228,6 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/app/userNotificationAuditTrail.json", null, true, null);
-    }
-
-    private Collection<String> convertStringToInternetRecipientsList(String s) throws AddressException {
-        InternetAddress[] addresses;
-        InternetAddress address;
-        Collection<String> recipients = new ArrayList<String>();
-        Set emailSet = new HashSet(); // to detect duplicate emails
-        String addrStr;
-
-        if (!("".equals(s) || s == null)) {
-            addresses = InternetAddress.parse(s);
-            for (int i = 0; i < addresses.length; i++) {
-                address = addresses[i];
-                addrStr = address.getAddress();
-
-                if (addrStr == null || addrStr.trim().length() == 0) {
-                    // ignore
-                    continue;
-                }
-                // allow invalid RFC email addresses. Uncomment to check - but not recommended
-                // address.validate();
-                if (!emailSet.contains(addrStr)) {
-                    emailSet.add(addrStr);
-                    recipients.add(addrStr);
-                }
-            }
-        }
-
-        return recipients;
     }
     
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

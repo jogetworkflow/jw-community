@@ -330,11 +330,12 @@
 
 .flexigrid div.bDiv
 	{
-	border: 1px solid #ccc;
+	border: 1px dotted #ccc;
 	border-top: 0px;
 	background: #fff;
 	overflow: auto;
 	position: relative;
+        min-height: 298px;
 	}
 
 .flexigrid div.bDiv table

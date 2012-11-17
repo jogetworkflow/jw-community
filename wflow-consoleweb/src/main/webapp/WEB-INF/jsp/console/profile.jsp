@@ -53,6 +53,17 @@
                         </form:select>
                     </span>
                 </div>
+                <c:if test="${enableUserLocale eq 'true'}">
+                    <div class="form-row">
+                        <label for="field1"><fmt:message key="console.directory.user.common.label.locale"/></label>
+                        <span class="form-input">
+                            <form:select path="locale" cssErrorClass="form-input-error">
+                                <form:option value="" label="" />
+                                <form:options items="${localeStringList}" />
+                            </form:select>
+                        </span>
+                    </div>
+                </c:if>
             </fieldset>
             <div class="form-buttons">
                 <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>

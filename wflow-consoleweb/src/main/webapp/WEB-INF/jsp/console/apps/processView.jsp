@@ -88,7 +88,7 @@
                                     <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${participant.id}
                                 </span>
                                 <span class="row-button">
-                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('${participant.id}')"/>
+                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('${participant.id}', '${participant.name}')"/>
                                 </span>
                                 <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                     <div id="participant_${participant.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -149,7 +149,7 @@
                                                             <font class="ftl_label"><fmt:message key="console.app.process.common.label.variableId"/> :</font> <c:out value="${fn:substring(participantMap[participantUid].value, 0, fn:indexOf(participantMap[participantUid].value, ','))}"/><br/>
                                                             <fmt:message key="console.process.config.label.mapParticipants.variable.${fn:substring(participantMap[participantUid].value, fn:indexOf(participantMap[participantUid].value, ',')+1, -1)}"/>
                                                         </c:when>
-                                                        <c:when test="${participantMap[participantUid].type eq 'requester' || participantMap[participantUid].type eq 'requesterHod' || participantMap[participantUid].type eq 'requesterSubordinates' || participantMap[participantUid].type eq 'requesterDepartment'}">
+                                                        <c:when test="${participantMap[participantUid].type eq 'requester' || participantMap[participantUid].type eq 'requesterHod' || participantMap[participantUid].type eq 'requesterSubordinates' || participantMap[participantUid].type eq 'requesterDepartment' || participantMap[participantUid].type eq 'requesterHodIgnoreReportTo'}">
                                                             <c:choose>
                                                                 <c:when test="${participantMap[participantUid].value ne ''}">
                                                                     <font class="ftl_label"><fmt:message key="console.app.activity.common.label.definitionId"/> :</font>
@@ -173,7 +173,7 @@
                                                     <div>
                                                         <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapParticipants.removeMapping"/>" onclick="participantRemoveMapping('${participant.id}')"/>
                                                         <c:if test="${participantMap[participantUid].type eq 'plugin'}">
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('${participant.id}')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('${participant.id}', '${participant.name}')"/>
                                                         </c:if>
                                                     </div>
                                                 </dd>
@@ -214,7 +214,7 @@
                                         <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('${activity.id}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('${activity.id}', '${activityDisplayName}')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -277,7 +277,7 @@
                                         <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('${activity.id}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('${activity.id}', '${activityDisplayName}')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -292,7 +292,7 @@
                                                     <dd>
                                                         <div>
                                                             <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('${activity.id}')"/>
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('${activity.id}')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('${activity.id}', '${activityDisplayName}')"/>
                                                         </div>
                                                     </dd>
                                                 </dl>
@@ -476,18 +476,18 @@
 //                window.open(url, "_blank", "");
             }
 
-            function addEditForm(activityId){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form";
+            function addEditForm(activityId, activityName){
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form?activityName=" + escape(activityName) ;
                 popupDialog.init();
             }
 
-            function addEditPlugin(activityId){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin";
+            function addEditPlugin(activityId, activityName){
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + escape(activityName);
                 popupDialog.init();
             }
 
-            function addEditParticipant(participantId){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId;
+            function addEditParticipant(participantId, participantName){
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + escape(participantName);
                 popupDialog.init();
             }
 
@@ -505,8 +505,9 @@
                 }
             }
 
-            function activityConfigurePlugin(activityId){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure";
+            function activityConfigurePlugin(activityId, activityName){
+                var title = " - " + activityName + " (" + activityId + ")";
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + escape(title);
                 popupDialog.init();
             }
 
@@ -535,8 +536,9 @@
                 }
             }
 
-            function participantConfigurePlugin(participantId){
-                popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure';
+            function participantConfigurePlugin(participantId, participantName){
+                var title = " - " + participantName + " (" + participantId + ")";
+                popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + escape(title);
                 popupDialog.init();
             }
 

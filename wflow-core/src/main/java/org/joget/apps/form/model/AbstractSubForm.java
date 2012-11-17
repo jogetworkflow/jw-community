@@ -132,10 +132,14 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
 
         // prefix parent ID set custom parameter name and readonly property for each child recursively
         boolean readonly = Boolean.valueOf(getPropertyString(FormUtil.PROPERTY_READONLY)).booleanValue();
+        boolean readonlyLabel = Boolean.valueOf(getPropertyString(FormUtil.PROPERTY_READONLY_LABEL)).booleanValue();
         Collection<Element> children = element.getChildren();
         for (Element child : children) {
             if (readonly) {
                 child.setProperty(FormUtil.PROPERTY_READONLY, "true");
+            }
+            if (readonlyLabel) {
+                child.setProperty(FormUtil.PROPERTY_READONLY_LABEL, "true");
             }
             updateElementParameterNames(child, prefix);
         }
@@ -317,5 +321,14 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
             return (Form) getChildren().iterator().next();
         }
         return null;
+    }
+    
+    @Override
+    public boolean continueValidation(FormData formData) {
+        if ("true".equalsIgnoreCase(getPropertyString(FormUtil.PROPERTY_READONLY))) {
+            return false;
+        }
+        
+        return true;
     }
 }

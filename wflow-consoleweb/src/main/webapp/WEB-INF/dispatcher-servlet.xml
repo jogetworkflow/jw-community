@@ -12,7 +12,7 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-2.5.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.2.xsd">    
-    
+       
     <context:annotation-config/>
     <context:component-scan base-package="org.joget"/>
     
@@ -23,8 +23,10 @@
             p:configurationLoader-ref="configurationLoader"/>
 
     <bean class="org.joget.commons.spring.web.ParameterizedAnnotationMethodHandlerAdapter"/>
-   
-	<bean class="org.joget.commons.spring.web.ParameterizedUrlHandlerMapping">
+    
+    <bean id="multipartHandlerInterceptor" class="org.joget.commons.spring.web.MultipartHandlerInterceptor" />
+    
+    <bean class="org.joget.commons.spring.web.ParameterizedUrlHandlerMapping">
         <property name="interceptors">
             <list>
                 <ref bean="openSessionInViewInterceptor"/>
@@ -33,8 +35,6 @@
             </list>
        </property>
     </bean>
-    
-    <bean id="multipartHandlerInterceptor" class="org.joget.commons.spring.web.MultipartHandlerInterceptor" />
     
     <bean name="openSessionInViewInterceptor"
           class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">  
@@ -57,7 +57,7 @@
     <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
     <bean class="org.springframework.web.servlet.mvc.throwaway.ThrowawayControllerHandlerAdapter"/>
-    
+
     <bean id="viewNameTranslator"
           class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator" />
     
@@ -65,20 +65,4 @@
           class="org.springframework.web.servlet.view.InternalResourceViewResolver"
           p:prefix="/WEB-INF/jsp/"
           p:suffix=".jsp" />
-           
-    <bean id="messageSource" class="org.joget.commons.util.DatabaseResourceBundleMessageSource">
-        <property name="basenames">
-             <list>
-                <value>console</value>
-                <value>peditor</value>
-                <value>fbuilder</value>
-                <value>dbuilder</value>
-                <value>ubuilder</value>
-                <value>plugin</value>
-                <value>helpdef</value>
-                <value>help</value>
-             </list>
-        </property>
-    </bean>
-
 </beans>

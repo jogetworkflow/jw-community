@@ -2,7 +2,7 @@
 
 <commons:popupHeader />
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapParticipants"/>
+        <fmt:message key="console.process.config.label.mapParticipants"/> - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />
     </div>
     <div id="main-body-content" style="text-align: left">
         <div id="userTabView">
@@ -105,6 +105,11 @@
                                     <div class="form-row">
                                     <label for="requesterHod">
                                         <input id="requesterHod" type="radio" name="participantType" value="requesterHod"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod"/>
+                                    </label>
+                                    </div>
+                                    <div class="form-row">
+                                    <label for="requesterHodIgnoreReportTo">
+                                        <input id="requesterHodIgnoreReportTo" type="radio" name="participantType" value="requesterHodIgnoreReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod.ignoreReportTo"/>
                                     </label>
                                     </div>
                                     <div class="form-row">
@@ -318,7 +323,7 @@
         }
 
         function submitPlugin(id){
-            document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+id;
+            document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
         }
 
         function post(type, params){

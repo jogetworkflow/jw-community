@@ -27,6 +27,7 @@ import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
@@ -203,6 +204,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 if (user != null) {
                     gmt = user.getTimeZone();
                 }
+                String format = AppUtil.getAppDateFormat();
                 for (WorkflowAssignment assignment : assignmentList) {
                     Map data = new HashMap();
                     data.put("processId", assignment.getProcessId());
@@ -211,9 +213,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                     data.put("processName", assignment.getProcessName());
                     data.put("activityName", assignment.getActivityName());
                     data.put("processVersion", assignment.getProcessVersion());
-                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
                     data.put("acceptedStatus", assignment.isAccepted());
-                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
+                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format) : "-");
 
                     double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
@@ -309,9 +311,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentFormUnavailable");
-            setProperty("formHtml", "Assignment Unavailable");
+            setProperty("formHtml", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
         }
     }
 
@@ -324,7 +326,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
-        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appDef.getVersion().toString(), activityId, formData, formUrl);
+        FormService formService = (FormService) ac.getBean("formService");
+        
+        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
+        
+        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
         return activityForm;
     }
 
@@ -368,6 +374,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
+            
+            if (formData.getStay()) {
+                setAlertMessage("");
+                setRedirectUrl("");
+            }
 
             // show form
             String formJson = formService.generateElementJson(form);
@@ -387,9 +398,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("redirectUrlAfterComplete", getUrl());
             setRedirectUrl(getUrl());
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentFormUnavailable");
-            setProperty("formHtml", "Assignment Unavailable");
+            setProperty("formHtml", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
         }
 
     }
@@ -402,8 +413,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
         String activityId = assignment.getActivityId();
         String processId = assignment.getProcessId();
-
-        formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
         // get form
         Form currentForm = activityForm.getForm();
@@ -422,8 +431,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         } else if (formData.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
             // complete assignment
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            formData = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
-
+            formData = appService.completeAssignmentForm(currentForm, assignment, formData, variableMap);
+            
             Map<String, String> errors = formData.getFormErrors();
             
             if (errors.isEmpty() && activityForm.isAutoContinue()) {

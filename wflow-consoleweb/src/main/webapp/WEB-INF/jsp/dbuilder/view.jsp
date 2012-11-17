@@ -5,8 +5,9 @@
 <head>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
-
-    <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>" />
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/themeroller/jquery-ui-themeroller.css">
+    
+    <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
     <style>
         * { font-family:'PT Sans',Arial; font-size:13px; line-height:16px }
         body { width:900px }

@@ -9,6 +9,7 @@ import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.lib.SubmitButton;
 import org.joget.apps.form.model.Column;
@@ -121,6 +122,13 @@ public class FormBuilderWebController {
 
         return "fbuilder/previewElement";
     }
+    
+    @RequestMapping("/app/(*:appId)/(~:appVersion)/form/embed")
+    public String appEmbedForm(ModelMap model, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        AppUtil.setCurrentAppDefinition(appDef);
+        return embedForm(model, request, buttonLabel, json, callback, callbackSetting, id, action);
+    }
 
     @RequestMapping("/form/embed")
     public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
@@ -167,7 +175,7 @@ public class FormBuilderWebController {
 
             Element hiddenField = (Element) pluginManager.getPlugin(HiddenField.class.getName());
             hiddenField.setProperty(FormUtil.PROPERTY_ID, "_json");
-            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, StringEscapeUtils.escapeHtml(json));
+            hiddenField.setProperty(FormUtil.PROPERTY_VALUE, json);
             columnChildren.add((Element) hiddenField);
 
             Element submitButton = (Element) pluginManager.getPlugin(SubmitButton.class.getName());

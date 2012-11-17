@@ -1,4 +1,6 @@
 <%@ page isErrorPage="true" %>
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
@@ -35,7 +37,10 @@
 
                 <div id="stack_trace" style="display:none; overflow:auto; font-size:10px; text-align: left">
                     <hr />
-                    <pre><% exception.printStackTrace(new java.io.PrintWriter(out));%></pre>
+                    <c:set var="error">
+                        <% exception.printStackTrace(new java.io.PrintWriter(out));%>
+                    </c:set>
+                    <pre><c:out value="${error}" escapeXml="true"/></pre>
                 </div>
             </div>
             <div id="footer">

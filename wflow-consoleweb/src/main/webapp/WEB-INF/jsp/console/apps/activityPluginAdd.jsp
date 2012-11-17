@@ -3,7 +3,7 @@
 <commons:popupHeader />
 
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapTools"/>
+        <fmt:message key="console.process.config.label.mapTools"/> - <c:out value=" ${param.activityName} (${activityDefId})" escapeXml="true" />
     </div>
 
     <div id="main-body-content" style="text-align: left">
@@ -15,7 +15,7 @@
                        width="100%"
                        sort="name"
                        desc="false"
-                       href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/${activityDefId}/plugin/submit"
+                       href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/${activityDefId}/plugin/submit?title= - ${fn:escapeXml(param.activityName)} (${fn:escapeXml(activityDefId)})&"
                        hrefParam="id"
                        hrefQuery="true"
                        hrefDialog="false"

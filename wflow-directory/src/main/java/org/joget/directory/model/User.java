@@ -23,6 +23,7 @@ public class User implements Serializable, Auditable {
     private String email;
     private Integer active;
     private String timeZone;
+    private String locale;
     //join
     private Set roles;
     private Set groups;
@@ -93,6 +94,14 @@ public class User implements Serializable, Auditable {
 
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
+    }
+    
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     public String getTimeZoneLabel() {

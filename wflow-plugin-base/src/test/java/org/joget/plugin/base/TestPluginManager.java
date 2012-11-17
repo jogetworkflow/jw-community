@@ -24,7 +24,7 @@ public class TestPluginManager {
     @Autowired
     PluginManager pluginManager;
 
-    private String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.0-SNAPSHOT.jar";
+    private String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.1-SNAPSHOT.jar";
     private String samplePlugin = "org.joget.plugin.sample.SamplePlugin";
 
     public String getSamplePluginFile() {

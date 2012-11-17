@@ -27,8 +27,25 @@
         description : '@@form.datepicker.format.eg@@'
     },
     {
+        name : 'yearRange',
+        label : '@@form.datepicker.yearRange@@',
+        type : 'textfield',
+        value : 'c-10:c+10',
+        required : 'true'
+    },
+    {
         name : 'readonly',
         label : '@@form.datepicker.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.datepicker.readonlyLabel@@',
         type : 'checkbox',
         value : 'False',
         options : [{

@@ -24,7 +24,7 @@
         label : '@@userview.formmenu.form@@',
         type : 'selectbox',
         required : 'True',
-        options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.FormMenu/service?action=getOptions'
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/forms/options'
     },
     {
         name : 'showInPopupDialog',
@@ -45,6 +45,16 @@
             value : 'Yes',
             label : ''
         }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@userview.formmenu.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
@@ -63,6 +73,20 @@
         name : 'redirectUrlOnCancel',
         label : '@@userview.formmenu.redirectOnCancel@@',
         type : 'textfield'
+    },
+    {
+        name : 'redirectTargetOnCancel',
+        label : '@@userview.formmenu.redirectTargetOnCancel@@',
+        type : 'selectbox',
+        value : 'top',
+        options : [{
+            value : 'top',
+            label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'window',
+            label : '@@userview.formmenu.target.window@@'
+        }]
     },
     {
         name : 'fieldPassover',

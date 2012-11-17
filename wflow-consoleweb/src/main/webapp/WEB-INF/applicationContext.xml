@@ -15,16 +15,11 @@
 
     <import resource="classpath:appsApplicationContext.xml" />
 
-    <!-- START Spring Security -->
-    <bean id="springSecurityFilterChain" class="org.springframework.security.util.FilterChainProxy">
-        <security:filter-chain-map path-type="ant">
-            <security:filter-chain pattern="/**" filters="workflowHttpAuthFilter"/>
-        </security:filter-chain-map>
-    </bean>
-
     <security:authentication-manager alias="authenticationManager"/>
 
-    <security:http auto-config="false" access-denied-page="/web/unauthorized" servlet-api-provision="false">
+    <security:http auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" access-denied-page="/web/unauthorized" servlet-api-provision="false">
+        <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/client/app/**/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/console/profile/**" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/profile" access="ROLE_ADMIN, ROLE_USER"/>
@@ -36,8 +31,9 @@
         <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/web/json/monitoring/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/**" filters="none"/>
-        <security:form-login login-page="/web/login" authentication-failure-url="/web/login?login_error=1" default-target-url="/index.jsp" />
         <security:logout logout-success-url="/web/login"/>
         <security:anonymous />
     </security:http>
@@ -48,14 +44,23 @@
     </bean>
 
     <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
-        <security:custom-filter before="AUTHENTICATION_PROCESSING_FILTER" />
+        <security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
         <property name="authenticationManager" ref="authenticationManager" />
-        <property name="authenticationFailureUrl" value="/web/login?login_error=1" />
-        <property name="defaultTargetUrl" value="/" />
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="directoryManager" ref="directoryManager"/>
         <property name="setupManager" ref="setupManager"/>
+        <property name="localeResolver" ref="localeResolver"/>
+        <property name="defaultTargetUrl" value="/index.jsp"/>
+        <property name="authenticationFailureUrl" value="/web/login?login_error=1" />
+        <property name="allowSessionCreation" value="true" />
+    </bean>
+    
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
+        <property name="loginFormUrl" value="/web/login" />
+        <property name="forceHttps" value="false" />
     </bean>
 
     <!-- END Spring Security -->
+    
+    <import resource="classpath:webApplicationContext.xml" />
 </beans>

@@ -17,8 +17,9 @@ body {
     padding: 0;
     margin: 0;
     font-family: Arial,sans-serif;
-    font-size: 13px;
-    background: url(../images/v3/console/header_bg.png) repeat-x #EFFDC8;
+    font-size: 12px;
+    background: #E6FAB6;
+    backgroundx: url(../images/v3/console/header_bg.png) repeat-x #EFFDC8;
 }
 div {
 
@@ -39,7 +40,8 @@ button {
     font-size: 12px;
     color: #565656;
     cursor: pointer;
-    border-radius: 4px; }
+    border-radius: 4px; 
+}
 button:hover { 
     background: #e7fab6 url(../images/v3/console/dropdown_btn_bg.gif) 0 0 repeat-x;
 }
@@ -73,49 +75,104 @@ img {
     filter: alpha(opacity=30);
 }
 #header {
-    position: relative;
+    position: fixed;
     min-width: 980px;
     z-index: 8;
+    opacity: 1.0;
+    width: 100%;
 }
 #header #topbar {
     position: relative;
-    height: 30px;
+    height: 3px;
+    z-index: 2;
+    background: url(../images/v3/console/header_bg.png) repeat-x #EFFDC8;
 }
 #header #logo {
-    position: relative;
-    background: url(../images/v3/console/logo.png) no-repeat;
-    width: 200px;
-    height: 30px;
-    float: left;
+    position: fixed;
+    background: url(../images/v3/console/logo_name.png) no-repeat;
+    widthx: 88px;
+    width: 125px;
+    height: 32px;
+    floatx: left;
     padding-top: 2px;
     padding-left: 35px;
-    color: #B3CB5E;
+    color: #4C6B00;
     font-weight: bold;
     vertical-align: middle;
     z-index: 8;
+    top: 7px;
+    left: 6px;
 }
 #header #account {
-    padding-top: 2px;
-    padding-right: 20px;
-    height: 30px;
+    padding: 2px 20px;
+    margin-right: 5px;
+    height: 15px;
     float: right;
     color: #B3CB5E;
     text-align: center;
     vertical-align: bottom;
     font-size: 11px;
+    background: darkGreen;
+    -moz-border-radius: 0px 0px 6px 6px;
+    -webkit-border-radius: 0px 0px 6px 6px;
+    border-radius: 0px 0px 6px 6px;
+    opacity: 0.7;
 }
 #header #account a {
     color: white;
     text-decoration: none;
 }
+#logo-label {
+    position: absolute;
+    top: 19px;
+    left: 105px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #4F6028;
+    font-size: 10px;
+}
+#header-label {
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    left: 95px;
+    line-height: 14px;
+    opacity: 0.7;
+    padding: 2px 10px;
+    position: fixed;
+    top: 28px;
+    z-index: 5;
+    width: 84px;
+    text-align: right;
+}
+#header-bg {
+    background-image: url(../images/v3/console/header_bg.png);
+    background-color: #EFFDC8;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 46px;
+    opacity: 0.7;
+    border-bottom-width: 2px;
+    border-bottom-style: none;
+    border-bottom-color: #4C5B28;
+    -moz-box-shadow: 0px 0px 20px green;
+    -webkit-box-shadow: 0px 0px 20px green;
+    box-shadow: 0px 0px 20px green;
+    background-position: 0px 50%;
+    background-repeat: repeat no-repeat;    
+}
 #menu {
     height: 45px;
     padding: 10px 0 0 0;
     margin-bottom: 10px;
-    position: relative;
-    top: -12px;
-    left: 40px;
-    max-width: 1050px;
+    position: fixed;
+    top: -6px;
+    leftx: 170px;
+    left: 198px;
+    opacity: 1.0;
+    width: 892px;
 }
 #menu #menu-items {
     list-style: none;
@@ -137,14 +194,14 @@ img {
 #menu ul#menu-items a {
     display: block;
     background: url(../images/v3/console/menu_arrow.png) right top no-repeat;
-    padding: 0 28px 0 5px;
+    padding: 0 24px 0 4px;
     text-decoration: none
 }
 #menu ul#menu-items a span.menu-bg {
     background:url(../images/v3/console/menu_bg.png) left top repeat-x;
     display: block;
-    height:49px;
-    line-height: 49px;
+    height:40px;
+    line-height: 40px;
     text-decoration: none;
     cursor: pointer;
     padding: 0 5px 0 0;
@@ -187,12 +244,14 @@ img {
     padding: 0 0 0 6px
 }
 #menu span.title {
-    font-size: 18px;
+    font-size: 14px;
     color: #f1ffbf;
     text-shadow: 1px 1px 1px #767676;
     display: block;
-    line-height: 28px;
-    padding: 2px 0 0 26px
+    line-height: 22px;
+    padding: 2px 0 0 28px;
+    font-weight: bold;
+    max-width: 130px;
 }
 #menu span.subtitle { 
     font-size: 11px;
@@ -201,7 +260,8 @@ img {
     line-height: 10px;
     font-family: Arial, Helvetica, sans-serif;
     display: block;
-    padding: 0 0 0 26px
+    padding: 0 0 0 26px;
+    max-width: 136px;
 }
 
 #menu ul#menu-items li:hover .dropdown { 
@@ -217,7 +277,7 @@ img {
     position: absolute;
     z-index: 9;
     width: 283px;
-    top: 45px;
+    top: 40px;
     left: 2px;
     overflow: hidden;
     clear: left;
@@ -289,7 +349,8 @@ img {
     text-shadow: none;
     display: block;
     line-height: 22px;
-    paddingx: 12px 0 0 26px
+    paddingx: 12px 0 0 26px;
+    max-width: 200px;
 }
 #menu .dropdown span.subsubtitle {
     font-size: 10px;
@@ -384,16 +445,20 @@ img {
 #container {
     min-width: 980px;
     padding-right: 10px;
-    margin-topx: 30px;
+    position: relative;
+    top: 46px;
 }
 #nav {
-    width: 19%;
+    position: fixed;
+    top: 29px;
+    z-index: 0;
+    width: 10%;
     float: left;
     margin-rightx: 20px;
-    margin-top: 15px;
+    margin-top: 0px;
 }
 #nav #nav-body {
-    padding-top: 5px;
+    min-width: 179px;
 }
 #nav #nav-list {
     list-style: none;
@@ -411,15 +476,13 @@ img {
     font-size: 0.8em;
 }
 #nav #nav-title {
-    background: #d1ddb0;
-    padding: 15px;
-    margin: 0 0 5px 20px;
-    width: 110%;
-    -moz-border-radius: 5px 0 0 5px;
-    -webkit-border-radius: 5px 0 0 5px;
-    border-radius: 5px 0 0 5px;
-    color: #646a52;
+    background: #D1DDB0;
+    padding: 25px 15px 5px 15px;
+    margin: 0px;
+    width: 170px;
+    color: #646A52;
     min-height: 40px;
+    border-top: solid 2px #DFF6A1;
 }
 #nav #nav-list {
     list-style: none;
@@ -430,7 +493,7 @@ img {
 #nav #nav-list li {
     padding: 0 10px 0 20px;
     margin: 0 0 1px 0;
-    width: 101%;
+    overflow: hidden;
 }
 #nav #nav-list li:hover {
     background: url(../images/v3/console/left_nav_activebar.png) right center no-repeat;
@@ -439,8 +502,7 @@ img {
 #nav #nav-list a {
     text-decoration: none;
     display: block;
-    font-size: 14px;
-    color: #565656;
+    font-size: 13px;
     height: 36px;
     line-height: 36px
 }
@@ -472,9 +534,9 @@ img {
 #nav span.nav-subtitle {
     display: block;
     padding: 0 0 0 15px;
-    font-size: 16px;
+    font-size: 14px;
     color: #4c4c4c;
-    width: 200px;
+    width: 175px;
 }
 #nav span.nav-subtitle a {
     color: #4c6b00;
@@ -483,6 +545,13 @@ img {
 }
 #nav span.nav-subtitle a:hover {
     text-decoration: underline
+}
+#quickNav {
+    display: none;
+    position: absolute;
+    right: 0px;
+    top: -30px;
+    padding: 4px 20px;
 }
 #guide {
     display: none;
@@ -505,16 +574,17 @@ img {
     padding: 1px 20px;
 }
 #main {
+    position: relative;
     min-width: 600px;
-    width: 78%;
-    float: right;
+    width: 80%;
     -moz-box-shadow: #bfbfbf 0 1px 3px;
-    -webkit-box-shadow: #bfbfbf 0 1px 3px;
-    border: 1px solid #e9e9e9;
-    background-color: #fff;
+    -webkit-box-shadow: #BFBFBF 0 1px 3px;
+    border: 1px solid #E9E9E9;
+    background-color: white;
     padding: 1px 1px 30px 1px;
     margin-right: 10px;
     border-radius: 1px;
+    margin-left: 200px;
 }
 #main #main-title {
     color: #fff; 
@@ -555,7 +625,7 @@ img {
 #main #main-body {
     clear: both;
     min-height: 300px;
-    padding: 10px 30px;
+    padding: 20px 30px;
 }
 #main-body strong {
     font-size: 16px;
@@ -612,7 +682,7 @@ img {
 }
 #footer {
     position: relative;
-    top: 20px;
+    top: 50px;
     clear: both;
     text-align: center;
     padding: 20px;
@@ -1077,19 +1147,15 @@ img {
 }
 
 #main .main-grid .main-grid-item {
-    border: solid 1px #dfdfdf;
-    padding: 20px;
-    margin: 5px 5px 10px 5px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
+    border: solid 1px #DFDFDF;
+    padding: 15px 15px 40px 15px;
+    margin: 1px 5px 10px 5px;
     width: 90%;
-    min-height: 150px;
-    display: block;
-    float: left;
+    display: block;    
 }
 
 #main .main-grid .main-grid-title {
-    font-size: 17px;
+    font-size: 13px;
     font-weight: bold;
     line-height: 24px;
     float: left;
@@ -1117,7 +1183,7 @@ img {
 }
 
 #main .main-subgrid .main-subgrid-title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: bold;
     line-height: 20px;
     float: left;
@@ -1252,4 +1318,60 @@ span.dot_yellow{
     height: 15px;
     text-align: left;
     width: 15px;
+}
+
+#login-container {
+    -moz-box-shadow: 0 1px 3px #BFBFBF;
+    background-color: #FFFFFF;
+    border: 1px solid #E9E9E9;
+    margin: 0 auto;
+    padding: 70px 20px;
+    width: 90%;
+}
+#login-box {
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    background-color: #F3F9E0;
+    border: 1px solid #E9E9E9;
+    margin: 0 auto;
+    padding: 60px 20px;
+    text-align: center;
+    width: 500px;
+}
+#login-box td, #login-box .input {
+    font-family: 'Times New Roman', serif;
+    font-size: 16px;
+    color: #757575;
+    display: block;
+    text-align: left;
+}
+#login-box .input {
+    width: 250px;
+    height: 20px;
+    font-size: 18px;
+    color: #535353;
+    padding: 5px;
+}
+#login-box tr {
+    margin-top: 15px;
+    display: block;
+}
+#login-box h1 {
+    color: #617722;
+    font-family: Georgia,"Times New Roman",Times,serif;
+    font-size: 22px;
+    font-weight: normal;
+}
+#login-box .buttons {
+    text-align: right;
+    font-size: 18px;
+}
+#login-box .buttons input {
+    font-size: 16px;
+}
+.clear{
+    clear:both;
+}
+#propertyEditor #header {
+    position: relative;
 }

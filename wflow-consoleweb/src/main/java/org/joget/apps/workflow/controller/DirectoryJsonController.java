@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import org.joget.directory.dao.EmploymentDao;
 import org.joget.directory.dao.UserDao;
@@ -94,7 +95,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -127,7 +128,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -157,7 +158,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -187,7 +188,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -222,7 +223,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -260,7 +261,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -316,7 +317,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -355,7 +356,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -402,7 +403,7 @@ public class DirectoryJsonController {
         }
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -452,7 +453,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -488,7 +489,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -527,7 +528,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -566,7 +567,7 @@ public class DirectoryJsonController {
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -627,7 +628,7 @@ public class DirectoryJsonController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {

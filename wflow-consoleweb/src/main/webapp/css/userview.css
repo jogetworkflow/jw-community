@@ -139,3 +139,7 @@ body.rtl #content {
     position: absolute;
     right: 5px;
 }
+
+body.rtl #ui-datepicker-div {
+    display:none;
+}

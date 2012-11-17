@@ -2832,67 +2832,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 AdminMisc admin = shark.getAdminMisc();
                 WMSessionHandle sessionHandle = sc.getSessionHandle();
 
-                boolean found = false;
-                WfActivity[] activityList = wfProcess.get_sequence_step(0);
                 XPDLBrowser xpdl = shark.getXPDLBrowser();
-                int index = 0;
-                String activityId = "";
-                WMEntity activityEntity = null;
-                while (!found && activityList.length > index) {
-                    WfActivity activity = activityList[index];
-                    activityId = activity.key();
-                    activityEntity = admin.getActivityDefinitionInfo(sessionHandle, wfProcess.key(), activityId);
-
-                    //check for tool
-                    WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, activityEntity, null, true);
-                    found = true;
-                    while (activityEntityIterator.hasNext()) {
-                        WMEntity entity = (WMEntity) activityEntityIterator.next();
-                        if (entity.getType().equalsIgnoreCase("tool") || entity.getType().equalsIgnoreCase("route")) {
-                            found = false;
-                            break;
-                        }
-
-                        //redirect to the first activity id from sub flow
-                        if (entity.getType().equalsIgnoreCase("subflow")) {
-                            WfProcess[] wfProcesses = activity.get_sequence_performer(0);
-                            wfProcess = (wfProcesses.length > 0 ? wfProcesses[0] : null);
-
-                            if (wfProcess != null) {
-                                WfActivity[] wfActivityTemp = wfProcess.get_sequence_step(0);
-                                if (wfActivityTemp.length > 0) {
-                                    WfActivity wfAct = wfProcess.get_sequence_step(0)[0];
-                                    activityId = wfAct.key();
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    index++;
-                }
-
-                if (activityId != null && activityId.trim().length() > 0) {
-                    List<String> users = getAssignmentResourceIds(mgr.name(), wfProcess.key(), activityId);
-
-                    if (users != null && users.size() > 0) {
-                        String currentUsername = getWorkflowUserManager().getCurrentUsername();
-                        for (String username : users) {
-                            if (username.equals(currentUsername)) {
-                                WorkflowActivity activityStarted = new WorkflowActivity();
-                                activityStarted.setId(activityId);
-                                activitiesStarted.add(activityStarted);
-                                result.setActivities(activitiesStarted);
-                                break;
-                            }
-                        }
-                    }
+                WfActivity[] activityList = wfProcess.get_sequence_step(0);
+                WorkflowActivity activity = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), activityList);
+                
+                if (activity != null) {
+                    activitiesStarted.add(activity);
+                    result.setActivities(activitiesStarted);
                 }
             }
-
-
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -3062,21 +3010,32 @@ public class WorkflowManagerImpl implements WorkflowManager {
         SharkConnection sc = null;
         WorkflowAssignment ass = null;
 
-        try {
-
-            sc = connect();
-
-            WfAssignment wfa = getSharkAssignmentByProcess(sc, processId);
-            String activityId = (wfa != null ? wfa.activity().key() : null);
-            ass = (activityId != null ? getAssignment(activityId) : null);
-
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
+        if (processId != null && !processId.trim().isEmpty()) {
             try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
+
+                sc = connect();
+
+                WfProcess wfProcess = sc.getProcess(processId);
+                if (wfProcess != null) {
+                    Shark shark = Shark.getInstance();
+                    AdminMisc admin = shark.getAdminMisc();
+                    WMSessionHandle sessionHandle = sc.getSessionHandle();
+                    XPDLBrowser xpdl = shark.getXPDLBrowser();
+
+                    WfActivity[] activityList = wfProcess.get_sequence_step(0);
+                    WorkflowActivity activity = getNextActivity(sessionHandle, wfProcess.manager(), admin, xpdl, wfProcess.key(), activityList);
+                    if (activity != null) {
+                        ass = getAssignment(activity.getId());
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "");
+            } finally {
+                try {
+                    disconnect(sc);
+                } catch (Exception e) {
+                    LogUtil.error(getClass().getName(), e, "");
+                }
             }
         }
         return ass;
@@ -4514,7 +4473,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         if (processDefId != null && processDefId.contains(LATEST)) {
-            String currentVersion = getCurrentPackageVersion(processDefId.split("#")[0]);
+            ApplicationContext appContext = WorkflowUtil.getApplicationContext();
+            WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+        
+            String currentVersion = workflowMapper.getPublishedPackageVersion(processDefId.split("#")[0]);
 
             if (currentVersion != null && currentVersion.trim().length() > 0) {
                 processDefId = processDefId.replace(LATEST, currentVersion);
@@ -4631,5 +4593,38 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         return temp;
+    }
+    
+    protected WorkflowActivity getNextActivity(WMSessionHandle sessionHandle, WfProcessMgr mgr, AdminMisc admin, XPDLBrowser xpdl, String processId, WfActivity[] activityList) {
+        try {
+            for (WfActivity wfAct : activityList) {
+                String activityId = wfAct.key();
+                WMEntity activityEntity = admin.getActivityDefinitionInfo(sessionHandle, processId, activityId);
+
+                //check for tool
+                WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, activityEntity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity entity = (WMEntity) activityEntityIterator.next();
+                    if (entity.getType().equalsIgnoreCase("tool") || entity.getType().equalsIgnoreCase("route")) {
+                        break;
+                    } else if (entity.getType().equalsIgnoreCase("subflow")) { //redirect to the first activity id from sub flow
+                        WfProcess[] wfProcesses = wfAct.get_sequence_performer(0);
+                        WfProcess wfProcess = (wfProcesses.length > 0 ? wfProcesses[0] : null);
+                        if (wfProcess != null) {
+                            WfActivity[] wfActivityTempList = wfProcess.get_sequence_step(0);
+                            return getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), wfActivityTempList);
+                        }
+                    } else {
+                        WfAssignment ass = getSharkAssignment(connect(), activityId);
+                        if (ass != null) {
+                            WorkflowActivity activityStarted = new WorkflowActivity();
+                            activityStarted.setId(activityId);
+                            return activityStarted;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {}
+        return null;
     }
 }

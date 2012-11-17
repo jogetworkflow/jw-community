@@ -173,7 +173,11 @@ DatalistBuilder = {
         $('#builder-palettle-items').html('');
         for(var e in fields){
             var field = fields[e];
-            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label">' + field.label + '</label></div></li>';
+            var cssClass = "";
+            if (field.id == field.label) {
+                cssClass = " key";
+            }
+            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + field.label + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
     },
@@ -666,8 +670,7 @@ DatalistBuilder = {
             {
                 label : 'Name',
                 name  : 'name',
-                required : 'true',
-                type : 'hidden'
+                type : 'label'
             },
             {
                 label : get_dbuilder_msg('dbuilder.label'),
@@ -756,8 +759,7 @@ DatalistBuilder = {
             {
                 label : 'Name',
                 name  : 'name',
-                required : 'true',
-                type : 'hidden'
+                type : 'label'
             },
             {
                 label : get_dbuilder_msg('dbuilder.label'),

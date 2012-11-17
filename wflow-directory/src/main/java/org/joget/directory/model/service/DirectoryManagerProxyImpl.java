@@ -57,7 +57,7 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
     }
 
     public boolean isCustomDirectoryManager() {
-        if (getCustomDirectoryManagerImpl() != null) {
+        if (getCustomDirectoryManagerImpl() != null && !(getCustomDirectoryManagerImpl() instanceof DirectoryManagerImpl)) {
             return true;
         }
         return false;
@@ -101,7 +101,7 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
         return null;
     }
 
-    private DirectoryManager getDirectoryManagerImpl() {
+    public DirectoryManager getDirectoryManagerImpl() {
         DirectoryManager customDirectoryManager = getCustomDirectoryManagerImpl();
 
         if (customDirectoryManager != null) {

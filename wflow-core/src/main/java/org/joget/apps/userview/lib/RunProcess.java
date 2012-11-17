@@ -23,6 +23,7 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -169,7 +170,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         WorkflowProcess process = appService.getWorkflowProcessForApp(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"));
         setProperty("process", process);
 
-        if (isUnauthorized()) {
+        if (isUnauthorized(process.getId())) {
             // check for start mapped form
             String formUrl = getUrl() + "?_action=start";
             FormData formData = new FormData();
@@ -227,7 +228,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         WorkflowProcess process = appService.getWorkflowProcessForApp(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"));
         setProperty("process", process);
 
-        if (isUnauthorized()) {
+        if (isUnauthorized(process.getId())) {
             // extract form values from request
             FormData formData = new FormData();
 
@@ -359,7 +360,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 } else if (formResult.getFormResult(AssignmentCompleteButton.DEFAULT_ID) != null) {
                     // complete assignment
                     Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-                    formResult = appService.completeAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, variableMap);
+                    formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
                     Map<String, String> errors = formResult.getFormErrors();
                     if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
@@ -416,11 +417,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         }
     }
 
-    private boolean isUnauthorized() {
+    private boolean isUnauthorized(String processDefId) {
         // check for permission
         ApplicationContext ac = AppUtil.getApplicationContext();
         WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
-        if (workflowManager.isUserInWhiteList(getPropertyString("processDefId"))) {
+        if (workflowManager.isUserInWhiteList(processDefId)) {
             return true;
         } else {
             setProperty("headerTitle", "Unauthorized");
@@ -437,7 +438,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         if (assignment != null) {
             return true;
         } else {
-            setProperty("headerTitle", "Assignment Unavailable");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.label.assignmentUnavailable"));
             setProperty("view", "assignmentUnavailable");
             return false;
         }

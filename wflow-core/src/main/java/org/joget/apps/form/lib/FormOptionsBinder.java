@@ -74,20 +74,21 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
             if (extraCondition != null && !extraCondition.trim().isEmpty()) {
                 condition = " WHERE " + extraCondition;
             }
-
+            
+            String labelColumn = (String) getProperty("labelColumn");
+            
             // get form data
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            results = formDataDao.find(formDefId, tableName, condition, null, null, null, null, null);
+            results = formDataDao.find(formDefId, tableName, condition, null, labelColumn, false, null, null);
 
             if (results != null) {
                 if ("true".equals(getPropertyString("addEmptyOption"))) {
                     FormRow emptyRow = new FormRow();
                     emptyRow.setProperty(FormUtil.PROPERTY_VALUE, "");
-                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, "");
+                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, getPropertyString("emptyLabel"));
                     filtered.add(emptyRow);
                 }
                 
-                String labelColumn = (String) getProperty("labelColumn");
                 //Determine id column. Setting to default if not specified
                 String idColumn = (String) getProperty("idColumn");
                 idColumn = (idColumn == null || "".equals(idColumn)) ? FormUtil.PROPERTY_ID : idColumn;

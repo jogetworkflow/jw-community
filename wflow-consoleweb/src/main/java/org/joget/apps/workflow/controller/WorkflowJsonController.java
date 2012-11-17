@@ -27,6 +27,7 @@ import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -560,7 +561,7 @@ public class WorkflowJsonController {
         if (user != null) {
             gmt = user.getTimeZone();
         }
-
+        String format = AppUtil.getAppDateFormat();
         for (WorkflowAssignment assignment : assignmentList) {
             Map data = new HashMap();
             data.put("processId", assignment.getProcessId());
@@ -568,9 +569,9 @@ public class WorkflowJsonController {
             data.put("processName", assignment.getProcessName());
             data.put("activityName", assignment.getActivityName());
             data.put("processVersion", assignment.getProcessVersion());
-            data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+            data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
             data.put("acceptedStatus", assignment.isAccepted());
-            data.put("due", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null) : "-");
+            data.put("due", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format) : "-");
 
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
 
@@ -759,10 +760,10 @@ public class WorkflowJsonController {
         if (user != null) {
             gmt = user.getTimeZone();
         }
-
-        jsonObject.accumulate("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+        String format = AppUtil.getAppDateFormat();
+        jsonObject.accumulate("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
         if (assignment.getDueDate() != null) {
-            jsonObject.accumulate("dueDate", TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null));
+            jsonObject.accumulate("dueDate", TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format));
         }
         Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(activityId);
         for (WorkflowVariable variable : variableList) {
@@ -798,10 +799,10 @@ public class WorkflowJsonController {
         if (user != null) {
             gmt = user.getTimeZone();
         }
-
-        jsonObject.accumulate("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, null));
+        String format = AppUtil.getAppDateFormat();
+        jsonObject.accumulate("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
         if (assignment.getDueDate() != null) {
-            jsonObject.accumulate("dueDate", TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, null));
+            jsonObject.accumulate("dueDate", TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format));
         }
         Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(assignment.getActivityId());
         for (WorkflowVariable variable : variableList) {
@@ -955,7 +956,7 @@ public class WorkflowJsonController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {

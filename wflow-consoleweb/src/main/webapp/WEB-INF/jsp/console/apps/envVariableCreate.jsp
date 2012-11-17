@@ -24,11 +24,11 @@
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.value"/></label>
-                    <span class="form-input"><form:input path="value" cssErrorClass="form-input-error" /></span>
+                    <span class="form-input"><form:textarea path="value" cssErrorClass="form-input-error" rows="10" cols="60" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.remarks"/></label>
-                    <span class="form-input"><form:textarea path="remarks" cssErrorClass="form-input-error" /></span>
+                    <span class="form-input"><form:textarea path="remarks" cssErrorClass="form-input-error" cols="60" /></span>
                 </div>
             </fieldset>
             <div class="form-buttons">

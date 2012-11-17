@@ -7,11 +7,11 @@
     <#if value??>
         <span class="form-fileupload-value">
             <#if tempFilePath??>
-                ${value}
-                <input type="hidden" name="${elementParamName!}_path" value="${tempFilePath}"/>
+                ${value!?html}
+                <input type="hidden" name="${elementParamName!}_path" value="${tempFilePath!?html}"/>
             <#else>
-                <a href="${request.contextPath}${filePath}">${value}</a>
-                <input type="hidden" name="${elementParamName!}_path" value="${value}"/>
+                <a href="${request.contextPath}${filePath!?html}">${value}</a>
+                <input type="hidden" name="${elementParamName!}_path" value="${value!?html}"/>
             </#if>
             <#if value != '' && element.properties.readonly! != 'true'>
                 <input type="checkbox" name="${elementParamName!}_remove" /> <span style="font-size:smaller">@@form.fileupload.remove@@</span>

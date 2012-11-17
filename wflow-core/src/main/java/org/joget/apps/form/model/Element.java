@@ -3,10 +3,16 @@ package org.joget.apps.form.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.ExtDefaultPlugin;
+import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
 
 /**
  * Base class for all elements within a form. All forms, containers and form fields must override this class.
@@ -230,6 +236,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     public String getDefaultPropertyValues(){
         return PropertyUtil.getDefaultPropertyValues(getPropertyOptions());
     }
+    
+    public Collection<String> getDynamicFieldNames() {
+        return null;
+    }
 
     @Override
     public String toString() {
@@ -252,5 +262,28 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         }
         
         return false;
+    }
+    
+    public Boolean isAuthorize(FormData formData) {
+        Boolean isAuthorize = true;
+        
+        Map permissionMap = (Map) getProperty("permission");
+        if (permissionMap != null && permissionMap.get("className") != null) {
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            UserviewPermission permission = (UserviewPermission) pluginManager.getPlugin(permissionMap.get("className").toString());
+            if (permission != null) {
+                permission.setProperties((Map) permissionMap.get("properties"));
+                permission.setRequestParameters(formData.getRequestParams());
+                
+                WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                ExtDirectoryManager directoryManager = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+                User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+                permission.setCurrentUser(user);
+                
+                isAuthorize = permission.isAuthorize();
+            }
+        }
+        
+        return isAuthorize;
     }
 }

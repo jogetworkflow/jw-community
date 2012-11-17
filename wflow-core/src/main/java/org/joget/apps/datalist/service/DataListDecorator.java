@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.decorator.CheckboxTableDecorator;
 import org.displaytag.model.TableModel;
 import org.displaytag.properties.MediaTypeEnum;
@@ -26,6 +27,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
     List checkedIds;
     String id;
     String fieldName;
+    
+    private int index = 0;
 
     @Override
     public void init(PageContext pageContext, Object decorated, TableModel tableModel) {
@@ -70,7 +73,31 @@ public class DataListDecorator extends CheckboxTableDecorator {
         buffer.append("<input type=\"checkbox\" name=\"");
         buffer.append(fieldName);
         buffer.append("\" value=\"");
-        buffer.append(evaluatedId);
+        buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));
+        buffer.append("\"");
+        if (checked) {
+            checkedIds.remove(evaluatedId);
+            buffer.append(" checked=\"checked\"");
+        }
+        buffer.append("/>");
+
+        return buffer.toString();
+    }
+    
+    public String getRadio() {
+        // Override this method to fix DisplayTag bug
+        String evaluatedId = "";
+        boolean checked = false;
+        if (id != null) {
+            evaluatedId = ObjectUtils.toString(evaluate(id));
+            checked = checkedIds.contains(evaluatedId);
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<input type=\"radio\" name=\"");
+        buffer.append(fieldName);
+        buffer.append("\" value=\"");
+        buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));
         buffer.append("\"");
         if (checked) {
             checkedIds.remove(evaluatedId);
@@ -124,8 +151,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (actions != null) {
             for (DataListAction action : actions) {
                 String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), action.getLinkLabel(), action.getConfirmation());
-                output += " " + link + " &nbsp; ";
+                output += " " + link + " </td><td> ";
             }
+            output = output.substring(0, output.length() - 10);
         }
         return output;
     }
@@ -134,12 +162,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
         // get column, temporarily just iterate thru to find
         DataListColumn column = null;
         DataListColumn[] columns = dataList.getColumns();
-        for (DataListColumn col : columns) {
-            if (col.getName().equals(columnName)) {
-                column = col;
-                break;
-            }
+        column = columns[index];
+        if (index == columns.length - 1) {
+            index = 0;
+        } else {
+            index++;
         }
+        
         return column;
     }
 

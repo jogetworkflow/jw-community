@@ -177,4 +177,47 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
     public String getFormBuilderIcon() {
         return null;
     }
+    
+    @Override
+    public Boolean selfValidate(FormData formData) {
+        String id = FormUtil.getElementParameterName(this);
+        Boolean valid = true;
+        String error = "";
+        try {
+            String value = FormUtil.getElementPropertyValue(this, formData);
+
+            File file = FileManager.getFileByPath(value);
+            if (file != null) {
+                if(getPropertyString("maxSize") != null && !getPropertyString("maxSize").isEmpty()) {
+                    long maxSize = Long.parseLong(getPropertyString("maxSize")) * 1024;
+                    
+                    if (file.length() > maxSize) {
+                        valid = false;
+                        error += getPropertyString("maxSizeMsg") + " ";
+                        
+                    }
+                }
+                if(getPropertyString("fileType") != null && !getPropertyString("fileType").isEmpty()) {
+                    String[] fileType = getPropertyString("fileType").split(";");
+                    String filename = file.getName().toUpperCase();
+                    Boolean found = false;
+                    for (String type : fileType) {
+                        if (filename.endsWith(type.toUpperCase())) {
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        valid = false;
+                        error += getPropertyString("fileTypeMsg");
+                    }
+                }
+            }
+            
+            if (!valid) {
+                formData.addFormError(id, error);
+            }
+        } catch (Exception e) {}
+        
+        return valid;
+    }
 }

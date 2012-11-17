@@ -81,12 +81,16 @@
                            desc="false"
                            href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/edit"
                            hrefParam="id"
-                           hrefQuery="false"
+                           hrefQuery="true"
                            hrefDialog="true"
                            hrefDialogTitle=""
                            checkbox="true"
                            checkboxButton1="general.method.label.delete"
                            checkboxCallback1="messageDelete"
+                           checkboxButton2="console.app.message.generate.po.label"
+                           checkboxCallback2="messageGenerate"
+                           checkboxButton3="console.app.message.import.po.label"
+                           checkboxCallback3="messageImport"
                            searchItems="filter|Filter"
                            fields="['id','messageKey','locale','message']"
                            column1="{key: 'messageKey', label: 'console.app.message.common.label.messageKey', sortable: true}"
@@ -138,6 +142,8 @@
     });
 
     <ui:popupdialog var="messageCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/create"/>
+    <ui:popupdialog var="messageGenerateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/generatepo"/>
+    <ui:popupdialog var="messageImportDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/importpo"/>
     <ui:popupdialog var="variableCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/envVariable/create"/>
     <ui:popupdialog var="pluginDefaultCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/pluginDefault/create"/>
 
@@ -155,6 +161,8 @@
 
     function closeDialog() {
         messageCreateDialog.close();
+        messageGenerateDialog.close();
+        messageImportDialog.close();
         variableCreateDialog.close();
         pluginDefaultCreateDialog.close();
     }
@@ -168,6 +176,14 @@
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/delete', callback, 'ids='+selectedList);
         }
+    }
+    
+    function messageGenerate(selectedList){
+        messageGenerateDialog.init();
+    }
+    
+    function messageImport(selectedList){
+        messageImportDialog.init();
     }
 
     function envVariableDelete(selectedList){

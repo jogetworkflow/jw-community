@@ -3,13 +3,17 @@ body{
 }
 
 #header #logo {
-    background: url("../images/v3/console/logo.png") no-repeat scroll right top transparent;
-    color: #B3CB5E;
-    float: right;
-    font-weight: bold;
-    height: 30px;
-    padding-left: 0px;
-    padding-right: 35px;
+    position: absolute;
+    right: 32px;
+}
+
+#header-label {
+    left: auto;
+    right: 5px;
+}
+
+#logo-label {
+    right: 30px;
 }
 
 #header #account {
@@ -20,7 +24,7 @@ body{
 
 #menu {
     left:auto;
-    right:40px;
+    right:198px;
 }
 
 #menu span.steps{
@@ -43,7 +47,7 @@ body{
 
 #menu ul#menu-items a {
     background: url(../images/v3/console/menu_arrow_rtl.png) left top no-repeat;
-    padding: 0 5px 0 28px;
+    padding: 0 4px 0 24px;
 }
 
 #menu ul#menu-items .dropdown {
@@ -132,7 +136,7 @@ body{
 }
 
 #main {
-    float:left;
+    left: -190px;
     margin-left: 10px;
     margin-right: 0px;
 }
@@ -200,4 +204,11 @@ body{
     text-align:right;
     direction:ltr;
 }
-  
+ 
+#login-box td, #login-box .input {
+    text-align: right;
+}
+
+#ui-datepicker-div {
+    display:none;
+}

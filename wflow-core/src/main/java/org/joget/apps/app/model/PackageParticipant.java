@@ -14,6 +14,7 @@ public class PackageParticipant implements Serializable {
     public static final String TYPE_USER = "user";
     public static final String TYPE_REQUESTER = "requester";
     public static final String TYPE_REQUESTER_HOD = "requesterHod";
+    public static final String TYPE_REQUESTER_HOD_IGNORE_REPORT_TO = "requesterHodIgnoreReportTo";
     public static final String TYPE_REQUESTER_SUBORDINATES = "requesterSubordinates";
     public static final String TYPE_REQUESTER_DEPARTMENT = "requesterDepartment";
     public static final String TYPE_HOD = "hod";

@@ -10,25 +10,13 @@ import java.io.Writer;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -112,6 +100,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.LocaleResolver;
 
 @Controller
 public class ConsoleWebController {
@@ -170,6 +159,8 @@ public class ConsoleWebController {
     DatalistDefinitionDao datalistDefinitionDao;
     @Resource
     FormDataDao formDataDao;
+    @Autowired
+    LocaleResolver localeResolver;
 
     @RequestMapping("/index")
     public String index() {
@@ -1044,7 +1035,25 @@ public class ConsoleWebController {
         User user = userDao.getUser(workflowUserManager.getCurrentUsername());
         map.addAttribute("user", user);
         map.addAttribute("timezones", TimeZoneUtil.getList());
-
+        
+        String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
+        Map<String, String> localeStringList = new TreeMap<String, String>();
+        if(enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
+            String userLocale = setupManager.getSettingValue("userLocale");
+            Collection<String> locales = new HashSet();
+            locales.addAll(Arrays.asList(userLocale.split(",")));
+            
+            Locale[] localeList = Locale.getAvailableLocales();
+            for (int x = 0; x < localeList.length; x++) {
+                String code = localeList[x].toString();
+                if (locales.contains(code)) {
+                    localeStringList.put(code, code + " - " +localeList[x].getDisplayName(localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest())));
+                }
+            }
+        }
+        map.addAttribute("enableUserLocale", enableUserLocale);
+        map.addAttribute("localeStringList", localeStringList);
+        
         return "console/profile";
     }
 
@@ -1057,6 +1066,7 @@ public class ConsoleWebController {
             currentUser.setLastName(user.getLastName());
             currentUser.setEmail(user.getEmail());
             currentUser.setTimeZone(user.getTimeZone());
+            currentUser.setLocale(user.getLocale());
             if (user.getPassword() != null && user.getConfirmPassword() != null && user.getPassword().length() > 0 && user.getPassword().equals(user.getConfirmPassword())) {
                 currentUser.setPassword(StringUtil.md5Base16(user.getPassword()));
             }
@@ -2159,6 +2169,33 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/options")
+    public void consoleDatalistOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+
+        Collection<DatalistDefinition> datalistDefinitionList = null;
+        
+        if (sort == null) {
+            sort = "name";
+            desc = false;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, sort, desc, start, rows);
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        for (DatalistDefinition datalistDef : datalistDefinitionList) {
+            Map data = new HashMap();
+            data.put("value", datalistDef.getId());
+            data.put("label", datalistDef.getName());
+            jsonArray.put(data);
+        }
+        writeJson(writer, jsonArray, callback);
+    }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/userviews")
     public String consoleUserviewList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
@@ -2301,7 +2338,7 @@ public class ConsoleWebController {
         return "console/apps/messageCreate";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit/(*:id)")
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/edit")
     public String consoleAppMessageEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -2408,6 +2445,70 @@ public class ConsoleWebController {
             String id = (String) strToken.nextElement();
             messageDao.delete(id, appDef);
         }
+        return "console/dialogClose";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo")
+    public String consoleAppMessageGeneratePO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appId);
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        map.addAttribute("localeList", getSortedLocalList());
+        map.addAttribute("locale", AppUtil.getAppLocale());
+        
+        return "console/apps/messageGeneratePO";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo/download")
+    public void consoleAppMessageGeneratePODownload(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "locale", required = false) String locale) throws IOException {
+        ServletOutputStream output = null;
+        try {
+            // determine output filename
+            String filename = appId + "_" + version + "_" + locale + ".po";
+
+            // set response headers
+            response.setContentType("text/plain");
+            response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+            output = response.getOutputStream();
+
+            appService.generatePO(appId, version, locale, output);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            if (output != null) {
+                output.flush();
+            }
+        }
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/message/importpo")
+    public String consoleAppMessageImportPO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appId);
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        
+        return "console/apps/messageImportPO";
+    }
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/importpo/submit", method = RequestMethod.POST)
+    public String consoleAppMessageInportPOUpload(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) throws Exception {
+        Setting setting = setupManager.getSettingByProperty("systemLocale");
+        String systemLocale = (setting != null) ? setting.getValue() : null;
+        if (systemLocale == null || systemLocale.equalsIgnoreCase("")) {
+            systemLocale = "en_US";
+        }
+
+        try {
+            MultipartFile multiPartfile = FileStore.getFile("localeFile");
+            appService.importPO(appId, version, systemLocale, multiPartfile);
+        } catch (IOException e) {
+        }
+        String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+        String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=message";
+        map.addAttribute("url", url);
         return "console/dialogClose";
     }
 
@@ -2780,7 +2881,7 @@ public class ConsoleWebController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("tableName", tableNameList);
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(callback + "(" + jsonObject + ");");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -2906,11 +3007,10 @@ public class ConsoleWebController {
         }
 
         Locale[] localeList = Locale.getAvailableLocales();
-        String[] localeStringList = new String[localeList.length];
+        Map<String, String> localeStringList = new TreeMap<String, String>();
         for (int x = 0; x < localeList.length; x++) {
-            localeStringList[x] = localeList[x].toString();
+            localeStringList.put(localeList[x].toString(), localeList[x].toString() + " - " +localeList[x].getDisplayName(localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest())));
         }
-        Arrays.sort(localeStringList);
 
         map.addAttribute("localeList", localeStringList);
         map.addAttribute("settingMap", settingMap);
@@ -2934,6 +3034,8 @@ public class ConsoleWebController {
         boolean deleteProcessOnCompletionIsNull = true;
         boolean enableNtlmIsNull = true;
         boolean rightToLeftIsNull = true;
+        boolean enableUserLocale = true;
+        boolean dateFormatFollowLocale = true;
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -2953,6 +3055,16 @@ public class ConsoleWebController {
 
             if (paramName.equals("rightToLeft")) {
                 rightToLeftIsNull = false;
+                paramValue = "true";
+            }
+            
+            if (paramName.equals("enableUserLocale")) {
+                enableUserLocale = false;
+                paramValue = "true";
+            }
+            
+            if (paramName.equals("dateFormatFollowLocale")) {
+                dateFormatFollowLocale = false;
                 paramValue = "true";
             }
 
@@ -2992,6 +3104,26 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty("rightToLeft");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
+        if (enableUserLocale) {
+            Setting setting = setupManager.getSettingByProperty("enableUserLocale");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("enableUserLocale");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
+        if (dateFormatFollowLocale) {
+            Setting setting = setupManager.getSettingByProperty("dateFormatFollowLocale");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("dateFormatFollowLocale");
             }
             setting.setValue("false");
             setupManager.saveSetting(setting);
@@ -3690,13 +3822,16 @@ public class ConsoleWebController {
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListAction", "Data List Action");
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListBinder", "Data List Binder");
         pluginTypeMap.put("org.joget.apps.datalist.model.DataListColumnFormat", "Data List Column Format");
+        pluginTypeMap.put("org.joget.apps.datalist.model.DataListFilterType", "Data List Filter Type");
         pluginTypeMap.put("org.joget.workflow.model.DeadlinePlugin", "Deadline");
         pluginTypeMap.put("org.joget.directory.model.service.DirectoryManagerPlugin", "Directory Manager");
         pluginTypeMap.put("org.joget.apps.form.model.Element", "Form Element");
         pluginTypeMap.put("org.joget.apps.form.model.FormLoadElementBinder", "Form Load Binder");
         pluginTypeMap.put("org.joget.apps.form.model.FormLoadOptionsBinder", "Form Options Binder");
         pluginTypeMap.put("org.joget.apps.form.model.FormStoreBinder", "Form Store Binder");
+        pluginTypeMap.put("org.joget.apps.form.model.FormPermission", "Form Permission");
         pluginTypeMap.put("org.joget.apps.form.model.FormValidator", "Form Validator");
+        pluginTypeMap.put("org.joget.apps.app.model.HashVariablePlugin", "Hash Variable");
         pluginTypeMap.put("org.joget.workflow.model.ParticipantPlugin", "Process Participant");
         pluginTypeMap.put("org.joget.plugin.base.ApplicationPlugin", "Process Tool");
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewMenu", "Userview Menu");
@@ -3718,7 +3853,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {
@@ -3728,7 +3863,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONArray jsonArray, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(callback + "(");
+            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
         }
         jsonArray.write(writer);
         if (callback != null && callback.trim().length() > 0) {

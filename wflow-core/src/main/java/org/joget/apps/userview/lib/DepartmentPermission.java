@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.Department;
@@ -20,7 +21,7 @@ import org.joget.plugin.base.PluginWebSupport;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
-public class DepartmentPermission extends UserviewPermission implements PluginWebSupport {
+public class DepartmentPermission extends UserviewPermission implements PluginWebSupport, FormPermission {
 
     @Override
     public boolean isAuthorize() {

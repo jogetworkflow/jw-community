@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
@@ -301,11 +302,15 @@ public class FormService {
         // handle standard parameters
         for (String key : (Set<String>) requestMap.keySet()) {
             Object paramValue = requestMap.get(key);
-            Class type = paramValue.getClass();
-            if (type.isArray()) {
-                formData.addRequestParameterValues(key, (String[]) paramValue);
+            if (paramValue != null) {
+                Class type = paramValue.getClass();
+                if (type.isArray()) {
+                    formData.addRequestParameterValues(key, (String[]) paramValue);
+                } else {
+                    formData.addRequestParameterValues(key, new String[]{paramValue.toString()});
+                }
             } else {
-                formData.addRequestParameterValues(key, new String[]{paramValue.toString()});
+                formData.addRequestParameterValues(key, new String[]{""});
             }
         }
         // handle multipart files
@@ -341,7 +346,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormOptionsBinders(Element element, FormData formData) {
+    public FormData executeFormOptionsBinders(Element element, FormData formData) {
         // create new form data if necessary
         if (formData == null) {
             formData = new FormData();
@@ -358,7 +363,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormLoadBinders(Element element, FormData formData) {
+    public FormData executeFormLoadBinders(Element element, FormData formData) {
         // create new form data if necessary
         if (formData == null) {
             formData = new FormData();
@@ -375,7 +380,7 @@ public class FormService {
      * @param formData
      * @return
      */
-    protected FormData executeFormStoreBinders(Form form, FormData formData) {
+    public FormData executeFormStoreBinders(Form form, FormData formData) {
 
         // get formatted data from all elements
         formData = FormUtil.executeElementFormatData(form, formData);
@@ -386,7 +391,7 @@ public class FormService {
         return formData;
     }
     
-    private FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
+    public FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
         if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
         
             //load child element store binder to store before the main form
@@ -399,7 +404,7 @@ public class FormService {
 
             //if store binder exist && element is not readonly, run it
             FormStoreBinder binder = element.getStoreBinder();
-            if (binder != null) {
+            if (!(element instanceof AbstractSubForm) && binder != null) {
                 FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
 
                 // execute binder

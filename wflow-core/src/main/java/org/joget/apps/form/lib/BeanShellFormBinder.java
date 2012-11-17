@@ -11,12 +11,14 @@ import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormLoadElementBinder;
+import org.joget.apps.form.model.FormLoadMultiRowElementBinder;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormStoreElementBinder;
+import org.joget.apps.form.model.FormStoreMultiRowElementBinder;
 
-public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder {
+public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormLoadMultiRowElementBinder, FormStoreMultiRowElementBinder {
 
     @Override
     public String getClassName() {

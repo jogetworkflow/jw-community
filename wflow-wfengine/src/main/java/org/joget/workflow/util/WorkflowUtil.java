@@ -17,9 +17,11 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+@Service
 public class WorkflowUtil implements ApplicationContextAware {
 
     public static final String FORM_DATA = "form";

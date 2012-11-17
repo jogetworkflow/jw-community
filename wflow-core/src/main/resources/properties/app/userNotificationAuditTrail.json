@@ -20,6 +20,23 @@
         required : 'True'
     },
     {
+        name : 'security',
+        label : '@@app.usernotificationaudittrail.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.usernotificationaudittrail.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.usernotificationaudittrail.security.ssl@@'
+        }]
+    },
+    {
         name : 'needAuthentication',
         label : '@@app.usernotificationaudittrail.authentication@@',
         type : 'checkbox',
@@ -65,6 +82,15 @@
         cols : '60',
         rows : '15',
         value : 'A new task has been created by the process #assignment.processName#'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.usernotificationaudittrail.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {

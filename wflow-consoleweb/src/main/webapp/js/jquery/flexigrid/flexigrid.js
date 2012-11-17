@@ -206,9 +206,9 @@
 						var newH = v.h + diff;
 						if ((newH > p.minheight || p.height < p.minheight) && !v.hgo)
 							{
-								this.bDiv.style.height = newH + 'px';
-								p.height = newH;
-								this.fixHeight(newH);
+//								this.bDiv.style.height = newH + 'px';
+//								p.height = newH;
+//								this.fixHeight(newH);
 							}
 						v = null;
 					}
@@ -1069,7 +1069,7 @@
 		g.bDiv.className = 'bDiv';
 		$(t).before(g.bDiv);
 		$(g.bDiv)
-		.css({ height: (p.height=='auto') ? 'auto' : p.height+"px"})
+		//.css({ height: (p.height=='auto') ? 'auto' : p.height+"px"})
 		.scroll(function (e) {g.scroll()})
 		.append(t)
 		;

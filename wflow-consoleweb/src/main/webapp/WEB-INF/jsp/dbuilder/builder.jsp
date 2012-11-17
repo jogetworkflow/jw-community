@@ -13,20 +13,20 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/dbuilder"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/dbuilder.core.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/dbuilder?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/dbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
 
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" />
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/dbuilder.css"  />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/dbuilder.css?build=<fmt:message key="build.number"/>"  />
         
-        <c:if test="${rightToLeft == 'true'}">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
+        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
         </c:if>
         <script type="text/javascript">
 
@@ -88,7 +88,7 @@
 
         <div id="builder-container">
             <div id="builder-header">
-                <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="dbuilder.title"/></div>
+                <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="dbuilder.title"/></div>
                 <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />
             </div>
             <div id="builder-body">
@@ -100,6 +100,7 @@
                         <li id="builder-steps-preview"><a onclick="DatalistBuilder.preview()"><span class="steps-bg"><span class="title"><fmt:message key="dbuilder.preview"/></span><span class="subtitle"><fmt:message key="dbuilder.preview.description"/></span></span></a></li>
                         <li id="builder-steps-save" class="last-inactive"><a onclick="DatalistBuilder.save()"><span class="steps-bg"><span class="title"><fmt:message key="dbuilder.save"/></span><span class="subtitle"><fmt:message key="dbuilder.save.description"/></span></span></a></li>
                     </ul>
+                    <div id="builder-bg"></div>
                 </div>
 
                 <div id="tabpanels">
@@ -110,7 +111,7 @@
                     <div id="designer" style="display:none">
                         <table>
                             <tr>
-                                <td width="200" valign="top">
+                                <td width="175" valign="top">
                                     <fieldset id="builder-palette">
                                         <div id="builder-palette-top"></div>
                                         <div id="builder-palette-body">
@@ -122,6 +123,7 @@
                                             </ul>
                                         </div>
                                     </fieldset>
+                                    <div id="builder-palette-spacer"></div>
                                 </td>
                                 <td valign="top">
                                     <fieldset id="form-canvas" style="">

@@ -27,7 +27,7 @@
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
     </c:if>
-    <c:redirect url="${redirectUrl}"/>
+    <c:redirect url="${redirectUrl}?${queryString}"/>
 </c:if>
 
 <html>
@@ -46,14 +46,14 @@
             ${userview.setting.theme.javascript}
         </script>
 
-        <link href="${pageContext.request.contextPath}/css/userview.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
         <style type="text/css">
             ${userview.setting.theme.css}
         </style>
     </head>
 
-    <body id="login" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true'}"> rtl</c:if>">
+    <body id="login" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}"> rtl</c:if>">
         <div id="page">
             <div id="header">
 
@@ -91,7 +91,7 @@
                 <div id="content">
                     <c:if test="${!empty param.login_error}">
                         <div id="main-body-message" class="form-errors">
-                            <fmt:message key="ubuilder.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
+                            <fmt:message key="ubuilder.loginError" /> ${SPRING_SECURITY_LAST_EXCEPTION.message}.
                         </div>
                     </c:if>
                     <c:if test="${!empty userview.setting.properties.loginPageTop}">

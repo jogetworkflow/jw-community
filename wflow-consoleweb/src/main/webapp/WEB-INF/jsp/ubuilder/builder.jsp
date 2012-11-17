@@ -19,20 +19,20 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/ubuilder"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/ubuilder.core.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/ubuilder?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/ubuilder.core.js?build=<fmt:message key="build.number"/>"></script>
 
-        <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/css/ui-lightness/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/css/ubuilder.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/jquery-ui-1.8.5.custom.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/css/ubuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
-        <c:if test="${rightToLeft == 'true'}">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css">
+        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
         </c:if>
             
         <script type="text/javascript">
@@ -81,7 +81,7 @@
     <body id="userviewbuilder">
         <div id="builder-container">
             <div id="builder-header">
-                <img alt="logo" width="107" height="38" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
+                <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
                 <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />
             </div>
             <div id="builder-body">
@@ -92,6 +92,7 @@
                         <li id="step-preview"><a onclick="UserviewBuilder.preview();" title="<fmt:message key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
                         <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.save();" title="<fmt:message key="ubuilder.save.disabled.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
                     </ul>
+                    <div id="builder-bg"></div>
                 </div>
                 <div id="builder-content">
                     <div id="step-design-container">

@@ -88,7 +88,7 @@ public class CustomPdfViewer implements BinaryExportView {
      */
     protected void initTable() throws BadElementException, DocumentException, IOException{
         tablePDF = new Table(this.model.getNumberOfColumns());
-        tablePDF.setDefaultVerticalAlignment(Element.ALIGN_TOP);
+        tablePDF.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
         tablePDF.setCellsFitPage(true);
         tablePDF.setWidth(100);
 
