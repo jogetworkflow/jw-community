@@ -392,7 +392,7 @@ public class FormService {
     }
     
     public FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
-        if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
+        if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY)) && element.isAuthorize(formData)) {
         
             //load child element store binder to store before the main form
             Collection<Element> children = element.getChildren(formData);
