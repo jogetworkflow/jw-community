@@ -57,12 +57,12 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             super.doFilterHttp(request, response, chain);
             
             String uri = request.getRequestURL().toString();
-            if (requiresAuthentication && uri.contains("/web/json/")) {
+            if (requiresAuthentication && (uri.contains("/web/json/") || uri.contains("/web/ulogin/"))) {
                 chain.doFilter(request, response);
             }
         } finally {
             String uri = request.getRequestURL().toString();
-            if (requiresAuthentication && uri.contains("/web/json/")) {
+            if (requiresAuthentication && uri.contains("/web/json/") && !uri.contains("/web/json/directory/user/sso")) {
                 SecurityContextHolder.getContext().setAuthentication(null);
             }
             // clear current user
@@ -85,7 +85,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             return uri.endsWith(getFilterProcessesUrl());
         }
         
-        if (uri.contains("/web/json/") && super.obtainUsername(request) != null && WorkflowUserManager.ROLE_ANONYMOUS.equals(workflowUserManager.getCurrentUsername())) {
+        if ((uri.contains("/web/json/") || uri.contains("/web/ulogin/")) && super.obtainUsername(request) != null && WorkflowUserManager.ROLE_ANONYMOUS.equals(workflowUserManager.getCurrentUsername())) {
             return true;
         }
 
@@ -183,7 +183,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
         String uri = request.getRequestURL().toString();
-        if (uri.contains("/web/json/")) {
+        if (uri.contains("/web/json/") || uri.contains("/web/ulogin/")) {
             SecurityContextHolder.getContext().setAuthentication(authResult);
         } else {
             super.successfulAuthentication(request, response, authResult);
