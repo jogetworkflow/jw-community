@@ -54,7 +54,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             }
         } finally {
             String uri = request.getRequestURL().toString();
-            if (requiresAuthentication && uri.contains("/web/json/")) {
+            if (requiresAuthentication && uri.contains("/web/json/") && !uri.contains("/web/json/directory/user/sso")) {
                 SecurityContextHolder.getContext().setAuthentication(null);
             }
             // clear current user
