@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
+import org.hibernate.MappingException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
@@ -37,12 +38,14 @@ import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LogUtil;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -811,6 +814,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public Collection<String> getFormDefinitionColumnNames(String tableName) {
         Collection<String> columnList = new HashSet<String>();
+        Map<String, String> checkDuplicateMap = new HashMap<String, String>();
 
         // strip table prefix
         if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
@@ -820,6 +824,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get forms mapped to the table name
         columnList = formColumnCache.get(tableName);
         if (columnList == null) {
+            LogUtil.info("", "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
             Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
             if (formList != null && !formList.isEmpty()) {
@@ -828,11 +833,25 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     String json = formDef.getJson();
                     if (json != null) {
                         Form form = (Form) getFormService().createElementFromJson(json, false);
-                        findAllElementIds(form, columnList);
+                        Collection<String> tempColumnList = new HashSet<String>();
+                        findAllElementIds(form, tempColumnList);
+                        
+                        LogUtil.info("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                        for (String c : tempColumnList) {
+                            String exist = checkDuplicateMap.get(c.toLowerCase());
+                            if (exist != null && !exist.equals(c)) {
+                                LogUtil.info("", "Detected duplicated column : \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                columnList.remove(exist);
+                            }
+                            checkDuplicateMap.put(c.toLowerCase(), c);
+                            columnList.add(c);
+                        }
                     }
                 }
+                LogUtil.info("", "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
             }
+            LogUtil.info("", "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
         }
         return columnList;
     }
