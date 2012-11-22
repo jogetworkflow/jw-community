@@ -750,7 +750,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (ht == null) {
             // no existing or outdated template found, create new one
             ht = createHibernateTemplate(entityName, tableName, rowSet, actionType);
-            Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.INFO, "  --- Form {0} hibernate template created", entityName);
+            Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template created", entityName);
 
             // save into cache
             templateCache.put(entityName, ht);
@@ -824,7 +824,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get forms mapped to the table name
         columnList = formColumnCache.get(tableName);
         if (columnList == null) {
-            LogUtil.info("", "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
+            LogUtil.debug("", "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
             Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
             if (formList != null && !formList.isEmpty()) {
@@ -836,11 +836,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         Collection<String> tempColumnList = new HashSet<String>();
                         findAllElementIds(form, tempColumnList);
                         
-                        LogUtil.info("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
+                        LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
                         for (String c : tempColumnList) {
                             String exist = checkDuplicateMap.get(c.toLowerCase());
                             if (exist != null && !exist.equals(c)) {
-                                LogUtil.info("", "Detected duplicated column : \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
                                 columnList.remove(exist);
                             }
                             checkDuplicateMap.put(c.toLowerCase(), c);
@@ -848,10 +848,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         }
                     }
                 }
-                LogUtil.info("", "All Columns - " + columnList.toString());
+                LogUtil.debug("", "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
             }
-            LogUtil.info("", "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
+            LogUtil.debug("", "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
         }
         return columnList;
     }
