@@ -1415,6 +1415,9 @@ public class AppServiceImpl implements AppService {
                     }
                 }
                 
+                if (o.getValue() == null) {
+                    o.setValue("");
+                }
                 o.setAppDefinition(newAppDef);
                 
                 environmentVariableDao.add(o);
