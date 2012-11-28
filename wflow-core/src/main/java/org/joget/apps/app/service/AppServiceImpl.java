@@ -64,6 +64,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
@@ -876,7 +877,7 @@ public class AppServiceImpl implements AppService {
             String formJson = formDef.getJson();
 
             if (formJson != null) {
-                formJson = AppUtil.processHashVariable(formJson, wfAssignment, null, null);
+                formJson = AppUtil.processHashVariable(formJson, wfAssignment, StringUtil.TYPE_JSON, null);
                 form = (Form) formService.loadFormFromJson(formJson, formData);
             }
         } catch (Exception e) {

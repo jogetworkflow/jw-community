@@ -18,6 +18,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,7 +81,7 @@ public class FormService {
             String processedJson = elementJson;
             // process hash variable
             if (processHashVariable) {
-                processedJson = AppUtil.processHashVariable(elementJson, null, null, null);
+                processedJson = AppUtil.processHashVariable(elementJson, null, StringUtil.TYPE_JSON, null);
             }
             
             processedJson = processedJson.replaceAll("\\\"\\{\\}\\\"", "{}");

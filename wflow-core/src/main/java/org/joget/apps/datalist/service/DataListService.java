@@ -9,6 +9,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class DataListService {
      * @return
      */
     public DataList fromJson(String json) {
-        json = AppUtil.processHashVariable(json, null, null, null);
+        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
         DataList dataList = JsonUtil.fromJson(json, DataList.class);
         return dataList;

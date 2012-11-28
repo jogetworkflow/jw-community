@@ -11,6 +11,7 @@ import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.AuditTrailPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -67,7 +68,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                             String json = pluginDefaultProperties.getPluginProperties();
 
                             //process basic hash variable
-                            json = AppUtil.processHashVariable(json, null, null, null);
+                            json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
                             propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
                         }
 

@@ -14,6 +14,7 @@ import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginManager;
@@ -55,7 +56,7 @@ public class UserviewService {
         }
 
         //process json with hash variable
-        json = AppUtil.processHashVariable(json, null, null, null);
+        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
         User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
 
