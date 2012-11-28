@@ -11,6 +11,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -64,7 +65,7 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 formData.setProcessId(parentFormData.getProcessId());
                 WorkflowManager wm = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
                 WorkflowAssignment wfAssignment = wm.getAssignmentByProcess(parentFormData.getProcessId());
-                json = AppUtil.processHashVariable(json, wfAssignment, null, null);
+                json = AppUtil.processHashVariable(json, wfAssignment, StringUtil.TYPE_JSON, null);
             }
             
             // use the json definition to create the subform

@@ -18,6 +18,7 @@ import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.User;
@@ -509,7 +510,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                             String json = pluginDefaultProperties.getPluginProperties();
 
                             //process basic hash variable
-                            json = AppUtil.processHashVariable(json, null, null, null);
+                            json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
                             propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
                         }
 
