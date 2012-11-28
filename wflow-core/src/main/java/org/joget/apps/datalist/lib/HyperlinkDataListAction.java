@@ -2,13 +2,12 @@ package org.joget.apps.datalist.lib;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.service.AppPluginUtil;
-import org.joget.apps.app.service.AppService;
+import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
+import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
@@ -70,8 +69,9 @@ public class HyperlinkDataListAction extends DataListActionDefault {
         String columnName = getHrefColumn();
 
         if (columnName != null && columnName.trim().length() > 0) {
-            Form form = getSelectedForm();
-            if (form != null) {
+            DataListCollection rows = dataList.getRows();
+            String primaryKeyColumnName = dataList.getBinder().getPrimaryKeyColumnName();
+            if (rows != null) {
                 if (getHrefParam() != null && getHrefParam().trim().length() > 0) {
                     if (url.contains("?")) {
                         url += "&";
@@ -87,7 +87,7 @@ public class HyperlinkDataListAction extends DataListActionDefault {
                 }
 
                 for (String key : rowKeys) {
-                    url += getValue(form, key, columnName) + ";";
+                    url += getValue(rows, primaryKeyColumnName, key, columnName) + ";";
                 }
                 url = url.substring(0, url.length() - 1);
             }
@@ -103,31 +103,24 @@ public class HyperlinkDataListAction extends DataListActionDefault {
         return json;
     }
 
-    protected Form getSelectedForm() {
-        Form form = null;
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        String formDefId = getPropertyString("formDefId");
-        if (formDefId != null) {
-            form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, null, null, null);
-        }
-        return form;
-    }
-
-    protected String getValue(Form form, String key, String columnName) {
-        FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-        FormRow row = formDataDao.load(form, key);
-
+    protected String getValue(DataListCollection rows, String primaryKeyColumnName, String key, String columnName) {
         String paramValue = "";
-        if (FormUtil.PROPERTY_ID.equals(columnName)) {
-            paramValue = row.getId();
-        } else {
-            paramValue = (String) row.getCustomProperties().get(columnName);
-        }
-
+        
         try {
+            if (primaryKeyColumnName != null && primaryKeyColumnName.equals(columnName)) {
+                paramValue = key;
+            } else {
+                for (Object r : rows) {
+                    Object id = LookupUtil.getBeanProperty(r, primaryKeyColumnName);
+                    if (id != null && id.toString().equals(key)) {
+                        paramValue = LookupUtil.getBeanProperty(r, columnName).toString();
+                        break;
+                    }
+                }
+            }
+        
             return (paramValue != null) ? URLEncoder.encode(paramValue, "UTF-8") : null;
-        } catch (UnsupportedEncodingException ex) {
+        } catch (Exception ex) {
             return paramValue;
         }
     }
