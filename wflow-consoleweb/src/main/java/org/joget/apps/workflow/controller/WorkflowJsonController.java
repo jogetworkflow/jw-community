@@ -963,6 +963,16 @@ public class WorkflowJsonController {
             writer.write(")");
         }
     }
+    
+    @RequestMapping(value = "/json/monitoring/activity/reassign")
+    public void activityReassign(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId) throws IOException, JSONException {
+        workflowManager.assignmentReassign(null, null, activityId, username, replaceUser);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("activityId", activityId);
+        jsonObject.accumulate("username", username);
+        jsonObject.accumulate("replaceUser", replaceUser);
+        writeJson(writer, jsonObject, callback);
+    }
 
     @RequestMapping(value = "/monitoring/running/activity/reassign", method = RequestMethod.POST)
     public void assignmentReassign(Writer writer, @RequestParam("state") String state, @RequestParam("processDefId") String processDefId, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) {
