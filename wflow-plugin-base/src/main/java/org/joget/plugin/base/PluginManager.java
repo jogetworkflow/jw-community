@@ -645,6 +645,7 @@ public class PluginManager implements ApplicationContextAware {
                 // compress by removing new lines
                 output = output.replace('\n', ' ');
                 output = output.replace('\r', ' ');
+                output = output.trim();
             }
         }
 
