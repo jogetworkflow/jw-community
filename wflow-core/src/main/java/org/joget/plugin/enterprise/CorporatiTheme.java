@@ -52,9 +52,10 @@ public class CorporatiTheme extends UserviewTheme {
     public String getJavascript() {
         String js = getPropertyString("js");
         if ("true".equals(getPropertyString("collapsibleMenu"))) {
-            js += "\n$(document).ready(function(){$(\".category-label\").click(function(){";
-            js += "var container = $(this).parent().find(\".menu-container\");";
-            js += "if($(container).is(\":visible\")){$(container).hide();}else{$(container).show();}";
+            js += "\n$(document).ready(function(){$(\".category-label, .category-label a\").click(function(){";
+            js += "var element = ($(this).hasClass(\"category-label\"))? $(this) : $(this).parent();";
+            js += "var container = $(element).parent().find(\".menu-container\");";
+            js += "if($(container).is(\":visible\")){$(container).hide();}else{$(container).show();}return false;";
             js += "});});";
         }
         return js;
