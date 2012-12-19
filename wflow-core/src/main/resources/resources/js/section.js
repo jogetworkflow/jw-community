@@ -76,7 +76,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
         if($(this).is(":enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
             var n = $(this).attr("name");
-            if ($.inArray(n, names) < 0) {
+            if ($.inArray(n, names) < 0 && n != "") {
                 names.push(n);
             }
         } 
@@ -92,7 +92,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var names = new Array();
     $(targetEl).find('.section-visibility-disabled').removeClass(".section-visibility-disabled").removeAttr("disabled").each(function(){
         var n = $(this).attr("name");
-        if ($.inArray(n, names) < 0) {
+        if ($.inArray(n, names) < 0 && n != "") {
             names.push(n);
         }
     });
