@@ -43,7 +43,7 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, controlEl, control
 
 VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, isRegex) {
     //get enabled input field oni
-    controlEl = $(controlEl).filter(":enabled, [disabled=false]");
+    controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
     
     var match = false;
     if ($(controlEl).length > 0) {
@@ -73,7 +73,7 @@ VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var names = new Array();
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
-        if($(this).is(":enabled, [disabled=false]")){
+        if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {

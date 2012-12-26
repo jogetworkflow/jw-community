@@ -37,6 +37,6 @@ FormUtil = {
             field = $("[name$="+fieldId+"]");
         }
         
-        return $(field).filter(":enabled, [disabled=false]");
+        return $(field).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
     }
 }
