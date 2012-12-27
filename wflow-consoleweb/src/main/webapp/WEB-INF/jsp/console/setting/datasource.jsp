@@ -88,7 +88,7 @@
             </div>
             <div class="main-body-row" id="testConnection" style="display: none">
                 <b><fmt:message key="console.setting.datasource.label.testingConnection"/></b>
-                <div id="workflowTestConnection"><fmt:message key="console.setting.datasource.label.testing"/> <i>workflow</i> <fmt:message key="console.setting.datasource.label.datasource"/>...<span class="connectionStatus"></span></div>
+                <div id="workflowTestConnection"><fmt:message key="console.setting.datasource.label.testing"/> <fmt:message key="console.setting.datasource.label.datasource"/>...<span class="connectionStatus"></span></div>
             </div>
             <div class="form-buttons">
                 <input class="form-button" id="saveDatasource" type="button" value="<fmt:message key="general.method.label.save"/>" onclick="submitDatasource()" />
