@@ -24,7 +24,7 @@
         label : '@@userview.datalistmenu.listId@@',
         type : 'selectbox',
         required : 'True',
-        options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.DataListMenu/service?action=getOptions'
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/datalist/options'
     }]
 },
 {

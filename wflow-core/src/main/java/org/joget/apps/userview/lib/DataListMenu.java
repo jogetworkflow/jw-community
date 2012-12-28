@@ -1,12 +1,5 @@
 package org.joget.apps.userview.lib;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
@@ -17,13 +10,10 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
-import org.joget.commons.util.LogUtil;
-import org.joget.plugin.base.PluginWebSupport;
-import org.json.JSONArray;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
-public class DataListMenu extends UserviewMenu implements PluginWebSupport {
+public class DataListMenu extends UserviewMenu {
 
     @Override
     public String getClassName() {
@@ -86,39 +76,6 @@ public class DataListMenu extends UserviewMenu implements PluginWebSupport {
     @Override
     public String getCategory() {
         return UserviewBuilderPalette.CATEGORY_GENERAL;
-    }
-
-    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-
-        if ("getOptions".equals(action)) {
-            String appId = request.getParameter("appId");
-            String appVersion = request.getParameter("appVersion");
-            try {
-                JSONArray jsonArray = new JSONArray();
-
-                ApplicationContext ac = AppUtil.getApplicationContext();
-                AppService appService = (AppService) ac.getBean("appService");
-                AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
-                Collection<DatalistDefinition> datalistDefList = appDef.getDatalistDefinitionList();
-
-                Map<String, String> empty = new HashMap<String, String>();
-                empty.put("value", "");
-                empty.put("label", "");
-                jsonArray.put(empty);
-
-                for (DatalistDefinition d : datalistDefList) {
-                    Map<String, String> option = new HashMap<String, String>();
-                    option.put("value", d.getId());
-                    option.put("label", d.getName());
-                    jsonArray.put(option);
-                }
-
-                jsonArray.write(response.getWriter());
-            } catch (Exception ex) {
-                LogUtil.error(this.getClass().getName(), ex, "Get Datalist's options Error!");
-            }
-        }
     }
 
     @Override
