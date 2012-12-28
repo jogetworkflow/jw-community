@@ -132,6 +132,7 @@ public class FormMenu extends UserviewMenu {
 
         Form form = null;
         WorkflowAssignment assignment = null;
+        PackageActivityForm activityForm = null;
         FormData formData = new FormData();
 
         // get assignment by activity ID if available
@@ -144,9 +145,8 @@ public class FormMenu extends UserviewMenu {
         }
         if (assignment != null) {
             // load assignment form
-            PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
+            activityForm = retrieveAssignmentForm(formData, assignment);
             form = activityForm.getForm();
-            setProperty("activityForm", activityForm);
         } else {
             // load data form
             form = retrieveDataForm(formData, id);
@@ -159,7 +159,11 @@ public class FormMenu extends UserviewMenu {
             setProperty("view", "formView");
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
-            if (assignment != null) {
+            if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+                setProperty("activityForm", activityForm);
+                setProperty("assignment", assignment);
+                setProperty("appDef", AppUtil.getCurrentAppDefinition());
+            } else if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
         } else {

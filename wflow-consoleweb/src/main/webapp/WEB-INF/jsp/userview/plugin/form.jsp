@@ -68,6 +68,8 @@
             </p>
         </c:when>
         <c:when test="${properties.view eq 'formView'}">
+            <c:set var="appDef" scope="request" value="${properties.appDef}"/>
+            <c:set var="assignment" scope="request" value="${properties.assignment}"/>
             <c:set var="activityForm" scope="request" value="${properties.activityForm}"/>
             <c:set var="formHtml" scope="request" value="${properties.formHtml}"/>
             <c:set var="formJson" scope="request" value="${properties.formJson}"/>

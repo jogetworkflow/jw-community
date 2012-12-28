@@ -286,6 +286,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
         Form form = null;
         WorkflowAssignment assignment = null;
+        PackageActivityForm activityForm = null;
         FormData formData = new FormData();
 
         // get assignment by activity ID if available
@@ -295,9 +296,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
         if (assignment != null) {
             // load assignment form
-            PackageActivityForm activityForm = retrieveAssignmentForm(formData, assignment);
+            activityForm = retrieveAssignmentForm(formData, assignment);
             form = activityForm.getForm();
-            setProperty("activityForm", activityForm);
         }
 
         if (form != null) {
@@ -307,7 +307,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             setProperty("view", "formView");
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
-            if (assignment != null) {
+            if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+                setProperty("activityForm", activityForm);
+                setProperty("assignment", assignment);
+                setProperty("appDef", AppUtil.getCurrentAppDefinition());
+            } else if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
         } else {
