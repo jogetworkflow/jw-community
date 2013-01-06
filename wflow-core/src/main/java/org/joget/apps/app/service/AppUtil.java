@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
@@ -322,6 +323,9 @@ public class AppUtil implements ApplicationContextAware {
                                         tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
                                     }
                                 }
+                                
+                                //unescape hash variable
+                                tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
                                 
                                 //get result from plugin
                                 String value = cachedPlugin.processHashVariable(tempVar);
