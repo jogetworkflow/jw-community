@@ -72,7 +72,7 @@
         </c:if>
 
         <!-- Display Main Table -->
-        <form name="form_${dataListId}" action="?" method="get">
+        <form name="form_${dataListId}" action="?${queryString}" method="POST">
             <!-- Display Buttons -->
             <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                 <div class="actions bottom ${buttonFloat}">
