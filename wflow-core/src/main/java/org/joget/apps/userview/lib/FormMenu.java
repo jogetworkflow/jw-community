@@ -159,7 +159,7 @@ public class FormMenu extends UserviewMenu {
             setProperty("view", "formView");
             setProperty("formHtml", formHtml);
             setProperty("formJson", formJson);
-            if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
+            if (activityForm != null && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
                 setProperty("activityForm", activityForm);
                 setProperty("assignment", assignment);
                 setProperty("appDef", AppUtil.getCurrentAppDefinition());
