@@ -20,15 +20,19 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
 
     @Override
     public String processHashVariable(String variableKey) {
-        String primaryKey = "";
+        String primaryKey = null;
         if (variableKey.contains("[") && variableKey.contains("]")) {
             primaryKey = variableKey.substring(variableKey.indexOf("[") + 1, variableKey.indexOf("]"));
             variableKey = variableKey.substring(0, variableKey.indexOf("["));
+            
+            if (primaryKey.isEmpty()) {
+                return "";
+            }
         }
         
         //get from request parameter if exist
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (primaryKey.isEmpty() && request != null && request.getParameter("id") != null) {
+        if (primaryKey == null && request != null && request.getParameter("id") != null) {
             primaryKey = request.getParameter("id");
         }
         
@@ -38,7 +42,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         String columnName = temp[1];
         
         WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
-        if (!primaryKey.isEmpty() || wfAssignment != null) {
+        if ((primaryKey != null && !primaryKey.isEmpty()) || wfAssignment != null) {
             try {
                 if (tableName != null && tableName.length() != 0) {
                     ApplicationContext appContext = AppUtil.getApplicationContext();
