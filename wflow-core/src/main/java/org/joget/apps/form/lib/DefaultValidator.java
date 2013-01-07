@@ -178,7 +178,7 @@ public class DefaultValidator extends FormValidator {
         if (values != null && values.length > 0) {
             for (String val : values) {
                 if (val != null && !val.isEmpty()) {
-                    String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+                    String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})$";
                     Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
                     Matcher matcher = pattern.matcher(val);
                     if (!matcher.matches()) {
