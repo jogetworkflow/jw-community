@@ -32,7 +32,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         
         //get from request parameter if exist
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (primaryKey == null && request != null && request.getParameter("id") != null) {
+        if (primaryKey == null && request != null && request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
             primaryKey = request.getParameter("id");
         }
         
@@ -48,14 +48,14 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                     ApplicationContext appContext = AppUtil.getApplicationContext();
                     FormDataDao formDataDao = (FormDataDao) appContext.getBean("formDataDao");
 
-                    if (primaryKey.isEmpty() && wfAssignment != null) {
+                    if (primaryKey == null && wfAssignment != null) {
 
                         WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
                         WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(wfAssignment.getProcessId());
 
                         if (link != null) {
                             primaryKey = link.getOriginProcessId();
-                        } else if (primaryKey.isEmpty()) {
+                        } else if (primaryKey == null) {
                             primaryKey = wfAssignment.getProcessId();
                         }
                     }
