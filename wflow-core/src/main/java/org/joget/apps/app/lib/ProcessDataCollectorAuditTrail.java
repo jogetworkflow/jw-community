@@ -104,6 +104,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 || auditTrail.getMethod().equals("assignmentAccept")
                 || auditTrail.getMethod().equals("assignmentComplete")
                 || auditTrail.getMethod().equals("assignmentForceComplete")
+                || auditTrail.getMethod().equals("assignmentReassignUser")
                 || auditTrail.getMethod().equals("executeTool")
                 || auditTrail.getMethod().equals("executeToolCompleted");
     }
@@ -153,9 +154,10 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
         WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
         ReportManager reportManager = (ReportManager) AppUtil.getApplicationContext().getBean("reportManager");
-
+        
         if (wfActivity != null) {
             ReportWorkflowActivityInstance aInstance = reportManager.getReportWorkflowActivityInstance(activityInstanceId);
+            List<String> userList = new ArrayList<String>();
             if (aInstance == null) {
                 aInstance = new ReportWorkflowActivityInstance();
                 aInstance.setInstanceId(activityInstanceId);
@@ -174,7 +176,6 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 aInstance.setReportWorkflowActivity(reportActivtiy);
 
                 //get assignment users
-                List<String> userList = new ArrayList<String>();
                 try {
                     Thread.sleep(2000);
                     int maxAttempt = 5;
@@ -190,17 +191,20 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 } catch (Exception e) {
                     Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
                 }
-                String assignmentUsers = "";
-                if (userList != null) {
-                    for (String username : userList) {
-                        assignmentUsers += username + ",";
-                    }
-                }
-                if (assignmentUsers.endsWith(",")) {
-                    assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
-                }
-                aInstance.setAssignmentUsers(assignmentUsers);
+            } else {
+                userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
             }
+
+            String assignmentUsers = "";
+            if (userList != null) {
+                for (String username : userList) {
+                    assignmentUsers += username + ",";
+                }
+            }
+            if (assignmentUsers.endsWith(",")) {
+                assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
+            }
+            aInstance.setAssignmentUsers(assignmentUsers);
 
             aInstance.setPerformer(wfTrackActivity.getPerformer());
             aInstance.setNameOfAcceptedUser(wfTrackActivity.getNameOfAcceptedUser());
