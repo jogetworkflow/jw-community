@@ -3932,6 +3932,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
                 wfa.set_assignee(res);
             }
+            
+            WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentReassignUser", activityId);
 
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
