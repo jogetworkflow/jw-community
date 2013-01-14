@@ -95,10 +95,10 @@
                 <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                     <c:choose>
                         <c:when test="${selectionType eq 'single'}">
-                            <display:column property="radio" media="html" title="" />
+                            <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                         </c:when>
                         <c:otherwise>
-                            <display:column property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                            <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
                         </c:otherwise>
                     </c:choose>
                 </c:if>
@@ -107,22 +107,24 @@
                         property="column(${column.name})"
                         title="${column.label}"
                         sortable="${column.sortable}"
+                        headerClass="column_${column.name}"
+                        class="column_${column.name}"
                         />
                 </c:forEach>
                 <c:if test="${!empty dataList.rowActions[0]}">
                     <c:set var="actionTitle" value="" />
                     <c:forEach items="${dataList.rowActions}" var="rowAction" begin="1">
-                        <c:set var="actionTitle" value="${actionTitle}</th><th>" />
+                        <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action\">" />
                     </c:forEach>
-                    <display:column property="actions" media="html" title="${actionTitle}"/>
+                    <display:column headerClass="row_action" class="row_action" property="actions" media="html" title="${actionTitle}"/>
                 </c:if>
                 <c:if test="${checkboxPosition eq 'right' || checkboxPosition eq 'both'}">
                     <c:choose>
                         <c:when test="${selectionType eq 'single'}">
-                            <display:column property="radio" media="html" title="" />
+                            <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                         </c:when>
                         <c:otherwise>
-                            <display:column property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                            <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
                         </c:otherwise>
                     </c:choose>
                 </c:if>
