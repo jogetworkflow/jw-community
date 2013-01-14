@@ -11,6 +11,7 @@ import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
 
 /**
  * Form load binder that loads the data rows of a form.
@@ -64,55 +65,60 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
         //Using filtered formset to ensure the returned result is clean with no unnecessary nulls
         FormRowSet filtered = new FormRowSet();
         filtered.setMultiRow(true);
-        // get form
-        String formDefId = (String) getProperty("formDefId");
-        String tableName = getTableName(formDefId);
-        if (tableName != null) {
+        
+        try {
+            // get form
+            String formDefId = (String) getProperty("formDefId");
+            String tableName = getTableName(formDefId);
+            if (tableName != null) {
 
-            String condition = null;
-            String extraCondition = (String) getProperty("extraCondition");
-            if (extraCondition != null && !extraCondition.trim().isEmpty()) {
-                condition = " WHERE " + extraCondition;
-            }
-            
-            String labelColumn = (String) getProperty("labelColumn");
-            
-            // get form data
-            FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
-            results = formDataDao.find(formDefId, tableName, condition, null, labelColumn, false, null, null);
+                String condition = null;
+                String extraCondition = (String) getProperty("extraCondition");
+                if (extraCondition != null && !extraCondition.trim().isEmpty()) {
+                    condition = " WHERE " + extraCondition;
+                }
 
-            if (results != null) {
-                if ("true".equals(getPropertyString("addEmptyOption"))) {
-                    FormRow emptyRow = new FormRow();
-                    emptyRow.setProperty(FormUtil.PROPERTY_VALUE, "");
-                    emptyRow.setProperty(FormUtil.PROPERTY_LABEL, getPropertyString("emptyLabel"));
-                    filtered.add(emptyRow);
-                }
-                
-                //Determine id column. Setting to default if not specified
-                String idColumn = (String) getProperty("idColumn");
-                idColumn = (idColumn == null || "".equals(idColumn)) ? FormUtil.PROPERTY_ID : idColumn;
-                
-                String groupingColumn = (String) getProperty("groupingColumn");
-                
-                // loop thru results to set value and label
-                for (FormRow row : results) {
-                    String id = row.getProperty(idColumn);
-                    String label = row.getProperty(labelColumn);
-                    String grouping = "";
-                    if (groupingColumn != null && !groupingColumn.isEmpty() && row.containsKey(groupingColumn)) {
-                        grouping = row.getProperty(groupingColumn);
+                String labelColumn = (String) getProperty("labelColumn");
+
+                // get form data
+                FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+                results = formDataDao.find(formDefId, tableName, condition, null, labelColumn, false, null, null);
+
+                if (results != null) {
+                    if ("true".equals(getPropertyString("addEmptyOption"))) {
+                        FormRow emptyRow = new FormRow();
+                        emptyRow.setProperty(FormUtil.PROPERTY_VALUE, "");
+                        emptyRow.setProperty(FormUtil.PROPERTY_LABEL, getPropertyString("emptyLabel"));
+                        filtered.add(emptyRow);
                     }
-                    
-                    if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
-                        row.setProperty(FormUtil.PROPERTY_VALUE, id);
-                        row.setProperty(FormUtil.PROPERTY_LABEL, label);
-                        row.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
-                        
-                        filtered.add(row);
+
+                    //Determine id column. Setting to default if not specified
+                    String idColumn = (String) getProperty("idColumn");
+                    idColumn = (idColumn == null || "".equals(idColumn)) ? FormUtil.PROPERTY_ID : idColumn;
+
+                    String groupingColumn = (String) getProperty("groupingColumn");
+
+                    // loop thru results to set value and label
+                    for (FormRow row : results) {
+                        String id = row.getProperty(idColumn);
+                        String label = row.getProperty(labelColumn);
+                        String grouping = "";
+                        if (groupingColumn != null && !groupingColumn.isEmpty() && row.containsKey(groupingColumn)) {
+                            grouping = row.getProperty(groupingColumn);
+                        }
+
+                        if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
+                            row.setProperty(FormUtil.PROPERTY_VALUE, id);
+                            row.setProperty(FormUtil.PROPERTY_LABEL, label);
+                            row.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
+
+                            filtered.add(row);
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            LogUtil.error("FormOptionsBinder", e, "");
         }
         return filtered;
     }
