@@ -1374,7 +1374,8 @@ public class AppServiceImpl implements AppService {
         if (!overrideEnvVariable || !overridePluginDefault) {
             orgAppDef = loadAppDefinition(appDef.getAppId(), null);
         }
-        
+
+        LogUtil.debug(getClass().getName(), "Importing app " + appDef.getId());        
         AppDefinition newAppDef = new AppDefinition();
         newAppDef.setAppId(appDef.getAppId());
         newAppDef.setVersion(appVersion);
@@ -1390,6 +1391,7 @@ public class AppServiceImpl implements AppService {
             for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 datalistDefinitionDao.add(o);
+                LogUtil.debug(getClass().getName(), "Added list " + o.getId());
             }
         }
 
@@ -1397,6 +1399,11 @@ public class AppServiceImpl implements AppService {
             for (FormDefinition o : appDef.getFormDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 formDefinitionDao.add(o);
+                
+                // initialize db table by making a dummy load
+                String dummyKey = "xyz123";
+                formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
+                LogUtil.debug(getClass().getName(), "Initialized form " + o.getId() + " with table " + o.getTableName());
             }
         }
 
@@ -1404,6 +1411,7 @@ public class AppServiceImpl implements AppService {
             for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 userviewDefinitionDao.add(o);
+                LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
             }
         }
 
@@ -1496,6 +1504,7 @@ public class AppServiceImpl implements AppService {
 
         // reload app from DB
         newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
+        LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
         
         return newAppDef;
     }
