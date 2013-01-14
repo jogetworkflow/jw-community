@@ -140,6 +140,6 @@ body.rtl #content {
     right: 5px;
 }
 
-body.rtl #ui-datepicker-div {
+body #ui-datepicker-div {
     display:none;
 }
