@@ -200,6 +200,7 @@
 
             </div>
         </div>
+        <div id="preview-label">Preview</div>
         <div style="display:none" id="preview-form">
             <form id="preview" action="" method="post">
                 <input type="hidden" name="json" value="<c:out value="${json}"/>"/>
