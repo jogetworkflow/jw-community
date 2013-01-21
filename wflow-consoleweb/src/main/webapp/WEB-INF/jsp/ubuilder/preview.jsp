@@ -165,10 +165,10 @@
                         </c:forEach>
                     </div>
                 </div>
-                <c:if test="${!empty userview.setting.theme.beforeContent}">
-                    ${userview.setting.theme.beforeContent}
-                </c:if>
                 <div id="content">
+                    <c:if test="${!empty userview.setting.theme.beforeContent}">
+                        ${userview.setting.theme.beforeContent}
+                    </c:if>
                     <c:set var="properties" scope="request" value="${userview.current.properties}"/>
                     <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
                     <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
