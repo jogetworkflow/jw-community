@@ -116,6 +116,9 @@
                     </script>
                 </div>
                 <div class="clear"></div>
+                <c:if test="${!empty userview.setting.theme.pageBottom}">
+                    ${userview.setting.theme.pageBottom}
+                </c:if>
             </div>
             <div id="footer">
                 <c:choose>
