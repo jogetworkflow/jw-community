@@ -51,5 +51,7 @@
             </div-->
         </fieldset>
 
+        <div id="preview-label">Preview</div>
+                
     </body>
 </html>

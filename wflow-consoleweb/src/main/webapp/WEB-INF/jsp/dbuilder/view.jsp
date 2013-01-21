@@ -25,5 +25,7 @@
     
     <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
 
+    <div id="preview-label">Preview</div>
+
 </body>
 </html>

@@ -143,3 +143,16 @@ body.rtl #content {
 body #ui-datepicker-div {
     display:none;
 }
+
+#preview-label {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+    font-size: 40px;
+    color: white;
+    opacity: 0.5;
+    z-index: 1000000;
+    background: #222;
+    border-radius: 10px;
+    padding: 20px;
+}
