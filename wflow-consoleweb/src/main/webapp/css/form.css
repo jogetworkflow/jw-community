@@ -24,7 +24,7 @@
     margin: 0px;
 }
 .form-section, .subform-section {
-    position: relative;
+    /*position: relative;*/
     border: none 2px #cccccc;
     heightx: 100%;
     overflow: hidden;
