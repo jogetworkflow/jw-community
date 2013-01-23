@@ -8,6 +8,7 @@ import javax.servlet.jsp.tagext.Tag;
 import org.displaytag.localization.I18nResourceProvider;
 import org.displaytag.localization.LocaleResolver;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
@@ -46,6 +47,12 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
             if (locale == null) {
                 locale = DEFAULT;
                 try {
+                    // reset profile and set hostname
+                    HostManager.setCurrentProfile(null);
+                    String hostname = request.getServerName();
+                    HostManager.setCurrentHost(hostname);
+                    
+                    // set locale
                     String systemLocale = "";
 
                     String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
