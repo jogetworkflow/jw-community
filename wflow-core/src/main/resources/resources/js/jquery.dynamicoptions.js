@@ -13,7 +13,7 @@
     });
     
     function showHideOption(target, o){
-        var controlValue = $('[name$='+o.controlField+']').filter(":enabled, [disabled=false]").val();
+        var controlValue = $('[name$='+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]").val();
         if ($(target).is("select")) {
             if ($(target).next('.dynamic_option_container').length == 0) {
                 $(target).after('<select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select>');
@@ -41,5 +41,6 @@
                 }
             });
         }
+        $(target).trigger("change");
     }
 })(jQuery);
