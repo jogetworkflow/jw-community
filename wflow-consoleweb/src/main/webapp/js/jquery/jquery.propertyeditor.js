@@ -209,7 +209,7 @@
                 var validator = pageValidationStack[currentPageId]['validators'][key];
 
                 if(validator.type.toLowerCase() == "ajax"){
-                    validateAjax(editorId, null, pageValidationStack[currentPageId].properties, properties, validator);
+                    validateAjax(editorId, currentPageId, pageValidationStack[currentPageId].properties, properties, validator, "editor");
                 }
             }
         }
@@ -999,7 +999,7 @@
                 var validator = pageValidationStack[pageId]['validators'][key];
 
                 if(validator.type.toLowerCase() == "ajax"){
-                    validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator);
+                    validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator, "page");
                 }
             }
         }else{
@@ -1287,7 +1287,10 @@
         }
     }
 
-    function validateAjax(editorId, pageId, pagePropertiesDefinition, data, validator){
+    function validateAjax(editorId, pageId, pagePropertiesDefinition, data, validator, mode){
+        //remove previous error message
+        $('#'+pageId + ' > .property-editor-property-container > .property-editor-page-errors').remove();
+        
         $.ajax({
             url: replaceContextPath(validator.url, optionsStack[editorId].contextPath),
             data : $.param( data ),
@@ -1314,8 +1317,17 @@
                         }
                     }
                 }
+                
+                if(errors.length != 0){
+                    var errorPage = $('#'+pageId);
+                    var errorContainer = $('<div class="property-editor-page-errors"></div>');
+                    for(e in errors){
+                        $(errorContainer).append('<div class="property-input-error">'+errors[e].message+'</div>')
+                    }
+                    $(errorPage).find('.property-editor-property-container').prepend(errorContainer);
+                }
 
-                if(pageId != null){
+                if(mode == "page"){
                     validationProgressStack[pageId].count = validationProgressStack[pageId].count - 1;
                     if(errors.length != 0){
                         validationProgressStack[pageId].valid = false;
