@@ -446,6 +446,8 @@
         var size = '';
         if(property.size != undefined && property.size != null){
             size = ' size="'+ size +'"';
+        } else {
+            size = ' size="50"';
         }
 
         return '<input type="text" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size +' value="'+ escapeHtmlTag(value) +'" disabled />';
@@ -458,6 +460,8 @@
         }
         if(property.size != undefined && property.size != null){
             size = ' size="'+ property.size +'"';
+        } else {
+            size = ' size="50"';
         }
         var maxlength = '';
         if(property.maxlength != undefined && property.maxlength != null){
@@ -501,10 +505,14 @@
         }
         if(property.rows != undefined && property.rows != null){
             rows = ' rows="'+ property.rows +'"';
+        } else {
+            rows = ' rows="50"';
         }
         var cols = '';
         if(property.cols != undefined && property.cols != null){
             cols = ' cols="'+ property.cols +'"';
+        } else {
+            cols = ' cols="5"';
         }
 
         var defaultValueLabel = '';
