@@ -13,7 +13,20 @@
     });
     
     function showHideOption(target, o){
-        var controlValue = $('[name$='+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]").val();
+        //get enabled input field oni
+        var controlEl = $('[name$='+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var controlValues = new Array();
+        
+        if ($(target).is("select")) {
+            controlEl = $(controlEl).find("option:selected");
+        } else {
+            controlEl = $(controlEl).filter(":checked");
+        }
+        
+        $(controlEl).each(function() {
+            controlValues.push($(this).val());
+        });
+        
         if ($(target).is("select")) {
             if ($(target).next('.dynamic_option_container').length == 0) {
                 $(target).after('<select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select>');
@@ -23,15 +36,16 @@
             
             $(target).find("option").each(function(){
                 var option = $(this);
-                if ($(option).attr("grouping") != "" && $(option).attr("grouping") != controlValue) {
+                if ($(option).attr("grouping") != "" && $.inArray($(option).attr("grouping"), controlValues) == -1) {
                     $(option).remove();
                 }
             });
         } else {
+              
             $(target).each(function(){
                 var option = $(this);
                 var label = $(option).parent();
-                if ($(option).attr("grouping") == "" || $(option).attr("grouping") == controlValue) {
+                if ($(option).attr("grouping") == "" || $.inArray($(option).attr("grouping"), controlValues) > -1) {
                     $(label).show();
                 } else {
                     if ($(option).is(":checked")) {
@@ -41,6 +55,6 @@
                 }
             });
         }
-        $(target).trigger("change");
+        $('[name='+$(target).attr("name")+']').trigger("change");
     }
 })(jQuery);
