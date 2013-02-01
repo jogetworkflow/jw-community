@@ -183,7 +183,7 @@
     font-size: 40px;
     color: white;
     opacity: 0.5;
-    z-index: 1000000;
+    z-index: 500;
     background: #222;
     border-radius: 10px;
     padding: 20px;
