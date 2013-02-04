@@ -34,7 +34,7 @@ FormUtil = {
     getField : function(fieldId){
         var field = $("[name="+fieldId+"]");
         if ($(field).length == 0) {
-            field = $("[name$="+fieldId+"]");
+            field = $("[name$=_"+fieldId+"]");
         }
         
         return $(field).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
