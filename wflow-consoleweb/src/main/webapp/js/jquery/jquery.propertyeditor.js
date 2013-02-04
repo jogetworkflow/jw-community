@@ -506,13 +506,13 @@
         if(property.rows != undefined && property.rows != null){
             rows = ' rows="'+ property.rows +'"';
         } else {
-            rows = ' rows="50"';
+            rows = ' rows="5"';
         }
         var cols = '';
         if(property.cols != undefined && property.cols != null){
             cols = ' cols="'+ property.cols +'"';
         } else {
-            cols = ' cols="5"';
+            cols = ' cols="50"';
         }
 
         var defaultValueLabel = '';
