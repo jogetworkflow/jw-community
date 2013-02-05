@@ -30,15 +30,6 @@
         }]
     },
     {
-        name : 'needAuthentication',
-        label : '@@app.emailtool.authentication@@',
-        type : 'checkbox',
-        options : [{
-            value : 'yes',
-            label : ''
-        }]
-    },
-    {
         name : 'username',
         label : '@@app.emailtool.username@@',
         type : 'textfield'

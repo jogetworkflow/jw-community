@@ -37,15 +37,6 @@
         }]
     },
     {
-        name : 'needAuthentication',
-        label : '@@app.usernotificationaudittrail.authentication@@',
-        type : 'checkbox',
-        options : [{
-            value : 'yes',
-            label : ''
-        }]
-    },
-    {
         name : 'username',
         label : '@@app.usernotificationaudittrail.username@@',
         type : 'textfield'

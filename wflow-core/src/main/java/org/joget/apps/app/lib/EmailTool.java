@@ -47,7 +47,6 @@ public class EmailTool extends DefaultApplicationPlugin {
         String formDataTable = (String) properties.get("formDataTable");
         String smtpHost = (String) properties.get("host");
         String smtpPort = (String) properties.get("port");
-        String needAuthentication = (String) properties.get("needAuthentication");
         String smtpUsername = (String) properties.get("username");
         String smtpPassword = (String) properties.get("password");
         String security = (String) properties.get("security");
@@ -81,7 +80,7 @@ public class EmailTool extends DefaultApplicationPlugin {
             if (smtpPort != null && smtpPort.length() != 0) {
                 email.setSmtpPort(Integer.parseInt(smtpPort));
             }
-            if (needAuthentication != null && needAuthentication.length() != 0 && needAuthentication.equals("yes")) {
+            if (smtpUsername != null && !smtpUsername.isEmpty()) {
                 email.setAuthentication(smtpUsername, smtpPassword);
             }
             if(security!= null){

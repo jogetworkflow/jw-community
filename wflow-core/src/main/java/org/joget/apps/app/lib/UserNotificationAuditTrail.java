@@ -54,7 +54,6 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String base = (String) properties.get("base");
             final String smtpHost = (String) properties.get("host");
             final String smtpPort = (String) properties.get("port");
-            final String needAuthentication = (String) properties.get("needAuthentication");
             final String smtpUsername = (String) properties.get("username");
             final String smtpPassword = (String) properties.get("password");
             final String security = (String) properties.get("security");
@@ -128,7 +127,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             if (smtpPort != null && smtpPort.length() != 0) {
                                                 email.setSmtpPort(Integer.parseInt(smtpPort));
                                             }
-                                            if (needAuthentication != null && needAuthentication.length() != 0 && needAuthentication.equals("yes")) {
+                                            if (smtpUsername != null && !smtpUsername.isEmpty()) {
                                                 email.setAuthentication(smtpUsername, smtpPassword);
                                             }
                                             if(security!= null){
