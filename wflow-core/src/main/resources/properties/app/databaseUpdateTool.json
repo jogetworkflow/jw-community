@@ -1,22 +1,24 @@
 [{
     title : '@@app.databaseupdatetool.config@@',
     properties : [{
-        name : 'driverClassName',
-        label : '@@app.databaseupdatetool.databaseType@@',
+        name : 'jdbcDatasource',
+        label : '@@app.databaseupdatetool.datasource@@',
+        description : '@@app.databaseupdatetool.datasource.desc@@',
         type : 'selectbox',
         options : [{
-            value : 'com.mysql.jdbc.Driver',
-            label : '@@app.databaseupdatetool.mySql@@'
-        },
-        {
-            value : 'oracle.jdbc.driver.OracleDriver',
-            label : '@@app.databaseupdatetool.oracle@@'
-        },
-        {
-            value : 'com.microsoft.sqlserver.jdbc.SQLServerDriver',
-            label : '@@app.databaseupdatetool.msSqlServer@@'
+            value : 'custom',
+            label : '@@app.databaseupdatetool.customDatasource@@'
+        },{
+            value : 'default',
+            label : '@@app.databaseupdatetool.defaultDatasource@@'
         }],
-        required : 'True'
+        value : 'custom'
+    },{
+        name : 'driverClassName',
+        label : '@@app.databaseupdatetool.databaseType@@',
+        description : '@@app.databaseupdatetool.driver.desc@@',
+        type : 'textfield',
+        value : 'com.mysql.jdbc.Driver'
     },
     {
         name : 'url',

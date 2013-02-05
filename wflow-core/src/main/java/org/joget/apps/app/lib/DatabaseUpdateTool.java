@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
@@ -32,16 +33,35 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
     public Object execute(Map properties) {
         Object result = null;
         try {
-            String driverClassName = (String) properties.get("driverClassName");
-            String url = (String) properties.get("url");
-            String username = (String) properties.get("username");
-            String password = (String) properties.get("password");
             String query = (String) properties.get("query");
-
+            String driver = "";
+            DataSource ds = null;
+            String datasource = (String)properties.get("jdbcDatasource");
+            if (datasource != null && "default".equals(datasource)) {
+                // use current datasource
+                 ds = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
+                 driver = DynamicDataSourceManager.getProperty("workflowDriver");
+            } else {
+                Properties props = new Properties();
+                String driverClassName = (String) properties.get("driverClassName");
+                String url = (String) properties.get("url");
+                String username = (String) properties.get("username");
+                String password = (String) properties.get("password");
+            
+                driver = driverClassName;
+                
+                // use custom datasource
+                props.put("driverClassName", driverClassName);
+                props.put("url", url);
+                props.put("username", username);
+                props.put("password", password);
+                ds = createDataSource(props);
+            }
+            
             WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
 
             Map<String, String> replace = new HashMap<String, String>();
-            if (driverClassName.equalsIgnoreCase("com.mysql.jdbc.Driver")) {
+            if (driver.equalsIgnoreCase("com.mysql.jdbc.Driver")) {
                 replace.put("\\\\", "\\\\");
                 replace.put("'", "\\'");
             } else {
@@ -50,13 +70,6 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
 
             query = WorkflowUtil.processVariable(query, null, wfAssignment, "regex", replace);
 
-            Properties props = new Properties();
-
-            props.put("driverClassName", driverClassName);
-            props.put("url", url);
-            props.put("username", username);
-            props.put("password", password);
-            DataSource ds = createDataSource(props);
             result = executeQuery(ds, query);
 
             return result;
