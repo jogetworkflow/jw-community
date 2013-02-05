@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ tag import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ tag import="org.joget.commons.util.LogUtil"%>
 
 <c:set var="isExtDirectoryManager" value="<%= DirectoryUtil.isExtDirectoryManager() %>"/>
 <c:set var="isCustomDirectoryManager" value="<%= DirectoryUtil.isCustomDirectoryManager() %>"/>
@@ -225,6 +226,15 @@
                                     <span class="subtitle"><fmt:message key="console.header.submenu.label.auditTrail"/></span>
                                     <span class="subsubtitle"><fmt:message key="console.header.submenu.description.auditTrail"/></span></a>
                                 </li>
+                                <c:set var="isTomcat" value="<%= LogUtil.isDeployInTomcat() %>"/>
+                                <c:if test="${isTomcat}">
+                                    <li>
+                                        <a href="${pageContext.request.contextPath}/web/console/monitor/logs" class="substeps">
+                                        <span class="substeps">&nbsp;</span>
+                                        <span class="subtitle"><fmt:message key="console.header.submenu.label.logs"/></span>
+                                        <span class="subsubtitle"><fmt:message key="console.header.submenu.description.logs"/></span></a>
+                                    </li>
+                                </c:if>
                                 <%--<li>
                                     <a href="${pageContext.request.contextPath}/web/console/monitor/sla" class="substeps">
                                     <span class="substeps">&nbsp;</span>

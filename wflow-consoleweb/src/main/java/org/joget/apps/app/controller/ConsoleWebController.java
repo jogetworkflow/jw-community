@@ -2,11 +2,15 @@ package org.joget.apps.app.controller;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +20,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
@@ -3775,6 +3780,87 @@ public class ConsoleWebController {
     @RequestMapping("/console/monitor/audit")
     public String consoleMonitorAuditTrail(ModelMap map) {
         return "console/monitor/auditTrail";
+    }
+    
+    @RequestMapping("/console/monitor/logs")
+    public String consoleMonitorLogs(ModelMap map) {
+        return "console/monitor/logs";
+    }
+    
+    @RequestMapping("/console/monitor/log/(*:fileName)")
+    public void consoleMonitorLogs(HttpServletResponse response, @RequestParam("fileName") String fileName) throws IOException {
+        ServletOutputStream stream = response.getOutputStream();
+        
+        String decodedFileName = fileName;
+        try {
+            decodedFileName = URLDecoder.decode(fileName, "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            // ignore
+        }
+        
+        File file = LogUtil.getTomcatLogFile(decodedFileName);
+        if (file.isDirectory() || !file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        DataInputStream in = new DataInputStream(new FileInputStream(file));
+        byte[] bbuf = new byte[65536];
+
+        try {
+            // set attachment filename
+            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + URLEncoder.encode(decodedFileName, "UTF8"));
+            
+            // send output
+            int length = 0;
+            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+                stream.write(bbuf, 0, length);
+            }
+        } finally {
+            in.close();
+            stream.flush();
+            stream.close();
+        }
+    }
+    
+    @RequestMapping("/json/console/monitor/logs/list")
+    public void consoleMonitorLogsJson(Writer writer, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        File[] files = LogUtil.tomcatLogFiles();
+        Collection<File> fileList = new ArrayList<File>();
+        
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    String lowercaseFN = file.getName().toLowerCase();
+                    Date lastModified = new Date(file.lastModified());
+                    Date current = new Date();
+                    
+                    if ((lowercaseFN.startsWith("joget") || lowercaseFN.startsWith("catalina") || lowercaseFN.startsWith("localhost")) 
+                        && (lastModified.getTime() > (current.getTime() - (5*1000*60*60*24))) && file.length() > 0) {
+                        fileList.add(file);
+                    }
+                }
+            }
+        }
+        files = fileList.toArray(new File[0]);
+        
+        Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
+        SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        
+        for (File file : files) {
+            Map data = new HashMap();
+            data.put("filename", file.getName()); 
+            data.put("filesize", file.length());
+            data.put("date", sf.format(new Date(file.lastModified())));
+
+            jsonObject.accumulate("data", data);
+        }
+        
+        jsonObject.accumulate("total", fileList.size());
+        jsonObject.accumulate("start", start);
+        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("desc", desc);
+        jsonObject.write(writer);
     }
 
     @RequestMapping("/console/i18n/(*:name)")
