@@ -21,4 +21,17 @@
         label : '@@form.hiddenfield.workflowVariable@@',
         type : 'textfield'
     }]
+},
+{
+    title : '@@form.hiddenfield.advanced@@',
+    properties : [{
+        name : 'useDefaultWhenEmpty',
+        label : '@@form.hiddenfield.useDefaultWhenEmpty@@',
+        type : 'checkbox',
+        options : [{
+                label : '',
+                value : 'true'
+            }
+        ]
+    }]
 }]
