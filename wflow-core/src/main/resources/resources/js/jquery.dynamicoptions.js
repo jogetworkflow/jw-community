@@ -17,11 +17,11 @@
         var controlEl = $('[name='+o.controlField+'], [name$=_'+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var controlValues = new Array();
         
-        if ($(target).is("select")) {
+        if ($(controlEl).is("select")) {
             controlEl = $(controlEl).find("option:selected");
-        } else {
+        } else if ($(controlEl).is("input[type=checkbox], input[type=radio]")) {
             controlEl = $(controlEl).filter(":checked");
-        }
+        } 
         
         $(controlEl).each(function() {
             controlValues.push($(this).val());
