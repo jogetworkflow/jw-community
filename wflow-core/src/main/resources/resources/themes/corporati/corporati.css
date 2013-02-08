@@ -164,7 +164,7 @@ body.embeded #page {
     overflow-y: auto;
     z-index: -1;
     min-height: 200px;
-    height: 4000px;
+    height: 88%;
     -moz-box-shadow: 0px 0px 5px gray;
     -webkit-box-shadow: 0px 0px 5px gray;
     box-shadow: 0px 0px 5px gray;
