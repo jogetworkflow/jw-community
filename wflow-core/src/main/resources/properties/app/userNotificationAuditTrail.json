@@ -92,6 +92,11 @@
         type : 'textfield'
     },
     {
+        name : 'urlName',
+        label : '@@app.usernotificationaudittrail.urlName@@',
+        type : 'textfield'
+    },
+    {
         name : 'parameterName',
         label : '@@app.usernotificationaudittrail.parameterName@@',
         description : '@@app.usernotificationaudittrail.parameterName.desc@@',

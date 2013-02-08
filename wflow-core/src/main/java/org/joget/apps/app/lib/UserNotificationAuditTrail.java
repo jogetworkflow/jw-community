@@ -65,6 +65,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             final String emailMessage = (String) properties.get("emailMessage");
             
             final String url = (String) properties.get("url");
+            final String urlName = (String) properties.get("urlName");
             final String parameterName = (String) properties.get("parameterName");
             final String passoverMethod = (String) properties.get("passoverMethod");
             final String exclusion = (String) properties.get("exclusion");
@@ -183,11 +184,18 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
 
                                                     link = base + urlMapping + activityInstanceId;
                                                 }
-
-                                                String msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
-                                                if ("true".equalsIgnoreCase(isHtml)) {
+                                                
+                                                String msg;
+                                                if("true".equalsIgnoreCase(isHtml)){
+                                                    if(urlName != null && urlName.length() != 0){
+                                                        link = "<a href=\"" + link + "\">" + urlName + "</a>";
+                                                    }else{
+                                                        link = "<a href=\"" + link + "\">" + link + "</a>";
+                                                    }
+                                                    msg = AppUtil.processHashVariable(emailMessage + "<br><br><br>" + link, wfAssignment, null, replace);
                                                     email.setHtmlMsg(msg);
-                                                } else {
+                                                }else{
+                                                    msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
                                                     email.setMsg(msg);
                                                 }
                                             }
