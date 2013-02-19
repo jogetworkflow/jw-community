@@ -292,10 +292,15 @@ public class DataList {
         String page = getDataListParamString(TableTagParameters.PARAMETER_PAGE);
         String order = getDataListParamString(TableTagParameters.PARAMETER_ORDER);
         String sort = getDataListParamString(TableTagParameters.PARAMETER_SORT);
-
+        
         // determine start and size
         Integer recordSize = getPageSize();
         Integer start = 0;
+        
+        if (page != null && page.trim().length() > 0 && getSize() <= ((Integer.parseInt(page)-1) * recordSize)) {
+            page = null;
+        }
+        
         if (getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) != null) {
             // exporting, set full list
             page = "1";
