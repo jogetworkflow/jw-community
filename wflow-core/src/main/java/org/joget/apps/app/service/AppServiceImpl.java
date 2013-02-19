@@ -536,6 +536,13 @@ public class AppServiceImpl implements AppService {
         AppDefinition appDef = getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         PackageActivityForm paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        if (paf != null) {
+            try {
+                paf = (PackageActivityForm)paf.clone();
+            } catch (CloneNotSupportedException ex) {
+                LogUtil.error(AppServiceImpl.class.getName(), ex, "Error cloning PackageActivityForm for " + activityDefId);
+            }
+        }
         return paf;
     }
 

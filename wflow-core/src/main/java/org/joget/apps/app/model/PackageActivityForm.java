@@ -9,7 +9,7 @@ import org.simpleframework.xml.Root;
  * Represents a mapping for a workflow activity to a form.
  */
 @Root
-public class PackageActivityForm implements Serializable {
+public class PackageActivityForm implements Serializable, Cloneable {
 
     public static final String ACTIVITY_FORM_TYPE_SINGLE = "SINGLE";
     public static final String ACTIVITY_FORM_TYPE_EXTERNAL = "EXTERNAL";
@@ -114,4 +114,9 @@ public class PackageActivityForm implements Serializable {
     public void setForm(Form form) {
         this.form = form;
     }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }    
 }
