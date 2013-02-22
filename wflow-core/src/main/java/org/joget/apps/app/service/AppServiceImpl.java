@@ -1406,7 +1406,9 @@ public class AppServiceImpl implements AppService {
             for (FormDefinition o : appDef.getFormDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 formDefinitionDao.add(o);
-                
+            }
+            
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
                 // initialize db table by making a dummy load
                 String dummyKey = "xyz123";
                 formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
