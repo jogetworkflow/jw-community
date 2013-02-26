@@ -100,6 +100,7 @@ public class EmailTool extends DefaultApplicationPlugin {
             final String fromStr = WorkflowUtil.processVariable(from, formDataTable, wfAssignment);
             email.setFrom(fromStr);
             email.setSubject(emailSubject);
+            email.setCharset("UTF-8");
             
             if ("true".equalsIgnoreCase(isHtml)) {
                 email.setHtmlMsg(emailMessage);
