@@ -40,7 +40,7 @@
         name : 'showInPopupDialog',
         label : '@@userview.runprocess.showInPopup@@',
         type : 'checkbox',
-        value : 'Yes',
+        value : 'No',
         options : [{
             value : 'Yes',
             label : ''
