@@ -151,6 +151,62 @@
 531     Fixed: wflow-install - Fixed misconfiguration in my.ini for the mysql client utility.
 530     Modified: wflow-consoleweb - Minor CSS adjustment to web console subheader menu item width to better fit non-english labels.
 529     Added: wflow-core/wflow-consoleweb - File Upload - Support file size & file type validation. (#859)
+528     Fixed: wflow-consoleweb - Embeded Data List - Not supporting RTL mode.
+527     Fixed: wflow-consoleweb - UI - Datepicker is not compatible with Chrome in RTL mode.
+526     Modified: wflow-consoleweb - Minor CSS adjustment to web console header menu item width to better fit non-english labels.
+525     Modified: wflow-consoleweb - Removed unused file "userview/plugin/csvImport.jsp".
+523     Fixed: wflow-core - Form Builder - Form attachment is cached for 5 minutes. (#811)
+521     Fixed: wflow-core - Data List Builder - Formatter on different columns with same field name does not work. (#852)
+520     Added: wflow-core - Request Parameter Hash Variable - Support path parameter accessible by this hash variable. (#839)
+519     Modified: wflow-consoleweb - Support auto convert view to RTL when current locale is Arabic.
+518     Modified: wflow-consoleweb - Improve performance of locale handling.
+        Fixed: wflow-consoleweb - paremeter "_lang" with empty value does not reset locale to default locale.
+517     Fixed: wflow-core - AbstractSubForm - Form Binder always run twice. (#830)
+516     Fixed: wflow-core - Form Data Dao - Mapping file for storing is always recreated in stead of taking from cache.
+515     Fixed: wflow-consoleweb - Embed Data List View - Not working when datalist json contain escape character.
+514     Modified: wflow-consoleweb - Removed unused file "userview/plugin/userProfile.jsp".
+513     Fixed: wflow-plugin-base - Plugin Manager - Message Key that contains regex special character does not translated.
+512     Modified: wflow-consoleweb - Properties Editor - Support new property type - "label" to show value as label.
+        Modified: wflow-consoleweb - Datalist Builder - Show column name when edit column and filter. (#790)
+511     Fixed: wflow-consoleweb - App Process List - Process thumbnail is not well arrange when more than 3 processes.
+510     Added: wflow-core/ wflow-consoleweb - App Message - Generate & import PO file. (#343, #700)
+509     Fixed: wflow-core - Form Builder - Hard to differential which binder is for grid and vice versa.
+508     Modified: wflow-core/wflow-consoleweb - Custom HTML - support auto populate saved data. (#728)
+507     Fixed: wflow-core - Inbox Menu - Form is not display correctly in stay mode. (#842)
+506     Modified: wflow-core/wflow-consoleweb - Form Data binder - Show all columns in the table.
+        Modified: wflow-consoleweb - Datalist Builder - Sort field by label.
+505     Modified: wflow-core - Form Element - Support dynamic field of element.
+504     Modified: wflow-commons - Database Resource Bundle Message Source - Removed unnecessary exception message.
+503     Added: wflow-directory/wflow-core/wflow-consoleweb - Support user change locale in profile.
+        Modified: wflow-consoleweb - Improve performance of locale handling.
+501     Fixed: wflow-core - Default Form Options Binder - Options is not sort in order. (#831)
+499     Modified: wflow-core - Email Tool/ User Notification - Support multiple email per user. (#823)
+497     Modified: wflow-core/wflow-consoleweb - Email Tool/ User Notification - Support TLS/SSL
+496     Modified: wflow-consoleweb - General Setting - List language with name based on current locale setting.
+495     Fixed: wflow-consoleweb - Login error message is not following locale. (#828)
+        Modified: wflow-consoleweb - Updated console.properties & console_zh_CN.properties for login error message. (#828)
+494     Modified: wflow-commons/wflow-core/wflow-consoleweb/wflow-plugin-base - Refactored to standardize locale handling using a LocalLocaleResolver.
+        Added: wflow-consoleweb - Support change locale using url parameter "_lang".
+492     Fixed: wflow-core - Form Util - isElementPropertyValuesChanges() compared updated values with default values. (#841)
+491     Modified: wflow-consoleweb - Datalist Builder - Update embed datalist to return id in callback.
+489     Fixes: wflow-core - Current User/Performer/User/User Variable Hash Variable - Fail to retrieve active attribute. (#835)
+487     Added: wflow-consoleweb - Embed Code for Inbox - Support filter by ProcessDef Id. (#837)
+486     Add: wflow-consoleweb - Datalist Builder - JSON API retrieve datalist options.
+        Add: wflow-consoleweb - Datalist Builder - Datalist view for integration.
+485     Modified: wflow-consoleweb - Minor change to builder CSS to align navigator buttons.
+484     Fixed: wflow-consoleweb - Fixed header label not aligned correctly in right-to-left.
+483     Modified: wflow-consoleweb - Modified login page to better support right-to-left.
+482     Added: wflow-consoleweb - New web console design facelift.
+481     Modified: wflow-consoleweb - Updated iText and Apache POI versions.
+479     Fixed: wflow-core - Form Builder - Dynamic options feature not working in IE9. (#824)
+474     Fixed: wflow-wfengine/wflow-core - Workflow Manager - getConvertedLatestProcessDefId() return wrong version of processDefId.
+473     Modified: wflow-core - Userview Builder - Redirection is not work correctly in popup dialog.
+472     Modified: wflow-consoleweb - Userview Builder - Support quit embed mode by parameter embed=false.
+470     Fixed: wflow-core/wflow-consoleweb - Duplicate Value Validator - Error message are hard-coded. (#818)
+469     Fixed: wflow-core/wflow-consoleweb - Inbox Menu/ Run Process Menu - Label are hard-coded. (#803)
+468     Modified: wflow-core/wflow-consoleweb - Date Picker Field - Allow to configure year range of the date picker.
+467     Added: wflow-core/wflow-consoleweb - Form Builder - Option to convert readonly field to display as label
+466     Added: wflow-cosoleweb - Form Builder - Added form utility method for javascript. Syntax: FormUtil.getValue(fieldId), FormUtil.getValues(fieldId), FormUtil.getField(fieldId)
 
 3.0.3
 =====
