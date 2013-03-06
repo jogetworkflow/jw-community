@@ -28,7 +28,9 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                 condition += " " + filterQueryObjects[i].getOperator() + " ";
             }
             condition += filterQueryObjects[i].getQuery();
-            values.addAll(Arrays.asList(filterQueryObjects[i].getValues()));
+            if (filterQueryObjects[i].getValues() != null && filterQueryObjects[i].getValues().length > 0) {
+                values.addAll(Arrays.asList(filterQueryObjects[i].getValues()));
+            }
         }
         obj.setQuery(condition);
         if (values.size() > 0){
