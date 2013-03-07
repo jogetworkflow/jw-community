@@ -12,19 +12,22 @@ public class RequestParameterHashVariable extends DefaultHashVariablePlugin {
     public String processHashVariable(String variableKey) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
 
-        String value = request.getParameter(variableKey);
+        if (request != null) {
+            String value = request.getParameter(variableKey);
 
-        if (value != null) {
-            return value;
-        } else {
-            //get path parameter
-            Map<String, String> params = (Map) request.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS);
-            if (params != null && params.containsKey(variableKey)) {
-                return params.get(variableKey);
+            if (value != null) {
+                return value;
+            } else {
+                //get path parameter
+                Map<String, String> params = (Map) request.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS);
+                if (params != null && params.containsKey(variableKey)) {
+                    return params.get(variableKey);
+                }
+
+                return "";
             }
-            
-            return "";
         }
+        return "";
     }
 
     public String getName() {
