@@ -116,10 +116,12 @@ public abstract class UserviewMenu extends ExtElement{
      */
     public void setRedirectUrl(String redirectUrl, boolean redirectToParent) {
         if (redirectToParent && !redirectUrl.startsWith("/") && !redirectUrl.startsWith("http") && !redirectUrl.contains("embed=")) {
-            if (redirectUrl.contains("?")) {
-                redirectUrl += "&embed=false";
-            } else {
-                redirectUrl += "?embed=false";
+            if (!redirectUrl.startsWith("javascript")) {
+                if (redirectUrl.contains("?")) {
+                    redirectUrl += "&embed=false";
+                } else {
+                    redirectUrl += "?embed=false";
+                }
             }
         }
         
