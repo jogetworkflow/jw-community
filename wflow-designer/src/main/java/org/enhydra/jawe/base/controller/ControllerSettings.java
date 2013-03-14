@@ -244,7 +244,7 @@ public class ControllerSettings extends JaWEComponentSettings {
         componentSettings.put("ExternalPackagesLangName", "externalPackage");
         componentSettings.put("SettingsMenu", "@LanguageSwitcher @Reconfigurator");
         componentSettings.put("SettingsLangName", "settings");
-        componentSettings.put("HelpMenu", "HelpManual HelpAbout");
+        componentSettings.put("HelpMenu", "HelpAbout");
         componentSettings.put("HelpLangName", "help");
 
         // toolbar
