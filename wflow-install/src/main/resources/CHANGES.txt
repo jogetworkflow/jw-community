@@ -1,3 +1,4 @@
+
 3.1.0
 =====
 690     Added: wflow-core/wflow-consoleweb - Support Hungarian language in Datalist PDF export feature. (#1238)
