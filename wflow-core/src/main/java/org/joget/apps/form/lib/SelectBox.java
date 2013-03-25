@@ -43,7 +43,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
     @Override
     public FormData formatDataForValidation(FormData formData) {
         String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
-        if (paramValues == null || paramValues.length == 0) {
+        if ((paramValues == null || paramValues.length == 0) && FormUtil.isFormSubmitted(this, formData)) {
             String paramName = FormUtil.getElementParameterName(this);
             formData.addRequestParameterValues(paramName, new String[]{""});
         }
@@ -61,7 +61,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
             if (values != null && values.length > 0) {
                 // check for empty submission via parameter
                 String[] paramValues = FormUtil.getRequestParameterValues(this, formData);
-                if (paramValues == null || paramValues.length == 0) {
+                if ((paramValues == null || paramValues.length == 0) && FormUtil.isFormSubmitted(this, formData)) {
                     values = new String[]{""};
                 }
 
