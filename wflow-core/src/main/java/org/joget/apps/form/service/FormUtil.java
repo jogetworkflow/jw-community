@@ -570,7 +570,20 @@ public class FormUtil implements ApplicationContextAware {
         Element result = null;
         String elementId = rootElement.getPropertyString(FormUtil.PROPERTY_ID);
         if (elementId != null && elementId.equals(id)) {
-            result = rootElement;
+            if (rootElement instanceof Form) {
+                Collection<Element> children = rootElement.getChildren(formData);
+                if (children != null) {
+                    for (Element child : children) {
+                        result = FormUtil.findElement(id, child, formData, includeSubForm);
+                        if (result != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (result == null) {
+                result = rootElement;
+            }
             return result;
         } else if (!(rootElement instanceof AbstractSubForm) || ((rootElement instanceof AbstractSubForm) && includeSubForm)) {
             Collection<Element> children = rootElement.getChildren(formData);
