@@ -138,8 +138,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // get data list
             DataList dataList = getDataList();
             dataList.setCheckboxPosition(DataList.CHECKBOX_POSITION_NO);
-            dataList.setRows(getRows(dataList));
             dataList.setSize(getDataTotalRowCount());
+            dataList.setRows(getRows(dataList));
 
             // set data list
             setProperty("dataList", dataList);
