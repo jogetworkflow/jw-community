@@ -3211,7 +3211,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 String processKey = MiscUtilities.getProcessMgrProcDefId(processDefId);
                 String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessDefIdEquals(sessionHandle, processKey));
-                filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
+                //filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
             }
 
             // filter by process instance id
