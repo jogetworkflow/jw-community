@@ -15,7 +15,7 @@
         "id" : "column_1",
         "name" : "activityName",
         "label" : "@@userview.inboxmenu.activityName@@",
-        "sortable" : "true",
+        "sortable" : "false",
         "action" : {
             "className" : "org.joget.apps.datalist.lib.HyperlinkDataListAction",
             "properties" : {
@@ -32,7 +32,7 @@
         "id" : "column_0",
         "label" : "@@userview.inboxmenu.processName@@",
         "name" : "processName",
-        "sortable" : "true"
+        "sortable" : "false"
     },
     {
         "id" : "column_2",
@@ -50,6 +50,6 @@
         "id" : "column_4",
         "label" : "@@userview.inboxmenu.dueDate@@",
         "name" : "dueDate",
-        "sortable" : "true"
+        "sortable" : "false"
     }]
 })
