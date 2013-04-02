@@ -32,7 +32,7 @@ public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
     }
 
     public String getPropertyOptions() {
-        return "";
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/datalist/textFieldDataListFilterType.json", null, true, null);
     }
 
     public String getTemplate(DataList datalist, String name, String label) {
@@ -40,16 +40,17 @@ public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
         Map dataModel = new HashMap();
         dataModel.put("name", datalist.getDataListEncodedParamName(DataList.PARAMETER_FILTER_PREFIX+name));
         dataModel.put("label", label);
-        dataModel.put("value", getValue(datalist, name));
+        dataModel.put("value", getValue(datalist, name, getPropertyString("defaultValue")));
         dataModel.put("contextPath", WorkflowUtil.getHttpServletRequest().getContextPath());
         return pluginManager.getPluginFreeMarkerTemplate(dataModel, getClassName(), "/templates/textFieldDataListFilterType.ftl", null);
     }
 
     public DataListFilterQueryObject getQueryObject(DataList datalist, String name) {
         DataListFilterQueryObject queryObject = new DataListFilterQueryObject();
-        if (datalist != null && datalist.getBinder() != null && getValue(datalist, name) != null && !getValue(datalist, name).isEmpty()) {
+        String value = getValue(datalist, name, getPropertyString("defaultValue"));
+        if (datalist != null && datalist.getBinder() != null && value != null && !value.isEmpty()) {
             queryObject.setQuery(datalist.getBinder().getColumnName(name) + " like ?");
-            queryObject.setValues(new String[]{'%' + getValue(datalist, name) + '%'});
+            queryObject.setValues(new String[]{'%' + value + '%'});
 
             return queryObject;
         }
