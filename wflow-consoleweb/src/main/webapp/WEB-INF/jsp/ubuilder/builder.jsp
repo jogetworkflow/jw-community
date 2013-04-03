@@ -12,6 +12,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=8" />
         <title><fmt:message key="ubuilder.title"/> - ${userview.name}</title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />

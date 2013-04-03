@@ -150,6 +150,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=8" />
         <title>
             ${userview.properties.name} &nbsp;&gt;&nbsp;
             <c:if test="${!empty userview.current}">

@@ -9,6 +9,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=8" />
         <title><fmt:message key="fbuilder.title"/> - ${formDef.name}</title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
@@ -129,6 +131,7 @@
                         <li id="builder-step-properties"><a href="#" onclick="FormBuilder.showFormProperties()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.properties"/> </span><span class="subtitle"><fmt:message key="fbuilder.properties.description"/></span></span></a></li>
                         <li id="builder-step-properties"><a href="#" onclick="FormBuilder.previewForm()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.preview"/> </span><span class="subtitle"><fmt:message key="fbuilder.preview.description"/></span></span></a></li>
                         <li class="last-inactive"><a href="#" onclick="saveForm()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.save"/> </span><span class="subtitle"><fmt:message key="fbuilder.save.description"/></span></span></a></li>
+                        <jsp:include page="extend.jsp" flush="true" />
                     </ul>
                     <div id="builder-bg"></div>
                 </div>
