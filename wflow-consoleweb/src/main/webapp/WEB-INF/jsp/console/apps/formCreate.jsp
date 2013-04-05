@@ -47,17 +47,8 @@
             var loadTableNameData = {
                 success : function(response){
                     var data = eval('(' + response + ')');
-                    $("#tableName").autocomplete(data.tableName, {minChars: 0});
-                    $("#tableName").click(function(){
-                        if(preventRecursiveClick < 1){
-                            preventRecursiveClick = preventRecursiveClick + 1;
-                            $("#tableName").trigger("click");
-                        }else{
-                            preventRecursiveClick = 0;
-                        }
-                    });
-                    $("#tableName").focus(function(){
-                        $("#tableName").trigger("click");
+                    $("#tableName").autocomplete({source : data.tableName, minLength : 0}).focus(function(){ 
+                        $(this).data("autocomplete").search($(this).val());
                     });
                 }
             }

@@ -1375,3 +1375,6 @@ span.dot_yellow{
 #propertyEditor #header {
     position: relative;
 }
+.ui-autocomplete {
+    border: 1px solid gray;
+}
