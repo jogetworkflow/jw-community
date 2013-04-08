@@ -1377,4 +1377,6 @@ span.dot_yellow{
 }
 .ui-autocomplete {
     border: 1px solid gray;
+    max-height: 150px;
+    overflow:auto;
 }
