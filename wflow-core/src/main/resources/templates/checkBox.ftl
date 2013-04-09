@@ -24,7 +24,7 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 $("#${elementParamName!}${element.properties.elementUniqueKey!} input").dynamicOptions({
-                    controlField : "${element.properties.controlField!}"
+                    controlField : "${element.properties.controlFieldParamName!}"
                 });
             });
         </script>

@@ -61,7 +61,9 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "checkBox.ftl";
-
+        
+        dynamicOptions(formData);
+        
         // set value
         String[] valueArray = FormUtil.getElementPropertyValues(this, formData);
         List<String> values = Arrays.asList(valueArray);

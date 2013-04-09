@@ -3,7 +3,7 @@
         dynamicOptions : function(o){
             var target = this;
             if($(target)){
-                $('[name='+o.controlField+'], [name$=_'+o.controlField+']').live("change", function(){
+                $('[name='+o.controlField+']').live("change", function(){
                     showHideOption(target, o);
                 });
                 showHideOption(target, o);
@@ -14,7 +14,7 @@
     
     function showHideOption(target, o){
         //get enabled input field oni
-        var controlEl = $('[name='+o.controlField+'], [name$=_'+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var controlEl = $('[name='+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var controlValues = new Array();
         
         if ($(controlEl).is("select")) {

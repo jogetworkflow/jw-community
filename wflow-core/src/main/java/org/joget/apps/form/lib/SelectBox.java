@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
@@ -82,6 +83,8 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "selectBox.ftl";
+        
+        dynamicOptions(formData);
 
         // set value
         String[] valueArray = FormUtil.getElementPropertyValues(this, formData);
@@ -129,6 +132,16 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
     @Override
     public String getFormBuilderIcon() {
         return null;
+    }
+    
+    protected void dynamicOptions(FormData formData) {
+        if (getPropertyString("controlField") != null && !getPropertyString("controlField").isEmpty()) {
+            Form form = FormUtil.findRootForm(this);
+            Element e = FormUtil.findElement(getPropertyString("controlField"), form, formData);
+            if (e != null) {
+                setProperty("controlFieldParamName", FormUtil.getElementParameterName(e));
+            }
+        }
     }
 }
 
