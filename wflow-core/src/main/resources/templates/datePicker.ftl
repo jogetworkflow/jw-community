@@ -2,6 +2,9 @@
 <link rel="stylesheet" href="${request.contextPath}/css/jquery-ui-1.8.6.custom.css" />
 
 <#if element.properties.readonly! != 'true'>
+    <#if request.getAttribute("currentLocale")!?starts_with("zh") >
+        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
+    </#if>
 <script type="text/javascript">
     $(document).ready(function() {
         $("#${elementParamName!}_${element.properties.elementUniqueKey!}").datepicker({
