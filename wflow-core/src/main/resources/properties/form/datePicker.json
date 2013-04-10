@@ -27,6 +27,12 @@
         description : '@@form.datepicker.format.eg@@'
     },
     {
+        name : 'dataFormat',
+        label : '@@form.datepicker.dataFormat@@',
+        type : 'textfield',
+        description : '@@form.datepicker.dataFormat.eg@@'
+    },
+    {
         name : 'yearRange',
         label : '@@form.datepicker.yearRange@@',
         type : 'textfield',

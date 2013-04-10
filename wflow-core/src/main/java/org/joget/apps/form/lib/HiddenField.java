@@ -31,10 +31,18 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
 
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-
-        if (getPropertyString("value") != null && !"true".equals(getPropertyString("useDefaultWhenEmpty"))) {
-            value = getPropertyString("value");
-        }
+        String priority = getPropertyString("useDefaultWhenEmpty");
+        
+        if (priority != null && !priority.isEmpty()) {
+            if (("true".equals(priority) && (value == null || value.isEmpty()))
+                    || "valueOnly".equals(priority)) {
+                value = getPropertyString("value");
+            }
+        } else {
+            if (getPropertyString("value") != null && !getPropertyString("value").isEmpty()) {
+                value = getPropertyString("value");
+            }
+        } 
 
         dataModel.put("value", value);
 

@@ -543,7 +543,7 @@
                     }
                 });
                 $.each(defaultValue.split(";"), function(i, v){
-                    if(v == option.value){
+                    if(v != "" && v == option.value){
                         defaultValueText += option.label + ', ';
                     }
                 });
@@ -576,7 +576,7 @@
                 if(value == option.value){
                     checked = " checked";
                 }
-                if(defaultValue == option.value){
+                if(defaultValue != "" && defaultValue == option.value){
                     defaultValueText = option.label;
                 }
                 html += '<label><input type="radio" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>';
