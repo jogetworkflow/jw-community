@@ -21,9 +21,9 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public static final String UNDEFINED_KEY = "???"; //$NON-NLS-1$
     public static final String PARAM_NAME = "_lang";
     public static final Locale DEFAULT = new Locale("en", "US");
-    public static final String DEFAULT_LOCALE_KEY = "locale_default";
+    public static final String DEFAULT_LOCALE_KEY = "defaultLocale";
     public static final String DEFAULT_LOCALE_EXPIRY_KEY = "locale_expiry";
-    public static final String CURRENT_LOCALE_KEY = "locale_current";
+    public static final String CURRENT_LOCALE_KEY = "currentLocale";
     private String paramValue;
     
     @Override
