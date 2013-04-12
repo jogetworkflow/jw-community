@@ -648,112 +648,114 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         if (actionType == ACTION_TYPE_LOAD) {
             entityName = tableName;
-        }
+        
+            // lookup existing mapping from cache
+            Map<String, HibernateTemplate> templateCache = getTemplateCache();
+            HibernateTemplate template = templateCache.get(entityName);
+            if (template != null) {
+                ht = template;
+                Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template found in cache", entityName);
 
-        // lookup existing mapping from cache
-        Map<String, HibernateTemplate> templateCache = getTemplateCache();
-        HibernateTemplate template = templateCache.get(entityName);
-        if (template != null) {
-            ht = template;
-            Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template found in cache", entityName);
-
-            // lookup existing PersistentClass from cache
-            Map<String, PersistentClass> persistentClassCache = getPersistentClassCache();
-            PersistentClass pc = persistentClassCache.get(entityName);
-            String filename = entityName + ".hbm.xml";
-            if(pc == null){
-                // get existing mapping file
-                File mappingFile = new File(path, filename);
-                if (mappingFile.exists()) {
-                    Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} loaded form mapping file {1}", new Object[]{entityName, mappingFile.getName()});
-                    Configuration configuration = new Configuration().configure();
-                    configuration.addFile(mappingFile);
-                    pc = configuration.getClassMapping(entityName);
-                    persistentClassCache.put(entityName, pc);
-                }
-            }
-            
-            if (pc != null) {
-                // check for changes
-                boolean changes = false;
-                
-                Collection<String> columnList = null;
-                
-                if (actionType == ACTION_TYPE_STORE) {
-                    columnList = getFormRowColumnNames(rowSet);
-                } else {
-                    columnList = getFormDefinitionColumnNames(tableName);
-                }
-                
-                if (!columnList.isEmpty()) {
-                    Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
-                    Component customComponent = (Component) custom.getValue();
-                    
-                    // check size
-                    int size = 0;
-                    Iterator i = customComponent.getPropertyIterator();
-                    while (i.hasNext()) {
-                        i.next();
-                        size++;
+                // lookup existing PersistentClass from cache
+                Map<String, PersistentClass> persistentClassCache = getPersistentClassCache();
+                PersistentClass pc = persistentClassCache.get(entityName);
+                String filename = entityName + ".hbm.xml";
+                if(pc == null){
+                    // get existing mapping file
+                    File mappingFile = new File(path, filename);
+                    if (mappingFile.exists()) {
+                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} loaded form mapping file {1}", new Object[]{entityName, mappingFile.getName()});
+                        Configuration configuration = new Configuration().configure();
+                        configuration.addFile(mappingFile);
+                        pc = configuration.getClassMapping(entityName);
+                        persistentClassCache.put(entityName, pc);
                     }
-                    
-                    if (size == columnList.size()) {
-                        for (String propName : columnList) {
-                            boolean found = false;
-                            i = customComponent.getPropertyIterator();
-                            while (i.hasNext()) {
-                                Property property = (Property) i.next();
-                                if (propName.equalsIgnoreCase(property.getName())) {
-                                    found = true;
+                }
+
+                if (pc != null) {
+                    // check for changes
+                    boolean changes = false;
+
+                    Collection<String> columnList = null;
+
+                    if (actionType == ACTION_TYPE_STORE) {
+                        columnList = getFormRowColumnNames(rowSet);
+                    } else {
+                        columnList = getFormDefinitionColumnNames(tableName);
+                    }
+
+                    if (!columnList.isEmpty()) {
+                        Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
+                        Component customComponent = (Component) custom.getValue();
+
+                        // check size
+                        int size = 0;
+                        Iterator i = customComponent.getPropertyIterator();
+                        while (i.hasNext()) {
+                            i.next();
+                            size++;
+                        }
+
+                        if (size == columnList.size()) {
+                            for (String propName : columnList) {
+                                boolean found = false;
+                                i = customComponent.getPropertyIterator();
+                                while (i.hasNext()) {
+                                    Property property = (Property) i.next();
+                                    if (propName.equalsIgnoreCase(property.getName())) {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    changes = true;
                                     break;
                                 }
                             }
-                            if (!found) {
-                                changes = true;
-                                break;
-                            }
+                        } else {
+                            changes = true;
                         }
-                    } else {
+                    }
+
+                    if(!tableName.equals(pc.getTable().getName())){
                         changes = true;
+                    } 
+
+                    if (changes) {
+                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} changes detected", entityName);
+
+                        // properties changed, close session factory
+                        SessionFactory sf = ht.getSessionFactory();
+                        sf.close();
+                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} existing session factory closed", entityName);
+
+                        // delete existing mapping file
+                        File mappingFile = new File(path, filename);
+                        if (mappingFile.exists()) {
+                            mappingFile.delete();
+                        }
+
+                        // clear template to be recreated
+                        ht = null;
+
+                        //remove persistentClassCache
+                        persistentClassCache.remove(entityName);
                     }
-                }
-                
-                if(!tableName.equals(pc.getTable().getName())){
-                    changes = true;
-                } 
-                
-                if (changes) {
-                    Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} changes detected", entityName);
-
-                    // properties changed, close session factory
-                    SessionFactory sf = ht.getSessionFactory();
-                    sf.close();
-                    Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} existing session factory closed", entityName);
-
-                    // delete existing mapping file
-                    File mappingFile = new File(path, filename);
-                    if (mappingFile.exists()) {
-                        mappingFile.delete();
-                    }
-
-                    // clear template to be recreated
+                } else {
                     ht = null;
-                    
-                    //remove persistentClassCache
-                    persistentClassCache.remove(entityName);
                 }
-            } else {
-                ht = null;
             }
-        }
 
-        if (ht == null) {
-            // no existing or outdated template found, create new one
+            if (ht == null) {
+                // no existing or outdated template found, create new one
+                ht = createHibernateTemplate(entityName, tableName, rowSet, actionType);
+                Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template created", entityName);
+
+                // save into cache
+                templateCache.put(entityName, ht);
+            }
+        } else {
             ht = createHibernateTemplate(entityName, tableName, rowSet, actionType);
-            Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template created", entityName);
-
-            // save into cache
-            templateCache.put(entityName, ht);
         }
         return ht;
     }
@@ -1045,11 +1047,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
         }
 
-        // save xml
-        XMLUtil.saveDocument(document, mappingFile.getPath());
+        if (actionType == ACTION_TYPE_LOAD) {
+            // save xml
+            XMLUtil.saveDocument(document, mappingFile.getPath());
 
-        // add mapping to config
-        config.addFile(mappingFile);
+            // add mapping to config
+            config.addFile(mappingFile);
+        } else {
+            config.addDocument(document);
+        }
         return config;
     }
 }
