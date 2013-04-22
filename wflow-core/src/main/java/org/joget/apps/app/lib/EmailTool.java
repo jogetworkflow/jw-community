@@ -73,6 +73,12 @@ public class EmailTool extends DefaultApplicationPlugin {
             
             emailSubject = WorkflowUtil.processVariable(emailSubject, formDataTable, wfAssignment);
             emailMessage = AppUtil.processHashVariable(emailMessage, wfAssignment, null, replaceMap);
+            
+            smtpHost = AppUtil.processHashVariable(smtpHost, wfAssignment, null, null);
+            smtpPort = AppUtil.processHashVariable(smtpPort, wfAssignment, null, null);
+            smtpUsername = AppUtil.processHashVariable(smtpUsername, wfAssignment, null, null);
+            smtpPassword = AppUtil.processHashVariable(smtpPassword, wfAssignment, null, null);
+            security = AppUtil.processHashVariable(security, wfAssignment, null, null);
 
             // create the email message
             final HtmlEmail email = new HtmlEmail();
