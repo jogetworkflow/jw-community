@@ -71,6 +71,17 @@ PopupDialog.prototype = {
           }
           return;
       }
+      
+      var temWidth = $(window).width();
+      var temHeight = $(window).height();
+      if (temWidth >= 768) {
+          this.width = temWidth * 0.8;
+          this.height = temHeight * 0.9;
+      } else {
+          this.width = temWidth - 20;
+          this.height = temHeight - 20;
+      }
+      
       var thisObject = this;
       var newDiv = document.getElementById("jqueryDialogDiv");
       var newFrame = document.getElementById("jqueryDialogFrame");
@@ -84,6 +95,7 @@ PopupDialog.prototype = {
               newFrame.setAttribute("frameborder", "0");
               newFrame.setAttribute("width", "100%");
               newFrame.setAttribute("height", this.height-22);
+              newFrame.setAttribute("scrolling", "auto");
               newDiv.appendChild(newFrame);
               document.body.appendChild(newDiv);
           }
@@ -101,6 +113,7 @@ PopupDialog.prototype = {
               newFrame.setAttribute("src", "");
           }
       }
+      
       this.popupDialog = $(newDiv).dialog({
           modal: true,
           //title: this.title,
