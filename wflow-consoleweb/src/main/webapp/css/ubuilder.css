@@ -243,17 +243,6 @@
     background: lightgreen;
 }
 
-#step-setting-container .property-editor-container{
-    height:auto;
-    overflow:visible;
-    width:100%;
-}
-
-#step-setting-container .property-editor-property-container{
-    height:auto;
-    overflow:visible;
-}
-
 .clear{
     clear:both;
 }

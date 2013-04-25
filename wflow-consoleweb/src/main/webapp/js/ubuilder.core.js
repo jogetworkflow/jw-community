@@ -4,7 +4,7 @@ UserviewBuilder = {
     saveUrl : '',
     previewUrl : '',
     contextPath : '/jw',
-
+    
     //undo & redo feature
     undoStack : new Array(),
     redoStack : new Array(),
@@ -139,6 +139,7 @@ UserviewBuilder = {
             saveCallback: UserviewBuilder.saveSettingProperties
         }
         $('#step-setting-container').propertyEditor(options);
+        $('#step-setting-container').hide();
 
         // make palette sections draggable
         $(".builder-palette-element").draggable({

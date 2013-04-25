@@ -34,7 +34,7 @@
             $.ajaxSetup ({
                 cache: false
             }); 
-
+            
             return this.each(function() {
                 var editorId = 'property_' + uuid();
                 var html = '<div id="' + editorId + '" class="property-editor-container" style="position:relative;">' ;
@@ -51,9 +51,21 @@
                 html += '</div>';
 
                 $(this).append(html);
-
+                
                 var editor = $(this).find('div#'+editorId);
                 loadOptions(editor);
+                
+                //adjust height & width
+                var tempHeight = $(window).height();
+                if ($(this).hasClass("boxy-content")) {
+                    $(editor).css("width", ($(window).width() * 0.8) + "px");
+                    tempHeight = tempHeight  * 0.85;
+                } else {
+                    $(editor).css("width", "auto");
+                    tempHeight = tempHeight  * 0.95 - $(this).offset().top;
+                }
+                $(editor).css("height", (tempHeight  - 25) + "px");
+                $(editor).find(".property-editor-property-container").css("height", (tempHeight - 130) + "px");
 
                 $(editor).find('.property-page-hide, .property-type-hidden').hide();
                 $(editor).find('.property-page-show').hide();
@@ -84,7 +96,7 @@
                         extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
 
                         height : "300px",
-                        width : "500px"
+                        width : "95%"
                     });
                     if($(editor).find('.tinymce').length > 0){
                        tinyMceInitialed = true;
@@ -287,7 +299,7 @@
         }
 
         html += '</div>' + renderButtonPanel(options, true) + '</div>';
-
+        
         return html;
     }
 
@@ -298,32 +310,32 @@
 
         return html;
     }
-
+    
     function renderStepsIndicator(currentPage){
-        var editor = $(currentPage).parent();
+            var editor = $(currentPage).parent();
 
-        var html = '';
+            var html = '';
 
-        $(editor).find('.property-page-show').each(function(i){
-            var pageId = $(this).attr("id");
-            
-            if($(this).hasClass("current")){
-                html += '<span class="step active">';
-            }else{
-                html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
-            }
-            html += $(this).find('.property-editor-page-title').html() + '</span>';
-            if(i < $(editor).find('.property-page-show').length - 1){
-                html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-            }
-        });
-        html += '<div style="clear:both;"></div>';
-        $(currentPage).find('.property-editor-page-step-indicator').html(html);
-        
-        $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
-            changePage(currentPage, $(this).attr("rel"));
-        });
-    }
+            $(editor).find('.property-page-show').each(function(i){
+                var pageId = $(this).attr("id");
+
+                if($(this).hasClass("current")){
+                    html += '<span class="step active">';
+                }else{
+                    html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
+                }
+                html += $(this).find('.property-editor-page-title').html() + '</span>';
+                if(i < $(editor).find('.property-page-show').length - 1){
+                    html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+                }
+            });
+            html += '<div style="clear:both;"></div>';
+            $(currentPage).find('.property-editor-page-step-indicator').html(html);
+
+            $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
+                changePage(currentPage, $(this).attr("rel"));
+            });
+        }
 
     function renderButtonPanel(options, showNavButton){
         var html = '<div class="property-editor-page-button-panel">';
@@ -1367,7 +1379,7 @@
 
     function addElementPropertiesPage(editorId, currentPage, html){
         var content = $(html);
-
+        
         //attach event
         //next page event
         $(content).find('input.page-button-next').click(function(){
@@ -1399,6 +1411,8 @@
                 optionsStack[editorId].cancelCallback(parent);
             }
         });
+        
+        $(content).find('.property-editor-property-container').css("height", ($("#"+editorId).height() - 105) + "px");
 
         //grid action
         attachGridAction(content);
@@ -1439,7 +1453,7 @@
                 extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
 
                 height : "300px",
-                width : "500px"
+                width : "95%"
             });
             if($(content).find('.tinymce').length > 0){
                 tinyMceInitialed = true;
@@ -1599,5 +1613,5 @@
             $(property).find(".property-description").show();
         });
     }
-
+    
 })(jQuery);

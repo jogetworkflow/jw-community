@@ -55,8 +55,14 @@
 
 .property-description{
     display:none;
-    color:#999999;
+    color:#0000ff;
     font-size:10px;
+    padding-right:10px;
+}
+
+.property-label{
+    padding-right:10px;
+    color: #535353;
 }
 
 .property-input{
@@ -64,12 +70,13 @@
     float:right;
 }
 
-.property-input label{
+.property-input .multiple_option{
     display:block;
 }
 
 .property-input table{
     border-collapse:collapse;
+    width: 100%;
 }
 
 .property-input .default{
@@ -101,11 +108,11 @@
 .property-input table tr th.property-type-grid-action-column,
 .property-input table tr td.property-type-grid-action-column{
     border:0px;
+    width: 60px;
 }
 
-.property-input table tr th,
-.property-input table tr td{
-    width:90px;
+.property-input table tr td input{
+    width:90%;
 }
 
 .property-input select{
@@ -186,4 +193,9 @@
 .property-type-grid-action-movedown span,
 .property-type-grid-action-add span{
     display:none;
+}
+
+.property-editor-property textarea{
+    width:95%;
+    min-height: 200px;
 }

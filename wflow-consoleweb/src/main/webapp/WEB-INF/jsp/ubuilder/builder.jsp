@@ -96,6 +96,8 @@
                     <div id="builder-bg"></div>
                 </div>
                 <div id="builder-content">
+                    <div id="step-setting-container">
+                    </div>
                     <div id="step-design-container">
                         <div id="toolbar">
                             <ul>
@@ -165,10 +167,6 @@
                         </div>
 
                     </div>
-
-                    <div id="step-setting-container" style="display:none;">
-
-                    </div>
                 </div>
             </div>
             <div id="builder-footer">
@@ -182,6 +180,6 @@
             HelpGuide.key = "help.web.console.app.userview.builder";
             HelpGuide.show();
         </script>
-            
+       
     </body>
 </html>
