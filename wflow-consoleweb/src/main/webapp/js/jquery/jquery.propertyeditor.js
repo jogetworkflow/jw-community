@@ -141,6 +141,7 @@
                 attachGridAction(editor);
                 
                 attachDescriptionEvent(editor);
+                attachHashVariablePropertyEvent(editorId, editor);
 
                 //element select onchange event
                 $(editor).find('.property-type-elementselect .property-input select').change(function(){
@@ -1614,4 +1615,159 @@
         });
     }
     
+    function attachHashVariablePropertyEvent(editorId, container){
+        var keys = {};
+
+        $(container).keydown(function(e){
+            keys[e.which] = true;
+            if (keys[17] == true && keys[16] == true && (keys[51] == true || keys[219] == true)) {
+                var element = $(container).find(":focus");
+                showHashVariableAssit(editorId, element, doGetCaretPosition(element[0]), (keys[51] == true)?"#":"{");
+                keys = {};
+            }
+        }).keyup(function(e){
+            delete keys[e.which];
+        });
+    }
+    
+    function renderHashVariableAssit(editorId){
+        var html = "<div class=\""+editorId+"hashassit\" title=\""+get_peditor_msg('peditor.hashVariable')+"\">";
+        html += "<input type=\"text\" id=\""+editorId+"hashassit_input\" class=\"hashassit_input\" style=\"width:90%\"/>";
+        html += "</div>";
+        
+        var object = $(html);
+        $(object).dialog({autoOpen: false, modal: true, height: 45});
+        /*
+        $.ajax({
+            url: optionsStack[editorId].contextPath + '/web/json/hash/options',
+            dataType: "text",
+            success: function(data) {
+                if(data != undefined && data != null){
+                    var options = $.parseJSON(data);
+                    $("#"+editorId+"hashassit_input").autocomplete({
+                        source : options, 
+                        minLength : 0,
+                        open: function(){
+                            $(this).autocomplete('widget').css('z-index', 99999);
+                            return false;
+                        }
+                    }).focus(function(){ 
+                        $(this).data("autocomplete").search($(this).val());
+                    });
+                }
+                
+            }
+        });
+        
+        $(object).find(".hashassit_input").keydown(function(e){
+            var autocomplete = $(this).autocomplete("widget");
+            if(e.which == 13 && $(autocomplete).is(":hidden")) {
+                var text = $(this).val();
+                if (text.length > 0) {
+                    if (hashAssit[editorId].syntax == "#") {
+                        text = "#" + text + "#";
+                    } else {
+                        text = "{" + text + "}";
+                    }
+                    var org = $(hashAssit[editorId].field).val();
+                    var output = [org.slice(0, hashAssit[editorId].caret), text, org.slice(hashAssit[editorId].caret)].join('');
+                    $(hashAssit[editorId].field).val(output);
+                }
+                $(hashAssit[editorId].popup).dialog("close");
+                $(hashAssit[editorId].field).focus();
+            }
+        });*/
+        
+        return object;
+    }
+    
+    function showHashVariableAssit(editorId, field, caret, syntax){
+        var html = "<div class=\""+editorId+"hashassit\" title=\""+get_peditor_msg('peditor.hashVariable')+"\">";
+        html += "<input type=\"text\" id=\""+editorId+"hashassit_input\" class=\"hashassit_input\" style=\"width:90%\"/>";
+        html += "</div>";
+        
+        var object = $(html);
+        $(object).dialog({
+            autoOpen: false, 
+            modal: true, 
+            height: 45,
+            close: function( event, ui ) {
+                $(object).dialog("destroy");
+                $(object).remove();
+                $(field).focus();
+            }
+        });
+        
+        $.ajax({
+            url: optionsStack[editorId].contextPath + '/web/json/hash/options',
+            dataType: "text",
+            success: function(data) {
+                if(data != undefined && data != null){
+                    var options = $.parseJSON(data);
+                    $(object).find(".hashassit_input").autocomplete({
+                        source : options, 
+                        minLength : 0,
+                        open: function(){
+                            $(this).autocomplete('widget').css('z-index', 99999);
+                            return false;
+                        }
+                    }).focus(function(){ 
+                        $(this).data("autocomplete").search($(this).val());
+                    }).keydown(function(e){
+                        var autocomplete = $(this).autocomplete("widget");
+                        if(e.which == 13 && $(autocomplete).is(":hidden")) {
+                            var text = $(this).val();
+                            if (text.length > 0) {
+                                if (syntax == "#") {
+                                    text = "#" + text + "#";
+                                } else {
+                                    text = "{" + text + "}";
+                                }
+                                var org = $(field).val();
+                                var output = [org.slice(0, caret), text, org.slice(caret)].join('');
+                                $(field).val(output);
+                            }
+                            $(object).dialog("close");
+                        }
+                    });
+                    $(object).dialog("open");
+                    $(object).find(".hashassit_input").val("").focus();
+                } else {
+                    $(object).dialog("destroy");
+                    $(object).remove();
+                    $(field).focus();
+                }
+            }
+        });
+    }
+    
+    function doGetCaretPosition (oField) {
+
+        // Initialize
+        var iCaretPos = 0;
+
+        // IE Support
+        if (document.selection) {
+
+            // Set focus on the element
+            oField.focus ();
+
+            // To get cursor position, get empty selection range
+            var oSel = document.selection.createRange ();
+
+            // Move selection start to 0 position
+            oSel.moveStart ('character', -oField.value.length);
+
+            // The caret position is selection length
+            iCaretPos = oSel.text.length;
+        }
+
+        // Firefox support
+        else if (oField.selectionStart || oField.selectionStart == '0')
+            iCaretPos = oField.selectionStart;
+
+        // Return results
+        return (iCaretPos);
+    }
+
 })(jQuery);

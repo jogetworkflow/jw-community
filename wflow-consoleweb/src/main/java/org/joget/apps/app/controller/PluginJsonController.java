@@ -6,12 +6,15 @@ import org.joget.plugin.base.PluginManager;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
@@ -20,6 +23,7 @@ import org.joget.plugin.base.AuditTrailPlugin;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.DeadlinePlugin;
 import org.joget.workflow.model.ParticipantPlugin;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,6 +188,30 @@ public class PluginJsonController {
         if (!found) {
             // send 404 not found
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+    
+    @RequestMapping("/json/hash/options")
+    public void HashVariableOptions(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+        try {
+            Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
+            
+            JSONArray jsonArray = new JSONArray();
+            
+            List<String> syntaxs = new ArrayList<String> (); 
+            for (Plugin p : pluginList) {
+                HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
+                if (hashVariablePlugin.availableSyntax() != null) {
+                    syntaxs.addAll(hashVariablePlugin.availableSyntax());
+                }
+            }
+            Collections.sort(syntaxs);
+            for (String key : syntaxs) {
+                jsonArray.put(key);
+            }
+            jsonArray.write(writer);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass().getName(), e, "");
         }
     }
 }
