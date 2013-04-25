@@ -1,0 +1,47 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.joget</groupId>
+    <artifactId>wflow-app</artifactId>
+    <version>3.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>wflow-app</name>
+    <url>http://www.joget.org</url>
+    <scm>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/</developerConnection>
+        <url>http://dev.joget.org/svn/jw-community/trunk/</url>
+    </scm>
+    <build>
+        <plugins>
+            <!-- dummy goal for deployment to glassfish -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>cd</executable>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modules>
+        <module>../wflow-jdbc</module>
+        <module>../wflow-commons</module>
+        <module>../wflow-plugin-base</module>
+        <module>../wflow-plugin-archetype</module>
+        <module>../wflow-directory</module>
+        <module>../wflow-wfengine</module>
+        <module>../wflow-core</module>
+        <module>../wflow-consoleweb</module>
+        <module>../wflow-designer</module>
+        <module>../wflow-designerweb</module>
+    </modules>
+</project>
+
