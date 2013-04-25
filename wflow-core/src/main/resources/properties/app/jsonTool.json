@@ -1,0 +1,52 @@
+[{
+    title : '@@app.jsontool.config@@',
+    properties : [{
+        name : 'jsonUrl',
+        label : '@@app.jsontool.jsonUrl@@',
+        type : 'textfield',
+        required : 'True'
+    }]
+},
+{
+    title : '@@app.jsontool.storeToForm@@',
+    properties : [{
+        name : 'formDefId',
+        label : '@@app.jsontool.formId@@',
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/forms/options'
+    },
+    {
+        name : 'multirowBaseObject',
+        label : '@@app.jsontool.baseJsonObject@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fieldMapping',
+        label : '@@app.jsontool.fieldMapping@@',
+        type : 'grid',
+        columns : [{
+            key : 'field',
+            label : '@@app.jsontool.fieldName@@'
+        },
+        {
+            key : 'jsonObjectName',
+            label : '@@app.jsontool.jsonObjectName@@'
+        }]
+    }]
+},
+{
+    title : '@@app.jsontool.storeToWorkflowVariable@@',
+    properties : [{
+        name : 'wfVariableMapping',
+        label : '@@app.jsontool.workflowVariableMapping@@',
+        type : 'grid',
+        columns : [{
+            key : 'variable',
+            label : '@@app.jsontool.workflowVariable@@'
+        },
+        {
+            key : 'jsonObjectName',
+            label : '@@app.jsontool.jsonObjectName@@'
+        }]
+    }]
+}]

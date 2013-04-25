@@ -1,0 +1,31 @@
+[
+    {
+        title:'@@form.column.editColumn@@',
+        properties:[
+            {
+                name : 'label',
+                label : '@@form.column.label@@',
+                type : 'textfield',
+            },
+            {
+                name : 'customWidth',
+                label : '@@form.column.width@@',
+                type : 'textfield',
+                required : 'False',
+                value : ''
+            },
+            {
+                name:'horizontal',
+                label:'@@form.column.horizontalLayout@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            }
+        ]
+    }
+]

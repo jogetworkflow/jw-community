@@ -1,0 +1,31 @@
+[{
+    title : '@@form.duplicatevaluevalidator.config@@',
+    properties : [
+    %s,
+    {
+        name : 'fieldId',
+        label : '@@form.duplicatevaluevalidator.fieldId@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'mandatory',
+        label : '@@form.duplicatevaluevalidator.mandatory@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'regex',
+        label : '@@form.duplicatevaluevalidator.regexCheck@@',
+        type : 'textfield'
+    },
+    {
+        name : 'errorMsg',
+        label : '@@form.duplicatevaluevalidator.errorMsg@@',
+        type : 'textfield'
+    }]
+}]

@@ -1,0 +1,47 @@
+[{
+    title : '@@userview.link.editLink@@',
+    properties : [{
+        name : 'id',
+        label : 'Id',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.link.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.link.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.link.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@userview.link@@'
+    },
+    {
+        name : 'url',
+        label : '@@userview.link.url@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'target',
+        label : '@@userview.link.target@@',
+        type : 'selectbox',
+        options : [{
+            value : 'blank',
+            label : '@@userview.link.newWindow@@'
+        },
+        {
+            value : 'self',
+            label : '@@userview.link.currentWindow@@'
+        },
+        {
+            value : 'iframe',
+            label : '@@userview.link.iframe@@'
+        }],
+        required : 'True',
+        value : 'blank'
+    }]
+}]

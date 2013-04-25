@@ -1,0 +1,13 @@
+[{
+    title : '@@datalist.formrowdeletedatalistaction.editDeleteAction@@',
+    properties : [{
+        name : 'label',
+        label : '@@datalist.formrowdeletedatalistaction.label@@',
+        type : 'textfield'
+    },
+    %s,{
+        name : 'confirmation',
+        label : '@@datalist.formrowdeletedatalistaction.confirmationMessage@@',
+        type : 'textfield'
+    }]
+}]
