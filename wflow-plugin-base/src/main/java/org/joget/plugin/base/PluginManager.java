@@ -770,7 +770,7 @@ public class PluginManager implements ApplicationContextAware {
             temp.process(data, out);
             out.flush();
             result = out.toString();
-
+            
             result = processPluginTranslation(result, pluginName, translationPath);
 
         } catch (Exception ex) {
@@ -900,7 +900,7 @@ public class PluginManager implements ApplicationContextAware {
             for (Plugin p : pm.list()) {
                 LogUtil.info(PluginManager.class.getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             }
-            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.1-SNAPSHOT.jar";
+            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-4.0-SNAPSHOT.jar";
             String samplePlugin = "org.joget.plugin.sample.SamplePlugin";
 
             try {
