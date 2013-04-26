@@ -157,11 +157,9 @@
 
                 $(editor).find('.property-page-show:first .property-editor-property-container .property-editor-property:first .property-input').find('input, select, textarea').focus();
 
-                //hide page navigation when page only has one, else show steps indicator
-                if($(editor).find('.property-page-show').length <= 1){
-                    $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').hide();
-                }else{
-                    renderStepsIndicator($(editor).find('.property-page-show.current'));
+                $(editor).find('.property-page-show.current .property-editor-page-button-panel .page-button-navigation [type=button]').hide();
+                if($(editor).find('.property-page-show').length > 1){
+                    renderAdvancedStepsIndicator($(editor).find('.property-page-show.current'));
                 }
             });
         }
@@ -312,7 +310,29 @@
         return html;
     }
     
+    function renderAdvancedStepsIndicator(currentPage){
+        var editor = $(currentPage).parent();
+        
+        var html = '<span class="step active">';
+        html += $(editor).find('.property-page-show.current').find('.property-editor-page-title').html() + '</span>';
+        html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+        html += '<span class="showAdvancedOptions" style="cursor:pointer">';
+        html += get_peditor_msg('peditor.showAdvancedOptions') + '</span> ';
+        html += '<div style="clear:both;"></div>';
+        $(currentPage).find('.property-editor-page-step-indicator').html(html);
+        
+        $(currentPage).find('.property-editor-page-button-panel .page-button-navigation').append('<input type="button" class="showAdvancedOptions" value="'+get_peditor_msg('peditor.showAdvancedOptions')+'"/>');
+        
+        $(currentPage).find('.showAdvancedOptions').click(function(){
+            $(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
+            $(currentPage).find('.property-editor-page-button-panel .page-button-navigation [type=button]').show();
+            renderStepsIndicator(currentPage);
+            nextPage(currentPage);
+        });
+    }
+    
     function renderStepsIndicator(currentPage){
+        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
             var editor = $(currentPage).parent();
 
             var html = '';
@@ -337,6 +357,7 @@
                 changePage(currentPage, $(this).attr("rel"));
             });
         }
+    }
 
     function renderButtonPanel(options, showNavButton){
         var html = '<div class="property-editor-page-button-panel">';
@@ -560,7 +581,7 @@
                         defaultValueText += option.label + ', ';
                     }
                 });
-                html += '<label><input type="checkbox" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>';
+                html += '<span class="multiple_option"><label><input type="checkbox" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label></span>';
             });
         }
 
@@ -592,7 +613,7 @@
                 if(defaultValue != "" && defaultValue == option.value){
                     defaultValueText = option.label;
                 }
-                html += '<label><input type="radio" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>';
+                html += '<span class="multiple_option"><label><input type="radio" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label></span>';
             });
         }
 
@@ -1127,7 +1148,9 @@
         var properties = new Object();
 
         $.each(pagePropertiesDefinition, function(i, property){
-            if(property.type.toLowerCase() == "elementselect"){
+            if(property.type.toLowerCase() == "header"){
+                //skip
+            }else if(property.type.toLowerCase() == "elementselect"){
                 var element = new Object();
                 element['className'] = "";
                 if($(editor).find('#'+editorId+'_'+parent+property.name).val() != null){

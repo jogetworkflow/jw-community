@@ -200,6 +200,16 @@
     min-height: 200px;
 }
 
+.property-editor-property.property-type-header .property-label-container {
+    border-bottom: 1px solid #DDDDDD;
+    margin: 0;
+    padding: 3px 5px;
+    width: auto;
+    float: none;
+    font-weight: bold;
+    background: #f6f6f6;
+}
+
 .ui-widget-overlay {
     z-index: 9998 !important;
 }
