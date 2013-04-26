@@ -1,10 +1,11 @@
 package org.joget.apps.app.lib;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
-import org.joget.commons.util.StringUtil;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
@@ -68,5 +69,19 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
 
     public String getPropertyOptions() {
         return "";
+    }
+    
+    @Override
+    public Collection<String> availableSyntax() {
+        Collection<String> syntax = new ArrayList<String>();
+        syntax.add("date.FORMAT");
+        syntax.add("date.DAY+INTEGER.FORMAT");
+        syntax.add("date.DAY-INTEGER.FORMAT");
+        syntax.add("date.MONTH+INTEGER.FORMAT");
+        syntax.add("date.MONTH-INTEGER.FORMAT");
+        syntax.add("date.YEAR+INTEGER.FORMAT");
+        syntax.add("date.YEAR-INTEGER.FORMAT");
+        
+        return syntax;
     }
 }

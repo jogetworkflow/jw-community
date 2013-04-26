@@ -1,6 +1,8 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
@@ -78,5 +80,17 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
 
     public String getPropertyOptions() {
         return "";
+    }
+    
+    @Override
+    public Collection<String> availableSyntax() {
+        Collection<String> syntax = new ArrayList<String>();
+        syntax.add("user.USERNAME.firstName");
+        syntax.add("user.USERNAME.lastName");
+        syntax.add("user.USERNAME.email");
+        syntax.add("user.USERNAME.active");
+        syntax.add("user.USERNAME.timeZone");
+        
+        return syntax;
     }
 }

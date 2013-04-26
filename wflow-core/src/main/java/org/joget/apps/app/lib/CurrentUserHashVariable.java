@@ -1,6 +1,8 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
@@ -83,5 +85,18 @@ public class CurrentUserHashVariable extends DefaultHashVariablePlugin {
     
     public String getPropertyOptions() {
         return "";
+    }
+    
+    @Override
+    public Collection<String> availableSyntax() {
+        Collection<String> syntax = new ArrayList<String>();
+        syntax.add("currentUser.username");
+        syntax.add("currentUser.firstName");
+        syntax.add("currentUser.lastName");
+        syntax.add("currentUser.email");
+        syntax.add("currentUser.active");
+        syntax.add("currentUser.timeZone");
+        
+        return syntax;
     }
 }

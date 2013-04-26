@@ -1,6 +1,8 @@
 package org.joget.apps.app.lib;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.LogUtil;
@@ -55,5 +57,21 @@ public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
 
     public String getPropertyOptions() {
         return "";
+    }
+    
+    @Override
+    public Collection<String> availableSyntax() {
+        Collection<String> syntax = new ArrayList<String>();
+        syntax.add("assignment.processId");
+        syntax.add("assignment.processDefId");
+        syntax.add("assignment.processName");
+        syntax.add("assignment.processVersion");
+        syntax.add("assignment.processRequesterId");
+        syntax.add("assignment.activityId");
+        syntax.add("assignment.activityName");
+        syntax.add("assignment.activityDefId");
+        syntax.add("assignment.assigneeId");
+        
+        return syntax;
     }
 }

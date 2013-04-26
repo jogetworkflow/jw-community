@@ -1,5 +1,7 @@
 package org.joget.apps.app.lib;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -108,5 +110,14 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
 
     public String getPropertyOptions() {
         return "";
+    }
+    
+    @Override
+    public Collection<String> availableSyntax() {
+        Collection<String> syntax = new ArrayList<String>();
+        syntax.add("form.TABLE.COLUMN");
+        syntax.add("form.TABLE.COLUMN[PRIMARY_KEY]");
+        
+        return syntax;
     }
 }
