@@ -1,0 +1,48 @@
+<html class="ui-mobile" manifest="/jw/web/mobilecache/default">
+    <head>
+        <title>Joget Mobile</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <link rel="stylesheet" href="jqm/jquery.mobile-1.2.0.css">
+        <script src="jqm/jquery-1.7.2.min.js"></script>
+        <script src="jqm/jquery.cookie.js"></script>
+        <script src="jqm/jquery.mobile-1.2.0.min.js"></script>
+        <script src="mobile.js"></script>
+        <script>
+            function desktopSite() {
+                var path = "/jw/web/desktop";
+                var href = "/jw/web/desktop";
+                Mobile.viewFullSite(path, href);
+                return false;
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="mobileHome" data-role="page" >
+            <div data-role="header" data-position="fixed">
+                <h1>Joget Worklow</h1>
+                <a href="#" onclick="return desktopSite()" data-icon="home" rel="external">Desktop Site</a>
+            </div>
+            <div data-role="content">
+                <style>
+                    #splash {
+                        text-align: center;
+                    }
+                </style>
+                <ul id="welcome" data-role="listview" data-inset="true">
+                    <li>
+                        <a href="../web/mobile/apps">
+                            <div id="splash">
+                            <img src="logo.png" height="100">
+                            <br>
+                            </br>
+                            <h4>Welcome to the Joget Workflow <br>Mobile App</h4>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>		
+        </div>
+    </body>
+
+</html>

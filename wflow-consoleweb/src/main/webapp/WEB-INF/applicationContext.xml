@@ -30,6 +30,10 @@
         <security:intercept-url pattern="/web/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/web/mlogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/mobile/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
+        <security:intercept-url pattern="/web/embed/mlogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/embed/mobile/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN" />
         <security:intercept-url pattern="/web/json/monitoring/**" access="ROLE_ADMIN" />
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN, ROLE_USER, IS_AUTHENTICATED_ANONYMOUSLY" />

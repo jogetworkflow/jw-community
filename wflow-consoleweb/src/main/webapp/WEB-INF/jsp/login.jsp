@@ -1,5 +1,15 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
+
+<%
+if (MobileUtil.isMobileUserAgent(request)) {
+    pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
+}
+%>
+<c:if test="${mobileUserAgent && (empty cookie['desktopSite'].value || cookie['desktopSite'].value != 'true')}">
+    <c:redirect url="/web/mlogin"/>
+</c:if>
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!isAnonymous}">
@@ -26,7 +36,7 @@
                     <tr><td></td><td class="buttons"><input name="submit" class="form-button" type="submit" value="<fmt:message key="console.login.label.login" />" /></td></tr>
                 </table>
             </form>
-
+                    
             <script type="text/javascript">
                 $(document).ready(
                     function() {

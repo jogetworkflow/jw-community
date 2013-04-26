@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.model.MobileElement;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -89,6 +91,13 @@ public class FormUtil implements ApplicationContextAware {
         String className = obj.getString(FormUtil.PROPERTY_CLASS_NAME);
         Element element = (Element) pluginManager.getPlugin(className);
         if (element != null) {
+            // check for mobile support
+            boolean isMobileView = MobileUtil.isMobileView();
+            if (isMobileView && (element instanceof MobileElement) && !((MobileElement)element).isMobileSupported()) {
+                // mobile not supported, ignore this element
+                return null;
+            }
+            
             // set element properties
             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(obj);
             element.setProperties(properties);

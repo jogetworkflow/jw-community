@@ -43,6 +43,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.DefaultFormBinder;
@@ -95,6 +96,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.ui.AbstractProcessingFilter;
+import org.springframework.security.ui.savedrequest.SavedRequest;
+import org.springframework.security.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -167,7 +171,7 @@ public class ConsoleWebController {
     @Autowired
     LocaleResolver localeResolver;
 
-    @RequestMapping("/index")
+    @RequestMapping({"/index", "", "/", "/home", "/desktop"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
         

@@ -1641,8 +1641,19 @@ public class AppServiceImpl implements AppService {
      * @return 
      */
     public Collection<AppDefinition> getPublishedApps(String appId) {
+        Collection<AppDefinition> resultAppDefinitionList = getPublishedApps(appId, false, false);
+        return resultAppDefinitionList;
+    }
+
+    /**
+     * Retrieve list of published apps available to the current user. Overloaded
+     * to additionally filter by mobile view support.
+     * @param appId Optional filter by appId
+     * @return
+     */
+    public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
         Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
-        Collection<AppDefinition> appDefinitionList = null;
+        Collection<AppDefinition> appDefinitionList;
         if (appId == null || appId.trim().isEmpty()) {
             // get list of published apps.
             appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
@@ -1661,18 +1672,20 @@ public class AppServiceImpl implements AppService {
         // filter based on availability and permission of userviews to run.
         for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
             AppDefinition appDef = i.next();
-            
+
             Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
             Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
-            
+
             for (UserviewDefinition uvDef : uvDefList) {
                 Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null, false);
-                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))) {
+                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))
+                        && (!mobileView || !"true".equals(userview.getSetting().getProperty("mobileViewDisabled")))
+                        && (!mobileCache || "true".equals(userview.getSetting().getProperty("mobileCacheEnabled")))) {
                     newUvDefList.add(uvDef);
                 }
             }
 
-            if (newUvDefList != null && !newUvDefList.isEmpty()) {
+            if (!newUvDefList.isEmpty()) {
                 AppDefinition tempAppDef = new AppDefinition();
                 tempAppDef.setAppId(appDef.getId());
                 tempAppDef.setVersion(appDef.getVersion());
@@ -1682,8 +1695,8 @@ public class AppServiceImpl implements AppService {
             }
         }
         return resultAppDefinitionList;
-    }
-
+    }    
+    
     /**
      * Retrieve list of published processes available to the current user
      * @param appId Optional filter by appId

@@ -1,0 +1,215 @@
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.datalist.model.DataList"%>
+<%@ page import="org.joget.apps.datalist.model.DataListColumn"%>
+<%@ page import="org.joget.apps.datalist.model.DataListColumnFormat"%>
+<%@ page import="java.util.Collection"%>
+
+<c:set var="landingPage" value="landing"/>
+<html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
+    <head>
+        <title>
+            ${userview.properties.name} &nbsp;&gt;&nbsp;
+            <c:if test="${!empty userview.current}">
+                ${userview.current.properties.label}
+            </c:if>
+        </title>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.2.0.css">
+        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery-1.7.2.min.js"></script>
+        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.2.0.min.js"></script>
+        <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+        <style>
+        </style>
+
+        <c:catch var="dataListException">        
+        <c:set var="actionResult" value="${dataList.actionResult}" />
+        <c:if test="${!empty actionResult}">
+            <c:if test="${!empty actionResult.message}">
+                <script>
+                    alert("${actionResult.message}");
+                </script>
+            </c:if>
+            <c:choose>
+                <c:when test="${actionResult.type == 'REDIRECT' && actionResult.url == 'REFERER'}">
+                    <script>
+                        location.href = "${header['Referer']}";
+                    </script>
+                </c:when>
+                <c:when test="${actionResult.type == 'REDIRECT'  && !empty actionResult.url}">
+                    <script>
+                        location.href = "${actionResult.url}";
+                    </script>
+                </c:when>
+                <c:otherwise>   
+
+                </c:otherwise>
+            </c:choose>
+        </c:if>
+        </c:catch>
+
+    </head>
+    <body class="ui-mobile-viewport">
+
+        <div id="userview" data-role="page" data-url="userview" tabindex="0" style="min-height: 377px; ">
+
+            <div data-role="header" data-position="fixed" role="banner" style="top: 0px; ">
+                <c:if test="${!empty menuId && menuId != landingPage}">
+                    <a href="${pageContext.request.contextPath}/web/mobile/${appId}/${userview.properties.id}/${key}/${landingPage}" data-icon="home" data-direction="reverse"><fmt:message key="console.header.menu.label.home"/></a>
+                </c:if>
+                <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
+                <c:choose>
+                    <c:when test="${!empty userview.setting.theme.header}">
+                        ${userview.setting.theme.header}
+                    </c:when>
+                    <c:otherwise>
+                        ${userview.properties.name}
+                    </c:otherwise>
+                </c:choose>                    
+                </h1>
+                <c:if test="${empty menuId || menuId == landingPage}">    
+                    <c:choose>
+                        <c:when test="${isAnonymous}">
+                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/${key}" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText">${userview.properties.logoutText}</span></a>
+                        </c:otherwise>
+                    </c:choose>                            
+                </c:if>
+            </div>
+            <div id="logo"></div>
+            <div data-role="content" class="ui-content" role="main">
+                    
+                <c:set target="${dataList}" property="pageSize" value="500" />
+                <c:set var="columns" value="${dataList.columns}"/>
+                
+                <%-- Get first action as primary link --%>
+                <c:forEach items="${columns}" var="column">
+                    <c:if test="${empty firstDataListAction && !empty column.action}">
+                            <c:set var="firstDataListAction" value="${column.action}"/>
+                    </c:if>
+                </c:forEach>
+                <c:if test="${empty firstDataListAction && !empty dataList.rowActions && !empty dataList.rowActions[0]}">
+                    <c:set var="firstDataListAction" value="${dataList.rowActions[0]}"/>
+                </c:if>
+                <c:if test="${!empty firstDataListAction}">
+                    <c:set var="dataListHref" value="${firstDataListAction.href}"/>
+                    <c:if test="${!empty firstDataListAction.hrefColumn}">
+                        <c:choose>
+                            <c:when test="${empty firstDataListAction.hrefParam}">
+                                <c:set var="dataListHref" value="${dataListHref}/"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:if test="${!fn:contains(dataListHref, '?')}">
+                                    <c:set var="dataListHref" value="${dataListHref}?"/>
+                                </c:if>
+                                <c:if test="${fn:startsWith(dataListHref, '?')}">
+                                    <c:set var="dataListHref" value="${menuId}${dataListHref}"/>
+                                </c:if>
+                                <c:set var="dataListHref" value="${dataListHref}&${firstDataListAction.hrefParam}="/>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
+                </c:if>
+                            
+                <%-- Get second action as secondary link --%>
+                <c:forEach items="${dataList.rowActions}" var="rowAction">
+                    <c:choose>
+                        <c:when test="${empty secondDataListAction || !empty rowAction}">
+                            <c:set var="secondDataListAction" value="${rowAction}"/>
+                        </c:when>
+                    </c:choose>
+                </c:forEach>                            
+                <c:if test="${!empty secondDataListAction}">
+                    <c:set var="secondDataListHref" value="${secondDataListAction.href}"/>
+                    <c:if test="${!empty secondDataListAction.hrefColumn}">
+                        <c:choose>
+                            <c:when test="${empty secondDataListAction.hrefParam}">
+                                <c:set var="secondDataListHref" value="${secondDataListHref}/"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:if test="${!fn:contains(secondDataListHref, '?')}">
+                                    <c:set var="secondDataListHref" value="${secondDataListHref}?"/>
+                                </c:if>
+                                <c:if test="${fn:startsWith(secondDataListHref, '?')}">
+                                    <c:set var="secondDataListHref" value="${menuId}${secondDataListHref}"/>
+                                </c:if>
+                                <c:set var="secondDataListHref" value="${secondDataListHref}&${secondDataListAction.hrefParam}="/>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:if>
+                </c:if>                            
+                
+                <%-- Determine data-split-icon --%>
+                <c:set var="dataSplitIcon" value="gear"/>
+                <c:if test="${fn:contains(secondDataListAction, 'Delete')}">
+                    <c:set var="dataSplitIcon" value="delete"/>
+                </c:if>
+                            
+                <%-- Display datalist --%>            
+                <ul id="dataList" data-role="listview" data-filter="true" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
+                    <li data-role="list-divider">${dataList.name}</li>
+                    <c:forEach items="${dataList.rows}" var="row" varStatus="status">
+                        <li>
+                            <c:if test="${!empty firstDataListAction}">
+                                <c:set var="rowValue" value="${row[firstDataListAction.hrefColumn]}"/>
+                            </c:if>
+                            <c:set var="rowHref" value="${dataListHref}${rowValue}"/>
+                            <c:if test="${!empty rowHref}"><a href="${rowHref}"></c:if>
+                            <c:set var="column" value="${columns[0]}"/>
+                            <c:set var="cellValue" value="${row[columns[0].name]}"/>
+                            <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
+                            <h4>${formattedValue}</h4>
+                            <p>
+                            <c:forEach var="column" items="${columns}" varStatus="cStatus">
+                                <c:if test="${cStatus.index > 0}">
+                                    <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
+                                    <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
+                                    <c:if test="${!empty cellValue}">
+                                        <c:if test="${!empty cellLabel}">${cellLabel}:</c:if> ${cellValue}
+                                    </c:if>
+                                    <br>
+                                </c:if>
+                            </c:forEach>
+                            </p>
+                            <c:if test="${!empty rowHref}"></a></c:if>
+                            <c:if test="${!empty secondDataListHref}">
+                                <c:set var="onClickCode" value="$.mobile.changePage('${secondDataListHref}${rowValue}')"/>
+                                <c:set var="confirmation" value=""/>
+                                <c:if test="${!empty secondDataListAction.confirmation}">
+                                    <c:set var="onClickCode" value=" if (confirm('${secondDataListAction.confirmation}')) { ${onClickCode} }"/>
+                                </c:if>
+                                <a href="#" onclick="${onClickCode}">${secondDataListAction.linkLabel}</a>
+                            </c:if>
+                        </li>
+                    </c:forEach>                    
+                </ul>                
+            </div>		
+
+        </div>
+
+        <div class="ui-loader" style="top: 332px; "><h1><fmt:message key="mobile.apps.loading"/></h1></div>
+
+    </body>    
+</html>
+
+<%!
+    protected String formatColumn(PageContext pageContext) {
+        DataListColumn column = (DataListColumn)pageContext.findAttribute("column");
+        DataList dataList = (DataList)pageContext.findAttribute("dataList");
+        Object row = pageContext.findAttribute("row");
+        Object result = pageContext.findAttribute("cellValue");
+        Collection<DataListColumnFormat> formats = column.getFormats();
+        if (formats != null) {
+            for (DataListColumnFormat format : formats) {
+                if (format != null) {
+                    result = format.format(dataList, column, row, result);
+                }
+            }
+        }
+
+        String text = (result != null) ? result.toString() : null;
+        return text;
+    }    
+%>

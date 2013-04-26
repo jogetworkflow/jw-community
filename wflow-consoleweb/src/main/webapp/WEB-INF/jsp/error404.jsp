@@ -19,7 +19,7 @@
                 <br><br>
                 Sorry, the page requested is not found.
                 <br><br>
-                If you have been brought to this page unintentionally, please report the previous URL for troubleshooting purposes.
+                Please report the previous URL for troubleshooting purposes.
                 <p>&nbsp;</p>
                 <p>&nbsp;</p>
                 <p>

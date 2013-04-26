@@ -377,6 +377,14 @@ public interface AppService {
     public Collection<AppDefinition> getPublishedApps(String appId);
 
     /**
+     * Retrieve list of published apps available to the current user. Overloaded
+     * to additionally filter by mobile view support.
+     * @param appId Optional filter by appId
+     * @return
+     */
+    public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache);
+    
+    /**
      * Retrieve list of published processes available to the current user
      * @param appId Optional filter by appId
      * @return 

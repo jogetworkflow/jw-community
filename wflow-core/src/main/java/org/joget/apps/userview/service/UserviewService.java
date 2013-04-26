@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -160,6 +162,14 @@ public class UserviewService {
                             //set menu
                             JSONObject menuObj = (JSONObject) menusArray.get(j);
                             UserviewMenu menu = (UserviewMenu) pluginManager.getPlugin(menuObj.getString("className"));
+                            
+                            // check for mobile support
+                            boolean isMobileView = MobileUtil.isMobileView();
+                            if (isMobileView && (menu instanceof MobileElement) && !((MobileElement)menu).isMobileSupported()) {
+                                // mobile not supported, skip this menu
+                                continue;
+                            }
+            
                             menu.setProperties(PropertyUtil.getPropertiesValueFromJson(menuObj.getJSONObject("properties").toString()));
                             menu.setRequestParameters(requestParameters);
                             menu.setUserview(userview);

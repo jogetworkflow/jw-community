@@ -1,5 +1,12 @@
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
+
+<c:set var="mobileView" value="<%= MobileUtil.isMobileView() %>"/>
+<c:if test="${mobileView}">
+    <c:set scope="request" var="dataList" value="${dataList}"/>
+    <jsp:forward page="/WEB-INF/jsp/mobile/mDataListView.jsp"/>
+</c:if>
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
 <style>
@@ -148,6 +155,15 @@
     </c:catch>
 
     ${dataListException}
+    <c:if test="${!empty dataListException}">
+<pre>        
+<%
+Throwable t =(Throwable)pageContext.findAttribute("dataListException");      
+t.printStackTrace(new java.io.PrintWriter(out));
+%>                
+</pre>
+    </c:if>
+    
 </div>
 
 <script>

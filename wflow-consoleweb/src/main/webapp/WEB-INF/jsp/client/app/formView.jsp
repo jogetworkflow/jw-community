@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
 
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
@@ -19,13 +20,16 @@
     </c:when>
     <c:otherwise>
 
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css?build=<fmt:message key="build.number"/>" />
+        <c:set var="mobileView" value="<%= MobileUtil.isMobileView() %>"/>
+        <c:if test="${!mobileView}">
+            <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css?build=<fmt:message key="build.number"/>" />
 
-        <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
+            <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
+                <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
+            </c:if>
         </c:if>
         
         <script type="text/javascript">

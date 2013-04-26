@@ -25,9 +25,12 @@
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
         <property name="transactionManager" ref="atomikosTransactionManager" />
         <property name="userTransaction" ref="atomikosUserTransaction" />
+        <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
-    <tx:annotation-driven/>
+    <bean class="org.springframework.transaction.aspectj.AnnotationTransactionAspect" factory-method="aspectOf">
+        <property name="transactionManager" ref="transactionManager" />
+    </bean>
 
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>
