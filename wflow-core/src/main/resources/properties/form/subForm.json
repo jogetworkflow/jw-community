@@ -16,7 +16,16 @@
                 type:'textfield',
                 value : 'SubForm'
             },
-            %s,
+            %s
+        ]
+    },
+    {
+        title:'@@form.subform.ui@@',
+        properties:[
+            {
+                label : '@@form.subform.general@@',
+                type : 'header'
+            },
             {
                 name:'readonly',
                 label:'@@form.subform.readonly@@',
@@ -56,8 +65,12 @@
         ]
     },
     {
-        title:'@@form.subform.advanced@@',
+        title:'@@form.subform.data@@',
         properties:[
+            {
+                label : '@@form.subform.dataLinkage@@',
+                type : 'header'
+            },
             {
                 name:'parentSubFormId',
                 label:'@@form.subform.parentField@@',
@@ -67,12 +80,11 @@
                 name:'subFormParentId',
                 label:'@@form.subform.subformField@@',
                 type:'textfield'
-            }
-        ]
-    },
-    {
-        title:'@@form.subform.chooseLoadBinder@@',
-        properties:[
+            },
+            {
+                label : '@@form.subform.binder@@',
+                type : 'header'
+            },
             {
                 name:'loadBinder',
                 label:'@@form.subform.loadBinder@@',
@@ -81,12 +93,7 @@
                 url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
                 value:'org.joget.apps.form.lib.WorkflowFormBinder',
                 required:'True'
-            }
-        ]
-    },
-    {
-        title:'@@form.subform.chooseStoreBinder@@',
-        properties:[
+            },
             {
                 name:'storeBinder',
                 label:'@@form.subform.storeBinder@@',

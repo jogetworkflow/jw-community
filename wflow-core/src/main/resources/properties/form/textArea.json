@@ -13,11 +13,29 @@
         label : '@@form.textarea.label@@',
         type : 'textfield',
         value : 'TextArea'
+    }]
+},
+{
+    title : '@@form.textarea.advancedOptions@@',
+    properties : [{
+        label : '@@form.textarea.data@@',
+        type : 'header'
     },
     {
         name : 'value',
         label : '@@form.textarea.value@@',
         type : 'textarea'
+    },
+    {
+        name : 'validator',
+        label : '@@form.textarea.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        label : '@@form.textarea.ui@@',
+        type : 'header'
     },
     {
         name : 'cols',
@@ -50,21 +68,12 @@
             value : 'true',
             label : ''
         }]
-    }]
-},
-{
-    title : '@@form.textarea.chooseValidator@@',
-    properties : [{
-        name : 'validator',
-        label : '@@form.textarea.validator@@',
-        type : 'elementselect',
-        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
-        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-    }]
-},
-{
-    title : '@@form.textarea.workflowVariables@@',
-    properties : [{
+    },
+    {
+        label : '@@form.textarea.workflow@@',
+        type : 'header'
+    },
+    {
         name : 'workflowVariable',
         label : '@@form.textarea.workflowVariable@@',
         type : 'textfield'

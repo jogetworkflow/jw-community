@@ -15,16 +15,11 @@
     }]
 },
 {
-    title : '@@form.hiddenfield.workflowVariables@@',
+    title : '@@form.hiddenfield.advancedOptions@@',
     properties : [{
-        name : 'workflowVariable',
-        label : '@@form.hiddenfield.workflowVariable@@',
-        type : 'textfield'
-    }]
-},
-{
-    title : '@@form.hiddenfield.advanced@@',
-    properties : [{
+        label : '@@form.hiddenfield.data@@',
+        type : 'header'
+    },{
         name : 'useDefaultWhenEmpty',
         label : '@@form.hiddenfield.useDefaultWhenEmpty@@',
         description : '@@form.hiddenfield.useDefaultWhenEmpty.desc@@',
@@ -43,5 +38,14 @@
                 value : 'valueOnly'
             }
         ]
+    },
+    {
+        label : '@@form.hiddenfield.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.hiddenfield.workflowVariable@@',
+        type : 'textfield'
     }]
 }]

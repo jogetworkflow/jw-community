@@ -29,6 +29,13 @@
         type : 'textfield',
         required : 'True',
         value : 'ID-??????'
+    }]
+},
+{
+    title : '@@form.idgeneratorfield.advancedOptions@@',
+    properties : [{
+        label : '@@form.idgeneratorfield.ui@@',
+        type : 'header'
     },
     {
         name : 'hidden',
@@ -38,11 +45,12 @@
             value : 'true',
             label : ''
         }]
-    }]
-},
-{
-    title : '@@form.idgeneratorfield.workflowVariables@@',
-    properties : [{
+    },
+    {
+        label : '@@form.idgeneratorfield.workflow@@',
+        type : 'header'
+    },
+    {
         name : 'workflowVariable',
         label : '@@form.idgeneratorfield.workflowVariable@@',
         type : 'textfield'

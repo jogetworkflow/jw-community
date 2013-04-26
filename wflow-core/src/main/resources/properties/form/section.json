@@ -18,7 +18,7 @@
         ]
     },
     {
-        title:'@@form.section.chooseLoadBinder@@',
+        title:'@@form.section.data@@',
         properties:[
             {
                 name:'loadBinder',
@@ -26,12 +26,7 @@
                 type:'elementselect',
                 options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
                 url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-            }
-        ]
-    },
-    {
-        title:'@@form.section.chooseStoreBinder@@',
-        properties:[
+            },
             {
                 name:'storeBinder',
                 label:'@@form.section.storeBinder@@',
@@ -42,8 +37,11 @@
         ]
     },
     {
-        title:'@@form.section.visibility@@',
-        properties:[
+        title:'@@form.section.advancedOptions@@',
+        properties:[{
+                label : '@@form.section.visibility@@',
+                type : 'header'
+            },
             {
                 name:'visibilityControl',
                 label:'@@form.section.fieldIdControl@@',
@@ -65,12 +63,11 @@
                     value : 'true',
                     label : ''
                 }]
-            }
-        ]
-    },
-    {
-        title:'@@form.section.permission@@',
-        properties:[
+            },
+            {
+                label : '@@form.section.permission@@',
+                type : 'header'
+            },
             {
                 name:'permission',
                 label:'@@form.section.permission@@',

@@ -14,36 +14,15 @@
         type : 'textfield',
         required : 'True',
         value : 'FileUpload'
-    },
-    {
-        name : 'size',
-        label : '@@form.fileupload.size@@',
-        type : 'textfield'
-    },
-    {
-        name : 'readonly',
-        label : '@@form.fileupload.readonly@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    },
-    {
-        name : 'attachment',
-        label : '@@form.fileupload.download@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
     }]
 },
 {
-    title : '@@form.fileupload.chooseValidator@@',
+    title : '@@form.fileupload.advancedOptions@@',
     properties : [{
+        label : '@@form.fileupload.data@@',
+        type : 'header'
+    },
+    {
         name : 'validator',
         label : '@@form.fileupload.validator@@',
         type : 'elementselect',
@@ -73,5 +52,34 @@
         label : '@@form.fileupload.fileType.msg@@',
         type : 'textfield',
         value : '@@form.fileupload.fileType.msg.invalidFileType@@'
+    },
+    {
+        label : '@@form.fileupload.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'size',
+        label : '@@form.fileupload.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.fileupload.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'attachment',
+        label : '@@form.fileupload.download@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]

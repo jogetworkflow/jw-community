@@ -26,6 +26,13 @@
             key : 'label',
             label : '@@form.grid.label@@'
         }]
+    }]
+},
+{
+    title : '@@form.grid.uiAndValidation@@',
+    properties : [{
+        label : '@@form.grid.ui@@',
+        type : 'header'
     },
     {
         name : 'readonly',
@@ -36,11 +43,12 @@
             value : 'true',
             label : ''
         }]
-    }]
-},
-{
-    title : '@@form.grid.validation@@',
-    properties : [{
+    },
+    {
+        label : '@@form.grid.validation@@',
+        type : 'header'
+    },
+    {
         name : 'validateMinRow',
         label : '@@form.grid.validateMinRow@@',
         type : 'textfield'
@@ -58,18 +66,15 @@
     }]
 },
 {
-    title : '@@form.grid.chooseLoadBinder@@',
+    title : '@@form.grid.data@@',
     properties : [{
         name : 'loadBinder',
         label : '@@form.grid.loadBinder@@',
         type : 'elementselect',
         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder',
         url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-    }]
-},
-{
-    title : '@@form.grid.chooseStoreBinder@@',
-    properties : [{
+    },
+    {
         name : 'storeBinder',
         label : '@@form.grid.storeBinder@@',
         type : 'elementselect',
