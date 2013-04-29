@@ -3,56 +3,27 @@
     <head>
         <title>Joget Workflow</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link rel="shortcut icon" href="/jw/images/v3/joget.ico"/>
+        <meta http-equiv="refresh" content="1; url=../web/desktop">
+        <link rel="shortcut icon" href="../images/v3/joget.ico"/>
         <link rel="stylesheet" href="style.css"/>
+        <script src="../mobile/jqm/jquery-1.7.2.min.js"></script>
+        <script src="../mobile/jqm/jquery.cookie.js"></script>
+        <script src="../mobile/mobile.js"></script>
+        <script>
+            var url = "../mobile";
+            Mobile.directToMobileSite(url);
+        </script>
+        <link href="../js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     </head>
-    <body>
+    <body id="splash">
         <div id="container">
             <div id="logo">
                 <img src="logo.png" border="0" height="150" />
             </div>
-            <div id="title">
-                Joget Workflow Community Edition
-            </div>
-            <div id="content">
-                <div class="column border">
-                    <a target="_self" href="/jw/web/console/home">
-                        <h3>Access the Web Console</h3>
-                        <img src="webconsole.png" width="240" border="0" />
-                        <br />
-                        <h4>For Administrators and App Designers to:</h4>
-                        <ul>
-                            <li>Setup Users</li>
-                            <li>Design Apps</li>
-                            <li>Run Apps</li>
-                            <li>Monitor Apps</li>
-                        </ul>
-                    </a>
-                </div>
-                <div class="column border">
-                    <a target="_blank" href="/jw/web/userview/crm/crm_userview_sales">
-                        <h3>Try a Sample App</h3>
-                        <img src="sampleapp.png" width="240" border="0" />
-                        <br />
-                        <h4>Sample app showcases the following:</h4>
-                        <ul>
-                            <li>End-User Interface with Userviews</li>
-                            <li>Manage Data with Forms and Lists</li>
-                            <li>Manage Workflows with Processes</li>
-                        </ul>
-                    </a>
-                </div>
-                <div class="column">
-                        <h3>Get Help and Support</h3>
-                        <a target="_blank" href="http://www.joget.com/services?src=jwcv4"><img src="website.png" width="240" border="0" /></a>
-                        <br />
-                        <h4>Ways to get Help and Support:</h4>
-                        <ul>
-                            <li><a target="_blank" href="http://www.joget.com/download?src=jwcv4">Enterprise Edition and Enterprise Support</a></li>
-                            <li><a target="_blank" href="http://www.joget.com/services?src=jwcv4">Training and Consultancy Services</a></li>
-                            <li><a target="_blank" href="http://community.joget.org?src=jwcv4">Community Knowledge Base and Forums</a></li>
-                        </ul>
-                </div>
+            <div id="loading">
+                <i class="icon-spinner icon-spin icon-2x"></i>
+                <br>
+                Loading App Center
             </div>
             <div id="footer">
                 <a href="http://www.joget.com">&copy; Joget Workflow - Open Dynamics Inc</a>

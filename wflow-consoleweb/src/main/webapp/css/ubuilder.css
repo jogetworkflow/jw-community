@@ -262,3 +262,19 @@
     position: absolute;
     left: 939px;
 }
+
+#builder-message {
+    position: fixed;
+    top: 20px;
+    left: 450px;
+    background: yellow;
+    border-radius: 5px;
+    display: none;
+    opacity: 0.8;
+    z-index: 100000;
+    padding: 10px;
+}
+
+#builder-screenshot {
+    display: none;
+}

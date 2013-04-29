@@ -25,6 +25,8 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/ubuilder?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/ubuilder.core.js?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/html2canvas/html2canvas.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/html2canvas/jquery.plugin.html2canvas.js"></script>        
 
         <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
@@ -42,6 +44,8 @@
                 UserviewBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builderSave/';
                 UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builderPreview/';
                 UserviewBuilder.contextPath = '${pageContext.request.contextPath}';
+                UserviewBuilder.appId = '${appId}';
+                UserviewBuilder.userviewUrl = '${pageContext.request.contextPath}/web/userview/${appId}/${userviewId}/';
 
                 UserviewBuilder.initSettingPropertyOptions(${setting.propertyOptions});
                 UserviewBuilder.initCategoryPropertyOptions(${category.propertyOptions});
@@ -69,6 +73,10 @@
                         $("#userview-info").css("display", "none");
                     }
                 });
+                
+                <c:if test="${!empty param.menuId}">
+                    UserviewBuilder.editMenu('${param.menuId}');
+                </c:if>
             });
 
             window.onbeforeunload = function() {
@@ -83,7 +91,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
-                <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />
+                <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />--%>
             </div>
             <div id="builder-body">
                 <div id="builder-bar">
@@ -174,6 +182,9 @@
             </div>
         </div>
 
+        <div id="builder-message"></div>
+        <div id="builder-screenshot"></div>
+                                
         <script type="text/javascript">
             HelpGuide.base = "${pageContext.request.contextPath}"
             HelpGuide.attachTo = "#builder-bar";
@@ -181,5 +192,10 @@
             HelpGuide.show();
         </script>
        
+        <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="webConsole" value="true"/>
+        </jsp:include>
+            
     </body>
 </html>

@@ -6,7 +6,7 @@
         <div class="middle">
         <c:forEach items="${appDefinitionList}" var="appDefinition">
             <li>
-                <a href="${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/processes">
+                <a href="${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/forms">
                     <span class="substeps">&nbsp;</span>
                     <span class="subtitle">${appDefinition.name}</span>
                     <span class="subsubtitle"><fmt:message key="console.app.common.label.version"/> ${appDefinition.version}</span></a>

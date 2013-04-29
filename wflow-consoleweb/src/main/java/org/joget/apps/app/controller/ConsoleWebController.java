@@ -1,12 +1,15 @@
 package org.joget.apps.app.controller;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -16,9 +19,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -43,7 +48,6 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.DefaultFormBinder;
@@ -96,9 +100,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.ui.AbstractProcessingFilter;
-import org.springframework.security.ui.savedrequest.SavedRequest;
-import org.springframework.security.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
@@ -108,6 +109,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 
@@ -171,7 +173,7 @@ public class ConsoleWebController {
     @Autowired
     LocaleResolver localeResolver;
 
-    @RequestMapping({"/index", "", "/", "/home", "/desktop"})
+    @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
         
@@ -181,7 +183,7 @@ public class ConsoleWebController {
         return "redirect:" + landingPage;
     }
 
-    @RequestMapping("/console/home")
+    @RequestMapping({"/console", "/console/home"})
     public String consoleHome() {
         return "console/home";
     }
@@ -1119,7 +1121,7 @@ public class ConsoleWebController {
         } else {
             String appId = appDefinition.getId();
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/processes";
+            String url = contextPath + "/web/console/app/" + appId + "/forms";
             model.addAttribute("url", url);
             return "console/apps/dialogClose";
         }
@@ -1285,7 +1287,7 @@ public class ConsoleWebController {
         } else {
             String appId = appDef.getAppId();
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/processes";
+            String url = contextPath + "/web/console/app/" + appId + "/forms";
             map.addAttribute("url", url);
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
@@ -3985,4 +3987,138 @@ public class ConsoleWebController {
         return page;
     }
 
+    @RequestMapping(value="/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/screenshot/submit", method = RequestMethod.POST)
+    public void consoleUserviewScreenshotSubmit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
+
+        // check to ensure that userview is published
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (!appDef.isPublished()) {
+            return;
+        }
+        
+        // get base64 encoded image in POST body
+        String imageBase64 = request.getParameter("base64data");
+        imageBase64 = imageBase64.substring("data:image/png;base64,".length());
+        
+        // convert into bytes
+        byte[] decodedBytes = Base64.decodeBase64(imageBase64.getBytes());        
+        
+        // save into image file
+        version = (version != null) ? version : "";
+        String filename = appId + "_" + version + "_" + userviewId + ".png";
+        String path = SetupManager.getBaseDirectory() + "app_screenshots";
+        new File(path).mkdirs();
+        BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
+        File f = new File(path + File.separator + filename);
+        ImageIO.write(image, "png", f);
+        
+        LogUtil.debug(getClass().getName(), "Created screenshot for userview " + userviewId + " in " + appId);
+    }
+
+    @RequestMapping(value="/userview/screenshot/(*:appId)/(*:userviewId)")
+    public void consoleUserviewScreenshot(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
+        version = (version != null) ? version : "";
+        String filename = appId + "_" + version + "_" + userviewId + ".png";
+        String path = SetupManager.getBaseDirectory() + "app_screenshots";
+        File f = new File(path + File.separator + filename);
+        if (!f.exists()) {
+            String realContextPath = ((WebApplicationContext)AppUtil.getApplicationContext()).getServletContext().getRealPath("/");
+            String defaultImage = realContextPath + File.separator + "/home/sampleapp.png";
+            f = new File(defaultImage);
+        }
+        
+        response.setContentType("image/png");
+        OutputStream out = response.getOutputStream();
+        byte[] bbuf = new byte[65536];
+        DataInputStream in = new DataInputStream(new FileInputStream(f));
+        try {
+            int length = 0;
+            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+                out.write(bbuf, 0, length);
+            }
+        } finally {
+            in.close();
+            out.flush();
+            out.close();        
+        }
+    }        
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/navigator")
+    public String consoleAppNavigator(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        Collection<FormDefinition> formDefinitionList = null;
+        Collection<DatalistDefinition> datalistDefinitionList = null;
+        Collection<UserviewDefinition> userviewDefinitionList = null;
+
+        if (appDef != null) {
+            formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, "name", false, null, null);
+            datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, "name", false, null, null);
+            userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, "name", false, null, null);
+        }
+
+        map.addAttribute("appDef", appDef);
+        map.addAttribute("formDefinitionList", formDefinitionList);
+        map.addAttribute("datalistDefinitionList", datalistDefinitionList);
+        map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+
+        return "console/apps/navigator";
+    }
+    
+    @RequestMapping({"/desktop","/desktop/home"})
+    public String desktopHome() {
+        return "desktop/home";
+    }
+    
+    @RequestMapping("/desktop/apps")
+    public String desktopApps(ModelMap model) {
+        // get published apps
+        Collection<AppDefinition> publishedList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+        
+        // get app def ids of published apps
+        Collection<String> publishedIdSet = new HashSet<String>();
+        for (AppDefinition appDef: publishedList) {
+            publishedIdSet.add(appDef.getAppId());
+        }
+        
+        // get list of unpublished apps
+        Collection<AppDefinition> unpublishedList = new ArrayList<AppDefinition>();
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
+        for (Iterator<AppDefinition> i=appDefinitionList.iterator(); i.hasNext();) {
+            AppDefinition appDef = i.next();
+            if (!publishedIdSet.contains(appDef.getAppId())) {
+                unpublishedList.add(appDef);
+            }
+        }
+        model.addAttribute("appDefinitionList", appDefinitionList);
+        model.addAttribute("appPublishedList", publishedList);
+        model.addAttribute("appUnpublishedList", unpublishedList);
+        return "desktop/apps";
+    }
+    
+    @RequestMapping("/desktop/app/import")
+    public String desktopAppImport() {
+        return "desktop/apps/import";
+    }
+
+    @RequestMapping(value = "/desktop/app/import/submit", method = RequestMethod.POST)
+    public String desktopAppImportSubmit(ModelMap map) throws IOException {
+        MultipartFile appZip = FileStore.getFile("appZip");
+
+        AppDefinition appDef = appService.importApp(appZip.getBytes());
+
+        if (appDef == null) {
+            map.addAttribute("error", true);
+            return "desktop/apps/import";
+        } else {
+            String appId = appDef.getAppId();
+            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            String url = contextPath + "/web/console/app/" + appId + "/forms";
+            map.addAttribute("url", url);
+            map.addAttribute("appId", appId);
+            map.addAttribute("appVersion", appDef.getVersion());
+            return "desktop/apps/packageUploadSuccess";
+        }
+    }    
+    
 }

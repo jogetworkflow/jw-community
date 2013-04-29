@@ -91,7 +91,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="dbuilder.title"/></div>
-                <jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />
+                <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />--%>
             </div>
             <div id="builder-body">
                 <div id="builder-bar">
@@ -194,6 +194,11 @@
             HelpGuide.key = "help.web.console.app.datalist.builder";
             setTimeout(function() { HelpGuide.show(); }, 2000);
         </script>
+
+        <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="webConsole" value="true"/>
+        </jsp:include>
             
     </body>
 </html>

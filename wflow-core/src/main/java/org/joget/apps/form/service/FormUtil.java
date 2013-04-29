@@ -63,6 +63,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_TABLE_NAME = "tableName";
     public static final String PROPERTY_TEMP_FILE_PATH = "_tempFilePathMap";
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
+    public static final String FORM_BUILDER_ACTIVE = "formBuilderActive";
     static ApplicationContext appContext;
     
     public static Long runningNumber = 0L;
@@ -1145,4 +1146,25 @@ public class FormUtil implements ApplicationContextAware {
         runningNumber++;
         return Long.toString(runningNumber);
     }
+    
+    /**
+     * Set flag in request to indicate whether is currently in the form builder.
+     */
+    public static void setFormBuilderActive(Boolean active) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            request.setAttribute(FORM_BUILDER_ACTIVE, active);
+        }
+    }
+
+    /**
+     * Check whether request is currently in the form builder.
+     * @return 
+     */
+    public static boolean isFormBuilderActive() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        boolean formBuilderActive = (request != null) ? Boolean.TRUE.equals(request.getAttribute(FORM_BUILDER_ACTIVE)) : false;
+        return formBuilderActive;
+    }
+    
 }

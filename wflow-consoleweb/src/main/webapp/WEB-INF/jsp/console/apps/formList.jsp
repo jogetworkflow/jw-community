@@ -17,60 +17,53 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="formCreate()"><fmt:message key="console.form.create.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
 
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/forms?${pageContext.request.queryString}"
-                   var="JsonDataTable"
-                   divToUpdate="formList"
-                   jsonData="data"
-                   rowsPerPage="10"
-                   width="100%"
-                   sort="name"
-                   desc="false"
-                   href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/"
-                   hrefParam="id"
-                   hrefDialogWindowName="_blank"
-                   hrefQuery="false"
-                   hrefDialog="true"
-                   hrefDialogTab="true"
-                   hrefDialogTitle="Form Dialog"
-                   checkbox="true"
-                   checkboxButton1="general.method.label.delete"
-                   checkboxCallback1="formDelete"
-                   searchItems="name|Form Name"
-                   fields="['id','name','dateCreated','dateModified']"
-                   column1="{key: 'name', label: 'console.form.common.label.name', sortable: true}"
-                   column2="{key: 'tableName', label: 'console.form.common.label.tableName', sortable: false}"
-                   column3="{key: 'dateCreated', label: 'console.form.common.label.dateCreated', sortable: false}"
-                   column4="{key: 'dateModified', label: 'console.form.common.label.dateModified', sortable: false}"
-                   />
-
+        <div id='nv-refresh'><a href='#' onclick='return refreshNavigator()'><i class='icon-refresh'></i> <fmt:message key="general.method.label.refresh"/></a></div>        
+        <div id="nv-container">
+        <jsp:include page="/web/console/app/${appId}/${appVersion}/navigator" flush="true"/>
+        </div>
+        <script>
+            function refreshNavigator() {
+                if ($("#nv-refresh").css("visibility") != "hidden") {
+                    var loading = $("<img id='nv-loading' src='${pageContext.request.contextPath}/images/v3/loading.gif'>");
+                    $("#nv-refresh a").css("visibility", "hidden");
+                    $("#nv-refresh").append(loading);
+                }
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/navigator?hidden=true&_=" + jQuery.now(),
+                    success: function(data) {
+                        $("#nv-container").html(data);
+                    },
+                    complete: function() {
+                        $("#nv-refresh a").css("visibility", "visible");
+                        $(loading).remove();
+                    }
+                });
+                return false;
+            }
+            function closeDialog() {
+                refreshNavigator();
+            }            
+        </script>
     </div>
 </div>
 
 <script>
     $(document).ready(function(){
-        $('#JsonDataTable_searchTerm').hide();
+        <c:if test="${param.formCreate == 'true'}">
+            formCreate();
+        </c:if>
     });
     
     <ui:popupdialog var="formCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/create"/>
     function formCreate(){
         formCreateDialog.init();
     }
-    function formDelete(selectedList){
-        if (confirm('<fmt:message key="console.form.delete.label.confirmation"/>')) {
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/forms';
-                }
-            }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/delete', callback, 'formId='+selectedList);
-        }
-    }
     Template.init("#menu-apps", "#nav-app-forms");
+    HelpGuide.key = "help.web.console.app.navigator";
 </script>
 
 <commons:footer />

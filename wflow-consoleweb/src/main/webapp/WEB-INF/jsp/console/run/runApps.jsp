@@ -1,6 +1,87 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:header />
+<commons:header id="runApps" />
+
+<script>
+    var loadApps = function(container, baseUrl) {
+        container = container || "#published-apps";
+        baseUrl = baseUrl || "";
+
+        // show loading icon
+        $(container).empty();
+        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x"></i> <fmt:message key="appCenter.label.loadingApps"/></div>');
+        $(container).append(loading);
+
+        // load JSON
+        $.ajax({ 
+            url : baseUrl + "${pageContext.request.contextPath}/web/json/apps/published/userviews",
+            dataType:'jsonp',
+            success:function(data) {
+                var content = "";
+                var apps = data.apps;
+                for( var i=0; i<apps.length; i++) {
+                    // add app
+                    var app = apps[i];
+                    // add userviews
+                    var userviews = app.userviews;
+                    for( var j=0; j<userviews.length; j++){
+                        var uv = userviews[j];
+                        content +=  '<div class="column">\
+                                        <div class="appdiv"><h3>' + app.name + '</h3>\
+                                        <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
+                                            <div class="screenshot_label">' + uv.name + '</div>\
+                                            <img src="${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
+                                        </a></div>\
+                                    </div>';
+                    }
+                }
+
+                // show apps, hide loading icon
+                $(loading).remove();
+                $(container).append($(content));
+            }
+        });
+    }            
+    jQuery.expr[':'].Contains = function(a,i,m){ 
+        return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
+    };  
+    var searchFilter = function(header, list) { 
+        var timer;
+        var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
+        input = $("<input>").attr({"class":"filterinput","type":"text"}); 
+        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).appendTo(header);  
+        $(form).submit(function() { return false });
+        $(input).change(function () { 
+            var filter = $(this).val(); 
+            if(filter) { 
+                $(list).find("a:not(:Contains(" + filter + ")),h3:not(:Contains(" + filter + "))").parent().parent().fadeOut(); 
+                $(list).find("a:Contains(" + filter + "),h3:Contains(" + filter + ")").parent().parent().show(); 
+            } else { 
+                $(list).find("div").show(); 
+            } 
+            return false; 
+        }).keyup(function () {
+            if (timer) clearTimeout(timer);
+            var $this = $(this);
+            timer = setTimeout(function() {
+                $this.change(); 
+            }, 50);
+        }); 
+        $(input).focus();
+    }  
+    var loadPublishedApps = function() {
+        $(".published-apps").empty();
+        $("#categories a").removeClass("category-selected");
+        $("#category-published-apps").addClass("category-selected");
+        $("#published-apps").show();
+        $("#title form").remove();
+        searchFilter($("#title"), $("#published-apps")); 
+        loadApps("#published-apps");
+    }
+    $(function () { 
+        loadPublishedApps();
+    }); 
+</script>
 
 <div id="nav">
     <div id="nav-title">
@@ -21,37 +102,13 @@
     </div>
     <div id="main-body">
 
-        <div>
-            <c:if test="${empty appDefinitionList[0]}">
-                <fmt:message key="console.run.apps.none"/>
-            </c:if>
-        </div>
-        <ul class="main-grid">
-        <c:forEach items="${appDefinitionList}" var="appDefinition">
-            <li class="main-grid-item">
-                <div class="main-grid-title">${appDefinition.name}</div>
-                <div class="main-grid-corner"><fmt:message key="console.app.common.label.version"/> ${appDefinition.version}</div>
-                <div class="main-grid-description"></div>
-                <ul class="main-subgrid">
-                <c:set var="userviewDefinitionList" value="${appDefinition.userviewDefinitionList}"/>
-                <c:if test="${empty userviewDefinitionList[0]}">
-                    <li class="main-subgrid-item">
-                        <div class="main-subgrid-description"><fmt:message key="console.run.notAvailable"/></div>
-                    </li>
-                </c:if>
-                <c:forEach items="${userviewDefinitionList}" var="userviewDefinition">
-                    <li class="main-subgrid-item">
-                        <div class="main-subgrid-title">${userviewDefinition.name}</div>
-                        <div class="main-subgrid-action">
-                            <button onclick="window.open('${pageContext.request.contextPath}/web/userview/${appDefinition.id}/${userviewDefinition.id}')"><fmt:message key="console.run.launch"/></button>
-                        </div>
-                        <div class="main-subgrid-description">${userviewDefinition.description}</div>
-                    </li>
-                </c:forEach>
-                </ul>
-            </li>
-        </c:forEach>
-        </ul>
+            <div id="title">
+                <fmt:message key="appCenter.label.publishedApps"/>
+            </div>
+        
+            <div id="published-apps" class="published-apps"></div>
+            <div class="clear"></div>
+        
     </div>
 </div>
 

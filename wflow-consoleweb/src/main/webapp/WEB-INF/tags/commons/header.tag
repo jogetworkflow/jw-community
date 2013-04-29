@@ -3,6 +3,9 @@
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ tag import="org.joget.commons.util.LogUtil"%>
 
+<%@attribute name="id" required="false"%>
+<c:set var="isDesktop" value="<%= id == \"desktop\" %>"/>
+<c:set var="bodyId" value="<%= id != null ? id : \"\" %>"/>
 <c:set var="isExtDirectoryManager" value="<%= DirectoryUtil.isExtDirectoryManager() %>"/>
 <c:set var="isCustomDirectoryManager" value="<%= DirectoryUtil.isCustomDirectoryManager() %>"/>
 <c:set var="username" scope="request" value="<%= WorkflowUtil.getCurrentUsername() %>"/>
@@ -59,15 +62,15 @@
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
     </head>
-    <body>
+    <body id="${bodyId}">
 
         <div id="header">
             <div id="header-bg"></div>
             <div id="header-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" /></div>
             <div id="topbar">
-                <a href="${pageContext.request.contextPath}/web/console/home"><div id="logo"></div><div id="logo-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=logo" /></div></a>
+                <a href="${pageContext.request.contextPath}/"><div id="logo"></div><div id="logo-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=logo" /></div></a>
                 <div id="account">
-                    <c:if test="${isAdmin}">
+                    <c:if test="${isAdmin && !isDesktop}">
                         <a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a> |
                     </c:if>
                     <c:if test="${!isAnonymous}">
@@ -103,6 +106,7 @@
             </div>
             <div id="menu">
                 <ul id="menu-items">
+                <c:if test="${isDesktop != 'true'}">
                     <c:if test="${isAnonymous}">
                         <li id="menu-login" class="first-active"><a href="${pageContext.request.contextPath}/web/login"><span class="menu-bg"><span class="title"><fmt:message key="console.header.menu.label.login"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.login"/></span></span></a></li>
                         <li id="menu-home" class="last-inactive"><a href="${pageContext.request.contextPath}/web/console/home"><span class="menu-bg"><span class="title"><fmt:message key="console.header.menu.label.home"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.home"/></span></span></a></li>
@@ -173,7 +177,7 @@
                             </c:otherwise>
                         </c:choose>
                     </li>
-                    <li id="menu-apps"><a href="#"><span class="menu-bg"><span class="steps">2</span><span class="title"><fmt:message key="console.header.menu.label.apps"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.apps"/></span></span></a>
+                    <li id="menu-apps"><a href="${pageContext.request.contextPath}/web/desktop/apps"><span class="menu-bg"><span class="steps">2</span><span class="title"><fmt:message key="console.header.menu.label.apps"/></span><span class="subtitle"><fmt:message key="console.header.menu.description.apps"/></span></span></a>
                         <jsp:include page="/web/console/app/menu" />
                     </li>
                     <li id="menu-run">
@@ -246,6 +250,7 @@
                         </div>
                     </li>
                     </c:if>
+                </c:if>
                 </ul>
             </div>
             <div class="clear"></div>   

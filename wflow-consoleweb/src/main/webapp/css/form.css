@@ -188,3 +188,6 @@
     border-radius: 10px;
     padding: 20px;
 }
+.quickEdit, #form-canvas .quickEdit {
+    display: none;
+}

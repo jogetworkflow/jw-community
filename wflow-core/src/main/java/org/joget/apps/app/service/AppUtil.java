@@ -422,4 +422,9 @@ public class AppUtil implements ApplicationContextAware {
         
         return addresses;
     }
+    
+    public static boolean isQuickEditEnabled() {
+        return true;
+    }
+    
 }

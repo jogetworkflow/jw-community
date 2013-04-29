@@ -48,6 +48,9 @@ public class FormBuilderWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
     public String formBuilder(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
+        // set flag in request
+        FormUtil.setFormBuilderActive(true);
+
         // load form definition
         model.addAttribute("appId", appId);
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -95,7 +98,7 @@ public class FormBuilderWebController {
         // add form def id
         model.addAttribute("formId", formId);
         model.addAttribute("formDef", formDef);
-
+        
         return "fbuilder/formBuilder";
     }
 

@@ -80,6 +80,7 @@ img {
     z-index: 8;
     opacity: 1.0;
     width: 100%;
+    display: none;
 }
 #header #topbar {
     position: relative;
@@ -447,6 +448,7 @@ img {
     padding-right: 10px;
     position: relative;
     top: 46px;
+    z-index: 2;
 }
 #nav {
     position: fixed;
@@ -546,13 +548,6 @@ img {
 #nav span.nav-subtitle a:hover {
     text-decoration: underline
 }
-#quickNav {
-    display: none;
-    position: absolute;
-    right: 0px;
-    top: -30px;
-    padding: 4px 20px;
-}
 #guide {
     display: none;
     width: 20%; //245px;
@@ -624,7 +619,7 @@ img {
 }
 #main #main-body {
     clear: both;
-    min-height: 300px;
+    min-height: 450px;
     padding: 20px 30px;
 }
 #main-body strong {
@@ -687,6 +682,7 @@ img {
     text-align: center;
     padding: 20px;
     color: #999999;
+    display: none;
 }
 #main #main-body-content-subheader, .main-body-content-subheader {
     clear: both;
@@ -1319,7 +1315,6 @@ span.dot_yellow{
     text-align: left;
     width: 15px;
 }
-
 #login-container {
     -moz-box-shadow: 0 1px 3px #BFBFBF;
     background-color: #FFFFFF;
@@ -1379,4 +1374,328 @@ span.dot_yellow{
     border: 1px solid gray;
     max-height: 150px;
     overflow:auto;
+}
+
+
+#runApps #apps-loading {
+    margin-top: 50px;
+    text-transform: uppercase;
+}
+#runApps #logo {
+    display: block;
+    top: -5px;
+    position: absolute;
+    z-index: 100;
+}
+#runApps #title {
+    clear: both;
+    color: #444444;
+    font-family: Quattrocento;
+    font-weight: normal;
+    font-size: 1.8em;
+    background-color: #F5F5F5;
+    border-bottom: 1px solid #E5E5E5;
+    border-top: 1px solid #E5E5E5;                
+    padding-bottom: 5px;
+    margin-top: 10px;
+    text-align: center;
+}
+#runApps #categories {
+    padding: 20px 10px 10px 10px;
+    font-size: 16px;
+    text-align: center;
+}
+#runApps #categories a.category {
+    color: #535353;
+    text-decoration: none;
+    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    margin: 0px 5px;
+}
+#runApps #categories a.category-selected {
+    font-weight: normal;
+    background: #6abd3d;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+#runApps .clear {
+    clear: both;
+}
+#runApps .published-apps {
+    margin-top: 10px;
+    min-height: 100px;
+    padding-bottom: 10px;
+    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    color: #696969;
+}
+#runApps .appdiv h3, #content h3 {
+    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    color: #535353;
+    margin: 10px 0px 5px 0px;
+    font-weight: normal;        
+    text-align: center;
+}
+#runApps .column {
+    width: 175px;
+    float: left;
+    min-height: 210px;
+    text-align: center;
+    margin-left: 40px;
+}
+#runApps .column ul {
+    text-align: left;
+}
+#runApps .screenshot {
+    display: inline-block;
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border: solid 1px #dfdfdf;
+    border-radius: 12px 0px 12px 0px;
+    box-shadow: #dfdfdf 2px 2px 2px;
+}
+#runApps .screenshot_label {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: block;
+    width: 100px;
+    background: #535353;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 0px 0px 10px;                
+    z-index: 1;
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+#allApps #nv-apps h4 {
+    font-size: 13.5px;
+    margin: -15px 0px 10px 0px;
+}
+#allApps #nv-apps ul {
+    list-style: none;
+    list-style-position: outside;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+#allApps #nv-apps li {
+    padding: 0px;
+}
+#allApps #nv-apps a {
+    text-decoration: none;
+    color: #535353;
+    padding: 5px 0px;
+    display: inline-block;
+    font-size: 12px;
+    width: 100%;
+}
+#allApps #nv-apps a span {
+    font-size: 12px;
+}
+#allApps #nv-apps .nv-version {
+    float: right;
+    margin-right: 10px;
+    color: #a9a9a9;
+}
+#allApps .nv-link:hover {
+    background: #efefef;
+    color: black;
+}
+#allApps .nv-col {
+    width: 48%;
+    float: left;
+    padding-left: 10px;
+}
+#allApps .nv-border {
+    border-right: solid 1px #efefef;
+}
+#allApps #nv-clear {
+    clear: both;
+}
+
+body#login {
+    background: url(../images/cover.jpg);
+    background-size: cover;
+}
+#login #menu {
+    display: none;
+}
+#login #login-container {
+    background-color: none;
+    background: none;
+    opacity: 0.9;
+    border: none;
+}
+#login #footer {
+    color: white;
+}
+#login #header #logo {
+    top: 5px;
+}
+#login #header #logo-label {
+    top: 17px;
+}
+#login #header-bg {
+    background: #EFFDC8;
+    height: 34px;
+}
+#login #header-label {
+    color: #4C6B00;
+    top: 14px;
+    left: 160px;
+    text-align: left;
+}
+#login #header #account {
+    padding: 9px 20px;
+    font-size: 12px;
+    background: none;
+}
+#login #header #account a {
+    margin-left: 5px;
+    margin-right: 5px;
+    color: #4C6B00;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+#nv {
+    <c:if test="${param.hidden == 'true'}">display: none;</c:if>
+    background: white;
+    border: none;
+    padding: 2px 20px;
+    width: 100%;
+    height: auto;
+    font-family: Lucida Sans, Arial, sans-serif;
+    font-size: 13px;
+}
+#nv h4 {
+    font-size: 13.5px;
+}
+#nv ul {
+    list-style: none;
+    list-style-position: outside;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+#nv li {
+    padding: 0px;
+}
+#nv a {
+    text-decoration: none;
+    color: #535353;
+    padding: 5px 0px;
+    display: inline-block;
+    font-size: 12px;
+    width: 100%;
+}
+#nv a span {
+    font-size: 12px;
+}
+#nv button.nv-delete {
+    display: block;
+    color: red;
+    position: absolute;  
+    background: 0px;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    z-index: 5;
+    font-size: 9px;
+    border-radius: 8px;
+    width: 16px;
+    line-height: 13px;
+    visibility: hidden;
+}
+#nv .nv-col {
+    width: 31%;
+    float: left;
+    padding-left: 10px;
+}
+#nv .nv-border {
+    border-right: solid 1px #efefef;
+}
+#nv .nv-list {
+    height: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 300px;
+    padding-right: 10px;    
+}
+#nv .nv-list .nv-left {
+    width: 65%;
+}
+#nv .nv-left {
+    float: left;
+    width: 65%;
+}
+#nv .nv-link:hover {
+    background: #efefef;
+    color: black;
+}
+#nv .nv-link:hover span i {
+    visibility: hidden;
+}
+#nv .nv-link:hover button.nv-delete {
+    visibility: visible;
+    color: red;
+}
+#nv .nv-link button.nv-delete:hover {
+    visibility: visible;
+    color: white;
+    background: red;
+}
+#nv .nv-button-small {
+    float: left;
+    clear: right;
+    border: 1px solid #799837;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    margin: 5px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: #565656;
+    cursor: pointer;
+    border-radius: 4px;
+}
+#nv .nv-button {
+    border: 1px solid #799837;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    padding: 4px 10px;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #565656;
+    cursor: pointer;
+    border-radius: 4px;
+    display: block;
+}
+#nv .nv-form-table {
+    float: right;
+    color: #a9a9a9;
+}
+#nv .nv-link-name {
+    display: inline-block;
+}
+#nv .filterlabel {
+    font-weight: normal;
+    font-size: 10px;
+    color: #535353;
+    margin: 2px;
+}
+#nv #nv-clear {
+    clear: both;
+}
+#nv-refresh {
+    position: absolute;
+    font-size: 12px;
+    text-decoration: none;
+    display: block;
+    width: 98%;
+    text-align: right;
+}
+#nv-refresh a {
+    display: inline;
+    color: #999999;
 }

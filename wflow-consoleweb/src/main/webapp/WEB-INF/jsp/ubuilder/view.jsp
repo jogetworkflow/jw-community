@@ -3,6 +3,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page contentType="text/html" pageEncoding="utf-8"%>
 
 <%
@@ -86,6 +87,12 @@ if (MobileUtil.isMobileUserAgent(request)) {
     </c:if>
     <c:choose>
         <c:when test="${!empty userview.current}">
+            <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
+            <c:if test="${isQuickEditEnabled}">
+            <div class="quickEdit" style="display: none">
+                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}?menuId=${userview.current.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.page"/>: ${userview.current.properties.label}</a>
+            </div>            
+            </c:if>
             <c:set var="properties" scope="request" value="${userview.current.properties}"/>
             <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
             <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
@@ -187,6 +194,9 @@ if (MobileUtil.isMobileUserAgent(request)) {
         <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
         <style type="text/css">
+            .quickEdit, #form-canvas .quickEdit {
+                display: none;
+            }
             ${userview.setting.theme.css}
         </style>
     </head>
@@ -242,6 +252,11 @@ if (MobileUtil.isMobileUserAgent(request)) {
                         </c:if>
                         <c:if test="${!embed}">
                         <div id="navigation">
+                            <c:if test="${isQuickEditEnabled}">
+                            <div class="quickEdit" style="display: none">
+                                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.menu"/>: ${userview.properties.name}</a>
+                            </div>
+                            </c:if>
                             <div id="category-container">
                                 <c:forEach items="${userview.categories}" var="category" varStatus="cStatus">
                                     <c:if test="${category.properties.hide ne 'yes'}">
@@ -332,6 +347,11 @@ if (MobileUtil.isMobileUserAgent(request)) {
             pageContext.setAttribute("duration", duration);
         %>    
         <%--div class="small">[${duration}ms]</div--%>
+        
+        <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="userviewId" value="${userview.properties.id}"/>
+        </jsp:include>
     </body>
     
 </html>

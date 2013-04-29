@@ -1,4 +1,5 @@
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
@@ -15,6 +16,14 @@
 </style>
 
 <div class="dataList">
+        
+    <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
+    <c:if test="${isQuickEditEnabled}">
+    <div class="quickEdit" style="display: none">
+        <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: ${dataList.name}</a>
+    </div>
+    </c:if>
+    
     <c:catch var="dataListException">
         
         <c:set var="actionResult" value="${dataList.actionResult}" />

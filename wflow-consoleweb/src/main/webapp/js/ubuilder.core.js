@@ -4,6 +4,8 @@ UserviewBuilder = {
     saveUrl : '',
     previewUrl : '',
     contextPath : '/jw',
+    appId: '',
+    userviewUrl: '',
     
     //undo & redo feature
     undoStack : new Array(),
@@ -421,14 +423,17 @@ UserviewBuilder = {
     //Submit userview json to server for saving
     save : function(){
         if(this.saveChecker != 0){
+            UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saving'));
+            var self = this;
             $.post(this.saveUrl + this.data.properties.id, {json : this.getJson()} , function(data) {
                 var d = JSON.decode(data);
                 if(d.success == true){
                     UserviewBuilder.updateSaveStatus("0");
-                    alert(get_ubuilder_msg('ubuilder.saved'));
+                    UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot");
                 }else{
                     alert(get_ubuilder_msg('ubuilder.saveFailed'));
                 }
+                UserviewBuilder.showMessage("");
             }, "text");
         }
     },
@@ -773,5 +778,70 @@ UserviewBuilder = {
             var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         }).toUpperCase();
-    }
+    },
+           
+    showMessage: function(message) {
+        if (message && message != "") {
+            $("#builder-message").html(message);
+            $("#builder-message").fadeIn();
+        } else {
+            $("#builder-message").fadeOut();
+        }
+    },
+            
+    screenCapture: function(appId, userviewId, title, path, container, width) {
+        container = container || document.body;
+        width = width || 300;
+        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.generatingScreenshot'));
+        var appcontainer = $("<div><i class='icon-spinner icon-spin icon-2x'></i><div style='opacity:0'></div></div>");
+        $(container).append(appcontainer);
+        $.ajax({
+            url: path,
+            success: function(data) {
+                var iframe = document.createElement('iframe');
+                var iwidth = 1024; //$(window).width()
+                var iheight = 768; //$(window).height()
+                $(iframe).css({
+                    'visibility':'hidden'
+                }).width(iwidth).height(iheight);
+                $(document.body).append(iframe);
+                var d = iframe.contentWindow.document;
+                d.open();
+                $(iframe.contentWindow).load(function() {
+                    var ibody = $(iframe).contents().find('body');
+                    html2canvas(ibody, {
+                        onrendered: function(canvas) {
+                            $(appcontainer).remove();
+                            $(iframe).remove();
+                            var imgData = canvas.toDataURL();
+                            var img = $("<span class='screenshot'><a target='_blank' href='" + path + "'><div class='screenshot_label'>" + title + "</div><img src='" + imgData + "' width='" + width + "'></a></span>");
+                            $(container).append(img);
+
+                            var saveUrl = UserviewBuilder.contextPath + '/web/console/app/' + appId + '//userview/' + userviewId + '/screenshot/submit';
+                            $.ajax({ 
+                                type: "POST", 
+                                url: saveUrl,
+                                dataType: 'text',
+                                data: {
+                                    base64data : imgData
+                                }
+                            })
+                        }
+                    });
+                });    
+                try {
+                    if (true) { // disable scripts
+                        data = data.replace(/\<script/gi,"<!--<script");
+                        data = data.replace(/\<\/script\>/gi,"<\/script>-->");
+                    }
+                    d.write(data);
+                } catch(e) {}
+                d.close();
+            },
+            complete: function() {
+                UserviewBuilder.showMessage("");
+                alert(get_ubuilder_msg('ubuilder.saved'));
+            }
+        })
+    }    
 }

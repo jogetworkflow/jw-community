@@ -56,6 +56,10 @@
             }
             return false;
         }
+        
+        $(function() {
+            $("input#id").focus();
+        });
     </script>
 
 <commons:popupFooter />

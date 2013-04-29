@@ -63,11 +63,16 @@ public abstract class UserviewMenu extends ExtElement{
      * @return
      */
     public String getMenu() {
-        String decoratedMenu = getDecoratedMenu();
-        if (decoratedMenu == null || (decoratedMenu != null && decoratedMenu.trim().length() == 0)) {
-            return "<a href='" + getUrl() + "' class='menu-link default'><span>" + getPropertyString("label") + "</span></a>";
-        } else {
-            return decoratedMenu;
+        try {
+            String decoratedMenu = getDecoratedMenu();
+            if (decoratedMenu == null || (decoratedMenu != null && decoratedMenu.trim().length() == 0)) {
+                return "<a href='" + getUrl() + "' class='menu-link default'><span>" + getPropertyString("label") + "</span></a>";
+            } else {
+                return decoratedMenu;
+            }
+        } catch (Exception e) {
+            // ignore since stacktrace should already be thrown
+            return "...";
         }
     }
 

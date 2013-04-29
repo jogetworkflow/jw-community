@@ -2,6 +2,7 @@ package org.joget.apps.form.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
@@ -28,6 +29,19 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
 
+        // get current app
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        if (appDef != null) {
+            dataModel.put("appId", appDef.getAppId());
+            dataModel.put("appVersion", appDef.getVersion());
+        }
+        
+        // check whether in form builder
+        boolean formBuilderActive = FormUtil.isFormBuilderActive();
+       
+        // check for quick edit mode
+        boolean isQuickEditEnabled = (!formBuilderActive && AppUtil.isQuickEditEnabled()) || (formBuilderActive && getParent() != null);
+        dataModel.put("quickEditEnabled", isQuickEditEnabled);
         if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             dataModel.put("isAuthorize", true);
             

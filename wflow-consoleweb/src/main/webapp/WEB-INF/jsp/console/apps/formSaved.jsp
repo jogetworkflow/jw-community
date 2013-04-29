@@ -37,6 +37,9 @@
                         if (parent && parent.PopupDialog.closeDialog) {
                             parent.PopupDialog.closeDialog();
                         }
+                        if (parent && parent.refreshNavigator) {
+                            parent.refreshNavigator();
+                        }
                     }
                     return false;
                 }

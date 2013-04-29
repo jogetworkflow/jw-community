@@ -122,7 +122,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="fbuilder.title"/></div>
-                <jsp:include page="/web/console/app/${appId}/${appDefinition.version}/builder/navigator/f/${formId}" flush="true" />
+                <%--<jsp:include page="/web/console/app/${appId}/${appDefinition.version}/builder/navigator/f/${formId}" flush="true" />--%>
             </div>
             <div id="builder-body">
                 <div id="builder-bar">
@@ -212,5 +212,10 @@
             HelpGuide.show();
         </script>
             
+        <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="webConsole" value="true"/>
+        </jsp:include>
+                        
     </body>
 </html>

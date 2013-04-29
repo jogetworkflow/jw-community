@@ -3,17 +3,22 @@
 <commons:header />
 
 <style>
+body {
+    background: url(${pageContext.request.contextPath}/images/cover.jpg);
+}
+#footer {
+    color: white;
+}
 #home-container {
     -moz-box-shadow: 0 1px 3px #BFBFBF;
-    background-color: #FFFFFF;
-    border: 1px solid #E9E9E9;
+    background-colorx: #FFFFFF;
+    borderx: 1px solid #E9E9E9;
     margin: 0 auto;
     padding: 0px 20px 140px 0px;
     width: 90%;
 }
 #home-box {
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
+    border-radius: 8px;
     background-color: #F3F9E0;
     border: 1px solid #E9E9E9;
     margin: 0 auto;
@@ -64,7 +69,7 @@ x.welcome-box h3 {
                 <ul>
                 <c:if test="${isAdmin}">
                     <li><a href="${pageContext.request.contextPath}/web/console/directory/orgs"><fmt:message key="console.header.menu.label.users"/></a></li>
-                    <li><a href="#" onclick="appCreate();return false"><fmt:message key="console.header.menu.label.apps"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/web/desktop/apps"><fmt:message key="console.header.menu.label.apps"/></a></li>
                     <li><a href="${pageContext.request.contextPath}/web/console/run/apps"><fmt:message key="console.header.menu.label.run"/></a></li>
                     <li><a href="${pageContext.request.contextPath}/web/console/monitor/running"><fmt:message key="console.header.menu.label.monitor"/></a></li>
                 </c:if>
@@ -96,6 +101,10 @@ x.welcome-box h3 {
 <c:if test="${!isAdmin}">
     HelpGuide.key = "help.web.console.home.user";
 </c:if>
+    
+    if (parent && parent.showQuickOverlay) {
+        HelpGuide.key = "help.none";
+    }    
 </script>
 
 <commons:footer />

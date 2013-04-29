@@ -78,6 +78,8 @@
     text-align: center;
 }
 .form-palette-options button {
+    text-decoration: none;
+    color: black;
     font-size: 13px;
     height: 18px;
     line-height: 15px;

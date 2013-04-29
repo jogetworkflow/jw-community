@@ -1,4 +1,10 @@
 <#if isAuthorize>
+    <#if quickEditEnabled>
+    <div class="quickEdit">
+         <a href="${request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/${element.properties.id!}" target="_blank"><i class="icon-edit"></i> @@adminBar.label.form@@: ${element.properties.name!}</a>
+    </div>
+    </#if>
+    
     <#if !element.parent??>
     <form id="${element.properties.id!}" name="${element.properties.id!}" class="form-container" ${elementMetaData!} <#if element.properties.url??>action="${element.properties.url}"</#if> method="POST" enctype="multipart/form-data">
     </#if>
