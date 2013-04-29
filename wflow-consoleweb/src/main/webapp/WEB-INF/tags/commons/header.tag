@@ -11,6 +11,11 @@
 <c:set var="username" scope="request" value="<%= WorkflowUtil.getCurrentUsername() %>"/>
 <c:set var="isAnonymous" scope="request" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
+<c:set var="isProtected" scope="request" value="<%= WorkflowUtil.getSystemSetupValue(\"disableWebConsole\") %>"/>
+
+<c:if test="${!isAnonymous && !isAdmin && !isDesktop && isProtected}">
+    <c:redirect url="/home" />
+</c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>

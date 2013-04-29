@@ -423,8 +423,32 @@ public class AppUtil implements ApplicationContextAware {
         return addresses;
     }
     
+    /**
+     * Checks system settings whether front-end quick edit is enabled.
+     * @return 
+     */
     public static boolean isQuickEditEnabled() {
-        return true;
+        String settingValue = null;
+        
+        // lookup cache in request
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            settingValue = (String)request.getAttribute("disableAdminBar");
+        }
+        if (settingValue == null) {
+            // get from SetupManager
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            settingValue = setupManager.getSettingValue("disableAdminBar");
+            if (settingValue == null) {
+                settingValue = "false";
+            }
+            if (request != null) {
+                // cache value in request
+                request.setAttribute("disableAdminBar", settingValue);
+            }
+        }
+        boolean enabled = !"true".equals(settingValue);
+        return enabled;
     }
     
 }

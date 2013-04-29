@@ -44,20 +44,34 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
-                        <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
-                        <span class="form-input">
-                            <input id="css" type="text" name="css" value="${settingMap['css']}"/>
-                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.contextPath}/css/new.css</i>
-                        </span>
+                        <label for="disableAdminBar"><fmt:message key="console.setting.general.label.disableAdminBar"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['disableAdminBar'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="disableAdminBar" name="disableAdminBar" ${checked} />
                     </div>
                 </span>
-            </div>
+            </div>            
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
-                        <label for="customCss"><fmt:message key="console.setting.general.label.customCss"/></label>
+                        <label for="disableWebConsole"><fmt:message key="console.setting.general.label.disableWebConsole"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['disableWebConsole'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="disableWebConsole" name="disableWebConsole" ${checked} />
+                    </div>
+                </span>
+            </div>            
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
                         <span class="form-input">
-                            <textarea rows="15" id="customCss" type="text" name="customCss">${settingMap['customCss']}</textarea>
+                            <input id="defaultLandingPage" type="text" name="landingPage" value="${settingMap['landingPage']}"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span><span> /home</span></i>
                         </span>
                     </div>
                 </span>
@@ -126,6 +140,27 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
+                        <span class="form-input">
+                            <input id="css" type="text" name="css" value="${settingMap['css']}"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.contextPath}/css/new.css</i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="customCss"><fmt:message key="console.setting.general.label.customCss"/></label>
+                        <span class="form-input">
+                            <textarea rows="15" id="customCss" type="text" name="customCss">${settingMap['customCss']}</textarea>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.timeSettings"/></span>
             </div>
@@ -160,17 +195,6 @@
                         <span class="form-input">
                             <input id="masterLoginPassword" type="password" name="masterLoginPassword" value="${settingMap['masterLoginPassword']}"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.masterLoginHash"/></span><span id="masterLoginHash">-</span></i>
-                        </span>
-                    </div>
-                </span>
-            </div>
-            <div class="main-body-row">
-                <span class="row-content">
-                    <div class="form-row">
-                        <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
-                        <span class="form-input">
-                            <input id="defaultLandingPage" type="text" name="landingPage" value="${settingMap['landingPage']}"/>
-                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span><span> /web/console/home</span></i>
                         </span>
                     </div>
                 </span>

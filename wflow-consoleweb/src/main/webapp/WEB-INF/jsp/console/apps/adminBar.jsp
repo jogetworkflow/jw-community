@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
-<c:if test="${isQuickEditEnabled}">
+<c:if test="${isQuickEditEnabled || param.desktop == 'true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:if test="${isAdmin}">
 

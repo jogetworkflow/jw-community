@@ -3045,8 +3045,10 @@ public class ConsoleWebController {
         boolean deleteProcessOnCompletionIsNull = true;
         boolean enableNtlmIsNull = true;
         boolean rightToLeftIsNull = true;
-        boolean enableUserLocale = true;
-        boolean dateFormatFollowLocale = true;
+        boolean enableUserLocaleIsNull = true;
+        boolean dateFormatFollowLocaleIsNull = true;
+        boolean disableAdminBarIsNull = true;
+        boolean disableWebConsoleIsNull = true;
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -3070,15 +3072,25 @@ public class ConsoleWebController {
             }
             
             if (paramName.equals("enableUserLocale")) {
-                enableUserLocale = false;
+                enableUserLocaleIsNull = false;
                 paramValue = "true";
             }
             
             if (paramName.equals("dateFormatFollowLocale")) {
-                dateFormatFollowLocale = false;
+                dateFormatFollowLocaleIsNull = false;
                 paramValue = "true";
             }
 
+            if (paramName.equals("disableAdminBar")) {
+                disableAdminBarIsNull = false;
+                paramValue = "true";
+            }
+            
+            if (paramName.equals("disableWebConsole")) {
+                disableWebConsoleIsNull = false;
+                paramValue = "true";
+            }
+            
             Setting setting = setupManager.getSettingByProperty(paramName);
             if (setting == null) {
                 setting = new Setting();
@@ -3120,7 +3132,7 @@ public class ConsoleWebController {
             setupManager.saveSetting(setting);
         }
         
-        if (enableUserLocale) {
+        if (enableUserLocaleIsNull) {
             Setting setting = setupManager.getSettingByProperty("enableUserLocale");
             if (setting == null) {
                 setting = new Setting();
@@ -3130,7 +3142,7 @@ public class ConsoleWebController {
             setupManager.saveSetting(setting);
         }
         
-        if (dateFormatFollowLocale) {
+        if (dateFormatFollowLocaleIsNull) {
             Setting setting = setupManager.getSettingByProperty("dateFormatFollowLocale");
             if (setting == null) {
                 setting = new Setting();
@@ -3140,6 +3152,26 @@ public class ConsoleWebController {
             setupManager.saveSetting(setting);
         }
 
+        if (disableAdminBarIsNull) {
+            Setting setting = setupManager.getSettingByProperty("disableAdminBar");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("disableAdminBar");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
+        if (disableWebConsoleIsNull) {
+            Setting setting = setupManager.getSettingByProperty("disableWebConsole");
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("disableWebConsole");
+            }
+            setting.setValue("false");
+            setupManager.saveSetting(setting);
+        }
+        
         pluginManager.refresh();
         workflowManager.internalUpdateDeadlineChecker();
 
