@@ -1,4 +1,5 @@
-<%@tag import="org.joget.commons.util.HostManager"%>
+<%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ tag import="org.joget.commons.util.HostManager"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 </div>
@@ -12,6 +13,10 @@
         </div>
     </c:if>
 </div>
+
+<style>
+<%= WorkflowUtil.getSystemSetupValue("customCss") %>
+</style>
 
 <script>
     if (window.parent != self && window.parent.name != "quickOverlayFrame") {

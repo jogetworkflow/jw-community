@@ -87,7 +87,7 @@
 
 <script>
     var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
-    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' onclick='return Mobile.viewMobileSite(\"/jwlabs/home/\", \"${pageContext.request.contextPath}/web/mobile\")' title='User Agent: " + navigator.userAgent + "'>" + mobileLinkTitle + "</a>";
+    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")' title='User Agent: " + navigator.userAgent + "'>" + mobileLinkTitle + "</a>";
     $("#header #account").prepend(mobileLink + " | ");
     var url = "${pageContext.request.contextPath}/mobile";
     Mobile.directToMobileSite(url);

@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:header />
+<commons:header id="webconsole" />
 
 <style>
 body {
