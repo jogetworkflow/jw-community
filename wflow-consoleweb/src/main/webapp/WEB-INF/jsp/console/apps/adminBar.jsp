@@ -78,6 +78,7 @@
             </c:if>
         </div>
 
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
         <script>
             function showQuickOverlay(url) {
                 if ($("#quickOverlayContainer").length == 0) {
