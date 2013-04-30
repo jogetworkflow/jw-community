@@ -23,6 +23,16 @@
     <div class="clear"></div>
 
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
+    <c:if test="${!isAdmin}">
+        <style>
+            #getting-started {
+                height: 0px;
+                width: 0px;
+                overflow: hidden;
+            }
+        </style>
+        <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
+    </c:if>
     <c:if test="${isAdmin}">
         <div id="title">
             <fmt:message key="appCenter.label.administration"/>

@@ -76,6 +76,14 @@
             </div>		
         </div>
         <div id="online-status"></div>
+        <style>
+            #getting-started {
+                height: 0px;
+                width: 0px;
+                overflow: hidden;
+            }
+        </style>
+        <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
         <jsp:include page="mCss.jsp" flush="true"/>
     </body>
 

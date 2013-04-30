@@ -910,6 +910,10 @@ img {
     padding: 10px;
 }
 
+.ui-widget-header {
+    background: none;
+}
+
 .main-body-row{
     clear:both;
     min-height: 40px;
