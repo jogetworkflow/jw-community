@@ -130,7 +130,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      */
     protected String getWelcome() {
         String content = "<div id=\"getting-started\">"
-                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; overflow:hidden;\" src=\"http://www.joget.org/updates/welcome?src=v3\" frameborder=\"0\"></iframe>"
+                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; overflow:hidden;\" src=\"http://www.joget.org/updates/welcome?src=v4\" frameborder=\"0\"></iframe>"
                 + "<a href=\"http://www.joget.org/help?src=wmc\" target=\"www.joget.org\" id=\"link\"></a>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
