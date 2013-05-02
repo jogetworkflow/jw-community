@@ -216,7 +216,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String formatColumn(DataListColumn column, Object row, Object value) {
-        Object result = value;
+        String result = StringEscapeUtils.escapeHtml((String) value);
         Collection<DataListColumnFormat> formats = column.getFormats();
         if (formats != null) {
             for (DataListColumnFormat format : formats) {
