@@ -133,7 +133,7 @@
 </c:when>
 </c:choose>
 </c:catch>
-
+<!DOCTYPE html>
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
     <head>
         <title>

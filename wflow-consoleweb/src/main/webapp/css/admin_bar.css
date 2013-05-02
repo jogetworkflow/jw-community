@@ -35,6 +35,7 @@ body.embeded #adminBar {
 }
 #adminBar #quickEditModeOption label {
     margin-bottom: 0px;
+    display: none;
 }
 #adminBar .ui-buttonset .ui-button {
     margin-left: 0;

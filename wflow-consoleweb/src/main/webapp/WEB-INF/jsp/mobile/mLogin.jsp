@@ -25,7 +25,7 @@
 <c:if test="${empty redirectUrl}">
     <c:set var="redirectUrl" scope="request" value="/web/mobile"/>
 </c:if>
-
+<!DOCTYPE html>
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
     <head>
         <title>

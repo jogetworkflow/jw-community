@@ -212,3 +212,27 @@ body{
 #ui-datepicker-div {
     display:none;
 }
+
+#desktop #header-label {
+    right: 0px;
+}
+#desktop #logo-label {
+    display: none;
+}
+#desktop .column {
+    float: right;
+}
+#desktop .column ul {
+    text-align: right;
+    margin-right: 25px;
+}
+#desktop #content .column-narrow a {
+    text-align: right;
+}
+
+#allApps .nv-col {
+    float: right;
+}
+#nv .nv-col {
+    float: right;
+}

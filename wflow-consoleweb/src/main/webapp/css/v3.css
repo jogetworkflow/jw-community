@@ -568,6 +568,9 @@ img {
 #guide ul li {
     padding: 1px 20px;
 }
+.guider .guider_description {
+    text-align: left;
+}
 #main {
     position: relative;
     min-width: 600px;

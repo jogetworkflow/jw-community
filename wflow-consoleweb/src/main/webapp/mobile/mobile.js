@@ -93,45 +93,47 @@ var Mobile = {
     },
 
     updateCache: function() {
-        // Check if a new cache is available on page load.
-        window.addEventListener('load', function(e) {
+        if (typeof applicationCache != "undefined") {
+            // Check if a new cache is available on page load.
+            window.addEventListener('load', function(e) {
 
-            window.applicationCache.addEventListener('updateready', function(e) {
-                $.mobile.hidePageLoadingMsg();
-                if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
-                    // Browser downloaded a new app cache, swap it in and reload the page to get the new hotness.
-                    window.applicationCache.swapCache();
-                    window.location.reload();
-                } else {
-                    // Manifest didn't change. Nothing new to server.
-                }
-            }, false);
-            
-            window.applicationCache.addEventListener('checking', function(e) {
-                $.mobile.showPageLoadingMsg();
+                window.applicationCache.addEventListener('updateready', function(e) {
+                    $.mobile.hidePageLoadingMsg();
+                    if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+                        // Browser downloaded a new app cache, swap it in and reload the page to get the new hotness.
+                        window.applicationCache.swapCache();
+                        window.location.reload();
+                    } else {
+                        // Manifest didn't change. Nothing new to server.
+                    }
+                }, false);
+
+                window.applicationCache.addEventListener('checking', function(e) {
+                    $.mobile.showPageLoadingMsg();
+                }, false);            
+
+                window.applicationCache.addEventListener('downloading', function(e) {
+                    $.mobile.showPageLoadingMsg();
+                }, false);            
+
+                window.applicationCache.addEventListener('cached', function(e) {
+                    $.mobile.hidePageLoadingMsg();
+                }, false);            
+
+                window.applicationCache.addEventListener('noupdate', function(e) {
+                    $.mobile.hidePageLoadingMsg();
+                }, false);            
+
+                window.applicationCache.addEventListener('error', function(e) {
+                    $.mobile.hidePageLoadingMsg();
+                }, false);            
+
+                window.applicationCache.addEventListener('obsolete', function(e) {
+                    $.mobile.hidePageLoadingMsg();
+                }, false);            
+
             }, false);            
-
-            window.applicationCache.addEventListener('downloading', function(e) {
-                $.mobile.showPageLoadingMsg();
-            }, false);            
-
-            window.applicationCache.addEventListener('cached', function(e) {
-                $.mobile.hidePageLoadingMsg();
-            }, false);            
-
-            window.applicationCache.addEventListener('noupdate', function(e) {
-                $.mobile.hidePageLoadingMsg();
-            }, false);            
-
-            window.applicationCache.addEventListener('error', function(e) {
-                $.mobile.hidePageLoadingMsg();
-            }, false);            
-
-            window.applicationCache.addEventListener('obsolete', function(e) {
-                $.mobile.hidePageLoadingMsg();
-            }, false);            
-
-        }, false);            
+        }
     },
     
     checkNetworkStatus: function() {
@@ -184,7 +186,7 @@ $("#userview").live("pageshow", function() {
 });
 
 $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
-    if (applicationCache &&
+    if (typeof applicationCache != "undefined" &&
             applicationCache.status !== applicationCache.UNCACHED &&
             applicationCache.status !== applicationCache.OBSOLETE
         ) {

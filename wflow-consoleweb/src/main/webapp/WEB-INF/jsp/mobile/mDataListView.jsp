@@ -6,6 +6,7 @@
 <%@ page import="java.util.Collection"%>
 
 <c:set var="landingPage" value="landing"/>
+<!DOCTYPE html>
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
     <head>
         <title>

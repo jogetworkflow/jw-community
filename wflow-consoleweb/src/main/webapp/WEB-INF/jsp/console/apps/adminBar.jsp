@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
-<c:if test="${isQuickEditEnabled || param.desktop == 'true'}">
+<c:if test="${isQuickEditEnabled || param.webConsole =='true' || param.desktop == 'true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:if test="${isAdmin}">
 
@@ -16,6 +16,9 @@
         <style>
             #quickEditModeOption {
                 display: none;
+            }
+            #adminBar .adminBarButton {
+                display: block;
             }
         </style>
         <c:if test="${!empty param.webConsole}">
@@ -52,28 +55,28 @@
         <div id="adminBar">
             <a id="appCenter" <c:if test="${empty param.desktop}"> target="_blank"</c:if> title="<fmt:message key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"></a>
             <div id="quickEditModeOption">
-                <input type="radio" id="quickEditModeOn" name="radio" /><label for="quickEditModeOn">On</label>
-                <input type="radio" id="quickEditModeOff" name="radio" /><label for="quickEditModeOff">Off</label>
+                <input type="radio" id="quickEditModeOn" name="radio" /><label for="quickEditModeOn"><fmt:message key='adminBar.label.on'/></label>
+                <input type="radio" id="quickEditModeOff" name="radio" /><label for="quickEditModeOff"><fmt:message key='adminBar.label.off'/></label>
             </div>
             <c:if test="${!empty param.appId || !empty param.webConsole || !empty param.desktop}">
                 <c:if test="${!empty param.appId}">
                     <div>
-                        <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.designApp'/>" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms')"><i class="icon-edit"></i><br>App</a>
+                        <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.designApp'/>" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms')"><i class="icon-edit"></i><br><fmt:message key='adminBar.label.app'/></a>
                     </div>
                 </c:if>
                 <c:if test="${!empty param.appControls}">
                     <div>
-                        <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="icon-wrench"></i><br>All Apps</a>
+                        <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="icon-wrench"></i><br><fmt:message key='adminBar.label.allApps'/></a>
                     </div>
                 </c:if>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="icon-user"></i><br>Users</a>
+                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="icon-user"></i><br><fmt:message key='adminBar.label.users'/></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="icon-dashboard"></i><br>Monitor</a>
+                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="icon-dashboard"></i><br><fmt:message key='adminBar.label.monitor'/></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="icon-cogs"></i><br>Settings</a>
+                    <a class="adminBarButton" style="display:none" title="<fmt:message key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="icon-cogs"></i><br><fmt:message key='adminBar.label.settings'/></a>
                 </div>
             </c:if>
         </div>
@@ -111,29 +114,43 @@
                 });
                 initQuickEditMode();
             }
+            function showQuickEdit() {
+                $("#quickEditModeOn").attr("checked", "checked");
+                $("#quickEditModeOff").removeAttr("checked");
+                $(".quickEdit, .adminBarButton").fadeIn();
+                $("#page").addClass("quickEditModeActive");
+                $("#quickEditModeOption").button("refresh");
+            }
+            function hideQuickEdit() {
+                $("#quickEditModeOff").attr("checked", "checked");
+                $("#quickEditModeOn").removeAttr("checked");
+                $(".quickEdit, .adminBarButton").css("display", "none");
+                $("#page").removeClass("quickEditModeActive");
+                $("#quickEditModeOption").button("refresh");
+            }
             function initQuickEditMode() {
                 var quickEditModeActive =  $.cookie("quickEditModeActive");
                 if (quickEditModeActive == "true") {
-                    $("#quickEditModeOn").attr("checked", "checked");
-                    $("#quickEditModeOff").removeAttr("checked");
-                    $(".quickEdit, .adminBarButton").fadeIn();
-                    $("#page").addClass("quickEditModeActive");
-                    $("#quickEditModeOption").button("refresh");
+                    showQuickEdit();
                 } else {
-                    $("#quickEditModeOff").attr("checked", "checked");
-                    $("#quickEditModeOn").removeAttr("checked");
-                    $(".quickEdit, .adminBarButton").css("display", "none");
-                    $("#page").removeClass("quickEditModeActive");
-                    $("#quickEditModeOption").button("refresh");
+                    hideQuickEdit();
                 }
             }
             $(window).load(function() {
-                $("#quickEditModeOn").click(enableQuickEditMode);
-                $("#quickEditModeOff").click(disableQuickEditMode);
                 initQuickEditMode();
+                $("#quickEditModeOn").live('click', enableQuickEditMode);
+                $("#quickEditModeOff").live('click', disableQuickEditMode);
+                $("label.ui-button").live('click', function() {
+                    var input = $('#' + $(this).attr('for'));
+                    if(input) {
+                        input.trigger('click'); 
+                    }
+                    return true;
+                });
+                $("#adminBar #quickEditModeOption label").show();
                 $("#quickEditModeOption").buttonset();
                 <c:if test="${!empty param.webConsole || !empty param.desktop}">
-                    enableQuickEditMode();
+                    showQuickEdit();
                 </c:if>
             });
         </script>
