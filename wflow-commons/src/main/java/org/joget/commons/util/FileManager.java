@@ -22,8 +22,10 @@ public class FileManager {
             String id = UuidGenerator.getInstance().getUuid();
             FileOutputStream out = null;
             String path =  id + File.separator;
+            String filename = path;
             try {
-                File uploadFile = new File(getBaseDirectory() + path + file.getOriginalFilename());
+                filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                File uploadFile = new File(getBaseDirectory() + filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
                     new File(getBaseDirectory() + path).mkdirs();
@@ -41,7 +43,7 @@ public class FileManager {
                     } catch (Exception ex) {
                     }
                 }
-                return path + file.getOriginalFilename();
+                return filename;
             }
         }
         return null;
