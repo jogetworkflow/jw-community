@@ -40,7 +40,7 @@
             <arg value="--host=${db.host}"/>
             <arg value="-P ${db.port}"/>
             <arg value="--user=${db.user}"/>
-            <arg value="-p${db.password}"/>
+            <arg value="--password=${db.password}"/>
             <arg value="${db.name}"/>
         </exec>
     </target>

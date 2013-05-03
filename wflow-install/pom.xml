@@ -100,45 +100,36 @@
                                 <copy file="src/main/resources/joget_stop.ico" todir="target"/>
                                 <copy file="src/main/resources/mysql-start.bat" todir="target"/>
                                 <copy file="src/main/resources/mysql-stop.bat" todir="target"/>
-                                <copy file="src/main/resources/tomcat6-run.bat" todir="target"/>
-                                <copy file="src/main/resources/tomcat6-stop.bat" todir="target"/>
+                                <copy file="src/main/resources/mysql-5.0.22-start.bat" todir="target"/>
+                                <copy file="src/main/resources/mysql-5.0.22-stop.bat" todir="target"/>
+                                <copy file="src/main/resources/tomcat7-run.bat" todir="target"/>
+                                <copy file="src/main/resources/tomcat7-stop.bat" todir="target"/>
                                 <copy file="src/main/resources/joget-start.bat" todir="target"/>
                                 <copy file="src/main/resources/joget-stop.bat" todir="target"/>
                                 <copy file="src/main/resources/build.xml" todir="target"/>
                                 <copy file="src/main/resources/setup.sh" todir="target"/>
-                                <copy file="src/main/resources/tomcat6.sh" todir="target"/>
+                                <copy file="src/main/resources/tomcat7.sh" todir="target"/>
 
                                 <mkdir dir="downloads"/>
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/jdk${jdk.version}.zip" dest="downloads/jdk${jdk.version}.zip" username="public" password="public" usetimestamp="true" />
-
-                                <mkdir dir="downloads"/>
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/svn/joget/tags/1.1.3/wflow-install/src/main/resources/jdk${jdk.version}.zip" dest="downloads/jdk${jdk.version}.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="http://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="http://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="http://dev.joget.org/downloads/dependencies/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="http://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
 
                                 <untar compression="gzip" dest="target">
                                     <fileset dir="downloads/">
                                         <include name="apache-tomcat-${tomcat.version}.tar.gz"/>
                                         <include name="apache-ant-${apache-ant.version}-bin.tar.gz"/>
+                                        <include name="jre${jre.version}.tar.gz"/>
                                     </fileset>
                                 </untar>
 
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
                                         <include name="mysql-noinstall-${mysql.version}-win32.zip"/>
-                                        <include name="jdk${jdk.version}.zip"/>
                                     </fileset>
                                 </unzip>
 
-                                <!--copy flatten="true" todir="target/wflow/app_plugins">
-                                    <fileset dir="../wflow-plugins/">
-                                        <include name="*/*/wflow-plugin-*.jar"/>
-                                    </fileset>
-                                </copy-->
                                 <copy flatten="true" todir="target/apache-tomcat-${tomcat.version}/webapps">
                                     <fileset dir="../wflow-consoleweb/">
                                         <include name="*/jw.war"/>
@@ -149,7 +140,6 @@
                                         <include name="*/jwdesigner.war"/>
                                     </fileset>
                                 </copy>
-                                <copy tofile="target/apache-tomcat-${tomcat.version}/conf/logging.properties" file="src/main/resources/tomcat-logging.properties" overwrite="true"/>
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true"/>
                                 <copy todir="target/mysql-${mysql.version}-win32/" file="src/main/resources/my.ini"/>
                                 <copy todir="target/mysql-${mysql.version}-win32/data/">
@@ -175,17 +165,18 @@
                                         <include name="LICENSE.txt"/>
                                         <include name="README.txt"/>
                                         <include name="CHANGES.txt"/>
-                                        <include name="tomcat6-run.bat"/>
-                                        <include name="tomcat6-stop.bat"/>
+                                        <include name="tomcat7-run.bat"/>
+                                        <include name="tomcat7-stop.bat"/>
                                         <include name="VERSION.txt"/>
                                     </fileset>
                                 </zip>
 
+                                <!--
                                 <zip destfile="builds/joget-demo-windows-${project.version}-${buildNumber}.zip">
                                     <fileset dir="target">
                                         <include name="apache-ant-${apache-ant.version}/**"/>
                                         <include name="apache-tomcat-${tomcat.version}/**"/>
-                                        <include name="jdk${jdk.version}/**"/>
+                                        <include name="jre${jre.version}/**"/>
                                         <include name="mysql-${mysql.version}-win32/**"/>
                                         <include name="data/**"/>
                                         <include name="docs/**"/>
@@ -197,11 +188,12 @@
                                         <include name="mysql-start.bat"/>
                                         <include name="mysql-stop.bat"/>
                                         <include name="CHANGES.txt"/>
-                                        <include name="tomcat6-run.bat"/>
-                                        <include name="tomcat6-stop.bat"/>
+                                        <include name="tomcat7-run.bat"/>
+                                        <include name="tomcat7-stop.bat"/>
                                         <include name="VERSION.txt"/>
                                     </fileset>
                                 </zip>
+                                -->
 
                                 <tar compression="gzip" destfile="builds/joget-linux-${project.version}-${buildNumber}.tar.gz">
                                     <tarfileset dir="target" prefix="joget-linux-${project.version}">
@@ -215,7 +207,7 @@
                                         <include name="README.txt"/>
                                         <include name="CHANGES.txt"/>
                                         <include name="setup.sh"/>
-                                        <include name="tomcat6.sh"/>
+                                        <include name="tomcat7.sh"/>
                                         <include name="VERSION.txt"/>
                                     </tarfileset>
                                     <tarfileset dir="target" filemode="755" prefix="joget-linux-${project.version}">
@@ -225,6 +217,7 @@
                                     </tarfileset>
                                 </tar>
 
+                                <!--
                                 <zip destfile="builds/joget-updates-${project.version}-${buildNumber}.zip">
                                     <fileset dir="target">
                                         <include name="apache-tomcat-${tomcat.version}/webapps/jw**"/>
@@ -234,6 +227,7 @@
                                         <include name="CHANGES.txt"/>
                                     </fileset>
                                 </zip>
+                                -->
 
                             </tasks>
                         </configuration>

@@ -1,15 +1,14 @@
 @ECHO OFF
 
 REM Stop MySQL
-set MYSQL_HOME=.\mysql-5.0.22-win32
-ECHO == Stopping MySQL from %MYSQL_HOME% ==
+ECHO == Stopping MySQL ==
 ECHO.
-start %MYSQL_HOME%\bin\mysqladmin -u root shutdown
+CALL .\mysql-stop.bat
 ECHO.
 
 REM Stop Tomcat
-set JAVA_HOME=.\jdk1.6.0
-set CATALINA_HOME=.\apache-tomcat-6.0.18
+set JAVA_HOME=.\jre1.7.0_21
+set CATALINA_HOME=.\apache-tomcat-7.0.39
 ECHO == Stopping Tomcat from %CATALINA_HOME% ==
 ECHO.
 %CATALINA_HOME%\bin\shutdown.bat

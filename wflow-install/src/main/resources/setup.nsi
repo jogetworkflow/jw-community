@@ -13,7 +13,7 @@
 
   ;Default installation folder
   ;InstallDir "$PROGRAMFILES\Joget"
-  InstallDir "C:\Joget-v3"
+  InstallDir "C:\Joget-v4-Beta"
 
   ;Get installation folder from registry if available
   ;InstallDirRegKey HKCU "Software\Joget"
@@ -26,6 +26,7 @@
 
   !define INSTALL_TYPE_FULL full
   !define INSTALL_TYPE_UPGRADE upgrade
+  !define INSTALL_TYPE_UPDATE update
   !define INSTALL_TYPE_ABORT abort
   Var INSTALL_TYPE
 
@@ -145,23 +146,24 @@ Section "Joget Workflow" SecJoget
   Call CheckUpgrade
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_ABORT}"
-    MessageBox MB_OK "Existing installation found in the directory '$INSTDIR'.$\r$\nSorry, upgrade not supported yet."
+    MessageBox MB_OK "Existing v2 installation found in the directory '$INSTDIR'.$\r$\nSorry, upgrade from this version is not supported."
     Quit
   ${EndIf}
 
-  ${If} $INSTALL_TYPE == "${INSTALL_TYPE_UPGRADE}"
+  ${If} $INSTALL_TYPE != "${INSTALL_TYPE_FULL}"
     ;MessageBox MB_OK $INSTALL_TYPE
-    MessageBox MB_YESNO "Existing installation found in the directory '$INSTDIR'.$\r$\nWould you like to update? $\r$\n(NOTE: Only the Joget files will be updated)" IDYES DoUpgrade
+    MessageBox MB_YESNO "Existing installation found in the directory '$INSTDIR'.$\r$\nWould you like to update? $\r$\n" IDYES DoUpgrade
     MessageBox MB_OK "Installation aborted"
     Quit
 
     DoUpgrade:
     ;MessageBox MB_OK "Upgrading"
-    RmDir /r "$INSTDIR\apache-tomcat-6.0.18\webapps\jw"
-    RmDir /r "$INSTDIR\apache-tomcat-6.0.18\webapps\jwdesigner"
-    CreateDirectory "$INSTDIR\apache-tomcat-6.0.18\webapps"
-    File /oname=apache-tomcat-6.0.18\webapps\jw.war apache-tomcat-6.0.18\webapps\jw.war
-    File /oname=apache-tomcat-6.0.18\webapps\jwdesigner.war apache-tomcat-6.0.18\webapps\jwdesigner.war
+    RmDir /r "$SMPROGRAMS\Joget Workflow v3"
+    RmDir /r "$INSTDIR\apache-tomcat-7.0.39\webapps\jw"
+    RmDir /r "$INSTDIR\apache-tomcat-7.0.39\webapps\jwdesigner"
+    CreateDirectory "$INSTDIR\apache-tomcat-7.0.39\webapps"
+    File /oname=apache-tomcat-7.0.39\webapps\jw.war apache-tomcat-7.0.39\webapps\jw.war
+    File /oname=apache-tomcat-7.0.39\webapps\jwdesigner.war apache-tomcat-7.0.39\webapps\jwdesigner.war
     CreateDirectory "$INSTDIR\data"
     File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
     File /r wflow*.*
@@ -175,9 +177,9 @@ Section "Joget Workflow" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-6.0.18\webapps"
-  File /oname=apache-tomcat-6.0.18\webapps\jw.war apache-tomcat-6.0.18\webapps\jw.war
-  File /oname=apache-tomcat-6.0.18\webapps\jwdesigner.war apache-tomcat-6.0.18\webapps\jwdesigner.war
+  CreateDirectory "$INSTDIR\apache-tomcat-7.0.39\webapps"
+  File /oname=apache-tomcat-7.0.39\webapps\jw.war apache-tomcat-7.0.39\webapps\jw.war
+  File /oname=apache-tomcat-7.0.39\webapps\jwdesigner.war apache-tomcat-7.0.39\webapps\jwdesigner.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   ;File docs
@@ -199,15 +201,15 @@ Section "Joget Workflow" SecJoget
 
 SectionEnd
 
-Section "Apache Tomcat 6" SecTomcat
+Section "Apache Tomcat 7" SecTomcat
 
   SectionIn RO
   SetOutPath "$INSTDIR"
 
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-6.0.18
-  File tomcat6-run.bat
-  File tomcat6-stop.bat
+  File /r /x *.war apache-tomcat-7.0.39
+  File tomcat7-run.bat
+  File tomcat7-stop.bat
   File joget-start.bat
   File joget-stop.bat
 
@@ -216,17 +218,13 @@ Section "Apache Tomcat 6" SecTomcat
 
 SectionEnd
 
-Section "Java 6" SecJava
+Section "Java 7" SecJava
 
   SectionIn RO
   SetOutPath "$INSTDIR"
 
-  ${If} $INSTALL_TYPE == "${INSTALL_TYPE_UPGRADE}"
-    Return
-  ${EndIf}
-
   ;Java Files Here
-  File /r jdk1.6.0
+  File /r jre1.7.0_21
 
 SectionEnd
 
@@ -236,13 +234,17 @@ Section "MySQL 5" SecMySQL
   SetOutPath "$INSTDIR"
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_UPGRADE}"
+    File /oname=mysql-start.bat mysql-5.0.22-start.bat
+    File /oname=mysql-stop.bat mysql-5.0.22-stop.bat
     Return
   ${EndIf}
 
-  ;MySQL Files Here
-  File /r mysql-5.0.22-win32
-  File mysql-start.bat
-  File mysql-stop.bat
+  ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
+    ;MySQL Files Here
+    File /r mysql-5.0.96-win32
+    File mysql-start.bat
+    File mysql-stop.bat
+  ${EndIf}
 
 SectionEnd
 
@@ -250,11 +252,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget Workflow v3"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v3\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v3\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v3\Web Console.lnk" "http://localhost:8080/jw" "Web Console" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v3\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Joget Workflow v4 Beta"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -274,8 +276,10 @@ FunctionEnd
 
 Function CheckUpgrade
 
-  ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
+  ${If} ${FileExists} $INSTDIR\apache-tomcat-7.0.39\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.39\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
   ${Else}
@@ -292,7 +296,7 @@ FunctionEnd
   ;Language strings
   LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget Workflow Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
-  LangString DESC_SecJava ${LANG_ENGLISH} "Java 6 Standard Edition"
+  LangString DESC_SecJava ${LANG_ENGLISH} "Java 7 Standard Edition"
   LangString DESC_SecMySQL ${LANG_ENGLISH} "MySQL 5 Database Server"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start Menu Shortcuts"
 
@@ -312,14 +316,14 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget Workflow v3"
+  RMDir /r "$SMPROGRAMS\Joget Workflow v4 Beta"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
-  RmDir /r "$INSTDIR\jdk1.6.0"
-  RmDir /r "$INSTDIR\apache-tomcat-6.0.18\webapps\jw"
-  RmDir /r "$INSTDIR\apache-tomcat-6.0.18\webapps\jwdesigner"
-  Delete "$INSTDIR\apache-tomcat-6.0.18\webapps\jw.war"
-  Delete "$INSTDIR\apache-tomcat-6.0.18\webapps\jwdesigner.war"
+  RmDir /r "$INSTDIR\jre1.7.0_21"
+  RmDir /r "$INSTDIR\apache-tomcat-7.0.39\webapps\jw"
+  RmDir /r "$INSTDIR\apache-tomcat-7.0.39\webapps\jwdesigner"
+  Delete "$INSTDIR\apache-tomcat-7.0.39\webapps\jw.war"
+  Delete "$INSTDIR\apache-tomcat-7.0.39\webapps\jwdesigner.war"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
@@ -331,8 +335,8 @@ Section "Uninstall"
   Delete "$INSTDIR\joget_stop.ico"
   Delete "$INSTDIR\Start Joget Server.lnk"
   Delete "$INSTDIR\Stop Joget Server.lnk"
-  Delete "$INSTDIR\tomcat6-run.bat"
-  Delete "$INSTDIR\tomcat6-stop.bat"
+  Delete "$INSTDIR\tomcat7-run.bat"
+  Delete "$INSTDIR\tomcat7-stop.bat"
   Delete "$INSTDIR\mysql-start.bat"
   Delete "$INSTDIR\mysql-stop.bat"
   Delete "$INSTDIR\joget-start.bat"
