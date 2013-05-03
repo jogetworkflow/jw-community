@@ -129,6 +129,7 @@
                 $("#quickEditModeOption").button("refresh");
             }
             function initQuickEditMode() {
+                $("#adminBar #quickEditModeOption label").css("display", "block");
                 var quickEditModeActive =  $.cookie("quickEditModeActive");
                 if (quickEditModeActive == "true") {
                     showQuickEdit();
