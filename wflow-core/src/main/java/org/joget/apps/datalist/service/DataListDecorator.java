@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
@@ -18,6 +19,7 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * DisplayTag column decorator to modify columns e.g. format, add links, etc.
@@ -31,6 +33,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     String fieldName;
     
     private int index = 0;
+    Whitelist whitelist;
 
     @Override
     public void init(PageContext pageContext, Object decorated, TableModel tableModel) {
@@ -45,6 +48,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
         } else {
             checkedIds = new ArrayList(0);
         }
+        
+        // configure jsoup whitelist
+        whitelist = Whitelist.relaxed().addTags("span").addAttributes(":all","style","class","title");
+        java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, whitelist, new HashMap());
     }
 
     @Override
@@ -218,7 +227,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String formatColumn(DataListColumn column, Object row, Object value) {
-        String result = Jsoup.clean((String) value, Whitelist.relaxed().addTags("span").addAttributes(":all","style"));
+        Object result = (value instanceof String) ? Jsoup.clean((String) value, whitelist) : value;
         Collection<DataListColumnFormat> formats = column.getFormats();
         if (formats != null) {
             for (DataListColumnFormat format : formats) {
