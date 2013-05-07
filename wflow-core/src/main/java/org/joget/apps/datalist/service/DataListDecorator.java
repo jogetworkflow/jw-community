@@ -16,6 +16,8 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 
 /**
  * DisplayTag column decorator to modify columns e.g. format, add links, etc.
@@ -216,7 +218,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String formatColumn(DataListColumn column, Object row, Object value) {
-        String result = StringEscapeUtils.escapeHtml((String) value);
+        String result = Jsoup.clean((String) value, Whitelist.relaxed().addTags("span").addAttributes(":all","style"));
         Collection<DataListColumnFormat> formats = column.getFormats();
         if (formats != null) {
             for (DataListColumnFormat format : formats) {
