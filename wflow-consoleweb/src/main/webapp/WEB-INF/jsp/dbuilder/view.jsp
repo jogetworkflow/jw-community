@@ -26,7 +26,8 @@
     
     <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
 
-    <div id="preview-label">Preview</div>
+        <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
+        <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
 
 </body>
 </html>

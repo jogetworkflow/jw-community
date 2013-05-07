@@ -261,4 +261,6 @@
             <div class="clear"></div>   
         </div>
         <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=body" />
+        <!--[if IE]><div id="beta" class="ie">Beta</div> <![endif]-->
+        <!--[if !IE]><!--><div id="beta">Beta</div><!--<![endif]-->                
         <div id="container">

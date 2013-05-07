@@ -10,6 +10,7 @@
     <span id="main-action-help" style="display:none"></span>
     
     <div id="title">
+        <div id="title-label"><fmt:message key="adminBar.label.appCenter"/></div>
         <div id="search">
         </div>
         <div id="categories">

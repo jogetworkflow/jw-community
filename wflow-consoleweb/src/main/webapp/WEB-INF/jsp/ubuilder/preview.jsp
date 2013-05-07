@@ -200,7 +200,8 @@
 
             </div>
         </div>
-        <div id="preview-label">Preview</div>
+        <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
+        <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
         <div style="display:none" id="preview-form">
             <form id="preview" action="" method="post">
                 <input type="hidden" name="json" value="<c:out value="${json}"/>"/>

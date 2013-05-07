@@ -211,6 +211,9 @@ body#desktop {
     text-decoration: none;
     font-family: "Lucida Sans",Arial,Verdana,sans-serif;
     margin: 0px 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: dotted 1px #c0c0c0;
 }
 #desktop #categories a.category-selected {
     font-weight: normal;
@@ -280,4 +283,10 @@ body#desktop {
     z-index: 10;
     opacity: 0.7;
     text-decoration: none;
+}
+#desktop #title-label {
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 20px;
+    color: #969696;
 }

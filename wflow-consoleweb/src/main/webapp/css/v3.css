@@ -1706,3 +1706,32 @@ body#login {
     display: inline;
     color: #999999;
 }
+
+#beta {
+    display: none;
+    position: fixed;
+    top: 40px;
+    left: -135px;
+    width: 300px;
+    padding: 5px;
+    font-size: 14px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: 'trebuchet ms', verdana, arial, sans-serif;
+    background-color: red;
+    border: 1px solid rgb(170, 170, 170);
+    z-index: 6;
+    opacity: 0.5;
+    -moz-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+#beta.ie {
+    top: -60px;
+    left: -100px;
+    opacity: 1;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678,sizingMethod='auto expand') progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678,sizingMethod='auto expand') progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+    zoom: 1;
+}

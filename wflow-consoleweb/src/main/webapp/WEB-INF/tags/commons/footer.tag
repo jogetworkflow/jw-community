@@ -20,10 +20,10 @@
 
 <script>
     if (window.parent != self && window.parent.name != "quickOverlayFrame") {
-        $("#header, #footer, #adminBar").hide();
+        $("#header, #footer, #adminBar, #beta").hide();
         $("#container, #nav").css("top", "0px");
     } else {
-        $("#header, #footer, #adminBar").show();
+        $("#header, #footer, #adminBar, #beta").show();
     }
 </script>
 
