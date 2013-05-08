@@ -81,6 +81,9 @@
                 height: 0px;
                 width: 0px;
                 overflow: hidden;
+                z-index: -100;
+                position: absolute;
+                margin-top: 100%;
             }
         </style>
         <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
