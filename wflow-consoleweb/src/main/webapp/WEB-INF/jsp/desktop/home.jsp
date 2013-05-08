@@ -89,12 +89,12 @@
         </c:if>
     </script>
     
-<commons:footer/>
-
 <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
     <jsp:param name="desktop" value="true"/>
     <jsp:param name="appControls" value="true"/>
 </jsp:include>
+
+<commons:footer/>
 
 <script>
     var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
