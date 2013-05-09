@@ -2435,7 +2435,7 @@ public class ConsoleWebController {
                 data.put("id", message.getId());
                 data.put("messageKey", message.getMessageKey());
                 data.put("locale", message.getLocale());
-                data.put("message", message.getMessage());
+                data.put("message", StringEscapeUtils.escapeHtml(message.getMessage()));
                 jsonObject.accumulate("data", data);
             }
         }
@@ -2614,7 +2614,7 @@ public class ConsoleWebController {
             for (EnvironmentVariable environmentVariable : environmentVariableList) {
                 Map data = new HashMap();
                 data.put("id", environmentVariable.getId());
-                data.put("value", environmentVariable.getValue());
+                data.put("value", StringEscapeUtils.escapeHtml(environmentVariable.getValue()));
                 data.put("remarks", environmentVariable.getRemarks());
                 jsonObject.accumulate("data", data);
             }
@@ -3513,7 +3513,7 @@ public class ConsoleWebController {
                 data.put("id", message.getId());
                 data.put("key", message.getKey());
                 data.put("locale", message.getLocale());
-                data.put("message", message.getMessage());
+                data.put("message", StringEscapeUtils.escapeHtml(message.getMessage()));
                 jsonObject.accumulate("data", data);
             }
         }
