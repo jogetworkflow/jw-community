@@ -30,16 +30,23 @@
                 height: 0px;
                 width: 0px;
                 overflow: hidden;
+                z-index: -100;
+                position: absolute;
+                margin-top: 100%;
             }
         </style>
         <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
     </c:if>
     <c:if test="${isAdmin}">
-        <div id="title">
+        <div id="title" class="administration">
             <fmt:message key="appCenter.label.administration"/>
         </div>
-        <div id="content">
+        <div id="content" class="administration">
             <div class="column border">
+                <c:set var="helpWebConsole"><fmt:message key="appCenter.help.webConsole"/></c:set>
+                <c:choose>
+                <c:when test="${!empty helpWebConsole && helpWebConsole != '???appCenter.help.webConsole???'}"><fmt:message key="appCenter.help.webConsole"/></c:when>
+                <c:otherwise>
                 <a target="_self" href="${pageContext.request.contextPath}/web/console/home">
                     <h3>Access the v3 Web Console</h3>
                     <img src="${pageContext.request.contextPath}/home/webconsole.png" width="150" border="0" />
@@ -52,8 +59,14 @@
                         <li>Monitor Apps</li>
                     </ul>
                 </a>
+                </c:otherwise>
+                </c:choose>
             </div>
             <div class="column border">
+                <c:set var="helpSupport"><fmt:message key="appCenter.help.helpSupport"/></c:set>
+                <c:choose>
+                <c:when test="${!empty helpSupport && helpSupport != '???appCenter.help.helpSupport???'}"><fmt:message key="appCenter.help.helpSupport"/></c:when>
+                <c:otherwise>
                     <h3>Get Help and Support</h3>
                     <a target="_blank" href="http://www.joget.com/services?src=jwcv4"><img src="${pageContext.request.contextPath}/home/website.png" width="150" border="0" /></a>
                     <br />
@@ -63,11 +76,17 @@
                         <li><a target="_blank" href="http://community.joget.org/?src=jwcv4">Enterprise Knowledge Base</a></li>
                         <li><a target="_blank" href="http://www.joget.com/services/training/?src=jwcv4">Training and Consultancy Services</a></li>
                     </ul>
+                </c:otherwise>
+                </c:choose>
             </div>
             <div class="column-wide">
                 <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
             </div>
             <div class="column-narrow">
+                <c:set var="helpResources"><fmt:message key="appCenter.help.helpResources"/></c:set>
+                <c:choose>
+                <c:when test="${!empty helpResources && helpResources != '???appCenter.help.helpResources???'}"><fmt:message key="appCenter.help.helpResources"/></c:when>
+                <c:otherwise>
                 <a target="_blank" href="http://www.joget.org/videos/tutorial/?src=jwcv4">
                     <h4>Learn with the following resources:</h4>
                     <ul>
@@ -75,6 +94,8 @@
                         <li>Knowledge Base</li>
                     </ul>
                 </a>
+                </c:otherwise>
+                </c:choose>
             </div>
         </div>
     </c:if>
@@ -127,11 +148,11 @@
                     for( var j=0; j<userviews.length; j++){
                         var uv = userviews[j];
                         content +=  '<div class="column">\
-                                        <div class="appdiv"><h3>' + app.name + '</h3>\
+                                        <div class="appdiv">\
                                         <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
                                             <div class="screenshot_label">' + uv.name + '</div>\
                                             <img src="${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
-                                        </a></div>\
+                                        </a><h3>' + app.name + '</h3></div>\
                                     </div>';
                     }
                 }

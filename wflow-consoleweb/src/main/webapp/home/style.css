@@ -236,11 +236,17 @@ body#desktop {
     font-family: "Lucida Sans",Arial,Verdana,sans-serif;
     color: #535353;
     margin: 10px 0px 5px 0px;
-    font-weight: normal;        
+    font-weight: normal;
     text-align: center;
+    max-height: 45px;
+    overflow: hidden;
+}
+#desktop .appdiv h3 {
+    margin: 10px 0px 0px 0px;
+    padding-bottom: 0px;
 }
 #desktop .column {
-    min-height: 210px;
+    min-height: 200px;
     text-align: center;
     width: 195px;
 }
@@ -268,6 +274,7 @@ body#desktop {
     border: solid 1px #dfdfdf;
     border-radius: 12px 0px 12px 0px;
     box-shadow: #dfdfdf 2px 2px 2px;
+    margin-top: 20px;
 }
 #desktop .screenshot_label {
     position: absolute;
@@ -289,4 +296,7 @@ body#desktop {
     margin-top: 12px;
     margin-left: 20px;
     color: #969696;
+}
+#desktop .filterlabel {
+    margin-left: 3px;
 }

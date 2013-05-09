@@ -27,11 +27,11 @@
                     for( var j=0; j<userviews.length; j++){
                         var uv = userviews[j];
                         content +=  '<div class="column">\
-                                        <div class="appdiv"><h3>' + app.name + '</h3>\
+                                        <div class="appdiv">\
                                         <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
                                             <div class="screenshot_label">' + uv.name + '</div>\
                                             <img src="${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
-                                        </a></div>\
+                                        </a><h3>' + app.name + '</h3></div>\
                                     </div>';
                     }
                 }
