@@ -25,6 +25,7 @@
     }
     .ui-content {
         clear: both;
+        overflow-x: auto;
         <c:if test="${userview.setting.properties.mobileViewTranslucent == 'true'}">
         opacity: 0.9;
         </c:if>
@@ -56,6 +57,9 @@
     }    
     .ui-mobile .form-error-message {
         color: red;
+    }
+    .ui-mobile ul {
+        list-style: none;
     }
     <c:if test="${userview.setting.properties.mobileViewTranslucent == 'true'}">
     .ui-html, #loginForm {
