@@ -47,7 +47,7 @@ var Mobile = {
             $(newButtons).append($("<li></li>").append(el));
         });
         if (newButtons) {
-            newButtons = $("<div data-role='navbar' data-position='fixed'></div>").append(newButtons);
+            newButtons = $("<div id='navbar' data-role='navbar' data-position='fixed'></div>").append(newButtons);
             $("#form-canvas form").append(newButtons);
             $("form.form-container #section-actions").remove();
         }
