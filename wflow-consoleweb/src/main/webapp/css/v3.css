@@ -1732,3 +1732,16 @@ body#login {
     filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678,sizingMethod='auto expand') progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
     zoom: 1;
 }
+
+.ui-widget-content {
+    background:#ffffff;
+    border:0;
+}
+
+.ui-widget-header {
+    border:0px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    padding: 2px;
+}

@@ -25,6 +25,7 @@ function init() {
 	var dir = dom.getAttrib(trElm, 'dir');
 
 	selectByValue(formObj, 'rowtype', rowtype);
+	setActionforRowType(formObj, rowtype);
 
 	// Any cells selected
 	if (dom.select('td.mceSelected,th.mceSelected', trElm).length == 0) {
@@ -56,6 +57,11 @@ function updateAction() {
 	var inst = tinyMCEPopup.editor, dom = inst.dom, trElm, tableElm, formObj = document.forms[0];
 	var action = getSelectValue(formObj, 'action');
 
+	if (!AutoValidator.validate(formObj)) {
+		tinyMCEPopup.alert(AutoValidator.getErrorMessages(formObj).join('. ') + '.');
+		return false;
+	}
+
 	tinyMCEPopup.restoreSelection();
 	trElm = dom.getParent(inst.selection.getStart(), "tr");
 	tableElm = dom.getParent(inst.selection.getStart(), "table");
@@ -79,8 +85,6 @@ function updateAction() {
 		tinyMCEPopup.close();
 		return;
 	}
-
-	inst.execCommand('mceBeginUndoLevel');
 
 	switch (action) {
 		case "row":
@@ -123,19 +127,19 @@ function updateRow(tr_elm, skip_id, skip_parent) {
 
 	// Update row element
 	if (!skip_id)
-		tr_elm.setAttribute('id', formObj.id.value);
+		dom.setAttrib(tr_elm, 'id', formObj.id.value);
 
-	tr_elm.setAttribute('align', getSelectValue(formObj, 'align'));
-	tr_elm.setAttribute('vAlign', getSelectValue(formObj, 'valign'));
-	tr_elm.setAttribute('lang', formObj.lang.value);
-	tr_elm.setAttribute('dir', getSelectValue(formObj, 'dir'));
-	tr_elm.setAttribute('style', dom.serializeStyle(dom.parseStyle(formObj.style.value)));
+	dom.setAttrib(tr_elm, 'align', getSelectValue(formObj, 'align'));
+	dom.setAttrib(tr_elm, 'vAlign', getSelectValue(formObj, 'valign'));
+	dom.setAttrib(tr_elm, 'lang', formObj.lang.value);
+	dom.setAttrib(tr_elm, 'dir', getSelectValue(formObj, 'dir'));
+	dom.setAttrib(tr_elm, 'style', dom.serializeStyle(dom.parseStyle(formObj.style.value)));
 	dom.setAttrib(tr_elm, 'class', getSelectValue(formObj, 'class'));
 
 	// Clear deprecated attributes
-	tr_elm.setAttribute('background', '');
-	tr_elm.setAttribute('bgColor', '');
-	tr_elm.setAttribute('height', '');
+	dom.setAttrib(tr_elm, 'background', '');
+	dom.setAttrib(tr_elm, 'bgColor', '');
+	dom.setAttrib(tr_elm, 'height', '');
 
 	// Set styles
 	tr_elm.style.height = getCSSSize(formObj.height.value);
@@ -163,13 +167,10 @@ function updateRow(tr_elm, skip_id, skip_parent) {
 		if (newParent == null) {
 			newParent = doc.createElement(dest);
 
-			if (dest == "thead") {
-				if (theTable.firstChild.nodeName == 'CAPTION')
-					inst.dom.insertAfter(newParent, theTable.firstChild);
-				else
-					theTable.insertBefore(newParent, theTable.firstChild);
-			} else
-				theTable.appendChild(newParent);
+			if (theTable.firstChild.nodeName == 'CAPTION')
+				inst.dom.insertAfter(newParent, theTable.firstChild);
+			else
+				theTable.insertBefore(newParent, theTable.firstChild);
 		}
 
 		// append the row to the new parent
@@ -234,4 +235,20 @@ function changedColor() {
 	formObj.style.value = dom.serializeStyle(st);
 }
 
+function changedRowType() {
+	var formObj = document.forms[0];
+	var rowtype = getSelectValue(formObj, 'rowtype');
+
+	setActionforRowType(formObj, rowtype);
+
+}
+
+function setActionforRowType(formObj, rowtype) {
+	if (rowtype === "tbody") {
+		formObj.action.disabled = false;
+	} else {
+		selectByValue(formObj, 'action', "row");
+		formObj.action.disabled = true;
+	}
+}
 tinyMCEPopup.onInit.add(init);

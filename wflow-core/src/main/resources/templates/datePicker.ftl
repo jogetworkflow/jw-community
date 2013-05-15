@@ -1,5 +1,4 @@
 <div class="form-cell" ${elementMetaData!}>
-<link rel="stylesheet" href="${request.contextPath}/css/jquery-ui-1.8.6.custom.css" />
 
 <#if element.properties.readonly! != 'true'>
     <#if request.getAttribute("currentLocale")!?starts_with("zh") >

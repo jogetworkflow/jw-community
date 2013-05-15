@@ -74,7 +74,7 @@ UserviewBuilder = {
             $('#builder-palette-body').append('<h3>'+category+'</h3><ul id="'+categoryId+'"></ul>');
         }
 
-        $('ul#'+categoryId).append('<li><div id="'+className+'" class="builder-palette-element"><img src="' + this.contextPath + iconPath + '" border="0" align="left" /><label class="label">'+label+'</label></div></li>');
+        $('ul#'+categoryId).append('<li><div id="'+className+'" element="'+className+'" class="builder-palette-element"><img src="' + this.contextPath + iconPath + '" border="0" align="left" /><label class="label">'+label+'</label></div></li>');
     },
 
     //Initial Builder feature
@@ -286,7 +286,7 @@ UserviewBuilder = {
 
     addMenu : function(obj){
         var id = this.uuid();
-        var type = $(obj).attr('id');
+        var type = $(obj).attr('element');
 
         UserviewBuilder.addToUndo();
         var categoryId = $(obj).parent().parent().attr('id');

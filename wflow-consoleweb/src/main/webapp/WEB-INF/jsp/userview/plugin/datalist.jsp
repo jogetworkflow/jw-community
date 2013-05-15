@@ -10,10 +10,7 @@
         });
     </script>
 </c:if>
-
-<script type="text/javascript" src="${requestParameters.contextPath}/js/jquery/jquery-1.5.2.min.js"></script>
-<script type="text/javascript" src="${requestParameters.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
-
+   
 <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
 <div class="datalist-body-content">
     <c:if test="${!empty properties.customHeader}">

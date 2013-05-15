@@ -80,8 +80,7 @@
                 </div>
             </c:if>
         </div>
-
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
+            
         <script>
             function showQuickOverlay(url) {
                 if ($("#quickOverlayContainer").length == 0) {
@@ -119,16 +118,17 @@
                 $("#quickEditModeOff").removeAttr("checked");
                 $(".quickEdit, .adminBarButton").fadeIn();
                 $("#page").addClass("quickEditModeActive");
-                $("#quickEditModeOption").button("refresh");
+                $("#quickEditModeOption").buttonset("refresh");
             }
             function hideQuickEdit() {
                 $("#quickEditModeOff").attr("checked", "checked");
                 $("#quickEditModeOn").removeAttr("checked");
                 $(".quickEdit, .adminBarButton").css("display", "none");
                 $("#page").removeClass("quickEditModeActive");
-                $("#quickEditModeOption").button("refresh");
+                $("#quickEditModeOption").buttonset("refresh");
             }
             function initQuickEditMode() {
+                $("#quickEditModeOption").buttonset();
                 $("#adminBar #quickEditModeOption label").css("display", "block");
                 var quickEditModeActive =  $.cookie("quickEditModeActive");
                 if (quickEditModeActive == "true") {
@@ -149,7 +149,6 @@
                     return true;
                 });
                 $("#adminBar #quickEditModeOption label").show();
-                $("#quickEditModeOption").buttonset();
                 <c:if test="${!empty param.webConsole || !empty param.desktop}">
                     showQuickEdit();
                 </c:if>

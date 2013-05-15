@@ -132,10 +132,11 @@
             </c:if>
         </title>
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.2.0.css">
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery-1.7.2.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.8.6.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.2.0.min.js"></script>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
+        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
+        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
         <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
         <script>

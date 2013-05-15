@@ -12,8 +12,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=8" />
         <title>${title}</title>
 
-        <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         
     </head>
