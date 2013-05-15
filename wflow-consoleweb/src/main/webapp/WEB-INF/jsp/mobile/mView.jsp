@@ -100,20 +100,9 @@
 <c:set var="redirectParentProperty" value="<%= UserviewMenu.REDIRECT_PARENT_PROPERTY %>"/>
 <c:set var="redirectParentValue" value="${userview.current.properties[redirectParentProperty]}"/>
 <c:choose>
-<c:when test="${!empty alertMessageValue}">
-    <script>
-        alert("${alertMessageValue}");
-    <c:if test="${!empty redirectUrlValue}">
-        <c:if test="${redirectParentValue}">parent.</c:if>location.href = "${redirectUrlValue}";
-    </c:if>
-    </script>
-</c:when>
 <c:when test="${!empty redirectUrlValue}">
     <c:choose>
         <c:when test="${redirectParentValue}">
-            <script>
-                parent.location.href = "${redirectUrlValue}";
-            </script>
         </c:when>
         <c:otherwise>
             <c:if test="${!fn:containsIgnoreCase(redirectUrlValue, 'http') && !fn:startsWith(redirectUrlValue, '/')}">
