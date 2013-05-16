@@ -169,10 +169,13 @@ if (MobileUtil.isMobileUserAgent(request)) {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=8" />
         <title>
-            ${userview.properties.name} &nbsp;&gt;&nbsp;
-            <c:if test="${!empty userview.current}">
-                ${userview.current.properties.label}
-            </c:if>
+            <c:set var="html">
+                ${userview.properties.name} &nbsp;&gt;&nbsp;
+                <c:if test="${!empty userview.current}">
+                    ${userview.current.properties.label}
+                </c:if>
+            </c:set>
+            <ui:stripTag html="${html}"/>    
         </title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
