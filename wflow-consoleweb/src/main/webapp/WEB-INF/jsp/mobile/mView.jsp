@@ -126,10 +126,13 @@
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
     <head>
         <title>
-            ${userview.properties.name} &nbsp;&gt;&nbsp;
-            <c:if test="${!empty userview.current}">
-                ${userview.current.properties.label}
-            </c:if>
+            <c:set var="html">
+                ${userview.properties.name} &nbsp;&gt;&nbsp;
+                <c:if test="${!empty userview.current}">
+                    ${userview.current.properties.label}
+                </c:if>
+            </c:set>
+            <ui:stripTag html="${html}"/>
         </title>
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
