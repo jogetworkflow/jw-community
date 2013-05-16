@@ -59,7 +59,7 @@ public class DefaultTheme extends UserviewTheme {
     }
 
     public String getName() {
-        return "Default Theme";
+        return "V3 Default Theme";
     }
 
     public String getVersion() {
@@ -71,7 +71,7 @@ public class DefaultTheme extends UserviewTheme {
     }
 
     public String getLabel() {
-        return "Default Theme";
+        return "V3 Default Theme";
     }
 
     public String getClassName() {

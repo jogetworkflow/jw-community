@@ -2255,7 +2255,7 @@ public class ConsoleWebController {
             if (userviewDefinitionDao.loadById(userviewDefinition.getId(), appDef) != null) {
                 errors.add("console.userview.error.label.exists");
             } else {
-                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + userviewDefinition.getId() + "\",\"name\":\"" + userviewDefinition.getName() + "\",\"description\":\"" + userviewDefinition.getDescription() + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.apps.userview.lib.DefaultTheme\",\"properties\":{}}}},\"categories\":[]}");
+                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + userviewDefinition.getId() + "\",\"name\":\"" + userviewDefinition.getName() + "\",\"description\":\"" + userviewDefinition.getDescription() + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.CorporatiTheme\",\"properties\":{}}}},\"categories\":[]}");
                 invalid = !userviewDefinitionDao.add(userviewDefinition);
             }
 
