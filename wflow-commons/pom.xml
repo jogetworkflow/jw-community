@@ -133,6 +133,12 @@
             <artifactId>ehcache</artifactId>
             <version>1.4.1</version>
         </dependency>
+        <dependency>
+            <!-- jsoup HTML parser library @ http://jsoup.org/ -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.7.2</version>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>

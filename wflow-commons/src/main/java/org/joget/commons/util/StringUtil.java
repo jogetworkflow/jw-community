@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
+import org.springframework.util.ReflectionUtils;
 
 public class StringUtil {
 
@@ -192,5 +195,26 @@ public class StringUtil {
             e.printStackTrace();
             return null;
         }
+    }
+    
+    public static String stripAllHtmlTag(String content) {
+        if (content != null && !content.isEmpty()) {
+            content = Jsoup.clean(content, Whitelist.none());
+        }
+        return content;
+    }
+    
+    public static String stripHtmlTag(String content, String[] allowedTag) {
+        if (content != null && !content.isEmpty()) {
+            Whitelist whitelist = Whitelist.none().addAttributes(":all","style","class","title","id","src","href");
+            for (String tag : allowedTag) {
+                whitelist.addTags(tag);
+            }
+            java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
+            ReflectionUtils.makeAccessible(field);
+            ReflectionUtils.setField(field, whitelist, new HashMap());
+            content = Jsoup.clean(content, Whitelist.simpleText());
+        }
+        return content;
     }
 }
