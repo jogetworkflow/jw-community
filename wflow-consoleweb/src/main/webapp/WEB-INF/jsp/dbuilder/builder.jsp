@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title><fmt:message key="dbuilder.title"/> - ${datalist.name}</title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>

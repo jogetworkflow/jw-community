@@ -21,7 +21,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <c:if test="${!isDesktop}"><meta http-equiv="X-UA-Compatible" content="IE=8" /></c:if>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title><fmt:message key="console.header.browser.title"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script>
