@@ -57,6 +57,7 @@
                        column2="{key: 'firstName', label: 'console.directory.user.common.label.firstName', sortable: true}"
                        column3="{key: 'lastName', label: 'console.directory.user.common.label.lastName', sortable: true}"
                        column4="{key: 'email', label: 'console.directory.user.common.label.email', sortable: true}"
+                       column5="{key: 'active', label: 'console.directory.user.common.label.status', sortable: true}"
                        />
 
     </div>

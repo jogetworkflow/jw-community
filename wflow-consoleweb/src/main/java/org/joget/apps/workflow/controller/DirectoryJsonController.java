@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.commons.util.ResourceBundleUtil;
 
 import org.joget.directory.dao.EmploymentDao;
 import org.joget.directory.dao.UserDao;
@@ -307,6 +308,7 @@ public class DirectoryJsonController {
                 data.put("firstName", user.getFirstName());
                 data.put("lastName", user.getLastName());
                 data.put("email", user.getEmail());
+                data.put("active", (user.getActive() == 1)? ResourceBundleUtil.getMessage("console.directory.user.common.label.status.active") : ResourceBundleUtil.getMessage("console.directory.user.common.label.status.inactive"));
                 jsonObject.accumulate("data", data);
             }
         }
