@@ -567,7 +567,7 @@
             }
 
             function toggleContinueNextAssignment(processDefId, activityDefId, checkbox){
-                var params = "auto="+$(checkbox).attr('checked');
+                var params = "auto="+$(checkbox).is(':checked');
                 ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/' + processDefId + '/activity/' + activityDefId + '/continue', autoCallback, params);
             }
     </script>
