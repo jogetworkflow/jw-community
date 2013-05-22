@@ -222,5 +222,4 @@
     border: 1px solid gray;
     max-height: 150px;
     overflow:auto;
-    z-index: 100000 !important;
 }
