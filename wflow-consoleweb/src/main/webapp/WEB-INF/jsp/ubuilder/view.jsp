@@ -181,6 +181,26 @@ if (MobileUtil.isMobileUserAgent(request)) {
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
         <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+            .quickEdit, #form-canvas .quickEdit {
+                display: none;
+            }
+            ${userview.setting.theme.css}
+        </style>
+        
+        <script type="text/javascript">
+            function userviewPrint(){
+                $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/css/userview_print.css" type="text/css" media="print"/>');
+                setTimeout("do_print()", 1000); 
+            }
+
+            function do_print(){
+                window.print();
+                $('#userview_print_css').remove();
+            }
+            
+            ${userview.setting.theme.javascript}
+        </script>
     </head>
 
     <body id="${bodyId}" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}"> rtl</c:if>">
@@ -334,26 +354,6 @@ if (MobileUtil.isMobileUserAgent(request)) {
             <jsp:param name="appId" value="${appId}"/>
             <jsp:param name="userviewId" value="${userview.properties.id}"/>
         </jsp:include>
-        <style type="text/css">
-            .quickEdit, #form-canvas .quickEdit {
-                display: none;
-            }
-            ${userview.setting.theme.css}
-        </style>
-    
-        <script type="text/javascript">
-            function userviewPrint(){
-                $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/css/userview_print.css" type="text/css" media="print"/>');
-                setTimeout("do_print()", 1000); 
-            }
-
-            function do_print(){
-                window.print();
-                $('#userview_print_css').remove();
-            }
-            
-            ${userview.setting.theme.javascript}
-        </script>
     </body>
     
 </html>
