@@ -1743,3 +1743,8 @@ body#login {
 .ui-dialog .ui-dialog-titlebar {
     padding: 2px;
 }
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-active {
+    border-bottom: 1px solid #FFFFFF;
+    margin-bottom: -1px !important;
+}
