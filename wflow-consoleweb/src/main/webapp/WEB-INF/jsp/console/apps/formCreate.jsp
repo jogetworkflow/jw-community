@@ -48,7 +48,7 @@
                 success : function(response){
                     var data = eval('(' + response + ')');
                     $("#tableName").autocomplete({source : data.tableName, minLength : 0}).focus(function(){ 
-                        $(this).data("autocomplete").search($(this).val());
+                        $(this).data("uiAutocomplete").search($(this).val());
                     });
                 }
             }

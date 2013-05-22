@@ -1077,7 +1077,6 @@ img {
 }
 
 #main-body-content .ui-tabs-nav a,#main-body-content .ui-tabs-nav .ui-tabs-selected a,#main-body-content .ui-tabs-nav a:hover,#main-body-content .ui-tabs-nav .ui-tabs-selected a:hover,#main-body-content .ui-tabs-nav a:focus,#main-body-content .ui-tabs-nav .ui-tabs-selected a:focus {
-    background:#ccc no-repeat top right;
     color:#565656;
 }
 
@@ -1113,7 +1112,6 @@ img {
 }
 
 #main-body-content .ui-tabs-panel .ui-tabs-nav a,#main-body-content .ui-tabs-panel .ui-tabs-nav a:hover,#main-body-content .ui-tabs-panel .ui-tabs-nav a:focus {
-    background:#F2F3F5;
     background-image:none;
     color:#06c;
 }

@@ -604,7 +604,7 @@ TabView.prototype = {
     },
 
     select: function(index) {
-        this.tabView.tabs("select", index);
+        this.tabView.tabs("option", "active", $(index).index());
     },
 
     disable: function(index) {

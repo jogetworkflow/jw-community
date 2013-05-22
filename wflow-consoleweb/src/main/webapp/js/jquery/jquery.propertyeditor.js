@@ -1713,7 +1713,7 @@
         $(object).dialog({
             autoOpen: false, 
             modal: true, 
-            height: 45,
+            height: 85,
             close: function( event, ui ) {
                 $(object).dialog("destroy");
                 $(object).remove();
@@ -1735,7 +1735,7 @@
                             return false;
                         }
                     }).focus(function(){ 
-                        $(this).data("autocomplete").search($(this).val());
+                        $(this).data("uiAutocomplete").search($(this).val());
                     }).keydown(function(e){
                         var autocomplete = $(this).autocomplete("widget");
                         if(e.which == 13 && $(autocomplete).is(":hidden")) {
