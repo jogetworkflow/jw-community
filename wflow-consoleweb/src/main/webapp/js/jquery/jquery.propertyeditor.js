@@ -158,9 +158,7 @@
                 $(editor).find('.property-page-show:first .property-editor-property-container .property-editor-property:first .property-input').find('input, select, textarea').focus();
 
                 $(editor).find('.property-page-show.current .property-editor-page-button-panel .page-button-navigation [type=button]').hide();
-                if($(editor).find('.property-page-show').length > 1){
-                    renderAdvancedStepsIndicator($(editor).find('.property-page-show.current'));
-                }
+                renderAdvancedStepsIndicator($(editor).find('.property-page-show.current'));
             });
         }
     });
@@ -312,31 +310,36 @@
     
     function renderAdvancedStepsIndicator(currentPage){
         var editor = $(currentPage).parent();
-        
-        var html = '<span class="step active">';
-        html += $(editor).find('.property-page-show.current').find('.property-editor-page-title').html() + '</span>';
-        html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-        html += '<span class="showAdvancedOptions" style="cursor:pointer">';
-        html += get_peditor_msg('peditor.showAdvancedOptions') + '</span> ';
-        html += '<div style="clear:both;"></div>';
-        $(currentPage).find('.property-editor-page-step-indicator').html(html);
-        
-        $(currentPage).find('.property-editor-page-button-panel .page-button-navigation').append('<input type="button" class="showAdvancedOptions" value="'+get_peditor_msg('peditor.showAdvancedOptions')+'"/>');
-        
-        $(currentPage).find('.showAdvancedOptions').click(function(){
-            $(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
-            $(currentPage).find('.property-editor-page-button-panel .page-button-navigation [type=button]').show();
-            renderStepsIndicator(currentPage);
-            nextPage(currentPage);
-        });
+        if($(editor).find('.property-page-show').length > 1){
+            var html = '<span class="step active">';
+            html += $(editor).find('.property-page-show.current').find('.property-editor-page-title').html() + '</span>';
+            html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+            html += '<span class="showAdvancedOptions" style="cursor:pointer">';
+            html += get_peditor_msg('peditor.showAdvancedOptions') + '</span> ';
+            html += '<div style="clear:both;"></div>';
+            $(currentPage).find('.property-editor-page-step-indicator').html(html);
+
+            if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
+                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation').append('<input type="button" class="showAdvancedOptions" value="'+get_peditor_msg('peditor.showAdvancedOptions')+'"/>');
+            }
+            
+            $(currentPage).find('.showAdvancedOptions').click(function(){
+                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
+                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation [type=button]').show();
+                renderStepsIndicator(currentPage);
+                nextPage(currentPage);
+            });
+        } else {
+            $(currentPage).find('.property-editor-page-step-indicator').html("");
+        }
     }
     
     function renderStepsIndicator(currentPage){
-        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0) {
+        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0 ||
+           ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 1)) {
             renderAdvancedStepsIndicator(currentPage);
-        } else if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
+        } else {
             var editor = $(currentPage).parent();
-
             var html = '';
 
             $(editor).find('.property-page-show').each(function(i){
@@ -1495,20 +1498,20 @@
 
     function appendElementPropertiesPageCallback(editorId, currentPage){
         var activePage = $('div#'+editorId).find('.property-editor-page.current');
-        renderStepsIndicator(activePage);
 
         var editor = $('#'+editorId);
 
         //hide page navigation when page only has one, else show steps indicator
         if($(editor).find('.property-page-show').length <= 1){
-            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').hide();
-        }else{
-            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').show();
+            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation input[type=button]').hide();
+            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
         }
         
         $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation input[type=button]').removeAttr("disabled");
         $(editor).find('.property-page-show:first .property-editor-page-button-panel .page-button-navigation .page-button-prev').attr("disabled","disabled");
         $(editor).find('.property-page-show:last .property-editor-page-button-panel .page-button-navigation .page-button-next').attr("disabled","disabled");
+        
+        renderStepsIndicator(activePage);
     }
 
     function replaceContextPath(string, contextPath){
@@ -1653,57 +1656,6 @@
         }).keyup(function(e){
             delete keys[e.which];
         });
-    }
-    
-    function renderHashVariableAssit(editorId){
-        var html = "<div class=\""+editorId+"hashassit\" title=\""+get_peditor_msg('peditor.hashVariable')+"\">";
-        html += "<input type=\"text\" id=\""+editorId+"hashassit_input\" class=\"hashassit_input\" style=\"width:90%\"/>";
-        html += "</div>";
-        
-        var object = $(html);
-        $(object).dialog({autoOpen: false, modal: true, height: 45});
-        /*
-        $.ajax({
-            url: optionsStack[editorId].contextPath + '/web/json/hash/options',
-            dataType: "text",
-            success: function(data) {
-                if(data != undefined && data != null){
-                    var options = $.parseJSON(data);
-                    $("#"+editorId+"hashassit_input").autocomplete({
-                        source : options, 
-                        minLength : 0,
-                        open: function(){
-                            $(this).autocomplete('widget').css('z-index', 99999);
-                            return false;
-                        }
-                    }).focus(function(){ 
-                        $(this).data("autocomplete").search($(this).val());
-                    });
-                }
-                
-            }
-        });
-        
-        $(object).find(".hashassit_input").keydown(function(e){
-            var autocomplete = $(this).autocomplete("widget");
-            if(e.which == 13 && $(autocomplete).is(":hidden")) {
-                var text = $(this).val();
-                if (text.length > 0) {
-                    if (hashAssit[editorId].syntax == "#") {
-                        text = "#" + text + "#";
-                    } else {
-                        text = "{" + text + "}";
-                    }
-                    var org = $(hashAssit[editorId].field).val();
-                    var output = [org.slice(0, hashAssit[editorId].caret), text, org.slice(hashAssit[editorId].caret)].join('');
-                    $(hashAssit[editorId].field).val(output);
-                }
-                $(hashAssit[editorId].popup).dialog("close");
-                $(hashAssit[editorId].field).focus();
-            }
-        });*/
-        
-        return object;
     }
     
     function showHashVariableAssit(editorId, field, caret, syntax){
