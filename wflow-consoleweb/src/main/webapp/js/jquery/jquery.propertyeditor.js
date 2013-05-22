@@ -332,7 +332,9 @@
     }
     
     function renderStepsIndicator(currentPage){
-        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
+        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0) {
+            renderAdvancedStepsIndicator(currentPage);
+        } else if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
             var editor = $(currentPage).parent();
 
             var html = '';
