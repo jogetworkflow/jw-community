@@ -986,7 +986,6 @@ img {
 #main-body-content .ui-tabs-nav a, #main-body-content .ui-tabs-nav a span {
     display: block;
     padding: 0 10px;
-    background: url(tab.png) no-repeat;
 }
 #main-body-content .ui-tabs-nav a {
     margin: 1px 0 0; /* position: relative makes opacity fail for disabled tab in IE */
