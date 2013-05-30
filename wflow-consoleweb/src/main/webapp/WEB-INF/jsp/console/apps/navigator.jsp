@@ -33,6 +33,12 @@
             listFilter($("#nv-form h4"), $("#nv-form ul")); 
             listFilter($("#nv-list h4"), $("#nv-list ul")); 
             listFilter($("#nv-userview h4"), $("#nv-userview ul")); 
+            if (parent && parent.PopupDialog.closeDialog) {
+                var locationUrl = top.location.href;
+                if (locationUrl.indexOf("/web/console/app") > 0 && locationUrl.indexOf("/builder/") > 0) {
+                    $("#nv a.nv-link").attr("target", "_top");
+                }
+            }
         }); 
     }(jQuery)); 
 </script>
