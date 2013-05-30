@@ -166,14 +166,14 @@
                             <c:set var="column" value="${columns[0]}"/>
                             <c:set var="cellValue" value="${row[columns[0].name]}"/>
                             <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
-                            <h4>${formattedValue}</h4>
+                            <h4><c:out value="${formattedValue}"/></h4>
                             <p>
                             <c:forEach var="column" items="${columns}" varStatus="cStatus">
                                 <c:if test="${cStatus.index > 0}">
                                     <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
                                     <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
                                     <c:if test="${!empty cellValue}">
-                                        <c:if test="${!empty cellLabel}">${cellLabel}:</c:if> ${cellValue}
+                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> <c:out value="${cellValue}"/>
                                     </c:if>
                                     <br>
                                 </c:if>
@@ -217,5 +217,5 @@
 
         String text = (result != null) ? result.toString() : null;
         return text;
-    }    
+    }
 %>
