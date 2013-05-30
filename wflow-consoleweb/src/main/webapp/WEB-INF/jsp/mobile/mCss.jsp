@@ -47,6 +47,15 @@
         border-radius: 2px;
         margin: 5px 0px;
     }
+    .ui-mobile .form-cell-value, .ui-mobile .subform-cell-value {
+        padding: 7px;
+        border: solid 1px silver;
+        border-radius: 10px;
+        margin: 7px;
+        box-shadow: -1px -1px 1px silver;
+        background: #f6f6f6;
+        color: #696969;
+    }
     .ui-mobile .form-cell label {
         padding: 12px 0px;
         display: inline-block;
