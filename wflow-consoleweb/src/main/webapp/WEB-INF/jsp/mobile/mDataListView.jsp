@@ -3,6 +3,7 @@
 <%@ page import="org.joget.apps.datalist.model.DataList"%>
 <%@ page import="org.joget.apps.datalist.model.DataListColumn"%>
 <%@ page import="org.joget.apps.datalist.model.DataListColumnFormat"%>
+<%@ page import="org.joget.commons.util.StringUtil"%>
 <%@ page import="java.util.Collection"%>
 
 <c:set var="landingPage" value="landing"/>
@@ -166,14 +167,15 @@
                             <c:set var="column" value="${columns[0]}"/>
                             <c:set var="cellValue" value="${row[columns[0].name]}"/>
                             <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
-                            <h4><c:out value="${formattedValue}"/></h4>
+                            <h4>${formattedValue}</h4>
                             <p>
                             <c:forEach var="column" items="${columns}" varStatus="cStatus">
                                 <c:if test="${cStatus.index > 0}">
                                     <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
                                     <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
                                     <c:if test="${!empty cellValue}">
-                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> <c:out value="${cellValue}"/>
+                                        <c:set var="cellCleanValue" value="<%= cleanText(pageContext.findAttribute(\"cellValue\").toString()) %>"/>
+                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
                                     </c:if>
                                     <br>
                                 </c:if>
@@ -216,6 +218,15 @@
         }
 
         String text = (result != null) ? result.toString() : null;
-        return text;
+        String cleanText = cleanText(text);
+        return cleanText;
+    }
+    
+    protected String cleanText(String text) {
+        if (text == null) {
+            return text;
+        }
+        String cleanText = StringUtil.stripHtmlTag(text, new String[]{ "a", "span" });
+        return cleanText;
     }
 %>
