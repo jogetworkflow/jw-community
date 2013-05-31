@@ -213,7 +213,7 @@ public class StringUtil {
             java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
             ReflectionUtils.makeAccessible(field);
             ReflectionUtils.setField(field, whitelist, new HashMap());
-            content = Jsoup.clean(content, Whitelist.simpleText());
+            content = Jsoup.clean(content, whitelist);
         }
         return content;
     }
