@@ -30,6 +30,12 @@
         opacity: 0.9;
         </c:if>
     }
+    .ui-body-c .ui-link {
+        margin: 5px 15px;
+        display: block;
+        text-decoration: underline;
+        font-size: 1.1em;
+    }
     .ui-mobile .navbar, .ui-mobile-viewport .ui-title .container {
         display: none;
     }

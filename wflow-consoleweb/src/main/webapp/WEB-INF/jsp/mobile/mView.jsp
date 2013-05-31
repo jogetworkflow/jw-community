@@ -135,6 +135,7 @@
             <ui:stripTag html="${html}"/>
         </title>
         <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
         <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
