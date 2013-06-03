@@ -31,7 +31,7 @@
         </c:if>
     }
     .ui-body-c .ui-link {
-        margin: 5px 15px;
+        margin: 10px 5px 5px 5px;
         display: block;
         text-decoration: underline;
         font-size: 1.1em;
@@ -62,7 +62,12 @@
         background: #f6f6f6;
         color: #696969;
     }
-    .ui-mobile .form-cell label {
+    .ui-mobile .form-cell-full {
+        border: none;
+        box-shadow: none;
+        background: none;
+    }
+    .ui-mobile .form-cell label, .ui-mobile .subform-cell label {
         padding: 12px 0px;
         display: inline-block;
     }
