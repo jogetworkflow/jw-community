@@ -6,7 +6,7 @@
     </#if>
     
     <#if !element.parent??>
-    <form id="${element.properties.id!}" name="${element.properties.id!}" data-ajax="false" class="form-container" ${elementMetaData!} <#if element.properties.url??>action="${element.properties.url}"</#if> method="POST" enctype="multipart/form-data">
+    <form id="${element.properties.id!}" name="${element.properties.id!}" class="form-container" ${elementMetaData!} <#if element.properties.url??>action="${element.properties.url}"</#if> method="POST" enctype="multipart/form-data">
     </#if>
         <#assign keys = element.formMetas?keys>
         <#list keys as key>
