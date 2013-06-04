@@ -28,11 +28,11 @@
         });
         
         if ($(target).is("select")) {
-            if ($(target).next('.dynamic_option_container').length == 0) {
-                $(target).after('<select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select>');
+            if ($(target).closest(".form-cell").find('select.dynamic_option_container').length == 0) {
+                $(target).after('<div class="ui-screen-hidden"><select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select></div>');
             }
             
-            $(target).html($(target).next('.dynamic_option_container').html());
+            $(target).html($(target).closest(".form-cell").find('select.dynamic_option_container').html());
             
             $(target).find("option").each(function(){
                 var option = $(this);
