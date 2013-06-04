@@ -184,6 +184,9 @@ $("#userview").live("pageshow", function() {
     Mobile.initPage();
     Mobile.checkNetworkStatus();
 });
+$(document).on("pagehide", "div[data-role=page]", function(event){
+  $(event.target).remove();
+});
 
 $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
     if (typeof applicationCache != "undefined" &&
