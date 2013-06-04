@@ -3,9 +3,6 @@
     iframe {
         display: none;
     }
-    .print-button {
-        display: none;
-    }
     #online-status {
         font-size: 11px;
         position: fixed;
@@ -115,6 +112,12 @@
     }   
     .quickEdit, #form-canvas .quickEdit {
         display: none;
-    }    
+    }
+    .ui-mobile .form-cell, .ui-mobile .subform-cell {
+        clear: both;
+    }
+    .print-button, .ui-body-c .print-button {
+        display: none;
+    }
     ${userview.setting.properties.mobileViewCustomCss}
 </style>
