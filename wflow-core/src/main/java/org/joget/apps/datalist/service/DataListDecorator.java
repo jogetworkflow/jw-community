@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.decorator.CheckboxTableDecorator;
 import org.displaytag.model.TableModel;
 import org.displaytag.properties.MediaTypeEnum;
+import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListColumn;
@@ -227,7 +228,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String formatColumn(DataListColumn column, Object row, Object value) {
-        Object result = (value instanceof String) ? Jsoup.clean((String) value, whitelist) : value;
+        Object result = ((value instanceof String) && dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null) ? Jsoup.clean((String) value, whitelist) : value;
         Collection<DataListColumnFormat> formats = column.getFormats();
         if (formats != null) {
             for (DataListColumnFormat format : formats) {
