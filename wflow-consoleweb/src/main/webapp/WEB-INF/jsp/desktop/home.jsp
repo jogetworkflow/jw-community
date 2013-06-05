@@ -124,9 +124,10 @@
     var url = "${pageContext.request.contextPath}/mobile";
     Mobile.directToMobileSite(url);
 
-    var loadApps = function(container, baseUrl) {
+    var loadApps = function(container, baseUrl, contextPath) {
         container = container || "#published-apps";
         baseUrl = baseUrl || "";
+        contextPath = contextPath || "${pageContext.request.contextPath}";
 
         // show loading icon
         $(container).empty();
@@ -135,7 +136,7 @@
 
         // load JSON
         $.ajax({ 
-            url : baseUrl + "${pageContext.request.contextPath}/web/json/apps/published/userviews",
+            url : baseUrl + contextPath + "/web/json/apps/published/userviews",
             dataType:'jsonp',
             success:function(data) {
                 var content = "";
@@ -151,7 +152,7 @@
                                         <div class="appdiv">\
                                         <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
                                             <div class="screenshot_label">' + uv.name + '</div>\
-                                            <img src="${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
+                                            <img src="' + baseUrl + contextPath + '/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
                                         </a><h3>' + app.name + '</h3></div>\
                                     </div>';
                     }
@@ -208,7 +209,7 @@
         $("#published-apps").hide();
         $("#search form").remove();
         searchFilter($("#search"), $("#marketplace-apps")); 
-        loadApps("#marketplace-apps", "http://marketplace.cloud.joget.com");
+        loadApps("#marketplace-apps", "http://marketplace.cloud.joget.com", "/jwlabs");
     }
     $(function () { 
         loadPublishedApps();
