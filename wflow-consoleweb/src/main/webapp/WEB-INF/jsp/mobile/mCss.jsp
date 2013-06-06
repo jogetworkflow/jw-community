@@ -119,5 +119,11 @@
     .print-button, .ui-body-c .print-button {
         display: none;
     }
+    .boxy-inner {
+        overflow: auto;
+    }
+    iframe.boxy-content {
+        padding: 0px;
+    }
     ${userview.setting.properties.mobileViewCustomCss}
 </style>
