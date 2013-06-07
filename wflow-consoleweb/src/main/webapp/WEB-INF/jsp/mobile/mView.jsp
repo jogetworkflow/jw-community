@@ -87,7 +87,7 @@
             <p>&nbsp;</p>
             <p>&nbsp;</p>
             <p>
-                <a href="${pageContext.request.contextPath}/web/mobile/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
+                <a href="${pageContext.request.contextPath}/web/mobile/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${userview.properties.homeMenuId}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
             </p>
         </c:when>
     </c:choose>
@@ -146,7 +146,7 @@
         <script>
             function desktopSite() {
                 var path = "${pageContext.request.contextPath}/web/userview/${appId}/";
-                var href = "${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}";
+                var href = "${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>";
                 Mobile.viewFullSite(path, href);
                 return false;
             }
@@ -163,7 +163,7 @@
 
             <div data-role="header" data-position="fixed" role="banner" style="top: 0px; ">
                 <c:if test="${!empty menuId && menuId != landingPage}">
-                    <a href="${pageContext.request.contextPath}/web/mobile/${appId}/${userview.properties.id}/${key}/${landingPage}" data-icon="home" data-direction="reverse"><fmt:message key="console.header.menu.label.home"/></a>
+                    <a href="${pageContext.request.contextPath}/web/mobile/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${landingPage}" data-icon="home" data-direction="reverse"><fmt:message key="console.header.menu.label.home"/></a>
                 </c:if>
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
@@ -178,7 +178,7 @@
                 <c:if test="${empty menuId || menuId == landingPage}">    
                     <c:choose>
                         <c:when test="${isAnonymous}">
-                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/${key}" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
+                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
                             <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:when>
                         <c:otherwise>
