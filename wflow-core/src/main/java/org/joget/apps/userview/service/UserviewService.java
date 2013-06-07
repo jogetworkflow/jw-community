@@ -1,5 +1,6 @@
 package org.joget.apps.userview.service;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -176,7 +177,7 @@ public class UserviewService {
                                     prefix = "/web/embed/userview/";
                                 }
                                 
-                                menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? key : "") + "/" + mId);
+                                menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? URLEncoder.encode(key, "UTF-8") : "") + "/" + mId);
                             }
 
                             //set Current, if current menu id is empty, search the 1st valid menu

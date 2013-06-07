@@ -97,7 +97,7 @@
             <p>&nbsp;</p>
             <p>&nbsp;</p>
             <p>
-                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
+                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${userview.properties.homeMenuId}"><fmt:message key="ubuilder.pageNotFound.backToMain"/></a>
             </p>
         </c:otherwise>
     </c:choose>
@@ -195,7 +195,7 @@
                     <c:otherwise>
                         <div id="header-info">
                             <div id="header-name">
-                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}" id="header-link"><span id="name">${userview.properties.name}</span></a>
+                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${userview.properties.homeMenuId}" id="header-link"><span id="name">${userview.properties.name}</span></a>
                             </div>
                             <div id="header-description">
                                 <span id="description">${userview.properties.description}</span>
@@ -212,7 +212,7 @@
                     <div id="header-logout-text">
                         <c:choose>
                             <c:when test="${isAnonymous}">
-                                <a href="${pageContext.request.contextPath}/web/ulogin/${appId}/${userview.properties.id}/${key}"><span id="loginText"><fmt:message key="ubuilder.login"/></span></a>
+                                <a href="${pageContext.request.contextPath}/web/ulogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>"><span id="loginText"><fmt:message key="ubuilder.login"/></span></a>
                             </c:when>
                             <c:otherwise>
                                 <a href="${pageContext.request.contextPath}/j_spring_security_logout"><span id="logoutText">${userview.properties.logoutText}</span></a>
@@ -256,7 +256,7 @@
                                                 <c:choose>
                                                     <c:when test="${!empty firstMenuItem && firstMenuItem.homePageSupported}">
                                                         <c:set var="menuItemId" value="${firstMenuItem.properties.menuId}"/>
-                                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${menuItemId}"><span>${category.properties.label}</span></a>
+                                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${menuItemId}"><span>${category.properties.label}</span></a>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span>${category.properties.label}</span>
