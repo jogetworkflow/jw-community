@@ -163,10 +163,17 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 
                 //try get value from parent field
                 Form rootForm = FormUtil.findRootForm(this);
-                Element parentSubFormIdElement = FormUtil.findElement(parentSubFormId, rootForm, formData);
                 String parentSubFormIdElementValue = "";
-                if (parentSubFormIdElement != null) {
-                    parentSubFormIdElementValue = FormUtil.getElementPropertyValue(parentSubFormIdElement, formData);
+                Element parentSubFormIdElement = null;
+                        
+                if (FormUtil.PROPERTY_ID.equals(parentSubFormId) && rootForm.getParent() == null && formData.getPrimaryKeyValue() != null && !formData.getPrimaryKeyValue().isEmpty()) {
+                    parentSubFormIdElementValue = formData.getPrimaryKeyValue();
+                } else {
+                    parentSubFormIdElement = FormUtil.findElement(parentSubFormId, rootForm, formData);
+                    
+                    if (parentSubFormIdElement != null) {
+                        parentSubFormIdElementValue = FormUtil.getElementPropertyValue(parentSubFormIdElement, formData);
+                    }
                 }
                 
                 // generate new ID if empty
