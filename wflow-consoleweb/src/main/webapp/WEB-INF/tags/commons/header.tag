@@ -2,6 +2,7 @@
 <%@ tag import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ tag import="org.joget.commons.util.LogUtil"%>
+<%@ tag import="org.joget.commons.util.HostManager"%>
 
 <c:set var="isExtDirectoryManager" value="<%= DirectoryUtil.isExtDirectoryManager() %>"/>
 <c:set var="isCustomDirectoryManager" value="<%= DirectoryUtil.isCustomDirectoryManager() %>"/>
@@ -227,7 +228,8 @@
                                     <span class="subsubtitle"><fmt:message key="console.header.submenu.description.auditTrail"/></span></a>
                                 </li>
                                 <c:set var="isTomcat" value="<%= LogUtil.isDeployInTomcat() %>"/>
-                                <c:if test="${isTomcat}">
+                                <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
+                                <c:if test="${isTomcat && !isVirtualHostEnabled}">
                                     <li>
                                         <a href="${pageContext.request.contextPath}/web/console/monitor/logs" class="substeps">
                                         <span class="substeps">&nbsp;</span>

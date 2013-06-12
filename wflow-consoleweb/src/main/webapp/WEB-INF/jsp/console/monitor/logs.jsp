@@ -1,4 +1,8 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.commons.util.HostManager"%>
+
+<c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
+
 <commons:header />
 
 <div id="nav">
@@ -17,7 +21,7 @@
     <div id="main-action">
     </div>
     <div id="main-body">
-
+        <c:if test="${!isVirtualHostEnabled}">    
         <div id="main-body-content">
             <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/logs/list?${pageContext.request.queryString}"
                        var="JsonDataTable"
@@ -37,6 +41,7 @@
                        column3="{key: 'date', label: 'console.monitoring.logs.label.date', sortable: false}"
                        />
         </div>
+        </c:if>
     </div>
 </div>
 
