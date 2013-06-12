@@ -293,8 +293,8 @@ public class FormPdfUtil {
         }
         
         String htmlMeta = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        htmlMeta += "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">";
-        htmlMeta += "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">";
+        htmlMeta += "<!DOCTYPE html>";
+        htmlMeta += "<html>";
         htmlMeta += "<head>";
         htmlMeta += "<meta http-equiv=\"content-type\" content=\"application/xhtml+xml; charset=UTF-8\" />";
         htmlMeta += style + "</head><body>";
