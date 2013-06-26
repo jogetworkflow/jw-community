@@ -477,37 +477,37 @@
             }
 
             function addEditForm(activityId, activityName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form?activityName=" + escape(activityName) ;
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/form?activityName=" + encodeURIComponent(activityName) ;
                 popupDialog.init();
             }
 
             function addEditPlugin(activityId, activityName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + escape(activityName);
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
                 popupDialog.init();
             }
 
             function addEditParticipant(participantId, participantName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + escape(participantName);
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + encodeURIComponent(participantName);
                 popupDialog.init();
             }
 
             function activityRemoveForm(activityId){
                 if (confirm("<fmt:message key="console.process.config.label.mapActivities.removeMapping.confirm"/>")) {
-                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form/remove";
+                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/form/remove";
                     ConnectionManager.post(url, reloadCallback);
                 }
             }
 
             function activityRemovePlugin(activityId){
                 if (confirm("<fmt:message key="console.process.config.label.mapTools.removePlugin.confirm"/>")) {
-                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/remove";
+                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin/remove";
                     ConnectionManager.post(url, reloadCallback);
                 }
             }
 
             function activityConfigurePlugin(activityId, activityName){
                 var title = " - " + activityName + " (" + activityId + ")";
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + escape(title);
+                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin/configure?title=" + encodeURIComponent(title);
                 popupDialog.init();
             }
 
@@ -538,7 +538,7 @@
 
             function participantConfigurePlugin(participantId, participantName){
                 var title = " - " + participantName + " (" + participantId + ")";
-                popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + escape(title);
+                popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + encodeURIComponent(title);
                 popupDialog.init();
             }
 
