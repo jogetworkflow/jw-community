@@ -493,14 +493,15 @@ public class WorkflowJsonController {
                 WorkflowProcess processStarted = result.getProcess();
                 if (processStarted != null) {
                     processId = processStarted.getInstanceId();
-                }
-                // check for automatic continuation
-                String packageId = WorkflowUtil.getProcessDefPackageId(processDefId);
-                String packageVersion = WorkflowUtil.getProcessDefVersion(processDefId);
-                boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
-                Collection<WorkflowActivity> activities = result.getActivities();
-                if (continueNextAssignment && activities != null && activities.size() > 0) {
-                    activityId = ((WorkflowActivity) activities.iterator().next()).getId();
+                    
+                    // check for automatic continuation
+                    String packageId = WorkflowUtil.getProcessDefPackageId(processStarted.getId());
+                    String packageVersion = WorkflowUtil.getProcessDefVersion(processStarted.getId());
+                    boolean continueNextAssignment = appService.isActivityAutoContinue(packageId, packageVersion, processDefId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+                    Collection<WorkflowActivity> activities = result.getActivities();
+                    if (continueNextAssignment && activities != null && activities.size() > 0) {
+                        activityId = ((WorkflowActivity) activities.iterator().next()).getId();
+                    }
                 }
             }
         }
