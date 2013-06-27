@@ -128,6 +128,7 @@ public class PluginManager implements ApplicationContextAware {
         configMap.put("org.osgi.framework.storage", targetCacheDir.getAbsolutePath());
         configMap.put("felix.log.level", "0");
         configMap.put("org.osgi.framework.storage.clean", "onFirstInit");
+        configMap.put("felix.cache.locking", "false");
 
         try {
             if (felix == null) {
