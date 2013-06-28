@@ -206,7 +206,7 @@ public class StringUtil {
     
     public static String stripHtmlTag(String content, String[] allowedTag) {
         if (content != null && !content.isEmpty()) {
-            Whitelist whitelist = Whitelist.none().addAttributes(":all","style","class","title","id","src","href");
+            Whitelist whitelist = Whitelist.none().addAttributes(":all","style","class","title","id","src","href","target");
             for (String tag : allowedTag) {
                 whitelist.addTags(tag);
             }
