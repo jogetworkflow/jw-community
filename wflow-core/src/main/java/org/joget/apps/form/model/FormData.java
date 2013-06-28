@@ -1,8 +1,11 @@
 package org.joget.apps.form.model;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.form.service.FormUtil;
 
@@ -158,6 +161,12 @@ public class FormData {
      * @param values
      */
     public void addRequestParameterValues(String parameter, String[] values) {
+        
+        if (values.length > 1) {
+            Set result = new HashSet(Arrays.asList(values));
+            values = (String[]) result.toArray(new String[0]);
+        }
+        
         requestParamMap.put(parameter, values);
     }
 
