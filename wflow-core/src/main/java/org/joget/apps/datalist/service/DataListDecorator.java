@@ -51,7 +51,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
         
         // configure jsoup whitelist
-        whitelist = Whitelist.relaxed().addTags("span").addAttributes(":all","style","class","title");
+        whitelist = Whitelist.relaxed().addTags("span").addAttributes(":all","style","class","title","target");
         java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, whitelist, new HashMap());
