@@ -840,13 +840,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         
                         LogUtil.debug("", "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
                         for (String c : tempColumnList) {
-                            String exist = checkDuplicateMap.get(c.toLowerCase());
-                            if (exist != null && !exist.equals(c)) {
-                                LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                columnList.remove(exist);
+                            if (!c.isEmpty()) {
+                                String exist = checkDuplicateMap.get(c.toLowerCase());
+                                if (exist != null && !exist.equals(c)) {
+                                    LogUtil.warn("", "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
+                                    columnList.remove(exist);
+                                }
+                                checkDuplicateMap.put(c.toLowerCase(), c);
+                                columnList.add(c);
                             }
-                            checkDuplicateMap.put(c.toLowerCase(), c);
-                            columnList.add(c);
                         }
                     }
                 }
