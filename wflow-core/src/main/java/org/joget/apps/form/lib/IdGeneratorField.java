@@ -45,7 +45,9 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
                 // generate new value
                 value = getGeneratedValue(formData);
                 setProperty(FormUtil.PROPERTY_VALUE, value);
-                formData.addRequestParameterValues(id, new String[] {value});
+                
+                String paramName = FormUtil.getElementParameterName(this);
+                formData.addRequestParameterValues(paramName, new String[] {value});
             }
             if (value != null) {
                 // set value into Properties and FormRowSet object
