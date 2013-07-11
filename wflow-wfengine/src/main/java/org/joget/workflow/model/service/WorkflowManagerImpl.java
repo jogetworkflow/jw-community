@@ -1798,7 +1798,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WorkflowProcess wfProcess = new WorkflowProcess();
 
 
-            int limit = -1;
+            double limit = -1;
 
             //get process limit
             AdminMisc admin = shark.getAdminMisc();
@@ -1830,7 +1830,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
 
                 if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
-                    limit = Integer.parseInt((String) procAttributeList[0].getValue());
+                    limit = Double.parseDouble((String) procAttributeList[0].getValue());
                 }
             }
 
@@ -1883,16 +1883,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     if (!durationUnit.equals("")) {
                         long limitInSecond = 0;
                         if (durationUnit.equals("D")) {
-                            limitInSecond = limit * 24 * 60 * 60;
+                            limitInSecond = Math.round(limit * 24 * 60 * 60);
                             wfProcess.setLimit(limit + " day");
                         } else if (durationUnit.equals("h")) {
-                            limitInSecond = limit * 60 * 60;
+                            limitInSecond = Math.round(limit * 60 * 60);
                             wfProcess.setLimit(limit + " hour(s)");
                         } else if (durationUnit.equals("m")) {
-                            limitInSecond = limit * 60;
+                            limitInSecond = Math.round(limit * 60);
                             wfProcess.setLimit(limit + " minute(s)");
                         } else if (durationUnit.equals("s")) {
-                            limitInSecond = limit;
+                            limitInSecond = Math.round(limit);
                             wfProcess.setLimit(limit + " second(s)");
                         }
 
@@ -2052,10 +2052,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
             String username = admin.getActivityResourceUsername(sessionHandle, processInstanceId, activityInstanceId);
             wfAct.setNameOfAcceptedUser(username);
 
-            int limit = -1;
+            double limit = -1;
             if (actAttributeList != null) {
                 if (actAttributeList[0].getValue() != null && !actAttributeList[0].getValue().equals("")) {
-                    limit = Integer.parseInt((String) actAttributeList[0].getValue());
+                    limit = Double.parseDouble((String) actAttributeList[0].getValue());
                 }
             }
 
@@ -2144,16 +2144,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (limit != -1) {
                 if (!durationUnit.equals("")) {
                     if (durationUnit.equals("D")) {
-                        wfAct.setLimitInSeconds(limit * 24 * 60 * 60);
+                        wfAct.setLimitInSeconds(Math.round(limit * 24 * 60 * 60));
                         wfAct.setLimit(limit + " day");
                     } else if (durationUnit.equals("h")) {
-                        wfAct.setLimitInSeconds(limit * 60 * 60);
+                        wfAct.setLimitInSeconds(Math.round(limit * 60 * 60));
                         wfAct.setLimit(limit + " hour(s)");
                     } else if (durationUnit.equals("m")) {
-                        wfAct.setLimitInSeconds(limit * 60);
+                        wfAct.setLimitInSeconds(Math.round(limit * 60));
                         wfAct.setLimit(limit + " minute(s)");
                     } else if (durationUnit.equals("s")) {
-                        wfAct.setLimitInSeconds(limit);
+                        wfAct.setLimitInSeconds(Math.round(limit));
                         wfAct.setLimit(limit + " second(s)");
                     }
                     wfAct.setDue(getDueDateProceedByPlugin(processInstanceId, activityInstanceId, wfAct.getLimitInSeconds(), wfAct.getCreatedTime(), wfAct.getStartedTime()));
