@@ -184,7 +184,7 @@ public class EmailTool extends DefaultApplicationPlugin {
                             email.attach(attachment);
                         } else {
                             URL u = new URL(path);
-                            email.attach(u, fileName, "");
+                            email.attach(u, MimeUtility.encodeText(fileName), "");
                         }
                         
                     } catch(Exception e){
