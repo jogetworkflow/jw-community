@@ -167,6 +167,7 @@ Section "Joget Workflow" SecJoget
     File /r wflow*.*
     File build.xml
     File LICENSE.txt
+    File NOTICE.txt
     File VERSION.txt
     File CHANGES.txt
     Return
@@ -184,6 +185,7 @@ Section "Joget Workflow" SecJoget
   File /r wflow*.*
   File build.xml
   File LICENSE.txt
+  File NOTICE.txt
   File VERSION.txt
   File CHANGES.txt
   ;File README.txt
@@ -323,6 +325,7 @@ Section "Uninstall"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
+  Delete "$INSTDIR\NOTICE.txt"
   Delete "$INSTDIR\VERSION.txt"
   Delete "$INSTDIR\README.txt"
   Delete "$INSTDIR\CHANGES.txt"

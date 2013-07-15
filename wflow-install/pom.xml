@@ -93,6 +93,7 @@
                                 <copy file="src/main/resources/README.txt" todir="target"/>
                                 <copy file="src/main/resources/CHANGES.txt" todir="target"/>
                                 <copy file="src/main/resources/LICENSE.txt" todir="target"/>
+                                <copy file="src/main/resources/NOTICE.txt" todir="target"/>
                                 <copy file="src/main/resources/setup.nsi" todir="target"/>
                                 <copy file="src/main/resources/joget_logo.bmp" todir="target"/>
                                 <copy file="src/main/resources/joget.ico" todir="target"/>
@@ -173,6 +174,7 @@
                                         <include name="joget-start.bat"/>
                                         <include name="joget-stop.bat"/>
                                         <include name="LICENSE.txt"/>
+                                        <include name="NOTICE.txt"/>
                                         <include name="README.txt"/>
                                         <include name="CHANGES.txt"/>
                                         <include name="tomcat6-run.bat"/>
@@ -194,6 +196,7 @@
                                         <include name="joget-start.bat"/>
                                         <include name="joget-stop.bat"/>
                                         <include name="LICENSE.txt"/>
+                                        <include name="NOTICE.txt"/>
                                         <include name="mysql-start.bat"/>
                                         <include name="mysql-stop.bat"/>
                                         <include name="CHANGES.txt"/>
@@ -212,6 +215,7 @@
                                         <include name="wflow/**"/>
                                         <include name="build.xml"/>
                                         <include name="LICENSE.txt"/>
+                                        <include name="NOTICE.txt"/>
                                         <include name="README.txt"/>
                                         <include name="CHANGES.txt"/>
                                         <include name="setup.sh"/>
