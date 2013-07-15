@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.activation.FileDataSource;
+import javax.mail.internet.MimeUtility;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -154,7 +155,7 @@ public class EmailTool extends DefaultApplicationPlugin {
                             File file = FileUtil.getFile(value, loadForm, primaryKey);
                             if (file != null) {
                                 FileDataSource fds = new FileDataSource(file);
-                                email.attach(fds, file.getName(), "");
+                                email.attach(fds, MimeUtility.encodeText(file.getName()), "");
                             }
                         }
                     } catch(Exception e){
@@ -179,11 +180,11 @@ public class EmailTool extends DefaultApplicationPlugin {
                         if ("system".equals(type)) {
                             EmailAttachment attachment = new EmailAttachment();
                             attachment.setPath(path);
-                            attachment.setName(fileName);
+                            attachment.setName(MimeUtility.encodeText(fileName));
                             email.attach(attachment);
                         } else {
                             URL u = new URL(path);
-                            email.attach(u, fileName, "");
+                            email.attach(u, MimeUtility.encodeText(fileName), "");
                         }
                         
                     } catch(Exception e){
