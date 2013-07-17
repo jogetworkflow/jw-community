@@ -5,13 +5,13 @@
         <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
             <#if value?? && value == option.value!>
                 <label class="readonly_label">
-                    <span>${option.label!}</span>
+                    <span>${option.label!?html}</span>
                 </label>
             </#if>
         <#else>
             <label>
-                <input grouping="${option.grouping!}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if value?? && value == option.value!>checked</#if> />
-                ${option.label!}
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if value?? && value == option.value!>checked</#if> />
+                ${option.label!?html}
             </label>
         </#if>
     </#list>

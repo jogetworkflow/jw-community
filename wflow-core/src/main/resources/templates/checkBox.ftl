@@ -5,14 +5,14 @@
         <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
             <#if values?? && values?seq_contains(option.value!)>
                 <label class="readonly_label">
-                    <span>${option.label!}</span>
-                    <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!}" />
+                    <span>${option.label!?html}</span>
+                    <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!?html}" />
                 </label>
             </#if>
         <#else>
             <label>
-                <input grouping="${option.grouping!}" id="${elementParamName!}" name="${elementParamName!}" type="checkbox" value="${option.value!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> onclick="this.checked=!this.checked;"</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
-                ${option.label!}
+                <input grouping="${option.grouping!?html}" id="${elementParamName!}" name="${elementParamName!}" type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> onclick="this.checked=!this.checked;"</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
+                ${option.label!?html}
             </label>
         </#if>
     </#list>

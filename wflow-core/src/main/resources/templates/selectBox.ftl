@@ -5,7 +5,7 @@
             <#list options as option>
                 <#if values?? && values?seq_contains(option.value!)>
                     <label class="readonly_label">
-                        <span>${option.label!}</span>
+                        <span>${option.label!?html}</span>
                     </label>
                 </#if>
             </#list>
@@ -14,7 +14,7 @@
     <#else>
         <select <#if element.properties.readonly! != 'true'>id="${elementParamName!}${element.properties.elementUniqueKey!}"</#if> name="${elementParamName!}" <#if element.properties.size?? && element.properties.size != ''> size="${element.properties.size!}"</#if> <#if element.properties.multiple! == 'true'>multiple</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled </#if>>
             <#list options as option>
-                <option value="${option.value!}" grouping="${option.grouping!}" <#if values?? && values?seq_contains(option.value!)>selected</#if> <#if element.properties.readonly! == 'true'>disabled</#if>>${option.label!}</option>
+                <option value="${option.value!?html}" grouping="${option.grouping!?html}" <#if values?? && values?seq_contains(option.value!)>selected</#if> <#if element.properties.readonly! == 'true'>disabled</#if>>${option.label!?html}</option>
             </#list>
         </select>
     </#if>
