@@ -526,7 +526,10 @@ UserviewBuilder = {
                         newCategory.menus.push(menu);
                     }else{
                          var nextMenuId = $(ui.item[0]).next().attr('id');
-                         var newPosition = UserviewBuilder.menusPointer[nextMenuId].position;
+                         var newPosition = 0;
+                         if (UserviewBuilder.menusPointer[nextMenuId] != undefined) {
+                            newPosition = UserviewBuilder.menusPointer[nextMenuId].position;
+                         }
                          newCategory.menus.splice(newPosition,0, menu);
                     }
 
