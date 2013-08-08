@@ -266,6 +266,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected String handleForm() {
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if ("submit".equals(getRequestParameterString("_action"))) {
             // submit form
             submitForm();
@@ -273,6 +274,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             displayForm();
 
         }
+        //reset appDef
+        AppUtil.setCurrentAppDefinition(appDef);
         return "userview/plugin/form.jsp";
     }
 
@@ -327,9 +330,10 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         formUrl = addParamToUrl(formUrl, "_mode", "assignment");
         formUrl = addParamToUrl(formUrl, "activityId", activityId);
 
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        AppService appService;
         ApplicationContext ac = AppUtil.getApplicationContext();
-        AppService appService = (AppService) ac.getBean("appService");
+        appService = (AppService) ac.getBean("appService");
+        AppDefinition appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
         FormService formService = (FormService) ac.getBean("formService");
         
         formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
