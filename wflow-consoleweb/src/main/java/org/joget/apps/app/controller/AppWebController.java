@@ -223,12 +223,6 @@ public class AppWebController {
                 appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
                 if (appDef != null) {
                     appId = appDef.getId();
-                    if (version == null || version.isEmpty()) {
-                        version = appService.getPublishedVersion(appId).toString();
-                        if (version != null && !version.isEmpty()) {
-                            appDef = appService.getAppDefinition(appId, version);
-                        }
-                    }
                 }
             }
 
