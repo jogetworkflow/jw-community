@@ -3264,9 +3264,6 @@ public class ConsoleWebController {
             Plugin plugin = pluginManager.getPlugin(settingMap.get("directoryManagerImpl"));
             if (plugin != null) {
                 map.addAttribute("directoryManagerName", plugin.getName());
-                if (!DirectoryUtil.isCustomDirectoryManager()) {
-                    map.addAttribute("directoryManagerConfigError", true);
-                }
             }
         }
 

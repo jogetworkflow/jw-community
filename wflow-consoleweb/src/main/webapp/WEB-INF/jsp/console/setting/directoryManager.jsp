@@ -56,10 +56,6 @@
                             <c:if test="${!empty settingMap['directoryManagerImpl']}">
                                 <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>
                                 <dd>${directoryManagerName}&nbsp;</dd>
-                                <c:if test="${directoryManagerConfigError}">
-                                    <dt>&nbsp;</dt>
-                                    <dd><fmt:message key="console.setting.directory.label.currentPluginConfigError"/></dd>
-                                </c:if>
                             </c:if>
                             <dt>&nbsp;</dt>
                             <dd>
