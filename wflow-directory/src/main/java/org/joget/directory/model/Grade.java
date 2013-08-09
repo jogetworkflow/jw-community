@@ -18,6 +18,7 @@ public class Grade implements Serializable, Auditable {
     //join
     private Set employments;
     private Organization organization;
+    private Boolean readonly = false;
 
     public String getId() {
         return id;
@@ -65,6 +66,14 @@ public class Grade implements Serializable, Auditable {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public String getAuditTrailId() {

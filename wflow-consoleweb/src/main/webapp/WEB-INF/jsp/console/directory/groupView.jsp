@@ -77,7 +77,7 @@
     $(document).ready(function(){
         $('#JsonDataTable_searchTerm').hide();
 
-        <c:if test="${isCustomDirectoryManager}">
+        <c:if test="${isCustomDirectoryManager || group.readonly}">
             $('#main-action-buttons').remove();
             $('#JsonDataTable_userList-buttons').remove();
         </c:if>

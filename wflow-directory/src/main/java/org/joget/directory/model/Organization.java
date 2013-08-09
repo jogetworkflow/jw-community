@@ -21,6 +21,7 @@ public class Organization implements Auditable {
     private Set employments;
     private Set childrens;
     private Organization parent;
+    private Boolean readonly = false;
 
     public Organization getParent() {
         return parent;
@@ -100,6 +101,14 @@ public class Organization implements Auditable {
 
     public void setGrades(Set grades) {
         this.grades = grades;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public String getAuditTrailId() {

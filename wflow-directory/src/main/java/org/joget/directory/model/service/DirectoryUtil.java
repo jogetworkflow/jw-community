@@ -34,6 +34,15 @@ public class DirectoryUtil implements ApplicationContextAware {
         return directoryManager.isCustomDirectoryManager();
     }
 
+    public static Boolean userIsReadonly(String username) {
+        DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
+        User user = directoryManager.getUserByUsername(username);
+        if (user != null) {
+            return user.getReadonly();
+        }
+        return false;	
+    }
+    
     public static Map<String, User> getUsersMap() {
         DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
         Collection<User> users = directoryManager.getUserList(null, "username", false, null, null);

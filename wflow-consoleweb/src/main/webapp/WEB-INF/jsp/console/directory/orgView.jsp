@@ -163,7 +163,7 @@
         $('#JsonGradeDataTable_searchTerm').hide();
         $('#JsonUserDataTable_searchTerm').hide();
 
-        <c:if test="${isCustomDirectoryManager}">
+        <c:if test="${isCustomDirectoryManager || organization.readonly}">
             $('#main-action-buttons').remove();
             $('#JsonDeptDataTable_departmentList-buttons').remove();
             $('#JsonGradeDataTable_gradeList-buttons').remove();

@@ -10,6 +10,7 @@
 <c:set var="isExtDirectoryManager" value="<%= DirectoryUtil.isExtDirectoryManager() %>"/>
 <c:set var="isCustomDirectoryManager" value="<%= DirectoryUtil.isCustomDirectoryManager() %>"/>
 <c:set var="username" scope="request" value="<%= WorkflowUtil.getCurrentUsername() %>"/>
+<c:set var="userIsReadonly" scope="request" value="<%= DirectoryUtil.userIsReadonly(WorkflowUtil.getCurrentUsername()) %>"/>
 <c:set var="isAnonymous" scope="request" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="isProtected" scope="request" value="<%= WorkflowUtil.getSystemSetupValue(\"disableWebConsole\") %>"/>
@@ -81,7 +82,7 @@
                     </c:if>
                     <c:if test="${!isAnonymous}">
                         <c:choose>
-                            <c:when test="${isCustomDirectoryManager}">
+                            <c:when test="${isCustomDirectoryManager || userIsReadonly}">
                                 ${username}
                             </c:when>
                             <c:otherwise>

@@ -22,6 +22,7 @@ public class Department implements Serializable, Auditable {
     private Department parent;
     //others
     private String treeStructure;
+    private Boolean readonly = false;
 
     public Set<Department> getChildrens() {
         return childrens;
@@ -93,6 +94,14 @@ public class Department implements Serializable, Auditable {
 
     public void setTreeStructure(String treeStructure) {
         this.treeStructure = treeStructure;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public String getAuditTrailId() {

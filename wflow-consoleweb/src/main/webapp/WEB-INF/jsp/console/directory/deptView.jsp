@@ -142,7 +142,7 @@
         $('#JsonDeptDataTable_searchTerm').hide();
         $('#JsonUserDataTable_searchTerm').hide();
 
-        <c:if test="${isCustomDirectoryManager}">
+        <c:if test="${isCustomDirectoryManager || department.readonly}">
             $('#main-action-buttons').remove();
             $('#JsonDeptDataTable_departmentList-buttons').remove();
             $('#JsonUserDataTable_userList-buttons').remove();

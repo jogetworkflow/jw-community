@@ -29,7 +29,9 @@ public class User implements Serializable, Auditable {
     private Set groups;
     private Set employments;
     //additional field
+    private String oldPassword;
     private String confirmPassword;
+    private Boolean readonly = false;
     public static final String LOGIN_HASH_DELIMINATOR = "::";
 
     public String getId() {
@@ -138,6 +140,22 @@ public class User implements Serializable, Auditable {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public String getAuditTrailId() {

@@ -18,6 +18,7 @@ public class Group implements Serializable, Auditable {
     //join
     private Set users;
     private Organization organization;
+    private Boolean readonly = false;
 
     public Organization getOrganization() {
         return organization;
@@ -65,6 +66,14 @@ public class Group implements Serializable, Auditable {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public Boolean getReadonly() {
+        return readonly;
+    }
+
+    public void setReadonly(Boolean readonly) {
+        this.readonly = readonly;
     }
 
     public String getAuditTrailId() {
