@@ -21,6 +21,15 @@ public class DynamicDataSourceManager {
     public static final String CURRENT_PROFILE_KEY = "currentProfile";
     public static final String DEFAULT_PROFILE = "default";
 
+    private static DatasourceProfilePropertyManager profilePropertyManager;
+    
+    /**
+     * The property manager is initialized via spring injection.
+     */
+    public DynamicDataSourceManager(DatasourceProfilePropertyManager propertyManager) {
+        DynamicDataSourceManager.profilePropertyManager = propertyManager;
+    }
+    
     public static boolean testConnection(String driver, String url, String user, String password) {
         Connection conn = null;
         try {
@@ -41,7 +50,7 @@ public class DynamicDataSourceManager {
     }
 
     public static Properties getProperties() {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(determineFilePath(getCurrentProfile())));
@@ -62,7 +71,7 @@ public class DynamicDataSourceManager {
     }
 
     public static String getProperty(String key) {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(determineFilePath(getCurrentProfile())));
@@ -110,7 +119,7 @@ public class DynamicDataSourceManager {
     }
 
     public static Properties getProfileProperties() {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         String defaultDataSourceFilename = determineDefaultDataSourceFilename();
         try {
@@ -188,7 +197,7 @@ public class DynamicDataSourceManager {
         try {
             fis = new FileInputStream(new File(defaultDataSourceFilename));
             properties.load(fis);
-            properties.put(CURRENT_PROFILE_KEY, profileName);
+            properties.setProperty(CURRENT_PROFILE_KEY, profileName);
 
             fos = new FileOutputStream(new File(defaultDataSourceFilename));
             properties.store(fos, "");
@@ -234,14 +243,14 @@ public class DynamicDataSourceManager {
     }
 
     public static void writeProperty(String key, String value) {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         FileOutputStream fos = null;
         try {
             String currentProfile = getCurrentProfile();
             fis = new FileInputStream(new File(determineFilePath(currentProfile)));
             properties.load(fis);
-            properties.put(key, value);
+            properties.setProperty(key, value);
 
             fos = new FileOutputStream(new File(determineFilePath(currentProfile)));
             properties.store(fos, "");
@@ -262,7 +271,7 @@ public class DynamicDataSourceManager {
     }
 
     public static Set getPropertyKeySet() {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(determineFilePath(getCurrentProfile())));
@@ -309,7 +318,7 @@ public class DynamicDataSourceManager {
             file.createNewFile();
 
             fos = new FileOutputStream(file);
-            properties.put(CURRENT_PROFILE_KEY, DEFAULT_PROFILE);
+            properties.setProperty(CURRENT_PROFILE_KEY, DEFAULT_PROFILE);
             properties.store(fos, "");
 
             //create default datasource properties file
