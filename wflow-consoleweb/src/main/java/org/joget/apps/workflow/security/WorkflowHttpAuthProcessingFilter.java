@@ -23,6 +23,8 @@ import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
 import org.springframework.security.util.TextUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
 public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFilter {
@@ -93,6 +95,8 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
     }
 
     protected Authentication authenticate(HttpServletRequest request) throws AuthenticationException {
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        
         Authentication auth = null;
 
         // check for username/password in request
