@@ -13,6 +13,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
@@ -426,6 +427,16 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         return addresses;
+    }
+
+    /**
+     * Returns the current system version.
+     * @since 3.2
+     * @return 
+     */
+    public static String getSystemVersion() {
+        String version = ResourceBundleUtil.getMessage("console.footer.label.revision");
+        return version;
     }
     
     /**
