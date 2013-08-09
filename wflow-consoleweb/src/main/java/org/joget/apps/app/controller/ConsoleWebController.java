@@ -3042,13 +3042,16 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
-        boolean deleteProcessOnCompletionIsNull = true;
-        boolean enableNtlmIsNull = true;
-        boolean rightToLeftIsNull = true;
-        boolean enableUserLocaleIsNull = true;
-        boolean dateFormatFollowLocaleIsNull = true;
-        boolean disableAdminBarIsNull = true;
-        boolean disableWebConsoleIsNull = true;
+        List<String> settingsIsNotNull = new ArrayList<String>();
+
+        List<String> booleanSettingsList = new ArrayList<String>();
+        booleanSettingsList.add("deleteProcessOnCompletion");
+        booleanSettingsList.add("enableNtlm");
+        booleanSettingsList.add("rightToLeft");
+        booleanSettingsList.add("enableUserLocale");
+        booleanSettingsList.add("dateFormatFollowLocale");
+        booleanSettingsList.add("disableAdminBar");
+        booleanSettingsList.add("disableWebConsole");
 
         //request params
         Enumeration e = request.getParameterNames();
@@ -3056,41 +3059,11 @@ public class ConsoleWebController {
             String paramName = (String) e.nextElement();
             String paramValue = request.getParameter(paramName);
 
-            if (paramName.equals("deleteProcessOnCompletion")) {
-                deleteProcessOnCompletionIsNull = false;
+            if (booleanSettingsList.contains(paramName)) {
+                settingsIsNotNull.add(paramName);
                 paramValue = "true";
             }
 
-            if (paramName.equals("enableNtlm")) {
-                enableNtlmIsNull = false;
-                paramValue = "true";
-            }
-
-            if (paramName.equals("rightToLeft")) {
-                rightToLeftIsNull = false;
-                paramValue = "true";
-            }
-
-            if (paramName.equals("enableUserLocale")) {
-                enableUserLocaleIsNull = false;
-                paramValue = "true";
-            }
-
-            if (paramName.equals("dateFormatFollowLocale")) {
-                dateFormatFollowLocaleIsNull = false;
-                paramValue = "true";
-            }
-
-            if (paramName.equals("disableAdminBar")) {
-                disableAdminBarIsNull = false;
-                paramValue = "true";
-            }
-            
-            if (paramName.equals("disableWebConsole")) {
-                disableWebConsoleIsNull = false;
-                paramValue = "true";
-            }
-            
             Setting setting = setupManager.getSettingByProperty(paramName);
             if (setting == null) {
                 setting = new Setting();
@@ -3102,76 +3075,18 @@ public class ConsoleWebController {
             setupManager.saveSetting(setting);
         }
 
-        if (deleteProcessOnCompletionIsNull) {
-            Setting setting = setupManager.getSettingByProperty("deleteProcessOnCompletion");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("deleteProcessOnCompletion");
+        for (String s : booleanSettingsList) {
+            if (!settingsIsNotNull.contains(s)) {
+                Setting setting = setupManager.getSettingByProperty(s);
+                if (setting == null) {
+                    setting = new Setting();
+                    setting.setProperty(s);
+                }
+                setting.setValue("false");
+                setupManager.saveSetting(setting);
             }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
         }
 
-        if (enableNtlmIsNull) {
-            Setting setting = setupManager.getSettingByProperty("enableNtlm");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("enableNtlm");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-
-        if (rightToLeftIsNull) {
-            Setting setting = setupManager.getSettingByProperty("rightToLeft");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("rightToLeft");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-
-        if (enableUserLocaleIsNull) {
-            Setting setting = setupManager.getSettingByProperty("enableUserLocale");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("enableUserLocale");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-
-        if (dateFormatFollowLocaleIsNull) {
-            Setting setting = setupManager.getSettingByProperty("dateFormatFollowLocale");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("dateFormatFollowLocale");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-
-        if (disableAdminBarIsNull) {
-            Setting setting = setupManager.getSettingByProperty("disableAdminBar");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("disableAdminBar");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-        
-        if (disableWebConsoleIsNull) {
-            Setting setting = setupManager.getSettingByProperty("disableWebConsole");
-            if (setting == null) {
-                setting = new Setting();
-                setting.setProperty("disableWebConsole");
-            }
-            setting.setValue("false");
-            setupManager.saveSetting(setting);
-        }
-        
         pluginManager.refresh();
         workflowManager.internalUpdateDeadlineChecker();
 
