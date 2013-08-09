@@ -81,6 +81,22 @@ AssignmentManager = {
         this.getCurrentUsername(baseUrl, gcuCallback);
     },
 
+    loginWithHash : function(baseUrl, username, hash, callback){
+        //check current username
+        var gcuCallback = {
+            success : function(o){
+		if(o.username != username){
+                    var url = baseUrl + "/web/json/directory/user/sso?username=" + username + "&hash=" + hash;
+                    ConnectionManager.ajaxJsonp(url, callback, null);
+                }else {
+                    callback.success(o);
+		}
+            }
+	};
+
+        this.getCurrentUsername(baseUrl, gcuCallback);
+    },
+
     logout : function(baseUrl){
         var url = baseUrl + "/j_spring_security_logout";
         ConnectionManager.ajaxJsonp(url, null, null);

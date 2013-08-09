@@ -613,9 +613,12 @@ public class DirectoryJsonController {
     }
 
     @RequestMapping("/json/directory/user/sso")
-    public void singleSignOn(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = true) String username, @RequestParam(value = "password") String password) throws JSONException, IOException, ServletException {
+    public void singleSignOn(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = true) String username, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "hash", required = false) String hash) throws JSONException, IOException, ServletException {
 
         try {
+            if (password == null) {
+                password = hash;
+            }
             Authentication request = new UsernamePasswordAuthenticationToken(username, password);
             Authentication result = authenticationManager.authenticate(request);
             SecurityContextHolder.getContext().setAuthentication(result);
