@@ -343,6 +343,8 @@ if (MobileUtil.isMobileUserAgent(request)) {
             HelpGuide.show();
         </script>
 
+        <%= AppUtil.getSystemAlert() %>   
+        
         <%
             sw.stop();
             long duration = sw.getTotalTimeMillis();

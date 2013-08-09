@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@page contentType="text/html" pageEncoding="windows-1252"%>
 
 <%
@@ -40,7 +41,7 @@
                     ${userview.current.properties.label}
                 </c:if>
             </c:set>
-            <ui:stripTag html="${html}"/>
+            <ui:stripTag html="${html}"/>  
         </title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
@@ -136,5 +137,6 @@
                 </c:choose>
             </div>
         </div>
+        <%= AppUtil.getSystemAlert() %>                  
     </body>
 </html>

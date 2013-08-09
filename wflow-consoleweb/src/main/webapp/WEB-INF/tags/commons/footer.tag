@@ -1,5 +1,6 @@
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ tag import="org.joget.commons.util.HostManager"%>
+<%@tag import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 </div>
@@ -32,6 +33,8 @@
     HelpGuide.attachTo = "#home-container, #login-container, #main";
     HelpGuide.show();
 </script>
+
+<%= AppUtil.getSystemAlert() %>
 
 </body>
 </html>

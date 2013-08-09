@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -37,6 +38,7 @@ public class AppUtil implements ApplicationContextAware {
 
     public static final String PREFIX_WORKFLOW_VARIABLE = "var_";
     public static final String PROPERTY_WORKFLOW_VARIABLE = "workflowVariable";
+    private static final String UI_SESSION_KEY = "UI_SESSION_KEY";
     static ApplicationContext appContext;
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
@@ -504,5 +506,36 @@ public class AppUtil implements ApplicationContextAware {
         }
 
         return content;
+    }
+    
+    public static void setSystemAlert(String value) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            HttpSession session = request.getSession(true);
+            String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
+            Collection<String> sessionValues = new ArrayList<String>();
+            if (values != null && values.length > 0) {
+                sessionValues.addAll(Arrays.asList(values));
+            }
+            sessionValues.add(value);
+            session.setAttribute(UI_SESSION_KEY, sessionValues.toArray(new String[0]));
+        }
+    }
+
+    public static String getSystemAlert() {
+        String script = "";
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            HttpSession session = request.getSession(true);
+            String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
+            if (values != null && values.length > 0) {
+                session.removeAttribute(UI_SESSION_KEY);
+
+                for (String v : values) {
+                    script += v;
+                }
+            }
+        }
+        return script;
     }
 }
