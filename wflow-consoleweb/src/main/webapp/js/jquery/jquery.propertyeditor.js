@@ -334,26 +334,54 @@
         }
     }
     
-    function renderStepsIndicator(currentPage){
-        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0 ||
-           ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 1)) {
-            renderAdvancedStepsIndicator(currentPage);
-        } else {
+    /*function renderStepsIndicator(currentPage){
         var editor = $(currentPage).parent();
+        
+        var currentPageParentElementId = $(currentPage).attr("elementid");
+        var prev = null;
+        
         var html = '';
 
         $(editor).find('.property-page-show').each(function(i){
             var pageId = $(this).attr("id");
+            var parentElementId = $(this).attr("elementid");
             
-            if($(this).hasClass("current")){
-                html += '<span class="step active">';
-            }else{
-                html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
-            }
-            html += $(this).find('.property-editor-page-title').html() + '</span>';
-            if(i < $(editor).find('.property-page-show').length - 1){
+            if (prev != null && prev != parentElementId && currentPageParentElementId != prev) {
                 html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
             }
+
+            if (parentElementId == undefined || currentPageParentElementId == parentElementId) {
+                var childPageClass = "";
+                
+                if(parentElementId != undefined && currentPageParentElementId == parentElementId) {
+                    childPageClass = " childPage";
+                }
+                
+                if($(this).hasClass("current")){
+                    html += '<span class="step active'+childPageClass+'">';
+                }else{
+                    html += '<span class="step clickable'+childPageClass+'" rel="'+pageId+'" style="cursor:pointer">';
+                }
+                html += $(this).find('.property-editor-page-title').html() + '</span>';
+                
+                if(i < $(editor).find('.property-page-show').length - 1){
+                    html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+                }
+            } else {
+                var value = $("#"+parentElementId).val();
+                var valueLabel = $("#"+parentElementId).find('option[value="'+value+'"]').text();
+                var label = $("#"+parentElementId).parent().prev(".property-label-container").find(".property-label").text();
+                
+                if (prev != parentElementId) {
+                    if($(this).hasClass("current")){
+                        html += '<span class="step active">';
+                    }else{
+                        html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
+                    }
+                    html += label + " (" + valueLabel + ')</span>';
+                }
+            }
+            prev = parentElementId;
         });
         html += '<div style="clear:both;"></div>';
         $(currentPage).find('.property-editor-page-step-indicator').html(html);
@@ -361,7 +389,68 @@
         $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
             changePage(currentPage, $(this).attr("rel"));
         });
-    }
+    }*/
+    
+    function renderStepsIndicator(currentPage){
+        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0 ||
+            ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 1)) {
+            renderAdvancedStepsIndicator(currentPage);
+        } else {
+            var editor = $(currentPage).parent();
+            
+            var currentPageParentElementId = $(currentPage).attr("elementid");
+            var prev = null;
+            
+            var html = '';
+            
+            $(editor).find('.property-page-show').each(function(i){
+                var pageId = $(this).attr("id");
+                var parentElementId = $(this).attr("elementid");
+                
+                if (prev != null && prev != parentElementId && currentPageParentElementId != prev) {
+                    html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+                }
+                
+                if (parentElementId == undefined || currentPageParentElementId == parentElementId) {
+                    var childPageClass = "";
+                    
+                    if(parentElementId != undefined && currentPageParentElementId == parentElementId) {
+                        childPageClass = " childPage";
+                    }
+                    
+                    if($(this).hasClass("current")){
+                        html += '<span class="step active'+childPageClass+'">';
+                    }else{
+                        html += '<span class="step clickable'+childPageClass+'" rel="'+pageId+'" style="cursor:pointer">';
+                    }
+                    html += $(this).find('.property-editor-page-title').html() + '</span>';
+                    
+                    if(i < $(editor).find('.property-page-show').length - 1){
+                        html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+                    }
+                } else {
+                    var value = $("#"+parentElementId).val();
+                    var valueLabel = $("#"+parentElementId).find('option[value="'+value+'"]').text();
+                    var label = $("#"+parentElementId).parent().prev(".property-label-container").find(".property-label").text();
+                    
+                    if (prev != parentElementId) {
+                        if($(this).hasClass("current")){
+                            html += '<span class="step active">';
+                        }else{
+                            html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
+                        }
+                        html += label + " (" + valueLabel + ')</span>';
+                    }
+                }
+                prev = parentElementId;
+            });
+            html += '<div style="clear:both;"></div>';
+            $(currentPage).find('.property-editor-page-step-indicator').html(html);
+            
+            $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
+                changePage(currentPage, $(this).attr("rel"));
+            });
+        }
     }
 
     function renderButtonPanel(options, showNavButton){

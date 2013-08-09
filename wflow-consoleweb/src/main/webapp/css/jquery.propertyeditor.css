@@ -25,6 +25,16 @@
     font-weight:bold;
 }
 
+.property-editor-page-step-indicator .step.childPage{
+    color: #333385;
+    font-weight:bold;	
+}
+
+.property-editor-page-step-indicator .step.childPage.active{
+    color: #000014;
+    font-weight:bold;
+}
+
 .property-editor-property-container{
     padding:5px 10px;
     height:390px;
