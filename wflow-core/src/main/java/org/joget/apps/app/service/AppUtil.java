@@ -12,6 +12,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
@@ -262,6 +263,8 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
+        content = decryptContent(content);
+
         // check for hash # to avoid unnecessary processing
         if (!containsHashVariable(content)) {
             return content;
@@ -451,4 +454,55 @@ public class AppUtil implements ApplicationContextAware {
         return enabled;
     }
     
+    public static String encryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
+                        tempS = SecurityUtil.encrypt(tempS);
+
+                        content = content.replaceAll(s, tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(AppUtil.class.getName(), ex, "");
+            }
+        }
+
+        return content;
+    }
+
+    public static String decryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = SecurityUtil.decrypt(s);
+                        content = content.replaceAll(StringUtil.escapeRegex(s), tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(AppUtil.class.getName(), ex, "");
+            }
+        }
+
+        return content;
+    }
 }

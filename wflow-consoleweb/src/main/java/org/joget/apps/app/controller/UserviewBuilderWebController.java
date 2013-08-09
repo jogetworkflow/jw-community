@@ -8,6 +8,7 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewSetting;
@@ -52,7 +53,7 @@ public class UserviewBuilderWebController {
 
         map.addAttribute("userviewId", userviewId);
         map.addAttribute("userview", userview);
-        map.addAttribute("json", userviewJson);
+        map.addAttribute("json", AppUtil.decryptContent(userviewJson));
 
         map.addAttribute("setting", new UserviewSetting());
         map.addAttribute("category", new UserviewCategory());
@@ -76,7 +77,7 @@ public class UserviewBuilderWebController {
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         userview.setName(userviewService.getUserviewName(json));
         userview.setDescription(userviewService.getUserviewDescription(json));
-        userview.setJson(json);
+        userview.setJson(AppUtil.encryptContent(json));
 
         boolean success = userviewDefinitionDao.update(userview);
         jsonObject.accumulate("success", success);

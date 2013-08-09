@@ -21,6 +21,7 @@ import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
@@ -77,7 +78,7 @@ public class DatalistBuilderWebController {
 
         map.addAttribute("id", id);
         map.addAttribute("datalist", datalist);
-        map.addAttribute("json", listJson);
+        map.addAttribute("json", AppUtil.decryptContent(listJson));
         return "dbuilder/builder";
     }
 
@@ -88,7 +89,7 @@ public class DatalistBuilderWebController {
         DataList dlist = dataListService.fromJson(json);
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getName());
-        datalist.setJson(json);
+        datalist.setJson(AppUtil.encryptContent(json));
 
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();

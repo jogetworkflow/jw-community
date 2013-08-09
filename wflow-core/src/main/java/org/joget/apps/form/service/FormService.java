@@ -46,7 +46,7 @@ public class FormService {
      * @return
      */
     public String previewElement(String json, boolean includeMetaData) {
-        Element element = createElementFromJson(json, !includeMetaData);
+        Element element = createElementFromJson(AppUtil.decryptContent(json), !includeMetaData);
         FormData formData = new FormData();
         String html = "";
         try {

@@ -34,7 +34,7 @@
             $.ajaxSetup ({
                 cache: false
             }); 
-            
+
             return this.each(function() {
                 var editorId = 'property_' + uuid();
                 var html = '<div id="' + editorId + '" class="property-editor-container" style="position:relative;">' ;
@@ -51,10 +51,10 @@
                 html += '</div>';
 
                 $(this).append(html);
-                
+
                 var editor = $(this).find('div#'+editorId);
                 loadOptions(editor);
-                
+
                 //adjust height & width
                 var tempHeight = $(window).height();
                 if ($(this).hasClass("boxy-content")) {
@@ -296,7 +296,7 @@
         }
 
         html += '</div>' + renderButtonPanel(options, true) + '</div>';
-        
+
         return html;
     }
 
@@ -307,7 +307,7 @@
 
         return html;
     }
-    
+
     function renderAdvancedStepsIndicator(currentPage){
         var editor = $(currentPage).parent();
         if($(editor).find('.property-page-show').length > 1){
@@ -339,29 +339,29 @@
            ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 1)) {
             renderAdvancedStepsIndicator(currentPage);
         } else {
-            var editor = $(currentPage).parent();
-            var html = '';
+        var editor = $(currentPage).parent();
+        var html = '';
 
-            $(editor).find('.property-page-show').each(function(i){
-                var pageId = $(this).attr("id");
-
-                if($(this).hasClass("current")){
-                    html += '<span class="step active">';
-                }else{
-                    html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
-                }
-                html += $(this).find('.property-editor-page-title').html() + '</span>';
-                if(i < $(editor).find('.property-page-show').length - 1){
-                    html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-                }
-            });
-            html += '<div style="clear:both;"></div>';
-            $(currentPage).find('.property-editor-page-step-indicator').html(html);
-
-            $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
-                changePage(currentPage, $(this).attr("rel"));
-            });
-        }
+        $(editor).find('.property-page-show').each(function(i){
+            var pageId = $(this).attr("id");
+            
+            if($(this).hasClass("current")){
+                html += '<span class="step active">';
+            }else{
+                html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
+            }
+            html += $(this).find('.property-editor-page-title').html() + '</span>';
+            if(i < $(editor).find('.property-page-show').length - 1){
+                html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
+            }
+        });
+        html += '<div style="clear:both;"></div>';
+        $(currentPage).find('.property-editor-page-step-indicator').html(html);
+        
+        $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
+            changePage(currentPage, $(this).attr("rel"));
+        });
+    }
     }
 
     function renderButtonPanel(options, showNavButton){
@@ -533,7 +533,7 @@
             defaultValue = defaultValue.replace(/./g, '*');
             defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+escapeHtmlTag(defaultValue)+'</span><div class="clear"></div></div>';
         }
-
+        value = value.replace(/%%%%/g, '');
         return '<input type="password" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ escapeHtmlTag(value) +'"/>'+defaultValueLabel;
     }
 
@@ -1201,6 +1201,8 @@
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).html();
                 }else if(property.type.toLowerCase() == "radio"){
                     value = $(editor).find('#'+editorId+'_'+parent+property.name+':checked').val();
+                }else if(property.type.toLowerCase() == "password"){
+                    value = "%%%%" + $(editor).find('#'+editorId+'_'+parent+property.name).val() + "%%%%";
                 }else{
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                 }
@@ -1408,7 +1410,7 @@
 
     function addElementPropertiesPage(editorId, currentPage, html){
         var content = $(html);
-        
+
         //attach event
         //next page event
         $(content).find('input.page-button-next').click(function(){
@@ -1440,7 +1442,7 @@
                 optionsStack[editorId].cancelCallback(parent);
             }
         });
-        
+
         $(content).find('.property-editor-property-container').css("height", ($("#"+editorId).height() - 105) + "px");
 
         //grid action
@@ -1642,7 +1644,7 @@
             $(property).find(".property-description").show();
         });
     }
-    
+
     function attachHashVariablePropertyEvent(editorId, container){
         var keys = {};
 

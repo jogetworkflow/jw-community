@@ -176,7 +176,7 @@ public class ConsoleWebController {
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
-        
+
         if (landingPage == null || landingPage.trim().isEmpty()) {
             landingPage = "/home";
         }
@@ -1046,14 +1046,14 @@ public class ConsoleWebController {
         User user = userDao.getUser(workflowUserManager.getCurrentUsername());
         map.addAttribute("user", user);
         map.addAttribute("timezones", TimeZoneUtil.getList());
-        
+
         String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
         Map<String, String> localeStringList = new TreeMap<String, String>();
         if(enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
             String userLocale = setupManager.getSettingValue("userLocale");
             Collection<String> locales = new HashSet();
             locales.addAll(Arrays.asList(userLocale.split(",")));
-            
+
             Locale[] localeList = Locale.getAvailableLocales();
             for (int x = 0; x < localeList.length; x++) {
                 String code = localeList[x].toString();
@@ -1064,7 +1064,7 @@ public class ConsoleWebController {
         }
         map.addAttribute("enableUserLocale", enableUserLocale);
         map.addAttribute("localeStringList", localeStringList);
-        
+
         return "console/profile";
     }
 
@@ -1422,7 +1422,7 @@ public class ConsoleWebController {
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        
+
         //for launching workflow designer
         User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
         map.addAttribute("loginHash", user.getLoginHash());
@@ -1738,7 +1738,7 @@ public class ConsoleWebController {
                     propertyMap = CsvUtil.getPluginPropertyMap(activityPlugin.getPluginProperties());
                     map.addAttribute("propertyMap", propertyMap);
                 } else {
-                    map.addAttribute("properties", activityPlugin.getPluginProperties());
+                    map.addAttribute("properties", AppUtil.decryptContent(activityPlugin.getPluginProperties()));
                 }
             }
 
@@ -1755,7 +1755,7 @@ public class ConsoleWebController {
                         }
                         map.addAttribute("defaultPropertyMap", defaultPropertyMap);
                     } else {
-                        map.addAttribute("defaultProperties", pluginDefaultProperties.getPluginProperties());
+                        map.addAttribute("defaultProperties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
                     }
                 }
             }
@@ -1808,7 +1808,7 @@ public class ConsoleWebController {
                 String pluginProps = sw.toString();
                 activityPlugin.setPluginProperties(pluginProps);
             } else {
-                activityPlugin.setPluginProperties(pluginProperties);
+                activityPlugin.setPluginProperties(AppUtil.encryptContent(pluginProperties));
             }
         }
 
@@ -1915,7 +1915,7 @@ public class ConsoleWebController {
                 String pluginProps = sw.toString();
                 participant.setPluginProperties(pluginProps);
             } else {
-                participant.setPluginProperties(pluginProperties);
+                participant.setPluginProperties(AppUtil.encryptContent(pluginProperties));
             }
         } else if ((PackageParticipant.TYPE_GROUP.equals(type) || PackageParticipant.TYPE_USER.equals(type)) && packageDef != null) {
             PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
@@ -1989,7 +1989,7 @@ public class ConsoleWebController {
                         propertyMap = CsvUtil.getPluginPropertyMap(participant.getPluginProperties());
                         map.addAttribute("propertyMap", propertyMap);
                     } else {
-                        map.addAttribute("properties", participant.getPluginProperties());
+                        map.addAttribute("properties", AppUtil.decryptContent(participant.getPluginProperties()));
                     }
                 }
             }
@@ -2008,7 +2008,7 @@ public class ConsoleWebController {
                     }
                     map.addAttribute("defaultPropertyMap", defaultPropertyMap);
                 } else {
-                    map.addAttribute("defaultProperties", pluginDefaultProperties.getPluginProperties());
+                    map.addAttribute("defaultProperties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
                 }
             }
         }
@@ -2180,12 +2180,12 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
-    
+
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/options")
     public void consoleDatalistOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<DatalistDefinition> datalistDefinitionList = null;
-        
+
         if (sort == null) {
             sort = "name";
             desc = false;
@@ -2458,7 +2458,7 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
-    
+
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo")
     public String consoleAppMessageGeneratePO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -2468,10 +2468,10 @@ public class ConsoleWebController {
 
         map.addAttribute("localeList", getSortedLocalList());
         map.addAttribute("locale", AppUtil.getAppLocale());
-        
+
         return "console/apps/messageGeneratePO";
     }
-    
+
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/generatepo/download")
     public void consoleAppMessageGeneratePODownload(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "locale", required = false) String locale) throws IOException {
         ServletOutputStream output = null;
@@ -2493,14 +2493,14 @@ public class ConsoleWebController {
             }
         }
     }
-    
+
     @RequestMapping("/console/app/(*:appId)/(~:version)/message/importpo")
     public String consoleAppMessageImportPO(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        
+
         return "console/apps/messageImportPO";
     }
 
@@ -2669,7 +2669,7 @@ public class ConsoleWebController {
                     propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
                     map.addAttribute("propertyMap", propertyMap);
                 } else {
-                    map.addAttribute("properties", pluginDefaultProperties.getPluginProperties());
+                    map.addAttribute("properties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
                 }
             }
         }
@@ -2746,7 +2746,7 @@ public class ConsoleWebController {
             String pluginProps = sw.toString();
             pluginDefaultProperties.setPluginProperties(pluginProps);
         } else {
-            pluginDefaultProperties.setPluginProperties(pluginProperties);
+            pluginDefaultProperties.setPluginProperties(AppUtil.encryptContent(pluginProperties));
         }
 
         if ("create".equals(action)) {
@@ -2849,7 +2849,7 @@ public class ConsoleWebController {
     public void consoleFormOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
 
         Collection<FormDefinition> formDefinitionList = null;
-        
+
         if (sort == null) {
             sort = "name";
             desc = false;
@@ -2957,7 +2957,7 @@ public class ConsoleWebController {
         Form form = (Form) formService.createElementFromJson(json);
         formDef.setName(form.getPropertyString("name"));
         formDef.setTableName(form.getPropertyString("tableName"));
-        formDef.setJson(json);
+        formDef.setJson(AppUtil.encryptContent(json));
 
         // update
         formDefinitionDao.update(formDef);
@@ -3028,7 +3028,7 @@ public class ConsoleWebController {
 
         return "console/setting/general";
     }
-    
+
     @RequestMapping("/console/setting/general/loginHash")
     public void loginHash(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
         User user = new User();
@@ -3070,12 +3070,12 @@ public class ConsoleWebController {
                 rightToLeftIsNull = false;
                 paramValue = "true";
             }
-            
+
             if (paramName.equals("enableUserLocale")) {
                 enableUserLocaleIsNull = false;
                 paramValue = "true";
             }
-            
+
             if (paramName.equals("dateFormatFollowLocale")) {
                 dateFormatFollowLocaleIsNull = false;
                 paramValue = "true";
@@ -3131,7 +3131,7 @@ public class ConsoleWebController {
             setting.setValue("false");
             setupManager.saveSetting(setting);
         }
-        
+
         if (enableUserLocaleIsNull) {
             Setting setting = setupManager.getSettingByProperty("enableUserLocale");
             if (setting == null) {
@@ -3141,7 +3141,7 @@ public class ConsoleWebController {
             setting.setValue("false");
             setupManager.saveSetting(setting);
         }
-        
+
         if (dateFormatFollowLocaleIsNull) {
             Setting setting = setupManager.getSettingByProperty("dateFormatFollowLocale");
             if (setting == null) {
@@ -3292,7 +3292,7 @@ public class ConsoleWebController {
             propertyMap = CsvUtil.getPluginPropertyMap(properties);
             map.addAttribute("propertyMap", propertyMap);
         } else {
-            map.addAttribute("properties", properties);
+            map.addAttribute("properties", AppUtil.decryptContent(properties));
         }
 
         if (plugin instanceof PropertyEditable) {
@@ -3355,7 +3355,7 @@ public class ConsoleWebController {
             String pluginProps = sw.toString();
             propertySetting.setValue(pluginProps);
         } else {
-            propertySetting.setValue(pluginProperties);
+            propertySetting.setValue(AppUtil.encryptContent(pluginProperties));
         }
         setupManager.saveSetting(propertySetting);
 
@@ -3747,7 +3747,7 @@ public class ConsoleWebController {
             data.put("state", workflowActivity.getState());
             data.put("dateCreated", workflowActivity.getCreatedTime());
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
-            
+
             jsonObject.accumulate("data", data);
         }
 
@@ -3768,7 +3768,7 @@ public class ConsoleWebController {
         map.addAttribute("activity", wflowActivity);
         map.addAttribute("variableList", variableList);
         map.addAttribute("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
-    
+
         if (trackWflowActivity != null) {
             map.addAttribute("trackWflowActivity", trackWflowActivity);
             String[] assignmentUsers = trackWflowActivity.getAssignmentUsers();
@@ -3819,23 +3819,23 @@ public class ConsoleWebController {
     public String consoleMonitorAuditTrail(ModelMap map) {
         return "console/monitor/auditTrail";
     }
-    
+
     @RequestMapping("/console/monitor/logs")
     public String consoleMonitorLogs(ModelMap map) {
         return "console/monitor/logs";
     }
-    
+
     @RequestMapping("/console/monitor/log/(*:fileName)")
     public void consoleMonitorLogs(HttpServletResponse response, @RequestParam("fileName") String fileName) throws IOException {
         ServletOutputStream stream = response.getOutputStream();
-        
+
         String decodedFileName = fileName;
         try {
             decodedFileName = URLDecoder.decode(fileName, "UTF8");
         } catch (UnsupportedEncodingException e) {
             // ignore
         }
-        
+
         File file = LogUtil.getTomcatLogFile(decodedFileName);
         if (file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -3847,7 +3847,7 @@ public class ConsoleWebController {
         try {
             // set attachment filename
             response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + URLEncoder.encode(decodedFileName, "UTF8"));
-            
+
             // send output
             int length = 0;
             while ((in != null) && ((length = in.read(bbuf)) != -1)) {
@@ -3859,21 +3859,21 @@ public class ConsoleWebController {
             stream.close();
         }
     }
-    
+
     @RequestMapping("/json/console/monitor/logs/list")
     public void consoleMonitorLogsJson(Writer writer, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         File[] files = LogUtil.tomcatLogFiles();
         Collection<File> fileList = new ArrayList<File>();
-        
+
         if (files != null && files.length > 0) {
             for (File file : files) {
                 if (file.isFile()) {
                     String lowercaseFN = file.getName().toLowerCase();
                     Date lastModified = new Date(file.lastModified());
                     Date current = new Date();
-                    
-                    if ((lowercaseFN.startsWith("joget") || lowercaseFN.startsWith("catalina") || lowercaseFN.startsWith("localhost")) 
+
+                    if ((lowercaseFN.startsWith("joget") || lowercaseFN.startsWith("catalina") || lowercaseFN.startsWith("localhost"))
                         && (lastModified.getTime() > (current.getTime() - (5*1000*60*60*24))) && file.length() > 0) {
                         fileList.add(file);
                     }
@@ -3881,19 +3881,19 @@ public class ConsoleWebController {
             }
         }
         files = fileList.toArray(new File[0]);
-        
+
         Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        
+
         for (File file : files) {
             Map data = new HashMap();
-            data.put("filename", file.getName()); 
+            data.put("filename", file.getName());
             data.put("filesize", file.length());
             data.put("date", sf.format(new Date(file.lastModified())));
 
             jsonObject.accumulate("data", data);
         }
-        
+
         jsonObject.accumulate("total", fileList.size());
         jsonObject.accumulate("start", start);
         jsonObject.accumulate("sort", sort);
@@ -4008,11 +4008,11 @@ public class ConsoleWebController {
 
     protected String checkVersionExist(ModelMap map, String appId, String version) {
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
-        
+
         // get app info
         String appInfo = consoleWebPlugin.getAppInfo(appId, version);
         map.put("appInfo", appInfo);
-        
+
         // verify app license
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         //LogUtil.debug(getClass().getName(), "App info: " + consoleWebPlugin.getAppInfo(appId, version));
@@ -4026,7 +4026,7 @@ public class ConsoleWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (!appDef.isPublished()) {
             return;
-        }
+}
         
         // get base64 encoded image in POST body
         String imageBase64 = request.getParameter("base64data");
