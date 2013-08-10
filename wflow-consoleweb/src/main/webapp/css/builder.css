@@ -37,6 +37,13 @@ div, label, input, button, select, th, td, a, span {
     background-color: #FFFFFF;
     padding: 0 20px 100px 0px;
 }
+#builder-logo {
+    background: url(../images/v3/builder/logo.png) no-repeat;
+    background-size: cover;
+    width: 68px;
+    height: 24px;
+    float: left;
+}
 #builder-bar { 
     padding: 2px;
     background: none;

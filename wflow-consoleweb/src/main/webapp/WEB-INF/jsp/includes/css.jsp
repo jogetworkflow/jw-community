@@ -10,3 +10,4 @@
     <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="<%= css %>?build=<fmt:message key="build.number"/>">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">

@@ -67,7 +67,7 @@
         </script>
         <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
-        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
     </head>
     <body id="${bodyId}">
 
@@ -77,6 +77,7 @@
             <div id="topbar">
                 <a href="${pageContext.request.contextPath}/"><div id="logo"></div><div id="logo-label"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=logo" /></div></a>
                 <div id="account">
+                    <jsp:include page="/WEB-INF/jsp/console/links.jsp" flush="true" />
                     <c:if test="${isAdmin && !isDesktop}">
                         <a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a> |
                     </c:if>

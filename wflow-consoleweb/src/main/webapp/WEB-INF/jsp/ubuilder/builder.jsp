@@ -36,6 +36,7 @@
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
         </c:if>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
             
         <script type="text/javascript">
             $(document).ready(function () {
@@ -89,7 +90,8 @@
     <body id="userviewbuilder">
         <div id="builder-container">
             <div id="builder-header">
-                <img alt="logo" width="68" height="24" src="${pageContext.request.contextPath}/images/v3/builder/logo.png" align="left" /> <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
+                <div id="builder-logo"></div>
+                <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />--%>
             </div>
             <div id="builder-body">

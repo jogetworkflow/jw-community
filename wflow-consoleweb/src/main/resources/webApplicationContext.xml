@@ -19,6 +19,7 @@
    <bean id="messageSource" class="org.joget.commons.util.DatabaseResourceBundleMessageSource">
         <property name="basenames">
              <list>
+                <value>custom</value>
                 <value>console</value>
                 <value>peditor</value>
                 <value>fbuilder</value>
@@ -32,4 +33,7 @@
         <property name="resourceBundleMessageDao" ref="resourceBundleMessageDao"/>
     </bean>
     <!-- END web relevant bean-->
+    
+    <import resource="classpath:customApplicationContext.xml" />    
+    
 </beans>
