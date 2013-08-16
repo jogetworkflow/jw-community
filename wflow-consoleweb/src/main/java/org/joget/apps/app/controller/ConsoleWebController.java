@@ -949,7 +949,7 @@ public class ConsoleWebController {
             }
 
             //Hod
-            if ("yes".equals(employeeDepartmentHod) && employeeDepartment.trim().length() > 0) {
+            if ("yes".equals(employeeDepartmentHod) && employeeDepartment != null && employeeDepartment.trim().length() > 0) {
                 User prevHod = userDao.getHodByDepartmentId(employeeDepartment);
                 if (prevHod != null) {
                     employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), employeeDepartment);
