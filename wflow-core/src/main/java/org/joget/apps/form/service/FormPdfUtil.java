@@ -26,6 +26,17 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
 
 public class FormPdfUtil {
+    private static ITextRenderer renderer;
+    
+    public static ITextRenderer getRenderer() {
+        if (renderer == null) {
+            renderer = new ITextRenderer();
+            SharedContext sharedContext = renderer.getSharedContext();
+            sharedContext.setFontResolver(new ITextCustomFontResolver(sharedContext));
+        }
+        return renderer;
+    }
+    
     public static byte[] createPdf(String formId, String primaryKey, AppDefinition appDef, WorkflowAssignment assignment, Boolean hideEmpty, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
             String html = getSelectedFormHtml(formId, primaryKey, appDef, assignment, hideEmpty);
@@ -46,15 +57,11 @@ public class FormPdfUtil {
             builder.setEntityResolver(FSEntityResolver.instance());
             org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(html.getBytes("UTF-8")));
 
-            ITextRenderer renderer = new ITextRenderer();
-            SharedContext sharedContext = renderer.getSharedContext();
-            sharedContext.setFontResolver(new ITextCustomFontResolver(sharedContext));
-            
-            renderer.setDocument(xmlDoc, null);
+            getRenderer().setDocument(xmlDoc, null);
 
             ByteArrayOutputStream os = new ByteArrayOutputStream();
-            renderer.layout();
-            renderer.createPDF(os);
+            getRenderer().layout();
+            getRenderer().createPDF(os);
             byte[] output = os.toByteArray();
             os.close();
             return output;
