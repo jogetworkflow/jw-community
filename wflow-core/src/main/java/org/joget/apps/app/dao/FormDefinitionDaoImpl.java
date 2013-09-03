@@ -105,7 +105,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            FormDefinition obj = loadById(id, appDef);
+            FormDefinition obj = super.loadById(id, appDef);
 
             // detach from app
             if (obj != null) {
