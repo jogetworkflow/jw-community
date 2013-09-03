@@ -1,3 +1,75 @@
+3.1.1
+=====
+927     Fixed: wflow-consoleweb - Unescaped activity name in process mapping view #1595 @3.1-SNAPSHOT
+923     Fixed: wflow-core - FormPdfUtil - ITextRenderer spawned threads without releasing after use. (#1560) @3.1-SNAPSHOT
+921     Fixed: wflow-consoleweb - NullPointerException when set user as HOD without setting the value of department. @ 3.1-SNAPSHOT
+909     Fixed: wflow-core - Date Picker - 'Display Format' set to 'dd-mm-yy' not handled properly #1589 @3.1-SNAPSHOT
+878     Modified: wflow-consoleweb - Revert changes on r852. Fixed assignment not showing the published form version in the web console inbox #1498 (#1572) @3.1-SNAPSHOT.
+        Fixed: wflow-core - Inbox Menu - Assignment form inconsistency with Inbox and Userview Inbox of different App version (#1498)
+876     Fixed: wflow-core - Fixed possible xss in selectbox, checkbox and radio @3.1-SNAPSHOT.
+874     Modified: wflow-plugin-base - Modified felix configuration to prevent cache locking #1477 @3.1-SNAPSHOT
+873     Modified: wflow-install - Updated NOTICE.txt @3.1-SNAPSHOT.
+871     Fixed: wflow-core - Email Tool - Correction on r869. Attachment file name encoding issue. (#1516) @3.1-SNAPSHOT
+869     Fixed: wflow-core - Email Tool - Attachment file name encoding issue. (#1516)
+867     Fixed: wflow-wfengine - WorkflowManagerImpl - Limit does not support decimal value. (#1518) @ 3.1-SNAPSHOT
+865     Modified: wflow-core - Message Dao - Added cache for minimize loading message from database. (#1519)
+863     Fixed: wflow-core - ID Geneartion Field - Not working with a subform mapped to run process activity. (#1517) @3.1-SNAPSHOT
+859     Fixed: wflow-core - Form Data Dao - Prevent empty string add to cached column list. (#1503) @3.1-SNAPSHOT
+857     Modified: wflow-consoleweb - plugin_zh_CN - Change label. (#1499) @ 3.1-SNAPSHOT
+856     Modified: wflow-core - Form Data - Add unique value checking to prevent duplicate value in field. (#1327) @ 3.1-SNAPSHOT
+854     Modified: wflow-commons/wflow-core - Allow "target" attribute in XSS protection whitelist. (#1500) @3.1-SNAPSHOT
+852     Modified: wflow-consoleweb - Fixed assignment not showing the published form version in the web console inbox #1498 @3.1-SNAPSHOT.
+848     Modified: wflow-jdbc - Updated mysql jdbc driver to 5.1.25 @3.1-SNAPSHOT.
+845     Fixed: wflow-consoleweb - Start Process JSON API - Activity Id is not return when using latest as version number. (#1494) @ 3.1-SNAPSHOT
+844     Modified: wflow-core - Modified Export Form Email Tool to prevent unnecessary XML validation @3.1-SNAPSHOT.
+843     Modified: wflow-consoleweb - Modified tomcat logs link in header and submenu @3.1-SNAPSHOT.
+840     Fixed: wflow-core - AbstractSubForm - Process id is overwrite when subform is used in Run Process Form. (#1438) @ 3.1-SNAPSHOT
+838     Fixed: wflow-core, wflow-consoleweb - Fixed possible XSS though userview key #1470 @3.1-SNAPHSHOT
+833     Fixed: wflow-core - Datalist Export - Special character show as escape code due to XSS filter. (#1459) @ 3.1-SNAPSHOT
+824     Fixed: wflow-commons - Fixed StringUtil.stripHtmlTag removing all tags. @ 3.1-SNAPSHOT
+822     Modified: wflow-consoleweb - UI - Change X-UA-Compatible to use IE=edge @ 3.1-SNAPSHOT
+810     Fixed: wflow-consoleweb - Userview - API to retrieve published userview does not parse Hash Variable correctly. (#1409) @ 3.1-SNAPSHOT
+807     Fixed: wflow-core - Duplicate Value Validator - Not working in subform. (#1416) @3.1-SNAPSHOT
+805     Fixed: wflow-core - Custom HTML - Null Pointer Exception when element is not configure. (#1414) @3.1-SNAPSHOT
+801     Modified: wflow-commons/wflow-consoleweb - Userview - strip HTML tag in HTML page title. (#1408) @3.1-SNAPSHOT
+794     Modified: wflow-consoleweb - Log - Exclude not harmful SchemaUpdate error message from log file. @ 3.1-SNAPSHOT
+786     Fixed: wflow-core - Fixed datalist not showing links, and possible ClassCastException for dates introduced in r783 @ 3.1-SNAPSHOT
+784     Fixed: wflow-wfengine - Workflow Manager - getAssignmentSize return incorrect value. (#1380) @ 3.1-SNAPSHOT
+777     Fixed: wflow-commons - File Manager - Files uploaded with + or %20 in file name cannot be found later on. (#1322, #1370) @ 3.1-SNAPSHOT
+775     Fixed: wflow-core - Datalist Decorator - XSS vulnerability. (#1372) @ 3.1-SNAPSHOT
+773     Fixed: wflow-core - Text Area - XSS vulnerability. (#1372) @ 3.1-SNAPSHOT
+741     Fixed: wflow-core - Email Tool - Workflow Variable Hash Variable is not working. (#1348)
+740     Fixed: wflow-core - Json Tool - Unicode encoding issue.
+738     Modified: wflow-consoleweb - Log4j - Remove info log from FormDataLocalSessionFactory.
+737     Fixed: wflow-core - Form Data Dao Impl - Hibernate file corrupted when too many current storing with dynamic number of field. (#1336)
+736     Added: wflow-core - Date Picker - Added zh locale support for date picker. (#1168)
+735     Fixed: wflow-consoleweb - LocalLocaleResolver - wrong locale passed to request attribute.
+734     Modified: wflow-core/wflow-consoleweb - Hidden Field - Support different priority of data loading from database & default value.
+        Modified: wflow-core/wflow-consoleweb - Date Picker - Support for different storing date format.
+733     Modified: Wflow-core - Selectbox/ Radio/ Checkbox - Improve dynamics option logic.
+732     Added: Wflow-consoleweb - Added empty extend.jsp for Form Builder for future used.
+731     Modified: wflow-cosoleweb - CSS changes for r729.
+730     Modified: wflow-core - Hidden Field - Remove checking for empty value. (#1321)
+729     Modified: wflow-consoleweb - Remove autocomplete js library and use Jquery UI autocomplete library.
+728     Added: wflow-core - Form - Added FormPDfUtil. (#1215)
+727     Fixed: wflow-consoleweb - Userview - Default cursor css of menu link is not pointer. (#1320)
+726     Fixed: wflow-consoleweb - Form/ Datalist/ Userview Builder - Force IE to use IE8 compatible mode. (#1276, #1301)
+725     Added: wflow-core/wflow-consoleweb - Text Field Datalist Filter - Support default initial value. (#723)
+724     Fixed: wflow-consoleweb - Email Tool/ User Notification - zh_CN message bundle correction. (#1314)
+723     Fixed: wflow-enterprise-plugins - Inbox Menu - Disable sorting for non-sortable column. (#1310)
+722     Modified: wflow-consoleweb - Increased max active transactions in jta.properties
+721     Fixed: wflow-core - Inbox Menu - Paging not working due to changes in r685.
+720     Modified: wflow-wfengine - Workflow Manager - Ignore process version checking in getAssignmentList method. (#1264)
+719     Fixed: wflow-core - Form Util - findElement method return Form instead of field element when both have same id. (#1304)
+718     Fixed: wflow-core - Check Box/Radio Button/Select Box - Validation/Data Storing not working properly on Multi Paged Form. (#1285)
+715     Modified: wflow-plugin-base - Upgraded apache felix version to 4.0.3.
+714     Fixed: wflow-core - Custom Html - Free Marker exception when no configuration was set. (#1290)
+712     Modified: wflow-designer: Removed unnecessary configuration in the help menu.
+711     Modified: wflow-core - Userview Menu - Support to use javascript reload in popup redirection. (#1281)
+710     Modified: wflow-consoleweb - Fixed inconsistencies and grammar mistakes in language properties files.
+709     Fixed: wflow-core - Request Parameter Hash Variable - Null Pointer Exception is not handle properly.
+708     Fixed: wflow-core - DataListBinderDefault - Null Pointer Exceptions when condition does not require a value. (#1271)
+707     Fixed: wflow-consoleweb - Datalist and Form Builder - Preview tag not showing in IE9
 
 3.1.0
 =====
