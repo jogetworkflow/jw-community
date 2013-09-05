@@ -35,9 +35,9 @@ public class LogUtil {
     
     public static File[] tomcatLogFiles() {
         // Directory path here
-        String path = System.getProperty("catalina.base") + File.separator + "logs"; 
+        String path = System.getProperty("catalina.base"); 
         if (path != null) {
-            File folder = new File(path);
+            File folder = new File(System.getProperty("catalina.base"), "logs");
             File[] listOfFiles = folder.listFiles(); 
             return listOfFiles;
         } 
@@ -45,10 +45,12 @@ public class LogUtil {
     }
     
     public static File getTomcatLogFile(String filename) {
-        String path = System.getProperty("catalina.base") + File.separator + "logs";
+        String path = System.getProperty("catalina.base");
         if (path != null) {
             try {
-                File file = new File(path + File.separator + URLDecoder.decode(filename, "UTF-8"));
+                String pureFilename = (new File(URLDecoder.decode(filename, "UTF-8"))).getName();
+                String logPath =  path + File.separator + "logs";
+                File file = new File(logPath, pureFilename);
                 if (file.exists() && !file.isDirectory()) {
                     return file;
                 }

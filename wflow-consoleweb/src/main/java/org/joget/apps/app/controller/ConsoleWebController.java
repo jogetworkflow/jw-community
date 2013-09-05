@@ -3799,7 +3799,7 @@ public class ConsoleWebController {
         }
         
         File file = LogUtil.getTomcatLogFile(decodedFileName);
-        if (file.isDirectory() || !file.exists()) {
+        if (file == null || file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
