@@ -752,6 +752,7 @@ public class ConsoleWebController {
         Set roles = new HashSet();
         roles.add(roleDao.getRole("ROLE_USER"));
         user.setRoles(roles);
+        user.setTimeZone(TimeZoneUtil.getServerTimeZone());
         model.addAttribute("user", user);
         model.addAttribute("employeeDepartmentHod", "no");
         return "console/directory/userCreate";
