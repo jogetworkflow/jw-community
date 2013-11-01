@@ -466,12 +466,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_STORE);
 
-        // save the form data
-        for (FormRow row : rowSet) {
-            ht.saveOrUpdate(entityName, row);
+        try {
+            // save the form data
+            for (FormRow row : rowSet) {
+                ht.saveOrUpdate(entityName, row);
+            }
+            ht.flush();
+        } finally {
+            closeSession(ht);
         }
-        
-        ht.flush();
     }
 
     /**
@@ -484,7 +487,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     public void updateSchema(Form form, FormRowSet rowSet) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        HibernateTemplate ht = getHibernateTemplate(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        
+        closeSession(ht);
     }
 
     /**
@@ -523,13 +528,16 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         HibernateTemplate ht = getHibernateTemplate(entityName, tableName, null, ACTION_TYPE_STORE);
 
-        // save the form data
-        for (String key : primaryKeyValues) {
-            Object obj = ht.load(entityName, key);
-            ht.delete(entityName, obj);
+        try {
+            // save the form data
+            for (String key : primaryKeyValues) {
+                Object obj = ht.load(entityName, key);
+                ht.delete(entityName, obj);
+            }
+            ht.flush();
+        } finally {
+            closeSession(ht);
         }
-        
-        ht.flush();
     }
 
     /**
@@ -911,6 +919,15 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 for (org.joget.apps.form.model.Element child : children) {
                     findAllElementIds(child, columnList);
                 }
+            }
+        }
+    }
+    
+    protected void closeSession(HibernateTemplate template) {
+        if (template != null) {
+            SessionFactory sf = template.getSessionFactory();
+            if (sf != null) {
+                sf.close();
             }
         }
     }
