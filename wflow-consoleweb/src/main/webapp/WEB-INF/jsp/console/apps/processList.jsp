@@ -151,6 +151,9 @@
                 });
                 $(el).find(" #thumbnail").hide();
             });
+            $(image).error(function(){
+                setTimeout(function() { Thumbnail.load(el);}, 10000);
+            });
         },
         init: function() {
             $(".list-thumbnail").each(function() {
