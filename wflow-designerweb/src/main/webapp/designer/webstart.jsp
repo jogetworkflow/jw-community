@@ -27,7 +27,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
     <update check="background" policy="prompt-update"/>
     <resources>
         <j2se version="1.5+"/>
-        <jar href="wflow-designer.jar" version="3.1-SNAPSHOT" main="true"/>
+        <jar href="wflow-designer-3.1-SNAPSHOT.jar" main="true"/>
         <jar href="jped.jar" version="2.0"/>
         <jar href="jped-highlight.jar" version="2.0"/>
         <jar href="jgraph.jar" version="5.10.2.0"/>
@@ -40,7 +40,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <jar href="commons-logging.jar" version="1.0.4"/>
         <jar href="officelnfs.jar" version="2.7"/>
         <jar href="xml-apis.jar" version="1.3.04"/>
-        <jar href="log4j.jar" version="1.2.15"/>
+        <jar href="log4j.jar" version="1.2.8"/>
         <jar href="commons-httpclient.jar" version="3.1"/>
         <jar href="nimrod-laf.jar" version="1.2"/>
     </resources>
