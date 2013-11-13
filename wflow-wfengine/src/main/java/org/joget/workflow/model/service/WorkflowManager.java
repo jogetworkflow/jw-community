@@ -122,6 +122,8 @@ public interface WorkflowManager {
     Collection<WorkflowVariable> getProcessVariableDefinitionList(String processDefId);
 
     WorkflowProcess getRunningProcessById(String processId);
+    
+    Collection<String> getRunningProcessIds();
 
     Collection<WorkflowProcess> getRunningProcessList(String packageId, String processId, String processName, String version, String sort, Boolean desc, Integer start, Integer rows);
 
@@ -186,6 +188,8 @@ public interface WorkflowManager {
     List<String> getAssignmentResourceIds(String processId, String processInstanceId, String activityInstanceId); // TODO: VERIFY USAGE??
 
     void internalCheckDeadlines(int instancesPerTransaction, int failuresToIgnore);
+    
+    boolean internalCheckDeadlines(String[] pids);
 
     void internalUpdateDeadlineChecker();
 
