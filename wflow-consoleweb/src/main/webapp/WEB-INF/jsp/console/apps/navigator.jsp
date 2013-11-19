@@ -12,7 +12,7 @@
         };  
         
         function listFilter(header, list) { 
-            var form = $("<form>").attr({"class":"filterform","action":"#"}), 
+            var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
             input = $("<input>").attr({"class":"filterinput","type":"text"}); 
             $(form).append(input).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).appendTo(header);  
             $(input) .change( function () { 
