@@ -149,6 +149,15 @@
                     return true;
                 });
                 $("#adminBar #quickEditModeOption label").show();
+                $("#adminBar").on("mouseover", function() { 
+                    $(this).css({right: '0px',transition: 'right 0.2s ease-in-out'}) 
+                })
+                $("#adminBar").on("mouseout", function() {
+                    var width = $(this).width() - 3;
+                    var rightPosition = "-" + width + "px";
+                    $(this).css({right: rightPosition,transition: 'right 0.2s ease-in-out'}) 
+                })
+                $("#adminBar").trigger("mouseout");
                 <c:if test="${!empty param.webConsole || !empty param.desktop}">
                     showQuickEdit();
                 </c:if>
