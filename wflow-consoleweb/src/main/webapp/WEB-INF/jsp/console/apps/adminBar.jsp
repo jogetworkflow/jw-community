@@ -89,6 +89,7 @@
                         <div id="quickOverlayButton"><a href="#" onclick="hideQuickOverlay()"><i class="icon-remove"></i></a></div>\
                         <iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div>';
                     $(document.body).append(overlayContainer);
+                    $(document.body).addClass("stop-scrolling");
                 }
                 $("#quickOverlayFrame").attr("src", "about:blank");
                 $("#quickOverlayFrame").attr("src", url);
@@ -98,6 +99,7 @@
             function hideQuickOverlay() {
                 $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeOut();
                 $("#quickOverlayContainer").remove();
+                $(document.body).removeClass("stop-scrolling");
             }
             function enableQuickEditMode() {
                 var path = "${cookiePath}";
@@ -149,6 +151,7 @@
                     return true;
                 });
                 $("#adminBar #quickEditModeOption label").show();
+                <c:if test="${param.desktop != 'true'}">
                 $("#adminBar").on("mouseover", function() { 
                     $(this).css({right: '0px',transition: 'right 0.2s ease-in-out'}) 
                 })
@@ -158,6 +161,7 @@
                     $(this).css({right: rightPosition,transition: 'right 0.2s ease-in-out'}) 
                 })
                 $("#adminBar").trigger("mouseout");
+                </c:if>
                 <c:if test="${!empty param.webConsole || !empty param.desktop}">
                     showQuickEdit();
                 </c:if>

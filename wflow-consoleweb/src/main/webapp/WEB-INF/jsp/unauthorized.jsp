@@ -1,4 +1,12 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%
+    String uri = (String)request.getAttribute("javax.servlet.forward.request_uri");
+    String contextPath = request.getContextPath();
+    if (uri.startsWith(contextPath + "/web/json")) {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        return;
+    }
+%>
 
 <commons:header />
 

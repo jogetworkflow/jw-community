@@ -49,7 +49,7 @@ public class DeadlineThreadManager {
                 thread = new DeadlineChecker(profile,
                     null,
                     interval,
-                    100,
+                    10,
                     10,
                     true);
                 threadMap.put(profile, thread);

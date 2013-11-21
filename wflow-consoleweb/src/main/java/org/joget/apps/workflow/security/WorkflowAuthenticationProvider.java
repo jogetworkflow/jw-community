@@ -58,9 +58,11 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         // get authorities
         Collection<Role> roles = directoryManager.getUserRoles(username);
         List<GrantedAuthority> gaList = new ArrayList<GrantedAuthority>();
-        for (Role role : roles) {
-            GrantedAuthorityImpl ga = new GrantedAuthorityImpl(role.getId());
-            gaList.add(ga);
+        if (roles != null && !roles.isEmpty()) {
+            for (Role role : roles) {
+                GrantedAuthorityImpl ga = new GrantedAuthorityImpl(role.getId());
+                gaList.add(ga);
+            }
         }
         GrantedAuthority[] authorities = gaList.toArray(new GrantedAuthority[gaList.size()]);
 

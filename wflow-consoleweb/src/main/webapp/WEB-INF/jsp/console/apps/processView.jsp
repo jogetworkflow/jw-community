@@ -1,4 +1,5 @@
-<%@page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
@@ -27,7 +28,7 @@
         </ul>
     </div>
     <div id="main-body">
-        <p><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp; <strong>${process.name}&nbsp;</strong></p>
+        <p><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp; <strong><c:out value="${process.name}"/>&nbsp;</strong></p>
 
         <div id="main-body-content">
 
@@ -41,11 +42,11 @@
             <div id="advancedView" style="display: none">
                 <dl>
                     <dt><fmt:message key="console.app.package.common.label.id"/></dt>
-                    <dd>${process.packageId}&nbsp;</dd>
+                    <dd><c:out value="${process.packageId}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
-                    <dd>${process.id}&nbsp;</dd>
+                    <dd><c:out value="${process.id}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.app.process.common.label.description"/></dt>
-                    <dd>${process.description}&nbsp;</dd>
+                    <dd><c:out value="${process.description}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.process.config.label.linkToRunProcess"/></dt>
                     <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}?start=true</dd>
                 </dl>
@@ -68,6 +69,7 @@
                     <div id="participantList">
                         <div class="tabSummary"><fmt:message key="console.process.config.label.mapParticipants.description"/></div>
                         <c:forEach var="participant" items="${participantList}" varStatus="rowCounter">
+                            <c:set var="escapeXml" value="${true}"/>
                             <c:set var="participantUid" value="${processIdWithoutVersion}::${participant.id}"/>
                             <c:choose>
                                 <c:when test="${rowCounter.last}">
@@ -81,14 +83,14 @@
                                 </c:otherwise>
                             </c:choose>
                             <div class="main-body-row ${rowStyle}">
-                                <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: ${participant.id}">
-                                    ${participant.name}
+                                <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: <c:out value="${participant.id}"/>">
+                                    <c:out value="${participant.name}"/>
                                 </span>
                                 <span class="row-content id">
-                                    <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${participant.id}
+                                    <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${participant.id}"/>
                                 </span>
                                 <span class="row-button">
-                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('${participant.id}', '${fn:escapeXml(fn:replace(participant.name, '\'', '\\\''))}')"/>
+                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('<c:out value="${participant.id}"/>', '${fn:escapeXml(fn:replace(participant.name, '\'', '\\\''))}')"/>
                                 </span>
                                 <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                     <div id="participant_${participant.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -102,46 +104,68 @@
                                                         <c:when test="${participantMap[participantUid].type eq 'user' || participantMap[participantUid].type eq 'group'}">
                                                             <c:forEach var="participantValue" items="${fn:split(participantMap[participantUid].value, ',')}" varStatus="status">
                                                                 <span class="participant-remove">
+                                                                    <c:set var="participantDisplayName" value=""/>
                                                                     <c:if test="${!(status.last && status.index eq 0)}">
-                                                                        <a onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','${participant.id}','${participantValue}')"> <img src="${pageContext.request.contextPath}/images/v3/cross-circle.png"/></a>
-                                                                    </c:if>
-                                                                    <c:choose>
-                                                                        <c:when test="${participantMap[participantUid].type eq 'user'}">
-                                                                            <c:set var="participantDisplayName" value="${usersMap[participantValue].username}"/>
-                                                                        </c:when>
-                                                                        <c:otherwise>
-                                                                            <c:set var="participantDisplayName" value="${groupsMap[participantValue].name}"/>
-                                                                        </c:otherwise>
-                                                                    </c:choose>
-                                                                    <c:choose>
-                                                                        <c:when test="${!isExtDirectoryManager || empty participantDisplayName}">
-                                                                            <c:if test="${empty participantDisplayName}">
-                                                                                <c:set var="participantDisplayName">
+                                                                        <a onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','<c:out value="${participant.id}"/>','${participantValue}')"> <img src="${pageContext.request.contextPath}/images/v3/cross-circle.png"/></a>
+                                                                        </c:if>
+                                                                        <c:choose>
+                                                                            <c:when test="${participantMap[participantUid].type eq 'user'}">
+                                                                                <c:set var="participantDisplayName" value="${usersMap[participantValue].username}"/>
+                                                                            </c:when>
+                                                                            <c:otherwise>
+                                                                                <c:if test="${!empty groupsMap[participantValue]}">
+                                                                                    <c:choose>
+                                                                                        <c:when test="${!empty groupsMap[participantValue].name}">
+                                                                                            <c:set var="participantDisplayName" value="${groupsMap[participantValue].name}"/>
+                                                                                        </c:when>
+                                                                                        <c:otherwise>
+                                                                                            <c:set var="participantDisplayName" value="${participantValue}"/>
+                                                                                        </c:otherwise>
+                                                                                    </c:choose>
+                                                                                </c:if>
+                                                                            </c:otherwise>
+                                                                        </c:choose>
+                                                                        <c:choose>
+                                                                            <c:when test="${!isExtDirectoryManager || empty participantDisplayName}">
+                                                                                <c:if test="${empty participantDisplayName}">
+                                                                                    <c:set var="participantDisplayName">
                                                                                     <span style="color:gray;">${participantValue} <fmt:message key="console.process.config.label.mapParticipants.unavailable"/></span>
-                                                                                </c:set>
-                                                                            </c:if>  
-                                                                            ${participantDisplayName}
-                                                                        </c:when>
-                                                                        <c:otherwise>
-                                                                            <a href="${pageContext.request.contextPath}/web/console/directory/${participantMap[participantUid].type}/view/${participantValue}.">${participantDisplayName}</a>
-                                                                        </c:otherwise>
+                                                                                    </c:set>
+                                                                                    <c:set var="escapeXml" value="${false}"/>
+                                                                                </c:if>  
+                                                                                <c:out value="${participantDisplayName}" escapeXml="${escapeXml}"/>
+                                                                            </c:when>
+                                                                            <c:otherwise>
+                                                                                <a href="${pageContext.request.contextPath}/web/console/directory/${participantMap[participantUid].type}/view/${participantValue}."><c:out value="${participantDisplayName}"/></a>
+                                                                            </c:otherwise>
                                                                     </c:choose>
                                                                 </span>
                                                             </c:forEach>
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'hod' || participantMap[participantUid].type eq 'department'}">
-                                                            <c:set var="participantDisplayName" value="${departmentsMap[participantMap[participantUid].value].name}"/>
+                                                            <c:set var="participantDisplayName" value=""/>
+                                                            <c:if test="${!empty departmentsMap[participantMap[participantUid].value]}">
+                                                                <c:choose>
+                                                                    <c:when test="${!empty departmentsMap[participantMap[participantUid].value].name}">
+                                                                        <c:set var="participantDisplayName" value="${departmentsMap[participantMap[participantUid].value].name}"/>
+                                                                    </c:when>
+                                                                    <c:otherwise>
+                                                                        <c:set var="participantDisplayName" value="${participantMap[participantUid].value}"/>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </c:if>
                                                             <c:choose>
                                                                 <c:when test="${!isExtDirectoryManager || empty participantDisplayName}">
                                                                     <c:if test="${empty participantDisplayName}">
                                                                         <c:set var="participantDisplayName">
                                                                             <span style="color:gray;">${participantMap[participantUid].value} <fmt:message key="console.process.config.label.mapParticipants.unavailable"/></span>
                                                                         </c:set>
+                                                                        <c:set var="escapeXml" value="${false}"/>
                                                                     </c:if>  
-                                                                    ${participantDisplayName}
+                                                                        <c:out value="${participantDisplayName}" escapeXml="${escapeXml}"/>
                                                                 </c:when>
                                                                 <c:otherwise>
-                                                                    <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${participantMap[participantUid].value}">${participantDisplayName}</a>
+                                                                    <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${participantMap[participantUid].value}."><c:out value="${participantDisplayName}"/></a>
                                                                 </c:otherwise>
                                                             </c:choose>
                                                         </c:when>
@@ -153,7 +177,7 @@
                                                             <c:choose>
                                                                 <c:when test="${participantMap[participantUid].value ne ''}">
                                                                     <font class="ftl_label"><fmt:message key="console.app.activity.common.label.definitionId"/> :</font>
-                                                                    <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}?tab=activityList&activityDefId=${participantMap[participantUid].value}">${participantMap[participantUid].value}</a>
+                                                                    <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}?tab=activityList&activityDefId=<c:out value="${participantMap[participantUid].value}"/>"><c:out value="${participantMap[participantUid].value}"/></a>
                                                                 </c:when>
                                                                 <c:otherwise>
                                                                     <fmt:message key="console.process.config.label.mapParticipants.previousActivity"/>
@@ -171,9 +195,9 @@
                                                 <dt>&nbsp;</dt>
                                                 <dd>
                                                     <div>
-                                                        <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapParticipants.removeMapping"/>" onclick="participantRemoveMapping('${participant.id}')"/>
+                                                        <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapParticipants.removeMapping"/>" onclick="participantRemoveMapping('<c:out value="${participant.id}"/>')"/>
                                                         <c:if test="${participantMap[participantUid].type eq 'plugin'}">
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('${participant.id}', '${participant.name}')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('<c:out value="${participant.id}"/>', '<c:out value="${participant.name}"/>')"/>
                                                         </c:if>
                                                     </div>
                                                 </dd>
@@ -203,18 +227,18 @@
                                 </c:choose>
 
                                 <div class="main-body-row ${rowStyle}" style="min-height: 50px">
-                                    <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: ${activity.id}">
+                                    <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: <c:out value="${activity.id}" escapeXml="true"/>">
                                         <c:set var="activityDisplayName" value="${activity.name}"/>
                                         <c:if test="${empty activity.name}">
                                             <c:set var="activityDisplayName" value="${activity.id}"/>
                                         </c:if>
-                                        ${activityDisplayName} <c:if test="${activity.type ne 'normal'}">(${activity.type})</c:if>
-                                    </span>
-                                    <span class="row-content id">
-                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
+                                        <c:out value="${activityDisplayName}"/> <c:if test="${activity.type ne 'normal'}">(${activity.type})</c:if>
+                                        </span>
+                                        <span class="row-content id">
+                                            <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('${activity.id}', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('<c:out value="${activity.id}"/>', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -223,9 +247,9 @@
                                             <c:if test="${!empty activityForm && form != null}">
                                                 <dl>
                                                     <dt><fmt:message key="console.form.common.label.name"/></dt>
-                                                    <dd><a href="#" onclick="launchFormBuilder('${form.id}');return false;">${form.name}</a></dd>
+                                                    <dd><a href="#" onclick="launchFormBuilder('${form.id}');return false;"><c:out value="${form.name}"/></a></dd>
                                                     <dt>&nbsp;</dt>
-                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('${activity.id}')"/></div></dd>
+                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<c:out value="${activity.id}"/>')"/></div></dd>
                                                 </dl>
                                             </c:if>
                                             <c:if test="${!empty activityForm && activityForm.type == 'EXTERNAL'}">
@@ -233,7 +257,7 @@
                                                     <dt><fmt:message key="console.process.config.label.mapActivities.formExternal"/></dt>
                                                     <dd><a target="_blank" href="${activityForm.formUrl}">${activityForm.formUrl}</a></dd>
                                                     <dt>&nbsp;</dt>
-                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('${activity.id}')"/></div></dd>
+                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<c:out value="${activity.id}"/>')"/></div></dd>
                                                 </dl>
                                             </c:if>
                                         </div>
@@ -243,7 +267,7 @@
                                             <c:if test="${!empty activityForm && activityForm.autoContinue}">
                                                 <c:set var="showNext" value="checked"/>
                                             </c:if>
-                                            <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','${activity.id}', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
+                                            <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
                                         </dl>
                                     </div>
                                 </div>
@@ -266,18 +290,18 @@
                                 </c:choose>
 
                                 <div class="main-body-row ${rowStyle}" style="min-height: 50px">
-                                    <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: ${activity.id}">
+                                    <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: <c:out value="${activity.id}"/>">
                                         <c:set var="activityDisplayName" value="${activity.name}"/>
                                         <c:if test="${empty activity.name}">
                                             <c:set var="activityDisplayName" value="${activity.id}"/>
                                         </c:if>
-                                        ${activityDisplayName}
+                                        <c:out value="${activityDisplayName}"/>
                                     </span>
                                     <span class="row-content id">
-                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> ${activity.id}
+                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('${activity.id}', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('<c:out value="${activity.id}"/>', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -291,8 +315,8 @@
                                                     <dt>&nbsp;</dt>
                                                     <dd>
                                                         <div>
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('${activity.id}')"/>
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('${activity.id}', '${activityDisplayName}')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('<c:out value="${activity.id}"/>')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('<c:out value="${activity.id}"/>', '<c:out value="${activityDisplayName}"/>')"/>
                                                         </div>
                                                     </dd>
                                                 </dl>
@@ -336,244 +360,244 @@
                     <div style="text-align:center">
                         <button onclick="window.location='${pageContext.request.contextPath}/web/console/app/${appId}//processes';return false;"><fmt:message key="general.method.label.ok"/></button>
                         <button id="closeInfo"><fmt:message key="general.method.label.cancel"/></button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        var image = new Image();
-        image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}?rnd=" + new Date().valueOf().toString();
-        $(image).load(function(){
-            $('#xpdlThumbnail').append(image);
-            $(image).each(function() {
-                var maxWidth = 600; // Max width for the image
-                var maxHeight = 250;    // Max height for the image
-                var ratio = 0;  // Used for aspect ratio
-                var width = $(this).width();    // Current image width
-                var height = $(this).height();  // Current image height
+        <script>
+            function loadImage() {
+                var image = new Image();
+                image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}?rnd=" + new Date().valueOf().toString();
+                $(image).load(function(){
+                    $('#xpdlThumbnail').append(image);
+                    $(image).each(function() {
+                        var maxWidth = 600; // Max width for the image
+                        var maxHeight = 250;    // Max height for the image
+                        var ratio = 0;  // Used for aspect ratio
+                        var width = $(this).width();    // Current image width
+                        var height = $(this).height();  // Current image height
 
-                // Check if the current width is larger than the max
-                if(width > maxWidth){
-                    ratio = maxWidth / width;   // get ratio for scaling image
-                    $(this).css("width", maxWidth); // Set new width
-                    $(this).css("height", height * ratio);  // Scale height based on ratio
-                    height = height * ratio;    // Reset height to match scaled image
-                    width = width * ratio;    // Reset width to match scaled image
-                }
+                        // Check if the current width is larger than the max
+                        if(width > maxWidth){
+                            ratio = maxWidth / width;   // get ratio for scaling image
+                            $(this).css("width", maxWidth); // Set new width
+                            $(this).css("height", height * ratio);  // Scale height based on ratio
+                            height = height * ratio;    // Reset height to match scaled image
+                            width = width * ratio;    // Reset width to match scaled image
+                        }
 
-                // Check if current height is larger than max
-                if(height > maxHeight){
-                    ratio = maxHeight / height; // get ratio for scaling image
-                    $(this).css("height", maxHeight);   // Set new height
-                    $(this).css("width", width * ratio);    // Scale width based on ratio
-                    width = width * ratio;    // Reset width to match scaled image
-                }
-            });
-            $('#xpdlThumbnailLoading').hide();
-        });
+                        // Check if current height is larger than max
+                        if(height > maxHeight){
+                            ratio = maxHeight / height; // get ratio for scaling image
+                            $(this).css("height", maxHeight);   // Set new height
+                            $(this).css("width", width * ratio);    // Scale width based on ratio
+                            width = width * ratio;    // Reset width to match scaled image
+                        }
+                    });
+                    $('#xpdlThumbnailLoading').hide();
+                });
+            
+                $(image).error(function(){
+                    setTimeout(function() { loadImage(); }, 10000);
+                });
+            }
 
-        $(document).ready(function() {
-            /*$('span.row-content[@helpTitle]').cluetip({
-                splitTitle: '|||',
-                showTitle: false,
-                arrows: true,
-                positionBy: 'mouse',
-                dropShadow: false,
-                hoverIntent: false,
-                sticky: true,
-                mouseOutClose: true,
-                closePosition: 'title'}
-        );*/
-        <c:if test="${!empty param.activityDefId}">
-            setTimeout(function() {
-                var topy = $("#activityForm_${param.activityDefId}").offset().top - 100;
-                topy = parseInt(topy);
-                window.scrollTo(0, topy);
-             }, 100);
-        </c:if>
-        <c:if test="${!empty param.participantId}">
-            setTimeout(function() {
-                var topy = $("#participant_${param.participantId}").offset().top - 100;
-                topy = parseInt(topy);
-                window.scrollTo(0, topy);
-             }, 100);
-        </c:if>
-        });
+            $(document).ready(function() {
+                loadImage();
+                /*$('span.row-content[@helpTitle]').cluetip({
+                    splitTitle: '|||',
+                    showTitle: false,
+                    arrows: true,
+                    positionBy: 'mouse',
+                    dropShadow: false,
+                    hoverIntent: false,
+                    sticky: true,
+                    mouseOutClose: true,
+                    closePosition: 'title'}
+            );*/
+            <c:if test="${!empty param.activityDefId}">
+                    setTimeout(function() {
+                        var topy = $("#activityForm_${param.activityDefId}").offset().top - 100;
+                        topy = parseInt(topy);
+                        window.scrollTo(0, topy);
+                    }, 100);
+            </c:if>
+            <c:if test="${!empty param.participantId}">
+                    setTimeout(function() {
+                        var topy = $("#participant_${param.participantId}").offset().top - 100;
+                        topy = parseInt(topy);
+                        window.scrollTo(0, topy);
+                    }, 100);
+            </c:if>
+                });
 
-        var tabView = new TabView('processTabView', 'top');
-        tabView.init();
-        <c:if test="${!empty param.tab}">
-            tabView.select('#${param.tab}');
-        </c:if>
-        <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/form/edit/${form.id}"/>
+                var tabView = new TabView('processTabView', 'top');
+                tabView.init();
+            <c:if test="${!empty param.tab}">
+                tabView.select('#${param.tab}');
+            </c:if>
+            <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/form/edit/${form.id}"/>
 
-            var reloadCallback = {
-                success: function(data){
-                    if (data && data.length > 0) {
-                        $("#" + data).css("display", "none");
-                        return;
-                    }
+                var reloadCallback = {
+                    success: function(data){
+                        if (data && data.length > 0) {
+                            $("#" + data).css("display", "none");
+                            return;
+                        }
 
-                    //get current selected tab
-                    var selectedTabId = $('#processTabView .ui-tabs-selected a').attr('href');
-                    selectedTabId = selectedTabId.replace('#', '');
+                        //get current selected tab
+                        var selectedTabId = $('#processTabView .ui-tabs-selected a').attr('href');
+                        selectedTabId = selectedTabId.replace('#', '');
 
-                    var urlQueryString = document.location.search;
-                    if(urlQueryString == ''){
-                        document.location.href = document.location.href + "?tab=" + selectedTabId;
-                    }else{
-                        if(urlQueryString.indexOf('tab') == -1){
-                            document.location.href = document.location.href + "&tab=" + selectedTabId;
+                        var urlQueryString = document.location.search;
+                        if(urlQueryString == ''){
+                            document.location.href = document.location.href + "?tab=" + selectedTabId;
                         }else{
-                            document.location.href = document.location.href.replace(urlQueryString, '') + "?tab=" + selectedTabId;
+                            if(urlQueryString.indexOf('tab') == -1){
+                                document.location.href = document.location.href + "&tab=" + selectedTabId;
+                            }else{
+                                document.location.href = document.location.href.replace(urlQueryString, '') + "?tab=" + selectedTabId;
+                            }
                         }
                     }
                 }
-            }
 
-            function closeDialog() {
-                popupDialog.close();
-            }
-
-            function uploadPackage(){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload";
-                popupDialog.init();
-            }
-
-            function launchDesigner(){
-                $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
-                $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
-                <%
-                        String designerwebBaseUrl = pageContext.getRequest().getScheme() + "://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
-                        if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
-                            designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-                        }
-
-                        if (designerwebBaseUrl.endsWith("/")) {
-                            designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
-                        }
-
-                        String locale = "en";
-                        if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
-                            locale = WorkflowUtil.getSystemSetupValue("systemLocale");
-                        }
-                %>
-                var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
-                var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
-                var path = base + '${pageContext.request.contextPath}';
-                document.location = '<%= designerwebBaseUrl%>/jwdesigner/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&hash=${loginHash}';
-            }
-
-            function launchFormBuilder(formId) {
-                window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/" + formId);
-            }
-
-            function runProcess() {
-                var url = "${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}";
-                popupDialog.src = url;
-                popupDialog.init();
-//                window.open(url, "_blank", "");
-            }
-
-            function addEditForm(activityId, activityName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/form?activityName=" + encodeURIComponent(activityName) ;
-                popupDialog.init();
-            }
-
-            function addEditPlugin(activityId, activityName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
-                popupDialog.init();
-            }
-
-            function addEditParticipant(participantId, participantName){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + encodeURIComponent(participantName);
-                popupDialog.init();
-            }
-
-            function activityRemoveForm(activityId){
-                if (confirm("<fmt:message key="console.process.config.label.mapActivities.removeMapping.confirm"/>")) {
-                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/form/remove";
-                    ConnectionManager.post(url, reloadCallback);
+                function closeDialog() {
+                    popupDialog.close();
                 }
-            }
 
-            function activityRemovePlugin(activityId){
-                if (confirm("<fmt:message key="console.process.config.label.mapTools.removePlugin.confirm"/>")) {
-                    var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin/remove";
-                    ConnectionManager.post(url, reloadCallback);
+                function uploadPackage(){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload";
+                    popupDialog.init();
                 }
-            }
 
-            function activityConfigurePlugin(activityId, activityName){
-                var title = " - " + activityName + " (" + activityId + ")";
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + encodeURIComponent(activityId) + "/plugin/configure?title=" + encodeURIComponent(title);
-                popupDialog.init();
-            }
+                function launchDesigner(){
+                    $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
+                    $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
+            <%
+                            String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
+                            String locale = "en";
+                            if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
+                                locale = WorkflowUtil.getSystemSetupValue("systemLocale");
+                            }
+            %>
+                    var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
+                    var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
+                    var path = base + '${pageContext.request.contextPath}';
+                    document.location = '<%= designerwebBaseUrl%>/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&domain=${pageContext.request.serverName}&port=${pageContext.request.serverPort}&context=${pageContext.request.contextPath}&session=${pageContext.request.session.id}';
+                }
 
-            function participantRemoveMapping(participantId){
-                var removeItem = {
-                    success : function(response) {
-                        $('#participant_'+participantId).html('');
+                function launchFormBuilder(formId) {
+                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/" + formId);
+                }
+
+                function runProcess() {
+                    var url = "${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}";
+                    popupDialog.src = url;
+                    popupDialog.init();
+                    //                window.open(url, "_blank", "");
+                }
+
+                function addEditForm(activityId, activityName){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form?activityName=" + escape(activityName) ;
+                    popupDialog.init();
+                }
+
+                function addEditPlugin(activityId, activityName){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + escape(activityName);
+                    popupDialog.init();
+                }
+
+                function addEditParticipant(participantId, participantName){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + escape(participantName);
+                    popupDialog.init();
+                }
+
+                function activityRemoveForm(activityId){
+                    if (confirm("<fmt:message key="console.process.config.label.mapActivities.removeMapping.confirm"/>")) {
+                        var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form/remove";
+                        ConnectionManager.post(url, reloadCallback);
                     }
                 }
-                if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, '');
-                }
-            }
 
-            function participantRemoveMappingSingle(obj, type, participantId, value){
-                var removeItem = {
-                    success : function(response) {
-                        $(obj).parent().hide('slow');
-                        if($(obj).parent().parent().find('.participant-remove:visible').length == 2){
-                            $(obj).parent().parent().find('.participant-remove:visible').find('img').remove();
-                        }
+                function activityRemovePlugin(activityId){
+                    if (confirm("<fmt:message key="console.process.config.label.mapTools.removePlugin.confirm"/>")) {
+                        var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/remove";
+                        ConnectionManager.post(url, reloadCallback);
                     }
                 }
-                if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, 'type='+type+'&value='+value);
+
+                function activityConfigurePlugin(activityId, activityName){
+                    var title = " - " + activityName + " (" + activityId + ")";
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + escape(title);
+                    popupDialog.init();
                 }
-            }
 
-            function participantConfigurePlugin(participantId, participantName){
-                var title = " - " + participantName + " (" + participantId + ")";
-                popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + encodeURIComponent(title);
-                popupDialog.init();
-            }
-
-            function showAdvancedInfo(){
-                $('#advancedView').slideToggle('slow');
-                $('#showAdvancedInfo').hide();
-                $('#hideAdvancedInfo').show();
-            }
-
-            function hideAdvancedInfo(){
-                $('#advancedView').slideToggle('slow');
-                $('#showAdvancedInfo').show();
-                $('#hideAdvancedInfo').hide();
-            }
-
-            function showXpdlImage(){
-                popupDialog.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}";
-                popupDialog.init();
-
-            }
-
-            var autoCallback = {
-                success: function() {
-                    // do nothing
+                function participantRemoveMapping(participantId){
+                    var removeItem = {
+                        success : function(response) {
+                            $('#participant_'+participantId).html('');
+                        }
+                    }
+                    if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
+                        ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, '');
+                    }
                 }
-            }
 
-            function toggleContinueNextAssignment(processDefId, activityDefId, checkbox){
-                var params = "auto="+$(checkbox).is(':checked');
-                ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/' + processDefId + '/activity/' + activityDefId + '/continue', autoCallback, params);
-            }
-    </script>
+                function participantRemoveMappingSingle(obj, type, participantId, value){
+                    var removeItem = {
+                        success : function(response) {
+                            $(obj).parent().hide('slow');
+                            if($(obj).parent().parent().find('.participant-remove:visible').length == 2){
+                                $(obj).parent().parent().find('.participant-remove:visible').find('img').remove();
+                            }
+                        }
+                    }
+                    if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
+                        ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, 'type='+encodeURIComponent(type)+'&value='+encodeURIComponent(value));
+                    }
+                }
 
+                function participantConfigurePlugin(participantId, participantName){
+                    var title = " - " + participantName + " (" + participantId + ")";
+                    popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + escape(title);
+                    popupDialog.init();
+                }
+
+                function showAdvancedInfo(){
+                    $('#advancedView').slideToggle('slow');
+                    $('#showAdvancedInfo').hide();
+                    $('#hideAdvancedInfo').show();
+                }
+
+                function hideAdvancedInfo(){
+                    $('#advancedView').slideToggle('slow');
+                    $('#showAdvancedInfo').show();
+                    $('#hideAdvancedInfo').hide();
+                }
+
+                function showXpdlImage(){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}";
+                    popupDialog.init();
+
+                }
+
+                var autoCallback = {
+                    success: function() {
+                        // do nothing
+                    }
+                }
+
+                function toggleContinueNextAssignment(processDefId, activityDefId, checkbox){
+                    var params = "auto="+$(checkbox).attr('checked');
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/' + processDefId + '/activity/' + activityDefId + '/continue', autoCallback, params);
+                }
+        </script>
+
+    </div>
 </div>
-
+    
 <script>
     Template.init("#menu-apps", "#nav-app-processes");
     <c:choose>
@@ -591,5 +615,5 @@
         </c:otherwise>
     </c:choose>
 </script>
-
+    
 <commons:footer />

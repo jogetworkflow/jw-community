@@ -4,6 +4,8 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import org.enhydra.shark.client.utilities.LimitStruct;
 import org.enhydra.shark.utilities.MiscUtilities;
@@ -138,11 +140,40 @@ public class DeadlineChecker extends Thread {
 
             HostManager.setCurrentProfile(profile);
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            workflowManager.internalCheckDeadlines(instancesPerTransaction, failuresToIgnore);
+            
+            int sizeToCheck = 0;
+            List<String> instancesFailed2check = new ArrayList<String>();
+            Collection<String> instancesToCheck = workflowManager.getRunningProcessIds();
+            
+            if (instancesToCheck != null && !instancesToCheck.isEmpty()) {
+                sizeToCheck = instancesToCheck.size();
+                Iterator iterProcesses = instancesToCheck.iterator();
+                List<String> currentBatch = null;
+                do {
+                    currentBatch = new ArrayList<String>(); 
+                    try {
+                        for (int n = 0; n < this.instancesPerTransaction; ++n) {
+                            if (!iterProcesses.hasNext()) {
+                                break;
+                            }
+                            String procId = (String) iterProcesses.next();
+                            iterProcesses.remove();
+                            currentBatch.add(procId);
+                        }
+                        String[] pids = new String[currentBatch.size()];
+                        currentBatch.toArray(pids);
+                        
+                        workflowManager.internalCheckDeadlines(pids);
+                    } catch (Exception ex) {
+                        LogUtil.error(getClass().getName(), ex, "Profile : " + profile);
+                        instancesFailed2check.addAll(currentBatch);
+                    }
+                } while (instancesFailed2check.size() <= this.failuresToIgnore && iterProcesses.hasNext());
+            }
 
             long end = System.currentTimeMillis();
 
-            LogUtil.debug(getClass().getName(), "Deadline check lasted " + (end - start) + " ms for profile " + profile);
+            LogUtil.debug(getClass().getName(), "Deadline check lasted " + (end - start) + " ms for profile " + profile + ". Checked:" + sizeToCheck + ". Failed:" + instancesFailed2check.size());
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
         }

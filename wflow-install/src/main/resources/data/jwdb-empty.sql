@@ -1,7 +1,8 @@
--- MySQL dump 10.11
+-- MySQL dump 10.13  Distrib 5.5.32, for debian-linux-gnu (x86_64)
 --
+-- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.0.51a-3ubuntu5.4
+-- Server version	5.5.32-0ubuntu0.12.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -18,36 +19,35 @@
 -- Table structure for table `SHKActivities`
 --
 
-DROP TABLE IF EXISTS `SHKActivities`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivities` (
   `Id` varchar(100) NOT NULL,
-  `ActivitySetDefinitionId` varchar(90) default NULL,
+  `ActivitySetDefinitionId` varchar(90) DEFAULT NULL,
   `ActivityDefinitionId` varchar(90) NOT NULL,
   `Process` decimal(19,0) NOT NULL,
-  `TheResource` decimal(19,0) default NULL,
+  `TheResource` decimal(19,0) DEFAULT NULL,
   `PDefName` varchar(200) NOT NULL,
   `ProcessId` varchar(200) NOT NULL,
-  `ResourceId` varchar(100) default NULL,
+  `ResourceId` varchar(100) DEFAULT NULL,
   `State` decimal(19,0) NOT NULL,
-  `BlockActivityId` varchar(100) default NULL,
-  `Performer` varchar(100) default NULL,
-  `IsPerformerAsynchronous` smallint(6) default NULL,
-  `Priority` int(11) default NULL,
-  `Name` varchar(254) default NULL,
+  `BlockActivityId` varchar(100) DEFAULT NULL,
+  `Performer` varchar(100) DEFAULT NULL,
+  `IsPerformerAsynchronous` smallint(6) DEFAULT NULL,
+  `Priority` int(11) DEFAULT NULL,
+  `Name` varchar(254) DEFAULT NULL,
   `Activated` bigint(20) NOT NULL,
   `ActivatedTZO` bigint(20) NOT NULL,
-  `Accepted` bigint(20) default NULL,
-  `AcceptedTZO` bigint(20) default NULL,
+  `Accepted` bigint(20) DEFAULT NULL,
+  `AcceptedTZO` bigint(20) DEFAULT NULL,
   `LastStateTime` bigint(20) NOT NULL,
   `LastStateTimeTZO` bigint(20) NOT NULL,
   `LimitTime` bigint(20) NOT NULL,
   `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) default NULL,
+  `Description` varchar(254) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivities` (`Id`),
   KEY `SHKActivities_TheResource` (`TheResource`),
   KEY `SHKActivities_State` (`State`),
@@ -57,7 +57,7 @@ CREATE TABLE `SHKActivities` (
   CONSTRAINT `SHKActivities_State` FOREIGN KEY (`State`) REFERENCES `SHKActivityStates` (`oid`),
   CONSTRAINT `SHKActivities_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivities`
@@ -72,31 +72,30 @@ UNLOCK TABLES;
 -- Table structure for table `SHKActivityData`
 --
 
-DROP TABLE IF EXISTS `SHKActivityData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityData` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` double default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `IsResult` smallint(6) NOT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityData` (`CNT`),
   UNIQUE KEY `I2_SHKActivityData` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityData_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivityData`
@@ -111,20 +110,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKActivityDataBLOBs`
 --
 
-DROP TABLE IF EXISTS `SHKActivityDataBLOBs`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityDataBLOBs` (
   `ActivityDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityDataBLOBs` (`ActivityDataWOB`,`OrdNo`),
   CONSTRAINT `SHKActivityDataBLOBs_ActivityDataWOB` FOREIGN KEY (`ActivityDataWOB`) REFERENCES `SHKActivityDataWOB` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivityDataBLOBs`
@@ -139,30 +137,29 @@ UNLOCK TABLES;
 -- Table structure for table `SHKActivityDataWOB`
 --
 
-DROP TABLE IF EXISTS `SHKActivityDataWOB`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityDataWOB` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` double default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `IsResult` smallint(6) NOT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKActivityDataWOB` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityDataWOB_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivityDataWOB`
@@ -177,19 +174,18 @@ UNLOCK TABLES;
 -- Table structure for table `SHKActivityStateEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKActivityStateEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityStateEventAudits` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStateEventAudits` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivityStateEventAudits`
@@ -204,19 +200,18 @@ UNLOCK TABLES;
 -- Table structure for table `SHKActivityStates`
 --
 
-DROP TABLE IF EXISTS `SHKActivityStates`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityStates` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStates` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKActivityStates`
@@ -224,7 +219,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `SHKActivityStates` WRITE;
 /*!40000 ALTER TABLE `SHKActivityStates` DISABLE KEYS */;
-INSERT INTO `SHKActivityStates` VALUES ('open.running','open.running','1000001',0),('open.not_running.not_started','open.not_running.not_started','1000003',0),('open.not_running.suspended','open.not_running.suspended','1000005',0),('closed.completed','closed.completed','1000007',0),('closed.terminated','closed.terminated','1000009',0),('closed.aborted','closed.aborted','1000011',0);
+INSERT INTO `SHKActivityStates` VALUES ('open.running','open.running',1000001,0),('open.not_running.not_started','open.not_running.not_started',1000003,0),('open.not_running.suspended','open.not_running.suspended',1000005,0),('closed.completed','closed.completed',1000007,0),('closed.terminated','closed.terminated',1000009,0),('closed.aborted','closed.aborted',1000011,0);
 /*!40000 ALTER TABLE `SHKActivityStates` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,18 +227,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKAndJoinTable`
 --
 
-DROP TABLE IF EXISTS `SHKAndJoinTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKAndJoinTable` (
   `Process` decimal(19,0) NOT NULL,
-  `BlockActivity` decimal(19,0) default NULL,
+  `BlockActivity` decimal(19,0) DEFAULT NULL,
   `ActivityDefinitionId` varchar(90) NOT NULL,
   `Activity` decimal(19,0) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKAndJoinTable` (`CNT`),
   KEY `SHKAndJoinTable_BlockActivity` (`BlockActivity`),
   KEY `I2_SHKAndJoinTable` (`Process`,`BlockActivity`,`ActivityDefinitionId`),
@@ -252,7 +246,7 @@ CREATE TABLE `SHKAndJoinTable` (
   CONSTRAINT `SHKAndJoinTable_BlockActivity` FOREIGN KEY (`BlockActivity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAndJoinTable_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKAndJoinTable`
@@ -267,40 +261,39 @@ UNLOCK TABLES;
 -- Table structure for table `SHKAssignmentEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKAssignmentEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKAssignmentEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
   `TheUsername` varchar(100) NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
   `ActivityId` varchar(100) NOT NULL,
-  `ActivityName` varchar(254) default NULL,
+  `ActivityName` varchar(254) DEFAULT NULL,
   `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) default NULL,
+  `ProcessName` varchar(254) DEFAULT NULL,
   `ProcessFactoryName` varchar(200) NOT NULL,
   `ProcessFactoryVersion` varchar(20) NOT NULL,
   `ActivityDefinitionId` varchar(90) NOT NULL,
-  `ActivityDefinitionName` varchar(90) default NULL,
+  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
   `ActivityDefinitionType` int(11) NOT NULL,
   `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) default NULL,
+  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
   `PackageId` varchar(90) NOT NULL,
-  `OldResourceUsername` varchar(100) default NULL,
-  `OldResourceName` varchar(100) default NULL,
+  `OldResourceUsername` varchar(100) DEFAULT NULL,
+  `OldResourceName` varchar(100) DEFAULT NULL,
   `NewResourceUsername` varchar(100) NOT NULL,
-  `NewResourceName` varchar(100) default NULL,
+  `NewResourceName` varchar(100) DEFAULT NULL,
   `IsAccepted` smallint(6) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKAssignmentEventAudits` (`CNT`),
   KEY `SHKAssignmentEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKAssignmentEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKAssignmentEventAudits`
@@ -315,9 +308,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKAssignmentsTable`
 --
 
-DROP TABLE IF EXISTS `SHKAssignmentsTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKAssignmentsTable` (
   `Activity` decimal(19,0) NOT NULL,
   `TheResource` decimal(19,0) NOT NULL,
@@ -330,7 +322,7 @@ CREATE TABLE `SHKAssignmentsTable` (
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKAssignmentsTable` (`CNT`),
   UNIQUE KEY `I2_SHKAssignmentsTable` (`Activity`,`TheResource`),
   KEY `I3_SHKAssignmentsTable` (`TheResource`,`IsValid`),
@@ -339,7 +331,7 @@ CREATE TABLE `SHKAssignmentsTable` (
   CONSTRAINT `SHKAssignmentsTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAssignmentsTable_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKAssignmentsTable`
@@ -354,18 +346,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKCounters`
 --
 
-DROP TABLE IF EXISTS `SHKCounters`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKCounters` (
   `name` varchar(100) NOT NULL,
   `the_number` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKCounters` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKCounters`
@@ -380,40 +371,39 @@ UNLOCK TABLES;
 -- Table structure for table `SHKCreateProcessEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKCreateProcessEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKCreateProcessEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
   `TheUsername` varchar(100) NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
   `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) default NULL,
+  `ProcessName` varchar(254) DEFAULT NULL,
   `ProcessFactoryName` varchar(200) NOT NULL,
   `ProcessFactoryVersion` varchar(20) NOT NULL,
   `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) default NULL,
+  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
   `PackageId` varchar(90) NOT NULL,
-  `PActivityId` varchar(100) default NULL,
-  `PProcessId` varchar(100) default NULL,
-  `PProcessName` varchar(254) default NULL,
-  `PProcessFactoryName` varchar(200) default NULL,
-  `PProcessFactoryVersion` varchar(20) default NULL,
-  `PActivityDefinitionId` varchar(90) default NULL,
-  `PActivityDefinitionName` varchar(90) default NULL,
-  `PProcessDefinitionId` varchar(90) default NULL,
-  `PProcessDefinitionName` varchar(90) default NULL,
-  `PPackageId` varchar(90) default NULL,
+  `PActivityId` varchar(100) DEFAULT NULL,
+  `PProcessId` varchar(100) DEFAULT NULL,
+  `PProcessName` varchar(254) DEFAULT NULL,
+  `PProcessFactoryName` varchar(200) DEFAULT NULL,
+  `PProcessFactoryVersion` varchar(20) DEFAULT NULL,
+  `PActivityDefinitionId` varchar(90) DEFAULT NULL,
+  `PActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `PProcessDefinitionId` varchar(90) DEFAULT NULL,
+  `PProcessDefinitionName` varchar(90) DEFAULT NULL,
+  `PPackageId` varchar(90) DEFAULT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKCreateProcessEventAudits` (`CNT`),
   KEY `SHKCreateProcessEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKCreateProcessEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKCreateProcessEventAudits`
@@ -428,35 +418,34 @@ UNLOCK TABLES;
 -- Table structure for table `SHKDataEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKDataEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKDataEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
   `TheUsername` varchar(100) NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) default NULL,
-  `ActivityName` varchar(254) default NULL,
+  `ActivityId` varchar(100) DEFAULT NULL,
+  `ActivityName` varchar(254) DEFAULT NULL,
   `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) default NULL,
+  `ProcessName` varchar(254) DEFAULT NULL,
   `ProcessFactoryName` varchar(200) NOT NULL,
   `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) default NULL,
-  `ActivityDefinitionName` varchar(90) default NULL,
-  `ActivityDefinitionType` int(11) default NULL,
+  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `ActivityDefinitionType` int(11) DEFAULT NULL,
   `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) default NULL,
+  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
   `PackageId` varchar(90) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKDataEventAudits` (`CNT`),
   KEY `SHKDataEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKDataEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKDataEventAudits`
@@ -471,9 +460,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKDeadlines`
 --
 
-DROP TABLE IF EXISTS `SHKDeadlines`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKDeadlines` (
   `Process` decimal(19,0) NOT NULL,
   `Activity` decimal(19,0) NOT NULL,
@@ -485,14 +473,14 @@ CREATE TABLE `SHKDeadlines` (
   `IsExecuted` smallint(6) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKDeadlines` (`CNT`),
   KEY `I2_SHKDeadlines` (`Process`,`TimeLimit`),
   KEY `I3_SHKDeadlines` (`Activity`,`TimeLimit`),
   CONSTRAINT `SHKDeadlines_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKDeadlines_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKDeadlines`
@@ -507,19 +495,18 @@ UNLOCK TABLES;
 -- Table structure for table `SHKEventTypes`
 --
 
-DROP TABLE IF EXISTS `SHKEventTypes`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKEventTypes` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKEventTypes` (`KeyValue`),
   UNIQUE KEY `I2_SHKEventTypes` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKEventTypes`
@@ -534,21 +521,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKGroupGroupTable`
 --
 
-DROP TABLE IF EXISTS `SHKGroupGroupTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupGroupTable` (
   `sub_gid` decimal(19,0) NOT NULL,
   `groupid` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupGroupTable` (`sub_gid`,`groupid`),
   KEY `I2_SHKGroupGroupTable` (`groupid`),
   CONSTRAINT `SHKGroupGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKGroupGroupTable_sub_gid` FOREIGN KEY (`sub_gid`) REFERENCES `SHKGroupTable` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKGroupGroupTable`
@@ -563,18 +549,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKGroupTable`
 --
 
-DROP TABLE IF EXISTS `SHKGroupTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupTable` (
   `groupid` varchar(100) NOT NULL,
-  `description` varchar(254) default NULL,
+  `description` varchar(254) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupTable` (`groupid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKGroupTable`
@@ -589,17 +574,16 @@ UNLOCK TABLES;
 -- Table structure for table `SHKGroupUser`
 --
 
-DROP TABLE IF EXISTS `SHKGroupUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupUser` (
   `USERNAME` varchar(100) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupUser` (`USERNAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKGroupUser`
@@ -614,21 +598,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKGroupUserPackLevelPart`
 --
 
-DROP TABLE IF EXISTS `SHKGroupUserPackLevelPart`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupUserPackLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
   KEY `SHKGroupUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKGroupUserPackLevelPart`
@@ -643,21 +626,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKGroupUserProcLevelPart`
 --
 
-DROP TABLE IF EXISTS `SHKGroupUserProcLevelPart`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupUserProcLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupUserProcLevelPart` (`PARTICIPANTOID`,`USEROID`),
   KEY `SHKGroupUserProcLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserProcLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserProcLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKGroupUserProcLevelPart`
@@ -672,30 +654,29 @@ UNLOCK TABLES;
 -- Table structure for table `SHKNewEventAuditData`
 --
 
-DROP TABLE IF EXISTS `SHKNewEventAuditData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` float default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNewEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKNewEventAuditData`
@@ -710,20 +691,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKNewEventAuditDataBLOBs`
 --
 
-DROP TABLE IF EXISTS `SHKNewEventAuditDataBLOBs`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNewEventAuditDataBLOBs` (`NewEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataBLOBs_NewEventAuditDataWOB` FOREIGN KEY (`NewEventAuditDataWOB`) REFERENCES `SHKNewEventAuditDataWOB` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKNewEventAuditDataBLOBs`
@@ -738,29 +718,28 @@ UNLOCK TABLES;
 -- Table structure for table `SHKNewEventAuditDataWOB`
 --
 
-DROP TABLE IF EXISTS `SHKNewEventAuditDataWOB`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` float default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNewEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKNewEventAuditDataWOB`
@@ -775,18 +754,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKNextXPDLVersions`
 --
 
-DROP TABLE IF EXISTS `SHKNextXPDLVersions`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNextXPDLVersions` (
   `XPDLId` varchar(90) NOT NULL,
   `NextVersion` varchar(20) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNextXPDLVersions` (`XPDLId`,`NextVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKNextXPDLVersions`
@@ -801,17 +779,16 @@ UNLOCK TABLES;
 -- Table structure for table `SHKNormalUser`
 --
 
-DROP TABLE IF EXISTS `SHKNormalUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNormalUser` (
   `USERNAME` varchar(100) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNormalUser` (`USERNAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKNormalUser`
@@ -826,30 +803,29 @@ UNLOCK TABLES;
 -- Table structure for table `SHKOldEventAuditData`
 --
 
-DROP TABLE IF EXISTS `SHKOldEventAuditData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` float default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKOldEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKOldEventAuditData`
@@ -864,20 +840,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKOldEventAuditDataBLOBs`
 --
 
-DROP TABLE IF EXISTS `SHKOldEventAuditDataBLOBs`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKOldEventAuditDataBLOBs` (`OldEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataBLOBs_OldEventAuditDataWOB` FOREIGN KEY (`OldEventAuditDataWOB`) REFERENCES `SHKOldEventAuditDataWOB` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKOldEventAuditDataBLOBs`
@@ -892,29 +867,28 @@ UNLOCK TABLES;
 -- Table structure for table `SHKOldEventAuditDataWOB`
 --
 
-DROP TABLE IF EXISTS `SHKOldEventAuditDataWOB`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` float default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKOldEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKOldEventAuditDataWOB`
@@ -929,20 +903,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelParticipant`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelParticipant`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelParticipant` (
   `PARTICIPANT_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelParticipant` (`PARTICIPANT_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelParticipant_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelParticipant_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelParticipant`
@@ -957,20 +930,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelXPDLApp`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelXPDLApp`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLApp` (
   `APPLICATION_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelXPDLApp` (`APPLICATION_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelXPDLApp_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelXPDLApp_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelXPDLApp`
@@ -985,21 +957,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelXPDLAppTAAppDetUsr`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelXPDLAppTAAppDetUsr`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppDetUsr` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelXPDLAppTAAppDetUsr`
@@ -1014,21 +985,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelXPDLAppTAAppDetail`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelXPDLAppTAAppDetail`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppDetail` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelXPDLAppTAAppDetail`
@@ -1043,21 +1013,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelXPDLAppTAAppUser`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelXPDLAppTAAppUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppUser` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelXPDLAppTAAppUser`
@@ -1072,21 +1041,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKPackLevelXPDLAppToolAgntApp`
 --
 
-DROP TABLE IF EXISTS `SHKPackLevelXPDLAppToolAgntApp`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLAppToolAgntApp` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKPackLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKPackLevelXPDLAppToolAgntApp`
@@ -1101,20 +1069,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelParticipant`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelParticipant`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelParticipant` (
   `PARTICIPANT_ID` varchar(90) NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelParticipant` (`PARTICIPANT_ID`,`PROCESSOID`),
   KEY `SHKProcLevelParticipant_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelParticipant_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLParticipantProcess` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelParticipant`
@@ -1129,20 +1096,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelXPDLApp`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelXPDLApp`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLApp` (
   `APPLICATION_ID` varchar(90) NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelXPDLApp` (`APPLICATION_ID`,`PROCESSOID`),
   KEY `SHKProcLevelXPDLApp_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelXPDLApp_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLApplicationProcess` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelXPDLApp`
@@ -1157,21 +1123,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelXPDLAppTAAppDetUsr`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelXPDLAppTAAppDetUsr`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppDetUsr` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelXPDLAppTAAppDetUsr`
@@ -1186,21 +1151,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelXPDLAppTAAppDetail`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelXPDLAppTAAppDetail`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppDetail` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelXPDLAppTAAppDetail`
@@ -1215,21 +1179,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelXPDLAppTAAppUser`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelXPDLAppTAAppUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppUser` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelXPDLAppTAAppUser`
@@ -1244,21 +1207,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcLevelXPDLAppToolAgntApp`
 --
 
-DROP TABLE IF EXISTS `SHKProcLevelXPDLAppToolAgntApp`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLAppToolAgntApp` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
   KEY `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcLevelXPDLAppToolAgntApp`
@@ -1273,30 +1235,29 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessData`
 --
 
-DROP TABLE IF EXISTS `SHKProcessData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessData` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` double default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessData` (`CNT`),
   UNIQUE KEY `I2_SHKProcessData` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessData_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessData`
@@ -1311,20 +1272,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessDataBLOBs`
 --
 
-DROP TABLE IF EXISTS `SHKProcessDataBLOBs`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDataBLOBs` (
   `ProcessDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob,
   `OrdNo` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDataBLOBs` (`ProcessDataWOB`,`OrdNo`),
   CONSTRAINT `SHKProcessDataBLOBs_ProcessDataWOB` FOREIGN KEY (`ProcessDataWOB`) REFERENCES `SHKProcessDataWOB` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessDataBLOBs`
@@ -1339,29 +1299,28 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessDataWOB`
 --
 
-DROP TABLE IF EXISTS `SHKProcessDataWOB`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDataWOB` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) default NULL,
-  `VariableValueDBL` double default NULL,
-  `VariableValueLONG` bigint(20) default NULL,
-  `VariableValueDATE` datetime default NULL,
-  `VariableValueBOOL` smallint(6) default NULL,
+  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
   `OrdNo` int(11) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKProcessDataWOB` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessDataWOB_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessDataWOB`
@@ -1376,9 +1335,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessDefinitions`
 --
 
-DROP TABLE IF EXISTS `SHKProcessDefinitions`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDefinitions` (
   `Name` varchar(200) NOT NULL,
   `PackageId` varchar(90) NOT NULL,
@@ -1388,10 +1346,10 @@ CREATE TABLE `SHKProcessDefinitions` (
   `State` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDefinitions` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessDefinitions`
@@ -1406,23 +1364,22 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessRequesters`
 --
 
-DROP TABLE IF EXISTS `SHKProcessRequesters`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessRequesters` (
   `Id` varchar(100) NOT NULL,
-  `ActivityRequester` decimal(19,0) default NULL,
-  `ResourceRequester` decimal(19,0) default NULL,
+  `ActivityRequester` decimal(19,0) DEFAULT NULL,
+  `ResourceRequester` decimal(19,0) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessRequesters` (`Id`),
   KEY `I2_SHKProcessRequesters` (`ActivityRequester`),
   KEY `I3_SHKProcessRequesters` (`ResourceRequester`),
   CONSTRAINT `SHKProcessRequesters_ActivityRequester` FOREIGN KEY (`ActivityRequester`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKProcessRequesters_ResourceRequester` FOREIGN KEY (`ResourceRequester`) REFERENCES `SHKResourcesTable` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessRequesters`
@@ -1437,19 +1394,18 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessStateEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKProcessStateEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessStateEventAudits` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStateEventAudits` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessStateEventAudits`
@@ -1464,19 +1420,18 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcessStates`
 --
 
-DROP TABLE IF EXISTS `SHKProcessStates`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessStates` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStates` (`Name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcessStates`
@@ -1484,7 +1439,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `SHKProcessStates` WRITE;
 /*!40000 ALTER TABLE `SHKProcessStates` DISABLE KEYS */;
-INSERT INTO `SHKProcessStates` VALUES ('open.running','open.running','1000000',0),('open.not_running.not_started','open.not_running.not_started','1000002',0),('open.not_running.suspended','open.not_running.suspended','1000004',0),('closed.completed','closed.completed','1000006',0),('closed.terminated','closed.terminated','1000008',0),('closed.aborted','closed.aborted','1000010',0);
+INSERT INTO `SHKProcessStates` VALUES ('open.running','open.running',1000000,0),('open.not_running.not_started','open.not_running.not_started',1000002,0),('open.not_running.suspended','open.not_running.suspended',1000004,0),('closed.completed','closed.completed',1000006,0),('closed.terminated','closed.terminated',1000008,0),('closed.aborted','closed.aborted',1000010,0);
 /*!40000 ALTER TABLE `SHKProcessStates` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1492,33 +1447,32 @@ UNLOCK TABLES;
 -- Table structure for table `SHKProcesses`
 --
 
-DROP TABLE IF EXISTS `SHKProcesses`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcesses` (
   `SyncVersion` bigint(20) NOT NULL,
   `Id` varchar(100) NOT NULL,
   `ProcessDefinition` decimal(19,0) NOT NULL,
   `PDefName` varchar(200) NOT NULL,
-  `ActivityRequesterId` varchar(100) default NULL,
-  `ActivityRequesterProcessId` varchar(100) default NULL,
+  `ActivityRequesterId` varchar(100) DEFAULT NULL,
+  `ActivityRequesterProcessId` varchar(100) DEFAULT NULL,
   `ResourceRequesterId` varchar(100) NOT NULL,
-  `ExternalRequesterClassName` varchar(254) default NULL,
+  `ExternalRequesterClassName` varchar(254) DEFAULT NULL,
   `State` decimal(19,0) NOT NULL,
-  `Priority` int(11) default NULL,
-  `Name` varchar(254) default NULL,
+  `Priority` int(11) DEFAULT NULL,
+  `Name` varchar(254) DEFAULT NULL,
   `Created` bigint(20) NOT NULL,
   `CreatedTZO` bigint(20) NOT NULL,
-  `Started` bigint(20) default NULL,
-  `StartedTZO` bigint(20) default NULL,
+  `Started` bigint(20) DEFAULT NULL,
+  `StartedTZO` bigint(20) DEFAULT NULL,
   `LastStateTime` bigint(20) NOT NULL,
   `LastStateTimeTZO` bigint(20) NOT NULL,
   `LimitTime` bigint(20) NOT NULL,
   `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) default NULL,
+  `Description` varchar(254) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcesses` (`Id`),
   KEY `I2_SHKProcesses` (`ProcessDefinition`),
   KEY `I3_SHKProcesses` (`State`),
@@ -1527,7 +1481,7 @@ CREATE TABLE `SHKProcesses` (
   CONSTRAINT `SHKProcesses_ProcessDefinition` FOREIGN KEY (`ProcessDefinition`) REFERENCES `SHKProcessDefinitions` (`oid`),
   CONSTRAINT `SHKProcesses_State` FOREIGN KEY (`State`) REFERENCES `SHKProcessStates` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKProcesses`
@@ -1542,18 +1496,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKResourcesTable`
 --
 
-DROP TABLE IF EXISTS `SHKResourcesTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKResourcesTable` (
   `Username` varchar(100) NOT NULL,
-  `Name` varchar(100) default NULL,
+  `Name` varchar(100) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKResourcesTable` (`Username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKResourcesTable`
@@ -1568,34 +1521,33 @@ UNLOCK TABLES;
 -- Table structure for table `SHKStateEventAudits`
 --
 
-DROP TABLE IF EXISTS `SHKStateEventAudits`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKStateEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
   `TheUsername` varchar(100) NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) default NULL,
-  `ActivityName` varchar(254) default NULL,
+  `ActivityId` varchar(100) DEFAULT NULL,
+  `ActivityName` varchar(254) DEFAULT NULL,
   `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) default NULL,
+  `ProcessName` varchar(254) DEFAULT NULL,
   `ProcessFactoryName` varchar(200) NOT NULL,
   `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) default NULL,
-  `ActivityDefinitionName` varchar(90) default NULL,
-  `ActivityDefinitionType` int(11) default NULL,
+  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `ActivityDefinitionType` int(11) DEFAULT NULL,
   `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) default NULL,
+  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
   `PackageId` varchar(90) NOT NULL,
-  `OldProcessState` decimal(19,0) default NULL,
-  `NewProcessState` decimal(19,0) default NULL,
-  `OldActivityState` decimal(19,0) default NULL,
-  `NewActivityState` decimal(19,0) default NULL,
+  `OldProcessState` decimal(19,0) DEFAULT NULL,
+  `NewProcessState` decimal(19,0) DEFAULT NULL,
+  `OldActivityState` decimal(19,0) DEFAULT NULL,
+  `NewActivityState` decimal(19,0) DEFAULT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKStateEventAudits` (`CNT`),
   KEY `SHKStateEventAudits_TheType` (`TheType`),
   KEY `SHKStateEventAudits_OldProcessState` (`OldProcessState`),
@@ -1608,7 +1560,7 @@ CREATE TABLE `SHKStateEventAudits` (
   CONSTRAINT `SHKStateEventAudits_OldProcessState` FOREIGN KEY (`OldProcessState`) REFERENCES `SHKProcessStateEventAudits` (`oid`),
   CONSTRAINT `SHKStateEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKStateEventAudits`
@@ -1623,18 +1575,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKToolAgentApp`
 --
 
-DROP TABLE IF EXISTS `SHKToolAgentApp`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentApp` (
   `TOOL_AGENT_NAME` varchar(250) NOT NULL,
   `APP_NAME` varchar(90) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentApp` (`TOOL_AGENT_NAME`,`APP_NAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKToolAgentApp`
@@ -1649,20 +1600,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKToolAgentAppDetail`
 --
 
-DROP TABLE IF EXISTS `SHKToolAgentAppDetail`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentAppDetail` (
   `APP_MODE` decimal(10,0) NOT NULL,
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentAppDetail` (`APP_MODE`,`TOOLAGENT_APPOID`),
   KEY `SHKToolAgentAppDetail_TOOLAGENT_APPOID` (`TOOLAGENT_APPOID`),
   CONSTRAINT `SHKToolAgentAppDetail_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKToolAgentAppDetail`
@@ -1677,21 +1627,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKToolAgentAppDetailUser`
 --
 
-DROP TABLE IF EXISTS `SHKToolAgentAppDetailUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentAppDetailUser` (
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentAppDetailUser` (`TOOLAGENT_APPOID`,`USEROID`),
   KEY `SHKToolAgentAppDetailUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppDetailUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKToolAgentAppDetailUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKToolAgentAppDetailUser`
@@ -1706,21 +1655,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKToolAgentAppUser`
 --
 
-DROP TABLE IF EXISTS `SHKToolAgentAppUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentAppUser` (
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentAppUser` (`TOOLAGENT_APPOID`,`USEROID`),
   KEY `SHKToolAgentAppUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKToolAgentAppUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKToolAgentAppUser`
@@ -1735,18 +1683,17 @@ UNLOCK TABLES;
 -- Table structure for table `SHKToolAgentUser`
 --
 
-DROP TABLE IF EXISTS `SHKToolAgentUser`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentUser` (
   `USERNAME` varchar(100) NOT NULL,
-  `PWD` varchar(100) default NULL,
+  `PWD` varchar(100) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentUser` (`USERNAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKToolAgentUser`
@@ -1761,21 +1708,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKUserGroupTable`
 --
 
-DROP TABLE IF EXISTS `SHKUserGroupTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKUserGroupTable` (
   `userid` decimal(19,0) NOT NULL,
   `groupid` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserGroupTable` (`userid`,`groupid`),
   KEY `SHKUserGroupTable_groupid` (`groupid`),
   CONSTRAINT `SHKUserGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKUserGroupTable_userid` FOREIGN KEY (`userid`) REFERENCES `SHKUserTable` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKUserGroupTable`
@@ -1790,21 +1736,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKUserPackLevelPart`
 --
 
-DROP TABLE IF EXISTS `SHKUserPackLevelPart`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKUserPackLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
   KEY `SHKUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKUserPackLevelPart`
@@ -1819,21 +1764,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKUserProcLevelParticipant`
 --
 
-DROP TABLE IF EXISTS `SHKUserProcLevelParticipant`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKUserProcLevelParticipant` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserProcLevelParticipant` (`PARTICIPANTOID`,`USEROID`),
   KEY `SHKUserProcLevelParticipant_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserProcLevelParticipant_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserProcLevelParticipant_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKUserProcLevelParticipant`
@@ -1848,21 +1792,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKUserTable`
 --
 
-DROP TABLE IF EXISTS `SHKUserTable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKUserTable` (
   `userid` varchar(100) NOT NULL,
-  `firstname` varchar(50) default NULL,
-  `lastname` varchar(50) default NULL,
+  `firstname` varchar(50) DEFAULT NULL,
+  `lastname` varchar(50) DEFAULT NULL,
   `passwd` varchar(50) NOT NULL,
-  `email` varchar(254) default NULL,
+  `email` varchar(254) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserTable` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKUserTable`
@@ -1877,17 +1820,16 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLApplicationPackage`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLApplicationPackage`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLApplicationPackage` (
   `PACKAGE_ID` varchar(90) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLApplicationPackage` (`PACKAGE_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLApplicationPackage`
@@ -1902,20 +1844,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLApplicationProcess`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLApplicationProcess`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLApplicationProcess` (
   `PROCESS_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLApplicationProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLApplicationProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLApplicationProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLApplicationProcess`
@@ -1930,9 +1871,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLData`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLData` (
   `XPDLContent` mediumblob NOT NULL,
   `XPDLClassContent` mediumblob NOT NULL,
@@ -1940,12 +1880,12 @@ CREATE TABLE `SHKXPDLData` (
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLData` (`CNT`),
   UNIQUE KEY `I2_SHKXPDLData` (`XPDL`),
   CONSTRAINT `SHKXPDLData_XPDL` FOREIGN KEY (`XPDL`) REFERENCES `SHKXPDLS` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLData`
@@ -1960,9 +1900,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLHistory`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLHistory`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLHistory` (
   `XPDLId` varchar(90) NOT NULL,
   `XPDLVersion` varchar(20) NOT NULL,
@@ -1971,10 +1910,10 @@ CREATE TABLE `SHKXPDLHistory` (
   `XPDLHistoryUploadTime` datetime NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLHistory` (`XPDLId`,`XPDLVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLHistory`
@@ -1989,9 +1928,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLHistoryData`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLHistoryData`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLHistoryData` (
   `XPDLContent` mediumblob NOT NULL,
   `XPDLClassContent` mediumblob NOT NULL,
@@ -1999,12 +1937,12 @@ CREATE TABLE `SHKXPDLHistoryData` (
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLHistoryData` (`CNT`),
   KEY `SHKXPDLHistoryData_XPDLHistory` (`XPDLHistory`),
   CONSTRAINT `SHKXPDLHistoryData_XPDLHistory` FOREIGN KEY (`XPDLHistory`) REFERENCES `SHKXPDLHistory` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLHistoryData`
@@ -2019,17 +1957,16 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLParticipantPackage`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLParticipantPackage`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLParticipantPackage` (
   `PACKAGE_ID` varchar(90) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLParticipantPackage` (`PACKAGE_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLParticipantPackage`
@@ -2044,20 +1981,19 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLParticipantProcess`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLParticipantProcess`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLParticipantProcess` (
   `PROCESS_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLParticipantProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLParticipantProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLParticipantProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLParticipantProcess`
@@ -2072,21 +2008,20 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLReferences`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLReferences`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLReferences` (
   `ReferredXPDLId` varchar(90) NOT NULL,
   `ReferringXPDL` decimal(19,0) NOT NULL,
   `ReferredXPDLNumber` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLReferences` (`ReferredXPDLId`,`ReferringXPDL`),
   KEY `SHKXPDLReferences_ReferringXPDL` (`ReferringXPDL`),
   CONSTRAINT `SHKXPDLReferences_ReferringXPDL` FOREIGN KEY (`ReferringXPDL`) REFERENCES `SHKXPDLS` (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLReferences`
@@ -2101,9 +2036,8 @@ UNLOCK TABLES;
 -- Table structure for table `SHKXPDLS`
 --
 
-DROP TABLE IF EXISTS `SHKXPDLS`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLS` (
   `XPDLId` varchar(90) NOT NULL,
   `XPDLVersion` varchar(20) NOT NULL,
@@ -2111,10 +2045,10 @@ CREATE TABLE `SHKXPDLS` (
   `XPDLUploadTime` datetime NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
-  PRIMARY KEY  (`oid`),
+  PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLS` (`XPDLId`,`XPDLVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `SHKXPDLS`
@@ -2129,20 +2063,19 @@ UNLOCK TABLES;
 -- Table structure for table `app_app`
 --
 
-DROP TABLE IF EXISTS `app_app`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_app` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `name` varchar(255) default NULL,
-  `published` bit(1) default NULL,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  `license` text default NULL,
-  PRIMARY KEY  (`appId`,`appVersion`)
+  `name` varchar(255) DEFAULT NULL,
+  `published` bit(1) DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `license` text,
+  PRIMARY KEY (`appId`,`appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_app`
@@ -2157,23 +2090,22 @@ UNLOCK TABLES;
 -- Table structure for table `app_datalist`
 --
 
-DROP TABLE IF EXISTS `app_datalist`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_datalist` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
+  `name` varchar(255) DEFAULT NULL,
   `description` text,
   `json` text,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  PRIMARY KEY  (`appId`,`appVersion`,`id`),
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK5E9247A6462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK5E9247A6462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_datalist`
@@ -2188,20 +2120,19 @@ UNLOCK TABLES;
 -- Table structure for table `app_env_variable`
 --
 
-DROP TABLE IF EXISTS `app_env_variable`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_env_variable` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) NOT NULL,
   `value` text,
   `remarks` text,
-  PRIMARY KEY  (`appId`,`appVersion`,`id`),
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_env_variable`
@@ -2216,16 +2147,15 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd`
 --
 
-DROP TABLE IF EXISTS `app_fd`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd` (
   `id` varchar(255) NOT NULL,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  PRIMARY KEY  (`id`)
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_fd`
@@ -2240,23 +2170,22 @@ UNLOCK TABLES;
 -- Table structure for table `app_form`
 --
 
-DROP TABLE IF EXISTS `app_form`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_form` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `formId` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  `tableName` varchar(255) default NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `tableName` varchar(255) DEFAULT NULL,
   `json` text,
-  PRIMARY KEY  (`appId`,`appVersion`,`formId`),
+  PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK45957822462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_form`
@@ -2271,21 +2200,20 @@ UNLOCK TABLES;
 -- Table structure for table `app_message`
 --
 
-DROP TABLE IF EXISTS `app_message`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_message` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) NOT NULL,
-  `messageKey` varchar(255) default NULL,
-  `locale` varchar(255) default NULL,
+  `messageKey` varchar(255) DEFAULT NULL,
+  `locale` varchar(255) DEFAULT NULL,
   `message` text,
-  PRIMARY KEY  (`appId`,`appVersion`,`ouid`),
+  PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_message`
@@ -2300,22 +2228,21 @@ UNLOCK TABLES;
 -- Table structure for table `app_package`
 --
 
-DROP TABLE IF EXISTS `app_package`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package` (
   `packageId` varchar(255) NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `name` varchar(255) default NULL,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  `appId` varchar(255) default NULL,
-  `appVersion` bigint(20) default NULL,
-  PRIMARY KEY  (`packageId`,`packageVersion`),
+  `name` varchar(255) DEFAULT NULL,
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `appVersion` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`packageId`,`packageVersion`),
   KEY `FK852EA428462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK852EA428462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_package`
@@ -2330,25 +2257,24 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_activity_form`
 --
 
-DROP TABLE IF EXISTS `app_package_activity_form`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_form` (
   `processDefId` varchar(255) NOT NULL,
   `activityDefId` varchar(255) NOT NULL,
   `packageId` varchar(255) NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) default NULL,
-  `type` varchar(255) default NULL,
-  `formId` varchar(255) default NULL,
-  `formUrl` varchar(255) default NULL,
-  `formIFrameStyle` varchar(255) default NULL,
-  `autoContinue` bit(1) default NULL,
-  PRIMARY KEY  (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
+  `ouid` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `formId` varchar(255) DEFAULT NULL,
+  `formUrl` varchar(255) DEFAULT NULL,
+  `formIFrameStyle` varchar(255) DEFAULT NULL,
+  `autoContinue` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKA8D741D5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKA8D741D5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_package_activity_form`
@@ -2363,22 +2289,21 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_activity_plugin`
 --
 
-DROP TABLE IF EXISTS `app_package_activity_plugin`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_plugin` (
   `processDefId` varchar(255) NOT NULL,
   `activityDefId` varchar(255) NOT NULL,
   `packageId` varchar(255) NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) default NULL,
-  `pluginName` varchar(255) default NULL,
+  `ouid` varchar(255) DEFAULT NULL,
+  `pluginName` varchar(255) DEFAULT NULL,
   `pluginProperties` text,
-  PRIMARY KEY  (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
+  PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_package_activity_plugin`
@@ -2393,23 +2318,22 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_participant`
 --
 
-DROP TABLE IF EXISTS `app_package_participant`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_participant` (
   `processDefId` varchar(255) NOT NULL,
   `participantId` varchar(255) NOT NULL,
   `packageId` varchar(255) NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) default NULL,
-  `type` varchar(255) default NULL,
+  `ouid` varchar(255) DEFAULT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `value` text,
   `pluginProperties` text,
-  PRIMARY KEY  (`processDefId`,`participantId`,`packageId`,`packageVersion`),
+  PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_package_participant`
@@ -2424,21 +2348,20 @@ UNLOCK TABLES;
 -- Table structure for table `app_plugin_default`
 --
 
-DROP TABLE IF EXISTS `app_plugin_default`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_plugin_default` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) NOT NULL,
-  `pluginName` varchar(255) default NULL,
+  `pluginName` varchar(255) DEFAULT NULL,
   `pluginDescription` text,
   `pluginProperties` text,
-  PRIMARY KEY  (`appId`,`appVersion`,`id`),
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_plugin_default`
@@ -2450,26 +2373,198 @@ LOCK TABLES `app_plugin_default` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `app_report_activity`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_activity` (
+  `uuid` varchar(255) NOT NULL,
+  `activityDefId` varchar(255) DEFAULT NULL,
+  `activityName` varchar(255) DEFAULT NULL,
+  `processUid` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  KEY `FK5E33D79C918F93D` (`processUid`),
+  CONSTRAINT `FK5E33D79C918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_activity`
+--
+
+LOCK TABLES `app_report_activity` WRITE;
+/*!40000 ALTER TABLE `app_report_activity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_activity` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_report_activity_instance`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_activity_instance` (
+  `instanceId` varchar(255) NOT NULL,
+  `performer` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
+  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `due` datetime DEFAULT NULL,
+  `createdTime` datetime DEFAULT NULL,
+  `startedTime` datetime DEFAULT NULL,
+  `finishTime` datetime DEFAULT NULL,
+  `delay` bigint(20) DEFAULT NULL,
+  `timeConsumingFromCreatedTime` bigint(20) DEFAULT NULL,
+  `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
+  `activityUid` varchar(255) DEFAULT NULL,
+  `processInstanceId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`instanceId`),
+  KEY `FK9C6ABDD8B06E2043` (`activityUid`),
+  KEY `FK9C6ABDD8D4610A90` (`processInstanceId`),
+  CONSTRAINT `FK9C6ABDD8D4610A90` FOREIGN KEY (`processInstanceId`) REFERENCES `app_report_process_instance` (`instanceId`),
+  CONSTRAINT `FK9C6ABDD8B06E2043` FOREIGN KEY (`activityUid`) REFERENCES `app_report_activity` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_activity_instance`
+--
+
+LOCK TABLES `app_report_activity_instance` WRITE;
+/*!40000 ALTER TABLE `app_report_activity_instance` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_activity_instance` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_report_app`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_app` (
+  `uuid` varchar(255) NOT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `appVersion` varchar(255) DEFAULT NULL,
+  `appName` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_app`
+--
+
+LOCK TABLES `app_report_app` WRITE;
+/*!40000 ALTER TABLE `app_report_app` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_app` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_report_package`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_package` (
+  `uuid` varchar(255) NOT NULL,
+  `packageId` varchar(255) DEFAULT NULL,
+  `packageName` varchar(255) DEFAULT NULL,
+  `packageVersion` varchar(255) DEFAULT NULL,
+  `appUid` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  KEY `FKBD580A19E475ABC` (`appUid`),
+  CONSTRAINT `FKBD580A19E475ABC` FOREIGN KEY (`appUid`) REFERENCES `app_report_app` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_package`
+--
+
+LOCK TABLES `app_report_package` WRITE;
+/*!40000 ALTER TABLE `app_report_package` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_package` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_report_process`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_process` (
+  `uuid` varchar(255) NOT NULL,
+  `processDefId` varchar(255) DEFAULT NULL,
+  `processName` varchar(255) DEFAULT NULL,
+  `packageUid` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`uuid`),
+  KEY `FKDAFFF442D40695DD` (`packageUid`),
+  CONSTRAINT `FKDAFFF442D40695DD` FOREIGN KEY (`packageUid`) REFERENCES `app_report_package` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_process`
+--
+
+LOCK TABLES `app_report_process` WRITE;
+/*!40000 ALTER TABLE `app_report_process` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_process` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `app_report_process_instance`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_report_process_instance` (
+  `instanceId` varchar(255) NOT NULL,
+  `requester` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `due` datetime DEFAULT NULL,
+  `startedTime` datetime DEFAULT NULL,
+  `finishTime` datetime DEFAULT NULL,
+  `delay` bigint(20) DEFAULT NULL,
+  `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
+  `processUid` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`instanceId`),
+  KEY `FK351D7BF2918F93D` (`processUid`),
+  CONSTRAINT `FK351D7BF2918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_report_process_instance`
+--
+
+LOCK TABLES `app_report_process_instance` WRITE;
+/*!40000 ALTER TABLE `app_report_process_instance` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_report_process_instance` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `app_userview`
 --
 
-DROP TABLE IF EXISTS `app_userview`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_userview` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
+  `name` varchar(255) DEFAULT NULL,
   `description` text,
   `json` text,
-  `dateCreated` datetime default NULL,
-  `dateModified` datetime default NULL,
-  PRIMARY KEY  (`appId`,`appVersion`,`id`),
+  `dateCreated` datetime DEFAULT NULL,
+  `dateModified` datetime DEFAULT NULL,
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FKE411D54E462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKE411D54E462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `app_userview`
@@ -2484,17 +2579,16 @@ UNLOCK TABLES;
 -- Table structure for table `dir_department`
 --
 
-DROP TABLE IF EXISTS `dir_department`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_department` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  `organizationId` varchar(255) default NULL,
-  `hod` varchar(255) default NULL,
-  `parentId` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `organizationId` varchar(255) DEFAULT NULL,
+  `hod` varchar(255) DEFAULT NULL,
+  `parentId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `FKEEE8AA4418CEBAE1` (`organizationId`),
   KEY `FKEEE8AA44EF6BB2B7` (`parentId`),
   KEY `FKEEE8AA4480DB1449` (`hod`),
@@ -2502,7 +2596,7 @@ CREATE TABLE `dir_department` (
   CONSTRAINT `FKEEE8AA4480DB1449` FOREIGN KEY (`hod`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FKEEE8AA44EF6BB2B7` FOREIGN KEY (`parentId`) REFERENCES `dir_department` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_department`
@@ -2517,20 +2611,19 @@ UNLOCK TABLES;
 -- Table structure for table `dir_employment`
 --
 
-DROP TABLE IF EXISTS `dir_employment`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment` (
   `id` varchar(255) NOT NULL,
-  `userId` varchar(255) default NULL,
-  `startDate` date default NULL,
-  `endDate` date default NULL,
-  `employeeCode` varchar(255) default NULL,
-  `role` varchar(255) default NULL,
-  `gradeId` varchar(255) default NULL,
-  `departmentId` varchar(255) default NULL,
-  `organizationId` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
+  `userId` varchar(255) DEFAULT NULL,
+  `startDate` date DEFAULT NULL,
+  `endDate` date DEFAULT NULL,
+  `employeeCode` varchar(255) DEFAULT NULL,
+  `role` varchar(255) DEFAULT NULL,
+  `gradeId` varchar(255) DEFAULT NULL,
+  `departmentId` varchar(255) DEFAULT NULL,
+  `organizationId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `FKC6620ADE716AE35F` (`departmentId`),
   KEY `FKC6620ADE14CE02E9` (`gradeId`),
   KEY `FKC6620ADECE539211` (`userId`),
@@ -2540,7 +2633,7 @@ CREATE TABLE `dir_employment` (
   CONSTRAINT `FKC6620ADE716AE35F` FOREIGN KEY (`departmentId`) REFERENCES `dir_department` (`id`),
   CONSTRAINT `FKC6620ADECE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_employment`
@@ -2555,20 +2648,19 @@ UNLOCK TABLES;
 -- Table structure for table `dir_employment_report_to`
 --
 
-DROP TABLE IF EXISTS `dir_employment_report_to`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment_report_to` (
   `employmentId` varchar(255) NOT NULL,
   `reportToId` varchar(255) NOT NULL,
-  `id` varchar(255) default NULL,
-  PRIMARY KEY  (`employmentId`,`reportToId`),
+  `id` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`employmentId`,`reportToId`),
   KEY `FK53622945F4068416` (`reportToId`),
   KEY `FK536229452787E613` (`employmentId`),
   CONSTRAINT `FK536229452787E613` FOREIGN KEY (`employmentId`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FK53622945F4068416` FOREIGN KEY (`reportToId`) REFERENCES `dir_employment` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_employment_report_to`
@@ -2583,19 +2675,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_grade`
 --
 
-DROP TABLE IF EXISTS `dir_grade`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_grade` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  `organizationId` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `organizationId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `FKBC9A49A518CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A49A518CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_grade`
@@ -2610,19 +2701,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_group`
 --
 
-DROP TABLE IF EXISTS `dir_group`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_group` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  `organizationId` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `organizationId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `FKBC9A804D18CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A804D18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_group`
@@ -2637,19 +2727,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_organization`
 --
 
-DROP TABLE IF EXISTS `dir_organization`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_organization` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  `parentId` varchar(255) default NULL,
-  PRIMARY KEY  (`id`),
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `parentId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `FK55A15FA5961BD498` (`parentId`),
   CONSTRAINT `FK55A15FA5961BD498` FOREIGN KEY (`parentId`) REFERENCES `dir_organization` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_organization`
@@ -2664,16 +2753,15 @@ UNLOCK TABLES;
 -- Table structure for table `dir_role`
 --
 
-DROP TABLE IF EXISTS `dir_role`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_role` (
   `id` varchar(255) NOT NULL,
-  `name` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
+  `name` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_role`
@@ -2689,21 +2777,21 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user`
 --
 
-DROP TABLE IF EXISTS `dir_user`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user` (
   `id` varchar(255) NOT NULL,
-  `username` varchar(255) default NULL,
-  `password` varchar(255) default NULL,
-  `firstName` varchar(255) default NULL,
-  `lastName` varchar(255) default NULL,
-  `email` varchar(255) default NULL,
-  `active` int(11) default NULL,
-  `timeZone` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
+  `username` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `firstName` varchar(255) DEFAULT NULL,
+  `lastName` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `active` int(11) DEFAULT NULL,
+  `timeZone` varchar(255) DEFAULT NULL,
+  `locale` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_user`
@@ -2711,27 +2799,54 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `dir_user` WRITE;
 /*!40000 ALTER TABLE `dir_user` DISABLE KEYS */;
-INSERT INTO `dir_user` VALUES ('admin','admin','21232f297a57a5a743894a0e4a801fc3','Admin','Admin',NULL,1,'0');
+INSERT INTO `dir_user` VALUES ('admin','admin','21232f297a57a5a743894a0e4a801fc3','Admin','Admin',NULL,1,'0',NULL);
 /*!40000 ALTER TABLE `dir_user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dir_user_extra`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dir_user_extra` (
+  `username` varchar(255) NOT NULL,
+  `algorithm` varchar(255) DEFAULT NULL,
+  `loginAttempt` int(11) DEFAULT NULL,
+  `failedloginAttempt` int(11) DEFAULT NULL,
+  `lastLogedInDate` datetime DEFAULT NULL,
+  `lockOutDate` datetime DEFAULT NULL,
+  `lastPasswordChangeDate` datetime DEFAULT NULL,
+  `requiredPasswordChange` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dir_user_extra`
+--
+
+LOCK TABLES `dir_user_extra` WRITE;
+/*!40000 ALTER TABLE `dir_user_extra` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dir_user_extra` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Table structure for table `dir_user_group`
 --
 
-DROP TABLE IF EXISTS `dir_user_group`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_group` (
   `groupId` varchar(255) NOT NULL,
   `userId` varchar(255) NOT NULL,
-  PRIMARY KEY  (`userId`,`groupId`),
+  PRIMARY KEY (`userId`,`groupId`),
   KEY `FK2F0367FD159B6639` (`groupId`),
   KEY `FK2F0367FDCE539211` (`userId`),
   CONSTRAINT `FK2F0367FD159B6639` FOREIGN KEY (`groupId`) REFERENCES `dir_group` (`id`),
   CONSTRAINT `FK2F0367FDCE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_user_group`
@@ -2743,22 +2858,46 @@ LOCK TABLES `dir_user_group` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `dir_user_password_history`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dir_user_password_history` (
+  `id` varchar(255) NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `salt` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `updatedDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dir_user_password_history`
+--
+
+LOCK TABLES `dir_user_password_history` WRITE;
+/*!40000 ALTER TABLE `dir_user_password_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dir_user_password_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `dir_user_role`
 --
 
-DROP TABLE IF EXISTS `dir_user_role`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_role` (
   `roleId` varchar(255) NOT NULL,
   `userId` varchar(255) NOT NULL,
-  PRIMARY KEY  (`userId`,`roleId`),
+  PRIMARY KEY (`userId`,`roleId`),
   KEY `FK5C5FE738C8FE3CA7` (`roleId`),
   KEY `FK5C5FE738CE539211` (`userId`),
   CONSTRAINT `FK5C5FE738C8FE3CA7` FOREIGN KEY (`roleId`) REFERENCES `dir_role` (`id`),
   CONSTRAINT `FK5C5FE738CE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `dir_user_role`
@@ -2774,14 +2913,13 @@ UNLOCK TABLES;
 -- Table structure for table `objectid`
 --
 
-DROP TABLE IF EXISTS `objectid`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `objectid` (
   `nextoid` decimal(19,0) NOT NULL,
-  PRIMARY KEY  (`nextoid`)
+  PRIMARY KEY (`nextoid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `objectid`
@@ -2789,7 +2927,7 @@ SET character_set_client = @saved_cs_client;
 
 LOCK TABLES `objectid` WRITE;
 /*!40000 ALTER TABLE `objectid` DISABLE KEYS */;
-INSERT INTO `objectid` VALUES ('1000200');
+INSERT INTO `objectid` VALUES (1000200);
 /*!40000 ALTER TABLE `objectid` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2797,21 +2935,20 @@ UNLOCK TABLES;
 -- Table structure for table `wf_audit_trail`
 --
 
-DROP TABLE IF EXISTS `wf_audit_trail`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_audit_trail` (
   `id` varchar(255) NOT NULL,
-  `username` varchar(255) default NULL,
-  `clazz` varchar(255) default NULL,
-  `method` varchar(255) default NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `clazz` varchar(255) DEFAULT NULL,
+  `method` varchar(255) DEFAULT NULL,
   `message` text,
-  `timestamp` datetime default NULL,
-  `appId` varchar(255) default NULL,
-  `appVersion` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
+  `timestamp` datetime DEFAULT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `appVersion` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_audit_trail`
@@ -2826,16 +2963,15 @@ UNLOCK TABLES;
 -- Table structure for table `wf_process_link`
 --
 
-DROP TABLE IF EXISTS `wf_process_link`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_process_link` (
   `processId` varchar(255) NOT NULL,
-  `parentProcessId` varchar(255) default NULL,
-  `originProcessId` varchar(255) default NULL,
-  PRIMARY KEY  (`processId`)
+  `parentProcessId` varchar(255) DEFAULT NULL,
+  `originProcessId` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`processId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_process_link`
@@ -2850,32 +2986,31 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report`
 --
 
-DROP TABLE IF EXISTS `wf_report`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report` (
   `activityInstanceId` varchar(255) NOT NULL,
-  `processInstanceId` varchar(255) default NULL,
-  `priority` varchar(255) default NULL,
-  `createdTime` datetime default NULL,
-  `startedTime` datetime default NULL,
-  `dateLimit` bigint(20) default NULL,
-  `due` datetime default NULL,
-  `delay` bigint(20) default NULL,
-  `finishTime` datetime default NULL,
-  `timeConsumingFromDateCreated` bigint(20) default NULL,
-  `timeConsumingFromDateStarted` bigint(20) default NULL,
-  `performer` varchar(255) default NULL,
-  `nameOfAcceptedUser` varchar(255) default NULL,
-  `status` varchar(255) default NULL,
-  `state` varchar(255) default NULL,
-  `packageId` varchar(255) default NULL,
-  `processDefId` varchar(255) default NULL,
-  `activityDefId` varchar(255) default NULL,
+  `processInstanceId` varchar(255) DEFAULT NULL,
+  `priority` varchar(255) DEFAULT NULL,
+  `createdTime` datetime DEFAULT NULL,
+  `startedTime` datetime DEFAULT NULL,
+  `dateLimit` bigint(20) DEFAULT NULL,
+  `due` datetime DEFAULT NULL,
+  `delay` bigint(20) DEFAULT NULL,
+  `finishTime` datetime DEFAULT NULL,
+  `timeConsumingFromDateCreated` bigint(20) DEFAULT NULL,
+  `timeConsumingFromDateStarted` bigint(20) DEFAULT NULL,
+  `performer` varchar(255) DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `state` varchar(255) DEFAULT NULL,
+  `packageId` varchar(255) DEFAULT NULL,
+  `processDefId` varchar(255) DEFAULT NULL,
+  `activityDefId` varchar(255) DEFAULT NULL,
   `assignmentUsers` text,
-  `appId` varchar(255) default NULL,
-  `appVersion` bigint(20) default NULL,
-  PRIMARY KEY  (`activityInstanceId`),
+  `appId` varchar(255) DEFAULT NULL,
+  `appVersion` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`activityInstanceId`),
   KEY `FKB943CCA47A4E8F48` (`packageId`),
   KEY `FKB943CCA4A39D6461` (`processDefId`),
   KEY `FKB943CCA4CB863F` (`activityDefId`),
@@ -2883,7 +3018,7 @@ CREATE TABLE `wf_report` (
   CONSTRAINT `FKB943CCA4A39D6461` FOREIGN KEY (`processDefId`) REFERENCES `wf_report_process` (`processDefId`),
   CONSTRAINT `FKB943CCA4CB863F` FOREIGN KEY (`activityDefId`) REFERENCES `wf_report_activity` (`activityDefId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_report`
@@ -2898,17 +3033,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_activity`
 --
 
-DROP TABLE IF EXISTS `wf_report_activity`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_activity` (
   `activityDefId` varchar(255) NOT NULL,
-  `activityName` varchar(255) default NULL,
-  `description` varchar(255) default NULL,
-  `priority` varchar(255) default NULL,
-  PRIMARY KEY  (`activityDefId`)
+  `activityName` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `priority` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`activityDefId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_report_activity`
@@ -2923,15 +3057,14 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_package`
 --
 
-DROP TABLE IF EXISTS `wf_report_package`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_package` (
   `packageId` varchar(255) NOT NULL,
-  `packageName` varchar(255) default NULL,
-  PRIMARY KEY  (`packageId`)
+  `packageName` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`packageId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_report_package`
@@ -2946,16 +3079,15 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_process`
 --
 
-DROP TABLE IF EXISTS `wf_report_process`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_process` (
   `processDefId` varchar(255) NOT NULL,
-  `processName` varchar(255) default NULL,
-  `version` varchar(255) default NULL,
-  PRIMARY KEY  (`processDefId`)
+  `processName` varchar(255) DEFAULT NULL,
+  `version` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`processDefId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_report_process`
@@ -2970,17 +3102,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_resource_bundle_message`
 --
 
-DROP TABLE IF EXISTS `wf_resource_bundle_message`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_resource_bundle_message` (
   `id` varchar(255) NOT NULL,
-  `messageKey` varchar(255) default NULL,
-  `locale` varchar(255) default NULL,
+  `messageKey` varchar(255) DEFAULT NULL,
+  `locale` varchar(255) DEFAULT NULL,
   `message` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_resource_bundle_message`
@@ -2995,17 +3126,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_setup`
 --
 
-DROP TABLE IF EXISTS `wf_setup`;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_setup` (
   `id` varchar(255) NOT NULL,
-  `property` varchar(255) default NULL,
+  `property` varchar(255) DEFAULT NULL,
   `value` text,
-  `ordering` int(11) default NULL,
-  PRIMARY KEY  (`id`)
+  `ordering` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-SET character_set_client = @saved_cs_client;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `wf_setup`
@@ -3025,3 +3155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+-- Dump completed on 2013-08-18 10:55:49

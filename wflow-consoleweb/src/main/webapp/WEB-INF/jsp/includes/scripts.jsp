@@ -1,6 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 
 <c:if test="${!jsonUiInRequest}">
+    
+    <c:set var="userSecurity" scope="request" value='<%= DirectoryUtil.getUserSecurity() %>'/>
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/flexigrid/css/flexigrid/flexigrid.css">
@@ -22,6 +25,7 @@
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     
+    <c:if test="${!empty userSecurity && !userSecurity.allowSessionTimeout}">
     <script type="text/javascript">
         $(document).ready(function(){
             $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/clear.gif?" alt="">');
@@ -34,4 +38,5 @@
                  myImg.src = myImg.src.replace(/\?.*$/, '?' + Math.random());   
         }   
     </script>
+    </c:if>
 </c:if>

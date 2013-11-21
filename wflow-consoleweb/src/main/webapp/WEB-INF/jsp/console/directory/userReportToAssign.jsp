@@ -14,7 +14,7 @@
                 <option></option>
             <c:forEach items="${departments}" var="d">
                 <c:set var="selected"><c:if test="${d.id == param.deptId}"> selected</c:if></c:set>
-                <option value="${d.id}" ${selected}>${d.name}</option>
+                <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
             </c:forEach>
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;
@@ -23,7 +23,7 @@
                 <option></option>
             <c:forEach items="${grades}" var="g">
                 <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
-                <option value="${g.id}" ${selected}>${g.name}</option>
+                <option value="<c:out value="${g.id}"/>" ${selected}><c:out value="${g.name}"/></option>
             </c:forEach>
             </select>
             </form>

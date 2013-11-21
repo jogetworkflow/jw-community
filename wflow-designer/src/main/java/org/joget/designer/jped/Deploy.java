@@ -8,12 +8,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.enhydra.jawe.ActionBase;
 import org.enhydra.jawe.JaWEComponent;
 import org.enhydra.jawe.JaWEManager;
@@ -50,38 +44,39 @@ public class Deploy extends ActionBase {
 
             if (checkValidity(jc)) {
 
-                HttpClient httpClient = new HttpClient();
-                String url = Designer.URLPATH + "/web/json/console/app/" + Designer.APP_ID + "/" + Designer.APP_VERSION + "/package/deploy?j_username=" + Designer.USERNAME + "&hash=" + Designer.HASH;
-
-                PostMethod post = new PostMethod(url);
                 try {
+                    String url = Designer.URLPATH + "/web/json/console/app/" + Designer.APP_ID + "/" + Designer.APP_VERSION + "/package/deploy";
+                    String username = Designer.USERNAME;
+                    String sessionId = Designer.SESSION;
+                    int port =  Integer.parseInt(Designer.PORT);
+                    String cookieDomain =  Designer.DOMAIN;
+                    String cookiePath = Designer.CONTEXTPATH;
 
-                    File file = saveTempFile();
+                    // get XPDL file
+                    File file = null;
+                    try {
+                        file = saveTempFile();
 
-                    Part[] parts = {
-                        new StringPart("param_name", "value"),
-                        new FilePart("packageXpdl", file)
-                    };
+                        // POST request
+                        String jsonString = HttpUtil.httpPost(null, url, port, sessionId, cookieDomain, cookiePath,  username, null, false, false, "packageXpdl", file);
+                        if (jsonString != null) {
+                            Pattern pattern = Pattern.compile("\"([^\"]{2,})\":\"([^\"]{2,})\"");
+                            Matcher matcher = pattern.matcher(jsonString);
 
-                    post.setRequestEntity(new MultipartRequestEntity(parts, post.getParams()));
-
-                    httpClient.executeMethod(post);
-
-                    String jsonString = post.getResponseBodyAsString();
-
-                    Pattern pattern = Pattern.compile("\"([^\"]{2,})\":\"([^\"]{2,})\"");
-                    Matcher matcher = pattern.matcher(jsonString);
-
-                    while (matcher.find()) {
-                        if(matcher.group(1).equals("status") && matcher.group(2).equals("complete")){
-                             JOptionPane.showMessageDialog(null, ResourceManager.getLanguageDependentString("DeploySuccessful"));
-                             System.exit(0);
-                        }else if(matcher.group(1).equals("errorMsg")){
-                            JOptionPane.showMessageDialog(null,  matcher.group(2));
+                            while (matcher.find()) {
+                                if(matcher.group(1).equals("status") && matcher.group(2).equals("complete")){
+                                     JOptionPane.showMessageDialog(null, ResourceManager.getLanguageDependentString("DeploySuccessful"));
+                                     System.exit(0);
+                                }else if(matcher.group(1).equals("errorMsg")){
+                                    JOptionPane.showMessageDialog(null,  matcher.group(2));
+                                }
+                            }
+                        }
+                    } finally {
+                        if (file != null) {
+                            file.delete();
                         }
                     }
-                    
-                    file.delete();
 
                 } catch (Exception ex) {
                     ex.printStackTrace();

@@ -64,7 +64,9 @@
                 
             <div style="position:relative;margin-bottom:5px;">
                 <span id="embed-icon"><a onclick="toggleEmbedCode()"><fmt:message key="general.method.label.embedCode"/></a></span>
+                <c:if test="${!userSecurity.disableHashLogin}">
                 <span id="rss-icon"><a target="_blank" href="${pageContext.request.contextPath}${rssLink}"><span><fmt:message key="general.method.label.rss"/></span></a></span>
+                </c:if>
             </div>
                 
             <div style="clear:both;"></div>

@@ -216,14 +216,24 @@
                                     <version>1.2</version>
                                 </jarResource>
                                 <jarResource>
-                                    <groupId>commons-httpclient</groupId>
-                                    <artifactId>commons-httpclient</artifactId>
-                                    <version>3.1</version>
+                                    <groupId>org.apache.httpcomponents</groupId>
+                                    <artifactId>httpclient</artifactId>
+                                    <version>4.2.5</version>
+                                </jarResource>
+                                <jarResource>
+                                    <groupId>org.apache.httpcomponents</groupId>
+                                    <artifactId>httpmime</artifactId>
+                                    <version>4.2.5</version>
+                                </jarResource>
+                                <jarResource>
+                                    <groupId>org.apache.httpcomponents</groupId>
+                                    <artifactId>httpcore</artifactId>
+                                    <version>4.2.4</version>
                                 </jarResource>
                                 <jarResource>
                                     <groupId>log4j</groupId>
                                     <artifactId>log4j</artifactId>
-                                    <version>1.2.15</version>
+                                    <version>1.2.8</version>
                                 </jarResource>
                                 <jarResource>
                                     <groupId>net.sf.nimrod</groupId>
@@ -281,6 +291,7 @@
           <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
                 <executions>
                     <execution>
                         <phase>deploy</phase>

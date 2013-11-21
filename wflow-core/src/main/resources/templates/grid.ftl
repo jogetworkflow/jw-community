@@ -35,18 +35,18 @@
         <table cellspacing="0">
             <tr>
             <#list headers?keys as header>
-                <th id="${elementParamName!}_${header}">${headers[header]}</th>
+                <th id="${elementParamName!}_${header}">${headers[header]?html}</th>
             </#list>
             </tr>
             <tr class="grid-row-template" style="display:none;">
             <#list headers?keys as header>
-                <td><span id="${elementParamName!}_${header}" name="${elementParamName!}_${header}" class="grid-cell">Click to edit</span> <input class="grid-input" type="hidden" value="" /></td>
+                <td><span id="${elementParamName!}_${header?html}" name="${elementParamName!}_${header?html}" class="grid-cell">Click to edit</span> <input class="grid-input" type="hidden" value="" /></td>
             </#list>
             </tr>
             <#list rows as row>
                 <tr class="grid-row">
                 <#list headers?keys as header>
-                    <td><span id="${elementParamName!}_${header}" name="${elementParamName!}_${header}" class="grid-cell">${row[header]}</span> <input name="${elementParamName!}_${header}_${row_index}" class="grid-input" type="hidden" value="${row[header]!?html}" /></td>
+                    <td><span id="${elementParamName!}_${header?html}" name="${elementParamName!}_${header?html}" class="grid-cell">${row[header]?html}</span> <input name="${elementParamName!}_${header?html}_${row_index}" class="grid-input" type="hidden" value="${row[header]!?html}" /></td>
                 </#list>
                 </tr>
             </#list>

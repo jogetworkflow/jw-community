@@ -1,5 +1,7 @@
 package org.joget.apps.userview.model;
 
+import org.joget.commons.util.StringUtil;
+
 public abstract class UserviewMenu extends ExtElement{
 
     public static final String REDIRECT_URL_PROPERTY = "userviewRedirectUrl";
@@ -63,16 +65,17 @@ public abstract class UserviewMenu extends ExtElement{
      * @return
      */
     public String getMenu() {
-        try {
-            String decoratedMenu = getDecoratedMenu();
-            if (decoratedMenu == null || (decoratedMenu != null && decoratedMenu.trim().length() == 0)) {
-                return "<a href='" + getUrl() + "' class='menu-link default'><span>" + getPropertyString("label") + "</span></a>";
-            } else {
-                return decoratedMenu;
+        // sanitize output if not decorated. Otherwise need to sanitize in individial plugins
+        String decoratedMenu = getDecoratedMenu();
+        if (decoratedMenu == null || (decoratedMenu != null && decoratedMenu.trim().length() == 0)) {
+            // sanitize label
+            String label = getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
             }
-        } catch (Exception e) {
-            // ignore since stacktrace should already be thrown
-            return "...";
+            return "<a href='" + getUrl() + "' class='menu-link default'><span>" + label + "</span></a>";
+        } else {
+            return decoratedMenu;
         }
     }
 

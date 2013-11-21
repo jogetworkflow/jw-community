@@ -14,7 +14,7 @@
                 <option></option>
             <c:forEach items="${organizations}" var="o">
                 <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                <option value="${o.id}" ${selected}>${o.name}</option>
+                <option value="<c:out value="${o.id}"/>" ${selected}><c:out value="${o.name}"/></option>
             </c:forEach>
             </select>
             </form>

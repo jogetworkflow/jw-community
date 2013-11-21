@@ -12,11 +12,14 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginWebSupport;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
@@ -72,6 +75,13 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
         String action = request.getParameter("action");
 
         if ("getOrgs".equals(action)) {
@@ -83,7 +93,7 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
 
                 Map<String, String> empty = new HashMap<String, String>();
                 empty.put("value", "");
-                empty.put("label", "All");
+                empty.put("label", ResourceBundleUtil.getMessage("console.directory.group.empty.option.label"));
                 jsonArray.put(empty);
 
                 Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);

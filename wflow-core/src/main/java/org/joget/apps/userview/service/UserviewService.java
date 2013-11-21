@@ -6,8 +6,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.MobileElement;
+import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.Userview;
@@ -23,6 +27,7 @@ import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +41,10 @@ public class UserviewService {
     private PluginManager pluginManager;
     @Autowired
     private WorkflowUserManager workflowUserManager;
+    @Autowired
+    private AppService appService;
+    @Autowired
+    UserviewDefinitionDao userviewDefinitionDao;
     @Autowired
     @Qualifier("main")
     ExtDirectoryManager directoryManager;
@@ -237,6 +246,49 @@ public class UserviewService {
             LogUtil.error(getClass().getName(), ex, "Get Userview Name Error!!");
         }
         return "";
+    }
+    
+    public UserviewTheme getUserviewTheme(String appId, String userviewId) {
+        UserviewTheme theme = null;
+        
+        Long appVersion = appService.getPublishedVersion(appId);
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (appVersion != null && request != null) {
+            AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+            if (appDef != null) {
+                UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+                if (userviewDef != null) {
+                    String json = userviewDef.getJson();
+                    //process json with hash variable
+                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
+                    
+                    Map requestParameters = convertRequestParamMap(request.getParameterMap());
+                    requestParameters.put("contextPath", request.getContextPath());
+                    requestParameters.put("appId", appDef.getAppId());
+                    requestParameters.put("appVersion", appDef.getVersion().toString());
+                    
+                    try {
+                        Userview userview = new Userview();
+                        
+                        //set userview properties
+                        JSONObject userviewObj = new JSONObject(json);
+                        userview.setProperties(PropertyUtil.getPropertiesValueFromJson(userviewObj.getJSONObject("properties").toString()));
+                        
+                        JSONObject settingObj = userviewObj.getJSONObject("setting");
+                        JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+                        
+                        theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                        theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeObj.getJSONObject("properties").toString()));
+                        theme.setRequestParameters(requestParameters);
+                        theme.setUserview(userview);
+                        
+                    } catch (Exception e) {
+                        LogUtil.debug(getClass().getName(), "get userview theme error.");
+                    }
+                }
+            }
+        }
+        return theme;
     }
 
     public String getUserviewDescription(String json) {

@@ -8,11 +8,12 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.commons.util.SecurityUtil;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,7 +54,7 @@ public class UserviewBuilderWebController {
 
         map.addAttribute("userviewId", userviewId);
         map.addAttribute("userview", userview);
-        map.addAttribute("json", AppUtil.decryptContent(userviewJson));
+        map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
 
         map.addAttribute("setting", new UserviewSetting());
         map.addAttribute("category", new UserviewCategory());
@@ -77,7 +78,7 @@ public class UserviewBuilderWebController {
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         userview.setName(userviewService.getUserviewName(json));
         userview.setDescription(userviewService.getUserviewDescription(json));
-        userview.setJson(AppUtil.encryptContent(json));
+        userview.setJson(PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), json));
 
         boolean success = userviewDefinitionDao.update(userview);
         jsonObject.accumulate("success", success);
@@ -91,9 +92,18 @@ public class UserviewBuilderWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
+        
+        String tempJson = json;
+        if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+            UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+
+            if (userview != null) {
+                tempJson = PropertyUtil.propertiesJsonStoreProcessing(userview.getJson(), tempJson);
+            }
+        }
 
         // get the userview
-        map.addAttribute("userview", userviewService.createUserview(json, menuId, true, request.getContextPath(), request.getParameterMap(), null, false));
+        map.addAttribute("userview", userviewService.createUserview(tempJson, menuId, true, request.getContextPath(), request.getParameterMap(), null, false));
         map.addAttribute("json", json);
         return "ubuilder/preview";
     }

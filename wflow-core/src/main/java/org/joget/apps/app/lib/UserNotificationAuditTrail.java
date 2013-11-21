@@ -113,7 +113,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                             }
                             
                             if (!exclusionIds.contains(WorkflowUtil.getProcessDefIdWithoutVersion(wfActivity.getProcessDefId()) + "-" + wfActivity.getActivityDefId())) {
-                                LogUtil.info(getClass().getName(), "Users to notify: " + userList);
+                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Users to notify: " + userList);
                                 if (userList != null) {
                                     for (String username : userList) {
                                         workflowUserManager.setCurrentThreadUser(username);
@@ -192,7 +192,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                     }else{
                                                         link = "<a href=\"" + link + "\">" + link + "</a>";
                                                     }
-                                                    msg = AppUtil.processHashVariable(emailMessage + "<br><br><br>" + link, wfAssignment, null, replace);
+                                                    msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + link, wfAssignment, null, replace);
+                                                    msg = msg.replaceAll("\\n", "<br/>");
                                                     email.setHtmlMsg(msg);
                                                 }else{
                                                     msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
@@ -202,18 +203,18 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             email.setCharset("UTF-8");
                                             
                                             try {
-                                                LogUtil.info(getClass().getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
+                                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
                                                 email.send();
-                                                LogUtil.info(getClass().getName(), "Sending email completed for subject=" + email.getSubject());
+                                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
                                             } catch (EmailException ex) {
-                                                LogUtil.error(getClass().getName(), ex, "Error sending email");
+                                                LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
                                             }
                                         }
                                     }
                                 }   
                             }
                         } catch (Exception ex) {
-                            LogUtil.error(getClass().getName(), ex, "Error executing plugin");
+                            LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error executing plugin");
                         }
 
                     }
@@ -221,7 +222,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             }
             return result;
         } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error executing plugin");
+            LogUtil.error(UserNotificationAuditTrail.class.getName(), e, "Error executing plugin");
             return null;
         }
     }
@@ -239,6 +240,13 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
     }
     
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
         String action = request.getParameter("action");
         String appId = request.getParameter("appId");
         String appVersion = request.getParameter("appVersion");
@@ -270,7 +278,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                 
                 jsonArray.write(response.getWriter());
             } catch (Exception ex) {
-                LogUtil.error(this.getClass().getName(), ex, "Get activity options Error!");
+                LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Get activity options Error!");
             }
         }
     }

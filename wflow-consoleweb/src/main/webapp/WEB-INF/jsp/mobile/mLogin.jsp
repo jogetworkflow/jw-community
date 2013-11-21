@@ -62,7 +62,7 @@
                         ${userview.setting.theme.header}
                     </c:when>
                     <c:otherwise>
-                        ${userview.properties.name}
+                        <c:out value="${userview.properties.name}"/>
                     </c:otherwise>
                 </c:choose>                    
                 </h1>

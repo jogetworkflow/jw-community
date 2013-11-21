@@ -1,3 +1,281 @@
+3.2.0
+=====
+1100    Modified: wflow-designerweb - Updated jnlp jar version as workaround for Java 7u45 Permissions attribute bug @3.2-SNAPSHOT
+1099    Modified: wflow-core - Reverted datalist to render HTML by default @3.2-SNAPSHOT
+1098    Fixed: wflow-consoleweb - Improper status code for API calls with no content return. @3.2-SNAPSHOT.
+1097    Modified: wflow-consoleweb - Prevent possible script execution in Run Process popup in the web console @3.2-SNAPSHOT
+1096    Modified: wflow-core, wflow-consoleweb - Prevent possible script execution in datalist builder, grid and form button labels @3.2-SNAPSHOT
+1095    Modified: wflow-consoleweb - JSON API to return 400 when parameter type is missing or type mismatch, 500 for other errors @3.2-SNAPSHOT
+1094    Fixed: wflow-consoleweb - Directory Json Api - getDeptAndGradeOptions throw NPE. @3.2-SNAPSHOT
+1093    Fixed: wflow-consoleweb - JSON API responses should identify body content type. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Body of error response to JSON requests is not easily parsed for relevant information. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Improper 500 error response on API calls. @3.2-SNAPSHOT
+1092    Modified: wflow-wfengine/wflow-consoleweb - Improve performance of XPDL image generation. @3.2-SNAPSHOT
+1091    Fixed: wflow-core, wflow-consoleweb - Prevent script execution in form, datalist and userview builder, and don't render html in datalist @3.2-SNAPSHOT
+1090    Fixed: wflow-consoleweb - Prevent script execution when viewing process info @3.2-SNAPSHOT
+1089    Fixed: wflow-consoleweb - Form name containing XSS causes Internal Server error (code 500) while launching the Form builder @3.2-SNAPSHOT
+1088    Fixed: wflow-consoleweb - Prevent script execution in Manage Messages from System Setting @3.2-SNAPSHOT
+1087    Added: wflow-consoleweb - Added customDispatcherServlet.xml @3.2-SNAPSHOT
+1086    Fixed: wflow-consoleweb- Fixed parameter auth prints 2 authentication messages to logs if permission denied @3.2-SNAPSHOT
+1085    Modified: wflow-core - Added role access control to PluginWebSupport plugins @3.2-SNAPSHOT
+1084    Modified: wflow-consoleweb - Upgraded commons-fileupload to 1.3 to fix possible "Stream ended unexpectedly" exception @3.2-SNAPSHOT
+1083    Fixed: wflow-consoleweb - Fixed inconsistent audit logging on authentication via parameters, basic and sso @3.2-SNAPSHOT
+1082    Fixed: wflow-directory - Cannot remove employment start and end dates when editing a user @3.2-SNAPSHOT
+1081    Modified: wflow-directory - Automatically assign normal user role if user is created by a non-admin user @3.2-SNAPSHOT
+1080    Fixed: wflow-core - Fixed Run Process menu showing no permission in popup dialog and added missing i18n preview messages @3.2-SNAPSHOT
+1079    Fixed: wflow-core - Fixed Run Process menu showing no permission when configured without confirmation screen and without Run Process mapping @3.2-SNAPSHOT
+1076    Fixed: wflow-directory - UserDaoImpl - Admin role is removed when user updated by system. @3.2-SNAPSHOT
+1075    Fixed: wflow-consoleweb - Fixed intermittent login failure using API parameter auth, and prevent logging of Basic auth header @3.2-SNAPSHOT
+1074    Added: wflow-commons - Added DateUtil. @3.2-SNAPSHOT
+        Modified: wflow-core - DatePicker - Change validation to use DateUtil. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Create/Edit user - No validation for date fields. @3.2-SNAPSHOT
+1073    Fixed: wflow-consoleweb - Form and plugin mapping not working in Firefox after CSRF change in r1069 @3.2-SNAPSHOT
+1070    Fixed: wflow-core - FormDataDaoImpl - Memory leak when data storing. @ 3.2-SNAPSHOT
+1069    Modified: wflow-core, wflow-consoleweb - Updated requests that modify state to accept POST only to prevent CSRF @3.2-SNAPSHOT
+1068    Fixed: wflow-commons - SecurityUtil - Encrypt & Decrypt exception are not handle. @ 3.2-SNAPSHOT
+1067    Modified: wflow-wfengine/wflow-directory - Moved WorkflowUserManager from wflow-wfengine to wflow-directory. @3.2-SNAPSHOT
+        Modified: wflow-directory - User - Disabled non admin user to assign user with Admin Role. @ 3.2-SNAPSHOT
+1066    Modified: wflow-consoleweb - WorkflowHttpAuthProcessingFilter - Do not redirect to SavedRequest url if it is a Post request. @ 3.2-SNAPSHOT
+1065    Fixed: wflow-core - Fixed unit test failure caused by r1063 after change in FormUtil.loadFormData @3.2-SNAPSHOT
+1064    Modified: wflow-consoleweb - Property Editor - Support header in options. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Property Editor - Element Select field is not working in third level of appended page. @3.2-SNAPSHOT
+1063    Fixed: wflow-core - Fixed possible hibernate LazyInitializationException in FormUtil.loadFormData @3.2-SNAPSHOT
+1062    Added: wflow-core - Introduced FormRerefenceDataRetriever interface to allow elements to customize behavior for FormUtil.loadFormData @3.2-SNAPSHOT
+1061    Modified: wflow-consoleweb - Updated tomcat log listing to show all log files except for admin, host-manager and manager logs @3.2-SNAPSHOT
+1060    Fixed: wflow-consoleweb - Userview UI - Fixed popup dialog in login page is not theme able. @ 3.2-SNAPSHOT
+1059    Modified: wflow-consoleweb - Updated index html to handle different context paths @3.2-SNAPSHOT
+1058    Fixed: wflow-core - Fixed random authentication failures due to request.getSession sometimes returning null @3.2-SNAPSHOT
+1057    Fixed: wflow-core, wflow-consoleweb - Fixed xpdl image not generating after deployment in r1051 @3.2-SNAPSHOT
+1056    Modified: wflow-consoleweb - Minor CSS modifications for form field hints @3.2-SNAPSHOT
+1055    Fixed: wflow-consoleweb - Fixed some unauthorized json calls not returning 401, and potential session fixation in basic auth @3.2-SNAPSHOT
+1054    Modified: wflow-commons/wflow-core/wflow-consoleweb - System Setting - File Upload Size Limit. @ 3.2-SNAPSHOT
+1053    Fixed: wflow-core - Date Picker - Validation fail when manual input is enabled and its value is empty. @ 3.2-SNAPSHOT
+1052    Fixed: wflow-core - Password Field - Not working correctly with encryption. @3.2-SNAPSHOT
+1051    Modified: wflow-wfengine, wflow-core, wflow-consoleweb - jwdesigner context path is now configurable in system settings and applicationContext@3.2-SNAPSHOT
+1050    Modified: wflow-core/wflow-consoleweb - Date Picker Field - Allowed manual input. @3.2-SNAPSHOT
+1049    Fixed: wflow-consoleweb - Fixed group name validation message showing not.blank when empty @3.2-SNAPSHOT
+1048    Fixed: wflow-designer - Fixed process deployment not working due to 401 response introduced in r1038 @3.2-SNAPSHOT
+1047    Fixed: wflow-consoleweb - Fixed profile update not working for normal users in r1038 @3.2-SNAPSHOT
+1046    Fixed: wflow-consoleweb - Fixed label typo in r1044 @3.2-SNAPSHOT
+1045    Modified: wflow-commons, wflow-core - Sanitize hash variable output @3.2-SNAPSHOT
+1044    Modified: wflow-enterprise-plugins - Correction on r1039. User Profile Menu - User Profile update requires authentication. @3.2-SNAPSHOT
+1043    Modified: wflow-core - Removed unnecessary css from datepicker template @3.2-SNAPSHOT
+1042    Added: wflow-consoleweb - Added favicon_uv.ico for userviews @3.2-SNAPSHOT
+1041    Fixed: wflow-consoleweb - Fixed organization assign users popup not showing correct count @3.2-SNAPSHOT
+1040    Modified: wflow-consoleweb - Modified popup body height to resize for iframe @3.2-SNAPSHOT
+1039    Modified: wflow-consoleweb - User Profile - User Profile update requires authentication. @3.2-SNAPSHOT
+1038    Modified: wflow-consoleweb - Modified applicationContext to be secure by default, added support for basic authentication, and modified JSON API to return 401 for unauthorized calls @3.2-SNAPSHOT
+1037    Fixed: wflow-consoleweb - Fixed possible session fixation vulnerability in the JSON API SSO call @3.2-SNAPSHOT
+1036    Fixed: wflow-consoleweb - Fixed SLA icon rendering is broken in r992 @3.2-SNAPSHOT
+1035    Fixed: wflow-consoleweb - Published tick not showing in Manage App Version due to XSS fixes in r993 @3.2-SNAPSHOT
+1034    Fixed: wflow-consoleweb - Fixed incorrect URL in running activity reassignment and completion @3.2-SNAPSHOT
+1033    Modified: wflow-consoleweb - Updated additional JSON calls for admin role only @3.2-SNAPSHOT
+1032    Modified: wflow-consoleweb - Slight adjustment to the Setup Users help hint @3.2-SNAPSHOT
+1031    Fixed: wflow-consoleweb - Fixed dialog in the wrong position caused by r1024, and disable background scrolling @3.2-SNAPSHOT
+1030    Modified: wflow-consoleweb - UI - Disabled dialog draggable attribute. @3.2-SNAPSHOT
+1029    Fixed: wflow-consoleweb - Correction on r1028. UI - "Re-evaluate Assignment(s) For User" dialog style is not consistent. @3.2-SNAPSHOT
+1028    Fixed: wflow-consoleweb - UI - "Re-evaluate Assignment(s) For User" dialog style is not consistent. @3.2-SNAPSHOT
+1027    Fixed: wflow-consoleweb - UI - Footer in user, group, department and grade view is nested inside the container div. @3.2-SNAPSHOT
+1026    Fixed: wflow-consoleweb - UI - Custom style is in wrong order in popup dialog page. @3.2-SNAPSHOT
+1025    Fixed: wflow-consoleweb - Import App - UI adjustment. @3.2-SNAPSHOT
+1024    Modified: wflow-consoleweb - UI Dialog - Disabled resize option. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - UI Dialog - Position is not fixed. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - UI Dialog - Content not following userview theme style. @3.2-SNAPSHOT
+1023    Fixed: wflow-consoleweb - Correction on r1020. Password/Text Field - Data Encryption. @3.2-SNAPSHOT
+1022    Fixed: wflow-core - Fixed TestAppService unit test failing and added additional null checks in FormUtil.loadFormData @3.2-SNAPSHOT.
+1021    Added: wflow-core - Added FormUtil.loadFormData utility method to fetch form data values, and updated unit test accordingly @3.2-SNAPSHOT.
+1020    Modified: wflow-consoleweb - Password/Text Field - Data Encryption. @3.2-SNAPSHOT
+1019    Modified: wflow-commons - SetupManager/Master Login - Do not fetch/populate password in UI. @3.2-SNAPSHOT
+1018    Modified: wflow-consoleweb - Master Login - Do not fetch/populate password in UI. @3.2-SNAPSHOT
+1017    Modified: wflow-commons/wflow-consoleweb - Datasource - Do not fetch/populate password in UI. @3.2-SNAPSHOT
+1016    Modified: wflow-plugin-base/wflow-core/wflow-consoleweb - Property Editor - Do not fetch/populate password in UI. @3.2-SNAPSHOT
+1015    Modified: wflow-core, wflow-jdbc, wflow-consoleweb - Additional thread cleanup on shutdown @3.2-SNAPSHOT.
+1014    Modified: wflow-consoleweb - Updated directory JSON calls for admin role only @3.2-SNAPSHOT.
+1013    Fixed: wflow-consoleweb - Fixed participant mapping showing span tag when mapping is unavailable, caused by r998 @3.2-SNAPSHOT.
+1012    Modified: wflow-consoleweb - Added favicon to builders @3.2-SNAPSHOT.
+1011    Fixed: wflow-consoleweb - Fixed JSON SSO call not working @3.2-SNAPSHOT.
+1010    Modified: wflow-designer - Only allow login for users with admin role @3.2-SNAPSHOT.
+1009    Modified: wflow-consoleweb - Modified JSON SSO call to return additional isAdmin flag @3.2-SNAPSHOT.
+1008    Fixed: wflow-consoleweb - Embedded inbox username and password parameters not URL encoded @3.2-SNAPSHOT.
+1007    Fixed: wflow-core/wflow-consoleweb - Correction of r999. Separated log "email.log" for email activities tracking. @3.2-SNAPSHOT
+1006    Fixed: wflow-consoleweb - Builder UI - Builder navigation bar css is included after custom css. @3.2-SNAPSHOT
+1005    Fixed: wflow-consoleweb - Correction on r996. Directory - HOD value is not set correctly. @3.2-SNAPSHOT
+1004    Modified: wflow-consoleweb - Added content-container div in the web console for CSS styling @3.2-SNAPSHOT.
+1003    Modified: wflow-consoleweb - Correction on r1002. UI - Modified appearance of popup dialog title . @3.2-SNAPSHOT
+1002    Modified: wflow-consoleweb - UI - Modified appearance of popup dialog title . @3.2-SNAPSHOT
+1001    Added: wflow-consoleweb - UI - Added popupTemplate.jsp for plugin web support usage. @3.2-SNAPSHOT
+1000    Fixed: wflow-consoleweb - UI - Footer in Process view is nested inside the container div. @3.2-SNAPSHOT
+999     Modified: wflow-core/wflow-consoleweb - Separated log "email.log" for email activities tracking. @3.2-SNAPSHOT
+998     Modified: wflow-core/wflow-consoleweb - Directory - Added customizable label for empty option. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Correction on r992. Fix the XSS vulnerabilities. @3.2-SNAPSHOT
+997     Fixed: wflow-consoleweb - Fixed session persistence across tomcat restarts potentially leaking @3.2-SNAPSHOT.
+996     Fixed: wflow-directory/wflow-consoleweb - Directory - HOD value is not set correctly. @3.2-SNAPSHOT
+995     Modified: wflow-directory/wflow-consoleweb - UserSecurity - Added method requestPostProcessing. @3.2-SNAPSHOT
+994     Fixed: wflow-consoleweb - Fixed change password error message in user profile form @3.2-SNAPSHOT.
+993     Fixed: wflow-consoleweb - Correction on r992. Fix the XSS vulnerabilities. @3.2-SNAPSHOT
+992     Fixed: wflow-consoleweb - Fix the XSS vulnerabilities. @3.2-SNAPSHOT
+991     Fixed: wflow-designer - Fixed deploy not working on subsequent authentication after initial failed login @3.2-SNAPSHOT.
+990     Fixed: wflow-consoleweb - Fixed property editor validation for passwords not working @3.2-SNAPSHOT.
+988     Modified: wflow-consoleweb - Default timezone to server timezone in the user creation form @3.2-SNAPSHOT.
+987     Modified: wflow-designer - Designer now prompts repeatly for invalid logins after a session timeout @3.2-SNAPSHOT.
+986     Added: wflow-consoleweb - Added jquery-ui-1.9.2.min.js @3.2-SNAPSHOT.
+985     Modified: wflow-consoleweb - Fixed grammar in error message when passwords do not match @3.2-SNAPSHOT.
+984     Fixed: wflow-consoleweb - Process Participant Mapping - Add "." suffix to department mapping url. @3.2-SNAPSHOT
+983     Fixed: wflow-consoleweb - Process Participant Mapping - Show group/department id if name is empty. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Directory - Add "." suffix to url in org/department/group/grade table. @3.2-SNAPSHOT
+982     Fixed: wflow-consoleweb - JSON table - Escape special character in record id. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Process Participant Mapping - Encoding parameter value in participantRemoveMappingSingle method. @3.2-SNAPSHOT
+981     Fixed: wflow-consoleweb - Fixed possible IllegalStateException in unauthenticated incorrect JSON API calls and refactored anonymous checking to use WorkflowUserManager.isCurrentUserAnonymous @3.2-SNAPSHOT.
+980     Fixed: wflow-directory- DirectoryManagerProxyImpl - Prevent additional method call when primary key is null/empty. @3.2-SNAPSHOT
+        Fixed: wflow-directory- DirectoryManagerProxyImpl - Prevent additional method call when username is "roleAnonymous". @3.2-SNAPSHOT
+979     Modified: wflow-core - User/Group Permission - Modified label of blank option of Organization select box. @3.2-SNAPSHOT
+978     Fixed: wflow-consoleweb - Directory - Exclude organization from external source when create/update user/group. @3.2-SNAPSHOT
+977     Fixed: wflow-consoleweb - Fixed system settings datasource profile db fields not accepting non-alphanumeric characters, and fixed missing loading image @3.2-SNAPSHOT.
+976     Fixed: wflow-core/wflow-consoleweb - Fixed NullPointerException in WorkflowAuthenticationProvider & WorkflowUserDetails. @3.2-SNAPSHOT
+975     Modified: wflow-consoleweb - Removed redundant login unsuccessful message @3.2-SNAPSHOT.
+974     Fixed: wflow-consoleweb - Fix Error 500 IllegalStateException accessing certain JSON API calls when unauthenticated @3.2-SNAPSHOT.
+973     Modified: General - Upgraded to Spring 2.5.6.SEC03 and Spring Security 2.0.8.RELEASE @3.2-SNAPSHOT.
+972     Modified: wflow-consoleweb - If UserSecurity.disableHashLogin is true, hide master login from System Settings and RSS link from Inbox @3.2-SNAPSHOT.
+971     Modified: wflow-consoleweb - Generate new session on login to avoid session fixation vulnerability @3.2-SNAPSHOT.
+970     Modified: wflow-directory/wflow-consoleweb - UserSecurity - Added updateUserProfilePostProcessing method. @3.2-SNAPSHOT
+969     Fixed: wflow-consoleweb - Directory Manager Setting - Remove and Configure button shown when no overridden implementation. @3.2-SNAPSHOT
+968     Fixed: wflow-commons, wflow-consoleweb - Log viewing possibly allows access to files outside of logs @3.2-SNAPSHOT.
+965     Modified: wflow-directory/wfow-consoleweb - Allow directory manager to switch even default directory manager is overridden. @3.2-SNAPSHOT
+961     Fixed: wflow-consoleweb - Fixed FormDataUpdateTool hitting java.sql.SQLException: Auto-commit #1574 @3.2-SNAPSHOT.
+957     Fixed: wflow-core - Forms cannot be deleted in a protected app. (#1564) @3.2-SNAPSHOT
+956     Fixed: wflow-consoleweb - Create/Edit User - Keep clear text password in user's confirmPassword attribute. @3.2-SNAPSHOT
+955     Modified: wflow-consoleweb - Create/Edit User - Validate password format based on password policies implemented in UserSecurity interface. @3.2-SNAPSHOT
+953     Modified: wflow-consoleweb - Removed session timeout from web.xml to follow web container default @3.2-SNAPSHOT.
+952     Fixed: wflow-consoleweb - Fixed process view page exposing unneeded parameters in the URL @3.2-SNAPSHOT.
+951     Modified: wflow-directory/wflow-consoleweb - UserSecurity - Validate user on profile update. @3.2-SNAPSHOT
+950     Modified: wflow-directory/wflow-consoleweb - UserSecurity - Added getUserDetailsButtons method to add HTML button user details page. @3.2-SNAPSHOT
+949     Fixed: wflow-directory - DirectoryManagerProxyImpl - newline character is not handled correctly for default value of custom directory manager. @3.2-SNAPSHOT
+948     Fixed: wflow-core - UserNotificationAuditTrail - newline character is not replaced by <br/> when set to html content and no Hash variable in message. @3.2-SNAPSHOT
+947     Fixed: wflow-core - EmailTool - newline character is not replaced by <br/> when set to html content and no Hash variable in message. @3.2-SNAPSHOT
+946     Modified: wflow-wfengine -Modified XPDL image generation to use TLS, support expired certs, and fixed possible ClassCastException @3.2-SNAPSHOT.
+945     Modified: wflow-wfengine -Updated xerces library to 2.11.0 @3.2-SNAPSHOT.
+944     Fixed: wflow-consoleweb -Fixed jwdesigner launch broken in r928 @3.2-SNAPSHOT.
+943     Modified: wflow-plugin-base - Optimized blacklist checking code @3.2-SNAPSHOT.
+942     Modified: wflow-designer, wflow-designerweb - Added Title property in custom.properties in wflow-designerweb that can be used to override the window title @3.2-SNAPSHOT.
+941     Modified: wflow-directory - DirectoryUtil - Always return false in userIsReadonly when user is anonymous. @3.2-SNAPSHOT
+940     Modified: wflow-consoleweb/wflow-core/wflow-commons - Moved encryptContent & decryptContent method from AppUtil to StringUtil. @3.2-SNAPSHOT
+        Fixed: wflow-Directory - DirectoryManagerProxyImpl - Password property is not decrypt getCustomDirectoryManagerImpl method. @3.2-SNAPSHOT
+939     Fixed: wflow-consoleweb - ConsoleWebController - Delete all users allows you to delete yourself. @3.2-SNAPSHOT
+938     Modified: wflow-plugin-base - Property value is not escape correctly in JSON format. @3.2-SNAPSHOT
+937     Modified: wflow-install - jwdb-empty - Removed drop command. @3.2-SNAPSHOT
+936     Modified: wflow-directory - UserDaoImpl - NullPointerException in getHodByDepartmentId method. @3.2-SNAPSHOT
+935     Modified: wflow-designerweb - Removed index.jsp page. @3.2-SNAPSHOT
+934     Modified: wflow-consoleweb - Method name correction. @3.2-SNAPSHOT
+        Fixed: wflow-consoleweb - Prevent NullPointerException. @3.2-SNAPSHOT
+933     Modified: wflow-directory/wflow-consoleweb - Method name correction. @3.2-SNAPSHOT
+932     Modified: wflow-consoleweb - Disable Master login based on UserSecurity interface. @3.2-SNAPSHOT
+        Modified: wflow-directory/wflow-consoleweb - UserSecurity - validate user data before insert/update to database. @3.2-SNAPSHOT
+        Modified: wflow-directory/wflow-consoleweb - DirectoryManagerProxyImpl - Enable to use a custom directory manager plugin to override default implementation. @3.2-SNAPSHOT
+931     Modified: wflow-designer - When session has timed out, show message and prompt for username (prefilled with existing username) @3.2-SNAPSHOT.
+930     Fixed: wflow-consoleweb - WorkflowHttpAuthProcessingFilter - NullPointerException when checking hard session timeout. @3.2-SNAPSHOT
+924     Fixed: wflow-consoleweb - workflowHttpAuthProcessingFilter - Excluded authentication check on plugin webservice support. @3.2-SNAPSHOT
+920     Modified: wflow-plugin-base - Added blacklist and classpath package option to PluginManager.
+        Modified: wflow-plugin-base - Cleaned up felix config @3.2-SNAPSHOT.
+        Modified: wflow-commons, wflow-plugin-base - Upgraded xerces and xml-apis @3.2-SNAPSHOT.
+919     Fixed: wflow-consoleweb - NullPointerException when set user as HOD without setting the value of department. @ 3.2-SNAPSHOT
+918     Modified: wflow-directory/ wflow-consoleweb - Implement hard session timeout based on UserSecurity interface. @3.2-SNAPSHOT
+        Modified: wflow-directory/ wflow-consoleweb - Implement allow session timeout based on UserSecurity interface. @3.2-SNAPSHOT
+        Modified: wflow-directory/ wflow-consoleweb - Implement authenticate all JSON API based on UserSecurity interface. @3.2-SNAPSHOT
+917     Modified: wflow-consoleweb - Update Css. @3.2-SNAPSHOT
+916     Modified: wflow-consoleweb - Use UserSecurity interface for enhanced security policy. @3.2-SNAPSHOT
+915     Modified: wflow-core/wflow-consoleweb - Moved WorkflowUserDetails & WorkflowUserDetailsService. @3.2-SNAPSHOT
+914     Modified: wflow-designer, wflow-designerweb - Modified workflow designer to use jsessionid, added prompt for password if required, and added support for self-signed cert @3.2-SNAPSHOT.
+913     Added: wflow-directory - Added UserSecurity interface for enhanced security policy. @3.2-SNAPSHOT
+912     Modified: wflow-wfengine, wflow-core, wflow-consoleweb - Modified launching of workflow designer to use jsessionid, secured xpdl json api and support for xpdl image generation using self-signed cert @3.2-SNAPSHOT.
+911     Fixed: wflow-commons - Security Util - method verifyHash & generateRandomSalt calling from interface implementation is not handle properly.
+903     Added: wflow-core - Added AppUtil.getSystemVersion() method @3.2-SNAPSHOT
+902     Modified: wflow-commons - Added some JavaDoc writeup in the DataEncryption interface @3.2-SNAPSHOT
+893     Fixed: wflow-consoleweb - Fixed invalid customApplicationContext.xml @3.2-SNAPSHOT
+892     Modified: wflow-consoleweb - Modified wflow-consoleweb to enable rebranding @3.2-SNAPSHOT.
+891     Added: wflow-commons - Added DatasourceProfilePropertyManager to allow the injection of custom Properties implementations @3.2-SNAPSHOT.
+889     Modified: wflow-consoleweb - SSO - Using different url parameter for hash login and password login. @3.2-SNAPSHOT
+888     Modified: wflow-consoleweb - General Setting - Refactored setting submission handling. @3.2-SNAPSHOT
+887     Modified: wflow-consoleweb - Directory Manager Setting - Remove inapplicable directory manager plugin error. @3.2-SNAPSHOT
+886     Modified: wflow-directory/wflow-consoleweb - Orgranization, Department, Grade, Group & User - Added readonly attribute to object for directory manager plugin to disable UI editing. @3.2-SNAPSHOT
+885     Modified: wflow-consoleweb - Set HttpServletRequest to RequestContextHolder during authentication for Directory Manager usage. @3.2-SNAPSHOT
+884     Modified: wflow-consoleweb - Property Editor - Grouping of element properties page. @3.2-SNAPSHOT
+883     Modified: wflow-consoleweb/wflow-core - AppUtil - Added method to display system alert. @3.2-SNAPSHOT
+882     Modified: wflow-consoleweb - Encrypt and decrypt password property type of property editor. @3.2-SNAPSHOT
+881     Added: wflow-commons - Added SecurityUtil for data encryption, data decryption, compute hash, verify hash & generate random salt. @3.2-SNAPSHOT
+        Added: wflow-commons - Added DataEncryption interface. @3.2-SNAPSHOT
+
+3.1.1
+=====
+927     Fixed: wflow-consoleweb - Unescaped activity name in process mapping view #1595 @3.1-SNAPSHOT
+923     Fixed: wflow-core - FormPdfUtil - ITextRenderer spawned threads without releasing after use. (#1560) @3.1-SNAPSHOT
+921     Fixed: wflow-consoleweb - NullPointerException when set user as HOD without setting the value of department. @ 3.1-SNAPSHOT
+909     Fixed: wflow-core - Date Picker - 'Display Format' set to 'dd-mm-yy' not handled properly #1589 @3.1-SNAPSHOT
+878     Modified: wflow-consoleweb - Revert changes on r852. Fixed assignment not showing the published form version in the web console inbox #1498 (#1572) @3.1-SNAPSHOT.
+        Fixed: wflow-core - Inbox Menu - Assignment form inconsistency with Inbox and Userview Inbox of different App version (#1498)
+876     Fixed: wflow-core - Fixed possible xss in selectbox, checkbox and radio @3.1-SNAPSHOT.
+874     Modified: wflow-plugin-base - Modified felix configuration to prevent cache locking #1477 @3.1-SNAPSHOT
+873     Modified: wflow-install - Updated NOTICE.txt @3.1-SNAPSHOT.
+871     Fixed: wflow-core - Email Tool - Correction on r869. Attachment file name encoding issue. (#1516) @3.1-SNAPSHOT
+869     Fixed: wflow-core - Email Tool - Attachment file name encoding issue. (#1516)
+867     Fixed: wflow-wfengine - WorkflowManagerImpl - Limit does not support decimal value. (#1518) @ 3.1-SNAPSHOT
+865     Modified: wflow-core - Message Dao - Added cache for minimize loading message from database. (#1519)
+863     Fixed: wflow-core - ID Geneartion Field - Not working with a subform mapped to run process activity. (#1517) @3.1-SNAPSHOT
+859     Fixed: wflow-core - Form Data Dao - Prevent empty string add to cached column list. (#1503) @3.1-SNAPSHOT
+857     Modified: wflow-consoleweb - plugin_zh_CN - Change label. (#1499) @ 3.1-SNAPSHOT
+856     Modified: wflow-core - Form Data - Add unique value checking to prevent duplicate value in field. (#1327) @ 3.1-SNAPSHOT
+854     Modified: wflow-commons/wflow-core - Allow "target" attribute in XSS protection whitelist. (#1500) @3.1-SNAPSHOT
+852     Modified: wflow-consoleweb - Fixed assignment not showing the published form version in the web console inbox #1498 @3.1-SNAPSHOT.
+848     Modified: wflow-jdbc - Updated mysql jdbc driver to 5.1.25 @3.1-SNAPSHOT.
+845     Fixed: wflow-consoleweb - Start Process JSON API - Activity Id is not return when using latest as version number. (#1494) @ 3.1-SNAPSHOT
+844     Modified: wflow-core - Modified Export Form Email Tool to prevent unnecessary XML validation @3.1-SNAPSHOT.
+843     Modified: wflow-consoleweb - Modified tomcat logs link in header and submenu @3.1-SNAPSHOT.
+840     Fixed: wflow-core - AbstractSubForm - Process id is overwrite when subform is used in Run Process Form. (#1438) @ 3.1-SNAPSHOT
+838     Fixed: wflow-core, wflow-consoleweb - Fixed possible XSS though userview key #1470 @3.1-SNAPHSHOT
+833     Fixed: wflow-core - Datalist Export - Special character show as escape code due to XSS filter. (#1459) @ 3.1-SNAPSHOT
+824     Fixed: wflow-commons - Fixed StringUtil.stripHtmlTag removing all tags. @ 3.1-SNAPSHOT
+822     Modified: wflow-consoleweb - UI - Change X-UA-Compatible to use IE=edge @ 3.1-SNAPSHOT
+810     Fixed: wflow-consoleweb - Userview - API to retrieve published userview does not parse Hash Variable correctly. (#1409) @ 3.1-SNAPSHOT
+807     Fixed: wflow-core - Duplicate Value Validator - Not working in subform. (#1416) @3.1-SNAPSHOT
+805     Fixed: wflow-core - Custom HTML - Null Pointer Exception when element is not configure. (#1414) @3.1-SNAPSHOT
+801     Modified: wflow-commons/wflow-consoleweb - Userview - strip HTML tag in HTML page title. (#1408) @3.1-SNAPSHOT
+794     Modified: wflow-consoleweb - Log - Exclude not harmful SchemaUpdate error message from log file. @ 3.1-SNAPSHOT
+786     Fixed: wflow-core - Fixed datalist not showing links, and possible ClassCastException for dates introduced in r783 @ 3.1-SNAPSHOT
+784     Fixed: wflow-wfengine - Workflow Manager - getAssignmentSize return incorrect value. (#1380) @ 3.1-SNAPSHOT
+777     Fixed: wflow-commons - File Manager - Files uploaded with + or %20 in file name cannot be found later on. (#1322, #1370) @ 3.1-SNAPSHOT
+775     Fixed: wflow-core - Datalist Decorator - XSS vulnerability. (#1372) @ 3.1-SNAPSHOT
+773     Fixed: wflow-core - Text Area - XSS vulnerability. (#1372) @ 3.1-SNAPSHOT
+741     Fixed: wflow-core - Email Tool - Workflow Variable Hash Variable is not working. (#1348)
+740     Fixed: wflow-core - Json Tool - Unicode encoding issue.
+738     Modified: wflow-consoleweb - Log4j - Remove info log from FormDataLocalSessionFactory.
+737     Fixed: wflow-core - Form Data Dao Impl - Hibernate file corrupted when too many current storing with dynamic number of field. (#1336)
+736     Added: wflow-core - Date Picker - Added zh locale support for date picker. (#1168)
+735     Fixed: wflow-consoleweb - LocalLocaleResolver - wrong locale passed to request attribute.
+734     Modified: wflow-core/wflow-consoleweb - Hidden Field - Support different priority of data loading from database & default value.
+        Modified: wflow-core/wflow-consoleweb - Date Picker - Support for different storing date format.
+733     Modified: Wflow-core - Selectbox/ Radio/ Checkbox - Improve dynamics option logic.
+732     Added: Wflow-consoleweb - Added empty extend.jsp for Form Builder for future used.
+731     Modified: wflow-cosoleweb - CSS changes for r729.
+730     Modified: wflow-core - Hidden Field - Remove checking for empty value. (#1321)
+729     Modified: wflow-consoleweb - Remove autocomplete js library and use Jquery UI autocomplete library.
+728     Added: wflow-core - Form - Added FormPDfUtil. (#1215)
+727     Fixed: wflow-consoleweb - Userview - Default cursor css of menu link is not pointer. (#1320)
+726     Fixed: wflow-consoleweb - Form/ Datalist/ Userview Builder - Force IE to use IE8 compatible mode. (#1276, #1301)
+725     Added: wflow-core/wflow-consoleweb - Text Field Datalist Filter - Support default initial value. (#723)
+724     Fixed: wflow-consoleweb - Email Tool/ User Notification - zh_CN message bundle correction. (#1314)
+723     Fixed: wflow-enterprise-plugins - Inbox Menu - Disable sorting for non-sortable column. (#1310)
+722     Modified: wflow-consoleweb - Increased max active transactions in jta.properties
+721     Fixed: wflow-core - Inbox Menu - Paging not working due to changes in r685.
+720     Modified: wflow-wfengine - Workflow Manager - Ignore process version checking in getAssignmentList method. (#1264)
+719     Fixed: wflow-core - Form Util - findElement method return Form instead of field element when both have same id. (#1304)
+718     Fixed: wflow-core - Check Box/Radio Button/Select Box - Validation/Data Storing not working properly on Multi Paged Form. (#1285)
+715     Modified: wflow-plugin-base - Upgraded apache felix version to 4.0.3.
+714     Fixed: wflow-core - Custom Html - Free Marker exception when no configuration was set. (#1290)
+712     Modified: wflow-designer: Removed unnecessary configuration in the help menu.
+711     Modified: wflow-core - Userview Menu - Support to use javascript reload in popup redirection. (#1281)
+710     Modified: wflow-consoleweb - Fixed inconsistencies and grammar mistakes in language properties files.
+709     Fixed: wflow-core - Request Parameter Hash Variable - Null Pointer Exception is not handle properly.
+708     Fixed: wflow-core - DataListBinderDefault - Null Pointer Exceptions when condition does not require a value. (#1271)
+707     Fixed: wflow-consoleweb - Datalist and Form Builder - Preview tag not showing in IE9
 
 3.1.0
 =====

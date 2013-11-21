@@ -47,7 +47,7 @@
                         <select id="profileList">
                             <c:forEach items="${profileList}" var="profile">
                                 <c:set var="selected"><c:if test="${profile == currentProfile}"> selected</c:if></c:set>
-                                <option ${selected}>${profile}</option>
+                                <option ${selected}><c:out value="${profile}"/></option>
                             </c:forEach>
                         </select>
                         <button type="button" onclick="changeProfile()"><fmt:message key="console.setting.datasource.label.switchProfile"/></button>
@@ -63,25 +63,25 @@
                     <div class="form-row">
                         <label for="workflowDriver"><fmt:message key="console.setting.datasource.label.driverName"/></label>
                         <span class="form-input">
-                            <input id="workflowDriver" type="text" name="workflowDriver" value="${settingMap['workflowDriver']}"/>
+                            <input id="workflowDriver" type="text" name="workflowDriver" value="<c:out value="${settingMap['workflowDriver']}"/>"/>
                         </span>
                     </div>
                     <div class="form-row">
                         <label for="workflowUrl"><fmt:message key="console.setting.datasource.label.url"/></label>
                         <span class="form-input">
-                            <input id="workflowUrl" type="text" name="workflowUrl" value="${settingMap['workflowUrl']}"/>
+                            <input id="workflowUrl" type="text" name="workflowUrl" value="<c:out value="${settingMap['workflowUrl']}"/>"/>
                         </span>
                     </div>
                     <div class="form-row">
                         <label for="workflowUser"><fmt:message key="console.setting.datasource.label.user"/></label>
                         <span class="form-input">
-                            <input id="workflowUser" type="text" name="workflowUser" value="${settingMap['workflowUser']}"/>
+                            <input id="workflowUser" type="text" name="workflowUser" value="<c:out value="${settingMap['workflowUser']}"/>"/>
                         </span>
                     </div>
                     <div class="form-row">
                         <label for="workflowPassword"><fmt:message key="console.setting.datasource.label.password"/></label>
                         <span class="form-input">
-                            <input id="workflowPassword" type="password" name="workflowPassword" value="${settingMap['workflowPassword']}"/>
+                            <input id="workflowPassword" type="password" name="workflowPassword" value="<c:out value="${settingMap['workflowPassword']}"/>"/>
                         </span>
                     </div>
                 </span>
@@ -105,7 +105,7 @@
 <script>
     var profileList= [];
     <c:forEach items="${profileList}" var="profile">
-        profileList.push('${profile}');
+        profileList.push('<c:out value="${profile}"/>');
     </c:forEach>
 
     var datasources = ['workflow'];
@@ -157,14 +157,14 @@
                     }
                 }
             };
-            var img = '<img src="${pageContext.request.contextPath}/images/new/loading.gif">';
+            var img = '<img src="${pageContext.request.contextPath}/images/v3/loading.gif">';
             $('#testConnection #' + datasources[i] + 'TestConnection .connectionStatus').html(img);
 
             var driver   = $('#' + datasources[i] + 'Driver').val();
             var url      = $('#' + datasources[i] + 'Url').val();
             var user     = $('#' + datasources[i] + 'User').val();
             var password = $('#' + datasources[i] + 'Password').val();
-            var testParam = "datasource=" + datasources[i] + "&driver=" + driver + "&url=" + url + "&user=" + user + "&password=" + password;
+            var testParam = "datasource=" + datasources[i] + "&driver=" + encodeURIComponent(driver) + "&url=" + encodeURIComponent(url) + "&user=" + encodeURIComponent(user) + "&password=" + encodeURIComponent(password);
 
             ConnectionManager.post(testUrl, testCallback, testParam);
         }

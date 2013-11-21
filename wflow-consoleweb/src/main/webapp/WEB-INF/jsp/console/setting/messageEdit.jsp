@@ -20,7 +20,7 @@
                 <legend><fmt:message key="console.setting.message.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.setting.message.common.label.key"/></label>
-                    <span class="form-input">${message.key}<input id="id" type="hidden" value="${message.id}" name="id"/></span>
+                    <span class="form-input"><c:out value="${message.key}"/><input id="id" type="hidden" value="${message.id}" name="id"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.setting.message.common.label.locale"/></label>

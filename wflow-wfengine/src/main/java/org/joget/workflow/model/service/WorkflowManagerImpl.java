@@ -4388,7 +4388,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             WMSessionHandle shandle = sc.getSessionHandle();
             Shark shark = Shark.getInstance();
-
+            
             shark.getExecutionAdministration().checkDeadlinesWithFiltering(shandle, null);
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -4399,6 +4399,63 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+    }
+    
+    public Collection<String> getRunningProcessIds() {
+        SharkConnection sc = null;
+        Collection<String> runningProcesseIds = new ArrayList<String>();
+        
+        try {
+            sc = connect();
+            
+            WfProcessIterator pi = sc.get_iterator_process();
+
+            String sharkExpression = "stateequals.(\"open.running\")";
+            String sqlExpression = "State = (SELECT oid FROM SHKProcessStates WHERE Name = 'open.running')";
+
+            String query_expression = "(" + sharkExpression + ")" + " /*sql (" + sqlExpression + ") sql*/ ";
+            pi.set_query_expression(query_expression);
+
+            WfProcess[] wfRunningProcessList = pi.get_next_n_sequence(0);
+
+            for (int i = 0; i < wfRunningProcessList.length; ++i) {
+                WfProcess wfProcess = wfRunningProcessList[i];
+
+                runningProcesseIds.add(wfProcess.key());
+            }
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return runningProcesseIds;
+    }
+    
+    public boolean internalCheckDeadlines(String[] pids) {
+        SharkConnection sc = null;
+        boolean success = false;
+        
+        try {
+            sc = connect();
+            WMSessionHandle shandle = sc.getSessionHandle();
+            Shark shark = Shark.getInstance();
+            
+            shark.getExecutionAdministration().checkDeadlinesForProcesses(shandle, pids);
+            success = true;
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return success;
     }
 
     public void internalRemoveProcessOnComplete(String procInstanceId) {

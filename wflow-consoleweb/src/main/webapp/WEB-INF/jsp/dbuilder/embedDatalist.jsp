@@ -25,7 +25,7 @@
         $(document).ready(function() {   
             // hide submit button and add insert button
             $(".actions button").hide();
-            var button = $('<button id="insert">${buttonLabel}</button>');
+            var button = $('<button id="insert"><c:out value="${buttonLabel}"/></button>');
             $(".actions").append(button);
 
             // set parent ID

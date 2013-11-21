@@ -1,5 +1,6 @@
-<%@ page import="org.joget.apps.userview.model.UserviewMenu"%>
-<%@ page import="org.springframework.util.StopWatch"%>
+<%@page import="org.joget.apps.userview.model.UserviewMenu"%>
+<%@page import="org.joget.apps.app.service.AppUtil"%>
+<%@page import="org.springframework.util.StopWatch"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
@@ -90,7 +91,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
             <c:if test="${isQuickEditEnabled}">
             <div class="quickEdit" style="display: none">
-                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}?menuId=${userview.current.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.page"/>: ${userview.current.properties.label}</a>
+                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}?menuId=${userview.current.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.page"/>: <c:out value="${userview.current.properties.label}"/></a>
             </div>            
             </c:if>
             <c:set var="properties" scope="request" value="${userview.current.properties}"/>
@@ -185,7 +186,6 @@ if (MobileUtil.isMobileUserAgent(request)) {
             .quickEdit, #form-canvas .quickEdit {
                 display: none;
             }
-            ${userview.setting.theme.css}
         </style>
         
         <script type="text/javascript">
@@ -200,7 +200,15 @@ if (MobileUtil.isMobileUserAgent(request)) {
             }
             
             ${userview.setting.theme.javascript}
+            UI.userview_app_id = '${appId}';
+            UI.userview_id = '${userview.properties.id}';
         </script>
+
+        <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
+        <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon_uv.ico"/>
+        <style type="text/css">
+            ${userview.setting.theme.css}
+        </style>
     </head>
 
     <body id="${bodyId}" class="<c:if test="${embed}">embeded</c:if><c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}"> rtl</c:if>">
@@ -214,10 +222,10 @@ if (MobileUtil.isMobileUserAgent(request)) {
                     <c:otherwise>
                         <div id="header-info">
                             <div id="header-name">
-                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${userview.properties.homeMenuId}" id="header-link"><span id="name">${userview.properties.name}</span></a>
+                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${userview.properties.homeMenuId}" id="header-link"><span id="name"><ui:stripTag html="${userview.properties.name}" relaxed="true"/></span></a>
                             </div>
                             <div id="header-description">
-                                <span id="description">${userview.properties.description}</span>
+                                <span id="description"><ui:stripTag html="${userview.properties.description}" relaxed="true"/></span>
                             </div>
                             <div class="clear"></div>
                         </div>
@@ -226,7 +234,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
 
                 <div id="header-message">
                     <div id="header-welcome-message">
-                        <span id="welcomeMessage">${userview.properties.welcomeMessage}</span>
+                        <span id="welcomeMessage"><ui:stripTag html="${userview.properties.welcomeMessage}" relaxed="true"/></span>
                     </div>
                     <div id="header-logout-text">
                         <c:choose>
@@ -234,7 +242,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
                                 <a href="${pageContext.request.contextPath}/web/ulogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>"><span id="loginText"><fmt:message key="ubuilder.login"/></span></a>
                             </c:when>
                             <c:otherwise>
-                                <a href="${pageContext.request.contextPath}/j_spring_security_logout"><span id="logoutText">${userview.properties.logoutText}</span></a>
+                                <a href="${pageContext.request.contextPath}/j_spring_security_logout"><span id="logoutText"><ui:stripTag html="${userview.properties.logoutText}" relaxed="true"/></span></a>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -256,7 +264,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
                         <div id="navigation">
                             <c:if test="${isQuickEditEnabled}">
                             <div class="quickEdit" style="display: none">
-                                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.menu"/>: ${userview.properties.name}</a>
+                                <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.menu"/>: <c:out value="${userview.properties.name}"/></a>
                             </div>
                             </c:if>
                             <div id="category-container">
@@ -280,10 +288,10 @@ if (MobileUtil.isMobileUserAgent(request)) {
                                                 <c:choose>
                                                     <c:when test="${!empty firstMenuItem && firstMenuItem.homePageSupported}">
                                                         <c:set var="menuItemId" value="${firstMenuItem.properties.menuId}"/>
-                                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${menuItemId}"><span>${category.properties.label}</span></a>
+                                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${menuItemId}"><span><ui:stripTag html="${category.properties.label}" relaxed="true"/></span></a>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span>${category.properties.label}</span>
+                                                        <span><ui:stripTag html="${category.properties.label}" relaxed="true"/></span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>
@@ -329,7 +337,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
                     </c:when>
                     <c:otherwise>
                         <div id="footer-message">
-                            <span id="footerMessage">${userview.properties.footerMessage}</span>
+                            <span id="footerMessage"><ui:stripTag html="${userview.properties.footerMessage}" relaxed="true"/></span>
                         </div>
                     </c:otherwise>
                 </c:choose>

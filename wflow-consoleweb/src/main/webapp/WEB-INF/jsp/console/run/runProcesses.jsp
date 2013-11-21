@@ -40,8 +40,8 @@
             <c:set var="appDefinition" value="${appEntry.key}"/>
             <c:set var="processList" value="${appEntry.value}"/>
             <li class="main-grid-item">
-                <div class="main-grid-title">${appDefinition.name}</div>
-                <div class="main-grid-corner"><fmt:message key="console.app.common.label.version"/> ${appDefinition.version}</div>
+                <div class="main-grid-title"><c:out value="${appDefinition.name}"/></div>
+                <div class="main-grid-corner"><fmt:message key="console.app.common.label.version"/> <c:out value="${appDefinition.version}"/></div>
                 <div class="main-grid-description"></div>
                 <ul class="main-subgrid">
                 <c:if test="${empty processList[0]}">
@@ -51,9 +51,9 @@
                 </c:if>
                 <c:forEach items="${processList}" var="processDefinition">
                     <li class="main-subgrid-item">
-                        <div class="main-subgrid-title">${processDefinition.name}</div>
+                        <div class="main-subgrid-title"><c:out value="${processDefinition.name}"/></div>
                         <div class="main-subgrid-action">
-                            <button onclick="runProcess('${appDefinition.id}','${appDefinition.version}','${processDefinition.idWithoutVersion}')"><fmt:message key="console.run.launch"/></button>
+                            <button onclick="runProcess('<c:out value="${appDefinition.id}"/>','<c:out value="${appDefinition.version}"/>','<c:out value="${processDefinition.idWithoutVersion}"/>')"><fmt:message key="console.run.launch"/></button>
                         </div>
                         <div class="main-subgrid-description"><!-- <fmt:message key="console.app.general.label.version"/> ${processDefinition.version} --></div>
                     </li>

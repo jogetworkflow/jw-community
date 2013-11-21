@@ -28,6 +28,7 @@ import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
@@ -96,8 +97,14 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         if (showRowCount) {
             int rowCount = getDataTotalRowCount();
 
+            // sanitize label
+            String label = getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+
             // generate menu link
-            menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + getPropertyString("label") + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
+            menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
         }
         return menuItem;
     }
@@ -268,6 +275,12 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     protected String handleForm() {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if ("submit".equals(getRequestParameterString("_action"))) {
+            // only allow POST
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
+                return "userview/plugin/unauthorized.jsp";
+            }
+            
             // submit form
             submitForm();
         } else {
@@ -471,6 +484,13 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
         String action = request.getParameter("action");
 
         if ("getProcesses".equals(action)) {

@@ -195,6 +195,18 @@
     -webkit-transform: rotate(45deg);  /* Saf3.1+ */
     transform: rotate(45deg);
 }
+.tooltips, #form-canvas .tooltips {
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+    padding: 5px 0 5px 5px;
+}
+.tooltips > span, #form-canvas .tooltips > span {
+    display:block;
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+}
 #preview-label.ie {
     top: -60px;
     right: -150px;

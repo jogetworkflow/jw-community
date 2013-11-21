@@ -1,8 +1,10 @@
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ tag import="org.joget.commons.util.HostManager"%>
 <%@tag import="org.joget.apps.app.service.AppUtil"%>
+<%@tag import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
+    </div>
 </div>
 
 <div id="footer">

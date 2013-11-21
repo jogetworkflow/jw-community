@@ -1,5 +1,6 @@
 <%@page contentType="application/x-java-jnlp-file" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="serverPath" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}" />
 
 <%
@@ -27,7 +28,7 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
     <update check="background" policy="prompt-update"/>
     <resources>
         <j2se version="1.5+"/>
-        <jar href="wflow-designer.jar" version="4.0-SNAPSHOT" main="true"/>
+        <jar href="wflow-designer-4.0-SNAPSHOT.jar" main="true"/>
         <jar href="jped.jar" version="2.0"/>
         <jar href="jped-highlight.jar" version="2.0"/>
         <jar href="jgraph.jar" version="5.10.2.0"/>
@@ -39,9 +40,10 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <jar href="commons-discovery.jar" version="0.2"/>
         <jar href="commons-logging.jar" version="1.0.4"/>
         <jar href="officelnfs.jar" version="2.7"/>
-        <jar href="xml-apis.jar" version="1.3.04"/>
-        <jar href="log4j.jar" version="1.2.15"/>
-        <jar href="commons-httpclient.jar" version="3.1"/>
+        <jar href="log4j.jar" version="1.2.8"/>
+        <jar href="httpclient.jar" version="4.2.5"/>
+        <jar href="httpcore.jar" version="4.2.4"/>
+        <jar href="httpmime.jar" version="4.2.5"/>
         <jar href="nimrod-laf.jar" version="1.2"/>
     </resources>
     <application-desc main-class="org.joget.designer.Designer">
@@ -51,6 +53,8 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <c:if test="${!empty param.url}">
             <argument>${param.url}</argument>
         </c:if>
+            <fmt:setBundle basename="custom" var="custom"/>
+            <argument>title:<fmt:message key="Title" bundle="${custom}"/></argument>
         <c:if test="${!empty param.path}">
             <argument>path:${param.path}</argument>
         </c:if>
@@ -63,9 +67,23 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <c:if test="${!empty param.locale}">
             <argument>locale:${param.locale}</argument>
         </c:if>
-        <c:if test="${!empty param.username && !empty param.hash}">
+        <c:if test="${!empty param.username}">
             <argument>username:${param.username}</argument>
+        </c:if>
+        <c:if test="${!empty param.hash}">
             <argument>hash:${param.hash}</argument>
+        </c:if>
+        <c:if test="${!empty param.domain}">
+            <argument>domain:${param.domain}</argument>
+        </c:if>
+        <c:if test="${!empty param.port}">
+            <argument>port:${param.port}</argument>
+        </c:if>
+        <c:if test="${!empty param.context}">
+            <argument>context:${param.context}</argument>
+        </c:if>
+        <c:if test="${!empty param.session}">
+            <argument>session:${param.session}</argument>
         </c:if>
     </application-desc>
 </jnlp>

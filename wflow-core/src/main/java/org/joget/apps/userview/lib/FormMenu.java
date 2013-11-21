@@ -3,6 +3,7 @@ package org.joget.apps.userview.lib;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.service.AppService;
@@ -16,8 +17,10 @@ import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -78,7 +81,13 @@ public class FormMenu extends UserviewMenu {
     @Override
     public String getDecoratedMenu() {
         if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-            String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_showDialog();return false;\" class=\"menu-link\"><span>" + getPropertyString("label") + "</span></a>";
+            // sanitize label
+            String label = getPropertyString("label");
+            if (label != null) {
+                label = StringUtil.stripHtmlRelaxed(label);
+            }
+
+            String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_showDialog();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
             menu += "<script>\n";
 
             if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
@@ -100,6 +109,12 @@ public class FormMenu extends UserviewMenu {
     @Override
     public String getJspPage() {
         if ("submit".equals(getRequestParameterString("_action"))) {
+            // only allow POST
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
+                return "userview/plugin/unauthorized.jsp";
+            }
+            
             // submit form
             submitForm();
         } else {

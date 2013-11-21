@@ -24,33 +24,36 @@
             </c:if>
             <li><button onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
         </ul>
+        <c:if test="${!empty addOnButtons}">
+            ${addOnButtons}
+        </c:if>
     </div>
     <div id="main-body">
         <fieldset class="view">
             <legend><fmt:message key="console.directory.user.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.username"/></label>
-                <span class="form-input">${user.username}</span>
+                <span class="form-input"><c:out value="${user.username}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
-                <span class="form-input">${user.firstName}</span>
+                <span class="form-input"><c:out value="${user.firstName}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.lastName"/></label>
-                <span class="form-input">${user.lastName}</span>
+                <span class="form-input"><c:out value="${user.lastName}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.email"/></label>
-                <span class="form-input">${user.email}</span>
+                <span class="form-input"><c:out value="${user.email}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.role"/></label>
-                <span class="form-input">${roles}</span>
+                <span class="form-input"><c:out value="${roles}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.timeZone"/></label>
-                <span class="form-input">${user.timeZoneLabel}</span>
+                <span class="form-input"><c:out value="${user.timeZoneLabel}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.status"/></label>
@@ -70,17 +73,17 @@
             <legend><fmt:message key="console.directory.employment.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.employeeCode"/></label>
-                <span class="form-input">${employment.employeeCode}</span>
+                <span class="form-input"><c:out value="${employment.employeeCode}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.role"/></label>
-                <span class="form-input">${employment.role}</span>
+                <span class="form-input"><c:out value="${employment.role}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.department"/></label>
                 <span class="form-input">
                     <c:if test="${!empty employment.department}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${employment.department.id}">${employment.department.name}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${employment.department.id}"><c:out value="${employment.department.name}"/></a>
                     </c:if>
                 </span>
             </div>
@@ -88,7 +91,7 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.grade"/></label>
                 <span class="form-input">
                     <c:if test="${!empty employment.grade}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/grade/view/${employment.grade.id}">${employment.grade.name}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/grade/view/${employment.grade.id}"><c:out value="${employment.grade.name}"/></a>
                     </c:if>
                 </span>
             </div>
@@ -96,17 +99,17 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.organization"/></label>
                 <span class="form-input">
                     <c:if test="${!empty employment.organization}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/org/view/${employment.organization.id}">${employment.organization.name}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/org/view/${employment.organization.id}"><c:out value="${employment.organization.name}"/></a>
                     </c:if>
                 </span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.startDate"/></label>
-                <span class="form-input">${employment.startDate}</span>
+                <span class="form-input"><c:out value="${employment.startDate}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.endDate"/></label>
-                <span class="form-input">${employment.endDate}</span>
+                <span class="form-input"><c:out value="${employment.endDate}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.hod"/></label>
@@ -125,25 +128,13 @@
                 <label for="field1"><fmt:message key="console.directory.employment.common.label.reportTo"/></label>
                 <span class="form-input">
                     <c:if test="${!empty employment.employmentReportTo && !empty employment.employmentReportTo.reportTo && !empty employment.employmentReportTo.reportTo.user}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${employment.employmentReportTo.reportTo.user.id}.">${employment.employmentReportTo.reportTo.user.firstName} ${employment.employmentReportTo.reportTo.user.lastName}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${employment.employmentReportTo.reportTo.user.id}."><c:out value="${employment.employmentReportTo.reportTo.user.firstName} ${employment.employmentReportTo.reportTo.user.lastName}"/></a>
                     </c:if>
                 </span>
             </div>
         </fieldset>
         <div class="view">
             <div class="main-body-content-subheader"><span><fmt:message key="console.directory.user.common.label.groupList"/><span></div>
-            <div id="main-body-content-filter">
-                <form>
-                <fmt:message key="console.directory.group.filter.label.byOrganization"/>
-                <select id="JsonDataTable_filterbyOrg" onchange="filter(JsonDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                    <option></option>
-                <c:forEach items="${organizations}" var="o">
-                    <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                    <option value="${o.id}" ${selected}>${o.name}</option>
-                </c:forEach>
-                </select>
-                </form>
-            </div>
             <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/user/group/list?userId=${user.id}&${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="groupList"
@@ -154,6 +145,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/group/view"
                        hrefParam="id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"
@@ -172,6 +164,7 @@
                        column4="{key: 'organization.name', label: 'console.directory.group.common.label.organization', sortable: false}"
                        />
         </div>
+    </div>
 </div>
 
 <script>
@@ -238,13 +231,6 @@
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${user.id}/group/unassign', callback, 'ids='+ selectedIds);
         }
     }
-
-    var org_filter = window.filter;
-    var filter = function(jsonTable, url, value){
-        url = "&orgId=" + $('#JsonDataTable_filterbyOrg').val();
-        url += "&name=" + $('#JsonDataTable_searchCondition').val();
-        org_filter(jsonTable, url, '');
-    };
 </script>
 
 <script>

@@ -7,11 +7,17 @@ import org.enhydra.jawe.base.editor.XPDLElementEditor;
 
 public class Designer {
 
+    public static String TITLE = "";
     public static String URLPATH = "";
     public static String USERNAME = "";
     public static String HASH = "";
+    public static String PASSWORD = "";
     public static String APP_ID = "";
     public static String APP_VERSION = "";
+    public static String DOMAIN = "";
+    public static String CONTEXTPATH = "";
+    public static String PORT = "";
+    public static String SESSION = "";
 
     /**
      * Checks to see if a package is defined and fixed (non-changeable)
@@ -34,10 +40,20 @@ public class Designer {
                 APP_ID = args[i].substring("appId:".length());
             } else if (args[i].startsWith("appVersion:")) {
                 APP_VERSION = args[i].substring("appVersion:".length());
+            } else if (args[i].startsWith("title:")) {
+                TITLE = args[i].substring("title:".length());
             } else if (args[i].startsWith("username:")) {
                 USERNAME = args[i].substring("username:".length());
             } else if (args[i].startsWith("hash:")) {
                 HASH = args[i].substring("hash:".length());
+            } else if (args[i].startsWith("domain:")) {
+                DOMAIN = args[i].substring("domain:".length());
+            } else if (args[i].startsWith("port:")) {
+                PORT = args[i].substring("port:".length());
+            } else if (args[i].startsWith("context:")) {
+                CONTEXTPATH = args[i].substring("context:".length());
+            } else if (args[i].startsWith("session:")) {
+                SESSION = args[i].substring("session:".length());
             } else if (args[i].startsWith("locale:")) {
                 argument[1] = args[i].substring("locale:".length());
             } else {

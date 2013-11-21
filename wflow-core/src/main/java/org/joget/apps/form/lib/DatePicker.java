@@ -3,6 +3,7 @@ package org.joget.apps.form.lib;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -12,6 +13,8 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.DateUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 
 public class DatePicker extends Element implements FormBuilderPaletteElement {
 
@@ -33,12 +36,13 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "datePicker.ftl";
-
+        
+        String displayFormat = getJavaDateFormat(getPropertyString("format"));
+        
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
         if (!FormUtil.isFormSubmitted(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
             try {
-                String displayFormat = getJavaDateFormat(getPropertyString("format"));
                 if (!displayFormat.equals(getPropertyString("dataFormat"))) {
                     SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
                     SimpleDateFormat display = new SimpleDateFormat(displayFormat);
@@ -47,6 +51,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                 }
             } catch (Exception e) {}
         }
+        
+        dataModel.put("displayFormat", displayFormat.toUpperCase());
+        
         dataModel.put("value", value);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
@@ -148,5 +155,23 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         }
         
         return format;
+    }
+    
+    @Override
+    public Boolean selfValidate(FormData formData) {
+        Boolean valid = true;
+        String id = FormUtil.getElementParameterName(this);
+        String value = FormUtil.getElementPropertyValue(this, formData);
+        
+        if (value != null && !value.isEmpty()) {
+            String displayFormat = getJavaDateFormat(getPropertyString("format"));
+            valid = DateUtil.validateDateFormat(value, displayFormat);
+            
+            if (!valid) {
+                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.invalidFormat"));
+            }
+        }
+        
+        return valid;
     }
 }

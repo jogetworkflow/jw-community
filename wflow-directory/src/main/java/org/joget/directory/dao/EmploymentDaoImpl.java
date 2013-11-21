@@ -255,7 +255,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             //get only 1st employment
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
-                if (employment.getHods().contains(department)) {
+                if (department != null && employment.getHods().contains(department)) {
                     employment.getHods().clear();
                     saveOrUpdate("Employment", employment);
                     department.setHod(null);
@@ -324,6 +324,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && organization != null) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
                 if (!organization.getId().equals(employment.getOrganizationId())) {
+                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
+                        Department orgDepartment = employment.getDepartment();
+                        orgDepartment.setHod(null);
+                        departmentDao.updateDepartment(orgDepartment);
+                    }
+                    
                     employment.setOrganizationId(organization.getId());
                     employment.setDepartmentId(null);
                     employment.setGradeId(null);
@@ -347,6 +353,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && organization != null) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
                 if (organization.getId().equals(employment.getOrganizationId())) {
+                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
+                        Department orgDepartment = employment.getDepartment();
+                        orgDepartment.setHod(null);
+                        departmentDao.updateDepartment(orgDepartment);
+                    }
+                    
                     employment.setOrganizationId(null);
                     employment.setDepartmentId(null);
                     employment.setGradeId(null);
@@ -370,6 +382,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
                 if (!department.getId().equals(employment.getDepartmentId())) {
+                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
+                        Department orgDepartment = employment.getDepartment();
+                        orgDepartment.setHod(null);
+                        departmentDao.updateDepartment(orgDepartment);
+                    }
+                    
                     employment.setOrganizationId(department.getOrganization().getId());
                     employment.setDepartmentId(department.getId());
                     employment.getHods().clear();
@@ -392,6 +410,12 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
             if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0 && department != null) {
                 Employment employment = (Employment) user.getEmployments().iterator().next();
                 if (department.getId().equals(employment.getDepartmentId())) {
+                    if (employment.getHods() != null && !employment.getHods().isEmpty() && employment.getDepartment() != null) {
+                        Department orgDepartment = employment.getDepartment();
+                        orgDepartment.setHod(null);
+                        departmentDao.updateDepartment(orgDepartment);
+                    }
+                    
                     employment.setDepartmentId(null);
                     employment.getHods().clear();
                     saveOrUpdate("Employment", employment);

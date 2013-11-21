@@ -60,6 +60,8 @@ public class PluginManager implements ApplicationContextAware {
     private String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + "app_plugins";
     private ApplicationContext applicationContext;
     private Map<Class, Map<String, Plugin>> pluginCache = new HashMap<Class, Map<String, Plugin>>();
+    private Set<String> blackList;
+    private Set<String> scanPackageList;
 
     public PluginManager() {
         init();
@@ -70,6 +72,22 @@ public class PluginManager implements ApplicationContextAware {
             this.baseDirectory = baseDirectory;
         }
         init();
+    }
+
+    public Set<String> getBlackList() {
+        return blackList;
+    }
+
+    public void setBlackList(Set<String> blackList) {
+        this.blackList = blackList;
+    }
+
+    public Set<String> getScanPackageList() {
+        return scanPackageList;
+    }
+
+    public void setScanPackageList(Set<String> scanPackageList) {
+        this.scanPackageList = scanPackageList;
     }
 
     /**
@@ -100,6 +118,9 @@ public class PluginManager implements ApplicationContextAware {
             LogUtil.error(PluginManager.class.getName(), ex, "");
         }
 
+        // workaround for log4j classloading issues
+        System.setProperty("log4j.ignoreTCL", "true");
+        
         // Create a case-insensitive configuration property map.
         Map configMap = new StringMap(false);
         configMap.putAll(config);
@@ -304,18 +325,21 @@ public class PluginManager implements ApplicationContextAware {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter(new AssignableTypeFilter(classFilter));
         Set<BeanDefinition> components = provider.findCandidateComponents("org.joget");
+        if (scanPackageList != null) {
+            for (String scanPackage: scanPackageList) {
+                components.addAll(provider.findCandidateComponents(scanPackage));
+            }
+        }
         for (BeanDefinition component : components) {
             String beanClassName = component.getBeanClassName();
-            try {
-                Object beanObj;
-                Class beanClass = Class.forName(beanClassName);
-                beanObj = beanClass.newInstance();
-                if (beanObj instanceof Plugin) {
-                    Plugin plugin = (Plugin) beanObj;
+            if (blackList == null || !blackList.contains(beanClassName)) {
+                try {
+                    Class<? extends Plugin> beanClass = Class.forName(beanClassName).asSubclass(Plugin.class);
+                    Plugin plugin = beanClass.newInstance();
                     pluginMap.put(plugin.getName(), plugin);
+                } catch (Exception ex) {
+                    LogUtil.warn(PluginManager.class.getName(), " Error loading plugin class  " + beanClassName);
                 }
-            } catch (Exception ex) {
-                LogUtil.warn(PluginManager.class.getName(), " Error loading plugin class  " + beanClassName);
             }
         }
 
@@ -323,7 +347,9 @@ public class PluginManager implements ApplicationContextAware {
         Collection<Plugin> pluginList = loadOsgiPlugins();
         for (Plugin plugin : pluginList) {
             if (clazz == null || clazz.isAssignableFrom(plugin.getClass())) {
-                pluginMap.put(plugin.getName(), plugin);
+                if (blackList == null || !blackList.contains(plugin.getClass().getName())) {
+                    pluginMap.put(plugin.getName(), plugin);
+                }
             }
         }
 
@@ -517,6 +543,10 @@ public class PluginManager implements ApplicationContextAware {
      * @return
      */
     public Plugin getPlugin(String name) {
+        if (blackList != null && blackList.contains(name)) {
+            return null;
+        }
+        
         if (name != null && name.trim().length() > 0 && !"null".equalsIgnoreCase(name)) {
             Plugin plugin = loadOsgiPlugin(name);
             if (plugin == null) {

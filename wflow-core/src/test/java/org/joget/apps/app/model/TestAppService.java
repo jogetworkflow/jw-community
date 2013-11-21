@@ -8,6 +8,8 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.springframework.transaction.annotation.Propagation;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
+import java.util.Map;
+import junit.framework.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -16,7 +18,9 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessResult;
@@ -46,6 +50,8 @@ public class TestAppService {
     protected final String TEST_FORM_B = "testFormB";
     protected final String TEST_FORM_C = "testFormC";
     protected final String TEST_FORM_D = "testFormD";
+    protected final String TEST_FORM_E = "testFormE";
+    
     @Autowired
     private AppService appService;
     @Autowired
@@ -164,7 +170,7 @@ public class TestAppService {
             appDef = createAppDefinition(TEST_APP_ID, TEST_APP_VERSION);
 
             // create forms
-            createFormDefinition(appDef, TEST_FORM_ID, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
             
             // deploy package
             packageDef = appService.deployWorkflowPackage(TEST_APP_ID, TEST_APP_VERSION.toString(), packageXpdl, true);
@@ -246,9 +252,9 @@ public class TestAppService {
             assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
 
             // create forms
-            createFormDefinition(appDef, TEST_FORM_ID, TEST_APP_VERSION);
-            createFormDefinition(appDef, TEST_FORM_ID_1, TEST_APP_VERSION);
-            createFormDefinition(appDef, TEST_FORM_ID_2, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_ID_1, TEST_FORM_ID_1, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_ID_2, TEST_FORM_ID_2, TEST_APP_VERSION);
 
             // assign form mappings and save
             PackageActivityForm paf = new PackageActivityForm();
@@ -336,7 +342,7 @@ public class TestAppService {
             appDef = createAppDefinition(TEST_APP_ID, TEST_APP_VERSION);
 
             // create forms
-            createFormDefinition(appDef, TEST_FORM_ID, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
 
             // store single row data
             String id = "row1";
@@ -369,9 +375,10 @@ public class TestAppService {
     @Rollback(false)
     public void testSubForms() throws Exception {
         String aId = null;
-        String bId = null;
         String cId = null;
         String dId = null;
+        String valueE1 = "e001";
+        String valueE2 = "e002";
         try {
             AppDefinition appDef = null;
 
@@ -381,15 +388,30 @@ public class TestAppService {
             // create app definition
             appDef = createAppDefinition(TEST_APP_ID, TEST_APP_VERSION);
 
-            // create forms - Form D contains Form C, which contains Form B, which contains Form A
-            createFormDefinition(appDef, TEST_FORM_A, TEST_APP_VERSION);
-            createFormDefinition(appDef, TEST_FORM_B, TEST_APP_VERSION);
-            createFormDefinition(appDef, TEST_FORM_C, TEST_APP_VERSION);
-            createFormDefinition(appDef, TEST_FORM_D, TEST_APP_VERSION);
+            // create forms - Form D contains Form C, which contains Form B, which contains Form A. Each form points to different tables, except Form B which points to the same table as Form C.
+            createFormDefinition(appDef, TEST_FORM_E, TEST_FORM_E, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_A, TEST_FORM_A, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_B, TEST_FORM_C, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_C, TEST_FORM_C, TEST_APP_VERSION);
+            createFormDefinition(appDef, TEST_FORM_D, TEST_FORM_D, TEST_APP_VERSION);
+
+            // add values for reference form E
+            FormData dataE = new FormData();
+            dataE.addRequestParameterValues("id", new String[]{valueE1});
+            dataE.addRequestParameterValues("e1", new String[]{valueE1});
+            dataE.addRequestParameterValues("e2", new String[]{valueE1});
+            dataE.addRequestParameterValues("e3", new String[]{valueE1});
+            appService.submitForm(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_E, dataE, true);
+            FormData dataE2 = new FormData();
+            dataE2.addRequestParameterValues("id", new String[]{valueE2});
+            dataE2.addRequestParameterValues("e1", new String[]{valueE2});
+            dataE2.addRequestParameterValues("e2", new String[]{valueE2});
+            dataE2.addRequestParameterValues("e3", new String[]{valueE2});
+            appService.submitForm(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_E, dataE2, true);
 
             // create data to store
             FormData data = new FormData();
-
+            
             // add values for root form D
             String valueD = "d001";
             data.addRequestParameterValues("id", new String[]{valueD});
@@ -400,10 +422,10 @@ public class TestAppService {
             String valueC = "c001";
             data.addRequestParameterValues("formC_testFormC_c1", new String[]{valueC});
             data.addRequestParameterValues("formC_testFormC_c2", new String[]{valueC});
+            data.addRequestParameterValues("formC_testFormC_eref", new String[]{valueE1, valueE2});
 
             // add values for subform B
             String valueB = "b001";
-            data.addRequestParameterValues("formC_testFormC_formB_testFormB_id", new String[]{valueB});
             data.addRequestParameterValues("formC_testFormC_formB_testFormB_b1", new String[]{valueB});
             data.addRequestParameterValues("formC_testFormC_formB_testFormB_b2", new String[]{valueB});
 
@@ -426,35 +448,55 @@ public class TestAppService {
             String generatedIdForC = (String) rowD.get("cid");
             FormRowSet rowSetC = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_C, generatedIdForC);
             FormRow rowC = rowSetC.iterator().next();
-            boolean verifyC = generatedIdForC.equals(rowC.get("id")) && valueC.equals(rowC.get("c1")) && valueB.equals(rowC.get("bid")) && generatedIdForC.equals(rowD.get("cid"));
+            boolean verifyC = generatedIdForC.equals(rowC.get("id")) && valueC.equals(rowC.get("c1")) && generatedIdForC.equals(rowD.get("cid"));
             cId = rowC.get("id").toString();
             
-            // load and verify values for form B
-            FormRowSet rowSetB = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_B, valueB);
-            FormRow rowB = rowSetB.iterator().next();
-            boolean verifyB = valueB.equals(rowB.get("id")) && valueB.equals(rowB.get("b1")) && generatedIdForC.equals(rowB.get("cid"));
-            bId = rowB.get("id").toString();
-            
             // load and verify data for form A
-            String generatedIdForA = (String) rowB.get("aid");
+            String generatedIdForA = (String) rowC.get("aid");
             FormRowSet rowSetA = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_A, generatedIdForA);
             FormRow rowA = rowSetA.iterator().next();
-            boolean verifyA = generatedIdForA.equals(rowA.get("id")) && valueA.equals(rowA.get("a1")) && valueB.equals(rowA.get("bid"));
+            boolean verifyA = generatedIdForA.equals(rowA.get("id")) && valueA.equals(rowA.get("a1")) && generatedIdForC.equals(rowA.get("bid"));
             aId = rowA.get("id").toString();
             
-            assertTrue(verifyA && verifyB && verifyC && verifyD);
-
+            // verify form data
+            assertTrue(verifyA && verifyC && verifyD);
+             
+            // load using form data util
+            boolean includeSubformData = true;
+            boolean includeReferenceElements = true;
+            boolean flatten = false;
+            Map<String, Object> result = FormUtil.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_D, dId, includeSubformData, includeReferenceElements, flatten, null);
+            String resultOutput = result.toString();        
+            LogUtil.info(FormUtil.class.getName(), "Form Data Output: " + resultOutput);
+            String resultJson = FormUtil.loadFormDataJson(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_D, dId, includeSubformData, includeReferenceElements, flatten, null);
+            LogUtil.info(FormUtil.class.getName(), "Form Data JSON: " + resultJson);
+            
+            // verify form data util output
+            String resultValueD = (String)result.get("d1");
+            String resultValueC = (String)((Map<String,Object>)result.get("formC")).get("c1");
+            Collection<Map<String, Object>> resultE = (Collection<Map<String, Object>>)((Map<String,Object>)result.get("formC")).get("eref");
+            String resultValueE1 = (String)resultE.iterator().next().get("e1");
+            boolean verifyFormData = 
+                    resultValueD.equals(valueD) &&
+                    resultValueC.equals(valueC) &&
+                    resultValueE1.equals(valueE1);
+            Assert.assertTrue(verifyFormData);
+            
         } catch(Exception ex) {
-            System.err.println(ex);
-        }finally {
+            ex.printStackTrace();
+            throw ex;
+        } finally {
             try {
                 // delete form data
                 formDataDao.delete(TEST_FORM_A, TEST_FORM_A, new String[]{aId});
-                formDataDao.delete(TEST_FORM_B, TEST_FORM_B, new String[]{bId});
                 formDataDao.delete(TEST_FORM_C, TEST_FORM_C, new String[]{cId});
                 formDataDao.delete(TEST_FORM_D, TEST_FORM_D, new String[]{dId});
+                formDataDao.delete(TEST_FORM_E, TEST_FORM_E, new String[]{valueE1});
+                formDataDao.delete(TEST_FORM_E, TEST_FORM_E, new String[]{valueE2});
             
-            } catch(Exception e){}
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
             
             // delete app
             deleteAppDefinition(TEST_APP_ID);
@@ -513,13 +555,13 @@ public class TestAppService {
         appService.deleteAllAppDefinitionVersions(id);
     }
 
-    protected FormDefinition createFormDefinition(AppDefinition appDef, String formId, Long formVersion) throws IOException {
+    protected FormDefinition createFormDefinition(AppDefinition appDef, String formId, String tableName, Long formVersion) throws IOException {
         // create test form
         FormDefinition formDef = new FormDefinition();
         formDef.setId(formId);
         formDef.setAppDefinition(appDef);
         formDef.setName(formId);
-        formDef.setTableName(formId);
+        formDef.setTableName(tableName);
         String jsonFileName = "/" + formId + ".json";
         String formJson = readFile(jsonFileName);
         if (formJson == null || formJson.trim().isEmpty()) {

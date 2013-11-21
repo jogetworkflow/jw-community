@@ -10,6 +10,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.commons.util.StringUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -66,8 +67,14 @@ public class DataListMenu extends UserviewMenu {
             if (dataList != null) {
                 int rowCount = dataList.getSize();
 
+                // sanitize label
+                String label = getPropertyString("label");
+                if (label != null) {
+                    label = StringUtil.stripHtmlRelaxed(label);
+                }
+            
                 // generate menu link
-                menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + getPropertyString("label") + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
+                menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
             }
         }
         return menuItem;

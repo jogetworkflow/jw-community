@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -129,7 +130,7 @@ public class AppWebController {
         }
     }
 
-    @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)/start")
+    @RequestMapping(value = "/client/app/(*:appId)/(~:version)/process/(*:processDefId)/start", method = RequestMethod.POST)
     public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String recordId, @RequestParam String processDefId) {
 
         // clean process def
@@ -252,7 +253,7 @@ public class AppWebController {
         return "client/app/assignmentView";
     }
 
-    @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)/submit")
+    @RequestMapping(value = "/client/app/(~:appId)/(~:version)/assignment/(*:activityId)/submit", method = RequestMethod.POST)
     public String clientAssignmentSubmit(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
         // check assignment
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);

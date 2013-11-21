@@ -7,9 +7,13 @@ import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -19,6 +23,15 @@ public class StringUtil {
 
     public static String TYPE_REGEX = "regex";
     public static String TYPE_JSON = "json";
+
+    static final Whitelist whitelistRelaxed;
+    static {
+        // configure jsoup whitelist
+        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div").addAttributes(":all","id","style","class","title","target");
+        java.lang.reflect.Field field = ReflectionUtils.findField(whitelistRelaxed.getClass(), "protocols");
+        ReflectionUtils.makeAccessible(field);
+        ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
+    }
 
     public static String encodeUrlParam(String url) {
         String urlResult = url;
@@ -215,6 +228,65 @@ public class StringUtil {
             ReflectionUtils.setField(field, whitelist, new HashMap());
             content = Jsoup.clean(content, whitelist);
         }
+        return content;
+    }
+    
+    public static String stripHtmlRelaxed(String content) {
+        if (content != null && content.indexOf("<") >= 0) {
+            content = Jsoup.clean(content, whitelistRelaxed);
+        }
+        return content;
+    }
+    
+    public static String encryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
+                        tempS = SecurityUtil.encrypt(tempS);
+
+                        content = content.replaceAll(s, tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(StringUtil.class.getName(), ex, "");
+            }
+        }
+
+        return content;
+    }
+
+    public static String decryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = SecurityUtil.decrypt(s);
+                        content = content.replaceAll(StringUtil.escapeRegex(s), tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(StringUtil.class.getName(), ex, "");
+            }
+        }
+
         return content;
     }
 }

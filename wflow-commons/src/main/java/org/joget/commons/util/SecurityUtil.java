@@ -33,15 +33,23 @@ public class SecurityUtil implements ApplicationContextAware {
     public static String encrypt(String rawContent) {
 
         if (rawContent != null && !rawContent.isEmpty() && getDataEncryption() != null) {
-            return ENVELOPE + getDataEncryption().encrypt(rawContent) + ENVELOPE;
+            try {
+                return ENVELOPE + getDataEncryption().encrypt(rawContent) + ENVELOPE;
+            } catch (Exception e) {
+                //Ignore
+            }
         }
         return rawContent;
     }
 
     public static String decrypt(String protectedContent) {
         if (protectedContent.startsWith(ENVELOPE) && protectedContent.endsWith(ENVELOPE) && getDataEncryption() != null) {
-            protectedContent = cleanPrefixPostfix(protectedContent);
-            return getDataEncryption().decrypt(protectedContent);
+            try {
+                String tempProtectedContent = cleanPrefixPostfix(protectedContent);
+                return getDataEncryption().decrypt(tempProtectedContent);
+            } catch (Exception e) {
+                //Ignore
+            }
         }
         return protectedContent;
     }
@@ -61,6 +69,7 @@ public class SecurityUtil implements ApplicationContextAware {
     public static Boolean verifyHash(String hash, String randomSalt, String rawContent) {
         if (hash != null && !hash.isEmpty() && rawContent != null && !rawContent.isEmpty()) {
             if (hash.startsWith(ENVELOPE) && hash.endsWith(ENVELOPE) && getDataEncryption() != null) {
+                hash = cleanPrefixPostfix(hash);
                 return getDataEncryption().verifyHash(hash, randomSalt, rawContent);
             } else {
                 return hash.equals(StringUtil.md5Base16(rawContent));
@@ -71,7 +80,7 @@ public class SecurityUtil implements ApplicationContextAware {
 
     public static String generateRandomSalt() {
         if (getDataEncryption() != null) {
-            getDataEncryption().generateRandomSalt();
+            return getDataEncryption().generateRandomSalt();
         }
         return "";
     }

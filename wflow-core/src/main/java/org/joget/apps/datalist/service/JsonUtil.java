@@ -43,6 +43,7 @@ public class JsonUtil {
     public static final String PROPERTY_OPERATOR = "operator";
     public static final String PROPERTY_FILTER_TYPE = "type";
     public static final String PROPERTY_FORMAT = "format";
+    public static final String PROPERTY_RENDER_HTML = "renderHtml";
 
     /**
      * Convert from JSON string into an object. Specifically to support data list model classes.
@@ -297,6 +298,9 @@ public class JsonUtil {
                     formatCollection.add(format);
                     
                     dataListColumn.setFormats(formatCollection);
+                }
+                if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML)) {
+                    dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
                 }
                 property.add(dataListColumn);
             }

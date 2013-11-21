@@ -7,7 +7,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 
 import org.joget.directory.dao.EmploymentDao;
@@ -25,12 +29,16 @@ import org.springframework.stereotype.Controller;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.Authentication;
+import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationManager;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.ui.AbstractProcessingFilter;
+import org.springframework.security.ui.savedrequest.SavedRequest;
 
 @Controller
 public class DirectoryJsonController {
@@ -366,13 +374,13 @@ public class DirectoryJsonController {
 
     @RequestMapping("/json/directory/admin/user/deptAndGrade/options")
     public void getDeptAndGradeOptions(Writer writer, @RequestParam(value = "callback", required = false) String callback,
-            @RequestParam(value = "orgId", required = false) String orgId) throws JSONException, IOException {
+            @RequestParam String orgId) throws JSONException, IOException {
 
         JSONObject jsonObject = new JSONObject();
         Collection<Department> departments = null;
         Collection<Grade> grades = null;
 
-        if (orgId != null & orgId.trim().length() > 0) {
+        if (orgId != null && orgId.trim().length() > 0) {
             Map empty = new HashMap();
             empty.put("id", "");
             empty.put("prefix", "");
@@ -485,7 +493,7 @@ public class DirectoryJsonController {
             }
         }
 
-        jsonObject.accumulate("total", employmentDao.getEmploymentsNoHaveOrganization(name, sort, desc, start, rows));
+        jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNoHaveOrganization(name));
         jsonObject.accumulate("start", start);
         jsonObject.accumulate("sort", sort);
         jsonObject.accumulate("desc", desc);
@@ -613,20 +621,51 @@ public class DirectoryJsonController {
     }
 
     @RequestMapping("/json/directory/user/sso")
-    public void singleSignOn(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = true) String username, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "hash", required = false) String hash) throws JSONException, IOException, ServletException {
+    public void singleSignOn(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "hash", required = false) String hash) throws JSONException, IOException, ServletException {
 
-        try {
-            if (password == null) {
-                password = hash;
+        if (username != null && !username.isEmpty()) {
+            try {
+                if (password == null) {
+                    password = hash;
+                }
+                Authentication request = new UsernamePasswordAuthenticationToken(username, password);
+                Authentication result = authenticationManager.authenticate(request);
+                SecurityContextHolder.getContext().setAuthentication(result);
+
+                // generate new session to avoid session fixation vulnerability
+                HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+                HttpSession session = httpRequest.getSession(false);
+                if (session != null) {
+                    SavedRequest savedRequest = (SavedRequest) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
+                    session.invalidate();
+                    session = httpRequest.getSession(true);
+                    if (savedRequest != null) {
+                        session.setAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+                    }
+                }
+
+                // add success to audit trail
+                boolean authenticated = result.isAuthenticated();
+                LogUtil.info(getClass().getName(), "Authentication for user " + username + ": " + authenticated);
+                WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+                workflowHelper.addAuditTrail("DirectoryJsonController", "authenticate", "Authentication for user " + username + ": " + authenticated);                
+
+            } catch (AuthenticationException e) {
+                // add failure to audit trail
+                if (username != null) {
+                    LogUtil.info(getClass().getName(), "Authentication for user " + username + ": false");
+                    WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+                    workflowHelper.addAuditTrail("DirectoryJsonController", "authenticate", "Authentication for user " + username + ": false");
+                }
             }
-            Authentication request = new UsernamePasswordAuthenticationToken(username, password);
-            Authentication result = authenticationManager.authenticate(request);
-            SecurityContextHolder.getContext().setAuthentication(result);
-        } catch (Exception e) {
         }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("username", WorkflowUtil.getCurrentUsername());
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
+        if (isAdmin) {
+            jsonObject.accumulate("isAdmin", "true");
+        }
 
         writeJson(writer, jsonObject, callback);
     }

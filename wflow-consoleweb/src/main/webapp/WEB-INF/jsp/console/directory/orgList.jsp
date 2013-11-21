@@ -32,6 +32,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/org/view"
                        hrefParam="id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"

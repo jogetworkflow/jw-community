@@ -87,7 +87,7 @@
                                 ${username}
                             </c:when>
                             <c:otherwise>
-                                <a href="javascript: editUserProfile()"><fmt:message key="console.header.top.label.userProfile"/> (${username})</a>
+                                <a href="javascript: editUserProfile()"><fmt:message key="console.header.top.label.userProfile"/> (<c:out value="${username}"/>)</a>
 
                                 <script>
                                     <ui:popupdialog var="userProfilePopupDialog" src="${pageContext.request.contextPath}/web/console/profile"/>
@@ -268,3 +268,4 @@
         <!--[if IE]><div id="beta" class="ie">Beta</div> <![endif]-->
         <!--[if !IE]><!--><div id="beta">Beta</div><!--<![endif]-->                
         <div id="container">
+            <div class="content-container">

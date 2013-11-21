@@ -1,4 +1,4 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="serverPath" value="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}" />
 
 <html>
@@ -31,4 +31,4 @@
         </ul>
     </body>
 
-</html>
+</html>--%>

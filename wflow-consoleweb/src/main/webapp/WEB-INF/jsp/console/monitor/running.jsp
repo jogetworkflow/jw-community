@@ -24,7 +24,7 @@
                 <option></option>
             <c:forEach items="${appDefinitionList}" var="app">
                 <c:set var="selected"><c:if test="${app.id == param.appId}"> selected</c:if></c:set>
-                <option value="${app.id}" ${selected}>${app.name}</option>
+                <option value="${app.id}" ${selected}><c:out value="${app.name}"/></option>
             </c:forEach>
             </select>
             </form>

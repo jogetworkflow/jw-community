@@ -178,3 +178,49 @@ body #ui-datepicker-div {
     -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE8 */
     zoom: 1;
 }
+.systemAlert{
+    background:#FFFFD6;
+    position:relative;
+    padding:10px 15px;
+    z-index:7;
+}
+.systemAlertClose{
+    position:absolute;
+    top:10px;
+    right:10px;
+    cursor:pointer;
+}
+.systemAlertMessage {
+    display:inline-block;
+    margin-right:30px;
+}
+.policies {
+    color: #999;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 0 0 10px 10px;
+}
+.policies > span{
+    display:block;
+}
+.form-errors, .form-error {
+    color: red;
+    font-weight: normal;
+}
+body .ui-dialog .ui-dialog-titlebar {
+    padding: 0px;
+    background: none;
+}
+body .ui-dialog .ui-dialog-titlebar-close span {
+    margin: -9px;
+}
+body .ui-dialog .ui-dialog-content {
+    padding: 5px;
+}
+body .ui-widget-overlay {
+    height: 1000%;
+}
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}

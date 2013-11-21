@@ -29,15 +29,15 @@
             <legend><fmt:message key="console.directory.org.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.org.common.label.id"/></label>
-                <span class="form-input">${organization.id}</span>
+                <span class="form-input"><c:out value="${organization.id}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.org.common.label.name"/></label>
-                <span class="form-input">${organization.name}</span>
+                <span class="form-input"><c:out value="${organization.name}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.org.common.label.description"/></label>
-                <span class="form-input">${organization.description}</span>
+                <span class="form-input"><c:out value="${organization.description}"/></span>
             </div>
         </fieldset>
         <div class="view">
@@ -52,6 +52,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/dept/view"
                        hrefParam="id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"
@@ -82,6 +83,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/grade/view"
                        hrefParam="id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"
@@ -108,7 +110,7 @@
                     <option></option>
                 <c:forEach items="${departments}" var="d">
                     <c:set var="selected"><c:if test="${d.id == param.deptId}"> selected</c:if></c:set>
-                    <option value="${d.id}" ${selected}>${d.name}</option>
+                    <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
                 </c:forEach>
                 </select>
                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -117,7 +119,7 @@
                     <option></option>
                 <c:forEach items="${grades}" var="g">
                     <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
-                    <option value="${g.id}" ${selected}>${g.name}</option>
+                    <option value="<c:out value="${g.id}"/>" ${selected}><c:out value="${g.name}"/></option>
                 </c:forEach>
                 </select>
                 </form>

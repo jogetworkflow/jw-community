@@ -7,54 +7,53 @@
     </div>
     <div id="main-body-content">
 
-        <c:if test="${error}">
-            <div class="form-error">
-                <fmt:message key="console.app.import.error.pleaseCheckAndTryAgain"/>
-            </div>
-        </c:if>
-
-        <c:if test="${errorList != null}">
-            <div class="form-error">
-                <div style="padding: 0.5em">
-                <c:forEach var="error" items="${errorList}">
-                    <div style="margin-bottom: 5px">${error}</div>
-                </c:forEach>
-                </div>
-            </div>
-        </c:if>
-
         <form method="post" action="${pageContext.request.contextPath}/web/console/app/import/submit" class="form" enctype="multipart/form-data">
-            <div class="form-row">
-                <label for="appZip" class="upload"><fmt:message key="console.app.import.label.selectFile"/></label>
-                <span class="form-input">
-                    <input id="appZip" type="file" name="appZip"/>
-                </span>
-            </div>
-            <div class="form-row">
-                <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
-                <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
-            </div>
-            <div id="advancedView" style="display:none">
-                <div class="form-row">                
+            
+            <c:if test="${errorList != null || error}">
+                <div class="form-errors" style="display:block">
+                    <c:if test="${error}">
+                        <div><fmt:message key="console.app.import.error.pleaseCheckAndTryAgain"/></div>
+                    </c:if>
+                    <c:forEach var="error" items="${errorList}">
+                        <div>${error}</div>
+                    </c:forEach>
+                </div>
+            </c:if>
+            
+            <fieldset>
+                <legend><fmt:message key="console.app.import.label.title"/></legend>
+                <div class="form-row">
+                    <label for="appZip" class="upload"><fmt:message key="console.app.import.label.selectFile"/></label>
                     <span class="form-input">
-                        <label for="overrideEnvVariable">
-                            <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
-                            <fmt:message key="console.app.import.label.overrideEnvVariable"/>
-                        </label>
+                        <input id="appZip" type="file" name="appZip"/>
                     </span>
                 </div>
-                <div class="form-row">                
-                    <span class="form-input">
-                        <label for="overridePluginDefault" class="upload">
-                            <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
-                            <fmt:message key="console.app.import.label.overridePluginDefault"/>
-                        </label>
-                    </span>
+                <div class="form-row">
+                    <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
+                    <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
                 </div>
-            </div>
-            <div class="form-buttons">
-                <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
-            </div>
+                <div id="advancedView" style="display:none">
+                    <div class="form-row">                
+                        <span class="form-input">
+                            <label for="overrideEnvVariable">
+                                <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
+                                <fmt:message key="console.app.import.label.overrideEnvVariable"/>
+                            </label>
+                        </span>
+                    </div>
+                    <div class="form-row">                
+                        <span class="form-input">
+                            <label for="overridePluginDefault" class="upload">
+                                <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
+                                <fmt:message key="console.app.import.label.overridePluginDefault"/>
+                            </label>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-buttons">
+                    <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
+                </div>
+            </fieldset>
         </form>
     </div>
 

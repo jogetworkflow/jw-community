@@ -2,8 +2,10 @@
 
 <commons:popupHeader />
 
-<h3>${process.name}</h3>
+<div id="main-body-header"><c:out value="${process.name}" escapeXml="true"/></div>
 
-<jsp:include page="formView.jsp" flush="true" />
+<div id="main-body-content">
+    <jsp:include page="formView.jsp" flush="true" />
+</div>
 
 <commons:popupFooter />

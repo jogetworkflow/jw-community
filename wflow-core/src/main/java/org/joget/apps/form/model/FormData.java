@@ -128,6 +128,9 @@ public class FormData {
      * @param error
      */
     public void addFormError(String id, String error) {
+        if (errorMap.containsKey(id)) {
+            error = errorMap.get(id) + "<br/>" + error;
+        }
         errorMap.put(id, error);
     }
 

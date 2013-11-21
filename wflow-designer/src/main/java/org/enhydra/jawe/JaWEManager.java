@@ -56,6 +56,7 @@ import org.enhydra.jawe.base.xpdlobjectfactory.XPDLObjectFactorySettings;
 import org.enhydra.jawe.base.xpdlvalidator.XPDLValidatorSettings;
 import org.enhydra.shark.xpdl.StandardPackageValidator;
 import org.enhydra.shark.xpdl.XPDLRepositoryHandler;
+import org.joget.designer.Designer;
 
 /**
  * This class is used to get all jawe's managers.
@@ -790,6 +791,10 @@ public class JaWEManager {
     }
 
     public String getName() {
+        if (Designer.TITLE != null && Designer.TITLE.trim().length() > 0) {
+            return Designer.TITLE;
+        }
+        
         if (JaWE.getJaWEVersion() == JaWE.COMMUNITY_VERSION) {
             return "Together Workflow Editor Community Edition";
         }

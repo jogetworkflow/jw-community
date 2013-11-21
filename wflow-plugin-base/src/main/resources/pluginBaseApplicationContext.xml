@@ -9,7 +9,20 @@
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
     <bean id="pluginManager" class="org.joget.plugin.base.PluginManager" destroy-method="shutdown">
-        <!--constructor-arg value="target/wflow-plugins" /-->
+        <!--
+        <property name="blackList">
+             <set>
+                <value>com.acme.plugin.SamplePlugin</value>
+                <value>com.acme.plugin.TestPlugin</value>
+             </set>
+        </property>
+        <property name="scanPackageList">
+             <set>
+                <value>com.acme</value>
+                <value>org.acme</value>
+             </set>
+        </property>
+        -->
     </bean>
 
 </beans>

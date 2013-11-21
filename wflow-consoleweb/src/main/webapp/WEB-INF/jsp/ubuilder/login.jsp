@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@page contentType="text/html" pageEncoding="windows-1252"%>
 
 <%
@@ -45,6 +46,12 @@
         </title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        
+        <script type="text/javascript">
+            ${userview.setting.theme.javascript}
+            UI.userview_app_id = '${appId}';
+            UI.userview_id = '${userview.properties.id}';
+        </script>
 
         <script type="text/javascript">
             ${userview.setting.theme.javascript}
@@ -95,7 +102,7 @@
                 <div id="content">
                     <c:if test="${!empty param.login_error}">
                         <div id="main-body-message" class="form-errors">
-                            <fmt:message key="ubuilder.loginError" /> ${SPRING_SECURITY_LAST_EXCEPTION.message}.
+                            ${SPRING_SECURITY_LAST_EXCEPTION.message}
                         </div>
                     </c:if>
                     <c:if test="${!empty userview.setting.properties.loginPageTop}">
@@ -106,6 +113,9 @@
                             <tr><td><fmt:message key="ubuilder.login.username" />: </td><td><input type='text' id='j_username' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
                             <tr><td><fmt:message key="ubuilder.login.password" />:</td><td><input type='password' id='j_password' name='j_password'></td></tr>
                             <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="<fmt:message key="ubuilder.login" />" /></td></tr>
+                            <tr><td colspan="2">
+                                <%= DirectoryUtil.getLoginFormFooter() %>
+                            </td></tr>
                         </table>
                     </form>
                     <c:if test="${!empty userview.setting.properties.loginPageBottom}">

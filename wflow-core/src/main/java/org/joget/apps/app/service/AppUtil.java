@@ -1,5 +1,6 @@
 package org.joget.apps.app.service;
 
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -12,6 +13,8 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -43,6 +46,7 @@ public class AppUtil implements ApplicationContextAware {
     static ApplicationContext appContext;
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
+    static String designerContextPath = "/jwdesigner";
 
     @Override
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
@@ -53,6 +57,14 @@ public class AppUtil implements ApplicationContextAware {
         return appContext;
     }
 
+    public static void setDesignerContextPath(String path) {
+        designerContextPath = path;
+    }
+    
+    public static String getDesignerContextPath() {
+        return designerContextPath;
+    }
+    
     /**
      * Ties an AppDefinition to the current thread.
      * @param appDef
@@ -124,16 +136,40 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String getDesignerWebBaseUrl() {
+        String defaultContext = getDesignerContextPath();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String designerwebBaseUrl = (request != null) ? request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() : "";
-        if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
-            designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-        }
-        if (designerwebBaseUrl.endsWith("/")) {
-            designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
-        }
+        String serverBaseUrl = (request != null) ? request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() : "";
+        String designerWebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
+        if (designerWebBaseUrl == null || designerWebBaseUrl.trim().isEmpty() || "/".equals(designerWebBaseUrl)) {
+            // use default context
+            designerWebBaseUrl = serverBaseUrl + defaultContext;
+        } else if (designerWebBaseUrl.startsWith("http")) {
+            try {
+                // remove trailing slash
+                if (designerWebBaseUrl.endsWith("/")) {
+                    designerWebBaseUrl = designerWebBaseUrl.substring(0, designerWebBaseUrl.length() - 1);
+                }
 
-        return designerwebBaseUrl;
+                // check if context path is specified
+                URL url = new URL(designerWebBaseUrl);
+                String path = url.getPath();
+                if (path == null || path.isEmpty()) {
+                    designerWebBaseUrl += defaultContext;
+                }
+            } catch (Exception ex) {
+                // use default context
+                designerWebBaseUrl = serverBaseUrl + defaultContext;
+            }
+        } else {
+            // remove preceding slash
+            if (designerWebBaseUrl.startsWith("/")) {
+                designerWebBaseUrl = designerWebBaseUrl.substring(1);
+            }
+            
+            // prepend base URL
+            designerWebBaseUrl = serverBaseUrl + "/" + designerWebBaseUrl;
+        }
+        return designerWebBaseUrl;
     }
 
     /**
@@ -182,13 +218,13 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String getAppLocale() {
-        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");  
+        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");
         return localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest()).toString();
     }
-    
+
     public static String getAppDateFormat() {
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-        
+
         if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
             Locale locale = new Locale(getAppLocale());
             DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
@@ -196,7 +232,7 @@ public class AppUtil implements ApplicationContextAware {
                 return ((SimpleDateFormat) dateInstance).toPattern();
             }
         }
-        
+
         return null;
     }
 
@@ -241,7 +277,7 @@ public class AppUtil implements ApplicationContextAware {
      * @param removeNewLines
      * @param translationFileName
      * @return null if the resource is not found or in the case of an exception
-     * @see java.util.Formatter 
+     * @see java.util.Formatter
      */
     public static String readPluginResource(String pluginName, String resourceUrl, Object[] arguments, boolean removeNewLines, String translationFileName) {
         String output = null;
@@ -264,10 +300,10 @@ public class AppUtil implements ApplicationContextAware {
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
     }
-    
-    public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
-        content = decryptContent(content);
 
+    public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
+        content = StringUtil.decryptContent(content);
+        
         // check for hash # to avoid unnecessary processing
         if (!containsHashVariable(content)) {
             return content;
@@ -291,17 +327,17 @@ public class AppUtil implements ApplicationContextAware {
 
                     for (String var : varList) {
                         String tempVar = var.replaceAll("#", "");
-                        
+
                         for (Plugin p : pluginList) {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
                                 tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
-                                
+
                                 HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
                                 if (cachedPlugin == null) {
                                     cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
                                     //get default plugin properties
-                                    
+
                                     if (appDef == null) {
                                         appDef = AppUtil.getCurrentAppDefinition();
                                     }
@@ -329,22 +365,25 @@ public class AppUtil implements ApplicationContextAware {
                                         tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
                                     }
                                 }
-                                
+
                                 //unescape hash variable
                                 tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
-                                
+
                                 //get result from plugin
                                 String value = cachedPlugin.processHashVariable(tempVar);
-                                
+
                                 if (value != null && !StringUtil.TYPE_REGEX.equals(escapeFormat) && !StringUtil.TYPE_JSON.equals(escapeFormat)) {
                                     value = StringUtil.escapeRegex(value);
                                 }
-                                
+
                                 //escape special char in HashVariable
                                 var = cachedPlugin.escapeHashVariable(var);
 
                                 //replace
                                 if (value != null) {
+                                    // clean to prevent XSS
+                                    value = StringUtil.stripHtmlRelaxed(value);
+
                                     content = content.replaceAll(var, StringUtil.escapeString(value, escapeFormat, replaceMap));
                                 }
                             }
@@ -362,11 +401,11 @@ public class AppUtil implements ApplicationContextAware {
         boolean result = (content != null && content.indexOf("#") >= 0);
         return result;
     }
-    
+
     public static Collection<String> getEmailList(String toParticipantId, String toSpecific, WorkflowAssignment wfAssignment, AppDefinition appDef) {
         Collection<String> addresses = new HashSet<String>();
         Collection<String> users = new HashSet<String>();
-        
+
         if (toParticipantId != null && !toParticipantId.isEmpty() && wfAssignment != null) {
             WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             WorkflowProcess process = workflowManager.getProcess(wfAssignment.getProcessDefId());
@@ -377,7 +416,7 @@ public class AppUtil implements ApplicationContextAware {
                 if (pId.length() == 0) {
                     continue;
                 }
-                
+
                 Collection<String> userList = null;
                 userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
 
@@ -386,7 +425,7 @@ public class AppUtil implements ApplicationContextAware {
                 }
             }
         }
-        
+
         if (toSpecific != null && toSpecific.trim().length() != 0) {
             toSpecific = AppUtil.processHashVariable(toSpecific, wfAssignment, null, null, appDef);
             toSpecific = toSpecific.replace(";", ","); // add support for MS-style semi-colon (;) as a delimiter
@@ -396,7 +435,7 @@ public class AppUtil implements ApplicationContextAware {
                 if (email.length() == 0) {
                     continue;
                 }
-                
+
                 //to support retrieve email by putting username
                 if (!email.contains("@")) {
                     users.add(email);
@@ -405,7 +444,7 @@ public class AppUtil implements ApplicationContextAware {
                 }
             }
         }
-        
+
         if (!users.isEmpty()) {
             DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
             for (String username : users) {
@@ -423,22 +462,12 @@ public class AppUtil implements ApplicationContextAware {
                         }
                     }
                 } catch (Exception e) {}
-            } 
+            }
         }
-        
+
         return addresses;
     }
 
-    /**
-     * Returns the current system version.
-     * @since 3.2
-     * @return 
-     */
-    public static String getSystemVersion() {
-        String version = ResourceBundleUtil.getMessage("console.footer.label.revision");
-        return version;
-    }
-    
     /**
      * Checks system settings whether front-end quick edit is enabled.
      * @return 
@@ -467,69 +496,29 @@ public class AppUtil implements ApplicationContextAware {
         return enabled;
     }
     
-    public static String encryptContent(String content) {
-        //parse content
-        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
-            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
-            Matcher matcher = pattern.matcher(content);
-            Set<String> sList = new HashSet<String>();
-            while (matcher.find()) {
-                sList.add(matcher.group(0));
-            }
-
-            try {
-                if (!sList.isEmpty()) {
-                    for (String s : sList) {
-                        String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
-                        tempS = SecurityUtil.encrypt(tempS);
-
-                        content = content.replaceAll(s, tempS);
-                    }
-                }
-            } catch (Exception ex) {
-                LogUtil.error(AppUtil.class.getName(), ex, "");
-            }
-        }
-
-        return content;
+    /**
+     * Returns the current system version.
+     * @since 3.2
+     * @return 
+     */
+    public static String getSystemVersion() {
+        String version = ResourceBundleUtil.getMessage("console.footer.label.revision");
+        return version;
     }
 
-    public static String decryptContent(String content) {
-        //parse content
-        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
-            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
-            Matcher matcher = pattern.matcher(content);
-            Set<String> sList = new HashSet<String>();
-            while (matcher.find()) {
-                sList.add(matcher.group(0));
-            }
-
-            try {
-                if (!sList.isEmpty()) {
-                    for (String s : sList) {
-                        String tempS = SecurityUtil.decrypt(s);
-                        content = content.replaceAll(StringUtil.escapeRegex(s), tempS);
-                    }
-                }
-            } catch (Exception ex) {
-                LogUtil.error(AppUtil.class.getName(), ex, "");
-            }
-        }
-
-        return content;
-    }
-    
     public static void setSystemAlert(String value) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             HttpSession session = request.getSession(true);
-            String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
-            Collection<String> sessionValues = new ArrayList<String>();
-            if (values != null && values.length > 0) {
-                sessionValues.addAll(Arrays.asList(values));
+            if (session != null) {
+                String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
+                Collection<String> sessionValues = new ArrayList<String>();
+                if (values != null && values.length > 0) {
+                    sessionValues.addAll(Arrays.asList(values));
+                }
+                sessionValues.add(value);
+                session.setAttribute(UI_SESSION_KEY, sessionValues.toArray(new String[0]));
             }
-            sessionValues.add(value);
-            session.setAttribute(UI_SESSION_KEY, sessionValues.toArray(new String[0]));
         }
     }
 
@@ -538,15 +527,42 @@ public class AppUtil implements ApplicationContextAware {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             HttpSession session = request.getSession(true);
-            String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
-            if (values != null && values.length > 0) {
-                session.removeAttribute(UI_SESSION_KEY);
+            if (session != null) {
+                String[] values = (String[]) session.getAttribute(UI_SESSION_KEY);
+                if (values != null && values.length > 0) {
+                    session.removeAttribute(UI_SESSION_KEY);
 
-                for (String v : values) {
-                    script += v;
+                    for (String v : values) {
+                        script += v;
+                    }
                 }
             }
         }
         return script;
+    }
+    
+    public static String getUserviewThemeCss() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null 
+                && request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0
+                && request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) {
+            try {
+                String appId = request.getParameterValues("__a_")[0];
+                String uId = request.getParameterValues("__u_")[0];
+
+                if (!appId.isEmpty() && !uId.isEmpty()) {
+                    UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
+                    UserviewTheme theme = userviewService.getUserviewTheme(appId, uId);
+
+                    if (theme != null && theme.getCss() != null) {
+                        return theme.getCss();
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, "getUserviewThemeCss Error!");
+            }
+        }
+        
+        return "";
     }
 }

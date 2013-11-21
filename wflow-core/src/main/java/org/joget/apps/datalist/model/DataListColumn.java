@@ -43,6 +43,10 @@ public class DataListColumn {
      * Optional field to store the DB type e.g. VARCHAR, etc
      */
     private String type;
+    /**
+     * Flag to indicate whether to render the column as HTML content
+     */
+    private boolean renderHtml = true;
 
     /**
      * Convenience method to add a format to this column
@@ -103,5 +107,13 @@ public class DataListColumn {
 
     public void setType(String type) {
         this.type = type;
+    }
+    
+    public boolean isRenderHtml() {
+        return renderHtml;
+    }
+
+    public void setRenderHtml(boolean renderHtml) {
+        this.renderHtml = renderHtml;
     }
 }

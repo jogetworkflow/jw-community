@@ -25,19 +25,19 @@
             <legend><fmt:message key="console.directory.group.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.group.common.label.id"/></label>
-                <span class="form-input">${group.id}</span>
+                <span class="form-input"><c:out value="${group.id}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.group.common.label.name"/></label>
-                <span class="form-input">${group.name}</span>
+                <span class="form-input"><c:out value="${group.name}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.group.common.label.description"/></label>
-                <span class="form-input">${group.description}</span>
+                <span class="form-input"><c:out value="${group.description}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.group.common.label.organization"/></label>
-                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${group.organization.id}">${group.organization.name}</a></span>
+                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${group.organization.id}"><c:out value="${group.organization.name}"/></a></span>
             </div>
         </fieldset>
         <div class="view">
@@ -71,6 +71,7 @@
                        column4="{key: 'email', label: 'console.directory.user.common.label.email', sortable: true}"
                        />
         </div>
+    </div>
 </div>
 
 <script>

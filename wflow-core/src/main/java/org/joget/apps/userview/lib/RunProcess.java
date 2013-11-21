@@ -24,12 +24,14 @@ import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
@@ -79,8 +81,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getDecoratedMenu() {
+        // sanitize label
+        String label = getPropertyString("label");
+        if (label != null) {
+            label = StringUtil.stripHtmlRelaxed(label);
+        }
+        
         if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-            String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_showDialog();return false;\" class=\"menu-link\"><span>" + getPropertyString("label") + "</span></a>";
+            String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_showDialog();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
             menu += "<script>\n";
 
             if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
@@ -90,17 +98,43 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             }
             menu += "function menu_" + getPropertyString("id") + "_showDialog(){\n";
             if ("true".equals(getRequestParameter("isPreview"))) {
-                menu += "alert('\\'Show in popup dialog?\\' feature disabled in Preview Mode.');\n";
+                menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.showInPopupPreviewWarning") + "\");\n";
             } else {
                 menu += "menu_" + getPropertyString("id") + "Dialog.init();\n";
             }
             menu += "}\n</script>";
             return menu;
+        } else if ("Yes".equals(getPropertyString("runProcessDirectly"))) {
+            ApplicationContext ac = AppUtil.getApplicationContext();
+            AppService appService = (AppService) ac.getBean("appService");
+            PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+            if (startFormDef == null || startFormDef.getFormId() == null) {
+                String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
+                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + getUrl() + "?_action=start" + "\" style=\"display:none\"></form>\n";
+                menu += "<script>"
+                        + "function menu_" + getPropertyString("id") + "_postForm() {";
+                if ("true".equals(getRequestParameter("isPreview"))) {
+                    menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.runProcessPreviewWarning") + "\");\n";
+                } else {
+                    menu += "$('#menu_" + getPropertyString("id") + "_form').submit()\n";
+                }
+                menu += "}";
+                menu += "</script>\n";
+                return menu;
+            }
         }
+        
         return null;
     }
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }        
+
         String action = request.getParameter("action");
 
         if ("getOptions".equals(action)) {
@@ -139,10 +173,22 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     @Override
     public String getJspPage() {
         if ("start".equals(getRequestParameterString("_action"))) {
+            // only allow POST
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
+                return "userview/plugin/unauthorized.jsp";
+            }
+            
             startProcess();
         } else if ("assignmentView".equals(getRequestParameterString("_action"))) {
             assignmentView();
         } else if ("assignmentSubmit".equals(getRequestParameterString("_action"))) {
+            // only allow POST
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
+                return "userview/plugin/unauthorized.jsp";
+            }
+            
             assignmentSubmit();
         } else {
             ApplicationContext ac = AppUtil.getApplicationContext();
@@ -153,7 +199,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     setProperty("view", "featureDisabled");
                 } else {
-                    startProcess();
+                    viewProcess();
+                    setProperty("view", "processFormPost");
                 }
             } else {
                 viewProcess();

@@ -71,11 +71,14 @@ import org.joget.workflow.model.WorkflowParticipant;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.CsvUtil;
+import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
@@ -89,8 +92,10 @@ import org.joget.directory.model.Grade;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.service.DirectoryManagerPlugin;
 import org.joget.directory.model.service.DirectoryUtil;
+import org.joget.directory.model.service.UserSecurity;
 import org.joget.workflow.model.ParticipantPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -613,7 +618,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/group/create")
     public String consoleGroupCreate(ModelMap model) {
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("group", new Group());
         return "console/directory/groupCreate";
@@ -628,7 +633,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/group/edit/(*:id)")
     public String consoleGroupEdit(ModelMap model, @RequestParam("id") String id) {
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         Group group = groupDao.getGroup(id);
         if (group.getOrganization() != null) {
@@ -674,7 +679,7 @@ public class ConsoleWebController {
         }
 
         if (invalid) {
-            Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+            Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
             model.addAttribute("organizations", organizations);
             model.addAttribute("group", group);
             if ("create".equals(action)) {
@@ -737,7 +742,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/create")
     public String consoleUserCreate(ModelMap model) {
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
         model.addAttribute("timezones", TimeZoneUtil.getList());
@@ -746,6 +751,13 @@ public class ConsoleWebController {
         status.put("1", "Active");
         status.put("0", "Inactive");
         model.addAttribute("status", status);
+        
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+        if (us != null) {
+            model.addAttribute("userFormFooter", us.getUserCreationFormFooter());
+        } else {
+            model.addAttribute("userFormFooter", "");
+        }
 
         User user = new User();
         user.setActive(1);
@@ -782,10 +794,12 @@ public class ConsoleWebController {
                 roles = roles.substring(0, roles.length() - 2);
             }
             model.addAttribute("roles", roles);
+            
+            UserSecurity us = DirectoryUtil.getUserSecurity();
+            if (us != null) {
+                model.addAttribute("addOnButtons", us.getUserDetailsButtons(user));
+            }
         }
-
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
-        model.addAttribute("organizations", organizations);
 
         model.addAttribute("isCustomDirectoryManager", DirectoryUtil.isCustomDirectoryManager());
 
@@ -794,7 +808,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/edit/(*:id)")
     public String consoleUserEdit(ModelMap model, @RequestParam("id") String id) {
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
         model.addAttribute("timezones", TimeZoneUtil.getList());
@@ -822,7 +836,14 @@ public class ConsoleWebController {
         model.addAttribute("employeeStartDate", employment.getStartDate());
         model.addAttribute("employeeEndDate", employment.getEndDate());
         model.addAttribute("employeeDepartmentHod", (employment.getHods() != null && employment.getHods().size() > 0) ? "yes" : "no");
-
+        
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+        if (us != null) {
+            model.addAttribute("userFormFooter", us.getUserEditingFormFooter(user));
+        } else {
+            model.addAttribute("userFormFooter", "");
+        }
+        
         return "console/directory/userEdit";
     }
 
@@ -835,22 +856,39 @@ public class ConsoleWebController {
         // validate ID
         validator.validate(user, result);
 
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+
         boolean invalid = result.hasErrors();
         if (!invalid) {
             // check error
             Collection<String> errors = new ArrayList<String>();
-
+            
             if ("create".equals(action)) {
                 // check username exist
                 if (userDao.getUser(user.getUsername()) != null) {
-                    errors.add("console.directory.user.error.label.usernameExists");
+                    errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.usernameExists"));
                 }
-
+                
+                if (us != null) {
+                    Collection<String> validationErrors = us.validateUserOnInsert(user);
+                    if (validationErrors != null && !validationErrors.isEmpty()) {
+                        errors.addAll(validationErrors);
+                    }
+                }
+                
+                errors.addAll(validateEmploymentDate(employeeStartDate, employeeEndDate));
 
                 if (errors.isEmpty()) {
                     user.setId(user.getUsername());
-                    //md5 password
-                    user.setPassword(StringUtil.md5Base16(user.getPassword()));
+                    if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                        user.setConfirmPassword(user.getPassword());
+                        if (us != null) {
+                            user.setPassword(us.encryptPassword(user.getUsername(), user.getPassword()));
+                        } else {
+                            //md5 password
+                            user.setPassword(StringUtil.md5Base16(user.getPassword()));
+                        }
+                    }
 
                     //set roles
                     if (user.getRoles() != null && user.getRoles().size() > 0) {
@@ -862,28 +900,59 @@ public class ConsoleWebController {
                     }
 
                     invalid = !userDao.addUser(user);
+
+                    if (us != null && !invalid) {
+                        us.insertUserPostProcessing(user);
+                    }
                 }
             } else {
-                User u = userDao.getUserById(user.getId());
-                u.setFirstName(user.getFirstName());
-                u.setLastName(user.getLastName());
-                u.setEmail(user.getEmail());
-                if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
-                    //set md5 password
-                    u.setPassword(StringUtil.md5Base16(user.getPassword()));
-                }
-                //set roles
-                if (user.getRoles() != null && user.getRoles().size() > 0) {
-                    Set roles = new HashSet();
-                    for (String roleId : (Set<String>) user.getRoles()) {
-                        roles.add(roleDao.getRole(roleId));
+                user.setUsername(user.getId());
+                
+                if (us != null) {
+                    Collection<String> validationErrors = us.validateUserOnUpdate(user);
+                    if (validationErrors != null && !validationErrors.isEmpty()) {
+                        errors.addAll(validationErrors);
                     }
-                    u.setRoles(roles);
                 }
-                u.setTimeZone(user.getTimeZone());
-                u.setActive(user.getActive());
+                
+                errors.addAll(validateEmploymentDate(employeeStartDate, employeeEndDate));
+                
+                if (errors.isEmpty()) {
+                    boolean passwordReset = false;
 
-                invalid = !userDao.updateUser(u);
+                    User u = userDao.getUserById(user.getId());
+                    u.setFirstName(user.getFirstName());
+                    u.setLastName(user.getLastName());
+                    u.setEmail(user.getEmail());
+                    if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+                        u.setConfirmPassword(user.getPassword());
+                        if (us != null) {
+                            passwordReset = true;
+                            u.setPassword(us.encryptPassword(user.getUsername(), user.getPassword()));
+                        } else {
+                            //md5 password
+                            u.setPassword(StringUtil.md5Base16(user.getPassword()));
+                        }
+                    }
+                    //set roles
+                    if (user.getRoles() != null && user.getRoles().size() > 0) {
+                        Set roles = new HashSet();
+                        for (String roleId : (Set<String>) user.getRoles()) {
+                            roles.add(roleDao.getRole(roleId));
+                        }
+                        u.setRoles(roles);
+                    }
+                    u.setTimeZone(user.getTimeZone());
+                    u.setActive(user.getActive());
+
+                    invalid = !userDao.updateUser(u);
+                    if (us != null && !invalid) {
+                        us.updateUserPostProcessing(u);
+                        if (passwordReset) {
+                            us.passwordResetPostProcessing(u);
+                        }
+                    }
+                }
             }
 
             if (!errors.isEmpty()) {
@@ -893,7 +962,7 @@ public class ConsoleWebController {
         }
 
         if (invalid) {
-            Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+            Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
             model.addAttribute("organizations", organizations);
             model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
             model.addAttribute("timezones", TimeZoneUtil.getList());
@@ -913,12 +982,25 @@ public class ConsoleWebController {
             model.addAttribute("employeeStartDate", employeeStartDate);
             model.addAttribute("employeeEndDate", employeeEndDate);
             model.addAttribute("employeeDepartmentHod", employeeDepartmentHod);
+            
+            if (us != null) {
+                if ("create".equals(action)) {
+                    model.addAttribute("userFormFooter", us.getUserCreationFormFooter());
+                } else {
+                    model.addAttribute("userFormFooter", us.getUserEditingFormFooter(user));
+                }
+            } else {
+                model.addAttribute("userFormFooter", "");
+            }
+            
             if ("create".equals(action)) {
                 return "console/directory/userCreate";
             } else {
                 return "console/directory/userEdit";
             }
         } else {
+            String prevDepartmentId = null;
+            
             //set employment detail
             Employment employment = null;
             if ("create".equals(action)) {
@@ -930,6 +1012,8 @@ public class ConsoleWebController {
                     employment = new Employment();
                 }
             }
+            
+            prevDepartmentId = employment.getDepartmentId();
 
             employment.setUserId(user.getId());
             employment.setEmployeeCode(employeeCode);
@@ -941,9 +1025,13 @@ public class ConsoleWebController {
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {
                     employment.setStartDate(df.parse(employeeStartDate));
+                } else {
+                    employment.setStartDate(null);
                 }
                 if (employeeEndDate != null && employeeEndDate.trim().length() > 0) {
                     employment.setEndDate(df.parse(employeeEndDate));
+                } else {
+                    employment.setEndDate(null);
                 }
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Set Employee Date error");
@@ -957,15 +1045,19 @@ public class ConsoleWebController {
 
             //Hod
             if ("yes".equals(employeeDepartmentHod) && employeeDepartment != null && employeeDepartment.trim().length() > 0) {
-                User prevHod = userDao.getHodByDepartmentId(employeeDepartment);
-                if (prevHod != null) {
-                    employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), employeeDepartment);
+                if (prevDepartmentId != null) {
+                    User prevHod = userDao.getHodByDepartmentId(prevDepartmentId);
+                    if (prevHod != null) {
+                        employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), prevDepartmentId);
+                    }
                 }
                 employmentDao.assignUserAsDepartmentHOD(user.getId(), employeeDepartment);
             } else {
-                User prevHod = userDao.getHodByDepartmentId(employeeDepartment);
-                if (prevHod != null && prevHod.getId().equals(user.getId())) {
-                    employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), employeeDepartment);
+                if (prevDepartmentId != null) {
+                    User prevHod = userDao.getHodByDepartmentId(prevDepartmentId);
+                    if (prevHod != null && prevHod.getId().equals(user.getId())) {
+                        employmentDao.unassignUserAsDepartmentHOD(prevHod.getId(), prevDepartmentId);
+                    }
                 }
             }
 
@@ -979,10 +1071,20 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/user/delete", method = RequestMethod.POST)
     public String consoleUserDelete(@RequestParam(value = "ids") String ids) {
+        String currentUsername = workflowUserManager.getCurrentUsername();
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String id = (String) strToken.nextElement();
-            userDao.deleteUser(id);
+            
+            if (id != null && !id.equals(currentUsername)) {
+                userDao.deleteUser(id);
+
+                UserSecurity us = DirectoryUtil.getUserSecurity();
+                if (us != null) {
+                    us.deleteUserPostProcessing(id);
+                }
+            }
         }
         return "console/directory/userList";
     }
@@ -990,7 +1092,7 @@ public class ConsoleWebController {
     @RequestMapping("/console/directory/user/(*:id)/group/assign/view")
     public String consoleUserGroupAssign(ModelMap model, @RequestParam(value = "id") String id) {
         model.addAttribute("id", id);
-        Collection<Organization> organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         return "console/directory/userGroupAssign";
     }
@@ -1050,7 +1152,7 @@ public class ConsoleWebController {
 
         String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
         Map<String, String> localeStringList = new TreeMap<String, String>();
-        if(enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
+        if (enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
             String userLocale = setupManager.getSettingValue("userLocale");
             Collection<String> locales = new HashSet();
             locales.addAll(Arrays.asList(userLocale.split(",")));
@@ -1063,6 +1165,16 @@ public class ConsoleWebController {
                 }
             }
         }
+        
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+        if (us != null) {
+            map.addAttribute("policies", us.passwordPolicies());
+            map.addAttribute("userProfileFooter", us.getUserProfileFooter(user));
+        } else {
+            map.addAttribute("policies", "");
+            map.addAttribute("userProfileFooter", "");
+        }
+
         map.addAttribute("enableUserLocale", enableUserLocale);
         map.addAttribute("localeStringList", localeStringList);
 
@@ -1072,17 +1184,87 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/profile/submit", method = RequestMethod.POST)
     public String profileSubmit(ModelMap model, @ModelAttribute("user") User user, BindingResult result) {
         User currentUser = userDao.getUser(workflowUserManager.getCurrentUsername());
-
-        if (currentUser.getUsername().equals(user.getUsername())) {
-            currentUser.setFirstName(user.getFirstName());
-            currentUser.setLastName(user.getLastName());
-            currentUser.setEmail(user.getEmail());
-            currentUser.setTimeZone(user.getTimeZone());
-            currentUser.setLocale(user.getLocale());
-            if (user.getPassword() != null && user.getConfirmPassword() != null && user.getPassword().length() > 0 && user.getPassword().equals(user.getConfirmPassword())) {
-                currentUser.setPassword(StringUtil.md5Base16(user.getPassword()));
+        Collection<String> errors = new ArrayList<String>();
+        Collection<String> passwordErrors = new ArrayList<String>();
+        
+        boolean authenticated = false;
+        try {
+            if (directoryManager.authenticate(user.getUsername(), user.getOldPassword())) {
+                authenticated = true;
             }
-            userDao.updateUser(currentUser);
+        } catch (Exception e) { }
+        
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+
+        if (us != null) {
+            errors = us.validateUserOnProfileUpdate(user);
+        }
+        
+        if (!authenticated) {
+            if (errors == null) {
+                errors = new ArrayList<String>();
+            }
+            errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.authenticationFailed"));
+        }
+        
+        if (user.getPassword() != null && !user.getPassword().isEmpty() && us != null) {
+            passwordErrors = us.validatePassword(user.getUsername(), user.getOldPassword(), user.getPassword(), user.getConfirmPassword());   
+        }
+
+        if (!authenticated || (passwordErrors != null && !passwordErrors.isEmpty()) || (errors != null && !errors.isEmpty())) {
+            model.addAttribute("passwordErrors", passwordErrors);
+            model.addAttribute("errors", errors);
+            model.addAttribute("user", user);
+            model.addAttribute("timezones", TimeZoneUtil.getList());
+
+            String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
+            Map<String, String> localeStringList = new TreeMap<String, String>();
+            if (enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
+                String userLocale = setupManager.getSettingValue("userLocale");
+                Collection<String> locales = new HashSet();
+                locales.addAll(Arrays.asList(userLocale.split(",")));
+
+                Locale[] localeList = Locale.getAvailableLocales();
+                for (int x = 0; x < localeList.length; x++) {
+                    String code = localeList[x].toString();
+                    if (locales.contains(code)) {
+                        localeStringList.put(code, code + " - " + localeList[x].getDisplayName(localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest())));
+                    }
+                }
+            }
+            model.addAttribute("enableUserLocale", enableUserLocale);
+            model.addAttribute("localeStringList", localeStringList);
+            
+            if (us != null) {
+                model.addAttribute("policies", us.passwordPolicies());
+                model.addAttribute("userProfileFooter", us.getUserProfileFooter(currentUser));
+            } else {
+                model.addAttribute("policies", "");
+                model.addAttribute("userProfileFooter", "");
+            }
+
+            return "console/profile";
+        } else {
+            if (currentUser.getUsername().equals(user.getUsername())) {
+                currentUser.setFirstName(user.getFirstName());
+                currentUser.setLastName(user.getLastName());
+                currentUser.setEmail(user.getEmail());
+                currentUser.setTimeZone(user.getTimeZone());
+                currentUser.setLocale(user.getLocale());
+                if (user.getPassword() != null && user.getConfirmPassword() != null && user.getPassword().length() > 0 && user.getPassword().equals(user.getConfirmPassword())) {
+                    if (us != null) {
+                        currentUser.setPassword(us.encryptPassword(user.getUsername(), user.getPassword()));
+                    } else {
+                        currentUser.setPassword(StringUtil.md5Base16(user.getPassword()));
+                    }
+                    currentUser.setConfirmPassword(user.getPassword());
+                }
+                userDao.updateUser(currentUser);
+
+                if (us != null) {
+                    us.updateUserProfilePostProcessing(currentUser);
+                }
+            }
         }
 
         return "console/dialogClose";
@@ -1101,7 +1283,7 @@ public class ConsoleWebController {
         return "console/apps/appCreate";
     }
 
-    @RequestMapping("/console/app/submit")
+    @RequestMapping(value = "/console/app/submit", method = RequestMethod.POST)
     public String consoleAppSubmit(ModelMap model, @ModelAttribute("appDefinition") AppDefinition appDefinition, BindingResult result) {
 
         // validate ID
@@ -1278,12 +1460,24 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/import/submit", method = RequestMethod.POST)
     public String consoleAppImportSubmit(ModelMap map) throws IOException {
-        MultipartFile appZip = FileStore.getFile("appZip");
+        Collection<String> errors = new ArrayList<String>();
+        
+        MultipartFile appZip = null;
+        
+        try {
+            appZip = FileStore.getFile("appZip");
+        } catch (FileLimitException e) {
+            errors.add(ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+        }
+        
+        AppDefinition appDef = null;
+        if (appZip != null) {
+            appDef = appService.importApp(appZip.getBytes());
+        }
 
-        AppDefinition appDef = appService.importApp(appZip.getBytes());
-
-        if (appDef == null) {
+        if (appDef == null || !errors.isEmpty()) {
             map.addAttribute("error", true);
+            map.addAttribute("errorList", errors);
             return "console/apps/import";
         } else {
             String appId = appDef.getAppId();
@@ -1296,7 +1490,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/package/xpdl")
+    @RequestMapping({"/console/app/(*:appId)/(~:version)/package/xpdl", "/json/console/app/(*:appId)/(~:version)/package/xpdl"})
     public void getPackageXpdl(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1337,29 +1531,42 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/package/deploy", method = RequestMethod.POST)
     public void consolePackageDeploy(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request) throws JSONException, IOException {
+        String error = null;
+        
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        MultipartFile packageXpdl = FileStore.getFile("packageXpdl");
+        MultipartFile packageXpdl = null;
+        
+        try {
+            packageXpdl = FileStore.getFile("packageXpdl");
+        } catch (FileLimitException e) {
+            error = ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()});
+        }
         JSONObject jsonObject = new JSONObject();
 
         // TODO: authenticate user
         boolean authenticated = !workflowUserManager.isCurrentUserAnonymous();
 
         if (authenticated) {
-            try {
-                // deploy package
-                PackageDefinition packageDef = appService.deployWorkflowPackage(appId, version, packageXpdl.getBytes(), true);
+            if (error == null) {
+                try {
+                    // deploy package
+                    PackageDefinition packageDef = appService.deployWorkflowPackage(appId, version, packageXpdl.getBytes(), true);
 
-                if (packageDef != null) {
-                    // generate image for each process
-                    List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
-                    for (WorkflowProcess process : processList) {
-                        XpdlImageUtil.generateXpdlImage(getDesignerwebBaseUrl(request), process.getId(), true);
+                    if (packageDef != null) {
+                        // generate image for each process
+                        List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
+                        String designerBaseUrl = AppUtil.getDesignerWebBaseUrl();
+                        for (WorkflowProcess process : processList) {
+                            XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
+                        }
                     }
-                }
 
-                jsonObject.accumulate("status", "complete");
-            } catch (Exception e) {
-                jsonObject.accumulate("errorMsg", e.getMessage().replace(":", ""));
+                    jsonObject.accumulate("status", "complete");
+                } catch (Exception e) {
+                    jsonObject.accumulate("errorMsg", e.getMessage().replace(":", ""));
+                }
+            } else {
+                jsonObject.accumulate("errorMsg", error);
             }
         } else {
             jsonObject.accumulate("errorMsg", "unauthenticated");
@@ -1382,15 +1589,24 @@ public class ConsoleWebController {
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
-        MultipartFile packageXpdl = FileStore.getFile("packageXpdl");
+        MultipartFile packageXpdl;
+        
+        try {
+            packageXpdl = FileStore.getFile("packageXpdl");
+        } catch (FileLimitException e) {
+            map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            return "console/apps/packageUpload";
+        }
+        
         try {
             if (packageXpdl == null || packageXpdl.isEmpty()) {
                 throw new RuntimeException("Package XPDL is empty");
             }
             PackageDefinition packageDef = appService.deployWorkflowPackage(appId, version, packageXpdl.getBytes(), false);
             Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageDef.getVersion().toString());
+            String designerBaseUrl = AppUtil.getDesignerWebBaseUrl();
             for (WorkflowProcess process : processList) {
-                XpdlImageUtil.generateXpdlImage(getDesignerwebBaseUrl(request), process.getId(), true);
+                XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
             }
 
         } catch (Throwable e) {
@@ -1398,18 +1614,6 @@ public class ConsoleWebController {
             return "console/apps/packageUpload";
         }
         return "console/apps/packageUploadSuccess";
-    }
-
-    protected String getDesignerwebBaseUrl(HttpServletRequest request) {
-        String designerwebBaseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
-            designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-        }
-        if (designerwebBaseUrl.endsWith("/")) {
-            designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
-        }
-
-        return designerwebBaseUrl;
     }
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/processes", "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)"})
@@ -1426,7 +1630,6 @@ public class ConsoleWebController {
 
         //for launching workflow designer
         User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
-        map.addAttribute("loginHash", user.getLoginHash());
         map.addAttribute("username", user.getUsername());
 
         WorkflowProcess process = null;
@@ -1452,6 +1655,8 @@ public class ConsoleWebController {
         if (!processFound) {
             // specific process not found, get list of processes
             if (processList != null && processList.size() == 1) {
+                // remove attributes to prevent passing over as url parameters
+                map.clear();
                 // redirect to the only process
                 WorkflowProcess wp = processList.iterator().next();
                 return "redirect:/web/console/app/" + appId + "/" + version + "/processes/" + wp.getIdWithoutVersion();
@@ -1589,7 +1794,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormAdd";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/submit")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/submit", method = RequestMethod.POST)
     public String consoleActivityFormSubmit(
             ModelMap map,
             @RequestParam String appId,
@@ -1629,7 +1834,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormAddSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/remove")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/remove", method = RequestMethod.POST)
     public String consoleActivityFormRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1657,7 +1862,7 @@ public class ConsoleWebController {
         return "console/apps/activityFormRemoveSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/continue")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/continue", method = RequestMethod.POST)
     public void consoleActivityContinueSubmit(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam String auto) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1695,7 +1900,7 @@ public class ConsoleWebController {
         return "console/apps/activityPluginAdd";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
     public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
@@ -1714,7 +1919,7 @@ public class ConsoleWebController {
         return "console/apps/activityPluginAddSuccess";
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/remove")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/remove", method = RequestMethod.POST)
     public String consoleActivityPluginRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         packageDefinitionDao.removeAppActivityPlugin(appId, appDef.getVersion(), processDefId, activityDefId);
@@ -1739,7 +1944,7 @@ public class ConsoleWebController {
                     propertyMap = CsvUtil.getPluginPropertyMap(activityPlugin.getPluginProperties());
                     map.addAttribute("propertyMap", propertyMap);
                 } else {
-                    map.addAttribute("properties", AppUtil.decryptContent(activityPlugin.getPluginProperties()));
+                    map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(activityPlugin.getPluginProperties()));
                 }
             }
 
@@ -1756,7 +1961,7 @@ public class ConsoleWebController {
                         }
                         map.addAttribute("defaultPropertyMap", defaultPropertyMap);
                     } else {
-                        map.addAttribute("defaultProperties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
+                        map.addAttribute("defaultProperties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
                     }
                 }
             }
@@ -1774,7 +1979,7 @@ public class ConsoleWebController {
         return "console/plugin/pluginConfig";
     }
 
-    @RequestMapping("/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit")
+    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
     public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1809,7 +2014,7 @@ public class ConsoleWebController {
                 String pluginProps = sw.toString();
                 activityPlugin.setPluginProperties(pluginProps);
             } else {
-                activityPlugin.setPluginProperties(AppUtil.encryptContent(pluginProperties));
+                activityPlugin.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(activityPlugin.getPluginProperties(), pluginProperties));
             }
         }
 
@@ -1916,7 +2121,13 @@ public class ConsoleWebController {
                 String pluginProps = sw.toString();
                 participant.setPluginProperties(pluginProps);
             } else {
-                participant.setPluginProperties(AppUtil.encryptContent(pluginProperties));
+                PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
+                String oldJson = "";
+                if (participantExisting != null && PackageParticipant.TYPE_PLUGIN.equals(participantExisting.getType())) {
+                    oldJson = participantExisting.getPluginProperties();
+                }
+                
+                participant.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(oldJson, pluginProperties));
             }
         } else if ((PackageParticipant.TYPE_GROUP.equals(type) || PackageParticipant.TYPE_USER.equals(type)) && packageDef != null) {
             PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
@@ -1990,7 +2201,7 @@ public class ConsoleWebController {
                         propertyMap = CsvUtil.getPluginPropertyMap(participant.getPluginProperties());
                         map.addAttribute("propertyMap", propertyMap);
                     } else {
-                        map.addAttribute("properties", AppUtil.decryptContent(participant.getPluginProperties()));
+                        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(participant.getPluginProperties()));
                     }
                 }
             }
@@ -2009,7 +2220,7 @@ public class ConsoleWebController {
                     }
                     map.addAttribute("defaultPropertyMap", defaultPropertyMap);
                 } else {
-                    map.addAttribute("defaultProperties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
+                    map.addAttribute("defaultProperties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
                 }
             }
         }
@@ -2119,7 +2330,7 @@ public class ConsoleWebController {
             if (datalistDefinitionDao.loadById(datalistDefinition.getId(), appDef) != null) {
                 errors.add("console.datalist.error.label.exists");
             } else {
-                datalistDefinition.setJson("{\"id\":\"" + datalistDefinition.getId() + "\",\"name\":\"" + datalistDefinition.getName() + "\",\"pageSize\":\"10\",\"order\":\"\",\"orderBy\":\"\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}");
+                datalistDefinition.setJson("{\"id\":\"" + StringEscapeUtils.escapeJavaScript(datalistDefinition.getId()) + "\",\"name\":\"" + StringEscapeUtils.escapeJavaScript(datalistDefinition.getName()) + "\",\"pageSize\":\"10\",\"order\":\"\",\"orderBy\":\"\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}");
                 invalid = !datalistDefinitionDao.add(datalistDefinition);
             }
 
@@ -2256,7 +2467,7 @@ public class ConsoleWebController {
             if (userviewDefinitionDao.loadById(userviewDefinition.getId(), appDef) != null) {
                 errors.add("console.userview.error.label.exists");
             } else {
-                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + userviewDefinition.getId() + "\",\"name\":\"" + userviewDefinition.getName() + "\",\"description\":\"" + userviewDefinition.getDescription() + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.CorporatiTheme\",\"properties\":{}}}},\"categories\":[]}");
+                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getId()) + "\",\"name\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getName()) + "\",\"description\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getDescription()) + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.apps.userview.lib.DefaultTheme\",\"properties\":{}}}},\"categories\":[]}");
                 invalid = !userviewDefinitionDao.add(userviewDefinition);
             }
 
@@ -2507,17 +2718,41 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/importpo/submit", method = RequestMethod.POST)
     public String consoleAppMessageInportPOUpload(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) throws Exception {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
         Setting setting = setupManager.getSettingByProperty("systemLocale");
         String systemLocale = (setting != null) ? setting.getValue() : null;
         if (systemLocale == null || systemLocale.equalsIgnoreCase("")) {
             systemLocale = "en_US";
         }
-
+        
+        String errorMsg = null;
+        
+        MultipartFile multiPartfile = null;
+        
         try {
-            MultipartFile multiPartfile = FileStore.getFile("localeFile");
-            appService.importPO(appId, version, systemLocale, multiPartfile);
-        } catch (IOException e) {
+            multiPartfile = FileStore.getFile("localeFile");
+        } catch (FileLimitException e) {
+            errorMsg = ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()});
         }
+
+        if (multiPartfile != null) {
+            try {
+                appService.importPO(appId, version, systemLocale, multiPartfile);
+            } catch (IOException e) {
+                errorMsg = ResourceBundleUtil.getMessage("console.app.message.import.po.error.invalidPoFile");
+            }
+        }
+        
+        if (errorMsg != null) {
+            map.addAttribute("appId", appId);
+            map.addAttribute("appVersion", appDef.getVersion());
+            map.addAttribute("appDefinition", appDef);
+            map.addAttribute("errorMessage", errorMsg);
+
+            return "console/apps/messageImportPO";
+        }
+        
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
         String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=message";
         map.addAttribute("url", url);
@@ -2670,7 +2905,7 @@ public class ConsoleWebController {
                     propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
                     map.addAttribute("propertyMap", propertyMap);
                 } else {
-                    map.addAttribute("properties", AppUtil.decryptContent(pluginDefaultProperties.getPluginProperties()));
+                    map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
                 }
             }
         }
@@ -2747,7 +2982,7 @@ public class ConsoleWebController {
             String pluginProps = sw.toString();
             pluginDefaultProperties.setPluginProperties(pluginProps);
         } else {
-            pluginDefaultProperties.setPluginProperties(AppUtil.encryptContent(pluginProperties));
+            pluginDefaultProperties.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(pluginDefaultProperties.getPluginProperties(), pluginProperties));
         }
 
         if ("create".equals(action)) {
@@ -2899,7 +3134,7 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping("/console/app/(*:appId)/(~:version)/form/submit")
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/submit", method = RequestMethod.POST)
     public String consoleFormSubmit(ModelMap model, @ModelAttribute("formDefinition") FormDefinition formDefinition, BindingResult result, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) throws UnsupportedEncodingException {
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -2958,7 +3193,7 @@ public class ConsoleWebController {
         Form form = (Form) formService.createElementFromJson(json);
         formDef.setName(form.getPropertyString("name"));
         formDef.setTableName(form.getPropertyString("tableName"));
-        formDef.setJson(AppUtil.encryptContent(json));
+        formDef.setJson(PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), json));
 
         // update
         formDefinitionDao.update(formDef);
@@ -3001,6 +3236,9 @@ public class ConsoleWebController {
         if (user != null) {
             model.addAttribute("rssLink", "/web/rss/client/inbox?j_username=" + user.getUsername() + "&hash=" + user.getLoginHash());
         }
+        // additional UserSecurity settings
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+        model.addAttribute("userSecurity", us);
         return "console/run/inbox";
     }
 
@@ -3010,12 +3248,11 @@ public class ConsoleWebController {
 
         Map<String, String> settingMap = new HashMap<String, String>();
         for (Setting setting : settingList) {
-            settingMap.put(setting.getProperty(), setting.getValue());
-        }
-
-        Properties properties = DynamicDataSourceManager.getProperties();
-        for (Object key : properties.keySet()) {
-            settingMap.put(key.toString(), properties.getProperty(key.toString()));
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(setting.getProperty())) {
+                settingMap.put(setting.getProperty(), SetupManager.SECURE_VALUE);
+            } else {
+                settingMap.put(setting.getProperty(), setting.getValue());
+            }
         }
 
         Locale[] localeList = Locale.getAvailableLocales();
@@ -3027,11 +3264,20 @@ public class ConsoleWebController {
         map.addAttribute("localeList", localeStringList);
         map.addAttribute("settingMap", settingMap);
 
+        // additional UserSecurity settings
+        UserSecurity us = DirectoryUtil.getUserSecurity();
+        map.addAttribute("userSecurity", us);
+        
         return "console/setting/general";
     }
 
     @RequestMapping("/console/setting/general/loginHash")
     public void loginHash(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
+        if (SetupManager.SECURE_VALUE.equals(password)) {
+            password = setupManager.getSettingValue(SetupManager.MASTER_LOGIN_PASSWORD);
+            password = SecurityUtil.decrypt(password);
+        }
+        
         User user = new User();
         user.setUsername(username);
         user.setPassword(StringUtil.md5Base16(password));
@@ -3073,6 +3319,15 @@ public class ConsoleWebController {
             } else {
                 setting.setValue(paramValue);
             }
+            
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName)) {
+                if (SetupManager.SECURE_VALUE.equals(paramValue)) {
+                    setting.setValue(setupManager.getSettingValue(SetupManager.MASTER_LOGIN_PASSWORD));
+                } else {
+                    setting.setValue(SecurityUtil.encrypt(paramValue));
+                }
+            }
+            
             setupManager.saveSetting(setting);
         }
 
@@ -3090,6 +3345,7 @@ public class ConsoleWebController {
 
         pluginManager.refresh();
         workflowManager.internalUpdateDeadlineChecker();
+        FileStore.updateFileSizeLimit();
 
         return "redirect:/web/console/setting/general";
     }
@@ -3100,7 +3356,11 @@ public class ConsoleWebController {
 
         Properties properties = DynamicDataSourceManager.getProperties();
         for (Object key : properties.keySet()) {
-            settingMap.put(key.toString(), properties.getProperty(key.toString()));
+            if (!DynamicDataSourceManager.SECURE_FIELD.equals(key)) {
+                settingMap.put(key.toString(), properties.getProperty(key.toString()));
+            } else {
+                settingMap.put(key.toString(), DynamicDataSourceManager.SECURE_VALUE);
+            }
         }
 
         map.addAttribute("settingMap", settingMap);
@@ -3120,6 +3380,9 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/setting/profile/create", method = RequestMethod.POST)
     public void consoleProfileCreate(Writer writer, HttpServletRequest request, @RequestParam("profileName") String profileName) {
         if (!HostManager.isVirtualHostEnabled()) {
+            //get 
+            String secureValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
+            
             DynamicDataSourceManager.createProfile(profileName);
             DynamicDataSourceManager.changeProfile(profileName);
 
@@ -3129,6 +3392,11 @@ public class ConsoleWebController {
                 String paramName = (String) e.nextElement();
                 if (!paramName.equals("profileName")) {
                     String paramValue = request.getParameter(paramName);
+                    
+                    if (DynamicDataSourceManager.SECURE_FIELD.equals(paramName) && DynamicDataSourceManager.SECURE_VALUE.equals(paramValue)) {
+                        paramValue = secureValue;
+                    }
+                    
                     DynamicDataSourceManager.writeProperty(paramName, paramValue);
                 }
             }
@@ -3150,6 +3418,11 @@ public class ConsoleWebController {
             String paramName = (String) e.nextElement();
             if (!paramName.equals("profileName")) {
                 String paramValue = request.getParameter(paramName);
+                
+                if (DynamicDataSourceManager.SECURE_FIELD.equals(paramName) && DynamicDataSourceManager.SECURE_VALUE.equals(paramValue)) {
+                    paramValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
+                }
+                
                 DynamicDataSourceManager.writeProperty(paramName, paramValue);
             }
         }
@@ -3175,9 +3448,15 @@ public class ConsoleWebController {
                 i.remove();
             }
         }
-
-        if (settingMap.get("directoryManagerImpl") != null) {
-            Plugin plugin = pluginManager.getPlugin(settingMap.get("directoryManagerImpl"));
+        String className = "";
+        if (DirectoryUtil.isOverridden()) {
+            className = DirectoryUtil.getOverriddenDirectoryManagerClassName();
+        } else if (settingMap.get("directoryManagerImpl") != null) {
+            className = settingMap.get("directoryManagerImpl");
+        }
+        
+        if (className != null && !className.isEmpty()) {
+            Plugin plugin = pluginManager.getPlugin(className);
             if (plugin != null) {
                 map.addAttribute("directoryManagerName", plugin.getName());
             }
@@ -3198,14 +3477,20 @@ public class ConsoleWebController {
     @RequestMapping("/console/setting/directoryManagerImpl/config")
     public String consoleSettingDirectoryManagerImplConfig(ModelMap map, @RequestParam("directoryManagerImpl") String directoryManagerImpl, HttpServletRequest request) throws IOException {
         Plugin plugin = pluginManager.getPlugin(directoryManagerImpl);
-
-        String properties = setupManager.getSettingValue("directoryManagerImplProperties");
+        
+        String properties = "";
+        if (directoryManagerImpl != null && directoryManagerImpl.equals(DirectoryUtil.getOverriddenDirectoryManagerClassName())) {
+            properties = setupManager.getSettingValue(DirectoryUtil.CUSTOM_IMPL_PROPERTIES);
+        } else {
+            properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
+        }
+        
         if (!(plugin instanceof PropertyEditable)) {
             Map propertyMap = new HashMap();
             propertyMap = CsvUtil.getPluginPropertyMap(properties);
             map.addAttribute("propertyMap", propertyMap);
         } else {
-            map.addAttribute("properties", AppUtil.decryptContent(properties));
+            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         }
 
         if (plugin instanceof PropertyEditable) {
@@ -3224,6 +3509,13 @@ public class ConsoleWebController {
     public String consoleSettingDirectoryManagerImplConfigSubmit(ModelMap map, @RequestParam("id") String id, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) {
         Plugin plugin = (Plugin) pluginManager.getPlugin(id);
 
+        String settingName = "";
+        if (id != null && id.equals(DirectoryUtil.getOverriddenDirectoryManagerClassName())) {
+            settingName = DirectoryUtil.CUSTOM_IMPL_PROPERTIES;
+        } else {
+            settingName = DirectoryUtil.IMPL_PROPERTIES;
+        }
+        
         //save plugin
         Setting setting = setupManager.getSettingByProperty("directoryManagerImpl");
         if (setting == null) {
@@ -3233,10 +3525,10 @@ public class ConsoleWebController {
         setting.setValue(id);
         setupManager.saveSetting(setting);
 
-        Setting propertySetting = setupManager.getSettingByProperty("directoryManagerImplProperties");
+        Setting propertySetting = setupManager.getSettingByProperty(settingName);
         if (propertySetting == null) {
             propertySetting = new Setting();
-            propertySetting.setProperty("directoryManagerImplProperties");
+            propertySetting.setProperty(settingName);
         }
 
         if (pluginProperties == null) {
@@ -3268,7 +3560,7 @@ public class ConsoleWebController {
             String pluginProps = sw.toString();
             propertySetting.setValue(pluginProps);
         } else {
-            propertySetting.setValue(AppUtil.encryptContent(pluginProperties));
+            propertySetting.setValue(PropertyUtil.propertiesJsonStoreProcessing(propertySetting.getValue(), pluginProperties));
         }
         setupManager.saveSetting(propertySetting);
 
@@ -3296,7 +3588,14 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/plugin/upload/submit", method = RequestMethod.POST)
     public String consoleSettingPluginUploadSubmit(ModelMap map, HttpServletRequest request) throws IOException {
-        MultipartFile pluginFile = FileStore.getFile("pluginFile");
+        MultipartFile pluginFile;
+        
+        try {
+            pluginFile = FileStore.getFile("pluginFile");
+        } catch (FileLimitException e) {
+            map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            return "console/setting/pluginUpload";
+        }
 
         try {
             pluginManager.upload(pluginFile.getOriginalFilename(), pluginFile.getInputStream());
@@ -3463,12 +3762,30 @@ public class ConsoleWebController {
         if (systemLocale == null || systemLocale.equalsIgnoreCase("")) {
             systemLocale = "en_US";
         }
-
+        
+        String errorMsg = null;
+        MultipartFile multiPartfile = null;
+        
         try {
-            MultipartFile multiPartfile = FileStore.getFile("localeFile");
-            ResourceBundleUtil.POFileImport(multiPartfile, systemLocale);
-        } catch (IOException e) {
+            multiPartfile = FileStore.getFile("localeFile");
+        } catch (FileLimitException e) {
+            errorMsg = ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()});
         }
+
+        if (multiPartfile != null) {
+            try {
+                ResourceBundleUtil.POFileImport(multiPartfile, systemLocale);
+            } catch (IOException e) {
+                errorMsg = ResourceBundleUtil.getMessage("console.setting.message.import.error.invalidPoFile");
+            }
+        }
+        
+        if (errorMsg != null) {
+            map.addAttribute("errorMessage", errorMsg);
+            map.addAttribute("localeList", getSortedLocalList());
+            return "console/setting/messageImport";
+        }
+        
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
         String url = contextPath + "/web/console/setting/message";
         map.addAttribute("url", url);
@@ -3786,7 +4103,7 @@ public class ConsoleWebController {
                     Date lastModified = new Date(file.lastModified());
                     Date current = new Date();
 
-                    if ((lowercaseFN.startsWith("joget") || lowercaseFN.startsWith("catalina") || lowercaseFN.startsWith("localhost"))
+                    if ("catalina.out".equals(lowercaseFN) || (lowercaseFN.indexOf(".log") > 0 && !lowercaseFN.startsWith("admin") && !lowercaseFN.startsWith("host-manager") && !lowercaseFN.startsWith("manager"))
                         && (lastModified.getTime() > (current.getTime() - (5*1000*60*60*24))) && file.length() > 0) {
                         fileList.add(file);
                     }
@@ -3931,7 +4248,26 @@ public class ConsoleWebController {
         //LogUtil.debug(getClass().getName(), "App info: " + consoleWebPlugin.getAppInfo(appId, version));
         return page;
     }
-
+    
+    protected Collection<String> validateEmploymentDate (String employeeStartDate, String employeeEndDate) {
+        Collection<String> errors = new ArrayList<String> ();
+        String format = "yyyy-MM-dd";
+        
+        //validate start date and end date
+        if (!DateUtil.validateDateFormat(employeeStartDate, format)) {
+            errors.add(ResourceBundleUtil.getMessage("console.directory.employment.error.startDate.invalid"));
+        }
+        
+        if (!DateUtil.validateDateFormat(employeeEndDate, format)) {
+            errors.add(ResourceBundleUtil.getMessage("console.directory.employment.error.endDate.invalid"));
+        }
+        
+        if (!DateUtil.compare(employeeStartDate, employeeEndDate, format)) {
+            errors.add(ResourceBundleUtil.getMessage("console.directory.employment.error.startdate.endDate.compare"));
+        }
+        
+        return errors;
+    }
     @RequestMapping(value="/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/screenshot/submit", method = RequestMethod.POST)
     public void consoleUserviewScreenshotSubmit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
 
@@ -4048,12 +4384,24 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/desktop/app/import/submit", method = RequestMethod.POST)
     public String desktopAppImportSubmit(ModelMap map) throws IOException {
-        MultipartFile appZip = FileStore.getFile("appZip");
+        Collection<String> errors = new ArrayList<String>();
+        
+        MultipartFile appZip = null;
+        
+        try {
+            appZip = FileStore.getFile("appZip");
+        } catch (FileLimitException e) {
+            errors.add(ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+        }
 
-        AppDefinition appDef = appService.importApp(appZip.getBytes());
+        AppDefinition appDef = null;
+        if (appZip != null) {
+            appDef = appService.importApp(appZip.getBytes());
+        }
 
-        if (appDef == null) {
+        if (appDef == null || !errors.isEmpty()) {
             map.addAttribute("error", true);
+            map.addAttribute("errorList", errors);
             return "desktop/apps/import";
         } else {
             String appId = appDef.getAppId();

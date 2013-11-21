@@ -27,7 +27,7 @@
 
 .property-editor-page-step-indicator .step.childPage{
     color: #333385;
-    font-weight:bold;	
+    font-weight:bold;
 }
 
 .property-editor-page-step-indicator .step.childPage.active{
@@ -84,6 +84,10 @@
     display:block;
 }
 
+.property-input label{
+    display:block;
+}
+
 .property-input table{
     border-collapse:collapse;
     width: 100%;
@@ -123,6 +127,11 @@
 
 .property-input table tr td input{
     width:90%;
+}
+
+.property-input table tr th,
+.property-input table tr td{
+    width:90px;
 }
 
 .property-input select{
@@ -204,20 +213,21 @@
 .property-type-grid-action-add span{
     display:none;
 }
-
-.property-editor-property textarea{
-    width:95%;
-    min-height: 200px;
-}
-
-.property-editor-property.property-type-header .property-label-container {
-    border-bottom: 1px solid #DDDDDD;
-    margin: 0;
-    padding: 3px 5px;
+.property-editor-property.property-type-header .property-label-container{
+    margin: 0;	
     width: auto;
     float: none;
+}
+.property-editor-property.property-type-header .property-label-container .property-label{
+    border-bottom: 1px solid #DDDDDD;
     font-weight: bold;
     background: #f6f6f6;
+    padding: 3px 5px;
+}
+.property-editor-property.property-type-header .property-label-container .property-description{
+    margin-top: 5px;
+    padding: 3px 5px;
+    display:block !important;
 }
 
 .ui-widget-overlay {

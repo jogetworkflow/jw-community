@@ -36,6 +36,27 @@ body.embeded #adminBar {
 #adminBar #quickEditModeOption label {
     margin-bottom: 0px;
     display: none;
+    font-family: PT Sans,Arial,serif;
+    font-size: 9px;
+    text-align: center;
+    font-weight: normal;
+    border: 1px solid #aaaaaa;
+    color: #212121;    
+}
+#adminBar #quickEditModeOption label.ui-state-active {
+    border: solid 1px lightblue;
+}
+#adminBar #quickEditModeOption label.ui-corner-left {
+    border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+    background: #ffffff;
+}
+#adminBar #quickEditModeOption label.ui-corner-right {
+    border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+    background: #ffffff;
 }
 #adminBar .ui-buttonset .ui-button {
     margin-left: 0;

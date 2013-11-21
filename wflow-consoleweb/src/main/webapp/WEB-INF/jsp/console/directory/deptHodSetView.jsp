@@ -12,10 +12,10 @@
             <fmt:message key="console.directory.employment.filter.label.byGrade"/>
             <select id="JsonUserDataTable_filterbyGrade" onchange="filter(JsonUserDataTable, '&gradeId=', this.options[this.selectedIndex].value)">
                 <option></option>
-            <c:forEach items="${grades}" var="g">
-                <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
-                <option value="${g.id}" ${selected}>${g.name}</option>
-            </c:forEach>
+                <c:forEach items="${grades}" var="g">
+                    <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
+                    <option value="<c:out value="${g.id}"/>" ${selected}><c:out value="${g.name}"/></option>
+                </c:forEach>
             </select>
             </form>
         </div>

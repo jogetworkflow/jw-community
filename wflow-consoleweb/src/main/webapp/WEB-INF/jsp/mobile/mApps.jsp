@@ -62,10 +62,10 @@
                         <c:forEach items="${userviewDefinitionList}" var="userviewDefinition">
                             <li>
                                 <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}//landing" rel="external">
-                                    <p><b>${appDefinition.name}</b></p>
-                                    <h4>${userviewDefinition.name}</h4>
+                                    <p><b><c:out value="${appDefinition.name}"/></b></p>
+                                    <h4><c:out value="${userviewDefinition.name}"/></h4>
                                     <p>
-                                        ${userviewDefinition.description}
+                                        <c:out value="${userviewDefinition.description}"/>
                                         <br>
                                         <fmt:message key="console.app.common.label.version"/> ${appDefinition.version}
                                     </p>

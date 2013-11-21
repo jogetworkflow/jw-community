@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="java.io.File,org.joget.commons.util.SetupManager"%>
 
 <commons:header />
@@ -70,7 +71,7 @@
                     <div class="form-row">
                         <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
                         <span class="form-input">
-                            <input id="defaultLandingPage" type="text" name="landingPage" value="${settingMap['landingPage']}"/>
+                            <input id="defaultLandingPage" type="text" name="landingPage" value="<c:out value="${settingMap['landingPage']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span><span> /home</span></i>
                         </span>
                     </div>
@@ -123,7 +124,7 @@
                     <div class="form-row">
                         <label for="userLocale"><fmt:message key="console.setting.general.label.userLocale"/></label>
                         <span class="form-input">
-                            <input id="userLocale" type="text" name="userLocale" value="${settingMap['userLocale']}"/>
+                            <input id="userLocale" type="text" name="userLocale" value="<c:out value="${settingMap['userLocale']}"/>"/>
                         </span>
                     </div>
                 </span>
@@ -145,7 +146,7 @@
                     <div class="form-row">
                         <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
                         <span class="form-input">
-                            <input id="css" type="text" name="css" value="${settingMap['css']}"/>
+                            <input id="css" type="text" name="css" value="<c:out value="${settingMap['css']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.contextPath}/css/new.css</i>
                         </span>
                     </div>
@@ -156,7 +157,7 @@
                     <div class="form-row">
                         <label for="customCss"><fmt:message key="console.setting.general.label.customCss"/></label>
                         <span class="form-input">
-                            <textarea rows="15" id="customCss" type="text" name="customCss">${settingMap['customCss']}</textarea>
+                            <textarea rows="15" id="customCss" type="text" name="customCss"><c:out value="${settingMap['customCss']}"/></textarea>
                         </span>
                     </div>
                 </span>
@@ -169,7 +170,7 @@
                     <div class="form-row">
                         <label for="deadlineCheckerInterval"><fmt:message key="console.setting.general.label.deadlineCheckerInterval"/></label>
                         <span class="form-input">
-                            <input id="deadlineCheckerInterval" type="text" name="deadlineCheckerInterval" value="${settingMap['deadlineCheckerInterval']}"/>
+                            <input id="deadlineCheckerInterval" type="text" name="deadlineCheckerInterval" value="<c:out value="${settingMap['deadlineCheckerInterval']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 0</i>
                         </span>
                     </div>
@@ -178,12 +179,13 @@
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.saSettings"/></span>
             </div>
+            <c:if test="${!userSecurity.disableHashLogin}">
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="masterLoginUsername"><fmt:message key="console.setting.general.label.masterLoginUsername"/></label>
                         <span class="form-input">
-                            <input id="masterLoginUsername" type="text" name="masterLoginUsername" value="${settingMap['masterLoginUsername']}"/>
+                            <input id="masterLoginUsername" type="text" name="masterLoginUsername" value="<c:out value="${settingMap['masterLoginUsername']}"/>"/>
                         </span>
                     </div>
                 </span>
@@ -193,18 +195,19 @@
                     <div class="form-row">
                         <label for="masterLoginPassword"><fmt:message key="console.setting.general.label.masterLoginPassword"/></label>
                         <span class="form-input">
-                            <input id="masterLoginPassword" type="password" name="masterLoginPassword" value="${settingMap['masterLoginPassword']}"/>
+                            <input id="masterLoginPassword" type="password" name="masterLoginPassword" value="<c:out value="${settingMap['masterLoginPassword']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.masterLoginHash"/></span><span id="masterLoginHash">-</span></i>
                         </span>
                     </div>
                 </span>
             </div>
+            </c:if>
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="dataFileBasePath"><fmt:message key="console.setting.general.label.dataFileBasePath"/></label>
                         <span class="form-input">
-                            <input id="dataFileBasePath" type="text" name="dataFileBasePath" value="${settingMap['dataFileBasePath']}"/>
+                            <input id="dataFileBasePath" type="text" name="dataFileBasePath" value="<c:out value="${settingMap['dataFileBasePath']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <%= new java.io.File(SetupManager.getBaseDirectory()).getAbsolutePath() %></i>
                         </span>
                     </div>
@@ -215,8 +218,8 @@
                     <div class="form-row">
                         <label for="designerwebBaseUrl"><fmt:message key="console.setting.general.label.designerwebBaseUrl"/></label>
                         <span class="form-input">
-                            <input id="designerwebBaseUrl" type="text" name="designerwebBaseUrl" value="${settingMap['designerwebBaseUrl']}"/>
-                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}</i>
+                            <input id="designerwebBaseUrl" type="text" name="designerwebBaseUrl" value="<c:out value="${settingMap['designerwebBaseUrl']}"/>"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <%= AppUtil.getDesignerContextPath() %></i>
                         </span>
                     </div>
                 </span>
@@ -238,7 +241,7 @@
                     <div class="form-row">
                         <label for="mediumWarningLevel"><fmt:message key="console.setting.general.label.mediumWarningLevel"/></label>
                         <span class="form-input">
-                            <input id="mediumWarningLevel" type="text" name="mediumWarningLevel" value="${settingMap['mediumWarningLevel']}"/>
+                            <input id="mediumWarningLevel" type="text" name="mediumWarningLevel" value="<c:out value="${settingMap['mediumWarningLevel']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 20</i>
                         </span>
                     </div>
@@ -249,8 +252,19 @@
                     <div class="form-row">
                         <label for="criticalWarningLevel"><fmt:message key="console.setting.general.label.criticalWarningLevel"/></label>
                         <span class="form-input">
-                            <input id="criticalWarningLevel" type="text" name="criticalWarningLevel" value="${settingMap['criticalWarningLevel']}"/>
+                            <input id="criticalWarningLevel" type="text" name="criticalWarningLevel" value="<c:out value="${settingMap['criticalWarningLevel']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> 50</i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="fileSizeLimit"><fmt:message key="console.setting.general.label.fileSizeLimit"/></label>
+                        <span class="form-input">
+                            <input id="fileSizeLimit" type="text" name="fileSizeLimit" value="<c:out value="${settingMap['fileSizeLimit']}"/>"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <fmt:message key="console.setting.general.label.noLimit"/></i>
                         </span>
                     </div>
                 </span>

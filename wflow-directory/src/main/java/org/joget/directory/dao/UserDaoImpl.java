@@ -11,6 +11,9 @@ import org.joget.directory.model.Employment;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.context.ApplicationContext;
 
 public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
@@ -53,6 +56,9 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
     public Boolean addUser(User user) {
         try {
+            
+            adminRoleFilter(user);
+            
             save("User", user);
             return true;
         } catch (Exception e) {
@@ -63,6 +69,8 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
     public Boolean updateUser(User user) {
         try {
+            adminRoleFilter(user);
+            
             merge("User", user);
             return true;
         } catch (Exception e) {
@@ -148,11 +156,13 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
     public User getHodByDepartmentId(String departmentId) {
         try {
-            Department department = departmentDao.getDepartment(departmentId);
-            if (department != null && department.getHod() != null) {
-                Employment employment = department.getHod();
-                if (employment.getUser() != null) {
-                    return getUserById(employment.getUserId());
+            if (departmentId != null) {
+                Department department = departmentDao.getDepartment(departmentId);
+                if (department != null && department.getHod() != null) {
+                    Employment employment = department.getHod();
+                    if (employment.getUser() != null) {
+                        return getUserById(employment.getUserId());
+                    }
                 }
             }
         } catch (Exception e) {
@@ -386,5 +396,23 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
         }
 
         return 0L;
+    }
+    
+    protected void adminRoleFilter(User user) {
+        ApplicationContext ac = DirectoryUtil.getApplicationContext();
+        
+        if (ac != null) {
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager) DirectoryUtil.getApplicationContext().getBean("workflowUserManager");
+            if (workflowUserManager != null && !(workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) || workflowUserManager.isSystemUser())){
+                Role adminRole = roleDao.getRole(WorkflowUserManager.ROLE_ADMIN);
+                if (user.getRoles() != null && user.getRoles().contains(adminRole)) {
+                    user.getRoles().remove(adminRole);
+                    Role userRole = roleDao.getRole("ROLE_USER");
+                    if (userRole != null && !user.getRoles().contains(userRole)) {
+                        user.getRoles().add(userRole);
+                    }
+                }
+            }
+        }
     }
 }

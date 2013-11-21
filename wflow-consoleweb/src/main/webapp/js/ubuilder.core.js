@@ -185,6 +185,7 @@ UserviewBuilder = {
                 value = get_ubuilder_msg('ubuilder.editable.noValue');
             }
             UserviewBuilder.adjustJson();
+            value = UI.escapeHTML(value);
             return value;
         },{
             type      : 'text',
@@ -209,15 +210,15 @@ UserviewBuilder = {
             UserviewBuilder.adjustJson();
         }
 
-        $('#header-name span').html(this.data.properties.name);
+        $('#header-name span').html(UI.escapeHTML(this.data.properties.name));
         this.decorateElementOptions($('#header-name'));
-        $('#header-description span').html(this.data.properties.description);
+        $('#header-description span').html(UI.escapeHTML(this.data.properties.description));
         this.decorateElementOptions($('#header-description'));
-        $('#header-welcome-message span').html(this.data.properties.welcomeMessage);
+        $('#header-welcome-message span').html(UI.escapeHTML(this.data.properties.welcomeMessage));
         this.decorateElementOptions($('#header-welcome-message'));
-        $('#header-logout-text span').html(this.data.properties.logoutText);
+        $('#header-logout-text span').html(UI.escapeHTML(this.data.properties.logoutText));
         this.decorateElementOptions($('#header-logout-text'));
-        $('#footer-message span').html(this.data.properties.footerMessage);
+        $('#footer-message span').html(UI.escapeHTML(this.data.properties.footerMessage));
         this.decorateElementOptions($('#footer-message'));
 
         //empty sidebar and put label on it
@@ -230,7 +231,7 @@ UserviewBuilder = {
             $('#userview-sidebar').append('<div id="'+category.properties.id+'" class="category"></div>');
             var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
             $(categoryObject).html(UserviewBuilder.getCategoryModel());
-            $(categoryObject).find('.category-label span').html(category.properties.label);
+            $(categoryObject).find('.category-label span').html(UI.escapeHTML(category.properties.label));
             this.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
             this.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
 
@@ -244,7 +245,7 @@ UserviewBuilder = {
                 $(categoryObject).find('.menu-container').append('<div id="'+menu.properties.id+'" class="menu"></div>');
                 var menuObject =  $(categoryObject).find('.menu-container #'+menu.properties.id);
                 $(menuObject).html(UserviewBuilder.getMenuModel());
-                $(menuObject).find('.menu-label span').html(menu.properties.label);
+                $(menuObject).find('.menu-label span').html(UI.escapeHTML(menu.properties.label));
                 this.decorateElementOptions(menuObject);
             }
             this.decorateElementOptions(categoryObject);
@@ -268,7 +269,7 @@ UserviewBuilder = {
         $('#userview-sidebar').append('<div id="'+category.properties.id+'" class="category"></div>');
         var categoryObject = $('#userview-sidebar').find('#'+category.properties.id);
         $(categoryObject).html(UserviewBuilder.getCategoryModel());
-        $(categoryObject).find('.category-label span').html(category.properties.label);
+        $(categoryObject).find('.category-label span').html(UI.escapeHTML(category.properties.label));
         this.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
         this.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
         this.decorateCategory($(categoryObject));
@@ -350,7 +351,8 @@ UserviewBuilder = {
         var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
 
         menu.properties = properties;
-        $('#'+id+' .menu-label span').html(properties.label);
+        var label = UI.escapeHTML(properties.label);
+        $('#'+id+' .menu-label span').html(label);
         thisObject.editorDialog.hide();
         UserviewBuilder.adjustJson();
     },
@@ -487,6 +489,7 @@ UserviewBuilder = {
                 thisObject.data.categories[thisObject.categoriesPointer[id]].properties.label = value;
                 UserviewBuilder.adjustJson();
             }
+            value = UI.escapeHTML(value);
             return value;
         },{
             type      : 'text',

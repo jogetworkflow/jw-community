@@ -19,6 +19,7 @@
                        hrefParam="id"
                        hrefQuery="true"
                        hrefDialog="false"
+                       hrefPost="true"
                        fields="['id','name','description','version']"
                        column1="{key: 'name', label: 'console.plugin.label.name', sortable: false}"
                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false}"

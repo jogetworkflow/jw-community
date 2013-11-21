@@ -1,10 +1,11 @@
 package org.joget.designer.jped;
 
-import java.io.InputStream;
-import java.net.URL;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpResponseException;
 import org.enhydra.jawe.base.xpdlhandler.XPDLHandlerSettings;
 import org.jped.base.xpdlhandler.PluggableXPDLHandler;
 import org.enhydra.shark.xpdl.elements.Package;
+import org.joget.designer.Designer;
 
 public class CustomXPDLHandler extends PluggableXPDLHandler {
 
@@ -21,32 +22,26 @@ public class CustomXPDLHandler extends PluggableXPDLHandler {
 
         if (pkgReference != null && pkgReference.startsWith("http")) {
             // open XPDL from URL
-            InputStream in = null;
             byte[] bytes = null;
             Package pkg = null;
 
             try {
-
-                try {
-                    // read from URL
-                    URL url = new URL(pkgReference);
-                    in = url.openStream();
-                    byte[] buffer = new byte[4096];
+                String sessionId = Designer.SESSION;
+                int port =  Integer.parseInt(Designer.PORT);
+                String cookieDomain =  Designer.DOMAIN;
+                String cookiePath = Designer.CONTEXTPATH;
                     String contents = "";
-                    int length;
-                    while ((length = in.read(buffer, 0, buffer.length)) > 0) {
-                        contents += new String(buffer, 0, length, "UTF-8");
-                    }
-                    bytes = contents.getBytes("UTF-8");
-
-                } finally {
-                    if (in != null) {
-                        try {
-                            in.close();
-                        } catch (Exception ie) {
-                        }
-                    }
+                try {
+                    contents = HttpUtil.httpPost(null, pkgReference, port, sessionId, cookieDomain, cookiePath,  Designer.USERNAME, null, false, false, null, null);
+                } catch(AuthenticationException ae) {
+                    System.exit(0);
+                } catch(HttpResponseException he) {
+                    System.exit(0);
                 }
+                if (contents == null) {
+                    System.exit(0);
+                }
+                bytes = contents.getBytes("UTF-8");
 
                 // open package
                 if (bytes != null) {
@@ -57,6 +52,7 @@ public class CustomXPDLHandler extends PluggableXPDLHandler {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new RuntimeException("Unable to open URL " + pkgReference, e);
             } finally {
                 return pkg;

@@ -25,10 +25,10 @@
                                     <form>
                                     <fmt:message key="console.directory.group.filter.label.byOrganization"/>
                                     <select id="JsonGroupDataTable_filterbyOrg" onchange="filter(JsonGroupDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                                        <option></option>
+                                        <option value=""><fmt:message key="console.directory.group.empty.option.label"/></option>
                                     <c:forEach items="${organizations}" var="o">
                                         <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                                        <option value="${o.id}" ${selected}>${o.name}</option>
+                                        <option value="${o.id}" ${selected}><c:out value="${o.name}"/></option>
                                     </c:forEach>
                                     </select>
                                     </form>
@@ -57,10 +57,10 @@
                                     <form>
                                     <fmt:message key="console.directory.user.filter.label.byOrganization"/>
                                     <select id="JsonUserDataTable_filterbyOrg" onchange="filter(JsonUserDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                                        <option></option>
+                                        <option value=""><fmt:message key="console.directory.user.empty.option.label"/></option>
                                     <c:forEach items="${organizations}" var="o">
                                         <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                                        <option value="${o.id}" ${selected}>${o.name}</option>
+                                        <option value="${o.id}" ${selected}><c:out value="${o.name}"/></option>
                                     </c:forEach>
                                     </select>
                                     </form>
@@ -128,7 +128,7 @@
                                             <select id="activity" name="activity">
                                                 <option value=""><fmt:message key="console.process.config.label.mapParticipants.previousActivity"/></option>
                                                 <c:forEach var="activity" items="${activityList}" varStatus="rowCounter">
-                                                    <option value="${activity.id}">${activity.name}</option>
+                                                    <option value="<c:out value="${activity.id}"/>"><c:out value="${activity.name}"/></option>
                                                 </c:forEach>
                                             </select>
                                         </span>
@@ -143,10 +143,10 @@
                                     <form>
                                     <fmt:message key="console.directory.group.filter.label.byOrganization"/>
                                     <select id="JsonHodDataTable_filterbyOrg" onchange="filter(JsonHodDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                                        <option></option>
+                                        <option value=""><fmt:message key="console.directory.dept.empty.option.label"/></option>
                                     <c:forEach items="${organizations}" var="o">
                                         <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                                        <option value="${o.id}" ${selected}>${o.name}</option>
+                                        <option value="${o.id}" ${selected}><c:out value="${o.name}"/></option>
                                     </c:forEach>
                                     </select>
                                     </form>
@@ -176,10 +176,10 @@
                                     <form>
                                     <fmt:message key="console.directory.group.filter.label.byOrganization"/>
                                     <select id="JsonDeptDataTable_filterbyOrg" onchange="filter(JsonDeptDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                                        <option></option>
+                                        <option value=""><fmt:message key="console.directory.dept.empty.option.label"/></option>
                                     <c:forEach items="${organizations}" var="o">
                                         <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
-                                        <option value="${o.id}" ${selected}>${o.name}</option>
+                                        <option value="${o.id}" ${selected}><c:out value="${o.name}"/></option>
                                     </c:forEach>
                                     </select>
                                     </form>

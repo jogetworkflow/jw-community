@@ -2,8 +2,10 @@
 
 <commons:popupHeader />
 
-<h3>${assignment.processName} - ${assignment.activityName}</h3>
+<div id="main-body-header"><c:out value="${assignment.processName}" escapeXml="true"/> - <c:out value="${assignment.activityName}" escapeXml="true"/></div>
 
-<jsp:include page="formView.jsp" flush="true" />
-
+<div id="main-body-content">
+    <jsp:include page="formView.jsp" flush="true" />
+</div>
+    
 <commons:popupFooter />

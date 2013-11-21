@@ -15,6 +15,7 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.lib.PasswordField;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormContainer;
@@ -81,13 +82,15 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             for (String columnName : columnNames) {
                 Element element = FormUtil.findElement(columnName, form, null, true);
                 if (element != null && !(element instanceof FormContainer)) {
-                    String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-                    String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
-                    if (id != null && !id.isEmpty()) {
-                        if (label == null || label.isEmpty()) {
-                            label = id;
+                    if (!(element instanceof PasswordField)) {
+                        String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                        String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
+                        if (id != null && !id.isEmpty()) {
+                            if (label == null || label.isEmpty()) {
+                                label = id;
+                            }
+                            columns.add(new DataListColumn(id, label, true));
                         }
-                        columns.add(new DataListColumn(id, label, true));
                     }
                 } else {
                     columns.add(new DataListColumn(columnName, columnName, true));

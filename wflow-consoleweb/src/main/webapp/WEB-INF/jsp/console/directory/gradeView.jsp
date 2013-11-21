@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><fmt:message key="console.directory.org.common.label"/>: <span class="nav-subtitle">${grade.organization.name}</span></p>
+        <p><fmt:message key="console.directory.org.common.label"/>: <span class="nav-subtitle"><c:out value="${grade.organization.name}"/></span></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -27,19 +27,19 @@
             <legend><fmt:message key="console.directory.grade.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.org.common.label"/></label>
-                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}">${grade.organization.name}</a></span>
+                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}"><c:out value="${grade.organization.name}"/></a></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.grade.common.label.id"/></label>
-                <span class="form-input">${grade.id}</span>
+                <span class="form-input"><c:out value="${grade.id}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.grade.common.label.name"/></label>
-                <span class="form-input">${grade.name}</span>
+                <span class="form-input"><c:out value="${grade.name}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.grade.common.label.description"/></label>
-                <span class="form-input">${grade.description}</span>
+                <span class="form-input"><c:out value="${grade.description}"/></span>
             </div>
         </fieldset>
         <div class="view">
@@ -51,7 +51,7 @@
                     <option></option>
                 <c:forEach items="${departments}" var="d">
                     <c:set var="selected"><c:if test="${d.id == param.deptId}"> selected</c:if></c:set>
-                    <option value="${d.id}" ${selected}>${d.name}</option>
+                    <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
                 </c:forEach>
                 </select>
                 </form>
@@ -87,6 +87,7 @@
                        column6="{key: 'department.name', label: 'console.directory.employment.common.label.department', sortable: true}"
                        />
         </div>
+    </div>
 </div>
 
 <script>

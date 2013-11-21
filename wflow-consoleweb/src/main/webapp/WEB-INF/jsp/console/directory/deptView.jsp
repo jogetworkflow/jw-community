@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><fmt:message key="console.directory.org.common.label"/>: <span class="nav-subtitle">${department.organization.name}</span></p>
+        <p><fmt:message key="console.directory.org.common.label"/>: <span class="nav-subtitle"><c:out value="${department.organization.name}"/></span></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -32,31 +32,31 @@
             <legend><fmt:message key="console.directory.department.common.label.details"/></legend>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.org.common.label"/></label>
-                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}">${department.organization.name}</a></span>
+                <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}"><c:out value="${department.organization.name}"/></a></span>
             </div>
             <c:if test="${!empty department.parent}">
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.department.common.label.parentDepartment"/></label>
-                    <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${department.parent.id}">${department.parent.name}</a></span>
+                    <span class="form-input"><a href="${pageContext.request.contextPath}/web/console/directory/dept/view/${department.parent.id}"><c:out value="${department.parent.name}"/></a></span>
                 </div>
             </c:if>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.department.common.label.id"/></label>
-                <span class="form-input">${department.id}</span>
+                <span class="form-input"><c:out value="${department.id}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.department.common.label.name"/></label>
-                <span class="form-input">${department.name}</span>
+                <span class="form-input"><c:out value="${department.name}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.department.common.label.description"/></label>
-                <span class="form-input">${department.description}</span>
+                <span class="form-input"><c:out value="${department.description}"/></span>
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.department.common.label.hod"/></label>
                 <span class="form-input">
                     <c:if test="${!empty hod}">
-                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${hod.id}.">${hod.username}</a>
+                        <a href="${pageContext.request.contextPath}/web/console/directory/user/view/${hod.id}."><c:out value="${hod.username}"/></a>
                     </c:if>
                 </span>
             </div>
@@ -73,6 +73,7 @@
                        desc="false"
                        href="${pageContext.request.contextPath}/web/console/directory/dept/view"
                        hrefParam="id"
+                       hrefSuffix="."
                        hrefQuery="false"
                        hrefDialog="false"
                        hrefDialogWidth="600px"
@@ -99,7 +100,7 @@
                     <option></option>
                 <c:forEach items="${grades}" var="g">
                     <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
-                    <option value="${g.id}" ${selected}>${g.name}</option>
+                    <option value="<c:out value="${g.id}"/>" ${selected}><c:out value="${g.name}"/></option>
                 </c:forEach>
                 </select>
                 </form>
@@ -135,6 +136,7 @@
                        column6="{key: 'grade.name', label: 'console.directory.employment.common.label.grade', sortable: true}"
                        />
         </div>
+    </div>
 </div>
 
 <script>

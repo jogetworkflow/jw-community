@@ -168,10 +168,10 @@
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
                     <c:when test="${!empty userview.setting.theme.header}">
-                        ${userview.setting.theme.header}
+                        <c:out value="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
-                        ${userview.properties.name}
+                        <c:out value="${userview.properties.name}"/>
                     </c:otherwise>
                 </c:choose>                    
                 </h1>
@@ -182,7 +182,7 @@
                             <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText">${userview.properties.logoutText}</span></a>
+                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
                             <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:otherwise>
                     </c:choose>                            
@@ -196,7 +196,7 @@
                             <c:forEach items="${userview.categories}" var="category" varStatus="cStatus">
                                 <c:if test="${category.properties.hide ne 'yes'}">                                        
                                     <li data-role="list-divider">
-                                        <h3>${category.properties.label}</h3>
+                                        <h3><ui:stripTag html="${category.properties.label}" relaxed="true"/></h3>
                                     </li>
                                     <c:forEach items="${category.menus}" var="menu" varStatus="mStatus">
                                         <li>

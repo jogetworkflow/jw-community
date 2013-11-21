@@ -37,6 +37,7 @@
                                    hrefDialogWidth="600px"
                                    hrefDialogHeight="400px"
                                    hrefDialogTitle="Form Dialog"
+                                   hrefPost="true"
                                    checkboxButton1="console.form.create.label"
                                    checkboxCallback1="createForm"
                                    searchItems="name|Form Name"
@@ -58,13 +59,13 @@
                         <div class="form-row">
                             <label for="externalFormUrl"><fmt:message key="console.process.config.label.mapActivities.formExternal.url"/></label>
                             <span class="form-input">
-                                <input id="externalFormUrl" type="text" name="externalFormUrl" size="60" value="${externalFormUrl}"/>
+                                <input id="externalFormUrl" type="text" name="externalFormUrl" size="60" value="<c:out value="${externalFormUrl}"/>"/>
                             </span>
                         </div>
                         <div class="form-row">
                             <label for="externalFormIFrameStyle"><fmt:message key="console.process.config.label.mapActivities.formExternal.iframeStyle"/></label>
                             <span class="form-input">
-                                <textarea id="externalFormIFrameStyle" name="externalFormIFrameStyle">${externalFormIFrameStyle}</textarea>
+                                <textarea id="externalFormIFrameStyle" name="externalFormIFrameStyle"><c:out value="${externalFormIFrameStyle}"/></textarea>
                             </span>
                         </div>
                         <div class="form-buttons">

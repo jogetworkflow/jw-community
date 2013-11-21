@@ -78,7 +78,14 @@ public class OrganizationDaoImpl extends AbstractSpringDao implements Organizati
                 Set<Grade> grades = organization.getGrades();
                 Set<Group> groups = organization.getGroups();
                 Set<Employment> employments = organization.getEmployments();
-
+                
+                if (employments != null) {
+                    for (Employment employment : employments) {
+                        getEmploymentDao().unassignUserFromOrganization(employment.getUserId(), id);
+                    }
+                    employments.clear();
+                }
+                
                 if (groups != null) {
                     organization.getGroups().removeAll(groups);
                 }
@@ -94,15 +101,7 @@ public class OrganizationDaoImpl extends AbstractSpringDao implements Organizati
                         getGradeDao().deleteGrade(grade.getId());
                     }
                 }
-
-                if (employments != null) {
-                    for (Employment employment : employments) {
-                        getEmploymentDao().unassignUserFromOrganization(employment.getUserId(), id);
-                        getEmploymentDao().deleteEmployment(employment.getId());
-                    }
-                    employments.clear();
-                }
-
+                
                 delete("Organization", organization);
             }
             return true;

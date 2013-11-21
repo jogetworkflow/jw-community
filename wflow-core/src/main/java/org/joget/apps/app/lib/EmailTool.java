@@ -70,6 +70,7 @@ public class EmailTool extends DefaultApplicationPlugin {
             if ("true".equalsIgnoreCase(isHtml)) {
                 replaceMap = new HashMap<String, String>();
                 replaceMap.put("\\n", "<br/>");
+                emailMessage = emailMessage.replaceAll("\\n", "<br/>");
             }
             
             emailSubject = WorkflowUtil.processVariable(emailSubject, formDataTable, wfAssignment);
@@ -159,7 +160,7 @@ public class EmailTool extends DefaultApplicationPlugin {
                             }
                         }
                     } catch(Exception e){
-                        LogUtil.info("EmailTool", "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
+                        LogUtil.info(EmailTool.class.getName(), "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
                     }
                 }
             }
@@ -188,7 +189,7 @@ public class EmailTool extends DefaultApplicationPlugin {
                         }
                         
                     } catch(Exception e){
-                        LogUtil.info("EmailTool", "Attached file fail from path \"" + path + "\"");
+                        LogUtil.info(EmailTool.class.getName(), "Attached file fail from path \"" + path + "\"");
                         e.printStackTrace();
                     }
                 }
@@ -199,11 +200,11 @@ public class EmailTool extends DefaultApplicationPlugin {
                 public void run() {
                     try {
                         HostManager.setCurrentProfile(profile);
-                        LogUtil.info(getClass().getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", subject=" + email.getSubject());
+                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", subject=" + email.getSubject());
                         email.send();
-                        LogUtil.info(getClass().getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());
+                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());
                     } catch (EmailException ex) {
-                        LogUtil.error(getClass().getName(), ex, "");
+                        LogUtil.error(EmailTool.class.getName(), ex, "");
                     }
                 }
             });
@@ -211,7 +212,7 @@ public class EmailTool extends DefaultApplicationPlugin {
             emailThread.start();
 
         } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "");
+            LogUtil.error(EmailTool.class.getName(), e, "");
         }
 
         return null;

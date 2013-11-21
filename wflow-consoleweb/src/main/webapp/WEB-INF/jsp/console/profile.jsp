@@ -15,7 +15,7 @@
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">
                     <c:forEach items="${errors}" var="error">
-                        <fmt:message key="${error}"/>
+                        <c:out value="${error}"/><br/>
                     </c:forEach>
                 </span>
             </c:if>
@@ -23,7 +23,7 @@
                 <legend><fmt:message key="console.directory.user.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.username"/></label>
-                    <span class="form-input">${user.username}</span>
+                    <span class="form-input"><c:out value="${user.username}"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
@@ -36,14 +36,6 @@
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.email"/></label>
                     <span class="form-input"><form:input path="email" cssErrorClass="form-input-error" /></span>
-                </div>
-                <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.password"/></label>
-                    <span class="form-input"><form:password path="password" cssErrorClass="form-input-error" /></span>
-                </div>
-                <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.confirmPassword"/></label>
-                    <span class="form-input"><form:password path="confirmPassword" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.timeZone"/></label>
@@ -65,6 +57,39 @@
                     </div>
                 </c:if>
             </fieldset>
+            <fieldset>
+                <legend><fmt:message key="console.directory.user.common.label.changePassword"/></legend>
+                <c:if test="${!empty passwordErrors}">
+                    <span class="form-errors" style="display:block">
+                        <c:forEach items="${passwordErrors}" var="error">
+                            <c:out value="${error}"/><br/>
+                        </c:forEach>
+                    </span>
+                </c:if>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.password"/></label>
+                    <span class="form-input"><form:password path="password" cssErrorClass="form-input-error" autocomplete="off" /></span>
+                </div>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.confirmPassword"/></label>
+                    <span class="form-input"><form:password path="confirmPassword" cssErrorClass="form-input-error" autocomplete="off" /></span>
+                </div>
+                <c:if test="${!empty policies}">
+                    <div class="policies" style="display:block">
+                        <c:forEach items="${policies}" var="policy">
+                            <span><c:out value="${policy}"/></span>
+                        </c:forEach>
+                    </div>
+                </c:if>
+            </fieldset>
+            <fieldset>
+                <legend><fmt:message key="console.directory.user.common.label.authentication"/></legend>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.oldPassword"/></label>
+                    <span class="form-input"><form:password path="oldPassword" cssErrorClass="form-input-error" autocomplete="off" /> *</span>
+                </div>
+            </fieldset>       
+            ${userProfileFooter}    
             <div class="form-buttons">
                 <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
                 <input class="form-button" type="button" value="<fmt:message key="general.method.label.cancel"/>" onclick="closeDialog()"/>

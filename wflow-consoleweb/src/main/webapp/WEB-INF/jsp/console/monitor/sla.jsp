@@ -24,7 +24,7 @@
                 <option></option>
             <c:forEach items="${processDefinitionList}" var="processDefinition">
                 <c:set var="selected"><c:if test="${processDefinition.id == param.processDefId}"> selected</c:if></c:set>
-                <option value="${processDefinition.id}" ${selected}>${processDefinition.name} - Version ${processDefinition.version}</option>
+                <option value="<c:out value="${processDefinition.id}"/>" ${selected}><c:out value="${processDefinition.name}"/> - Version <c:out value="${processDefinition.version}"/></option>
             </c:forEach>
             </select>
             </form>

@@ -4,7 +4,11 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.xml.parsers.*;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -18,12 +22,17 @@ import net.sf.json.JSONSerializer;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.xml.XMLSerializer;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.property.model.PropertyOptions;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class PropertyUtil {
+    public final static String PASSWORD_PROTECTED_VALUE = "****SECURE_VALUE****-";
+    public final static String TYPE_PASSWORD = "password";
+    public final static String TYPE_ELEMENT_SELECT = "elementselect";
 
     /**
      * Parse property xml file and convert to json output
@@ -131,7 +140,7 @@ public class PropertyUtil {
                         for (int j = 0; j < properties.size(); j++) {
                             JSONObject property = (JSONObject) properties.get(j);
                             if (property.containsKey("value")) {
-                                defaultProperties += "'" + property.getString("name") + "':'" + property.getString("value") + "',";
+                                defaultProperties += "'" + property.getString("name") + "':'" + StringUtil.escapeString(property.getString("value"), StringUtil.TYPE_JSON, null) + "',";
                             }
                         }
                     }
@@ -203,5 +212,93 @@ public class PropertyUtil {
             }
         }
         return array.toArray();
+    }
+    
+    public static String propertiesJsonLoadProcessing(String json) {
+        //parse content
+        if (json != null && json.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(json);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    int count = 0;
+                    for (String s : sList) {
+                        json = json.replaceAll(StringUtil.escapeRegex(s), PASSWORD_PROTECTED_VALUE + count);
+                        count++;
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(PropertyUtil.class.getName(), ex, "");
+            }
+        }
+        
+        return json;
+    }
+    
+    public static String propertiesJsonStoreProcessing(String oldJson, String newJson) {
+        Map<String, String> passwordProperty = new HashMap<String, String>();
+        
+        if (oldJson != null && !oldJson.isEmpty() && oldJson.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(oldJson);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+            
+            if (!sList.isEmpty()) {
+                int count = 0;
+                for (String s : sList) {
+                    passwordProperty.put(SecurityUtil.ENVELOPE + PASSWORD_PROTECTED_VALUE + count + SecurityUtil.ENVELOPE, s);
+                    count++;
+                }
+            }
+        }
+        
+        if (newJson != null && !newJson.isEmpty() && (newJson.contains(SecurityUtil.ENVELOPE) || newJson.contains(PASSWORD_PROTECTED_VALUE))) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(newJson);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+            
+            Pattern pattern2 = Pattern.compile("\"("+StringUtil.escapeRegex(PASSWORD_PROTECTED_VALUE)+"[^\"]*)\"");
+            Matcher matcher2 = pattern2.matcher(newJson);
+            while (matcher2.find()) {
+                sList.add(SecurityUtil.ENVELOPE + matcher2.group(1) + SecurityUtil.ENVELOPE);
+                newJson = newJson.replaceAll(StringUtil.escapeRegex(matcher2.group(1)), SecurityUtil.ENVELOPE + matcher2.group(1) + SecurityUtil.ENVELOPE);
+            }
+            
+            //For datalist binder initialization (getBuilderDataColumnList) 
+            if (!newJson.contains("\"")) {
+                sList.add(SecurityUtil.ENVELOPE + newJson + SecurityUtil.ENVELOPE);
+                newJson = SecurityUtil.ENVELOPE + newJson + SecurityUtil.ENVELOPE;
+            }
+            
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        if (s.contains(PASSWORD_PROTECTED_VALUE)) {
+                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), passwordProperty.get(s));
+                        } else {
+                            String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
+                            tempS = SecurityUtil.encrypt(tempS);
+
+                            newJson = newJson.replaceAll(s, tempS);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(PropertyUtil.class.getName(), ex, "");
+            }
+        }
+        
+        return newJson;
     }
 }

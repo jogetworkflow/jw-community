@@ -18,6 +18,8 @@ import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.plugin.base.PluginWebSupport;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class SubForm extends AbstractSubForm implements FormBuilderPaletteElement, PluginWebSupport {
 
@@ -114,6 +116,13 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
      */
     @Override
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
         String action = request.getParameter("action");
         if ("getOptions".equals(action)) {
             Collection<FormDefinition> formDefList = new ArrayList<FormDefinition>();

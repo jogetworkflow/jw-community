@@ -1,11 +1,15 @@
 ConnectionManager = {
     post : function(url, callback, params){
               var thisWindow = window;
+              $.support.cors = true;
               $.ajax({
                  type: 'POST',
                  url: url,
                  data: params,
                  dataType : "text",
+                 xhrFields: {
+                     withCredentials: true
+                 },
                  success: function(data) {
                      callback.success.call(thisWindow, data);
                  },
@@ -36,11 +40,15 @@ ConnectionManager = {
 
     get : function(url, callback, params, xss){
         if(!xss){
+              $.support.cors = true;
               $.ajax({
                  type: 'GET',
                  url: url,
                  data: params,
                  dataType : "text",
+                 xhrFields: {
+                     withCredentials: true
+                 },
                  success: function(data) {
                      callback.success(data)
                  },
@@ -71,7 +79,7 @@ AssignmentManager = {
         var gcuCallback = {
 			success : function(o){
 				if(o.username != username){
-                    var url = baseUrl + "/web/json/directory/user/sso?username=" + username + "&password=" + password;
+                    var url = baseUrl + "/web/json/directory/user/sso?username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password);
                     ConnectionManager.ajaxJsonp(url, callback, null);
                 }else
                     callback.success(o);
@@ -109,7 +117,7 @@ AssignmentManager = {
 				document.location = baseUrl + "/web/json/workflow/closeDialog";
 			}
 		};
-		ConnectionManager.ajaxJsonp(url, callback, null);
+		ConnectionManager.post(url, callback, null);
     },
 
     completeAssignment : function(baseUrl, activityId, redirect){
@@ -125,7 +133,7 @@ AssignmentManager = {
                     document.location = baseUrl + "/web/json/workflow/closeDialog";
 			}
 		};
-		ConnectionManager.ajaxJsonp(url, callback, null);
+		ConnectionManager.post(url, callback, null);
     },
 
     completeAssignmentWithVariable : function(baseUrl, activityId, variableData, redirect){
@@ -141,7 +149,7 @@ AssignmentManager = {
                     document.location = baseUrl + "/web/json/workflow/closeDialog";
 			}
 		};
-		ConnectionManager.ajaxJsonp(url, callback, variableData);
+		ConnectionManager.post(url, callback, variableData);
     }
 };
 

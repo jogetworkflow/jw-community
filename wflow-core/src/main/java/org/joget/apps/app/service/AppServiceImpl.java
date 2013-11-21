@@ -963,9 +963,9 @@ public class AppServiceImpl implements AppService {
         try {
             AppDefinition appDef = getAppDefinition(appId, version);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
-            String formJson = formDef.getJson();
-
-            if (formJson != null) {
+            
+            if (formDef != null && formDef.getJson() != null) {
+                String formJson = formDef.getJson();
                 formJson = AppUtil.processHashVariable(formJson, wfAssignment, StringUtil.TYPE_JSON, null);
                 form = (Form) formService.loadFormFromJson(formJson, formData);
             }
@@ -1499,7 +1499,7 @@ public class AppServiceImpl implements AppService {
 
                     // generate image for each process
                     List<WorkflowProcess> processList = workflowManager.getProcessList("", Boolean.TRUE, 0, 10000, packageDef.getId(), Boolean.FALSE, Boolean.FALSE);
-                    String designerBaseUrl = getDesignerwebBaseUrl(WorkflowUtil.getHttpServletRequest());
+                    String designerBaseUrl = AppUtil.getDesignerWebBaseUrl();
                     if (designerBaseUrl != null && !designerBaseUrl.isEmpty()) {
                         for (WorkflowProcess process : processList) {
                             XpdlImageUtil.generateXpdlImage(designerBaseUrl, process.getId(), true);
@@ -1516,21 +1516,6 @@ public class AppServiceImpl implements AppService {
         LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
         
         return newAppDef;
-    }
-
-    protected String getDesignerwebBaseUrl(HttpServletRequest request) {
-        String designerwebBaseUrl = null;
-        if (request != null) {
-            designerwebBaseUrl = "http://" + request.getServerName() + ":" + request.getServerPort();
-        }
-        if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
-            designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-        }
-        if (designerwebBaseUrl != null && designerwebBaseUrl.endsWith("/")) {
-            designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
-        }
-
-        return designerwebBaseUrl;
     }
 
     /**

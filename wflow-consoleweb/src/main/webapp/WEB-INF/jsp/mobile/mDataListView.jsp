@@ -67,10 +67,10 @@
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
                     <c:when test="${!empty userview.setting.theme.header}">
-                        ${userview.setting.theme.header}
+                        <c:out value="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
-                        ${userview.properties.name}
+                        <c:out value="${userview.properties.name}"/>
                     </c:otherwise>
                 </c:choose>                    
                 </h1>
@@ -80,7 +80,7 @@
                             <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText">${userview.properties.logoutText}</span></a>
+                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
                         </c:otherwise>
                     </c:choose>                            
                 </c:if>
@@ -156,18 +156,18 @@
                             
                 <%-- Display datalist --%>            
                 <ul id="dataList" data-role="listview" data-filter="true" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
-                    <li data-role="list-divider">${dataList.name}</li>
+                    <li data-role="list-divider"><c:out value="${dataList.name}"/></li>
                     <c:forEach items="${dataList.rows}" var="row" varStatus="status">
                         <li>
                             <c:if test="${!empty firstDataListAction}">
                                 <c:set var="rowValue" value="${row[firstDataListAction.hrefColumn]}"/>
                             </c:if>
                             <c:set var="rowHref" value="${dataListHref}${rowValue}"/>
-                            <c:if test="${!empty rowHref}"><a href="${rowHref}"></c:if>
+                            <c:if test="${!empty rowHref}"><a href="<c:out value="${rowHref}"/>"></c:if>
                             <c:set var="column" value="${columns[0]}"/>
                             <c:set var="cellValue" value="${row[columns[0].name]}"/>
                             <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
-                            <h4>${formattedValue}</h4>
+                            <h4><c:out value="${formattedValue}"/></h4>
                             <p>
                             <c:forEach var="column" items="${columns}" varStatus="cStatus">
                                 <c:if test="${cStatus.index > 0}">
@@ -175,7 +175,7 @@
                                     <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
                                     <c:if test="${!empty cellValue}">
                                         <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
-                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
+                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> <c:out value="${cellCleanValue}"/>
                                     </c:if>
                                     <br>
                                 </c:if>
@@ -188,7 +188,7 @@
                                 <c:if test="${!empty secondDataListAction.confirmation}">
                                     <c:set var="onClickCode" value=" if (confirm('${secondDataListAction.confirmation}')) { ${onClickCode} }"/>
                                 </c:if>
-                                <a href="#" onclick="${onClickCode}">${secondDataListAction.linkLabel}</a>
+                                <a href="#" onclick="<c:out value="${onClickCode}"/>"><c:out value="${secondDataListAction.linkLabel}"/></a>
                             </c:if>
                         </li>
                     </c:forEach>                    

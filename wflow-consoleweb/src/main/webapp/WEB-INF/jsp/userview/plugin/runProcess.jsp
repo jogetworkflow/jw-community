@@ -53,7 +53,7 @@
 
 <div class="runProcess-body-content">
     <div class="runProcess-body-header">
-        ${properties.headerTitle}
+        <c:out value="${properties.headerTitle}"/>
     </div>
 <c:choose>
     <c:when test="${properties.view eq 'unauthorized' or properties.view eq 'featureDisabled'}">
@@ -65,8 +65,8 @@
         <p>&nbsp;</p>
         <form id="processForm" name="processForm" method="POST" action="${properties.startUrl}">
             <div class="runProcess-body-message">
-                ${properties.process.name}
-                <p class="runProcess-body-submessage">${properties.process.packageName}</p>
+                <c:out value="${properties.process.name}"/>
+                <p class="runProcess-body-submessage"><c:out value="${properties.process.packageName}"/></p>
                 <button onclick="return startProcess()" class="form-button-large"><fmt:message key="client.app.run.process.label.start"/></button>
             </div>
         </form>
@@ -80,6 +80,11 @@
                 }
             }
         </script>
+    </c:when>
+    <c:when test="${properties.view eq 'processFormPost'}">
+        <p>&nbsp;</p>
+        <form id="processForm" name="processForm" method="POST" action="${properties.startUrl}"></form>
+        <script>$("#processForm").submit();</script>
     </c:when>
     <c:when test="${properties.view eq 'formView'}">
         <c:set var="activityForm" scope="request" value="${properties.activityForm}"/>

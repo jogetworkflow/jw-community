@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
@@ -18,9 +17,8 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.util.ReflectionUtils;
+import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 
 /**
  * DisplayTag column decorator to modify columns e.g. format, add links, etc.
@@ -34,7 +32,6 @@ public class DataListDecorator extends CheckboxTableDecorator {
     String fieldName;
     
     private int index = 0;
-    Whitelist whitelist;
 
     @Override
     public void init(PageContext pageContext, Object decorated, TableModel tableModel) {
@@ -49,12 +46,6 @@ public class DataListDecorator extends CheckboxTableDecorator {
         } else {
             checkedIds = new ArrayList(0);
         }
-        
-        // configure jsoup whitelist
-        whitelist = Whitelist.relaxed().addTags("span").addAttributes(":all","style","class","title","target");
-        java.lang.reflect.Field field = ReflectionUtils.findField(whitelist.getClass(), "protocols");
-        ReflectionUtils.makeAccessible(field);
-        ReflectionUtils.setField(field, whitelist, new HashMap());
     }
 
     @Override
@@ -133,9 +124,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
         // handle formatting
         String text = formatColumn(column, row, columnValue);
 
-        //strip tags if media type is not HTML
-        if (text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            text = text.replaceAll("\\<.*?>", "");
+        // strip tags if media type is not HTML
+        boolean renderHtml = column.isRenderHtml();
+        if (renderHtml && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+            text = StringUtil.stripAllHtmlTag(text);
         }
 
         // handle links
@@ -162,7 +154,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
         DataListAction[] actions = dataList.getRowActions();
         if (actions != null) {
             for (DataListAction action : actions) {
-                String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), action.getLinkLabel(), action.getConfirmation());
+                String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
+                String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation());
                 output += " " + link + " </td><td class=\"row_action\"> ";
             }
             output = output.substring(0, output.length() - 30);
@@ -228,7 +221,23 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected String formatColumn(DataListColumn column, Object row, Object value) {
-        Object result = ((value instanceof String) && dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null) ? Jsoup.clean((String) value, whitelist) : value;
+        Object result = value;
+        
+        // decrypt protected data 
+        if (result != null && result instanceof String) {
+            result = SecurityUtil.decrypt(result.toString());
+            
+            // sanitize output
+            if (dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null) {
+                boolean renderHtml = column.isRenderHtml();
+                if (renderHtml) {
+                    result = StringUtil.stripHtmlRelaxed(result.toString());
+                } else {
+                    result = StringEscapeUtils.escapeHtml(result.toString());
+                }
+            }
+        }
+
         Collection<DataListColumnFormat> formats = column.getFormats();
         if (formats != null) {
             for (DataListColumnFormat format : formats) {

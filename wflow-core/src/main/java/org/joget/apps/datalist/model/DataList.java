@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
@@ -512,7 +513,8 @@ public class DataList {
 
             DataListFilter[] filterList = getFilters();
             for (int i = 0; i < filterList.length; i++) {
-                templates.add(filterList[i].getType().getTemplate(this, filterList[i].getName(), filterList[i].getLabel()));
+                String label = StringEscapeUtils.escapeHtml(filterList[i].getLabel());
+                templates.add(filterList[i].getType().getTemplate(this, filterList[i].getName(), label));
             }
             filterTemplates = (String[]) templates.toArray(new String[0]);
         }

@@ -1,7 +1,10 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.commons.util.HostManager"%>
+<%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
+<c:set var="isOverridden" value="<%= DirectoryUtil.isOverridden() %>"/>
+<c:set var="overriddenDmClassName" value="<%= DirectoryUtil.getOverriddenDirectoryManagerClassName() %>"/>
 
 <commons:header />
 <style>
@@ -40,54 +43,68 @@
     <div id="main-body">
         <div id="connectorSetup">
             <div class="main-body-row">
-                <span class="row-content">
+                <div class="row-content">
                         <fmt:message key="console.setting.directory.label.directoryManagerImpl"/>
 
-                        <c:set var="selected">
-                            <fmt:message key="console.setting.directory.label.defaultPlugin"/>
-                        </c:set>
-                        <c:if test="${!empty settingMap['directoryManagerImpl']}">
-                            <c:set var="selected" value="${settingMap['directoryManagerImpl']}"/>
-                        </c:if>
+                        <c:choose>
+                            <c:when test="${isOverridden}">
+                                <c:set var="selected" value="${overriddenDmClassName}"/>
+                            </c:when>
+                            <c:when test="${!empty settingMap['directoryManagerImpl']}">
+                                <c:set var="selected" value="${settingMap['directoryManagerImpl']}"/>
+                            </c:when>
+                        </c:choose>
+                        
 
                         <dl>
                             <dt><fmt:message key="console.setting.directory.label.currentPluginClassName"/></dt>
-                            <dd>${selected}&nbsp;</dd>
-                            <c:if test="${!empty settingMap['directoryManagerImpl']}">
-                                <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>
-                                <dd>${directoryManagerName}&nbsp;</dd>
-                            </c:if>
+                            <c:choose>
+                                <c:when test="${!empty selected}">
+                                    <dd><c:out value="${selected}"/>&nbsp;</dd>
+                                    <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>
+                                    <dd><c:out value="${directoryManagerName}"/>&nbsp;</dd>
+                                </c:when>
+                                <c:otherwise>
+                                    <dd><fmt:message key="console.setting.directory.label.defaultPlugin"/>&nbsp;</dd>
+                                    <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>
+                                    <dd>&nbsp;</dd>
+                                </c:otherwise>
+                            </c:choose>
                             <dt>&nbsp;</dt>
                             <dd>
-                                <c:if test="${!empty settingMap['directoryManagerImpl']}">
-                                    <button type="button" class="smallbutton" onclick="removeDirectoryManagerImpl()"><fmt:message key="console.setting.directory.label.removePlugin"/></button>
-                                    <button type="button" class="smallbutton" onclick="configDirectoryManagerImpl('${settingMap['directoryManagerImpl']}')"><fmt:message key="general.method.label.configPlugin"/></button>
+                                <c:if test="${!empty selected}">
+                                    <c:if test="${!isOverridden}">
+                                        <button type="button" class="smallbutton" onclick="removeDirectoryManagerImpl()"><fmt:message key="console.setting.directory.label.removePlugin"/></button>
+                                    </c:if>
+                                    <button type="button" class="smallbutton" onclick="configDirectoryManagerImpl('${selected}')"><fmt:message key="general.method.label.configPlugin"/></button>
                                 </c:if>
                             </dd>
                         </dl>
-                </span>
-            </div>
+                </div>
+            </div>             
             <div class="main-body-row">
-                <span class="row-content">
-                        <dl>
-                            <dt><fmt:message key="console.setting.directory.label.selectPlugin"/></dt>
-                            <dd>
-                                <c:if test="${!empty directoryManagerPluginList}">
-                                    <select name="directoryManagerImpl" id="directoryManagerImpl">
-                                        <c:forEach items="${directoryManagerPluginList}" var="plugin">
-                                            <option value="${plugin['class'].name}">${plugin.name} - ${plugin.version}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <div>
-                                        <button type="button" class="smallbutton" onclick="selectDirectoryManagerImpl()"><fmt:message key="general.method.label.select"/></button>
-                                    </div>
-                                </c:if>
-                                <c:if test="${empty directoryManagerPluginList}">
-                                    <fmt:message key="console.setting.directory.label.noPlugin"/>
-                                </c:if>
-                            </dd>
-                        </dl>
-                </span>
+                <div class="row-content">
+                    <dl>
+                        <dt><fmt:message key="console.setting.directory.label.selectPlugin"/></dt>
+                        <dd>
+                            <c:if test="${!empty directoryManagerPluginList}">
+                                <select name="directoryManagerImpl" id="directoryManagerImpl">
+                                    <c:forEach items="${directoryManagerPluginList}" var="plugin">
+                                        <c:if test="${plugin['class'].name ne overriddenDmClassName}">
+                                            <option value="<c:out value="${plugin['class'].name}"/>"><c:out value="${plugin.name}"/> - <c:out value="${plugin.version}"/></option>
+                                        </c:if>
+                                    </c:forEach>
+                                </select>
+                                <div>
+                                    <button type="button" class="smallbutton" onclick="selectDirectoryManagerImpl()"><fmt:message key="general.method.label.select"/></button>
+                                </div>
+                            </c:if>
+                            <c:if test="${empty directoryManagerPluginList}">
+                                <fmt:message key="console.setting.directory.label.noPlugin"/>
+                            </c:if>
+                        </dd>
+                    </dl>
+                </div>
             </div>
         </div>
     </div>
@@ -106,16 +123,16 @@
         popupDialog.src = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + $('#directoryManagerImpl').val();
         popupDialog.init();
     }
-
-    function configDirectoryManagerImpl(pluginName){
-        popupDialog.src = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + pluginName;
-        popupDialog.init();
-    }
-
+    
     function removeDirectoryManagerImpl(){
         if(confirm("<fmt:message key="console.setting.directory.label.removePluginConfirm"/>")) {
             ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/remove", callback, null);
         }
+    }
+    
+    function configDirectoryManagerImpl(pluginName){
+        popupDialog.src = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + pluginName;
+        popupDialog.init();
     }
 </script>
 

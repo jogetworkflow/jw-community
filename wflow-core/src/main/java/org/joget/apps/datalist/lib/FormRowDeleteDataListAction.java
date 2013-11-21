@@ -1,5 +1,6 @@
 package org.joget.apps.datalist.lib;
 
+import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -8,6 +9,7 @@ import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.workflow.util.WorkflowUtil;
 
 /**
  * Test implementation for an action
@@ -65,6 +67,12 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     public DataListActionResult executeAction(DataList dataList, String[] rowKeys) {
         DataListActionResult result = null;
 
+        // only allow POST
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
+            return null;
+        }
+            
         if (rowKeys != null && rowKeys.length > 0) {
             String formDefId = getPropertyString("formDefId");
             String tableName = getSelectedFormTableName(formDefId);

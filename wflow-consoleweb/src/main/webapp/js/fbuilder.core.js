@@ -351,7 +351,7 @@ FormBuilder = {
             if (label != undefined && label != "") {
                 $(obj).find(".form-column-label").remove();
                 var hint = $(obj).find(".hint");
-                $(hint).after("<h3 class=\"form-column-label\">"+label+"</h3>");
+                $(hint).after("<h3 class=\"form-column-label\">" + UI.escapeHTML(label) + "</h3>");
             }else{
                 $(obj).find(".form-column-label").remove();
             }
@@ -564,7 +564,7 @@ FormBuilder = {
         if (elementClass == 'org.joget.apps.form.model.Section') {
             var title = elementProperty['label'];
             if (title && title.length > 0) {
-                title = "<span>" + title + "</span>";
+                title = "<span>" + UI.escapeHTML(title) + "</span>";
             } else {
                 title = "";
             }
@@ -586,6 +586,7 @@ FormBuilder = {
                 url: FormBuilder.contextPath + FormBuilder.elementPreviewUrl,
                 dataType : "text",
                 success: function(response) {
+                    response = UI.escapeHTML(response);
                     var newElement = $(response);
 
                     //locate main element

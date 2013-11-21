@@ -1,5 +1,4 @@
 <div class="form-cell" ${elementMetaData!}>
-
 <#if element.properties.readonly! != 'true'>
     <#if request.getAttribute("currentLocale")!?starts_with("zh") >
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
@@ -27,6 +26,7 @@
         <span>${value!?html}</span>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>
-        <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" class="${elementParamName!} <#if error??>form-error-cell</#if>" readonly />
+        <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" class="${elementParamName!} <#if error??>form-error-cell</#if>" <#if (element.properties.allowManual! != 'true')>readonly</#if> />
+        <#if (element.properties.allowManual! == 'true')><span class="dateFormat">(@@form.datepicker.label.format@@ ${displayFormat!})</span></#if>
     </#if>
 </div>

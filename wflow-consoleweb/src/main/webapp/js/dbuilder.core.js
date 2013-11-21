@@ -177,7 +177,7 @@ DatalistBuilder = {
             if (field.id == field.label) {
                 cssClass = " key";
             }
-            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + field.label + '</label></div></li>';
+            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + UI.escapeHTML(field.label) + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
     },
@@ -205,7 +205,7 @@ DatalistBuilder = {
         $('#builder-palettle-actions').html('');
         for(var e in actions){
             var action = actions[e];
-            var element = '<li><div class="builder-palette-action" id="' + action.className + '"><label class="label">' + action.label + '</label></div></li>';
+            var element = '<li><div class="builder-palette-action" id="' + action.className + '"><label class="label">' + UI.escapeHTML(action.label) + '</label></div></li>';
             $('#builder-palettle-actions').append(element);
         }
         DatalistBuilder.initEvents();
@@ -373,7 +373,7 @@ DatalistBuilder = {
             url: DatalistBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
             dataType : "text",
             success: function(response) {
-                var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + response + '</div></li>');
+                var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + UI.escapeHTML(response) + '</div></li>');
 
                 var current =  $('#databuilderContentFilters #' + id);
                 $(current).replaceWith(newElement);
@@ -392,6 +392,7 @@ DatalistBuilder = {
         if(action.properties.label != undefined){
             label = action.properties.label;
         }
+        label = $("<span></span>").text(UI.escapeHTML(label)).html();
 
         var string = '<li class="databuilderAction column" id="' + columnId + '"><div class="databuilderItemTitle">' + label + '</div>';
         string += '<div class="databuilderItemContent">';
@@ -416,6 +417,7 @@ DatalistBuilder = {
         if(rowAction.properties.label != undefined){
             label = rowAction.properties.label;
         }
+        label = $("<span></span>").text(UI.escapeHTML(label)).html();
 
         var string = '<li class="databuilderRowAction column" id="' + columnId + '"><div class="databuilderItemTitle">' + label + '</div>';
         string += '<div class="databuilderItemContent">';
@@ -459,7 +461,7 @@ DatalistBuilder = {
             }
         }
 
-        var string = '<li class="databuilderItem column" id="' + columnId + '"><div class="databuilderItemTitle">' + column.label + '&nbsp;' + sortable + '</div>';
+        var string = '<li class="databuilderItem column" id="' + columnId + '"><div class="databuilderItemTitle">' + UI.escapeHTML(column.label) + '&nbsp;' + sortable + '</div>';
         string += '<div class="databuilderItemContent">';
         string += '<ul>';
 
@@ -847,7 +849,7 @@ DatalistBuilder = {
         //populate list items
         var tempArray = [{'label':'','value':''}];
         for(ee in DatalistBuilder.availableColumns){
-            var temp = {'label' : DatalistBuilder.availableColumns[ee].label,
+            var temp = {'label' : UI.escapeHTML(DatalistBuilder.availableColumns[ee].label),
                          'value' : DatalistBuilder.availableColumns[ee].id};
             tempArray.push(temp);
         }
@@ -998,6 +1000,11 @@ DatalistBuilder = {
     setJson : function(json, id){
         var obj = json;
 
+        // set id
+        if (id) {
+            DatalistBuilder.datalistProperties.id = id;
+        }
+        
         DatalistBuilder.binderProperties = obj.binder;
         DatalistBuilder.init();
         DatalistBuilder.updateBinderProperties("");
@@ -1007,11 +1014,6 @@ DatalistBuilder = {
             if(e != 'binder' && e != 'columns'){
                 DatalistBuilder.datalistProperties[e] = obj[e];
             }
-        }
-        
-        // set id
-        if (id) {
-            DatalistBuilder.datalistProperties.id = id;
         }
 
         //load columns

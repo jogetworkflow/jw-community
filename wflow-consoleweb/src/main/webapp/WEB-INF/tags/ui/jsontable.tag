@@ -19,6 +19,7 @@
 <%@ attribute name="hrefDialogTitle"  %>
 <%@ attribute name="hrefDialogWindowName"  %>
 <%@ attribute name="hrefDialogTab"  %>
+<%@ attribute name="hrefPost"  %>
 <%@ attribute name="sort" %>
 <%@ attribute name="desc" %>
 <%@ attribute name="checkbox" %>
@@ -147,6 +148,8 @@
         </c:if>
     </c:forEach>
 </div>
+    
+<form id="ui_link_form" style="display:none"></form>
 
 <script type="text/javascript">
     var ${var} = new JsonTable("${divToUpdate}", "${url}");
@@ -253,6 +256,9 @@
         ${var}.link = new Link("${href}", "${hrefParam}", ${hrefQuery}, ${var}_popupDialog);
         <c:if test="${!empty hrefSuffix}">
             ${var}.link.suffix = "${hrefSuffix}";
+        </c:if>
+        <c:if test="${!empty hrefPost}">
+            ${var}.link.post = "${true}";
         </c:if>
     </c:if>
     <c:if test="${empty hrefDialogWidth}">${var}_popupDialog.width="${hrefDialogWidth}";</c:if>

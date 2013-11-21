@@ -20,7 +20,7 @@
     <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
     <c:if test="${isQuickEditEnabled}">
     <div class="quickEdit" style="display: none">
-        <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: ${dataList.name}</a>
+        <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
     </div>
     </c:if>
     
@@ -98,7 +98,7 @@
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
                             </c:if>
-                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}>${action.linkLabel}</button>
+                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                         </c:if>
                     </c:forEach>
                 </div>
@@ -119,9 +119,10 @@
                     </c:choose>
                 </c:if>
                 <c:forEach items="${dataList.columns}" var="column">
+                    <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
                     <display:column
                         property="column(${column.name})"
-                        title="${column.label}"
+                        title="${columnLabel}"
                         sortable="${column.sortable}"
                         headerClass="column_${column.name}"
                         class="column_${column.name}"
@@ -155,7 +156,7 @@
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
                             </c:if>
-                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}>${action.linkLabel}</button>
+                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                         </c:if>
                     </c:forEach>
                 </div>

@@ -96,7 +96,7 @@
                         extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
 
                         height : "300px",
-                        width : "95%"
+                        width : "500px"
                     });
                     if($(editor).find('.tinymce').length > 0){
                        tinyMceInitialed = true;
@@ -150,15 +150,19 @@
 
                 //for element select that has value, append properties page;
                 $(editor).find('.property-type-elementselect .property-input select').each(function(){
-                    if($(this).val() != '' && $(this).val() != null){
+                    if($(this).val() != undefined && $(this).val() != null){
                         appendElementPropertiesPage(this);
                     }
                 });
 
                 $(editor).find('.property-page-show:first .property-editor-property-container .property-editor-property:first .property-input').find('input, select, textarea').focus();
 
-                $(editor).find('.property-page-show.current .property-editor-page-button-panel .page-button-navigation [type=button]').hide();
-                renderAdvancedStepsIndicator($(editor).find('.property-page-show.current'));
+                //hide page navigation when page only has one, else show steps indicator
+                if($(editor).find('.property-page-show').length <= 1){
+                    $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').hide();
+                }else{
+                    renderStepsIndicator($(editor).find('.property-page-show.current'));
+                }
             });
         }
     });
@@ -308,33 +312,7 @@
         return html;
     }
 
-    function renderAdvancedStepsIndicator(currentPage){
-        var editor = $(currentPage).parent();
-        if($(editor).find('.property-page-show').length > 1){
-            var html = '<span class="step active">';
-            html += $(editor).find('.property-page-show.current').find('.property-editor-page-title').html() + '</span>';
-            html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-            html += '<span class="showAdvancedOptions" style="cursor:pointer">';
-            html += get_peditor_msg('peditor.showAdvancedOptions') + '</span> ';
-            html += '<div style="clear:both;"></div>';
-            $(currentPage).find('.property-editor-page-step-indicator').html(html);
-
-            if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 0) {
-                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation').append('<input type="button" class="showAdvancedOptions" value="'+get_peditor_msg('peditor.showAdvancedOptions')+'"/>');
-            }
-            
-            $(currentPage).find('.showAdvancedOptions').click(function(){
-                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
-                $(currentPage).find('.property-editor-page-button-panel .page-button-navigation [type=button]').show();
-                renderStepsIndicator(currentPage);
-                nextPage(currentPage);
-            });
-        } else {
-            $(currentPage).find('.property-editor-page-step-indicator').html("");
-        }
-    }
-    
-    /*function renderStepsIndicator(currentPage){
+    function renderStepsIndicator(currentPage){
         var editor = $(currentPage).parent();
         
         var currentPageParentElementId = $(currentPage).attr("elementid");
@@ -370,7 +348,8 @@
             } else {
                 var value = $("#"+parentElementId).val();
                 var valueLabel = $("#"+parentElementId).find('option[value="'+value+'"]').text();
-                var label = $("#"+parentElementId).parent().prev(".property-label-container").find(".property-label").text();
+                var label = $("#"+parentElementId).parent().prev(".property-label-container").find(".property-label")
+                .clone().children().remove().end().text();
                 
                 if (prev != parentElementId) {
                     if($(this).hasClass("current")){
@@ -389,68 +368,6 @@
         $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
             changePage(currentPage, $(this).attr("rel"));
         });
-    }*/
-    
-    function renderStepsIndicator(currentPage){
-        if ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation input[type=button]:visible').length == 0 ||
-            ($(currentPage).find('.property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').length == 1)) {
-            renderAdvancedStepsIndicator(currentPage);
-        } else {
-            var editor = $(currentPage).parent();
-            
-            var currentPageParentElementId = $(currentPage).attr("elementid");
-            var prev = null;
-            
-            var html = '';
-            
-            $(editor).find('.property-page-show').each(function(i){
-                var pageId = $(this).attr("id");
-                var parentElementId = $(this).attr("elementid");
-                
-                if (prev != null && prev != parentElementId && currentPageParentElementId != prev) {
-                    html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-                }
-                
-                if (parentElementId == undefined || currentPageParentElementId == parentElementId) {
-                    var childPageClass = "";
-                    
-                    if(parentElementId != undefined && currentPageParentElementId == parentElementId) {
-                        childPageClass = " childPage";
-                    }
-                    
-                    if($(this).hasClass("current")){
-                        html += '<span class="step active'+childPageClass+'">';
-                    }else{
-                        html += '<span class="step clickable'+childPageClass+'" rel="'+pageId+'" style="cursor:pointer">';
-                    }
-                    html += $(this).find('.property-editor-page-title').html() + '</span>';
-                    
-                    if(i < $(editor).find('.property-page-show').length - 1){
-                        html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
-                    }
-                } else {
-                    var value = $("#"+parentElementId).val();
-                    var valueLabel = $("#"+parentElementId).find('option[value="'+value+'"]').text();
-                    var label = $("#"+parentElementId).parent().prev(".property-label-container").find(".property-label").text();
-                    
-                    if (prev != parentElementId) {
-                        if($(this).hasClass("current")){
-                            html += '<span class="step active">';
-                        }else{
-                            html += '<span class="step clickable" rel="'+pageId+'" style="cursor:pointer">';
-                        }
-                        html += label + " (" + valueLabel + ')</span>';
-                    }
-                }
-                prev = parentElementId;
-            });
-            html += '<div style="clear:both;"></div>';
-            $(currentPage).find('.property-editor-page-step-indicator').html(html);
-            
-            $(currentPage).find('.property-editor-page-step-indicator .clickable').click(function(){
-                changePage(currentPage, $(this).attr("rel"));
-            });
-        }
     }
 
     function renderButtonPanel(options, showNavButton){
@@ -611,6 +528,8 @@
         }
         if(property.size != undefined && property.size != null){
             size = ' size="'+ property.size +'"';
+        } else {
+            size = ' size="50"';
         }
         var maxlength = '';
         if(property.maxlength != undefined && property.maxlength != null){
@@ -927,7 +846,7 @@
         if(defaultValue != null){
             defaultValueString = defaultValue.classname;
         }
-
+        
         if(property.options != undefined && property.options != null){
             $.each(property.options, function(i, option){
                 var selected = "";
@@ -1078,16 +997,16 @@
                             });
 
                             if(type == 'checkbox'){
-                                $('#'+id+'_input').append('<label><input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>');
+                                $('#'+id+'_input').append('<label><input type="checkbox" id="'+ id + '" name="'+ id + '" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+escapeHtmlTag(option.label)+'</label>');
                             }else if(type == 'radio'){
-                                $('#'+id+'_input').append('<label><input type="radio" id="'+ id +'" name="'+ id +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+option.label+'</label>');
+                                $('#'+id+'_input').append('<label><input type="radio" id="'+ id +'" name="'+ id +'" value="'+escapeHtmlTag(option.value)+'"'+checked+'/>'+escapeHtmlTag(option.label)+'</label>');
                             }else{
-                                $('#'+id).append('<option value="'+option.value+'"'+checked+'>'+option.label+'</option>');
+                                $('#'+id).append('<option value="'+option.value+'"'+checked+'>'+escapeHtmlTag(option.label)+'</option>');
                             }
                         });
 
                         //for element select that has value, append properties page;
-                        if($('#'+id).parent().parent().hasClass('property-type-elementselect') && $('#'+id).val() != '' && $('#'+id).val() != null){
+                        if($('#'+id).parent().parent().hasClass('property-type-elementselect') && $('#'+id).val() != undefined && $('#'+id).val() != null){
                             appendElementPropertiesPage($('#'+id));
                         }
                     }
@@ -1330,7 +1249,7 @@
                 if(defaultValues != undefined && defaultValues[property.name] != undefined){
                     defaultValue = defaultValues[property.name];
                 }
-                if(property.required != undefined && property.required.toLowerCase() == "true" && (value == '' || value == undefined || (property.type.toLowerCase() == "elementselect" && value.className == '')) && defaultValue == ''){
+                if(property.required != undefined && property.required.toLowerCase() == "true" && (value == '' || value == undefined || value == '%%%%%%%%' || (property.type.toLowerCase() == "elementselect" && value.className == '')) && defaultValue == ''){
                     var obj = new Object();
                     obj.fieldName = property.label;
                     obj.message = optionsStack[editorId].mandatoryMessage;
@@ -1543,9 +1462,16 @@
         $(content).find('.property-type-elementselect .property-input select').change(function(){
             appendElementPropertiesPage(this);
         });
-
+        
         $(currentPage).after(content);
-
+        
+        //for element select that has value, append properties page;
+        $(content).find('.property-type-elementselect .property-input select').each(function(){
+            if($(this).val() != undefined && $(this).val() != null){
+                appendElementPropertiesPage($(this));
+            }
+        });
+        
         //if tinymce ald exist, using command to init it
         if(tinyMceInitialed){
             $(content).find('.tinymce').each(function(){
@@ -1589,20 +1515,20 @@
 
     function appendElementPropertiesPageCallback(editorId, currentPage){
         var activePage = $('div#'+editorId).find('.property-editor-page.current');
+        renderStepsIndicator(activePage);
 
         var editor = $('#'+editorId);
 
         //hide page navigation when page only has one, else show steps indicator
         if($(editor).find('.property-page-show').length <= 1){
-            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation input[type=button]').hide();
-            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation .showAdvancedOptions').remove();
+            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').hide();
+        }else{
+            $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation').show();
         }
         
         $(editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation input[type=button]').removeAttr("disabled");
         $(editor).find('.property-page-show:first .property-editor-page-button-panel .page-button-navigation .page-button-prev').attr("disabled","disabled");
         $(editor).find('.property-page-show:last .property-editor-page-button-panel .page-button-navigation .page-button-next').attr("disabled","disabled");
-        
-        renderStepsIndicator(activePage);
     }
 
     function replaceContextPath(string, contextPath){

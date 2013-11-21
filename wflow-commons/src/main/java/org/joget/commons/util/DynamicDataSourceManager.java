@@ -20,6 +20,8 @@ public class DynamicDataSourceManager {
     public static final String FILE_PATH = SetupManager.getBaseSharedDirectory();
     public static final String CURRENT_PROFILE_KEY = "currentProfile";
     public static final String DEFAULT_PROFILE = "default";
+    public static final String SECURE_VALUE = "****SECURE VALUE****";
+    public static final String SECURE_FIELD = "workflowPassword";
 
     private static DatasourceProfilePropertyManager profilePropertyManager;
     

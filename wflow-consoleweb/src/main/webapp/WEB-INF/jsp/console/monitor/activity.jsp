@@ -32,17 +32,17 @@
     <div id="main-body">
         <dl>
             <dt><fmt:message key="console.app.activity.common.label.id"/></dt>
-            <dd>${activity.id}&nbsp;</dd>
+            <dd><c:out value="${activity.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.definitionId"/></dt>
-            <dd>${activity.activityDefId}&nbsp;</dd>
+            <dd><c:out value="${activity.activityDefId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.name"/></dt>
-            <dd>${activity.name}&nbsp;</dd>
+            <dd><c:out value="${activity.name}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
-            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}">${activity.processId}</a>&nbsp;</dd>
+            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.state"/></dt>
-            <dd>${activity.state}&nbsp;</dd>
+            <dd><c:out value="${activity.state}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.serviceLevelMonitor"/></dt>
-            <dd>${serviceLevelMonitor}&nbsp;</dd>
+            <dd><c:out value="${serviceLevelMonitor}" escapeXml="false"/>&nbsp;</dd>
 
             <c:if test="${trackWflowActivity.status == 'Pending'}">
                 <dt><fmt:message key="console.app.activity.common.label.listOfPending"/></dt>
@@ -62,7 +62,7 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}">
-                                ${assignmentUser}
+                                <c:out value="${assignmentUser}"/>
                             </c:forEach>
                         </c:otherwise>
                     </c:choose>
@@ -72,35 +72,46 @@
 
             <c:if test="${trackWflowActivity.status != 'Pending'}">
                 <dt><fmt:message key="console.app.activity.common.label.acceptedUser"/></dt>
-                <dd>${trackWflowActivity.nameOfAcceptedUser}&nbsp;</dd>
+                <dd><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/>&nbsp;</dd>
             </c:if>
 
             <dt><fmt:message key="console.app.activity.common.label.priority"/></dt>
-            <dd>${trackWflowActivity.priority}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.priority}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.createdTime"/></dt>
-            <dd>${trackWflowActivity.createdTime}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.createdTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dateLimit"/></dt>
-            <dd>${trackWflowActivity.limit}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.limit}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dueDate"/></dt>
-            <dd>${trackWflowActivity.due}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.due}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.delay"/></dt>
-            <dd>${trackWflowActivity.delay}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.delay}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.finishTime"/></dt>
-            <dd>${trackWflowActivity.finishTime}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.finishTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.timeConsumingFromDateCreated"/></dt>
-            <dd>${trackWflowActivity.timeConsumingFromDateCreated}&nbsp;</dd>
+            <dd><c:out value="${trackWflowActivity.timeConsumingFromDateCreated}"/>&nbsp;</dd>
         </dl>
         <div id="reevaluateForUser" style="display: none">
-            <div style="width:650px;margin:20px auto;">
-                <h3><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></h3>
-                <p><fmt:message key="console.monitoring.running.label.reevaluateForUser.select"/>
-                    <select id="reevaluateUser">
-                        <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}">
-                            <option>${assignmentUser}</option>
-                        </c:forEach>
-                    </select>
-                </p>
-                <p><input id="reevaluateForUserSubmit" class="form-button" type="button" value="<fmt:message key="console.monitoring.running.label.reevaluateForUser.submit"/>" onclick="reevaluateForUser()"/></p>
+            <div class="popupBody">
+                <div id="main-body-header"><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></div>
+                <div id="main-body-content">
+                    <div class="form">
+                        <fieldset>
+                            <div class="form-row">
+                                <label><fmt:message key="console.monitoring.running.label.reevaluateForUser.select"/></label>
+                                <span class="form-input">
+                                    <select id="reevaluateUser">
+                                        <c:forEach var="assignmentUser" items="${trackWflowActivity.assignmentUsers}">
+                                            <option><c:out value="${assignmentUser}"/></option>
+                                        </c:forEach>
+                                    </select>
+                                </span>
+                            </div>
+                        </fieldset>
+                        <div class="form-buttons">
+                            <input id="reevaluateForUserSubmit" class="form-button" type="button" value="<fmt:message key="console.monitoring.running.label.reevaluateForUser.submit"/>" onclick="reevaluateForUser()"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="main-body-content-subheader">
@@ -108,15 +119,15 @@
         </div>
         <c:forEach var="variable" items="${variableList}" varStatus="rowCounter">
             <div class="form-row">
-                <label for="${variable.name}">${variable.name}</label>
+                <label for="${variable.name}"><c:out value="${variable.name}"/></label>
                 <span class="input">
                     <c:choose>
                         <c:when test="${activity.state != 'closed.completed' && activity.state != 'closed.terminated' && activity.state != 'closed.aborted'}">
-                            <input name="${variable.name}" type="text" id="${variable.name}" value="${variable.val}"/>
-                            <input type="button" value="<fmt:message key="general.method.label.set"/>" onclick="setVariable('${variable.name}')"/>
+                            <input name="<c:out value="${variable.name}"/>" type="text" id="<c:out value="${variable.name}"/>" value="<c:out value="${variable.val}"/>"/>
+                            <input type="button" value="<fmt:message key="general.method.label.set"/>" onclick="setVariable('<c:out value="${variable.name}"/>')"/>
                         </c:when>
                         <c:otherwise>
-                            <input name="${variable.name}" type="text" id="${variable.name}" value="${variable.val}" disabled="true"/>
+                            <input name="<c:out value="${variable.name}"/>" type="text" id="<c:out value="${variable.name}"/>" value="<c:out value="${variable.val}"/>" disabled="true"/>
                         </c:otherwise>
                     </c:choose>
                 </span>
@@ -159,16 +170,23 @@
     }
 
     function completeActivity(){
-        ConnectionManager.post("${pageContext.request.contextPath}/web/monitoring/running/activity/complete", callback, "state=${activity.state}&processDefId=${activity.processDefId}&activityId=${activity.id}&processId=${activity.processId}");
+        ConnectionManager.post("${pageContext.request.contextPath}/web/json/monitoring/running/activity/complete", callback, "state=${activity.state}&processDefId=${activity.processDefId}&activityId=${activity.id}&processId=${activity.processId}");
     }
 
     function showReevaluateForUser(){
+        var openDialog = function() {
+            $(".ui-dialog.ui-widget").css("position", "fixed");
+        }
+      
         $('#reevaluateForUser').dialog({
             modal: true,
             width: 860,
             height: 520,
             position: 'center',
             autoOpen: true,
+            draggable: false,
+            resizable: false,
+            open: openDialog,
             overlay: {
               opacity: 0.5,
               background: "black"

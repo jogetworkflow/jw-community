@@ -1,4 +1,5 @@
-<%@page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
@@ -56,7 +57,7 @@
                         </div></a>
                 </div>
                 <div class="list-details">
-                    <div class="list-name"><a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.idWithoutVersion}">${process.name}</a>
+                    <div class="list-name"><a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.idWithoutVersion}"><c:out value="${process.name}"/></a>
                     </div>
                     <div class="list-description">
 <!--                        <ul id="main-body-sublist">
@@ -92,15 +93,7 @@
 
     function launchDesigner(){
         <%
-                String designerwebBaseUrl = pageContext.getRequest().getScheme() + "://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
-                if (WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0) {
-                    designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-                }
-
-                if (designerwebBaseUrl.endsWith("/")) {
-                    designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length() - 1);
-                }
-
+                String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
                 String locale = "en";
                 if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
                     locale = WorkflowUtil.getSystemSetupValue("systemLocale");
@@ -111,7 +104,7 @@
         var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
         var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
         var path = base + '${pageContext.request.contextPath}';
-        document.location = '<%= designerwebBaseUrl%>/jwdesigner/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&hash=${loginHash}';
+        document.location = '<%= designerwebBaseUrl%>/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&domain=${pageContext.request.serverName}&port=${pageContext.request.serverPort}&context=${pageContext.request.contextPath}&session=${pageContext.request.session.id}';
     }
 
     function uploadPackage(){
@@ -150,6 +143,9 @@
                     }
                 });
                 $(el).find(" #thumbnail").hide();
+            });
+            $(image).error(function(){
+                setTimeout(function() { Thumbnail.load(el);}, 10000);
             });
         },
         init: function() {

@@ -17,8 +17,10 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.springframework.stereotype.Service;
@@ -46,7 +48,7 @@ public class FormService {
      * @return
      */
     public String previewElement(String json, boolean includeMetaData) {
-        Element element = createElementFromJson(AppUtil.decryptContent(json), !includeMetaData);
+        Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
         FormData formData = new FormData();
         String html = "";
         try {
@@ -281,18 +283,9 @@ public class FormService {
             String[] values = request.getParameterValues(paramName);
             formData.addRequestParameterValues(paramName, values);
         }
-        // handle multipart files
-        Map<String, MultipartFile> fileMap = FileStore.getFileMap();
-        if (fileMap != null) {
-            for (String paramName : fileMap.keySet()) {
-                MultipartFile file = FileStore.getFile(paramName);
-                if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
-                    String path = FileManager.storeFile(file);
-                    formData.addRequestParameterValues(paramName, new String[]{path});
-                }
-            }
-            FileStore.clear();
-        }
+        
+        handleFiles(formData);
+        
         return formData;
     }
 
@@ -314,19 +307,39 @@ public class FormService {
                 formData.addRequestParameterValues(key, new String[]{""});
             }
         }
-        // handle multipart files
-        Map<String, MultipartFile> fileMap = FileStore.getFileMap();
-        if (fileMap != null) {
-            for (String paramName : fileMap.keySet()) {
-                MultipartFile file = FileStore.getFile(paramName);
-                if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
-                    String path = FileManager.storeFile(file);
-                    formData.addRequestParameterValues(paramName, new String[]{path});
+        
+        handleFiles(formData);
+        
+        return formData;
+    }
+    
+    private void handleFiles (FormData formData) {
+        try {
+            // handle multipart files
+            Map<String, MultipartFile> fileMap = FileStore.getFileMap();
+            if (fileMap != null) {
+                for (String paramName : fileMap.keySet()) {
+                    try {
+                        MultipartFile file = FileStore.getFile(paramName);
+                        if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
+                            String path = FileManager.storeFile(file);
+                            formData.addRequestParameterValues(paramName, new String[]{path});
+                        }
+                    } catch (FileLimitException ex) {
+                        formData.addFormError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+                    }
                 }
             }
+            
+            Collection<String> errorList = FileStore.getFileErrorList();
+            if (errorList != null && !errorList.isEmpty()) {
+                for (String paramName : errorList) {
+                    formData.addFormError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+                }
+            }
+        } finally {
             FileStore.clear();
         }
-        return formData;
     }
 
     /**

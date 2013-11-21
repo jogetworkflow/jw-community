@@ -1,5 +1,6 @@
-<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <html>
     <body>
@@ -8,15 +9,10 @@
         </p>
 
         <%
-            String designerwebBaseUrl = pageContext.getRequest().getScheme() + "://" + pageContext.getRequest().getServerName() + ":" + pageContext.getRequest().getServerPort();
-            if(WorkflowUtil.getSystemSetupValue("designerwebBaseUrl") != null && WorkflowUtil.getSystemSetupValue("designerwebBaseUrl").length() > 0)
-                designerwebBaseUrl = WorkflowUtil.getSystemSetupValue("designerwebBaseUrl");
-
-            if(designerwebBaseUrl.endsWith("/"))
-                designerwebBaseUrl = designerwebBaseUrl.substring(0, designerwebBaseUrl.length()-1);
+            String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
         %>
 
-        <c:set var="viewerUrl"><%= designerwebBaseUrl %>/jwdesigner/viewer/viewer.jsp?processId=${wfProcess.encodedId}</c:set>
+        <c:set var="viewerUrl"><%= designerwebBaseUrl %>/viewer/viewer.jsp?processId=${wfProcess.encodedId}</c:set>
         <form id="viewerForm" name="viewerForm" method="POST" action="${viewerUrl}">
             <dl>
                 <dd><textarea style="visibility:hidden" name="xpdl" rows="20" cols="80"><c:out value="${xpdl}" escapeXml="true"/></textarea></dd>

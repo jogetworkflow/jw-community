@@ -56,8 +56,8 @@
                 "className":"org.joget.apps.form.lib.SubForm",
                 "properties":{
                     "id":"formB",
-                    "parentSubFormId":"bid",
-                    "subFormParentId":"cid",
+                    "parentSubFormId":"id",
+                    "subFormParentId":"",
                     "label":"",
                     "formDefId":"testFormB",
                     "json":"",
@@ -70,6 +70,40 @@
                         "className": "org.joget.apps.form.lib.WorkflowFormBinder",
                         "properties": {}
                     },
+                }
+            },{
+                "className":"org.joget.apps.form.lib.SelectBox",
+                "properties":{
+                   "id":"eref",
+                   "label":"Reference Field e",
+                   "value":"",
+                   "size":"",
+                   "multiple":"true",
+                   "readonly":"",
+                   "readonlyLabel":"",
+                   "options":[
+
+                   ],
+                   "controlField":"",
+                   "optionsBinder":{
+                      "className":"org.joget.apps.form.lib.FormOptionsBinder",
+                      "properties":{
+                         "formDefId":"testFormE",
+                         "idColumn":"id",
+                         "labelColumn":"e1",
+                         "groupingColumn":"",
+                         "extraCondition":"",
+                         "addEmptyOption":"",
+                         "emptyLabel":""
+                      }
+                   },
+                   "validator":{
+                      "className":"",
+                      "properties":{
+
+                      }
+                   },
+                   "workflowVariable":""
                 }
             }],
             "className":"org.joget.apps.form.model.Column",

@@ -23,31 +23,31 @@
     <div id="main-body">
         <dl>
             <dt><fmt:message key="console.app.process.common.label.id"/></dt>
-            <dd>${wfProcess.instanceId}&nbsp;</dd>
+            <dd><c:out value="${wfProcess.instanceId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
-            <dd>${wfProcess.id}&nbsp;</dd>
+            <dd><c:out value="${wfProcess.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.version"/></dt>
-            <dd>${wfProcess.version}&nbsp;</dd>
+            <dd><c:out value="${wfProcess.version}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.name"/></dt>
-            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/${wfProcess.packageId}//processes/${wfProcess.idWithoutVersion}">${wfProcess.name}</a>&nbsp;</dd>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/${wfProcess.packageId}//processes/${wfProcess.idWithoutVersion}"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.state"/></dt>
-            <dd>${wfProcess.state}&nbsp;</dd>
+            <dd><c:out value="${wfProcess.state}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.serviceLevelMonitor"/></dt>
-            <dd>${serviceLevelMonitor}&nbsp;</dd>
+            <dd><c:out value="${serviceLevelMonitor}" escapeXml="false"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.requester"/></dt>
-            <dd>${wfProcess.requesterId}&nbsp;</dd>
+            <dd><c:out value="${wfProcess.requesterId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.startedTime"/></dt>
-            <dd>${trackWflowProcess.startedTime}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.startedTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.limit"/></dt>
-            <dd>${trackWflowProcess.limit}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.limit}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.dueDate"/></dt>
-            <dd>${trackWflowProcess.due}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.due}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.delay"/></dt>
-            <dd>${trackWflowProcess.delay}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.delay}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.finishTime"/></dt>
-            <dd>${trackWflowProcess.finishTime}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.finishTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.timeConsumingFromDateStarted"/></dt>
-            <dd>${trackWflowProcess.timeConsumingFromDateStarted}&nbsp;</dd>
+            <dd><c:out value="${trackWflowProcess.timeConsumingFromDateStarted}"/>&nbsp;</dd>
         </dl>
         <div id="main-body-content-subheader">
             <fmt:message key="console.monitoring.common.label.activityList"/>

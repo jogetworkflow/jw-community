@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<link href="${pageContext.request.contextPath}/css/builder_navigator.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
 <div id="builder_quick_navigator">
     <div class="builder_qn_label">
@@ -16,13 +15,13 @@
                                 <c:choose>
                                     <c:when test="${builder eq 'f' && id eq formDef.id}">
                                         <li class="active">
-                                            <span>${formDef.name}</span>
+                                            <span><c:out value="${formDef.name}"/></span>
                                             <div class="clear"></div>
                                         </li>
                                     </c:when>
                                     <c:otherwise>
                                         <li>
-                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}">${formDef.name}</a>
+                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}"><c:out value="${formDef.name}"/></a>
                                             <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>
@@ -50,13 +49,13 @@
                                 <c:choose>
                                     <c:when test="${builder eq 'd' && id eq listDef.id}">
                                         <li class="active">
-                                            <span>${listDef.name}</span>
+                                            <span><c:out value="${listDef.name}"/></span>
                                             <div class="clear"></div>
                                         </li>
                                     </c:when>
                                     <c:otherwise>
                                         <li>
-                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}">${listDef.name}</a>
+                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}"><c:out value="${listDef.name}"/></a>
                                             <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>
@@ -84,13 +83,13 @@
                                 <c:choose>
                                     <c:when test="${builder eq 'u' && id eq userviewDef.id}">
                                         <li class="active">
-                                            <span>${userviewDef.name}</span>
+                                            <span><c:out value="${userviewDef.name}"/></span>
                                             <div class="clear"></div>
                                         </li>
                                     </c:when>
                                     <c:otherwise>
                                         <li>
-                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}">${userviewDef.name}</a>
+                                            <a href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}"><c:out value="${userviewDef.name}"/></a>
                                             <a title="<fmt:message key="general.method.label.openNewWindow"/>" class="builder_qn_open" target="_blank" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}"><span><fmt:message key="general.method.label.openNewWindow"/></span></a>
                                             <div class="clear"></div>
                                         </li>

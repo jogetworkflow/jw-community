@@ -44,7 +44,8 @@
         "id" : "column_3",
         "label" : "@@userview.inboxmenu.serviceLevelMonitor@@",
         "name" : "serviceLevelMonitor",
-        "sortable" : "false"
+        "sortable" : "false",
+        "renderHtml" : "true"
     },
     {
         "id" : "column_4",

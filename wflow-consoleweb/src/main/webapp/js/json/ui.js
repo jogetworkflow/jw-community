@@ -1,5 +1,24 @@
 UI = {
-   base: ''
+   base: '',
+   userview_app_id: '',
+   userview_id: '',
+   escapeHTML: function(c) {
+      if (c == null || c == undefined) {
+          return '';
+      } else {
+          var span = $('<span>' + c + '</span>');
+          span.find("script").remove();
+          return span.html();
+      }
+   },
+   userviewThemeParams: function () {
+      var params = ''; 
+      if (UI.userview_app_id != undefined && UI.userview_app_id != '') {
+          params += "&__a_=" + UI.userview_app_id;
+          params += "&__u_=" + UI.userview_id;
+      }
+      return params;
+   }
 }
 
 /*
@@ -60,6 +79,8 @@ PopupDialog.prototype = {
           newSrc += "?";
       }
       newSrc += "&_=" + new Date().valueOf().toString();
+      newSrc += UI.userviewThemeParams();
+              
       PopupDialogCache.popupDialog = this;
 
       if (this.windowName) {
@@ -106,8 +127,12 @@ PopupDialog.prototype = {
           if (newFrame != null) {
               setTimeout(function() { newFrame.setAttribute("src", newSrc); }, 100);
           }
+          $(".ui-dialog.ui-widget").css("position", "fixed");
+          $(".ui-dialog.ui-widget").css("top", "5%");
+          $('body').addClass("stop-scrolling");
       }
       var closePopupDialog = function() {
+          $('body').removeClass("stop-scrolling");
           var newFrame = document.getElementById("jqueryDialogFrame");
           if (newFrame != null) {
               newFrame.setAttribute("src", "");
@@ -124,7 +149,9 @@ PopupDialog.prototype = {
           width: this.width,
           height: this.height,
           position: 'center',
+          draggable: false,
           autoOpen: true,
+          resizable: false,
           overlay: {
               opacity: 0.5,
               background: "black"
@@ -136,6 +163,7 @@ PopupDialog.prototype = {
   },
 
   close: function() {
+      $('body').removeClass("stop-scrolling");
       var result = false;
       if (this.popupWindow) {
           this.popupWindow.close();
@@ -172,6 +200,7 @@ Link.prototype = {
     value: null,
     suffix: null,
     queryString: false,
+    post: false,
     popupDialog: null,
 
     init: function() {
@@ -199,6 +228,17 @@ Link.prototype = {
         if (this.popupDialog) {
             this.popupDialog.src = link;
             this.popupDialog.show.apply(this.popupDialog);
+        }
+        else if (this.post) {
+            var $form = $("#ui_link_form:first");
+            if ($form.length > 0){
+                $form.attr("method", "POST");
+                $form.attr("action", link);
+            } else {
+                $form = $("<form method='POST' action='" + link + "'></form>");
+                $(document).append($form);
+            }
+            $form.submit();
         }
         else {
             window.location = link;
@@ -331,11 +371,13 @@ JsonTable.prototype = {
                         row[prop]='<input type="checkbox" class="' + thisObject.divToUpdate + '-checkbox-list" id="' + thisObject.divToUpdate + '_checkbox_' + i + '" ' + check + 'onclick="toggleCheckbox(\'' + thisObject.divToUpdate + '_checkbox_' + i + '\')">';
                     }else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
                         row[prop]='<input type="radio" id="' + thisObject.divToUpdate +'_radio_' + i + '" name="' + thisObject.divToUpdate + '_radio" onclick="' + thisObject.divToUpdate + '_toggleRadioButton(\'' + thisObject.divToUpdate + '_radio_' + i + '\')">';
+                    }else {
+                        row[prop]= UI.escapeHTML(row[prop]);
                     }
                     cell.push(row[prop]);
                 }
                 var newRow = new Object();
-                newRow.id = row[key].replace(/\./g, '__dot__');
+                newRow.id = encodeURIComponent(row[key].replace(/\./g, '__dot__'));
                 newRow.cell = cell;
                 newRows.push(newRow);
             }

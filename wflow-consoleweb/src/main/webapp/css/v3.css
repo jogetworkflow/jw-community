@@ -609,7 +609,9 @@ img {
     margin: 5px;
     float: right
 }
-
+#main-body-header > span#main-action-help {
+    margin: 2px 30px;
+}
 #main #main-action ul {
     padding: 0x;
     margin: 0px;
@@ -1226,12 +1228,13 @@ div.view .main-body-content-subheader{
 }
 
 .pluginConfig .property-editor-container{
-    width: 825px;
-    height:425px;
+    width: 99%;
+    height: 100%;
 }
 
 .pluginConfig .property-editor-property-container {
-    height: 320px;
+    height: 100%;
+    min-height: 320px;
 }
 
 .form-row.plugin-config i{
@@ -1379,8 +1382,54 @@ span.dot_yellow{
     max-height: 150px;
     overflow:auto;
 }
-
-
+.systemAlert{
+    background:#FFFFD6;
+    position:relative;
+    padding:10px 15px;
+    z-index:7;
+}
+.systemAlertClose{
+    position:absolute;
+    top:10px;
+    right:10px;
+    cursor:pointer;
+}
+.systemAlertMessage {
+    display:inline-block;
+    margin-right:30px;
+}
+.policies {
+    color: #999;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 0 0 10px 10px;
+}
+.policies > span{
+    display:block;
+}
+.popupBody .ui-datepicker{
+    display:none;
+}
+.ui-dialog .ui-dialog-titlebar {
+    background: transparent;
+    border: 0 none;
+    display: inline;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: auto;
+    z-index: 200;
+}
+.popupBody #main-body-content {
+    height: 100%;
+    overflowx: auto;
+    padding-top:0px;
+    margin-top: 1em;
+}
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}
 #runApps #apps-loading {
     margin-top: 50px;
     text-transform: uppercase;
@@ -1740,7 +1789,7 @@ body#login {
 }
 
 .ui-dialog .ui-dialog-titlebar {
-    padding: 2px;
+    padding: 0px;
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {

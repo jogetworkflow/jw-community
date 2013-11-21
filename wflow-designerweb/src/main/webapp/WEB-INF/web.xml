@@ -19,12 +19,14 @@
     <servlet-mapping>
         <servlet-name>JnlpDownloadServlet</servlet-name>
         <url-pattern>/webstart/*</url-pattern>
-     </servlet-mapping>
+    </servlet-mapping>
+    <!--
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+    -->
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>

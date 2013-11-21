@@ -1,5 +1,6 @@
 package org.joget.apps.form.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +17,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.MobileUtil;
+import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.lib.FormOptionsBinder;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -22,12 +32,16 @@ import org.joget.apps.form.model.FormAction;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
+import org.joget.apps.form.model.FormLoadOptionsBinder;
+import org.joget.apps.form.model.FormReferenceDataRetriever;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +49,7 @@ import org.json.JSONObject;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
 
 /**
@@ -65,6 +80,8 @@ public class FormUtil implements ApplicationContextAware {
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
     public static final String FORM_BUILDER_ACTIVE = "formBuilderActive";
     static ApplicationContext appContext;
+    
+    public static ThreadLocal processedFormJson = new ThreadLocal(); 
     
     public static Long runningNumber = 0L;
 
@@ -1044,7 +1061,7 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static String generateElementMetaData(Element element) {
-        String properties = FormUtil.generateElementPropertyJson(element);
+        String properties = FormUtil.getElementProcessedJson(element);
         String escaped = StringEscapeUtils.escapeHtml(properties);
         String elementMetaData = " element-class=\"" + element.getClass().getName() + "\" element-property=\"" + escaped + "\" ";
         return elementMetaData;
@@ -1101,6 +1118,14 @@ public class FormUtil implements ApplicationContextAware {
                 // ignore if servlet request is not available
             }
         }
+        
+        // sanitize label output
+        String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
+        if (label != null && !label.trim().isEmpty()) {
+            label = StringUtil.stripHtmlRelaxed(label);
+            element.setProperty(FormUtil.PROPERTY_LABEL, label);
+        }
+        
         return dataModel;
     }
 
@@ -1172,4 +1197,250 @@ public class FormUtil implements ApplicationContextAware {
         return formBuilderActive;
     }
     
+    public static void setProcessedFormJson(String json) {
+        processedFormJson.set(json);
+    }
+    
+    public static String getProcessedFormJson() {
+        if (processedFormJson != null && processedFormJson.get() != null) {
+            return (String) processedFormJson.get();
+        }
+        return null;
+    }
+    
+    public static void clearProcessedFormJson() {
+        if (processedFormJson != null && processedFormJson.get() != null) {
+            processedFormJson.set(null);
+        }
+    }
+    
+    public static String getElementProcessedJson(Element element) {
+        String properties = "";
+        try {
+            // create json object
+            JSONObject obj = new JSONObject(getProcessedFormJson());
+            Element temp = element;
+            
+            // get the elements on the path to root element;
+            Stack<Element> stack = new Stack<Element>();
+            while (temp != null) {
+                stack.push(temp);
+                temp = temp.getParent();
+            }
+            
+            // get the first element (Root element) in stack to match with root Json Object 
+            temp = stack.pop();
+            
+            //if statck is not empty, continue find the matching json object
+            while (!stack.isEmpty()) {
+                temp = stack.pop();
+                
+                //travel in json object's child to find matching json object
+                if (!obj.isNull(FormUtil.PROPERTY_ELEMENTS)) {
+                    int position = 0;
+                    
+                    //get position
+                    Element parent = temp.getParent();
+                    Collection<Element> children = parent.getChildren();
+                    if (children != null) {
+                        for (Element c : children) {
+                            if (c.equals(temp)) {
+                                break;
+                            }
+                            position++;
+                        }
+                    }
+                    
+                    //get json object
+                    JSONArray elements = obj.getJSONArray(FormUtil.PROPERTY_ELEMENTS);
+                    if (elements != null && elements.length() > 0) {
+                        obj = (JSONObject) elements.get(position);
+                    }
+                }
+            }
+            
+            if (temp != null && obj != null) {
+                //get properties obj and convert to json string
+                if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
+                    JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
+                    properties = objProperty.toString();
+                }
+            }
+            
+        } catch (Exception e) {
+            properties = FormUtil.generateElementPropertyJson(element);
+        }
+        return properties;
+    }
+
+    /**
+     * Similar to loadFormData, returns results in JSON format.
+     * @param appId
+     * @param appVersion
+     * @param formDefId
+     * @param primaryKeyValue
+     * @param includeSubformData
+     * @param includeReferenceElements
+     * @param flatten
+     * @param assignment
+     * @return 
+     */
+    public static String loadFormDataJson(String appId, String appVersion, String formDefId, String primaryKeyValue, boolean includeSubformData, boolean includeReferenceElements, boolean flatten, WorkflowAssignment assignment) throws JSONException {
+        Map<String, Object> result = loadFormData(appId, appVersion, formDefId, primaryKeyValue, includeSubformData, includeReferenceElements, flatten, assignment);
+        JSONObject jsonObject = new JSONObject(result);
+        String json = jsonObject.toString(4);
+        return json;
+    }
+    
+    /**
+     * Utility method to fetch submitted form data values including data from subforms, and reference fields.
+     * Returns a key-value pair (optionally flattened) for all the data that is part of a form submission. 
+     * The returned data includes top level form data, subform data (including recursive subforms), and data pointed by reference fields (like SelectBox pointing to a datalist item)
+     * @param appId
+     * @param appVersion
+     * @param formDefId
+     * @param primaryKeyValue
+     * @param includeSubformData true to recursively include subform data
+     * @param includeReferenceElements true to include data from reference elements e.g. selectbox, etc.
+     * @param flatten true to flatten data into a one level key-value map
+     * @param assignment Optional workflow assignment (for assignment hash variables)
+     * @return a Map<String,Object> representing the form data. The key is the element ID, and the value is either a String for an element value, Map<String,Object> representing subform data, or Collection<Map<String,Object>> for reference fields.
+     */
+    public static Map<String, Object> loadFormData(final String appId, final String appVersion, final String formDefId, final String primaryKeyValue, final boolean includeSubformData, final boolean includeReferenceElements, final boolean flatten, final WorkflowAssignment assignment) {
+
+        final Map<String, Object> result = new HashMap<String, Object>();
+        
+        // get service and DAO objects
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        AppService appService = (AppService)ac.getBean("appService");
+        final FormService formService = (FormService)ac.getBean("formService");
+        final FormDefinitionDao formDefinitionDao = (FormDefinitionDao)ac.getBean("formDefinitionDao");
+        final AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        
+        if (appDef != null && formDefId != null && !formDefId.isEmpty() && primaryKeyValue != null) {
+            formDefinitionDao.getHibernateTemplate().execute(new HibernateCallback() {
+                @SuppressWarnings("unchecked")
+                public Object doInHibernate(Session s) throws HibernateException, SQLException {
+                    // get root form
+                    Form form = null;
+                    FormData formData = new FormData();
+                    formData.setPrimaryKeyValue(primaryKeyValue);
+                    FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
+                    if (formDef != null) {
+                        String formJson = formDef.getJson();
+                        if (formJson != null) {
+                            formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null);
+                            form = (Form) formService.loadFormFromJson(formJson, formData);
+                        }
+
+                        // load data
+                        int currentDepth = 0;
+                        recursiveLoadFormData(appId, appVersion, form, result, formData, includeSubformData, includeReferenceElements, flatten, assignment, currentDepth);
+                    }                    
+                    return null;
+                }
+            });       
+            
+            
+        }
+        return result;
+    }
+    
+    protected static void recursiveLoadFormData(String appId, String appVersion, Element e, Map<String, Object> data, FormData formData, boolean includeSubformData, boolean includeReferenceElements, boolean flatten, WorkflowAssignment assignment, int currentDepth) {
+        boolean recursive = currentDepth == 0 || includeSubformData;
+        Map<String, Object> result = data;
+        FormLoadBinder loadBinder = e.getLoadBinder();
+        FormLoadBinder optionsBinder = e.getOptionsBinder();
+        if (loadBinder != null) {
+            if (recursive) {
+                // load form data
+                FormRowSet rowSet = formData.getLoadBinderData(e);
+                if (rowSet != null && !rowSet.isEmpty()) {
+                    FormRow row = rowSet.get(0);
+                    boolean useSubMap = !flatten && !(e instanceof Form);
+                    if (useSubMap) {
+                        // it's data from a different form, so put data into submap
+                        Map<String, Object> subMap = new HashMap<String, Object>();
+                        for (Iterator i=row.keySet().iterator(); i.hasNext();) {
+                            String key = (String)i.next();
+                            Object value = row.get(key);
+                            subMap.put(key, value.toString());
+                        }
+                        String elementKey = e.getPropertyString(FormUtil.PROPERTY_ID);
+                        data.put(elementKey, subMap);
+                        result = subMap;
+                    } else {
+                        // it's the same as the original form, so put data into original map
+                        for (Iterator i=row.keySet().iterator(); i.hasNext();) {
+                            String key = (String)i.next();
+                            Object value = row.get(key);
+                            data.put(key, value.toString());
+                        }
+                    }
+                }
+            }
+        } else if (includeReferenceElements && e instanceof FormReferenceDataRetriever) {
+            // handle reference fields for elements implementing FormReferenceDataRetriever
+            Collection<Map<String, Object>> subResults = new ArrayList<Map<String, Object>>();
+
+            // get values
+            String[] valueArray = FormUtil.getElementPropertyValues(e, formData);
+            FormRowSet options = ((FormReferenceDataRetriever)e).loadFormRows(valueArray);
+            for (Map opt: options) {
+                Map optionRow = new HashMap(opt);
+                subResults.add(optionRow);
+            }
+            if (!subResults.isEmpty()) {
+                String elementKey = e.getPropertyString(FormUtil.PROPERTY_ID);
+                data.put(elementKey, subResults);
+            }
+        } else if (optionsBinder != null) {
+            // handle reference fields
+            if (includeReferenceElements && optionsBinder instanceof FormLoadOptionsBinder) {
+                Collection<Map<String, Object>> subResults = new ArrayList<Map<String, Object>>();
+                if (optionsBinder instanceof FormOptionsBinder) {
+                    // element is using FormOptionsBinder, so retrieve all form data for the row
+                    String optionsFormDefId = ((FormOptionsBinder)optionsBinder).getPropertyString("formDefId");
+                    if (optionsFormDefId != null && !optionsFormDefId.isEmpty()) {
+                        String[] values = FormUtil.getElementPropertyValues(e, formData);
+                        for (String value: values) {
+                            Map<String, Object> optionRow = loadFormData(appId, appVersion, optionsFormDefId, value, includeSubformData, includeReferenceElements, flatten, assignment);
+                                subResults.add(optionRow);
+                            }
+                        }
+                    
+                } else {
+                    // other binder type is used, so just load available options
+                    Map<String, String> optionMap = new HashMap<String, String>();
+                    Collection<Map> options = FormUtil.getElementPropertyOptionsMap(e, formData);
+                    for (Map<String, String> opt: options) {
+                        String key = opt.get(FormUtil.PROPERTY_VALUE);
+                        String label = opt.get(FormUtil.PROPERTY_LABEL);
+                        optionMap.put(key, label);
+                    }
+
+                    // load reference data
+                    String[] values = FormUtil.getElementPropertyValues(e, formData);
+                    for (String value: values) {
+                        String label = optionMap.get(value);
+                        Map<String, Object> optionRow = new HashMap<String, Object>();
+                        if (value != null && label != null) {
+                            optionRow.put(value, label);
+                            subResults.add(optionRow);
+                        }
+                    }
+                }
+                String elementKey = e.getPropertyString(FormUtil.PROPERTY_ID);
+                data.put(elementKey, subResults);
+            }
+        }
+        
+        Collection<Element> children = e.getChildren();
+        if (children != null && !children.isEmpty()) {
+            currentDepth++;
+            for (Element c : children) {
+                recursiveLoadFormData(appId, appVersion, c, result, formData, includeSubformData, includeReferenceElements, flatten, assignment, currentDepth);
+            }
+        }
+    }    
 }

@@ -270,3 +270,33 @@
     position: absolute;
     left: 932px;
 }
+.tooltips, #form-canvas .tooltips {
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+    padding: 5px 0 5px 5px;
+}
+.tooltips > span, #form-canvas .tooltips > span {
+    display:block;
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+}
+#formbuilder .ui-dialog {
+    z-index: 400;
+}
+#formbuilder .ui-dialog .ui-dialog-titlebar-close span {
+    margin-left: -8px;
+    margin-top: -8px;
+}
+#formbuilder .ui-dialog .ui-dialog-titlebar {
+    padding: 0px;
+    background: transparent;
+    border: 0 none;
+    display: inline;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: auto;
+    z-index: 200;
+}

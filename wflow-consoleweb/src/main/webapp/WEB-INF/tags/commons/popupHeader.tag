@@ -1,7 +1,8 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ tag import="org.springframework.security.context.SecurityContextHolder"%>
-<%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ tag import="org.joget.apps.app.service.AppUtil"%>
 <%@ attribute name="title" %>
+
+<c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
 
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>
 
@@ -10,11 +11,23 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title>${title}</title>
+        <title><c:out value="${title}"/></title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         
+        <c:if test="${!empty userviewThemeCss}">
+            <style type="text/css">
+                ${userviewThemeCss}
+            </style>
+        </c:if>
+        <script>
+            $(function() {
+                if (window.self !== window.top) {
+                    $("#main-body-content").css("height", "435px");
+                }
+            });
+        </script>
     </head>
     <body class="popupBody">
