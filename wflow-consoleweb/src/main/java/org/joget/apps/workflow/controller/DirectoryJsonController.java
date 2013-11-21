@@ -483,7 +483,7 @@ public class DirectoryJsonController {
             }
         }
 
-        jsonObject.accumulate("total", employmentDao.getEmploymentsNoHaveOrganization(name, sort, desc, start, rows));
+        jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNoHaveOrganization(name));
         jsonObject.accumulate("start", start);
         jsonObject.accumulate("sort", sort);
         jsonObject.accumulate("desc", desc);
