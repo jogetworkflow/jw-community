@@ -32,8 +32,6 @@
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
 
-        <link href="${pageContext.request.contextPath}/css/builder_navigator.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
-
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
@@ -179,8 +177,8 @@
                         </div>
 
                     </div>
+                    </div>
                 </div>
-            </div>
             <div id="builder-footer">
                 <fmt:message key="console.builder.footer"/>
             </div>
@@ -195,7 +193,7 @@
             HelpGuide.key = "help.web.console.app.userview.builder";
             HelpGuide.show();
         </script>
-       
+            
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
             <jsp:param name="webConsole" value="true"/>

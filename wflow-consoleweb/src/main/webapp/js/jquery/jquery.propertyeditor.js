@@ -96,7 +96,7 @@
                         extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
 
                         height : "300px",
-                        width : "500px"
+                        width : "95%"
                     });
                     if($(editor).find('.tinymce').length > 0){
                        tinyMceInitialed = true;

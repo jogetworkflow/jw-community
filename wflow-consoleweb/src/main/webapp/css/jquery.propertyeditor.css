@@ -213,6 +213,11 @@
 .property-type-grid-action-add span{
     display:none;
 }
+
+.property-editor-property textarea{
+    width:95%;
+    min-height: 200px;
+}
 .property-editor-property.property-type-header .property-label-container{
     margin: 0;	
     width: auto;

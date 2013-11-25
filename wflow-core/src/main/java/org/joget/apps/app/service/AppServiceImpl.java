@@ -1670,7 +1670,7 @@ public class AppServiceImpl implements AppService {
                 }
             }
 
-            if (!newUvDefList.isEmpty()) {
+            if (newUvDefList != null && !newUvDefList.isEmpty()) {
                 AppDefinition tempAppDef = new AppDefinition();
                 tempAppDef.setAppId(appDef.getId());
                 tempAppDef.setVersion(appDef.getVersion());

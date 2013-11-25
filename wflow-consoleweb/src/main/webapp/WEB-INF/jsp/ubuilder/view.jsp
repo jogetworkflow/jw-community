@@ -181,7 +181,6 @@ if (MobileUtil.isMobileUserAgent(request)) {
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
-        <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <style type="text/css">
             .quickEdit, #form-canvas .quickEdit {
                 display: none;

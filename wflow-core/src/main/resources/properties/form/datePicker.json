@@ -14,6 +14,16 @@
         type : 'textfield',
         required : 'True',
         value : 'Date Picker'
+    },
+    {
+        name : 'allowManual',
+        label : '@@form.datepicker.allowManual@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
@@ -82,31 +92,8 @@
         type : 'header'
     },
     {
-        name : 'allowManual',
-        label : '@@form.datepicker.allowManual@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
+        name : 'workflowVariable',
+        label : '@@form.datepicker.workflowVariable@@',
+        type : 'textfield'
     }]
-    },
-    {
-        title : '@@form.datepicker.chooseValidator@@',
-        properties : [{
-            name : 'validator',
-            label : '@@form.datepicker.validator@@',
-            type : 'elementselect',
-            options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
-            url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-        }]
-    },
-    {
-        title : '@@form.datepicker.workflowVariables@@',
-        properties : [{
-            name : 'workflowVariable',
-            label : '@@form.datepicker.workflowVariable@@',
-            type : 'textfield'
-        }]
 }]
