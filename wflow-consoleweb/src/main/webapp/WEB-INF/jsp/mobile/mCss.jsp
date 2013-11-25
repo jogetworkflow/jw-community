@@ -116,7 +116,7 @@
     .ui-mobile .form-cell, .ui-mobile .subform-cell {
         clear: both;
     }
-    .print-button, .ui-body-c .print-button {
+    .ui-mobile .print-button, .ui-mobile .ui-body-c .print-button {
         display: none;
     }
     .boxy-inner {
@@ -124,6 +124,12 @@
     }
     iframe.boxy-content {
         padding: 0px;
+    }
+    .ui-mobile .form-fileupload-value .ui-checkbox {
+        margin-top: 15px;
+    }
+    .ui-mobile .form-fileupload-value .ui-checkbox input {
+        display: block;
     }
     ${userview.setting.properties.mobileViewCustomCss}
 </style>

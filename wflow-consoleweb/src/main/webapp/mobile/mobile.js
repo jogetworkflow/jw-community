@@ -76,6 +76,16 @@ var Mobile = {
                 $(el).removeAttr("target");
             }
         });
+        // disable ajax for forms with file uploads
+        var uploadFields = $("input[type='file']");
+        if (uploadFields.length > 0) {
+            // disable ajax form submission
+            var parentForm =  uploadFields.parents("form");
+            parentForm.attr("data-ajax", "false");
+        }
+        // disable ajax for file upload links
+        $(".form-fileupload-value a").attr("data-ajax", "false");
+        $(".form-fileupload-value a").attr("target", "_blank");
     },
     
     initDataList: function() {
