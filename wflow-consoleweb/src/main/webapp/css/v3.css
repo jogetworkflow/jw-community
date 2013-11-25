@@ -863,7 +863,7 @@ img {
 
 .popupBody #main-body-header {
     clear: both;
-    padding: 0.5em;
+    padding: 6px;
     background: #efefef;
     color:#000;
     font-family:Georgia,"Times New Roman",Times,serif;
@@ -890,8 +890,7 @@ img {
 }
 
 .popupBody #main-body-content {
-    padding: 1em 1.5em 1em 1em;
-    min-height: 430px;
+    padding: 4px;
 }
 
 .popupBody #main-body-message {
@@ -909,10 +908,8 @@ img {
     text-shadow: none;
 }
 
-.ui-dialog .ui-dialog-content .dialog {
-    font-family: Arial;
-    font-size: 13px;
-    padding: 10px;
+.ui-dialog .ui-dialog-content {
+    padding: 5px;
 }
 
 .ui-widget-header {
@@ -1422,9 +1419,9 @@ span.dot_yellow{
 }
 .popupBody #main-body-content {
     height: 100%;
-    overflowx: auto;
+    overflow: auto;
     padding-top:0px;
-    margin-top: 1em;
+    margin-top: 12px;
 }
 .stop-scrolling {
     height: 100%;
@@ -1795,4 +1792,7 @@ body#login {
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
     border-bottom: 1px solid #FFFFFF;
     margin-bottom: -1px !important;
+}
+.ui-dialog .ui-dialog-titlebar-close{
+    top: 70%;
 }
