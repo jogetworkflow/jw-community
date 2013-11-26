@@ -3847,6 +3847,9 @@ public class ConsoleWebController {
         map.addAttribute("wfProcess", wfProcess);
         map.addAttribute("trackWflowProcess", trackWflowProcess);
 
+        AppDefinition appDef = appService.getAppDefinitionForWorkflowProcess(processId);
+        map.addAttribute("appDef", appDef);
+        
         return "console/monitor/runningProcess";
     }
 
@@ -3916,6 +3919,9 @@ public class ConsoleWebController {
         map.addAttribute("wfProcess", wfProcess);
         map.addAttribute("trackWflowProcess", trackWflowProcess);
 
+        AppDefinition appDef = appService.getAppDefinitionForWorkflowProcess(processId);
+        map.addAttribute("appDef", appDef);
+        
         return "console/monitor/completedProcess";
     }
 

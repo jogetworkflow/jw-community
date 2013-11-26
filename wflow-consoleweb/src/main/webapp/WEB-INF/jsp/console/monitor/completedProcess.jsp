@@ -29,7 +29,7 @@
             <dt><fmt:message key="console.app.process.common.label.version"/></dt>
             <dd><c:out value="${wfProcess.version}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.name"/></dt>
-            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/${wfProcess.packageId}//processes/${wfProcess.idWithoutVersion}"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/${wfProcess.packageId}/${appDef.version}/processes/${wfProcess.idWithoutVersion}"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.state"/></dt>
             <dd><c:out value="${wfProcess.state}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.serviceLevelMonitor"/></dt>
