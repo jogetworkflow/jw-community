@@ -141,4 +141,15 @@ public class FormRow extends Properties {
             tempFilePathMap.putAll(files);
         }
     }
+    
+    @Override
+    public String getProperty(String key) {
+        Object oval = super.get(key);
+       
+        if (oval != null && oval instanceof Date) {
+            return oval.toString();
+        } else {
+            return super.getProperty(key);
+        }
+    }
 }

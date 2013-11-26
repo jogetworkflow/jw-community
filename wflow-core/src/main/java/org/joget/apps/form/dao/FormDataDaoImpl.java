@@ -21,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
+import org.hibernate.MappingException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.cfg.Configuration;
@@ -44,6 +45,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -810,6 +812,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     }
                 }
             }
+            
+            //remove predefined column
+            columnList.remove(FormUtil.PROPERTY_ID);
+            columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
+            columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
         }
         return columnList;
     }
@@ -858,6 +865,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         }
                     }
                 }
+                
+                //remove predefined column
+                columnList.remove(FormUtil.PROPERTY_ID);
+                columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
+                columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
+                
                 LogUtil.debug("", "All Columns - " + columnList.toString());
                 formColumnCache.put(tableName, columnList);
             }
