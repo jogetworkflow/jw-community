@@ -15,6 +15,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ThreadSessionUtil;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
 import org.joget.plugin.base.PluginManager;
@@ -87,10 +88,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             }
 
             if (auditTrail != null && (auditTrail.getMethod().equals("createAssignments") || auditTrail.getMethod().equals("getDefaultAssignments") || auditTrail.getMethod().equals("assignmentReassign") || auditTrail.getMethod().equals("assignmentForceComplete"))) {
-                final String profile = DynamicDataSourceManager.getCurrentProfile();                
+                final String profile = DynamicDataSourceManager.getCurrentProfile();
                 new Thread(new Runnable() {
 
                     public void run() {
+                        ThreadSessionUtil.initSession();
                         try {
                             HostManager.setCurrentProfile(profile);
                             List<String> userList = new ArrayList<String>();
@@ -214,8 +216,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                             }
                         } catch (Exception ex) {
                             LogUtil.error(getClass().getName(), ex, "Error executing plugin");
+                        } finally {
+                            ThreadSessionUtil.closeSession();
                         }
-
                     }
                 }).start();
             }

@@ -47,6 +47,27 @@
         <property name="sessionFactory"><ref bean="appSessionFactory"/></property>
         <property name="flushModeName" value="FLUSH_AUTO" />
     </bean>
+    
+    <bean name="openSessionInThread"
+          class="org.joget.commons.util.OpenSessionInThread">  
+        <property name="sessionFactory"><ref bean="directorySessionFactory"/></property>
+        <property name="flushModeName" value="FLUSH_AUTO" />
+    </bean>
+
+    <bean name="appOpenSessionInThread"
+          class="org.joget.commons.util.OpenSessionInThread">
+        <property name="sessionFactory"><ref bean="appSessionFactory"/></property>
+        <property name="flushModeName" value="FLUSH_AUTO" />
+    </bean>
+    
+    <bean id="threadSessionUtil" class="org.joget.commons.util.ThreadSessionUtil">
+        <property name="sessions">
+            <list>
+                <ref bean="openSessionInThread"/>
+                <ref bean="appOpenSessionInThread"/>
+            </list>
+        </property>
+    </bean>
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="defaultEncoding">
