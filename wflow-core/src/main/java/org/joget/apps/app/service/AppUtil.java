@@ -351,17 +351,26 @@ public class AppUtil implements ApplicationContextAware {
                                     hashVariablePluginCache.put(hashVariablePlugin.getClassName(), cachedPlugin);
                                 }
 
+                                String nestedHashVar = tempVar;
+                                        
                                 //process nested hash
-                                while (tempVar.contains("{") && tempVar.contains("}")) {
+                                while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
                                     Pattern nestedPattern = Pattern.compile("\\{([^\\{^\\}])*\\}");
-                                    Matcher nestedMatcher = nestedPattern.matcher(tempVar);
+                                    Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
                                     while (nestedMatcher.find()) {
                                         String nestedHash = nestedMatcher.group();
                                         String nestedHashString = nestedHash.replace("{", "#");
                                         nestedHashString = nestedHashString.replace("}", "#");
 
                                         String processedNestedHashValue = processHashVariable(nestedHashString, wfAssignment, escapeFormat, replaceMap, appDef);
-                                        tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
+                                        
+                                        //if being process
+                                        if (!nestedHashString.equals(processedNestedHashValue)) {
+                                            tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
+                                        } 
+                                        
+                                        //remove nested hash 
+                                        nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
                                     }
                                 }
 
