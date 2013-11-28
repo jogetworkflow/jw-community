@@ -110,6 +110,10 @@
     display:block;
 }
 
+.property-input table tr#header{
+    display:table-row;
+}
+
 .property-input table tr th span{
     font-size:10px;
 }
