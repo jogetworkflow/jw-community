@@ -131,5 +131,31 @@
     .ui-mobile .form-fileupload-value .ui-checkbox input {
         display: block;
     }
+    .ui-loader-default {
+        background: none;
+        filter: Alpha(Opacity=80);
+        opacity: .8;
+        width: 46px;
+        height: 46px;
+        margin-left: -23px;
+        margin-top: -23px;
+    }
+    .ui-loader .ui-icon {
+        background-color: transparent;
+        display: block;
+        margin: 0;
+        width: 44px;
+        height: 44px;
+        padding: 1px;
+        -webkit-border-radius: 36px;
+        border-radius: 36px;
+    }
+    .ui-icon-loading, .ui-loader .ui-icon-loading {
+        background-color: transparent;
+	background-size: 46px 46px;
+    }
+    .ui-listview > .ui-li-divider {
+        background: #bbb;
+    }
     ${userview.setting.properties.mobileViewCustomCss}
 </style>

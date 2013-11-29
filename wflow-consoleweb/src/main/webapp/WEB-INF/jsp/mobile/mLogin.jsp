@@ -37,15 +37,7 @@
             </c:set>
             <ui:stripTag html="${html}"/>
         </title>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
-        <style>
-        </style>
+        <jsp:include page="mScripts.jsp" flush="true"/>
     </head>
     <body class="ui-mobile-viewport">
 
@@ -59,7 +51,7 @@
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
                     <c:when test="${!empty userview.setting.theme.header}">
-                        ${userview.setting.theme.header}
+                        <ui:stripTag html="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
                         <c:out value="${userview.properties.name}"/>
@@ -98,7 +90,6 @@
         </div>
 
         <div class="ui-loader" style="top: 332px; "><h1><fmt:message key="mobile.apps.loading"/></h1></div>
-        <jsp:include page="mCss.jsp" flush="true"/>
 
     </body>    
 </html>

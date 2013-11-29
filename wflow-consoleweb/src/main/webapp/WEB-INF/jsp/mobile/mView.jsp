@@ -134,15 +134,7 @@
             </c:set>
             <ui:stripTag html="${html}"/>
         </title>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+        <jsp:include page="mScripts.jsp" flush="true"/>
         <script>
             function desktopSite() {
                 var path = "${pageContext.request.contextPath}/web/userview/${appId}/";
@@ -168,7 +160,7 @@
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
                     <c:when test="${!empty userview.setting.theme.header}">
-                        <c:out value="${userview.setting.theme.header}"/>
+                        <ui:stripTag html="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
                         <c:out value="${userview.properties.name}"/>
@@ -178,12 +170,12 @@
                 <c:if test="${empty menuId || menuId == landingPage}">    
                     <c:choose>
                         <c:when test="${isAnonymous}">
-                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
-                            <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="a"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
+                            <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
-                            <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="a" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
+                            <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:otherwise>
                     </c:choose>                            
                 </c:if>
@@ -229,6 +221,5 @@
                     
         <div class="ui-loader" style="top: 332px; "></div>
         <div id="online-status"></div>
-        <jsp:include page="mCss.jsp" flush="true"/>
     </body>    
 </html>

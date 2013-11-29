@@ -19,15 +19,7 @@
             </c:set>
             <ui:stripTag html="${html}"/>
         </title>
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
-        <style>
-        </style>
+        <jsp:include page="mScripts.jsp" flush="true"/>
 
         <c:catch var="dataListException">        
         <c:set var="actionResult" value="${dataList.actionResult}" />
@@ -67,7 +59,7 @@
                 <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">
                 <c:choose>
                     <c:when test="${!empty userview.setting.theme.header}">
-                        <c:out value="${userview.setting.theme.header}"/>
+                        <ui:stripTag html="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
                         <c:out value="${userview.properties.name}"/>
@@ -77,10 +69,10 @@
                 <c:if test="${empty menuId || menuId == landingPage}">    
                     <c:choose>
                         <c:when test="${isAnonymous}">
-                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="b"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
+                            <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="a"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
+                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="a" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
                         </c:otherwise>
                     </c:choose>                            
                 </c:if>
@@ -167,7 +159,7 @@
                             <c:set var="column" value="${columns[0]}"/>
                             <c:set var="cellValue" value="${row[columns[0].name]}"/>
                             <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
-                            <h4><c:out value="${formattedValue}"/></h4>
+                            <h4><ui:stripTag html="${formattedValue}"/></h4>
                             <p>
                             <c:forEach var="column" items="${columns}" varStatus="cStatus">
                                 <c:if test="${cStatus.index > 0}">
@@ -175,7 +167,7 @@
                                     <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
                                     <c:if test="${!empty cellValue}">
                                         <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
-                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> <c:out value="${cellCleanValue}"/>
+                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
                                     </c:if>
                                     <br>
                                 </c:if>

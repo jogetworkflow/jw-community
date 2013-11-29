@@ -69,6 +69,7 @@
         <security:intercept-url pattern="/web/home" filters="none"/>
         <security:intercept-url pattern="/web/desktop" filters="none"/>
         <security:intercept-url pattern="/web/mobile" filters="none"/>
+        <security:intercept-url pattern="/web/mobilecache/**" filters="none"/>
 
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN" />

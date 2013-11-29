@@ -76,6 +76,17 @@ var Mobile = {
                 $(el).removeAttr("target");
             }
         });
+        var thisWindow = window;
+        $("a").on("click", function() {
+            var previousUrl = thisWindow.location.href;
+            $.mobile.loading('show');
+            setTimeout(function() {
+                var currentUrl = thisWindow.location.href;
+                if (currentUrl == previousUrl) {
+                    $.mobile.loading('hide');
+                }
+            }, 2000);
+        });
         // disable ajax for forms with file uploads
         var uploadFields = $("input[type='file']");
         if (uploadFields.length > 0) {
@@ -108,7 +119,7 @@ var Mobile = {
             window.addEventListener('load', function(e) {
 
                 window.applicationCache.addEventListener('updateready', function(e) {
-                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.loading('hide');
                     if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
                         // Browser downloaded a new app cache, swap it in and reload the page to get the new hotness.
                         window.applicationCache.swapCache();
@@ -119,27 +130,27 @@ var Mobile = {
                 }, false);
 
                 window.applicationCache.addEventListener('checking', function(e) {
-                    $.mobile.showPageLoadingMsg();
+                    $.mobile.loading('show');
                 }, false);            
 
                 window.applicationCache.addEventListener('downloading', function(e) {
-                    $.mobile.showPageLoadingMsg();
+                    $.mobile.loading('show');
                 }, false);            
 
                 window.applicationCache.addEventListener('cached', function(e) {
-                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.loading('hide');
                 }, false);            
 
                 window.applicationCache.addEventListener('noupdate', function(e) {
-                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.loading('hide');
                 }, false);            
 
                 window.applicationCache.addEventListener('error', function(e) {
-                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.loading('hide');
                 }, false);            
 
                 window.applicationCache.addEventListener('obsolete', function(e) {
-                    $.mobile.hidePageLoadingMsg();
+                    $.mobile.loading('hide');
                 }, false);            
 
             }, false);            
@@ -170,6 +181,12 @@ var Mobile = {
         }
     },
     
+    hideDesktopSiteButton: function() {
+        if ($.cookie("cordova") == "true") {
+            $("#desktop-site").hide();
+        }
+    },
+    
     showNetworkStatus: function(online) {
         if (online) {
             $("#online-status").html("");
@@ -193,6 +210,7 @@ $(document).bind("mobileinit", function(){
 $("#userview").live("pageshow", function() {
     Mobile.initPage();
     Mobile.checkNetworkStatus();
+    Mobile.hideDesktopSiteButton();
 });
 $(document).on("pagehide", "div[data-role=page]", function(event){
   $(event.target).remove();
@@ -206,4 +224,6 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
         options.isLocal = true;
     }
 });
-
+$(function() {
+    Mobile.hideDesktopSiteButton();
+});

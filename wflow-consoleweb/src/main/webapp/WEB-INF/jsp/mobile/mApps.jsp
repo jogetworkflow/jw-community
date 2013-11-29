@@ -4,13 +4,7 @@
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/default">
     <head>
         <title><fmt:message key="mobile.apps.title"/></title>
-        <meta name="viewport" content="width=device-width,initial-scale=1"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.css">
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.3.1.min.js"></script>
-        <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+        <jsp:include page="mScripts.jsp" flush="true"/>
         <script>
             function desktopSite() {
                 var path = "${pageContext.request.contextPath}/web/desktop";
@@ -19,13 +13,13 @@
                 return false;
             }
             function showLoading(url) {
-                $.mobile.showPageLoadingMsg();
+                $.mobile.loading('show');
                 if (url) {
                     setTimeout(function() {
                         location.href = url;
-                    }, 120);
+                    }, 1000);
                     setTimeout(function() {
-                        $.mobile.hidePageLoadingMsg();
+//                        $.mobile.loading('hide');
                     }, 2000);
                     return false;
                 }
@@ -34,6 +28,9 @@
             Mobile.updateCache();
             $("#mobileHome").live("pageshow", function() {
                 Mobile.checkNetworkStatus();
+            });
+            $.cookie("cordova", "<c:out value="${param.cordova}"/>", {
+                path: "${pageContext.request.contextPath}/web/mobile"
             });
         </script>
     </head>
@@ -45,12 +42,12 @@
                 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
                 <c:choose>
                     <c:when test="${isAnonymous}">
-                        <a href="${pageContext.request.contextPath}/web/mlogin" data-icon="gear" data-theme="b"><fmt:message key="console.login.label.login"/></a>
-                        <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                        <a href="${pageContext.request.contextPath}/web/mlogin" data-icon="gear" data-theme="a"><fmt:message key="console.login.label.login"/></a>
+                        <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="b" data-direction="reverse"><fmt:message key="console.header.top.label.logout"/></a>
-                        <a href="#" onclick="return desktopSite()" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                        <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="a" data-direction="reverse"><fmt:message key="console.header.top.label.logout"/></a>
+                        <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                     </c:otherwise>
                 </c:choose>                            
             </div>
@@ -88,7 +85,6 @@
             }
         </style>
         <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
-        <jsp:include page="mCss.jsp" flush="true"/>
     </body>
 
 </html>
