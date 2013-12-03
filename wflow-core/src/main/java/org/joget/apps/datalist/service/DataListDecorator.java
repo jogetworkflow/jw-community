@@ -186,29 +186,44 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (link == null) {
             link = text;
         } else {
-            if (hrefParam != null && hrefParam.trim().length() > 0) {
-                if (link.contains("?")) {
-                    link += "&";
-                } else {
-                    link += "?";
+            if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
+                String[] params = hrefParam.split(";");
+                String[] columns = hrefColumn.split(";");
+                
+                for (int i = 0; i < columns.length; i++ ) {
+                    if (columns[i] != null && !columns[i].isEmpty()) {
+                        boolean isValid = false;
+                        if (params.length > i && params[i] != null && !params[i].isEmpty()) {
+                            if (link.contains("?")) {
+                                link += "&";
+                            } else {
+                                link += "?";
+                            }
+                            link += params[i];
+                            link += "=";
+                            isValid = true;
+                        } if (!link.contains("?")) {
+                            if (!link.endsWith("/")) {
+                                link += "/";
+                            }
+                            isValid = true;
+                        }
+                        
+                        if (isValid) {
+                            Object paramValue =evaluate(columns[i]);
+                            if (paramValue == null) {
+                                paramValue = columns[i];
+                            }
+                            try {
+                                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
+                            } catch (UnsupportedEncodingException ex) {
+                                link += paramValue;
+                            }
+                        }
+                    }
                 }
-                link += hrefParam;
-                link += "=";
-            } else {
-                if (!link.endsWith("/")) {
-                    link += "/";
-                }
             }
-
-            Object paramValue = "";
-            if (hrefColumn != null) {
-                paramValue = evaluate(hrefColumn);
-            }
-            try {
-                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
-            } catch (UnsupportedEncodingException ex) {
-                link += paramValue;
-            }
+            
             if (target != null && target.trim().length() > 0) {
                 targetString = " target=\"" + target + "\"";
             }

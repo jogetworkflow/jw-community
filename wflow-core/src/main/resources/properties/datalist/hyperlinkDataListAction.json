@@ -20,16 +20,17 @@
         }]
     },
     {
-        label : '@@datalist.hyperlinkdatalistaction.hyperlinkParamName@@',
-        name : 'hrefParam',
-        type : 'textfield',
-        description : '@@datalist.hyperlinkdatalistaction.hyperlinkParamName.desc@@'
-    },
-    {
-        label : '@@datalist.hyperlinkdatalistaction.columnName@@',
-        name : 'hrefColumn',
-        type : 'textfield',
-        description : '@@datalist.hyperlinkdatalistaction.columnName.desc@@'
+        name : 'parameters',
+        label : '@@datalist.hyperlinkdatalistaction.hyperlinkParameters@@',
+        type : 'gridCombine',
+        columns : [{
+            key : 'hrefParam',
+            label : '@@datalist.hyperlinkdatalistaction.hyperlinkParamName@@'
+        },
+        {
+            key : 'hrefColumn',
+            label : '@@datalist.hyperlinkdatalistaction.columnName@@'
+        }]
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.label@@',

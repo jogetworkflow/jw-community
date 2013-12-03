@@ -455,6 +455,8 @@
             html += renderMultiselect(id, property, value, defaultValue);
         }else if(property.type.toLowerCase() == "grid"){
             html += renderGrid(id, property, value, defaultValue);
+        }else if(property.type.toLowerCase() == "gridcombine"){
+            html += renderGridCombine(id, property, options.propertyValues, options.defaultPropertyValues);
         }else if(property.type.toLowerCase() == "htmleditor"){
             html += renderHtmleditor(id, property, value, defaultValue);
         }else if(property.type.toLowerCase() == "elementselect"){
@@ -718,7 +720,7 @@
         html += '<th class="property-type-grid-action-column"></th></tr>';
 
         //render model
-        html += '<tr id="model" style="display:none">'
+        html += '<tr id="model" style="display:none">';
         $.each(property.columns, function(i, column){
             html += '<td><span>';
             if(column.options != undefined){
@@ -774,6 +776,135 @@
         }
 
         var defaultValueText = '';
+        if(defaultValue != null){
+            $.each(defaultValue, function(i, row){
+                $.each(property.columns, function(i, column){
+                    var columnValue = "";
+                    if(row[column.key] != undefined){
+                        columnValue = row[column.key];
+                    }
+
+                    if(column.options != undefined){
+                        $.each(column.options, function(i, option){
+                            if(columnValue == option.value){
+                                defaultValueText +=  escapeHtmlTag(option.label) + '; ';
+                            }
+                        });
+                    }else{
+                        defaultValueText += columnValue + '; ';
+                    }
+                });
+                defaultValueText += '<br/>';
+            });
+        }
+        if(defaultValueText != ''){
+            defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+ defaultValueText +'</span><div class="clear"></div></div>';
+        }
+
+        html += '</table><a href="#" class="property-type-grid-action-add"><span>'+get_peditor_msg('peditor.add')+'</span></a>'+defaultValueText;
+        return html;
+    }
+    
+    function renderGridCombine(id, property, values, defaultValues){
+        var html = '<table id="'+ id +'_'+ property.name +'"><tr id="header">';
+        //render header
+        $.each(property.columns, function(i, column){
+            html += '<th><span>'+column.label+'</span></th>';
+        });
+        html += '<th class="property-type-grid-action-column"></th></tr>';
+
+        //render model
+        html += '<tr id="model" style="display:none">';
+        $.each(property.columns, function(i, column){
+            html += '<td><span>';
+            if(column.options != undefined){
+                html += '<select name="'+ column.key +'" value="">';
+                    $.each(column.options, function(i, option){
+                        html += '<option value="'+escapeHtmlTag(option.value)+'">'+option.label+'</option>';
+                });
+                html += '</select>';
+            }else{
+                html += '<input name="'+ column.key +'" size="10" value=""/>';
+            }
+            html += '</span></td>';
+        });
+        html += '<td class="property-type-grid-action-column">';
+        html += '<a href="#" class="property-type-grid-action-moveup"><span>'+get_peditor_msg('peditor.moveUp')+'</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-movedown"><span>'+get_peditor_msg('peditor.moveDown')+'</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-delete"><span>'+get_peditor_msg('peditor.delete')+'</span></a>';
+        html += '</td></tr>';
+
+        var value = new Array();
+        if (values != null) {
+            $.each(property.columns, function(i, column){
+                var temp = values[column.key];
+                if (temp != undefined) {
+                    var temp_arr = temp.split(";");
+
+                    $.each(temp_arr, function(i, row){
+                        if (value[i] == null) {
+                            value[i] = new Object();
+                        }
+                        value[i][column.key] = row;
+                    });
+                }
+            });
+        }
+        
+        //render value
+        if(value.length > 0){
+            $.each(value, function(i, row){
+                html += '<tr>';
+                $.each(property.columns, function(i, column){
+                    var columnValue = "";
+                    if(row[column.key] != undefined){
+                        columnValue = row[column.key];
+                    }
+
+                    html += '<td><span>';
+                    if(column.options != undefined){
+                        html += '<select name="'+ column.key +'" value="">';
+                        $.each(column.options, function(i, option){
+                            var selected = "";
+                            if(columnValue == option.value){
+                                selected = " selected";
+                            }
+                            html += '<option value="'+escapeHtmlTag(option.value)+'"'+selected+'>'+option.label+'</option>';
+                        });
+                        html += '</select>';
+                    }else{
+                        html += '<input name="'+ column.key +'" size="10" value="'+escapeHtmlTag(columnValue)+'"/>';
+                    }
+                    html += '</span></td>';
+                });
+
+                html += '<td class="property-type-grid-action-column">';
+                html += '<a href="#" class="property-type-grid-action-moveup"><span>'+get_peditor_msg('peditor.moveUp')+'</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-movedown"><span>'+get_peditor_msg('peditor.moveDown')+'</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-delete"><span>'+get_peditor_msg('peditor.delete')+'</span></a>';
+                html += '</td></tr>';
+            });
+        }
+
+        var defaultValueText = '';
+        
+        var defaultValue = new Array();
+        if (defaultValues != null) {
+            $.each(property.columns, function(i, column){
+                var temp = defaultValues[column.key];
+                if (temp != undefined) {
+                    var temp_arr = temp.split(";");
+
+                    $.each(temp_arr, function(i, row){
+                        if (defaultValue[i] == null) {
+                            defaultValue[i] = new Object();
+                        }
+                        defaultValue[i][column.key] = row;
+                    });
+                }
+            });
+        }
+        
         if(defaultValue != null){
             $.each(defaultValue, function(i, row){
                 $.each(property.columns, function(i, column){
@@ -1187,6 +1318,25 @@
                 });
 
                 properties[property.name] = gridValue;
+            }else if(property.type.toLowerCase() == "gridcombine"){
+                $(editor).find('#'+editorId+'_'+parent+property.name).find('tr').each(function(n, tr){
+                    var row = $(this);
+                    if($(row).attr('id') != "model" && $(row).attr('id') != "header"){
+                        $.each(property.columns, function(i, column){
+                            var value = properties[column.key];
+                            
+                            if (value == undefined) {
+                                value = "";
+                            }
+                            
+                            if (n > 2) {
+                                value += ';';
+                            }
+                            value += $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                            properties[column.key] = value;
+                        });
+                    }
+                });
             }else{
                 var value = '';
 

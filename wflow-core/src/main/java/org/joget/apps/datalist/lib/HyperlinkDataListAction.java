@@ -31,7 +31,7 @@ public class HyperlinkDataListAction extends DataListActionDefault {
     }
     
     public String getLabel() {
-        return "Data List Hyperlink Action";
+        return "Hyperlink";
     }
 
     public String getLinkLabel() {
@@ -66,33 +66,45 @@ public class HyperlinkDataListAction extends DataListActionDefault {
         DataListActionResult result = new DataListActionResult();
         result.setType(DataListActionResult.TYPE_REDIRECT);
         String url = getHref();
-        String columnName = getHrefColumn();
-
-        if (columnName != null && columnName.trim().length() > 0) {
+        String hrefParam = getHrefParam();
+        String hrefColumn = getHrefColumn();
+        
+        if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty() && rowKeys != null && rowKeys.length > 0) {
             DataListCollection rows = dataList.getRows();
             String primaryKeyColumnName = dataList.getBinder().getPrimaryKeyColumnName();
-            if (rows != null) {
-                if (getHrefParam() != null && getHrefParam().trim().length() > 0) {
-                    if (url.contains("?")) {
-                        url += "&";
-                    } else {
-                        url += "?";
-                    }
-                    url += getHrefParam();
-                    url += "=";
-                } else {
-                    if (!url.endsWith("/")) {
-                        url += "/";
-                    }
-                }
+        
+            String[] params = hrefParam.split(";");
+            String[] columns = hrefColumn.split(";");
 
-                for (String key : rowKeys) {
-                    url += getValue(rows, primaryKeyColumnName, key, columnName) + ";";
+            for (int i = 0; i < columns.length; i++) {
+                if (columns[i] != null && !columns[i].isEmpty()) {
+                    boolean isValid = false;
+                    if (params.length > i && params[i] != null && !params[i].isEmpty()) {
+                        if (url.contains("?")) {
+                            url += "&";
+                        } else {
+                            url += "?";
+                        }
+                        url += params[i];
+                        url += "=";
+                        isValid = true;
+                    } else {
+                        if (!url.endsWith("/")) {
+                            url += "/";
+                        }
+                        isValid = true;
+                    }
+
+                    if (isValid) {
+                        for (String key : rowKeys) {
+                            url += getValue(rows, primaryKeyColumnName, key, columns[i]) + ";";
+                        }
+                        url = url.substring(0, url.length() - 1);
+                    }
                 }
-                url = url.substring(0, url.length() - 1);
             }
         }
-
+        
         result.setUrl(url);
 
         return result;
