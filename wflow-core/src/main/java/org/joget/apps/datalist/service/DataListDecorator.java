@@ -199,7 +199,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                             } else {
                                 link += "?";
                             }
-                            link += params[i];
+                            link += StringEscapeUtils.escapeHtml(params[i]);
                             link += "=";
                             isValid = true;
                         } if (!link.contains("?")) {
@@ -212,7 +212,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                         if (isValid) {
                             Object paramValue =evaluate(columns[i]);
                             if (paramValue == null) {
-                                paramValue = columns[i];
+                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
                             }
                             try {
                                 link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
