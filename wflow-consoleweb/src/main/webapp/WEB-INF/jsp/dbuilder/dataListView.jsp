@@ -96,7 +96,7 @@
                         <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
-                                <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
+                                <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
                             </c:if>
                             <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                         </c:if>
@@ -154,7 +154,7 @@
                         <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                             <c:set var="buttonConfirmation" value="" />
                             <c:if test="${!empty action.confirmation}">
-                                <c:set var="buttonConfirmation" value=" onclick=\"return confirm('${action.confirmation}')\""/>
+                                <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
                             </c:if>
                             <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                         </c:if>
@@ -199,6 +199,15 @@ t.printStackTrace(new java.io.PrintWriter(out));
             $(table).find("input[type=checkbox]").attr("checked", "checked");
         } else {
             $(table).find("input[type=checkbox]").removeAttr("checked");
+        }
+    }
+    function showConfirm(element, message) {
+        var table = $(element).parent().parent().find('table');
+        if ($(table).find("input[type=checkbox][name|=d]:checked").length > 0) {
+            return confirm(message);
+        } else {
+            alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
+            return false;
         }
     }
 </script>
