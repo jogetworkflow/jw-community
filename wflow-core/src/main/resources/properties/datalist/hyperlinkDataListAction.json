@@ -10,6 +10,7 @@
         label : '@@datalist.hyperlinkdatalistaction.hyperlinkTarget@@',
         name : 'target',
         type : 'selectbox',
+        description : '@@datalist.hyperlinkdatalistaction.hyperlinkTarget.desc@@',
         options : [{
             value : '_self',
             label : '@@datalist.hyperlinkdatalistaction.currentWindow@@'
@@ -17,6 +18,10 @@
         {
             value : '_blank',
             label : '@@datalist.hyperlinkdatalistaction.newWindow@@'
+        },
+        {
+            value : 'popup',
+            label : '@@datalist.hyperlinkdatalistaction.popup@@'
         }]
     },
     {

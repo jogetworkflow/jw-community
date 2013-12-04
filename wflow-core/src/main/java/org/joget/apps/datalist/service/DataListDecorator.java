@@ -224,11 +224,20 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
             }
             
-            if (target != null && target.trim().length() > 0) {
-                targetString = " target=\"" + target + "\"";
-            }
-            if (confirmation != null && confirmation.trim().length() > 0) {
-                confirmationString = " onclick=\"return confirm('" + confirmation + "')\"";
+            if (target != null && "popup".equalsIgnoreCase(target)) {
+                if (confirmation == null) {
+                    confirmation = "";
+                }
+                StringUtil.stripAllHtmlTag(confirmation);
+                targetString = "onclick=\"return dlPopupAction(this, '" + confirmation + "')\"";
+            } else {
+                if (target != null && target.trim().length() > 0) {
+                    targetString = " target=\"" + target + "\"";
+                }
+                if (confirmation != null && confirmation.trim().length() > 0) {
+                    StringUtil.stripAllHtmlTag(confirmation);
+                    confirmationString = " onclick=\"return confirm('" + confirmation + "')\"";
+                }
             }
             link = "<a href=\"" + link + "\"" + targetString + confirmationString + ">" + text + "</a>";
         }

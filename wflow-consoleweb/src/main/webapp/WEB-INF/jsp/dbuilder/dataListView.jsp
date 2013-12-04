@@ -177,6 +177,8 @@ t.printStackTrace(new java.io.PrintWriter(out));
 </div>
 
 <script>
+    var popupActionDialog = null;
+    
     DataListUtil = {
         submitForm: function(form) {
             var params = $(form).serialize();
@@ -200,6 +202,22 @@ t.printStackTrace(new java.io.PrintWriter(out));
         } else {
             $(table).find("input[type=checkbox]").removeAttr("checked");
         }
+    }
+    function dlPopupAction(element, message) {
+        var url = $(element).attr("href");
+        var showPopup = true;
+        if (message != "") {
+            showPopup = confirm(message);
+        }
+        if (showPopup) {
+            if (popupActionDialog == null) {
+                popupActionDialog = new PopupDialog(url);
+            } else {
+                popupActionDialog.src = url;
+            }
+            popupActionDialog.init();
+        }
+        return false;
     }
     function showConfirm(element, message) {
         var table = $(element).parent().parent().find('table');
