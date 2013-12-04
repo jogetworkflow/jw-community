@@ -20,6 +20,10 @@ public abstract class FormValidator extends ExtDefaultPlugin implements Property
     public void setElement(Element element) {
         this.element = element;
     }
+    
+    public String getElementDecoration(Element element, FormData formData) {
+        return getElementDecoration();
+    }
 
     /**
      * Return the HTML decoration for the attached element, e.g. marking a required field.

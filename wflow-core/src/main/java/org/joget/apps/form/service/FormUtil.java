@@ -906,7 +906,7 @@ public class FormUtil implements ApplicationContextAware {
         String decoration = "";
         FormValidator validator = element.getValidator();
         if (validator != null) {
-            decoration = validator.getElementDecoration();
+            decoration = validator.getElementDecoration(element, formData);
             if (decoration == null) {
                 decoration = "";
             }
