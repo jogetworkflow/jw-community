@@ -102,7 +102,8 @@
                                                 <dd>
                                                     <c:choose>
                                                         <c:when test="${participantMap[participantUid].type eq 'user' || participantMap[participantUid].type eq 'group'}">
-                                                            <c:forEach var="participantValue" items="${fn:split(participantMap[participantUid].value, ',')}" varStatus="status">
+                                                            <c:set var="participantValues" value="${fn:replace(participantMap[participantUid].value, ';', ',')}"/>
+                                                            <c:forEach var="participantValue" items="${fn:split(participantValues, ',')}" varStatus="status">
                                                                 <span class="participant-remove">
                                                                     <c:set var="participantDisplayName" value=""/>
                                                                     <c:if test="${!(status.last && status.index eq 0)}">

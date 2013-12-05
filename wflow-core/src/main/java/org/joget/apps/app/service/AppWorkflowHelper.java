@@ -121,6 +121,11 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
                 
             if (participant != null) {
+                //support semi colon separated value 
+                if (participant.getValue() != null) {
+                    participant.setValue(participant.getValue().replace(";", ","));
+                }
+                
                 if (PackageParticipant.TYPE_USER.equals(participant.getType())) {
                     resultList = getParticipantsByUsers(participant);
                 } else if (PackageParticipant.TYPE_GROUP.equals(participant.getType())) {
@@ -394,6 +399,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         for (WorkflowVariable va : varList) {
             if (va.getName() != null && va.getName().equals(variableName)) {
                 String variableValue = (String) va.getVal();
+                variableValue = variableValue.replace(",", ";");
 
                 StringTokenizer valueST = new StringTokenizer(variableValue, ";");
                 Collection<User> users = new ArrayList<User>();
