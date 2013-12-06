@@ -14,7 +14,7 @@ import org.joget.workflow.shark.DeadlineChecker;
 
 public class DeadlineThreadManager {
 
-    public static final long INTERVAL_MINIMUM = 1000; // 1 second
+    public static final long INTERVAL_MINIMUM = 10000; // 10 seconds
     private static Map<String, DeadlineChecker> threadMap = Collections.synchronizedMap(new HashMap<String, DeadlineChecker>());
 
     public static void initThreads(WorkflowManager workflowManager) {
@@ -43,7 +43,12 @@ public class DeadlineThreadManager {
 
     public static void startThread(long interval) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
-        if (interval >= INTERVAL_MINIMUM) {
+        if (interval <= 0) {
+            stopThread(profile);
+        } else {
+            if (interval < INTERVAL_MINIMUM) {
+                interval = INTERVAL_MINIMUM;
+            }
             DeadlineChecker thread = getThread(profile);
             if (thread == null) {
                 thread = new DeadlineChecker(profile,
@@ -61,8 +66,6 @@ public class DeadlineThreadManager {
                     thread.startChecker();
                 }
             }
-        } else {
-            stopThread(profile);
         }
     }
 
