@@ -121,10 +121,6 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
                 
             if (participant != null) {
-                //support semi colon separated value 
-                if (participant.getValue() != null) {
-                    participant.setValue(participant.getValue().replace(";", ","));
-                }
                 
                 if (PackageParticipant.TYPE_USER.equals(participant.getType())) {
                     resultList = getParticipantsByUsers(participant);
@@ -169,13 +165,15 @@ public class AppWorkflowHelper implements WorkflowHelper {
      */
     protected List<String> getParticipantsByUsers(PackageParticipant participant) {
         List<String> resultList = new ArrayList<String>();
-        ApplicationContext appContext = AppUtil.getApplicationContext();
-        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-        String[] users = participant.getValue().split(",");
-        for (String userId : users) {
-            User user = directoryManager.getUserById(userId);
-            if (user != null && user.getActive() == User.ACTIVE) {
-                resultList.add(user.getUsername());
+        if (participant != null && participant.getValue() != null) {
+            ApplicationContext appContext = AppUtil.getApplicationContext();
+            DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+            String[] users = participant.getValue().replaceAll(";", ",").split(",");
+            for (String userId : users) {
+                User user = directoryManager.getUserById(userId);
+                if (user != null && user.getActive() == User.ACTIVE) {
+                    resultList.add(user.getUsername());
+                }
             }
         }
         return resultList;
@@ -188,14 +186,16 @@ public class AppWorkflowHelper implements WorkflowHelper {
      */
     protected List<String> getParticipantsByGroups(PackageParticipant participant) {
         List<String> resultList = new ArrayList<String>();
-        ApplicationContext appContext = AppUtil.getApplicationContext();
-        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-        String[] groups = participant.getValue().split(",");
-        for (String groupId : groups) {
-            Collection<User> users = directoryManager.getUserByGroupId(groupId);
-            for (User user : users) {
-                if (user != null && user.getActive() == User.ACTIVE) {
-                    resultList.add(user.getUsername());
+        if (participant != null && participant.getValue() != null) {
+            ApplicationContext appContext = AppUtil.getApplicationContext();
+            DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+            String[] groups = participant.getValue().replaceAll(";", ",").split(",");
+            for (String groupId : groups) {
+                Collection<User> users = directoryManager.getUserByGroupId(groupId);
+                for (User user : users) {
+                    if (user != null && user.getActive() == User.ACTIVE) {
+                        resultList.add(user.getUsername());
+                    }
                 }
             }
         }
@@ -386,7 +386,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         String variableType = null;
         String variableStr = participant.getValue();
         if (variableStr != null) {
-            StringTokenizer st = new StringTokenizer(variableStr, ",");
+            StringTokenizer st = new StringTokenizer(variableStr.replaceAll(";", ","), ",");
             if (st.hasMoreTokens()) {
                 variableName = st.nextToken();
             }

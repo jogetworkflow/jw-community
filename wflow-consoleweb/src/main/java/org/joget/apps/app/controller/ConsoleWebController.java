@@ -2130,28 +2130,30 @@ public class ConsoleWebController {
                 participant.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(oldJson, pluginProperties));
             }
         } else if ((PackageParticipant.TYPE_GROUP.equals(type) || PackageParticipant.TYPE_USER.equals(type)) && packageDef != null) {
+            //Using Set to prevent duplicate value
+            Set values = new HashSet();
+            StringTokenizer valueToken = new StringTokenizer(value, ",");
+            while (valueToken.hasMoreTokens()) {
+                values.add((String) valueToken.nextElement());
+            }
+            
             PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
-            if (participantExisting != null) {
-                //Using Set to prevent duplicate value
-                Set values = new HashSet();
-                StringTokenizer valueToken = new StringTokenizer(value, ",");
-                StringTokenizer existingValueToken = (type.equals(participantExisting.getType())) ? new StringTokenizer(participantExisting.getValue(), ",") : null;
-                while (valueToken.hasMoreTokens()) {
-                    values.add((String) valueToken.nextElement());
-                }
+            if (participantExisting != null && participantExisting.getValue() != null) {
+                
+                StringTokenizer existingValueToken = (type.equals(participantExisting.getType())) ? new StringTokenizer(participantExisting.getValue().replaceAll(";", ","), ",") : null;
                 while (existingValueToken != null && existingValueToken.hasMoreTokens()) {
                     values.add((String) existingValueToken.nextElement());
                 }
+            }
 
-                //Convert Set to String
-                value = "";
-                Iterator i = values.iterator();
-                while (i.hasNext()) {
-                    value += i.next().toString() + ',';
-                }
-                if (value.length() > 0) {
-                    value = value.substring(0, value.length() - 1);
-                }
+            //Convert Set to String
+            value = "";
+            Iterator i = values.iterator();
+            while (i.hasNext()) {
+                value += i.next().toString() + ',';
+            }
+            if (value.length() > 0) {
+                value = value.substring(0, value.length() - 1);
             }
         }
         participant.setType(type);
@@ -2253,10 +2255,10 @@ public class ConsoleWebController {
 
         if ((PackageParticipant.TYPE_USER.equals(type) || PackageParticipant.TYPE_GROUP.equals(type)) && value != null) {
             PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
-            if (participantExisting != null) {
+            if (participantExisting != null && participantExisting.getValue() != null) {
                 //Using Set to prevent duplicate value
                 Set values = new HashSet();
-                StringTokenizer existingValueToken = new StringTokenizer(participantExisting.getValue(), ",");
+                StringTokenizer existingValueToken = new StringTokenizer(participantExisting.getValue().replaceAll(";", ","), ",");
                 while (existingValueToken.hasMoreTokens()) {
                     String temp = (String) existingValueToken.nextElement();
                     if (!temp.equals(value)) {
