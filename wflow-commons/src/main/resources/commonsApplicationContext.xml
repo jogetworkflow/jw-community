@@ -54,11 +54,12 @@
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8" />
         <property name="username" value="root" />
         <property name="password" value="" />
-        <property name="minEvictableIdleTimeMillis" value="1800000" />
-        <property name="timeBetweenEvictionRunsMillis" value="900000" />
+        <property name="minEvictableIdleTimeMillis" value="10000" />
+        <property name="timeBetweenEvictionRunsMillis" value="10000" />
         <property name="numTestsPerEvictionRun" value="-1" />
         <property name="minIdle" value="1" />
         <property name="maxActive" value="-1" />
+        <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
     </bean>
 <!--
