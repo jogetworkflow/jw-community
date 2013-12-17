@@ -29,9 +29,9 @@
                         content +=  '<div class="column">\
                                         <div class="appdiv">\
                                         <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
-                                            <div class="screenshot_label">' + uv.name + '</div>\
+                                            <div class="screenshot_label">' + UI.escapeHTML(uv.name) + '</div>\
                                             <img src="${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
-                                        </a><h3>' + app.name + '</h3></div>\
+                                        </a><h3>' + UI.escapeHTML(app.name) + '</h3></div>\
                                     </div>';
                     }
                 }
