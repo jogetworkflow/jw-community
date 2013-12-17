@@ -1832,9 +1832,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
                     try {
                         limit = Double.parseDouble((String) procAttributeList[0].getValue());
-                    } catch (Exception e) {
-                        LogUtil.info(WorkflowManagerImpl.class.getName(), "Ignore invalid process limit - " + processInstanceId);
-                    }
+                    } catch (Exception e) {}
                 }
             }
 
@@ -2061,9 +2059,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 if (actAttributeList[0].getValue() != null && !actAttributeList[0].getValue().equals("")) {
                     try {
                         limit = Double.parseDouble((String) actAttributeList[0].getValue());
-                    } catch (Exception e) {
-                        LogUtil.info(WorkflowManagerImpl.class.getName(), "Ignore invalid activity limit - " + activityInstanceId);
-                    }
+                    } catch (Exception e) {}
                 }
             }
 
