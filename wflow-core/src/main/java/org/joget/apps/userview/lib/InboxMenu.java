@@ -523,6 +523,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             } catch (Exception ex) {
                 LogUtil.error(this.getClass().getName(), ex, "Get Run Process's options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 

@@ -126,6 +126,8 @@ public class UserPermission extends UserviewPermission implements PluginWebSuppo
             } catch (Exception ex) {
                 LogUtil.error(this.getClass().getName(), ex, "Get Users options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

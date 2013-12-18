@@ -97,6 +97,8 @@ public class OrganizationPermission extends UserviewPermission implements Plugin
             } catch (Exception ex) {
                 LogUtil.error(this.getClass().getName(), ex, "Get Organization options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

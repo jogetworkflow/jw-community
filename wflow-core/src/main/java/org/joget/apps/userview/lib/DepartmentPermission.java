@@ -124,6 +124,8 @@ public class DepartmentPermission extends UserviewPermission implements PluginWe
             } catch (Exception ex) {
                 LogUtil.error(this.getClass().getName(), ex, "Get departments options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

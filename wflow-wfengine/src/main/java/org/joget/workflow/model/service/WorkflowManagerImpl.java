@@ -1830,7 +1830,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
 
                 if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
-                    limit = Double.parseDouble((String) procAttributeList[0].getValue());
+                    try {
+                        limit = Double.parseDouble((String) procAttributeList[0].getValue());
+                    } catch (Exception e) {}
                 }
             }
 
@@ -2055,7 +2057,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
             double limit = -1;
             if (actAttributeList != null) {
                 if (actAttributeList[0].getValue() != null && !actAttributeList[0].getValue().equals("")) {
-                    limit = Double.parseDouble((String) actAttributeList[0].getValue());
+                    try {
+                        limit = Double.parseDouble((String) actAttributeList[0].getValue());
+                    } catch (Exception e) {}
                 }
             }
 

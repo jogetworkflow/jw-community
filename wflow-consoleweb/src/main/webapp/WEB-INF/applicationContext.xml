@@ -31,7 +31,7 @@
         <!-- Open JSON APIs: permissions controlled within assignment ownership, userview permission and process whitelist -->
         <security:intercept-url pattern="/web/json/directory/user/sso" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/workflow/currentUsername" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
-        <security:intercept-url pattern="/web/json/workflow/process/start" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/workflow/process/start/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/workflow/assignment/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/apps/published/userviews" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
         <security:intercept-url pattern="/web/json/apps/published/processes" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>

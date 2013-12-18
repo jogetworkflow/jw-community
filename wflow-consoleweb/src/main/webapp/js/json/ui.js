@@ -6,8 +6,7 @@ UI = {
       if (c == null || c == undefined) {
           return '';
       } else {
-          var span = $('<span>' + c + '</span>');
-          span.find("script").remove();
+          var span = $('<span></span>').text(c);
           return span.html();
       }
    },

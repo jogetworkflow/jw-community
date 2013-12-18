@@ -64,6 +64,8 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
             content = getHome();
         } else if ("welcome".equals(spot)) {
             content = getWelcome();
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
             
         // output content

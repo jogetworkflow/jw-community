@@ -1,24 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
-<%@page contentType="text/html" pageEncoding="utf-8"%>
 
-<%
-    String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-    pageContext.setAttribute("rightToLeft", rightToLeft);
-%>
-
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
+<commons:popupHeader /> 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css?build=<fmt:message key="build.number"/>" />
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
-        <script src="${pageContext.request.contextPath}/js/json/util.js"></script>      
-            
+        
         <c:set var="json" value="${fn:replace(json, '\\\\', '\\\\\\\\')}"/>
         <c:set var="json" value="${fn:replace(json, '\"', '\\\\\"')}"/>
         <script>
@@ -84,16 +69,9 @@
         </script>
         <style>
             .exportlinks { display: none }
-            body{font-size:13px;}
-            <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-                body{direction:rtl;}
-            </c:if>
         </style>
-    </head>
-    <body>
         <div id="listGridPopup">
             <c:set scope="request" var="dataListId" value="${dataList.id}"/>
             <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
         </div>
-    </body>
-</html>    
+<commons:popupFooter /> 

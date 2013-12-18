@@ -283,6 +283,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             } catch (Exception ex) {
                 LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Get activity options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

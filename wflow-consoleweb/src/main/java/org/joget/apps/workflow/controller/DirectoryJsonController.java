@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
@@ -621,9 +622,20 @@ public class DirectoryJsonController {
     }
 
     @RequestMapping("/json/directory/user/sso")
-    public void singleSignOn(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "hash", required = false) String hash) throws JSONException, IOException, ServletException {
-
-        if (username != null && !username.isEmpty()) {
+    public void singleSignOn(Writer writer, HttpServletRequest httpRequest, HttpServletResponse httpResponse, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, @RequestParam(value = "hash", required = false) String hash) throws JSONException, IOException, ServletException {
+        boolean loginWithFilter = false;
+        
+        //WorkflowHttpAuthProcessingFilter
+        if (httpRequest.getParameter("j_username") != null && (httpRequest.getParameter("j_password") != null || hash != null)) {
+            loginWithFilter = true;
+        }
+        
+        String header = httpRequest.getHeader("Authorization");
+        if ((header != null) && header.startsWith("Basic ")) {
+            loginWithFilter = true;
+        }
+        
+        if (username != null && !username.isEmpty() && !loginWithFilter) {
             try {
                 if (password == null) {
                     password = hash;
@@ -633,7 +645,6 @@ public class DirectoryJsonController {
                 SecurityContextHolder.getContext().setAuthentication(result);
 
                 // generate new session to avoid session fixation vulnerability
-                HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
                 HttpSession session = httpRequest.getSession(false);
                 if (session != null) {
                     SavedRequest savedRequest = (SavedRequest) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
@@ -659,9 +670,15 @@ public class DirectoryJsonController {
                 }
             }
         }
+        
+        if (WorkflowUtil.isCurrentUserAnonymous()) {
+            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("username", WorkflowUtil.getCurrentUsername());
+      
         boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
         if (isAdmin) {
             jsonObject.accumulate("isAdmin", "true");

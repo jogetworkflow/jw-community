@@ -1,7 +1,7 @@
 package org.joget.apps.app.web;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.Filter;
@@ -13,7 +13,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import org.apache.commons.io.output.CountingOutputStream;
 import org.joget.commons.util.LogUtil;
 import org.json.JSONObject;
 import org.springframework.beans.TypeMismatchException;
@@ -49,11 +48,18 @@ public class JsonResponseFilter implements Filter {
         
         private void buildJsonBody(int sc, String msg) {
             if (sc >= 400) {
+                // replace error 500 with generic message
+                if (sc == 500) {
+                    msg = "System error, please refer to log files";
+                }
                 try {
+                    setContentType("application/json; charset=utf-8");
+                    
                     JSONObject jsonObject = new JSONObject();
                     Map error = new HashMap();
                     error.put("code", Integer.toString(sc));
                     error.put("message", msg);
+                    error.put("date", new Date());
                     jsonObject.accumulate("error", error);
 
                     jsonObject.write(getWriter());
@@ -80,7 +86,13 @@ public class JsonResponseFilter implements Filter {
             
             StatusCodeCaptureWrapper wrappedResponse = new StatusCodeCaptureWrapper(httpResponse);
             
-            wrappedResponse.setContentType("application/json; charset=utf-8");
+            String callback = httpRequest.getParameter("callback");
+            
+            if (callback != null && !callback.isEmpty()) {
+                wrappedResponse.setContentType("application/javascript; charset=utf-8");
+            } else {
+                wrappedResponse.setContentType("application/json; charset=utf-8");
+            }
             
             Throwable throwable = null;
             Integer status = null;

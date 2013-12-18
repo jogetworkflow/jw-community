@@ -206,4 +206,11 @@ public interface UserSecurity {
      * @return 
      */
     public void requestPostProcessing();
+    
+    /**
+     * Check whether data is exist for a user.
+     * @param 
+     * @return 
+     */
+    public boolean isDataExist(String username);
 }

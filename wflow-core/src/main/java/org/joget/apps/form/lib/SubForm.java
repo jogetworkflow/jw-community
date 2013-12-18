@@ -25,7 +25,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getName() {
-        return "Sub Form";
+        return "Subform";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getDescription() {
-        return "Sub Form Element";
+        return "Subform Element";
     }
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
@@ -69,12 +69,12 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<div class='subform-container'><span class='subform-title'>SubForm</span></div>";
+        return "<div class='subform-container'><span class='subform-title'>Subform</span></div>";
     }
 
     @Override
     public String getLabel() {
-        return "Sub Form";
+        return "Subform";
     }
 
     @Override
@@ -137,6 +137,8 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
             }
             output += "]";
             response.getWriter().write(output);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

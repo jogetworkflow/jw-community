@@ -135,6 +135,8 @@ public class GroupPermission extends UserviewPermission implements PluginWebSupp
             } catch (Exception ex) {
                 LogUtil.error(this.getClass().getName(), ex, "Get Groups options Error!");
             }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
     }
 }

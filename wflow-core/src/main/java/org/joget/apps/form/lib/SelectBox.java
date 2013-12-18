@@ -18,7 +18,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "SelectBox";
+        return "Select Box";
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getDescription() {
-        return "SelectBox Element";
+        return "Select Box Element";
     }
 
     /**
@@ -106,12 +106,12 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>SelectBox</label><select><option>Option</option></select>";
+        return "<label class='label'>Select Box</label><select><option>Option</option></select>";
     }
 
     @Override
     public String getLabel() {
-        return "SelectBox";
+        return "Select Box";
     }
 
     @Override

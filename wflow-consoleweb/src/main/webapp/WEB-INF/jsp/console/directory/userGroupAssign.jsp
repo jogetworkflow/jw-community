@@ -11,7 +11,7 @@
             <form>
             <fmt:message key="console.directory.group.filter.label.byOrganization"/>
             <select id="JsonDataTable_filterbyOrg" onchange="filter(JsonDataTable, '&orgId=', this.options[this.selectedIndex].value)">
-                <option></option>
+                <option value=""><fmt:message key="console.directory.group.empty.option.label"/></option>
             <c:forEach items="${organizations}" var="o">
                 <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
                 <option value="<c:out value="${o.id}"/>" ${selected}><c:out value="${o.name}"/></option>

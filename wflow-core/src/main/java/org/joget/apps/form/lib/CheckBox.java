@@ -16,7 +16,7 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getName() {
-        return "CheckBox";
+        return "Check Box";
     }
 
     @Override
@@ -26,7 +26,7 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getDescription() {
-        return "CheckBox Element";
+        return "Check Box Element";
     }
 
     @Override
@@ -84,12 +84,12 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderTemplate() {
-        return "<label class='label'>CheckBox</label><label><input type='checkbox' value='Option' style='color:silver' />Option</label>";
+        return "<label class='label'>Check Box</label><label><input type='checkbox' value='Option' style='color:silver' />Option</label>";
     }
 
     @Override
     public String getLabel() {
-        return "CheckBox";
+        return "Check Box";
     }
 
     @Override

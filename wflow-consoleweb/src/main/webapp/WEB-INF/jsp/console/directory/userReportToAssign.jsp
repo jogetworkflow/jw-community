@@ -11,7 +11,7 @@
             <form>
             <fmt:message key="console.directory.employment.filter.label.byDepartment"/>
             <select id="JsonDataTable_filterbyDept" onchange="filter(JsonDataTable, '&deptId=', this.options[this.selectedIndex].value)">
-                <option></option>
+                <option value=""><fmt:message key="console.directory.dept.empty.option.label"/></option>
             <c:forEach items="${departments}" var="d">
                 <c:set var="selected"><c:if test="${d.id == param.deptId}"> selected</c:if></c:set>
                 <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
@@ -20,7 +20,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;
             <fmt:message key="console.directory.employment.filter.label.byGrade"/>
             <select id="JsonDataTable_filterbyGrade" onchange="filter(JsonDataTable, '&gradeId=', this.options[this.selectedIndex].value)">
-                <option></option>
+                <option value=""><fmt:message key="console.directory.grade.empty.option.label"/></option>
             <c:forEach items="${grades}" var="g">
                 <c:set var="selected"><c:if test="${g.id == param.gradeId}"> selected</c:if></c:set>
                 <option value="<c:out value="${g.id}"/>" ${selected}><c:out value="${g.name}"/></option>

@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.comparator.NameFileComparator;
@@ -865,7 +866,7 @@ public class ConsoleWebController {
             
             if ("create".equals(action)) {
                 // check username exist
-                if (userDao.getUser(user.getUsername()) != null) {
+                if (directoryManager.getUserByUsername(user.getUsername()) != null || (us != null && us.isDataExist(user.getUsername()))) {
                     errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.usernameExists"));
                 }
                 
@@ -1145,8 +1146,14 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/profile")
-    public String profile(ModelMap map) {
+    public String profile(ModelMap map, HttpServletResponse response) throws IOException{
         User user = userDao.getUser(workflowUserManager.getCurrentUsername());
+        
+        if (user == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         map.addAttribute("user", user);
         map.addAttribute("timezones", TimeZoneUtil.getList());
 
@@ -1182,33 +1189,49 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/profile/submit", method = RequestMethod.POST)
-    public String profileSubmit(ModelMap model, @ModelAttribute("user") User user, BindingResult result) {
+    public String profileSubmit(ModelMap model, HttpServletRequest request, HttpServletResponse response, @ModelAttribute("user") User user, BindingResult result) throws IOException {
         User currentUser = userDao.getUser(workflowUserManager.getCurrentUsername());
+        
+        if (currentUser == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         Collection<String> errors = new ArrayList<String>();
         Collection<String> passwordErrors = new ArrayList<String>();
         
         boolean authenticated = false;
-        try {
-            if (directoryManager.authenticate(user.getUsername(), user.getOldPassword())) {
-                authenticated = true;
+        
+        if (!currentUser.getUsername().equals(user.getUsername())) {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
             }
-        } catch (Exception e) { }
+        } else {
+            try {
+                if (directoryManager.authenticate(currentUser.getUsername(), user.getOldPassword())) {
+                    authenticated = true;
+                }
+            } catch (Exception e) {
+            }
+        }
+        
         
         UserSecurity us = DirectoryUtil.getUserSecurity();
 
-        if (us != null) {
-            errors = us.validateUserOnProfileUpdate(user);
-        }
-        
         if (!authenticated) {
             if (errors == null) {
                 errors = new ArrayList<String>();
             }
             errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.authenticationFailed"));
-        }
-        
-        if (user.getPassword() != null && !user.getPassword().isEmpty() && us != null) {
-            passwordErrors = us.validatePassword(user.getUsername(), user.getOldPassword(), user.getPassword(), user.getConfirmPassword());   
+        } else {
+            if (us != null) {
+                errors = us.validateUserOnProfileUpdate(user);
+            }
+
+            if (user.getPassword() != null && !user.getPassword().isEmpty() && us != null) {
+                passwordErrors = us.validatePassword(user.getUsername(), user.getOldPassword(), user.getPassword(), user.getConfirmPassword());   
+            }
         }
 
         if (!authenticated || (passwordErrors != null && !passwordErrors.isEmpty()) || (errors != null && !errors.isEmpty())) {
@@ -1491,8 +1514,13 @@ public class ConsoleWebController {
     }
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/package/xpdl", "/json/console/app/(*:appId)/(~:version)/package/xpdl"})
-    public void getPackageXpdl(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
+    public void getPackageXpdl(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
         PackageDefinition packageDef = appDef.getPackageDefinition();
         if (packageDef != null) {
             byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
@@ -1527,6 +1555,7 @@ public class ConsoleWebController {
                 }
             }
         }
+        response.setContentType("application/xml; charset=utf-8");
     }
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/package/deploy", method = RequestMethod.POST)

@@ -31,6 +31,10 @@
                     $("#main-body-content").css("height", wh + "px");
                 }
             });
+            <c:if test="${!empty param.__a_}">
+                UI.userview_app_id = '<c:out value="${param.__a_}"/>';
+                UI.userview_id = '<c:out value="${param.__u_}"/>';
+            </c:if>
         </script>
     </head>
     <body class="popupBody">

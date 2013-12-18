@@ -121,8 +121,9 @@ public class AppWebController {
                         }
                     }
                 }
+                model.addAttribute("formUrl", formUrl);
                 // redirect to start URL
-                return "redirect:" + formUrl;
+                return "client/app/processStartRedirect";
             } else {
                 // empty start page
                 return "client/app/processStart";
