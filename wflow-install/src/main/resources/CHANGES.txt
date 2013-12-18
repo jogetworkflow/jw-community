@@ -1,3 +1,22 @@
+3.1.3
+=====
+1164    Fixed: wflow-wfengine - get Process/ Activity info - Exception when invalid number format used in limit. @3.1-SNAPSHOT
+1155    Modified: wflow-commons, wflow-consoleweb - Tuned connection pool timeout settings @3.1-SNAPSHOT
+1154    Modified: wflow-wfengine - Updated minimum deadline checker interval to 10 seconds @3.1-SNAPSHOT
+1153    Modified: wflow-consoleweb - Hide profile in web console footer @3.1-SNAPSHOT
+1130    Fixed: wflow-cosoleweb/wflow-commons/wflow-core - User Notification - Nested user hash variable is not working. #1710 @3.1-SNAPSHOT
+
+3.1.2
+=====
+1111    Fixed: wflow-consoleweb - Fixed #1707 organization assign users popup not showing correct count @3.1-SNAPSHOT
+1103    Fixed: wflow-consoleweb/wflow-wfengine - Performance issue on deadline checking. @3.1-SNAPSHOT.
+1102    Modified: wflow-designerweb - Updated jnlp jar version as workaround for Java 7u45 Permissions attribute bug @3.1-SNAPSHOT
+1078    Modified: wflow-wfengine/wflow-consoleweb - Improve performance of XPDL image generation. @3.1-SNAPSHOT
+1077    Fixed: wflow-core - FormDataDaoImpl - Memory leak while storing form data. @3.1-SNAPSHOT
+967     Fixed: wflow-commons, wflow-consoleweb - Log viewing possibly allows access to files outside of logs @3.1-SNAPSHOT.
+960     Modified: wflow-consoleweb - Fixed FormDataUpdateTool hitting java.sql.SQLException: Auto-commit #1574 @3.1-SNAPSHOT.
+958     Fixed: wflow-core - Forms cannot be deleted in a protected app. (#1564) @3.1-SNAPSHOT
+
 3.1.1
 =====
 927     Fixed: wflow-consoleweb - Unescaped activity name in process mapping view #1595 @3.1-SNAPSHOT
