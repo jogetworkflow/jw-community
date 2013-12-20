@@ -1,7 +1,5 @@
 package org.joget.apps.form.lib;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
@@ -32,7 +30,6 @@ public class SaveAsDraftButton extends FormButton {
 
     @Override
     public FormData actionPerformed(Form form, FormData formData) {
-        Logger.getLogger(SaveAsDraftButton.class.getName()).log(Level.INFO, " -- SaveAsDraftButton actionPerformed " + FormUtil.getElementParameterName(this));
         FormService formService = (FormService) FormUtil.getApplicationContext().getBean("formService");
         FormData updatedFormData = formService.submitForm(form, formData, true);
         return updatedFormData;

@@ -2,14 +2,13 @@ package org.joget.apps.app.web;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -94,7 +93,7 @@ public class PluginResourceServlet extends HttpServlet {
                 }
 
             } catch (Exception e) {
-                Logger.getLogger(PluginResourceServlet.class.getName()).log(Level.SEVERE, null, e);
+                LogUtil.error(PluginResourceServlet.class.getName(), e, "");
             } finally {
                 if (stream != null) {
                     stream.flush();

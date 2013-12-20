@@ -23,8 +23,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.felix.framework.Felix;
@@ -653,7 +651,7 @@ public class PluginManager implements ApplicationContextAware {
                     }
                 }
             } catch (Exception e) {
-                Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, "Error reading resource " + resourceUrl, e);
+                LogUtil.error(PluginManager.class.getName(), e, "Error reading resource ");
             } finally {
                 try {
                     if (stream != null) {
@@ -664,7 +662,7 @@ public class PluginManager implements ApplicationContextAware {
                         input.close();
                     }
                 } catch (Exception e) {
-                    Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, "Error closing IO", e);
+                    LogUtil.error(PluginManager.class.getName(), e, "Error closing IO");
                 }
             }
         }
@@ -805,7 +803,7 @@ public class PluginManager implements ApplicationContextAware {
             result = processPluginTranslation(result, pluginName, translationPath);
 
         } catch (Exception ex) {
-            Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(PluginManager.class.getName(), ex, "");
             result = ex.toString();
         }
         return result;

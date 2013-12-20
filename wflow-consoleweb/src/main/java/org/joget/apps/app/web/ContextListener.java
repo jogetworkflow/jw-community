@@ -1,9 +1,8 @@
 package org.joget.apps.app.web;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.joget.commons.util.LogUtil;
 
 public class ContextListener implements ServletContextListener {
 
@@ -16,7 +15,7 @@ public class ContextListener implements ServletContextListener {
             cleaner.cleanThreadLocals();
             cleaner.cleanThreads();
         } catch (Exception ex) {
-            Logger.getLogger(ContextListener.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(ContextListener.class.getName(), ex, "");
         }
     }
 }

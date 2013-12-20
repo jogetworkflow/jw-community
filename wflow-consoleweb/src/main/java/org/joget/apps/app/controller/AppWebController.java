@@ -9,8 +9,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -248,7 +246,7 @@ public class AppWebController {
             model.addAttribute("formHtml", formHtml);
             model.addAttribute("formJson", formJson);
         } catch (Exception e) {
-            Logger.getLogger(AppWebController.class.getName()).log(Level.SEVERE, null, e);
+            LogUtil.error(AppWebController.class.getName(), e, "");
         }
 
         return "client/app/assignmentView";

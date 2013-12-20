@@ -5,8 +5,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.joget.commons.util.LogUtil;
 
 public class ThreadCleaner {
 
@@ -31,7 +30,8 @@ public class ThreadCleaner {
                     count += clear(threadLocalsField.get(thread));
                     count += clear(inheritableThreadLocalsField.get(thread));
             }
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "cleaned " + count + " values in ThreadLocals");
+            
+            LogUtil.info(getClass().getName(), "cleaned " + count + " values in ThreadLocals");
         } catch (Exception e) {
             throw new Error("ThreadLocalCleaner.cleanThreadLocals()", e);
         }
@@ -50,7 +50,7 @@ public class ThreadCleaner {
                     // Make sure it's from this web app instance
                     if (t.getClass().getClassLoader() != null && t.getClass().getClassLoader().equals(this.getClass().getClassLoader())) {
                         Runtime.getRuntime().removeShutdownHook(t); // Remove hook to avoid PermGen leak
-                        Logger.getLogger(getClass().getName()).log(Level.INFO, "Cleaning thread " + t);
+                        LogUtil.info(getClass().getName(), "Cleaning thread " + t);
                         count++;
                         t.start(); // Wait up to 1 minute for thread to run
                         t.join(60 * 1000); // Wait up to 1 minute for thread to run
@@ -91,15 +91,14 @@ public class ThreadCleaner {
         if (threadLocal.getClass() != null &&
             threadLocal.getClass().getEnclosingClass() != null &&
             threadLocal.getClass().getEnclosingClass().getName() != null) {
-
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "threadLocalMap(" + i + "): " + threadLocal.getClass().getEnclosingClass().getName());
+            LogUtil.info(getClass().getName(), "threadLocalMap(" + i + "): " + threadLocal.getClass().getEnclosingClass().getName());
         }
         else if (threadLocal.getClass() != null &&
                  threadLocal.getClass().getName() != null) {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "threadLocalMap(" + i + "): " + threadLocal.getClass().getName());
+            LogUtil.info(getClass().getName(), "threadLocalMap(" + i + "): " + threadLocal.getClass().getName());
         }
         else {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "threadLocalMap(" + i + "): cannot identify threadlocal class name");
+            LogUtil.info(getClass().getName(), "threadLocalMap(" + i + "): cannot identify threadlocal class name");
         }
     }
 

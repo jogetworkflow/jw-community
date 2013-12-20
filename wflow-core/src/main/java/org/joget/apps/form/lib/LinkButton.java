@@ -1,11 +1,7 @@
 package org.joget.apps.form.lib;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormBuilderPalette;
-import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
@@ -45,7 +41,6 @@ public class LinkButton extends FormButton {
 
     @Override
     public FormData actionPerformed(Form form, FormData formData) {
-        Logger.getLogger(LinkButton.class.getName()).log(Level.INFO, " -- LinkButton actionPerformed " + FormUtil.getElementParameterName(this));
         return formData;
     }
 

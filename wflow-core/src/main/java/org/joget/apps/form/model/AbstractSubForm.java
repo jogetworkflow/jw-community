@@ -2,8 +2,6 @@ package org.joget.apps.form.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -11,6 +9,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -83,7 +82,7 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 }
                 
             } catch (Exception e) {
-                Logger.getLogger(AbstractSubForm.class.getName()).log(Level.SEVERE, null, e);
+                LogUtil.error(AbstractSubForm.class.getName(), e, null);
             }
         }
 

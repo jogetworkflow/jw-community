@@ -3,8 +3,6 @@ package org.joget.apps.app.lib;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.service.AppService;
@@ -80,7 +78,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
             }
             return result;
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
+            LogUtil.error(getClass().getName(), e, "Error executing report plugin");
             return null;
         }
     }
@@ -189,7 +187,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
                     LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
                 } catch (Exception e) {
-                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing report plugin", e);
+                    LogUtil.error(getClass().getName(), e, "Error executing report plugin");
                 }
             } else {
                 userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);

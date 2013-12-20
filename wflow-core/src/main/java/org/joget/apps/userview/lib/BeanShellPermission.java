@@ -1,11 +1,10 @@
 package org.joget.apps.userview.lib;
 
 import bsh.Interpreter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.commons.util.LogUtil;
 
 public class BeanShellPermission extends UserviewPermission implements FormPermission {
     @Override
@@ -19,11 +18,10 @@ public class BeanShellPermission extends UserviewPermission implements FormPermi
             interpreter.set("user", getCurrentUser());
             interpreter.set("requestParams", getRequestParameters());
             
-            Logger.getLogger(getClass().getName()).log(Level.FINE, "Executing script " + script);
             result = interpreter.eval(script);
             return (Boolean) result;
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing script", e);
+            LogUtil.error(getClass().getName(), e, "Error executing script");
         }
 
         return false;

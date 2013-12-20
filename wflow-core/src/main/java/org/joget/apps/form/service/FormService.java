@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.AbstractSubForm;
@@ -20,6 +18,7 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
@@ -54,12 +53,12 @@ public class FormService {
         try {
             formData = executeFormOptionsBinders(element, formData);
         } catch (Exception ex) {
-            Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error executing form option binders", ex);
+            LogUtil.error(FormService.class.getName(), ex, "Error executing form option binders");
         }
         try {
             html = generateElementDesignerHtml(element, formData, includeMetaData);
         } catch (Exception ex) {
-            Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error generating element html", ex);
+            LogUtil.error(FormService.class.getName(), ex, "Error generating element html");
         }
         return html;
     }
@@ -93,7 +92,7 @@ public class FormService {
             Element element = FormUtil.parseElementFromJson(processedJson);
             return element;
         } catch (Exception ex) {
-            Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(FormService.class.getName(), ex, null);
             throw new RuntimeException(ex);
         }
     }
@@ -142,7 +141,7 @@ public class FormService {
         try {
             json = FormUtil.generateElementJson(element);
         } catch (Exception ex) {
-            Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error generating JSON for element", ex);
+            LogUtil.error(FormService.class.getName(), ex, "Error generating JSON for element");
         }
         return json;
     }
@@ -428,7 +427,7 @@ public class FormService {
                 } catch (Exception e) {
                     String formId = FormUtil.getElementParameterName(form);
                     formData.addFormError(formId, "Error storing data: " + e.getMessage());
-                    Logger.getLogger(FormService.class.getName()).log(Level.SEVERE, "Error executing store binder", e);
+                    LogUtil.error(FormService.class.getName(), e, "Error executing store binder");
                 }
             }
         }

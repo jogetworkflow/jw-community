@@ -5,8 +5,6 @@ import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -375,7 +373,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 setProperty("formHtml", formHtml);
                 setProperty("activityForm", activityForm);
             } catch (Exception e) {
-                Logger.getLogger(RunProcess.class.getName()).log(Level.SEVERE, null, e);
+                LogUtil.error(RunProcess.class.getName(), e, "");
             }
         }
     }
@@ -461,7 +459,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 return;
 
             } catch (Exception e) {
-                Logger.getLogger(RunProcess.class.getName()).log(Level.SEVERE, null, e);
+                LogUtil.error(RunProcess.class.getName(), e, "");
             }
         }
     }

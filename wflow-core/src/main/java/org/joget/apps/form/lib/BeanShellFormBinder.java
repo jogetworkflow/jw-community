@@ -3,8 +3,6 @@ package org.joget.apps.form.lib;
 import bsh.Interpreter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBinder;
@@ -17,6 +15,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormStoreElementBinder;
 import org.joget.apps.form.model.FormStoreMultiRowElementBinder;
+import org.joget.commons.util.LogUtil;
 
 public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormLoadMultiRowElementBinder, FormStoreMultiRowElementBinder {
 
@@ -71,11 +70,11 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
             for (Object key : properties.keySet()) {
                 interpreter.set(key.toString(), properties.get(key));
             }
-            Logger.getLogger(getClass().getName()).log(Level.FINE, "Executing script " + script);
+            LogUtil.debug(getClass().getName(), "Executing script " + script);
             result = interpreter.eval(script);
             return (FormRowSet) result;
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing script", e);
+            LogUtil.error(getClass().getName(), e, "Error executing script");
             return null;
         }
     }

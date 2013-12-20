@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -15,6 +13,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +76,7 @@ public class Grid extends Element implements FormBuilderPaletteElement {
             try {
                 rowSet = parseFormRowSetFromJson(json);
             } catch (Exception ex) {
-                Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
+                LogUtil.error(Grid.class.getName(), ex, "Error parsing grid JSON");
             }
 
             // read from request if available.
@@ -117,7 +116,7 @@ public class Grid extends Element implements FormBuilderPaletteElement {
                             try {
                                 rowSet = parseFormRowSetFromJson(jsonValue);
                             } catch (Exception ex) {
-                                Logger.getLogger(Grid.class.getName()).log(Level.SEVERE, "Error parsing grid JSON", ex);
+                                LogUtil.error(Grid.class.getName(), ex, "Error parsing grid JSON");
                             }
                         }
 

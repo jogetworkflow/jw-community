@@ -4,9 +4,8 @@ import bsh.Interpreter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.model.ParticipantPlugin;
@@ -65,11 +64,11 @@ public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin
             for (Object key : properties.keySet()) {
                 interpreter.set(key.toString(), properties.get(key));
             }
-            Logger.getLogger(getClass().getName()).log(Level.FINE, "Executing script " + script);
+            LogUtil.debug(getClass().getName(), "Executing script " + script);
             result = interpreter.eval(script);
             return result;
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing script", e);
+            LogUtil.error(getClass().getName(), e, "Error executing script");
             return null;
         }
     }

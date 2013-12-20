@@ -2,13 +2,12 @@ package org.joget.apps.datalist.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -47,7 +46,7 @@ public class DataListService {
             String className = id;
             binder = (DataListBinder) pluginManager.getPlugin(className);
         } catch (Exception ex) {
-            Logger.getLogger(DataListService.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(DataListService.class.getName(), ex, "");
         }
         return binder;
     }
@@ -62,7 +61,7 @@ public class DataListService {
         try {
             action = (DataListAction) pluginManager.getPlugin(className);
         } catch (Exception ex) {
-            Logger.getLogger(DataListService.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(DataListService.class.getName(), ex, "");
         }
         return action;
     }

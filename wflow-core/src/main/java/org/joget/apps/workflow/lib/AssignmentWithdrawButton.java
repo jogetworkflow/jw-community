@@ -1,11 +1,8 @@
 package org.joget.apps.workflow.lib;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.service.FormUtil;
 
 /**
  * Form button to withdraw a workflow assignment
@@ -31,7 +28,6 @@ public class AssignmentWithdrawButton extends FormButton {
 
     @Override
     public FormData actionPerformed(Form form, FormData formData) {
-        Logger.getLogger(AssignmentWithdrawButton.class.getName()).log(Level.INFO, " -- AssignmentWithdrawButton actionPerformed " + FormUtil.getElementParameterName(this));
         formData.addFormResult(DEFAULT_ID, "true");
         return formData;
     }

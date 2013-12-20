@@ -2,8 +2,6 @@ package org.joget.apps.datalist.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.joget.apps.app.service.AppUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +12,7 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterType;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -85,7 +84,7 @@ public class JsonUtil {
             
             return object;
         } catch (Exception ex) {
-            Logger.getLogger(JsonUtil.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(JsonUtil.class.getName(), ex, "");
         }
         return null;
     }
@@ -245,7 +244,7 @@ public class JsonUtil {
                 }
             }
         } catch (Exception e) {
-            Logger.getLogger(JsonUtil.class.getName()).log(Level.WARNING, "Invalid action for {0}", obj);
+            LogUtil.warn(JsonUtil.class.getName(), "Invalid action for " + obj.toString());
         }
         return null;
     }
@@ -264,7 +263,7 @@ public class JsonUtil {
                 }
             }
         } catch (Exception e) {
-            Logger.getLogger(JsonUtil.class.getName()).log(Level.WARNING, "Invalid formater for {0}", obj);
+            LogUtil.warn(JsonUtil.class.getName(), "Invalid formater for " + obj.toString());
         }
         return null;
     }

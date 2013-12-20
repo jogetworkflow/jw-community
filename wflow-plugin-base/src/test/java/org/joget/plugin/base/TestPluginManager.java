@@ -6,8 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,14 +50,14 @@ public class TestPluginManager {
                 pluginManager.upload(file.getName(), in);
             }
         } catch (Exception ex) {
-            Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(PluginManager.class.getName(), ex, "");
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(PluginManager.class.getName()).log(Level.SEVERE, null, ex);
+                LogUtil.error(PluginManager.class.getName(), ex, "");
             }
         }
     }

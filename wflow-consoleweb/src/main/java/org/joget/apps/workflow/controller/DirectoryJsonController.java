@@ -116,6 +116,10 @@ public class DirectoryJsonController {
 
         Collection<Department> departments = null;
 
+        if ("".equals(orgId)) {
+            orgId = null;
+        }
+
         departments = getDirectoryManager().getDepartmentsByOrganizationId(name, orgId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();

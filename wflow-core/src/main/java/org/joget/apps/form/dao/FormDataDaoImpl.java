@@ -1,6 +1,5 @@
 package org.joget.apps.form.dao;
 
-import java.util.logging.Level;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import org.hibernate.SessionFactory;
@@ -662,7 +660,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             HibernateTemplate template = templateCache.get(entityName);
             if (template != null) {
                 ht = template;
-                Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template found in cache", entityName);
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form "+entityName+" hibernate template found in cache");
 
                 // lookup existing PersistentClass from cache
                 Map<String, PersistentClass> persistentClassCache = getPersistentClassCache();
@@ -672,7 +670,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     // get existing mapping file
                     File mappingFile = new File(path, filename);
                     if (mappingFile.exists()) {
-                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} loaded form mapping file {1}", new Object[]{entityName, mappingFile.getName()});
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form "+entityName+" loaded form mapping file " + mappingFile.getName());
                         Configuration configuration = new Configuration().configure();
                         configuration.addFile(mappingFile);
                         pc = configuration.getClassMapping(entityName);
@@ -730,12 +728,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     } 
 
                     if (changes) {
-                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} changes detected", entityName);
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form "+entityName+" changes detected");
 
                         // properties changed, close session factory
                         SessionFactory sf = ht.getSessionFactory();
                         sf.close();
-                        Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} existing session factory closed", entityName);
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form "+entityName+" existing session factory closed");
 
                         // delete existing mapping file
                         File mappingFile = new File(path, filename);
@@ -757,7 +755,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (ht == null) {
                 // no existing or outdated template found, create new one
                 ht = createHibernateTemplate(entityName, tableName, rowSet, actionType);
-                Logger.getLogger(FormDataDaoImpl.class.getName()).log(Level.FINE, "  --- Form {0} hibernate template created", entityName);
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form "+entityName+" hibernate template created");
 
                 // save into cache
                 templateCache.put(entityName, ht);

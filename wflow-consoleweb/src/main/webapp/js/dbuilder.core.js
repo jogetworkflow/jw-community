@@ -373,7 +373,7 @@ DatalistBuilder = {
             url: DatalistBuilder.contextPath + '/web/dbuilder/getFilterTemplate',
             dataType : "text",
             success: function(response) {
-                var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + UI.escapeHTML(response) + '</div></li>');
+                var newElement = $('<li class="databuilderFilter column" id="' + id + '"><div class="content">' + response + '</div></li>');
 
                 var current =  $('#databuilderContentFilters #' + id);
                 $(current).replaceWith(newElement);
@@ -417,7 +417,7 @@ DatalistBuilder = {
         if(rowAction.properties.label != undefined){
             label = rowAction.properties.label;
         }
-        label = $("<span></span>").text(UI.escapeHTML(label)).html();
+        label = $("<span></span>").text(label).html();
 
         var string = '<li class="databuilderRowAction column" id="' + columnId + '"><div class="databuilderItemTitle">' + label + '</div>';
         string += '<div class="databuilderItemContent">';

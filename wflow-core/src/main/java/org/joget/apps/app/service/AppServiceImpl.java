@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -970,7 +968,7 @@ public class AppServiceImpl implements AppService {
                 form = (Form) formService.loadFormFromJson(formJson, formData);
             }
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
+            LogUtil.error(getClass().getName(), e, e.getMessage());
         }
         return form;
     }
@@ -1103,7 +1101,7 @@ public class AppServiceImpl implements AppService {
                 if (row != null) {
                     results.add(row);
                 }
-                Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Loaded form data row [{0}] for form [{1}] from table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
+                LogUtil.debug(getClass().getName(), "  -- Loaded form data row [" + primaryKeyValue + "] for form [" + form.getProperty(FormUtil.PROPERTY_ID) + "] from table [" + form.getProperty(FormUtil.PROPERTY_TABLE_NAME) + "]");
             }
         }
         return results;
@@ -1186,8 +1184,8 @@ public class AppServiceImpl implements AppService {
             
             // save data
             formDataDao.saveOrUpdate(form, results);
-            Logger.getLogger(getClass().getName()).log(Level.FINE, "  -- Saved form data row [{0}] for form [{1}] into table [{2}]", new Object[]{primaryKeyValue, form.getProperty(FormUtil.PROPERTY_ID), form.getProperty(FormUtil.PROPERTY_TABLE_NAME)});
-
+            LogUtil.debug(getClass().getName(), "  -- Saved form data row [" + primaryKeyValue + "] for form [" + form.getProperty(FormUtil.PROPERTY_ID) + "] from table [" + form.getProperty(FormUtil.PROPERTY_TABLE_NAME) + "]");
+            
             FileUtil.storeFileFromFormRowSet(results, form, primaryKeyValue);
         }
         return results;

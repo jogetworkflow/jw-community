@@ -6,12 +6,11 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSourceFactory;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
@@ -74,7 +73,7 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
 
             return result;
         } catch (Exception e) {
-            Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error executing plugin", e);
+            LogUtil.error(getClass().getName(), e, "Error executing plugin");
             return null;
         }
     }

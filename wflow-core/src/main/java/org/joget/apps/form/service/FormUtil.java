@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
@@ -38,6 +36,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -428,7 +427,7 @@ public class FormUtil implements ApplicationContextAware {
                                 currentRow.putAll(elementRow);
                             }
                         } catch (JSONException ex) {
-                            Logger.getLogger(FormUtil.class.getName()).log(Level.SEVERE, null, ex);
+                            LogUtil.error(FormUtil.class.getName(), ex, "");
                         }
                     } else {
                         // multiple row result, append all to rowset
@@ -937,7 +936,7 @@ public class FormUtil implements ApplicationContextAware {
             JSONObject jsonObject = generatePropertyJsonObject(properties);
             json = jsonObject.toString();
         } catch (Exception ex) {
-            Logger.getLogger(FormUtil.class.getName()).log(Level.SEVERE, null, ex);
+            LogUtil.error(FormUtil.class.getName(), ex, "");
         }
         return json;
     }
