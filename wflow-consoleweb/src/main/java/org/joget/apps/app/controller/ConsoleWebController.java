@@ -2954,7 +2954,7 @@ public class ConsoleWebController {
         url += "?param_id=" + plugin.getClass().getName();
 
         map.addAttribute("plugin", plugin);
-        map.addAttribute("skipValidation", true);
+        map.addAttribute("skipValidation", false);
         map.addAttribute("actionUrl", url);
 
         return "console/plugin/pluginConfig";
