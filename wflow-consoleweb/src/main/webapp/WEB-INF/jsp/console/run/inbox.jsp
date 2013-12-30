@@ -49,7 +49,7 @@
                           column3="{key: 'processVersion', label: 'console.app.process.common.label.version', sortable: false, hide:true}"
                           column4="{key: 'dateCreated', label: 'console.app.assignment.common.label.dateCreated', sortable: true, width: '130'}"
                           column5="{key: 'processId', label: 'console.app.process.common.label.id', sortable: true, hide:true}"
-                          column6="{key: 'serviceLevelMonitor', label: 'console.app.assignment.common.label.serviceLevelMonitor', sortable: true, width: '100'}"
+                          column6="{key: 'serviceLevelMonitor', label: 'console.app.assignment.common.label.serviceLevelMonitor', sortable: true, relaxed: true, width: '100'}"
                           column7="{key: 'due', label: 'console.app.assignment.common.label.dueDate', sortable: true, width: '128'}"
                           />
             

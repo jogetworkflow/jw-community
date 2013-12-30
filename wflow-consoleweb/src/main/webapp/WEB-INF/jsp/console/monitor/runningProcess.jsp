@@ -73,7 +73,7 @@
                        column1="{key: 'id', label: 'console.app.activity.common.label.id', sortable: true}"
                        column2="{key: 'name', label: 'console.app.activity.common.label.name', sortable: true}"
                        column3="{key: 'state', label: 'console.app.activity.common.label.state', sortable: false}"
-                       column4="{key: 'serviceLevelMonitor', label: 'console.app.activity.common.label.serviceLevelMonitor', sortable: false}"
+                       column4="{key: 'serviceLevelMonitor', label: 'console.app.activity.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
                        />
     </div>
 </div>

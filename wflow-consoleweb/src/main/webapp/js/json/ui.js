@@ -371,7 +371,10 @@ JsonTable.prototype = {
                     }else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
                         row[prop]='<input type="radio" id="' + thisObject.divToUpdate +'_radio_' + i + '" name="' + thisObject.divToUpdate + '_radio" onclick="' + thisObject.divToUpdate + '_toggleRadioButton(\'' + thisObject.divToUpdate + '_radio_' + i + '\')">';
                     }else {
-                        row[prop]= UI.escapeHTML(row[prop]);
+                        var relaxed = this.colModel[j].relaxed;
+                        if (!relaxed) {
+                            row[prop]= UI.escapeHTML(row[prop]);
+                        }
                     }
                     cell.push(row[prop]);
                 }

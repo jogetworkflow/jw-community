@@ -35,7 +35,7 @@
                    checkboxCallback5="deleteVersion"
                    fields="['version','published','dateCreated','dateModified']"
                    column1="{key: 'version', label: 'console.app.common.label.version', sortable: true}"
-                   column2="{key: 'published', label: 'console.app.common.label.published', sortable: true}"
+                   column2="{key: 'published', label: 'console.app.common.label.published', sortable: true, relaxed: true}"
                    column3="{key: 'dateCreated', label: 'console.app.common.label.dateCreated', sortable: true}"
                    column4="{key: 'dateModified', label: 'console.app.common.label.dateModified', sortable: true}"
                    />

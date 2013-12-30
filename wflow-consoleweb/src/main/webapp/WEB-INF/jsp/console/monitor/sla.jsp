@@ -40,7 +40,7 @@
                        desc="false"
                        fields="['activityName', 'minDelay', 'maxDelay','ratioWithDelay','ratioOnTime','serviceLevelMonitor']"
                        column1="{key: 'activityName', label: 'console.monitoring.sla.label.activity', sortable: false}"
-                       column2="{key: 'serviceLevelMonitor', label: 'console.monitoring.sla.label.serviceLevelMonitor', sortable: false}"
+                       column2="{key: 'serviceLevelMonitor', label: 'console.monitoring.sla.label.serviceLevelMonitor', sortable: false, relaxed: true}"
                        column3="{key: 'ratioWithDelay', label: 'console.monitoring.sla.label.ratioWithDelay', sortable: false}"
                        column4="{key: 'ratioOnTime', label: 'console.monitoring.sla.label.ratioOnTime', sortable: false}"
                        column5="{key: 'minDelay', label: 'console.monitoring.sla.label.minDelay', sortable: false}"

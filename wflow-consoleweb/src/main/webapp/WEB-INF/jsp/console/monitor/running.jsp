@@ -57,7 +57,7 @@
                        column5="{key: 'version', label: 'console.app.process.common.label.version', sortable: false}"
                        column6="{key: 'state', label: 'console.app.process.common.label.state', sortable: false}"
                        column7="{key: 'due', label: 'console.app.process.common.label.dueDate', sortable: false}"
-                       column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false}"
+                       column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
                        />
     </div>
 </div>
