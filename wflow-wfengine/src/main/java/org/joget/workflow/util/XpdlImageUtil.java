@@ -26,10 +26,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -46,12 +42,12 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.task.TaskExecutor;
 
 public class XpdlImageUtil {
     
@@ -59,10 +55,6 @@ public class XpdlImageUtil {
     public static final String IMAGE_EXTENSION = ".jpg";
     public static final String THUMBNAIL_PREFIX = "thumb-";
     public static final int THUMBNAIL_SIZE = 400;
-    
-    private static Map<String, XpdlImageThread> threads = Collections.synchronizedMap(new HashMap<String, XpdlImageThread>());
-    private static Map<String, Stack<String>> imageQueue = Collections.synchronizedMap(new HashMap<String,Stack<String>>());
-    private static Map<String, String> designerwebBaseUrls = Collections.synchronizedMap(new HashMap<String, String>());
 
     public static String getXpdlImagePath(String processDefId) {
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
@@ -95,38 +87,10 @@ public class XpdlImageUtil {
     }
 
     public static void generateXpdlImage(final String designerwebBaseUrl, final String processDefId, boolean asynchronous) {
-        //generateXpdlImageWithThread(designerwebBaseUrl, processDefId, asynchronous);
-        generateXpdlImageWithQueue(designerwebBaseUrl, processDefId);
-    }
-    
-    public static void generateXpdlImageWithQueue(String designerwebBaseUrl, String processDefId) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         
-        designerwebBaseUrls.put(profile, designerwebBaseUrl);
-        
-        Stack<String> queue = getQueue(profile);
-        
-        if (!queue.contains(processDefId)) {
-            queue.push(processDefId);
-        }
-        
-        runThread(profile);
-    }
-    
-    public static void generateXpdlImageWithThread(final String designerwebBaseUrl, final String processDefId, boolean asynchronous) {
-        final String profile = DynamicDataSourceManager.getCurrentProfile();
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                HostManager.setCurrentProfile(profile);
-                createXpdlImage(designerwebBaseUrl, processDefId);
-            }
-        });
-        if (asynchronous) {
-            thread.start();
-        }
-        else {
-            thread.run();
-        }
+        TaskExecutor executor = (TaskExecutor) WorkflowUtil.getApplicationContext().getBean("xpdlImageExecutor");
+        executor.execute(new XpdlImageTask(profile, designerwebBaseUrl, processDefId));
     }
 
     public static void createXpdlImage(String designerwebBaseUrl, String processDefId) {
@@ -245,52 +209,6 @@ public class XpdlImageUtil {
             } catch (Exception ex) {
                 LogUtil.error(XpdlImageUtil.class.getName(), ex, "");
             }
-        }
-    }
-    
-    public static void generateXpdlImageFromQueue() {
-        String profile = DynamicDataSourceManager.getCurrentProfile();
-        
-        Stack<String> queue = getQueue(profile);
-        
-        if (!queue.empty()) {
-            String processDefId = queue.pop();
-            
-            LogUtil.info(XpdlImageUtil.class.getName(), "generating xpdl image [processDefId=" + processDefId + "]");
-            
-            String designerwebBaseUrl = designerwebBaseUrls.get(profile);
-            
-            createXpdlImage(designerwebBaseUrl, processDefId);
-            
-            generateXpdlImageFromQueue();
-        }
-    }
-    
-    protected static Stack<String> getQueue(String profile) {
-        Stack<String> queue = (Stack<String>) imageQueue.get(profile);
-        
-        if (queue == null) {
-            queue = new Stack<String>();
-            imageQueue.put(profile, queue);
-        }
-        return queue;
-    }
-    
-    protected static void runThread(String profile) {
-        XpdlImageThread thread = (XpdlImageThread) threads.get(profile);
-        
-        if (thread == null) {
-            thread = new XpdlImageThread(profile);
-            thread.start();
-            threads.put(profile, thread);
-        }
-    }
-    
-    protected static void removeThread(String profile) {
-        XpdlImageThread thread = (XpdlImageThread) threads.get(profile);
-        
-        if (thread != null) {
-            threads.remove(profile);
         }
     }
     

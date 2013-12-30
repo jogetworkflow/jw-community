@@ -54,4 +54,8 @@
         <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
     </bean>
 
+    <bean id="xpdlImageExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="maxPoolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    </bean>
 </beans>
