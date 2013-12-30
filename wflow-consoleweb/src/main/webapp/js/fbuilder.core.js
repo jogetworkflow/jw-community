@@ -586,7 +586,6 @@ FormBuilder = {
                 url: FormBuilder.contextPath + FormBuilder.elementPreviewUrl,
                 dataType : "text",
                 success: function(response) {
-                    response = UI.escapeHTML(response);
                     var newElement = $(response);
 
                     //locate main element
