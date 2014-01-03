@@ -209,7 +209,7 @@
         $("#published-apps").hide();
         $("#search form").remove();
         searchFilter($("#search"), $("#marketplace-apps")); 
-        loadApps("#marketplace-apps", "http://marketplace.cloud.joget.com", "/jwlabs");
+        loadApps("#marketplace-apps", "http://marketplace.cloud.joget.com", "/jw4");
     }
     $(function () { 
         loadPublishedApps();
