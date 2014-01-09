@@ -49,22 +49,25 @@ public class FormPdfUtil {
     
     public static byte[] createPdf(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
-            html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
+            ITextRenderer r = getRenderer();
+            synchronized (r) {
+                html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
             
-            final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setValidating(false);
-            DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-            builder.setEntityResolver(FSEntityResolver.instance());
-            org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(html.getBytes("UTF-8")));
+                final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                documentBuilderFactory.setValidating(false);
+                DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+                builder.setEntityResolver(FSEntityResolver.instance());
+                org.w3c.dom.Document xmlDoc = builder.parse(new ByteArrayInputStream(html.getBytes("UTF-8")));
 
-            getRenderer().setDocument(xmlDoc, null);
+                r.setDocument(xmlDoc, null);
 
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-            getRenderer().layout();
-            getRenderer().createPDF(os);
-            byte[] output = os.toByteArray();
-            os.close();
-            return output;
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                r.layout();
+                r.createPDF(os);
+                byte[] output = os.toByteArray();
+                os.close();
+                return output;
+            }
         } catch (Exception e) {
             LogUtil.error(FormPdfUtil.class.getName(), e, "");
         }
