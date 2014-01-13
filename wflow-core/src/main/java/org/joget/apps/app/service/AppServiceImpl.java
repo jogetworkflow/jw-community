@@ -879,7 +879,7 @@ public class AppServiceImpl implements AppService {
             appDef = loadAppDefinition(appId, version);
 
             // verify packageId
-            if (appDef != null && !packageId.equals(appDef.getAppId())) {
+            if (appDef != null && !packageId.equalsIgnoreCase(appDef.getAppId())) {
                 throw new UnsupportedOperationException("Package ID does not match App ID");
             }
         } else {
@@ -888,6 +888,12 @@ public class AppServiceImpl implements AppService {
 
         if (appDef != null || createNewApp) {
             Long originalVersion = null;
+            
+            //to fix package id letter case issue
+            if (appDef != null && !packageId.equals(appDef.getAppId())) {
+                packageXpdl = StringUtil.searchAndReplaceByteContent(packageXpdl, packageId, appDef.getAppId());
+                packageId = appDef.getAppId();
+            }
 
             // deploy package
             String versionStr = workflowManager.getCurrentPackageVersion(packageId);
@@ -1375,16 +1381,18 @@ public class AppServiceImpl implements AppService {
             overridePluginDefault = true;
         }
         
-        AppDefinition orgAppDef = null;
-        if (!overrideEnvVariable || !overridePluginDefault) {
-            orgAppDef = loadAppDefinition(appDef.getAppId(), null);
+        //fix app id letter case issue during import
+        AppDefinition orgAppDef = loadAppDefinition(appDef.getAppId(), null);
+        String appId = appDef.getAppId();
+        if (orgAppDef != null) {
+            appId = orgAppDef.getAppId();
         }
 
         LogUtil.debug(getClass().getName(), "Importing app " + appDef.getId());        
         AppDefinition newAppDef = new AppDefinition();
-        newAppDef.setAppId(appDef.getAppId());
+        newAppDef.setAppId(appId);
         newAppDef.setVersion(appVersion);
-        newAppDef.setId(appDef.getId());
+        newAppDef.setId(appId);
         newAppDef.setName(appDef.getName());
         newAppDef.setPublished(Boolean.FALSE);
         newAppDef.setDateCreated(new Date());

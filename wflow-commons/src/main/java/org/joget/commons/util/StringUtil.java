@@ -289,4 +289,18 @@ public class StringUtil {
 
         return content;
     }
+    
+    public static byte[] searchAndReplaceByteContent(byte[] bytes, String search, String replacement) {
+        if (search != null && replacement != null) {
+            try {
+                String content = new String(bytes);
+
+                content = content.replaceAll(search, replacement);
+                bytes = content.getBytes("UTF-8");
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+        return bytes;
+    }
 }
