@@ -268,13 +268,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             if (employment != null && employment.getDepartment() != null) {
                 Department dept = employment.getDepartment();
                 User hod = directoryManager.getDepartmentHod(dept.getId());
-                while (dept != null && (hod == null || (hod.getUsername() != null && requesterUsername.equals(hod.getUsername())))) {
-                    // no HOD or user is HOD, so look for HOD of parent department
-                    dept = dept.getParent();
-                    if (dept != null) {
-                        hod = directoryManager.getDepartmentHod(dept.getId());
-                    }
-                }
+                
                 if (hod != null) {
                     resultList.add(hod.getUsername());
                 }

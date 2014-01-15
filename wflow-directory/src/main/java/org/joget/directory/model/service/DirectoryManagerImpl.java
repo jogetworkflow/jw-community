@@ -284,6 +284,21 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
 
     public User getDepartmentHod(String departmentId) {
         Department department = getDepartmentDao().getDepartment(departmentId);
+        if (department != null) {
+            User hod = getDepartmentHod(department);
+            while (department != null && hod == null) {
+                // no HOD or user is HOD, so look for HOD of parent department
+                department = department.getParent();
+                if (department != null) {
+                    hod = getDepartmentHod(department);
+                }
+            }
+            return hod;
+        }
+        return null;
+    }
+    
+    protected User getDepartmentHod(Department department) {
         if (department != null && department.getHod() != null) {
             return employmentDao.getEmployment(department.getHod().getId()).getUser();
         }
@@ -306,13 +321,7 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
             } else {
                 Department dept = employment.getDepartment();
                 User hod = getDepartmentHod(dept.getId());
-                while (dept != null && (hod == null || (hod.getUsername() != null && username.equals(hod.getUsername())))) {
-                    // no HOD or user is HOD, so look for HOD of parent department
-                    dept = dept.getParent();
-                    if (dept != null) {
-                        hod = getDepartmentHod(dept.getId());
-                    }
-                }
+                
                 if (hod != null) {
                     userList.add(hod);
                 }
