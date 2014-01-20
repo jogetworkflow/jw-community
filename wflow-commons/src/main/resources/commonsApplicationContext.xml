@@ -103,6 +103,9 @@
 
     <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="setupDao" ref="setupDao"/>
+        <property name="cache">
+            <ref local="setupManagerCache" />
+        </property>
     </bean>
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
@@ -114,4 +117,10 @@
     <bean id="resourceBundleMessageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
+
+    <bean id="setupManagerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
+    </bean>
+
 </beans>

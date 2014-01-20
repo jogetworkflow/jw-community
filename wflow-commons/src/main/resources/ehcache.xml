@@ -41,7 +41,15 @@
             timeToLiveSeconds="120"
             diskPersistent="false"
             diskExpiryThreadIntervalSeconds="120"/>
-            
+
+    <cache name="org.joget.cache.SETUP_CACHE"
+            maxElementsInMemory="100"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="10"
+            timeToLiveSeconds="10"
+            diskPersistent="false"/>
+                
     <cache name="org.joget.cache.RBM_CACHE"
         maxElementsInMemory="50000"
         eternal="true"

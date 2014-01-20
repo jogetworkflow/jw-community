@@ -1,6 +1,8 @@
 package org.joget.commons.spring.model;
 
-public class Setting {
+import java.io.Serializable;
+
+public class Setting implements Serializable {
 
     private String id;
     private String property;

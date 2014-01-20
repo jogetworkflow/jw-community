@@ -3,6 +3,8 @@ package org.joget.commons.util;
 import org.joget.commons.spring.model.Setting;
 import java.io.File;
 import java.util.Collection;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 
 public class SetupManager {
 
@@ -11,7 +13,7 @@ public class SetupManager {
     public static final String MASTER_LOGIN_PASSWORD = "masterLoginPassword";
     public static final String SECURE_VALUE = "****SECURE VALUE*****";
 
-    private static String BASE_DIRECTORY;
+    private static final String BASE_DIRECTORY;
 
     static {
         String baseDirectory = System.getProperty(SYSTEM_PROPERTY_WFLOW_HOME, System.getProperty("user.home") + File.separator + "wflow" + File.separator);
@@ -44,8 +46,41 @@ public class SetupManager {
 
     private SetupDao setupDao;
 
+    private Cache cache;
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+        if (cache != null) {
+            LogUtil.info(getClass().getName(), "Initializing setup cache");
+        }
+    }
+    
+    public void clearCache() {
+        if (cache != null) {
+            synchronized(cache) {
+                cache.removeAll();
+            }
+        }
+    }
+    
+    public void refreshCache() {
+        if (cache != null) {
+            LogUtil.info(getClass().getName(), "Refreshing setup cache");
+            Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
+            synchronized(cache) {
+                cache.removeAll();
+                for (Setting setting: settings) {
+                    String cacheKey = setting.getProperty();
+                    Element element = new Element(cacheKey, setting);
+                    cache.put(element);
+                }
+            }
+        }
+    }
+    
     public void saveSetting(Setting setting) {
         getSetupDao().saveOrUpdate(setting);
+        clearCache();
     }
 
     public Collection<Setting> getSettingList(String propertyFilter, String sort, Boolean desc, Integer start, Integer rows) {
@@ -62,15 +97,32 @@ public class SetupManager {
     }
 
     public Setting getSettingByProperty(String property) {
-        Collection<Setting> result = getSetupDao().find("WHERE property = ?",
-                new String[]{property},
-                null, null, null, null);
-        return (result.isEmpty()) ? null : result.iterator().next();
+        if (cache != null) {
+            Setting setting = null;
+            Element element = null;
+            synchronized(cache) {
+                element = cache.get(property);
+                if (element == null) {
+                    refreshCache();
+                    element = cache.get(property);
+                }
+            }
+            if (element != null) {
+                setting = (Setting)element.getValue();
+            }
+            return setting;
+        } else {
+            Collection<Setting> result = getSetupDao().find("WHERE property = ?",
+                    new String[]{property},
+                    null, null, null, null);
+            return (result.isEmpty()) ? null : result.iterator().next();
+        }
     }
 
-    public String getSettingValue(String property) {
-        Collection<Setting> result = getSetupDao().find("WHERE e.property = ?", new String[]{property}, null, null, null, null);
-        return (result.isEmpty()) ? null : result.iterator().next().getValue();
+    public String getSettingValue(String property) {        
+        Setting setting = getSettingByProperty(property);
+        String value = (setting != null) ? setting.getValue() : null;
+        return value;
     }
 
     public void deleteSetting(String property) {
