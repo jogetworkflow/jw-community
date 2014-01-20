@@ -218,7 +218,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
             reportManager.saveReportWorkflowActivityInstance(aInstance);
 
-            return reportManager.getReportWorkflowActivityInstance(activityInstanceId);
+            return null;
         }
         return null;
     }

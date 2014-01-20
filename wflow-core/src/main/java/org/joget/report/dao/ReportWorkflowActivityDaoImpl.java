@@ -29,7 +29,7 @@ public class ReportWorkflowActivityDaoImpl extends AbstractSpringDao implements 
         params.add(processDefId);
         params.add(activityDefId);
 
-        List<ReportWorkflowActivity> activities = (List<ReportWorkflowActivity>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, null, null);
+        List<ReportWorkflowActivity> activities = (List<ReportWorkflowActivity>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, 0, 1);
 
         if (activities != null && !activities.isEmpty()) {
             return activities.get(0);

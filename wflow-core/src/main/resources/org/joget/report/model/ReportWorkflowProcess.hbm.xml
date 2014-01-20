@@ -8,11 +8,11 @@
         <property name="processDefId" type="string"/>
         <property name="processName" type="string"/>
         <many-to-one column="packageUid" lazy="false" entity-name="ReportWorkflowPackage" name="reportWorkflowPackage"/>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="reportWorkflowProcessInstanceList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="reportWorkflowProcessInstanceList">
             <key column="processUid" not-null="true"/>  
             <one-to-many entity-name="ReportWorkflowProcessInstance"/>
         </bag>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="reportWorkflowActivityList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="reportWorkflowActivityList">
             <key column="processUid" not-null="true"/>  
             <one-to-many entity-name="ReportWorkflowActivity"/>
         </bag>
