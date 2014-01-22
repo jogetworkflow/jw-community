@@ -3,6 +3,8 @@ package org.joget.commons.util;
 import org.joget.commons.spring.model.Setting;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
@@ -58,22 +60,25 @@ public class SetupManager {
     public void clearCache() {
         if (cache != null) {
             synchronized(cache) {
-                cache.removeAll();
+                String profile = DynamicDataSourceManager.getCurrentProfile();
+                cache.remove(profile);
             }
         }
     }
     
     public void refreshCache() {
         if (cache != null) {
-            LogUtil.info(getClass().getName(), "Refreshing setup cache");
-            Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
             synchronized(cache) {
-                cache.removeAll();
+                String profile = DynamicDataSourceManager.getCurrentProfile();
+                LogUtil.debug(getClass().getName(), "Refreshing setup cache for " + profile);
+                cache.remove(profile);
+                Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
+                Map<String, Setting> settingMap = new HashMap<String, Setting>();
                 for (Setting setting: settings) {
-                    String cacheKey = setting.getProperty();
-                    Element element = new Element(cacheKey, setting);
-                    cache.put(element);
+                    settingMap.put(setting.getProperty(), setting);
                 }
+                Element element = new Element(profile, settingMap);
+                cache.put(element);
             }
         }
     }
@@ -99,16 +104,18 @@ public class SetupManager {
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
             Setting setting = null;
-            Element element = null;
             synchronized(cache) {
-                element = cache.get(property);
+                Element element = null;
+                String profile = DynamicDataSourceManager.getCurrentProfile();
+                element = cache.get(profile);
                 if (element == null) {
                     refreshCache();
-                    element = cache.get(property);
+                    element = cache.get(profile);
                 }
-            }
-            if (element != null) {
-                setting = (Setting)element.getValue();
+                if (element != null) {
+                    Map<String, Setting> settingMap = (Map<String, Setting>)element.getValue();
+                    setting = settingMap.get(property);
+                }
             }
             return setting;
         } else {
