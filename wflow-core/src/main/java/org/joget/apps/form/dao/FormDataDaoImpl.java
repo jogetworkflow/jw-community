@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import net.sf.ehcache.Cache;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
@@ -70,7 +71,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     private FormDefinitionDao formDefinitionDao;
     private FormService formService;
     private FormColumnCache formColumnCache;
-
+    private Cache formHibernateTemplateCache;
+    private Document formRowDocument;
+    
     public FormDefinitionDao getFormDefinitionDao() {
         return formDefinitionDao;
     }
@@ -93,6 +96,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setFormColumnCache(FormColumnCache formColumnCache) {
         this.formColumnCache = formColumnCache;
+    }
+
+    public Cache getFormHibernateTemplateCache() {
+        return formHibernateTemplateCache;
+    }
+
+    public void setFormHibernateTemplateCache(Cache formHibernateTemplateCache) {
+        this.formHibernateTemplateCache = formHibernateTemplateCache;
     }
 
     /**
@@ -950,7 +961,32 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     protected HibernateTemplate createHibernateTemplate(String entityName, String tableName, FormRowSet rowSet, int actionType) {
         setCurrentThreadForm(entityName, tableName, rowSet, actionType);
-        HibernateTemplate ht = new HibernateTemplate(loadCustomSessionFactory());
+        HibernateTemplate ht = null;
+        if (formHibernateTemplateCache != null) {
+            synchronized(formHibernateTemplateCache) {
+                String profile = DynamicDataSourceManager.getCurrentProfile();
+                String cacheKey = profile + ";" + entityName + ";" + tableName;
+                if (rowSet != null) {
+                    for (Iterator<FormRow> i=rowSet.iterator(); i.hasNext();) {
+                        FormRow row = i.next();
+                        cacheKey += ";" + row.keySet();
+                        break;
+                    }
+                }
+                net.sf.ehcache.Element element = formHibernateTemplateCache.get(cacheKey);
+                if (element != null) {
+                    ht = (HibernateTemplate)element.getObjectValue();
+                }
+                if (ht == null) {
+                    ht = new HibernateTemplate(loadCustomSessionFactory());
+                    element = new net.sf.ehcache.Element(cacheKey, ht);
+                    formHibernateTemplateCache.put(element);
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " hibernate template created");
+                }
+            }
+        } else {
+            ht = new HibernateTemplate(loadCustomSessionFactory());
+        }
         return ht;
     }
 
@@ -983,7 +1019,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     @Override
     public Configuration customizeConfiguration(Configuration config) throws ParserConfigurationException, SAXException, IOException, TransformerException {
 
-        Configuration configuration = new Configuration().configure();
+        Configuration configuration = new Configuration();
+        configuration.setProperty("show_sql", "false");
+        configuration.setProperty("cglib.use_reflection_optimizer", "true");
         configuration.addClass(FormRow.class);
         PersistentClass pc = configuration.getClassMapping("FormRow");
         Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
@@ -1002,8 +1040,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             mappingFile.delete();
         }
         
-        InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
-        Document document = XMLUtil.loadDocument(is);
+        synchronized(this) {
+            if (formRowDocument == null) {
+                InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
+                formRowDocument = XMLUtil.loadDocument(is);
+            }
+        }
+        Document document = (Document)formRowDocument.cloneNode(true);
 
         // set entity name for form
         FormRowSet rowSet = (FormRowSet) metaData[2];
