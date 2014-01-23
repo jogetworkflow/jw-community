@@ -37,6 +37,22 @@ FormUtil = {
             field = $("[name$=_"+fieldId+"]");
         }
         
-        return $(field).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        //to prevent return field with similar name, get the field with shorter name (Field in the subform)
+        if ($(field).length > 1) {
+            var fieldname;
+            $(field).each(function(){
+                if (fieldname === undefined) {
+                    fieldname = $(this).attr("name");
+                }
+                if ($(this).attr("name").length < fieldname.length) {
+                    fieldname = $(this).attr("name");
+                }
+                field = $("[name="+fieldname+"]");
+            });
+        }
+        
+        field = $(field).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        
+        return field;
     }
 }
