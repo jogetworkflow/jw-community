@@ -46,6 +46,7 @@ import freemarker.template.TemplateModelException;
 import java.io.StringWriter;
 import java.io.Writer;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -60,7 +61,9 @@ public class PluginManager implements ApplicationContextAware {
     private Map<Class, Map<String, Plugin>> pluginCache = new HashMap<Class, Map<String, Plugin>>();
     private Set<String> blackList;
     private Set<String> scanPackageList;
-
+    
+    public final static String ESCAPE_JAVASCRIPT = "javascript";
+    
     public PluginManager() {
         init();
     }
@@ -665,25 +668,32 @@ public class PluginManager implements ApplicationContextAware {
                     LogUtil.error(PluginManager.class.getName(), e, "Error closing IO");
                 }
             }
-        }
-        // set and return output
-        if (stream != null) {
-            output = new String(stream.toByteArray());
+            
+            // set and return output
+            if (stream != null) {
+                output = new String(stream.toByteArray());
 
-            if (arguments != null && arguments.length > 0) {
-                // format arguments
-                output = String.format(output, arguments);
+                if (arguments != null && arguments.length > 0) {
+                    // format arguments
+                    output = String.format(output, arguments);
+                }
+
+                if (removeNewLines) {
+                    // compress by removing new lines
+                    output = output.replace('\n', ' ');
+                    output = output.replace('\r', ' ');
+                    output = output.trim();
+                }
             }
 
-            if (removeNewLines) {
-                // compress by removing new lines
-                output = output.replace('\n', ' ');
-                output = output.replace('\r', ' ');
-                output = output.trim();
-            }
-        }
+            String escapeType = null;
 
-        output = processPluginTranslation(output, pluginName, translationPath);
+            if (resourceUrl.endsWith(".json") || resourceUrl.endsWith(".js")) {
+                escapeType = ESCAPE_JAVASCRIPT;
+            }
+
+            output = processPluginTranslation(output, pluginName, translationPath, escapeType);
+        }
 
         return output;
     }
@@ -712,8 +722,12 @@ public class PluginManager implements ApplicationContextAware {
         }
         return bundle;
     }
-
+    
     public String processPluginTranslation(String content, String pluginName, String translationPath) {
+        return processPluginTranslation(content, pluginName, translationPath, null);
+    }
+
+    public String processPluginTranslation(String content, String pluginName, String translationPath, String escapeType) {
         if (!(content != null && content.indexOf("@@") >= 0)) {
             return content;
         }
@@ -744,6 +758,9 @@ public class PluginManager implements ApplicationContextAware {
                 }
 
                 if (label != null) {
+                    if (ESCAPE_JAVASCRIPT.equals(escapeType)) {
+                        label = StringEscapeUtils.escapeJavaScript(label);
+                    }
                     content = content.replaceAll(StringUtil.escapeRegex(key), StringUtil.escapeRegex(label));
                 }
             }
