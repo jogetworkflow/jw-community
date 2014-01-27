@@ -188,6 +188,9 @@
                                                         <c:when test="${participantMap[participantUid].type eq 'plugin'}">
                                                             ${participantPluginMap[participantMap[participantUid].value].name} (<fmt:message key="console.plugin.label.version"/> ${participantPluginMap[participantMap[participantUid].value].version})
                                                         </c:when>
+                                                        <c:when test="${participantMap[participantUid].type eq 'role'}">
+                                                            <fmt:message key="console.process.config.label.mapParticipants.role.${participantMap[participantUid].value}"/>
+                                                        </c:when>
                                                         <c:otherwise>
                                                             ${participantMap[participantUid].value}
                                                         </c:otherwise>
@@ -202,6 +205,14 @@
                                                         </c:if>
                                                     </div>
                                                 </dd>
+                                            </dl>
+                                        </c:if>
+                                        <c:if test="${empty participantMap[participantUid] && participant.id eq 'processStartWhiteList'}">
+                                            <dl>
+                                                <dt><fmt:message key="console.process.config.label.mapParticipants.type"/></dt>
+                                                <dd><fmt:message key="console.process.config.label.mapParticipants.type.role"/></dd>
+                                                <dt><fmt:message key="console.process.config.label.mapParticipants.value"/></dt>
+                                                <dd><fmt:message key="console.process.config.label.mapParticipants.role.everyone"/></dd>
                                             </dl>
                                         </c:if>
                                     </div>
@@ -501,17 +512,17 @@
                 }
 
                 function addEditForm(activityId, activityName){
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form?activityName=" + escape(activityName) ;
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form?activityName=" + encodeURIComponent(activityName) ;
                     popupDialog.init();
                 }
 
                 function addEditPlugin(activityId, activityName){
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + escape(activityName);
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
                     popupDialog.init();
                 }
 
                 function addEditParticipant(participantId, participantName){
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + escape(participantName);
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + encodeURIComponent(participantName);
                     popupDialog.init();
                 }
 
@@ -531,16 +542,21 @@
 
                 function activityConfigurePlugin(activityId, activityName){
                     var title = " - " + activityName + " (" + activityId + ")";
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + escape(title);
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title);
                     popupDialog.init();
                 }
 
                 function participantRemoveMapping(participantId){
                     var removeItem = {
                         success : function(response) {
-                            $('#participant_'+participantId).html('');
+                            if (participantId === 'processStartWhiteList') {
+                                document.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processIdWithoutVersion}?tab=participantList&participantId=processStartWhiteList';
+                            } else {
+                                $('#participant_'+participantId).html('');
+                            }
                         }
                     }
+                    
                     if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
                         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, '');
                     }
@@ -555,6 +571,7 @@
                             }
                         }
                     }
+                    
                     if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
                         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, 'type='+encodeURIComponent(type)+'&value='+encodeURIComponent(value));
                     }
@@ -562,7 +579,7 @@
 
                 function participantConfigurePlugin(participantId, participantName){
                     var title = " - " + participantName + " (" + participantId + ")";
-                    popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + escape(title);
+                    popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + encodeURIComponent(title);
                     popupDialog.init();
                 }
 

@@ -962,7 +962,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     protected HibernateTemplate createHibernateTemplate(String entityName, String tableName, FormRowSet rowSet, int actionType) {
         setCurrentThreadForm(entityName, tableName, rowSet, actionType);
         HibernateTemplate ht = null;
-        if (formHibernateTemplateCache != null) {
+        if (formHibernateTemplateCache != null && rowSet != null) {
             synchronized(formHibernateTemplateCache) {
                 String profile = DynamicDataSourceManager.getCurrentProfile();
                 String cacheKey = profile + ";" + entityName + ";" + tableName;

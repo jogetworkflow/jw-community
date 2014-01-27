@@ -7,12 +7,39 @@
     <div id="main-body-content" style="text-align: left">
         <div id="userTabView">
             <ul>
-                <li class="selected"><a href="#userGroup"><span><fmt:message key="console.process.config.label.mapParticipants.userGroup"/></span></a></li>
+                <li class="selected">
+                <c:if test="${participantId eq 'processStartWhiteList'}">
+                        <a href="#role"><span><fmt:message key="console.process.config.label.mapParticipants.role"/></span></a></li><li>
+                </c:if>
+                <a href="#userGroup"><span><fmt:message key="console.process.config.label.mapParticipants.userGroup"/></span></a></li>
                 <li><a href="#orgChart"><span><fmt:message key="console.process.config.label.mapParticipants.orgChart"/></span></a></li>
                 <li><a href="#workflowVariableDiv"><span><fmt:message key="console.process.config.label.mapParticipants.variable"/></span></a></li>
                 <li><a href="#plugin"><span><fmt:message key="console.process.config.label.mapParticipants.plugin"/></span></a></li>
             </ul>
             <div>
+                <c:if test="${participantId eq 'processStartWhiteList'}">
+                    <div id="role">
+                        <form name="mapToRoleForm">
+                            <div class="form-row">
+                                <label style="vertical-align: top" for="workflowVariable"><fmt:message key="console.process.config.label.mapParticipants.role.selectARole"/></label>
+                                <span class="form-input">
+                                    <label for="roleAdmin">
+                                        <input id="roleAdmin" type="radio" name="role" value="adminUser" checked="checked"> <fmt:message key="console.process.config.label.mapParticipants.role.adminUser"/>
+                                    </label>
+                                    <label for="roleUser">
+                                        <input id="roleUser" type="radio" name="role" value="loggedInUser"> <fmt:message key="console.process.config.label.mapParticipants.role.loggedInUser"/>
+                                    </label>
+                                    <label for="roleEveryone">
+                                        <input id="roleEveryone" type="radio" name="role" value="everyone"> <fmt:message key="console.process.config.label.mapParticipants.role.everyone"/>
+                                    </label>
+                                </span>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="button" onclick="submitRole()" value="Submit"><fmt:message key="general.method.label.submit"/></button>
+                            </div>
+                        </form>
+                    </div>
+                </c:if>
                 <div id="userGroup">
                     <div id="userGroupTabView">
                         <ul>
@@ -321,6 +348,25 @@
                 post('workflowVariable', params);
             }
         }
+        
+        <c:if test="${participantId eq 'processStartWhiteList'}">
+            function submitRole(){
+                var role = $('input[name=role]:checked').val();
+                if (role === "everyone") {
+                    if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
+                        var callback = {
+                            success : function(response) {
+                                 parent.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=${participantId}';
+                            }
+                        }
+                        var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/remove', callback, null);
+                    }
+                    return false;
+                } else {
+                    post('role', "param_value="+role);
+                }
+            }
+        </c:if>
 
         function submitPlugin(id){
             document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");

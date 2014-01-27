@@ -21,6 +21,10 @@ public class PackageParticipant implements Serializable {
     public static final String TYPE_DEPARTMENT = "department";
     public static final String TYPE_WORKFLOW_VARIABLE = "workflowVariable";
     public static final String TYPE_PLUGIN = "plugin";
+    public static final String TYPE_ROLE = "role";
+    public static final String VALUE_ROLE_ADMIN = "adminUser";
+    public static final String VALUE_ROLE_LOGGED_IN_USER = "loggedInUser";
+    
     private PackageDefinition packageDefinition;
     @Element(required = false)
     private String processDefId;

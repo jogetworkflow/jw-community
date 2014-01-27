@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import org.simpleframework.xml.Element;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.NotBlank;
+import org.springmodules.validation.bean.conf.loader.annotation.handler.RegExp;
 
 /**
  * Abstract class to represent an object that is versioned.
@@ -15,6 +16,7 @@ public class AbstractVersionedObject implements Serializable {
     @Element(required = false)
     private String appId;
     @NotBlank
+    @RegExp(value = "^[0-9a-zA-Z_]+$")
     @Element(required = false)
     private String id;
     @Element(required = false)

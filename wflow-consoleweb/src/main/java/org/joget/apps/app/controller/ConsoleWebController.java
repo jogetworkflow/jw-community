@@ -2927,17 +2927,15 @@ public class ConsoleWebController {
 
         Plugin plugin = pluginManager.getPlugin(id);
 
-        if (!"create".equals(action)) {
-            PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(id, appDef);
-
-            if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-                if (!(plugin instanceof PropertyEditable)) {
-                    Map propertyMap = new HashMap();
-                    propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
-                    map.addAttribute("propertyMap", propertyMap);
-                } else {
-                    map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
-                }
+        PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(id, appDef);
+        
+        if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
+            if (!(plugin instanceof PropertyEditable)) {
+                Map propertyMap = new HashMap();
+                propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
+                map.addAttribute("propertyMap", propertyMap);
+            } else {
+                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
             }
         }
 
@@ -2946,7 +2944,7 @@ public class ConsoleWebController {
         }
 
         String url = request.getContextPath() + "/web/console/app/" + appId + "/" + version + "/pluginDefault/submit/";
-        if ("create".equals(action)) {
+        if (pluginDefaultProperties == null) {
             url += "create";
         } else {
             url += "edit";
@@ -3509,31 +3507,35 @@ public class ConsoleWebController {
     public String consoleSettingDirectoryManagerImplConfig(ModelMap map, @RequestParam("directoryManagerImpl") String directoryManagerImpl, HttpServletRequest request) throws IOException {
         Plugin plugin = pluginManager.getPlugin(directoryManagerImpl);
         
-        String properties = "";
-        if (directoryManagerImpl != null && directoryManagerImpl.equals(DirectoryUtil.getOverriddenDirectoryManagerClassName())) {
-            properties = setupManager.getSettingValue(DirectoryUtil.CUSTOM_IMPL_PROPERTIES);
+        if (plugin != null) {
+            String properties = "";
+            if (directoryManagerImpl != null && directoryManagerImpl.equals(DirectoryUtil.getOverriddenDirectoryManagerClassName())) {
+                properties = setupManager.getSettingValue(DirectoryUtil.CUSTOM_IMPL_PROPERTIES);
+            } else {
+                properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
+            }
+
+            if (!(plugin instanceof PropertyEditable)) {
+                Map propertyMap = new HashMap();
+                propertyMap = CsvUtil.getPluginPropertyMap(properties);
+                map.addAttribute("propertyMap", propertyMap);
+            } else {
+                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+            }
+
+            if (plugin instanceof PropertyEditable) {
+                map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+            }
+
+            map.addAttribute("plugin", plugin);
+
+            String url = request.getContextPath() + "/web/console/setting/directoryManagerImpl/config/submit?id=" + directoryManagerImpl;
+            map.addAttribute("actionUrl", url);
+            
+            return "console/plugin/pluginConfig";
         } else {
-            properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
+            return "error404";
         }
-        
-        if (!(plugin instanceof PropertyEditable)) {
-            Map propertyMap = new HashMap();
-            propertyMap = CsvUtil.getPluginPropertyMap(properties);
-            map.addAttribute("propertyMap", propertyMap);
-        } else {
-            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
-        }
-
-        if (plugin instanceof PropertyEditable) {
-            map.addAttribute("propertyEditable", (PropertyEditable) plugin);
-        }
-
-        map.addAttribute("plugin", plugin);
-
-        String url = request.getContextPath() + "/web/console/setting/directoryManagerImpl/config/submit?id=" + directoryManagerImpl;
-        map.addAttribute("actionUrl", url);
-
-        return "console/plugin/pluginConfig";
     }
 
     @RequestMapping(value = "/console/setting/directoryManagerImpl/config/submit", method = RequestMethod.POST)
@@ -4169,18 +4171,20 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/i18n/(*:name)")
-    public String consoleI18n(ModelMap map, @RequestParam("name") String name) throws IOException {
+    public String consoleI18n(ModelMap map, HttpServletResponse response, @RequestParam("name") String name) throws IOException {
         Properties keys = new Properties();
 
         //get message key from property file
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
         if (inputStream != null) {
             keys.load(inputStream);
+            map.addAttribute("name", name);
+            map.addAttribute("keys", keys.keys());
+            
+            return "console/i18n/lang";
+        } else {
+            return "error404";
         }
-        map.addAttribute("name", name);
-        map.addAttribute("keys", keys.keys());
-
-        return "console/i18n/lang";
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/builder/navigator/(*:builder)/(*:id)")

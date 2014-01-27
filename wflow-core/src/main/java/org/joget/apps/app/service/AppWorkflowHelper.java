@@ -37,13 +37,14 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 @Service("workflowHelper")
 public class AppWorkflowHelper implements WorkflowHelper {
-
+    
     @Override
     public boolean executeTool(WorkflowAssignment assignment) {
         ApplicationContext appContext = AppUtil.getApplicationContext();
@@ -113,37 +114,47 @@ public class AppWorkflowHelper implements WorkflowHelper {
             procDefId = WorkflowUtil.getProcessDefIdWithoutVersion(procDefId);
             Long packageVersion = Long.parseLong(version);
             PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-            PackageParticipant participant = packageDef.getPackageParticipant(procDefId, participantId);
-
-            //Set app definition
+            
             if (packageDef != null) {
-                AppUtil.setCurrentAppDefinition(packageDef.getAppDefinition());
-            }
-                
-            if (participant != null) {
-                
-                if (PackageParticipant.TYPE_USER.equals(participant.getType())) {
-                    resultList = getParticipantsByUsers(participant);
-                } else if (PackageParticipant.TYPE_GROUP.equals(participant.getType())) {
-                    resultList = getParticipantsByGroups(participant);
-                } else if (PackageParticipant.TYPE_REQUESTER.equals(participant.getType())) {
-                    resultList = getParticipantsByRequester(participant, procDefId, procId, requesterUsername);
-                } else if (PackageParticipant.TYPE_REQUESTER_HOD.equals(participant.getType())) {
-                    resultList = getParticipantsByRequesterHod(participant, procDefId, procId, requesterUsername);
-                } else if (PackageParticipant.TYPE_REQUESTER_HOD_IGNORE_REPORT_TO.equals(participant.getType())) {
-                    resultList = getParticipantsByRequesterHodIgnoreReportTo(participant, procDefId, procId, requesterUsername);
-                } else if (PackageParticipant.TYPE_REQUESTER_SUBORDINATES.equals(participant.getType())) {
-                    resultList = getParticipantsByRequesterSubordinates(participant, procDefId, procId, requesterUsername);
-                } else if (PackageParticipant.TYPE_REQUESTER_DEPARTMENT.equals(participant.getType())) {
-                    resultList = getParticipantsByRequesterDepartment(participant, procDefId, procId, requesterUsername);
-                } else if (PackageParticipant.TYPE_DEPARTMENT.equals(participant.getType())) {
-                    resultList = getParticipantsByDepartment(participant);
-                } else if (PackageParticipant.TYPE_HOD.equals(participant.getType())) {
-                    resultList = getParticipantsByHod(participant);
-                } else if (PackageParticipant.TYPE_WORKFLOW_VARIABLE.equals(participant.getType())) {
-                    resultList = getParticipantsByWorkflowVariable(participant, actId);
-                } else if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType())) {
-                    resultList = getParticipantsByPlugin(participant, procDefId, procId, version, actId);
+                PackageParticipant participant = packageDef.getPackageParticipant(procDefId, participantId);
+
+                //Set app definition    
+                AppDefinition appDef = packageDef.getAppDefinition();
+                AppUtil.setCurrentAppDefinition(appDef);
+
+                //if process start white list and app is not publish
+                if (WorkflowUtil.PROCESS_START_WHITE_LIST.equals(participantId) && !appDef.isPublished()) {
+                    resultList = getParticipantsByAdminUser();
+                } else if (WorkflowUtil.PROCESS_START_WHITE_LIST.equals(participantId) && appDef.isPublished() && participant == null) {
+                    resultList = getParticipantsByCurrentUser();
+                } else if (participant != null) {
+                    if (PackageParticipant.TYPE_USER.equals(participant.getType())) {
+                        resultList = getParticipantsByUsers(participant);
+                    } else if (PackageParticipant.TYPE_GROUP.equals(participant.getType())) {
+                        resultList = getParticipantsByGroups(participant);
+                    } else if (PackageParticipant.TYPE_REQUESTER.equals(participant.getType())) {
+                        resultList = getParticipantsByRequester(participant, procDefId, procId, requesterUsername);
+                    } else if (PackageParticipant.TYPE_REQUESTER_HOD.equals(participant.getType())) {
+                        resultList = getParticipantsByRequesterHod(participant, procDefId, procId, requesterUsername);
+                    } else if (PackageParticipant.TYPE_REQUESTER_HOD_IGNORE_REPORT_TO.equals(participant.getType())) {
+                        resultList = getParticipantsByRequesterHodIgnoreReportTo(participant, procDefId, procId, requesterUsername);
+                    } else if (PackageParticipant.TYPE_REQUESTER_SUBORDINATES.equals(participant.getType())) {
+                        resultList = getParticipantsByRequesterSubordinates(participant, procDefId, procId, requesterUsername);
+                    } else if (PackageParticipant.TYPE_REQUESTER_DEPARTMENT.equals(participant.getType())) {
+                        resultList = getParticipantsByRequesterDepartment(participant, procDefId, procId, requesterUsername);
+                    } else if (PackageParticipant.TYPE_DEPARTMENT.equals(participant.getType())) {
+                        resultList = getParticipantsByDepartment(participant);
+                    } else if (PackageParticipant.TYPE_HOD.equals(participant.getType())) {
+                        resultList = getParticipantsByHod(participant);
+                    } else if (PackageParticipant.TYPE_WORKFLOW_VARIABLE.equals(participant.getType())) {
+                        resultList = getParticipantsByWorkflowVariable(participant, actId);
+                    } else if (PackageParticipant.TYPE_PLUGIN.equals(participant.getType())) {
+                        resultList = getParticipantsByPlugin(participant, procDefId, procId, version, actId);
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_LOGGED_IN_USER.equals(participant.getValue())) {
+                        resultList = getParticipantsByLoggedInUser();
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_ADMIN.equals(participant.getValue())) {
+                        resultList = getParticipantsByAdminUser();
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -459,6 +470,43 @@ public class AppWorkflowHelper implements WorkflowHelper {
         } catch (Exception ex) {
             addAuditTrail(WorkflowUtil.class.getName(), "getAssignmentUsers", "Error executing plugin [pluginName=" + participant.getValue() + ", participantId=" + participantId + ", processId=" + processId + ", version=" + version + ", activityId=" + activityId + "]");
             LogUtil.error(WorkflowUtil.class.getName(), ex, "Error executing plugin [pluginName=" + participant.getValue() + ", participantId=" + participantId + ", processDefId=" + processDefId + ", version=" + version + ", activityId=" + activityId + "]");
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on current user (Including anonymous)
+     * @return 
+     */
+    protected List<String> getParticipantsByCurrentUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        resultList.add(workflowUserManager.getCurrentUsername());
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on logged in user
+     * @return 
+     */
+    protected List<String> getParticipantsByLoggedInUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (!workflowUserManager.isCurrentUserAnonymous()) {
+            resultList.add(workflowUserManager.getCurrentUsername());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on admin user
+     * @return 
+     */
+    protected List<String> getParticipantsByAdminUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN)) {
+            resultList.add(workflowUserManager.getCurrentUsername());
         }
         return resultList;
     }

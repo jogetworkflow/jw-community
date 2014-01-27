@@ -922,6 +922,20 @@ public class AppServiceImpl implements AppService {
                 originalVersion = packageDef.getVersion();
                 packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
             }
+            
+            //if package version is 1, set process start white list to admin user
+            if (packageVersion == 1) {
+                Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageVersion.toString());
+                for (WorkflowProcess wp : processList) {
+                    String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
+                    PackageParticipant participant = new PackageParticipant();
+                    participant.setProcessDefId(processIdWithoutVersion);
+                    participant.setParticipantId(WorkflowUtil.PROCESS_START_WHITE_LIST);
+                    participant.setType(PackageParticipant.TYPE_ROLE);
+                    participant.setValue(PackageParticipant.VALUE_ROLE_ADMIN);
+                    packageDefinitionDao.addAppParticipant(appDef.getAppId(), appDef.getVersion(), participant);
+                }
+            }
 
             if (originalVersion != null) {
                 updateRunningProcesses(packageId, originalVersion, packageVersion);
