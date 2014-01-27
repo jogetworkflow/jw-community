@@ -28,21 +28,21 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
     <resources>
         <j2se version="1.5+"/>
         <jar href="wflow-designer-3.1-SNAPSHOT.jar" main="true"/>
-        <jar href="jped.jar" version="2.0"/>
-        <jar href="jped-highlight.jar" version="2.0"/>
-        <jar href="jgraph.jar" version="5.10.2.0"/>
-        <jar href="xercesImpl.jar" version="2.8.1"/>
-        <jar href="xml-apis.jar" version="1.3.04"/>
-        <jar href="itext.jar" version="2.0.6"/>
-        <jar href="jedit-syntax.jar" version="2.2.2"/>
-        <jar href="commons-codec.jar" version="1.2"/>
-        <jar href="commons-discovery.jar" version="0.2"/>
-        <jar href="commons-logging.jar" version="1.0.4"/>
-        <jar href="officelnfs.jar" version="2.7"/>
-        <jar href="xml-apis.jar" version="1.3.04"/>
-        <jar href="log4j.jar" version="1.2.8"/>
-        <jar href="commons-httpclient.jar" version="3.1"/>
-        <jar href="nimrod-laf.jar" version="1.2"/>
+        <jar href="jped-2.0.jar"/>
+        <jar href="jped-highlight-2.0.jar"/>
+        <jar href="jgraph-5.10.2.0.jar"/>
+        <jar href="xercesImpl-2.8.1.jar"/>
+        <jar href="xml-apis-1.3.04.jar"/>
+        <jar href="itext-2.0.6.jar"/>
+        <jar href="jedit-syntax-2.2.2.jar"/>
+        <jar href="commons-codec-1.2.jar"/>
+        <jar href="commons-discovery-0.2.jar"/>
+        <jar href="commons-logging-1.0.4.jar"/>
+        <jar href="officelnfs-2.7.jar"/>
+        <jar href="xml-apis-1.3.04.jar"/>
+        <jar href="log4j-1.2.8.jar"/>
+        <jar href="commons-httpclient-3.1.jar"/>
+        <jar href="nimrod-laf-1.2.jar"/>
     </resources>
     <application-desc main-class="org.joget.designer.Designer">
         <c:if test="${!empty param.file}">
