@@ -3357,6 +3357,10 @@ public class ConsoleWebController {
                 }
             }
             
+            if (HostManager.isVirtualHostEnabled() && ("dataFileBasePath".equals(paramName) || "designerwebBaseUrl".equals(paramName))) {
+                setting.setValue("");
+            }
+            
             setupManager.saveSetting(setting);
         }
 

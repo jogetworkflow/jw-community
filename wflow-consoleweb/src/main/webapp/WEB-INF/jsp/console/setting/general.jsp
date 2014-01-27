@@ -1,6 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="java.io.File,org.joget.commons.util.SetupManager"%>
+<%@ page import="org.joget.commons.util.HostManager"%>
+
+<c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
 <commons:header />
 <style>
@@ -202,6 +205,7 @@
                 </span>
             </div>
             </c:if>
+            <c:if test="${!isVirtualHostEnabled}">
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
@@ -224,6 +228,7 @@
                     </div>
                 </span>
             </div>
+            </c:if>
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
