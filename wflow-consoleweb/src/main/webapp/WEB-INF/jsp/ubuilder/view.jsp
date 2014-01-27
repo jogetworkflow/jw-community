@@ -287,7 +287,7 @@ if (MobileUtil.isMobileUserAgent(request)) {
                                                 <c:choose>
                                                     <c:when test="${!empty firstMenuItem && firstMenuItem.homePageSupported}">
                                                         <c:set var="menuItemId" value="${firstMenuItem.properties.menuId}"/>
-                                                        <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/<c:out value="${key}"/>/${menuItemId}"><span><ui:stripTag html="${category.properties.label}" relaxed="true"/></span></a>
+                                                        <a href="${firstMenuItem.url}"><span><ui:stripTag html="${category.properties.label}" relaxed="true"/></span></a>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span><ui:stripTag html="${category.properties.label}" relaxed="true"/></span>

@@ -28,7 +28,7 @@
         <script type="text/javascript">
             $(document).ready(function () {
 
-                $('.menu-link.default').click(function(){
+                $('.menu-link.default, .category-label a').click(function(){
                     var action = $(this).attr('href');
                     $('#preview').attr('action', action);
                     $('#preview').submit();
@@ -138,7 +138,7 @@
                                                 <c:if test="${empty menuItemId}">
                                                     <c:set var="menuItemId" value="${firstMenuItem.properties.id}"/>
                                                 </c:if>
-                                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}/${key}/${menuItemId}"><span>${category.properties.label}</span></a>
+                                                <a href="${firstMenuItem.url}"><span>${category.properties.label}</span></a>
                                             </c:when>
                                             <c:otherwise>
                                                 <span>${category.properties.label}</span>
