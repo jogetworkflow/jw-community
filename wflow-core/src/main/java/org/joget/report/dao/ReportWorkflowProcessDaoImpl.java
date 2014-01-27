@@ -28,7 +28,7 @@ public class ReportWorkflowProcessDaoImpl extends AbstractSpringDao implements R
         params.add(appVersion);
         params.add(processDefId);
 
-        List<ReportWorkflowProcess> processes = (List<ReportWorkflowProcess>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, null, null);
+        List<ReportWorkflowProcess> processes = (List<ReportWorkflowProcess>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, 0, 1);
 
         if (processes != null && !processes.isEmpty()) {
             return processes.get(0);

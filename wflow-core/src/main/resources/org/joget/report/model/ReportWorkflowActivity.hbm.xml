@@ -8,7 +8,7 @@
         <property name="activityDefId" type="string"/>
         <property name="activityName" type="string"/>
         <many-to-one column="processUid" lazy="false" entity-name="ReportWorkflowProcess" name="reportWorkflowProcess"/>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="reportWorkflowActivityInstanceList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="reportWorkflowActivityInstanceList">
             <key column="activityUid" not-null="true"/>  
             <one-to-many entity-name="ReportWorkflowActivityInstance"/>
         </bag>

@@ -9,7 +9,7 @@
         <property name="packageName" type="string"/>
         <property name="packageVersion" type="string"/>
         <many-to-one column="appUid" lazy="false" entity-name="ReportApp" name="reportApp"/>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="false" name="reportWorkflowProcessList">
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="reportWorkflowProcessList">
             <key column="packageUid" not-null="true"/>  
             <one-to-many entity-name="ReportWorkflowProcess"/>
         </bag>
