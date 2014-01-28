@@ -107,6 +107,8 @@ public class FormPdfUtil {
             html = formService.retrieveFormHtml(form, formData);
         }
 
+        html = AppUtil.processHashVariable(html, assignment, null, null, appDef);
+        
         return html;
     }
     
