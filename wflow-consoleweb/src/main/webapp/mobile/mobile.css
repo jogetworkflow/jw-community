@@ -73,6 +73,16 @@ iframe {
 .ui-mobile ul {
     list-style: none;
 }
+.ui-mobile ul#appList li img {
+    margin: 17px 10px;
+    border: solid 1px #ddd;
+    width: 150px;
+    height: 150px;
+    background: white;
+    border-radius: 50px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+}
 .ui-mobile .ui-html-footer {
     clear: both;
 }

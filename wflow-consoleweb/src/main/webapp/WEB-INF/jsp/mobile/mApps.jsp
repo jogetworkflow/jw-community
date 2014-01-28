@@ -59,6 +59,7 @@
                         <c:forEach items="${userviewDefinitionList}" var="userviewDefinition">
                             <li>
                                 <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}//landing" rel="external">
+                                    <img src="${pageContext.request.contextPath}/web/userview/screenshot/${appDefinition.id}/${userviewDefinition.id}" width="150" border="0" />
                                     <p><b><c:out value="${appDefinition.name}"/></b></p>
                                     <h4><c:out value="${userviewDefinition.name}"/></h4>
                                     <p>
