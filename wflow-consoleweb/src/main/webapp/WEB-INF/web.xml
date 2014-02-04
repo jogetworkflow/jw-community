@@ -23,6 +23,9 @@
         <param-name>log4jExposeWebAppRoot</param-name>
         <param-value>false</param-value>
     </context-param>
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>

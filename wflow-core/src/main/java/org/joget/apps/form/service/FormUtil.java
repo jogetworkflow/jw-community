@@ -699,7 +699,7 @@ public class FormUtil implements ApplicationContextAware {
 
         // read from request if available, TODO: handle null values e.g. no options selected in a checkbox
         String paramValue = FormUtil.getRequestParameter(element, formData);
-        if (paramValue != null) {
+        if (paramValue != null && !FormUtil.isReadonly(element, formData)) {
             value = paramValue;
         } else {
             // load from binder if available
@@ -1165,6 +1165,18 @@ public class FormUtil implements ApplicationContextAware {
                 return true;
             }
         }
+        return false;
+    }
+    
+    /**
+     * Check an element is readonly or not
+     * @param formData
+     */
+    public static boolean isReadonly(Element element, FormData formData) {
+        if ("true".equalsIgnoreCase(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
+            return true;
+        }
+        
         return false;
     }
     
