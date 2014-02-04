@@ -195,7 +195,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
 
-            if ("Yes".equals(getPropertyString("runProcessDirectly")) && !(startFormDef != null && startFormDef.getFormId() != null)) {
+            if ("Yes".equals(getPropertyString("runProcessDirectly")) && !((startFormDef != null && startFormDef.getFormId() != null) || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     setProperty("view", "featureDisabled");
                 } else {
@@ -233,7 +233,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             }
 
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
-            if (startFormDef != null && startFormDef.getForm() != null) {
+            if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 Form startForm = startFormDef.getForm();
 
                 // generate form HTML
@@ -295,7 +295,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             String formUrl = getUrl() + "?_action=start";
             WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
-            if (startFormDef != null && startFormDef.getForm() != null) {
+            if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 if (result == null) {
                     // validation error, get form
                     Form startForm = startFormDef.getForm();
