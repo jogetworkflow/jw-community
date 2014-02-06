@@ -106,6 +106,9 @@
         </session-timeout>
     </session-config>
     -->
+    <session-config>
+        <tracking-mode>COOKIE</tracking-mode>
+    </session-config>
     <welcome-file-list>
         <welcome-file>index.htm</welcome-file>
         <welcome-file>index.html</welcome-file>
