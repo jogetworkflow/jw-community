@@ -104,7 +104,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
         MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
         Locale locale = new Locale(AppUtil.getAppLocale());
         String revision = messageSource.getMessage("console.footer.label.revision", null, "", locale);
-        String footer = "© Joget Workflow - Open Dynamics Inc. All Rights Reserved. " + revision;
+        String footer = "&copy; Joget Workflow - Open Dynamics Inc. All Rights Reserved. " + revision;
         return footer;
     }
     
