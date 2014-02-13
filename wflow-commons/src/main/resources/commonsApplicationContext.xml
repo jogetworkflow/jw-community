@@ -38,9 +38,7 @@
         <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
-    <bean class="org.springframework.transaction.aspectj.AnnotationTransactionAspect" factory-method="aspectOf">
-        <property name="transactionManager" ref="transactionManager" />
-    </bean>
+    <tx:annotation-driven/>
 
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>

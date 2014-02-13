@@ -25,23 +25,6 @@
                     <!--<skipTests>false</skipTests>-->
                 </configuration>
             </plugin>
-            <!-- dummy goal for deployment to glassfish -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cd</executable>
-                </configuration>
-            </plugin>
         </plugins>
         <extensions>
             <extension>
@@ -147,17 +130,17 @@
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-commons</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-directory</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-plugin-base</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.opencsv</groupId>
