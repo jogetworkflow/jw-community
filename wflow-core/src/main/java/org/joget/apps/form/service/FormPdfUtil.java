@@ -40,6 +40,10 @@ public class FormPdfUtil {
     public static byte[] createPdf(String formId, String primaryKey, AppDefinition appDef, WorkflowAssignment assignment, Boolean hideEmpty, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
             String html = getSelectedFormHtml(formId, primaryKey, appDef, assignment, hideEmpty);
+            
+            header = AppUtil.processHashVariable(header, assignment, null, null);
+            footer = AppUtil.processHashVariable(footer, assignment, null, null);
+            
             return createPdf(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
         } catch (Exception e) {
             LogUtil.error(FormPdfUtil.class.getName(), e, "");
