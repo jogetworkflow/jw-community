@@ -278,6 +278,9 @@ public class FormPdfUtil {
         style += ".form-fileupload {float: left;}";
         style += ".form-cell-value, .subform-cell-value {float: left;width: 60%;}";
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
+        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
+        style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
+        style += ".quickEdit{display:none;}";
         
         if (repeatHeader != null && repeatHeader) {
             style += "div.header{display: block;position: running(header);}";
