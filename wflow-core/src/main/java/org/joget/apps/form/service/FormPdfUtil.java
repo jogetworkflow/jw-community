@@ -40,6 +40,10 @@ public class FormPdfUtil {
     public static byte[] createPdf(String formId, String primaryKey, AppDefinition appDef, WorkflowAssignment assignment, Boolean hideEmpty, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
             String html = getSelectedFormHtml(formId, primaryKey, appDef, assignment, hideEmpty);
+            
+            header = AppUtil.processHashVariable(header, assignment, null, null);
+            footer = AppUtil.processHashVariable(footer, assignment, null, null);
+            
             return createPdf(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
         } catch (Exception e) {
             LogUtil.error(FormPdfUtil.class.getName(), e, "");
@@ -106,7 +110,7 @@ public class FormPdfUtil {
         if (form != null) {
             html = formService.retrieveFormHtml(form, formData);
         }
-        
+
         html = AppUtil.processHashVariable(html, assignment, null, null, appDef);
         
         return html;
@@ -278,6 +282,8 @@ public class FormPdfUtil {
         style += ".form-fileupload {float: left;}";
         style += ".form-cell-value, .subform-cell-value {float: left;width: 60%;}";
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
+        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
+        style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
         
         if (repeatHeader != null && repeatHeader) {
             style += "div.header{display: block;position: running(header);}";
