@@ -143,7 +143,7 @@
                 return false;
             }
             Mobile.contextPath = "${pageContext.request.contextPath}";
-            Mobile.updateCache();            
+            Mobile.updateCache();  
         </script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
@@ -171,13 +171,25 @@
                     <c:choose>
                         <c:when test="${isAnonymous}">
                             <a href="${pageContext.request.contextPath}/web/mlogin/${appId}/${userview.properties.id}/<c:out value="${key}"/>" data-icon="gear" data-theme="a"><span id="loginText"><fmt:message key="console.login.label.login"/></span></a>
-                            <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="a" data-direction="reverse"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
-                            <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                            <a href="#" onclick="return Mobile.logout()" data-icon="back" data-theme="a" data-direction="reverse" rel="external"><span id="logoutText"><c:out value="${userview.properties.logoutText}"/></span></a>
                         </c:otherwise>
-                    </c:choose>                            
+                    </c:choose>
+                    <c:choose>
+                        <c:when test="${showDesktopButton ne 'false' && showAllAppsButton eq 'true'}">
+                            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right"> 
+                                <a href="${pageContext.request.contextPath}/web/mobile" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
+                                <a href="#" onclick="return desktopSite()" id="desktop-site" data-role="button" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                            </div>
+                        </c:when>
+                        <c:when test="${showDesktopButton ne 'false'}">
+                            <a href="#" onclick="return desktopSite()" id="desktop-site" data-role="button" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                        </c:when>
+                        <c:when test="${showAllAppsButton eq 'true'}">
+                            <a href="${pageContext.request.contextPath}/web/mobile/apps" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
+                        </c:when>
+                    </c:choose>
                 </c:if>
             </div>
             <div id="logo"></div>

@@ -66,10 +66,7 @@
                             <fmt:message key="ubuilder.loginError" /> <c:out value="${SPRING_SECURITY_LAST_EXCEPTION.message}"/>.
                         </div>
                     </c:if>
-                    <c:set var="loginUrl"><c:url value='/j_spring_security_check'/></c:set>
-                    <c:if test="${!empty redirectUrl}">
-                        <c:set var="loginUrl" value="${loginUrl}?spring-security-redirect=${redirectUrl}"/>
-                    </c:if>
+                    <c:set var="loginUrl"><c:url value='${redirectUrl}'/></c:set>
                     <form id="loginForm" name="loginForm" target="_self" action="${loginUrl}" method="POST">
                         <table align="center">
                             <tr><td><fmt:message key="console.login.label.username" />: </td><td><input type='text' id='j_username' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>

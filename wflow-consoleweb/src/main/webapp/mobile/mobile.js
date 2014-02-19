@@ -181,12 +181,6 @@ var Mobile = {
         }
     },
     
-    hideDesktopSiteButton: function() {
-        if ($.cookie("cordova") == "true") {
-            $("#desktop-site").hide();
-        }
-    },
-    
     showNetworkStatus: function(online) {
         if (online) {
             $("#online-status").html("");
@@ -198,7 +192,21 @@ var Mobile = {
             $("#online-status").css("display", "block");
             $("#online-status").css("background", "red");
         }
-    }    
+    },
+    
+    logout: function() {
+        if ($.cookie("all-apps") == "true") {
+            $.ajax({
+                type: 'POST',
+                url: Mobile.contextPath + "/j_spring_security_logout",
+                success: function(data) {
+                    window.location.href = Mobile.contextPath + "/web/mobile/apps";
+                }
+            });
+        } else {
+            window.location.href = Mobile.contextPath + "/j_spring_security_logout";
+        }
+    }
 };
 
 $(document).bind("mobileinit", function(){
@@ -210,10 +218,9 @@ $(document).bind("mobileinit", function(){
 $("#userview").live("pageshow", function() {
     Mobile.initPage();
     Mobile.checkNetworkStatus();
-    Mobile.hideDesktopSiteButton();
 });
 $(document).on("pagehide", "div[data-role=page]", function(event){
-  $(event.target).remove();
+    $(event.target).remove();
 });
 
 $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
@@ -223,7 +230,4 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
         ) {
         options.isLocal = true;
     }
-});
-$(function() {
-    Mobile.hideDesktopSiteButton();
 });

@@ -29,9 +29,6 @@
             $("#mobileHome").live("pageshow", function() {
                 Mobile.checkNetworkStatus();
             });
-            $.cookie("cordova", "<c:out value="${param.cordova}"/>", {
-                path: "${pageContext.request.contextPath}/web/mobile"
-            });
         </script>
     </head>
 
@@ -43,13 +40,14 @@
                 <c:choose>
                     <c:when test="${isAnonymous}">
                         <a href="${pageContext.request.contextPath}/web/mlogin" data-icon="gear" data-theme="a"><fmt:message key="console.login.label.login"/></a>
-                        <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/j_spring_security_logout" data-icon="back" data-theme="a" data-direction="reverse"><fmt:message key="console.header.top.label.logout"/></a>
-                        <a href="#" onclick="return desktopSite()" id="desktop-site" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                        <a href="#" onclick="return Mobile.logout()"  data-icon="back" data-theme="a" data-direction="reverse" rel="external"><fmt:message key="console.header.top.label.logout"/></a>
                     </c:otherwise>
-                </c:choose>                            
+                </c:choose> 
+                <c:if test="${showDesktopButton ne 'false'}">
+                    <a href="#" onclick="return desktopSite()" id="desktop-site" data-role="button" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
+                </c:if>        
             </div>
             <div id="logo"></div>
             <div data-role="content">

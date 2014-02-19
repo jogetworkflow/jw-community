@@ -3,6 +3,9 @@ package org.joget.apps.app.controller;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -65,6 +68,16 @@ public class MobileUserviewWebController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
+        
+        Map<String, Cookie> cookiesMap = getCookiesMap(request);
+        
+        if (cookiesMap.get("cordova") != null && "true".equals(cookiesMap.get("cordova").getValue())) {
+            map.addAttribute("showDesktopButton", "false");
+        }
+        if (cookiesMap.get("all-apps") != null && "true".equals(cookiesMap.get("all-apps").getValue())) {
+            map.addAttribute("showAllAppsButton", "true");
+        }
+
         map.addAttribute("appId", appId);
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -131,9 +144,63 @@ public class MobileUserviewWebController {
     }
 
     @RequestMapping({"/mobile", "/mobile/", "/mobile/apps"})
-    public String mobileRunApps(ModelMap model) {
+    public String mobileRunApps(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
         // get list of published apps.
         Collection<AppDefinition> resultAppDefinitionList = appService.getPublishedApps(null, true, false);
+        
+        Map<String, Cookie> cookiesMap = getCookiesMap(request);
+        
+        if (request.getParameter("_cordova") != null) {
+            String value = request.getParameter("_cordova");
+            
+            Cookie cookie = cookiesMap.get("cordova");
+            if ("true".equals(value)) {
+                if (cookie == null) {
+                    cookie = new Cookie("cordova", value);
+                } else {
+                    cookie.setValue(value);
+                }
+                cookie.setPath(request.getContextPath());
+                response.addCookie(cookie);
+                
+                model.addAttribute("showDesktopButton", "false");
+            } else if (!"true".equals(value) && cookie != null) {
+                cookie.setValue("");
+                cookie.setPath(request.getContextPath());
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        } else if (cookiesMap.get("cordova") != null && "true".equals(cookiesMap.get("cordova").getValue())) {
+            model.addAttribute("showDesktopButton", "false");
+        }
+        
+        //redirect directly to app when only has one userview
+        if (resultAppDefinitionList.size() == 1 && !WorkflowUtil.isCurrentUserAnonymous()) {
+            AppDefinition appDef = resultAppDefinitionList.iterator().next();
+            if (appDef.getUserviewDefinitionList() != null && appDef.getUserviewDefinitionList().size() == 1) {
+                UserviewDefinition uv = appDef.getUserviewDefinitionList().iterator().next();
+                
+                Cookie cookie = cookiesMap.get("all-apps");
+                if (cookie != null) {
+                    cookie.setValue("");
+                    cookie.setPath(request.getContextPath());
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
+            
+                return "redirect:/web/mobile/"+appDef.getAppId()+"/"+uv.getId()+"//landing";
+            }
+        } else {
+            Cookie cookie = cookiesMap.get("all-apps");
+            if (cookie == null) {
+                cookie = new Cookie("all-apps", "true");
+            } else {
+                cookie.setValue("true");
+            }
+            cookie.setPath(request.getContextPath());
+            response.addCookie(cookie);
+        }
+        
         model.addAttribute("appDefinitionList", resultAppDefinitionList);
         LogUtil.debug(getClass().getName(), "Request: /web/mobile/apps");
         return "mobile/mApps";
@@ -250,11 +317,15 @@ public class MobileUserviewWebController {
                 + "\n"
                 + "CACHE:\n"
                 + contextPath + "/home/logo.png\n"
-                + contextPath + "/home/style.css\n"
-                + contextPath + "/web/mobile/\n"
-                + contextPath + "/web/mobile/apps\n"
-                + contextPath + "/web/mobile/apps?cordova=true\n"
-                + contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
+                + contextPath + "/home/style.css\n";
+        
+        Map<String, Cookie> cookiesMap = getCookiesMap(request);
+        if (cookiesMap.get("all-apps") != null && "true".equals(cookiesMap.get("all-apps").getValue())) {
+            manifest += contextPath + "/web/mobile/\n";
+            manifest += contextPath + "/web/mobile/apps\n";
+        }
+        
+        manifest += contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
                 + contextPath + "/mobile/jqm/jquery.mobile-1.4.0-rc.1.css\n"
                 + contextPath + "/mobile/mobile.css\n"
                 + contextPath + "/js/jquery/jquery-1.9.1.min.js\n"
@@ -280,7 +351,7 @@ public class MobileUserviewWebController {
             }
          }
          */
-
+        
         LogUtil.debug(getClass().getName(), "Request: " + request.getRequestURI());
         // output manifest
         Writer out = response.getWriter();
@@ -288,4 +359,14 @@ public class MobileUserviewWebController {
         out.flush();
     }
 
+    private Map<String, Cookie> getCookiesMap(HttpServletRequest request) {
+        Map<String, Cookie> cookiesMap = new HashMap<String, Cookie>();
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookiesMap.put(cookie.getName(), cookie);
+            }
+        }
+        return cookiesMap;
+    }
 }
