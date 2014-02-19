@@ -37,22 +37,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- dummy goal for deployment to glassfish -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cd</executable>
-                </configuration>
-            </plugin>
         </plugins>
         <extensions>
             <extension>
@@ -66,7 +50,7 @@
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-commons</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

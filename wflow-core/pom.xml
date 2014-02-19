@@ -17,22 +17,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-            <!-- dummy goal for deployment to glassfish -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cd</executable>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -54,7 +38,7 @@
         <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-wfengine</artifactId>
-            <version>3.1-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

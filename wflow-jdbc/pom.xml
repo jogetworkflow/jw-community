@@ -17,22 +17,6 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
-            <!-- dummy goal for deployment to glassfish -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cd</executable>
-                </configuration>
-            </plugin>
         </plugins>
         <extensions>
             <extension>

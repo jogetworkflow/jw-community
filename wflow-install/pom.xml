@@ -275,10 +275,10 @@
     </distributionManagement>
     <pluginRepositories>
         <pluginRepository>
-            <id>archiva.plugin.snapshots</id>
-            <url>http://dev.joget.org/archiva/repository/snapshots</url>
+            <id>internal</id>
+            <url>http://dev.joget.org/archiva/repository/internal</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>

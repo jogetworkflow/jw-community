@@ -11,26 +11,6 @@
         <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/</developerConnection>
         <url>http://dev.joget.org/svn/jw-community/trunk/</url>
     </scm>
-    <build>
-        <plugins>
-            <!-- dummy goal for deployment to glassfish -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <executable>cd</executable>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     <modules>
         <module>../wflow-jdbc</module>
         <module>../wflow-commons</module>

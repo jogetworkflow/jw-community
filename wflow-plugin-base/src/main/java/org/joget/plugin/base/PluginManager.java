@@ -901,7 +901,7 @@ public class PluginManager implements ApplicationContextAware {
             for (Plugin p : pm.list()) {
                 LogUtil.info(PluginManager.class.getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             }
-            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample-3.1-SNAPSHOT.jar";
+            String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample.jar";
             String samplePlugin = "org.joget.plugin.sample.SamplePlugin";
 
             try {
