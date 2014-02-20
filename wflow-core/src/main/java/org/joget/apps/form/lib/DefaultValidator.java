@@ -7,6 +7,7 @@ import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 
 public class DefaultValidator extends FormValidator {
 
@@ -95,7 +96,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateMandatory(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Missing required value";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.missingValue");
         }
         
         if (values == null || values.length == 0) {
@@ -118,7 +119,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateAlphaNumeric(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Only alphanumeric allowed";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.alphanumeric");
         }
         
         if (values != null && values.length > 0) {
@@ -136,7 +137,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateAlphabet(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Only alphabets allowed";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.alphabets");
         }
         
         if (values != null && values.length > 0) {
@@ -154,7 +155,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateNumeric(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Only numbers allowed";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.numbers");
         }
         
         if (values != null && values.length > 0) {
@@ -172,7 +173,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateEmail(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Only emails allowed";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.email");
         }
 
         if (values != null && values.length > 0) {
@@ -195,7 +196,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateCustom(FormData data, String id, String label, String[] values, String regex, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = "Invalid value";
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid");
         }
         
         if (values != null && values.length > 0) {
