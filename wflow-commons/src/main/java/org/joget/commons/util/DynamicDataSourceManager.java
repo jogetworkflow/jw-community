@@ -175,8 +175,10 @@ public class DynamicDataSourceManager {
             HostManager.setCurrentProfile(currentProfile);
             return currentProfile;
         } catch (FileNotFoundException e) {
-            createDefaultProfile();
-            LogUtil.debug(DynamicDataSourceManager.class.getName(), defaultDataSourceFilename + " not found, using default datasource");
+            if (!(e.getMessage() != null && e.getMessage().contains("Too many open files"))) {
+                createDefaultProfile();
+                LogUtil.debug(DynamicDataSourceManager.class.getName(), defaultDataSourceFilename + " not found, using default datasource");
+            }
         } catch (Exception e) {
             LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
         } finally {
@@ -203,6 +205,7 @@ public class DynamicDataSourceManager {
 
             fos = new FileOutputStream(new File(defaultDataSourceFilename));
             properties.store(fos, "");
+            HostManager.setCurrentProfile(profileName);
         } catch (Exception e) {
             LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
         } finally {

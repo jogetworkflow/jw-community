@@ -3615,6 +3615,7 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/setting/plugin/refresh")
     public void consoleSettingPluginRefresh(Writer writer) {
+        setupManager.clearCache();
         pluginManager.refresh();
     }
 

@@ -36,13 +36,8 @@ public class HostManager implements ApplicationContextAware {
     }
 
     public static String getCurrentProfile() {
-        if (isVirtualHostEnabled()) {
-            String profile = (String)currentProfile.get();
-            return profile;
-        }
-        else {
-            return null;
-        }
+        String profile = (String) currentProfile.get();
+        return profile;
     }
 
     public static boolean isVirtualHostEnabled() {
