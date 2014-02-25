@@ -493,18 +493,19 @@ FormBuilder = {
             propertyValues : elementProperty,
             showCancelButton:true,
             cancelCallback: function() {
-                FormBuilder.propertyDialog.hide()
+                FormBuilder.propertyDialog.hide();
+                $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
                 // hide dialog
-                FormBuilder.propertyDialog.hide()
+                FormBuilder.propertyDialog.hide();
 
                 // update element properties
                 FormBuilder.updateElementProperties(element, properties);
 
                 // refresh element UI
                 FormBuilder.refreshElementTemplate(element);
-
+                $("#form-property-editor").html("");
             }
         }
 
