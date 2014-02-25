@@ -7,9 +7,9 @@
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/</developerConnection>
-        <url>http://dev.joget.org/svn/jw-community/trunk/</url>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</developerConnection>
+        <url>http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</url>
     </scm>
     <modules>
         <module>../wflow-jdbc</module>

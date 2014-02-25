@@ -8,10 +8,10 @@
     <name>wflow-consoleweb</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</developerConnection>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-consoleweb/</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-consoleweb/</developerConnection>
         <tag>HEAD</tag>
-        <url>http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</url>
+        <url>http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-consoleweb/</url>
     </scm>
     <dependencies>
         <dependency>
