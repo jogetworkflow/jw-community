@@ -16,16 +16,27 @@ public class ContextListener implements ServletContextListener {
     }
 
     public void contextDestroyed(ServletContextEvent event) {
-
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+        }
         for (Thread thread : Thread.getAllStackTraces().keySet()) {
             try {
                 if (thread.getName().startsWith("AWT-")) {
                     if (!thread.isInterrupted()) {
                         thread.interrupt();
                     }
-                    thread.stop();
                 }
-
+            } catch (Exception ex) {
+            }
+        }
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            try {
+                if (thread.getName().startsWith("AWT-")) {
+                    if (!thread.isInterrupted()) {
+                        thread.interrupt();
+                    }
+                }
             } catch (Exception ex) {
             }
         }
