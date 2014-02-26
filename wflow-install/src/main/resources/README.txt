@@ -20,7 +20,7 @@ Installation for Linux:
     Alternatively, manually create the database tables as follows:
     4.1 Populate the jwdb database with the SQL script in data/jwdb-empty.sql
     4.2 Edit wflow/app_datasource-default.properties to match your database settings
-6. Execute the bundled Apache Tomcat application server: ./tomcat6.sh run
+6. Execute the bundled Apache Tomcat application server: ./tomcat7.sh run
 7. Access the Workflow Management Console at http://localhost:8080/jw
 
 
@@ -32,7 +32,7 @@ Installation for Windows:
 4. Create an empty database 'jwdb' in the MySQL server
 5. Populate the jwdb database with the SQL script in data\jwdb-empty.sql
 6. Edit wflow\app_datasource-default.properties to match your database settings
-7. Edit tomcat6-run.bat and change JAVA_HOME to your Java installation directory
-8. Run tomcat6-run.bat to start the bundled Apache Tomcat application server
+7. Edit tomcat7-run.bat and change JAVA_HOME to your Java installation directory
+8. Run tomcat7-run.bat to start the bundled Apache Tomcat application server
 9. Access the Workflow Management Console at http://localhost:8080/jw
 
