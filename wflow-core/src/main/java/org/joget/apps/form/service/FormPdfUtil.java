@@ -261,6 +261,12 @@ public class FormPdfUtil {
 
             html = html.replaceAll(StringUtil.escapeRegex(textareaString), StringUtil.escapeRegex(replace));
         }
+        
+        //escape special character in html
+        html = escapeSpecialCharacter(html, "label");
+        html = escapeSpecialCharacter(html, "span");
+        html = escapeSpecialCharacter(html, "th");
+        html = escapeSpecialCharacter(html, "p");
 
         //remove br
         html = html.replaceAll("</\\s?br>", "");
@@ -325,6 +331,22 @@ public class FormPdfUtil {
         
         html += "</body></html>";
         
+        return html;
+    }
+    
+    protected static String escapeSpecialCharacter(String html, String tag) {
+        //convert label
+        Pattern pattern = Pattern.compile("<"+tag+"[^>]*>.*?</"+tag+">", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(html);
+        while (matcher.find()) {
+            String text = matcher.group(0);
+            if (text.contains("&") && !text.contains("&amp;")) {
+                String replace = text;
+                replace = replace.replaceAll("&", " &amp;");
+
+                html = html.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
+            }
+        }
         return html;
     }
     
