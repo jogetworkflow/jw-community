@@ -513,7 +513,7 @@ public class DataList {
 
             DataListFilter[] filterList = getFilters();
             for (int i = 0; i < filterList.length; i++) {
-                String label = StringEscapeUtils.escapeHtml(filterList[i].getLabel());
+                String label = filterList[i].getLabel();
                 templates.add(filterList[i].getType().getTemplate(this, filterList[i].getName(), label));
             }
             filterTemplates = (String[]) templates.toArray(new String[0]);
