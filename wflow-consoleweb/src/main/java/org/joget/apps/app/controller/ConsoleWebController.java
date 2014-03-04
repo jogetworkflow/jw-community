@@ -1642,7 +1642,7 @@ public class ConsoleWebController {
             map.addAttribute("errorMessage", e.getMessage());
             return "console/apps/packageUpload";
         }
-        return "console/apps/packageUploadSuccess";
+        return "console/apps/xpdlUploadSuccess";
     }
 
     @RequestMapping({"/console/app/(*:appId)/(~:version)/processes", "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)"})
