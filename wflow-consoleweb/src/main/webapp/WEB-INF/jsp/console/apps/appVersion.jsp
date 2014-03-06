@@ -54,7 +54,7 @@
     }
 
     function deleteVersion(version){
-        if (confirm('<fmt:message key="console.app.delete.label.confirm"/>')) {
+        if (version != '' && confirm('<fmt:message key="console.app.delete.label.confirm"/>')) {
             var callback = {
                 success : function() {
                     document.location = document.location;
@@ -65,10 +65,11 @@
     }
 
     function publishVersion(version){
-        if (confirm('<fmt:message key="console.app.publish.label.confirm"/>')) {
+        if (version != '' && confirm('<fmt:message key="console.app.publish.label.confirm"/>')) {
             var callback = {
                 success : function() {
                     document.location = document.location;
+                    parent.location.reload(false);
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/publish', callback, '');
@@ -76,10 +77,11 @@
     }
 
     function unpublishVersion(version){
-        if (confirm('<fmt:message key="console.app.unpublish.label.confirm"/>')) {
+        if (version != '' && confirm('<fmt:message key="console.app.unpublish.label.confirm"/>')) {
             var callback = {
                 success : function() {
                     document.location = document.location;
+                    parent.location.reload(false);
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/unpublish', callback, '');
@@ -87,7 +89,9 @@
     }
 
     function viewVersion(version){
-        parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/processes';
+        if (version != '') {
+            parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/forms';
+        }
     }
 </script>
 <commons:popupFooter />
