@@ -202,9 +202,6 @@ FormBuilder = {
 
         // reset column options and hints
         $(".form-column").each(function(index, obj) {
-            // set options
-            FormBuilder.decorateElementOptions(obj);
-
             // set hints
             if ($(obj).children(".hint").length == 0) {
                 $(obj).prepend("<span class='hint'></span>");
@@ -214,6 +211,9 @@ FormBuilder = {
             } else {
                 $(obj).children(".hint").text(get_fbuilder_msg("fbuilder.dragThisColumn"));
             }
+            
+            // set options
+            FormBuilder.decorateElementOptions(obj);
         });
 
         FormBuilder.generateJSON();
