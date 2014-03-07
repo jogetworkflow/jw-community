@@ -20,6 +20,12 @@ public class SecurityUtil implements ApplicationContextAware {
         appContext = context;
     }
 
+    public void setDataEncryption(DataEncryption deImpl) {
+        if (de == null) {
+            de = deImpl;
+        }
+    }
+
     public static DataEncryption getDataEncryption() {
         if (de == null) {
             try {
@@ -29,10 +35,10 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return de;
     }
-
+    
     public static String encrypt(String rawContent) {
 
-        if (rawContent != null && !rawContent.isEmpty() && getDataEncryption() != null) {
+        if (rawContent != null && getDataEncryption() != null) {
             try {
                 return ENVELOPE + getDataEncryption().encrypt(rawContent) + ENVELOPE;
             } catch (Exception e) {
