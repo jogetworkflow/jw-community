@@ -48,7 +48,7 @@
                 <c:when test="${!empty helpWebConsole && helpWebConsole != '???appCenter.help.webConsole???'}"><fmt:message key="appCenter.help.webConsole"/></c:when>
                 <c:otherwise>
                 <a target="_self" href="${pageContext.request.contextPath}/web/console/home">
-                    <h3>Access the v3 Web Console</h3>
+                    <h3>Access the Web Console</h3>
                     <img src="${pageContext.request.contextPath}/home/webconsole.png" width="150" border="0" />
                     <br />
                     <h4>For Administrators and App Designers to:</h4>
