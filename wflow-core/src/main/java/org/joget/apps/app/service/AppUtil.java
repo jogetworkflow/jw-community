@@ -12,6 +12,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
@@ -178,13 +179,13 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String getAppLocale() {
-        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");  
+        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");
         return localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest()).toString();
     }
-    
+
     public static String getAppDateFormat() {
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-        
+
         if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
             Locale locale = new Locale(getAppLocale());
             DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
@@ -192,7 +193,7 @@ public class AppUtil implements ApplicationContextAware {
                 return ((SimpleDateFormat) dateInstance).toPattern();
             }
         }
-        
+
         return null;
     }
 
@@ -237,7 +238,7 @@ public class AppUtil implements ApplicationContextAware {
      * @param removeNewLines
      * @param translationFileName
      * @return null if the resource is not found or in the case of an exception
-     * @see java.util.Formatter 
+     * @see java.util.Formatter
      */
     public static String readPluginResource(String pluginName, String resourceUrl, Object[] arguments, boolean removeNewLines, String translationFileName) {
         String output = null;
@@ -260,8 +261,10 @@ public class AppUtil implements ApplicationContextAware {
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
     }
-    
+
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
+        content = decryptContent(content);
+
         // check for hash # to avoid unnecessary processing
         if (!containsHashVariable(content)) {
             return content;
@@ -285,17 +288,17 @@ public class AppUtil implements ApplicationContextAware {
 
                     for (String var : varList) {
                         String tempVar = var.replaceAll("#", "");
-                        
+
                         for (Plugin p : pluginList) {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
                                 tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
-                                
+
                                 HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
                                 if (cachedPlugin == null) {
                                     cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
                                     //get default plugin properties
-                                    
+
                                     if (appDef == null) {
                                         appDef = AppUtil.getCurrentAppDefinition();
                                     }
@@ -332,17 +335,17 @@ public class AppUtil implements ApplicationContextAware {
                                         nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
                                     }
                                 }
-                                
+
                                 //unescape hash variable
                                 tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
-                                
+
                                 //get result from plugin
                                 String value = cachedPlugin.processHashVariable(tempVar);
-                                
+
                                 if (value != null && !StringUtil.TYPE_REGEX.equals(escapeFormat) && !StringUtil.TYPE_JSON.equals(escapeFormat)) {
                                     value = StringUtil.escapeRegex(value);
                                 }
-                                
+
                                 //escape special char in HashVariable
                                 var = cachedPlugin.escapeHashVariable(var);
 
@@ -365,11 +368,11 @@ public class AppUtil implements ApplicationContextAware {
         boolean result = (content != null && content.indexOf("#") >= 0);
         return result;
     }
-    
+
     public static Collection<String> getEmailList(String toParticipantId, String toSpecific, WorkflowAssignment wfAssignment, AppDefinition appDef) {
         Collection<String> addresses = new HashSet<String>();
         Collection<String> users = new HashSet<String>();
-        
+
         if (toParticipantId != null && !toParticipantId.isEmpty() && wfAssignment != null) {
             WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             WorkflowProcess process = workflowManager.getProcess(wfAssignment.getProcessDefId());
@@ -380,7 +383,7 @@ public class AppUtil implements ApplicationContextAware {
                 if (pId.length() == 0) {
                     continue;
                 }
-                
+
                 Collection<String> userList = null;
                 userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
 
@@ -389,7 +392,7 @@ public class AppUtil implements ApplicationContextAware {
                 }
             }
         }
-        
+
         if (toSpecific != null && toSpecific.trim().length() != 0) {
             toSpecific = AppUtil.processHashVariable(toSpecific, wfAssignment, null, null, appDef);
             toSpecific = toSpecific.replace(";", ","); // add support for MS-style semi-colon (;) as a delimiter
@@ -399,7 +402,7 @@ public class AppUtil implements ApplicationContextAware {
                 if (email.length() == 0) {
                     continue;
                 }
-                
+
                 //to support retrieve email by putting username
                 if (!email.contains("@")) {
                     users.add(email);
@@ -408,7 +411,7 @@ public class AppUtil implements ApplicationContextAware {
                 }
             }
         }
-        
+
         if (!users.isEmpty()) {
             DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
             for (String username : users) {
@@ -426,9 +429,61 @@ public class AppUtil implements ApplicationContextAware {
                         }
                     }
                 } catch (Exception e) {}
-            } 
+            }
         }
-        
+
         return addresses;
+    }
+
+    public static String encryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
+                        tempS = SecurityUtil.encrypt(tempS);
+
+                        content = content.replaceAll(s, tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(AppUtil.class.getName(), ex, "");
+            }
+        }
+
+        return content;
+    }
+
+    public static String decryptContent(String content) {
+        //parse content
+        if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
+            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+            Matcher matcher = pattern.matcher(content);
+            Set<String> sList = new HashSet<String>();
+            while (matcher.find()) {
+                sList.add(matcher.group(0));
+            }
+
+            try {
+                if (!sList.isEmpty()) {
+                    for (String s : sList) {
+                        String tempS = SecurityUtil.decrypt(s);
+                        content = content.replaceAll(StringUtil.escapeRegex(s), tempS);
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(AppUtil.class.getName(), ex, "");
+            }
+        }
+
+        return content;
     }
 }

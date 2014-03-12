@@ -998,6 +998,11 @@ DatalistBuilder = {
     setJson : function(json, id){
         var obj = json;
 
+        // set id
+        if (id) {
+            DatalistBuilder.datalistProperties.id = id;
+        }
+        
         DatalistBuilder.binderProperties = obj.binder;
         DatalistBuilder.init();
         DatalistBuilder.updateBinderProperties("");
@@ -1007,11 +1012,6 @@ DatalistBuilder = {
             if(e != 'binder' && e != 'columns'){
                 DatalistBuilder.datalistProperties[e] = obj[e];
             }
-        }
-        
-        // set id
-        if (id) {
-            DatalistBuilder.datalistProperties.id = id;
         }
 
         //load columns

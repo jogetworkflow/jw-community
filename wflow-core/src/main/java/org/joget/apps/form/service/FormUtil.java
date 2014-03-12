@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,6 +63,8 @@ public class FormUtil implements ApplicationContextAware {
     public static final String PROPERTY_TEMP_FILE_PATH = "_tempFilePathMap";
     public static final String FORM_META_ORIGINAL_ID = "_FORM_META_ORIGINAL_ID";
     static ApplicationContext appContext;
+    
+    public static ThreadLocal processedFormJson = new ThreadLocal(); 
     
     public static Long runningNumber = 0L;
 
@@ -1034,7 +1037,7 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static String generateElementMetaData(Element element) {
-        String properties = FormUtil.generateElementPropertyJson(element);
+        String properties = FormUtil.getElementProcessedJson(element);
         String escaped = StringEscapeUtils.escapeHtml(properties);
         String elementMetaData = " element-class=\"" + element.getClass().getName() + "\" element-property=\"" + escaped + "\" ";
         return elementMetaData;
@@ -1140,5 +1143,81 @@ public class FormUtil implements ApplicationContextAware {
         }
         runningNumber++;
         return Long.toString(runningNumber);
+    }
+    
+    public static void setProcessedFormJson(String json) {
+        processedFormJson.set(json);
+    }
+    
+    public static String getProcessedFormJson() {
+        if (processedFormJson != null && processedFormJson.get() != null) {
+            return (String) processedFormJson.get();
+        }
+        return null;
+    }
+    
+    public static void clearProcessedFormJson() {
+        if (processedFormJson != null && processedFormJson.get() != null) {
+            processedFormJson.set(null);
+        }
+    }
+    
+    public static String getElementProcessedJson(Element element) {
+        String properties = "";
+        try {
+            // create json object
+            JSONObject obj = new JSONObject(getProcessedFormJson());
+            Element temp = element;
+            
+            // get the elements on the path to root element;
+            Stack<Element> stack = new Stack<Element>();
+            while (temp != null) {
+                stack.push(temp);
+                temp = temp.getParent();
+            }
+            
+            // get the first element (Root element) in stack to match with root Json Object 
+            temp = stack.pop();
+            
+            //if statck is not empty, continue find the matching json object
+            while (!stack.isEmpty()) {
+                temp = stack.pop();
+                
+                //travel in json object's child to find matching json object
+                if (!obj.isNull(FormUtil.PROPERTY_ELEMENTS)) {
+                    int position = 0;
+                    
+                    //get position
+                    Element parent = temp.getParent();
+                    Collection<Element> children = parent.getChildren();
+                    if (children != null) {
+                        for (Element c : children) {
+                            if (c.equals(temp)) {
+                                break;
+                            }
+                            position++;
+                        }
+                    }
+                    
+                    //get json object
+                    JSONArray elements = obj.getJSONArray(FormUtil.PROPERTY_ELEMENTS);
+                    if (elements != null && elements.length() > 0) {
+                        obj = (JSONObject) elements.get(position);
+                    }
+                }
+            }
+            
+            if (temp != null && obj != null) {
+                //get properties obj and convert to json string
+                if (!obj.isNull(FormUtil.PROPERTY_PROPERTIES)) {
+                    JSONObject objProperty = obj.getJSONObject(FormUtil.PROPERTY_PROPERTIES);
+                    properties = objProperty.toString();
+                }
+            }
+            
+        } catch (Exception e) {
+            properties = FormUtil.generateElementPropertyJson(element);
+        }
+        return properties;
     }
 }

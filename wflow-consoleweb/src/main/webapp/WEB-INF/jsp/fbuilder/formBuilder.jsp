@@ -91,7 +91,8 @@
 
                 // initialize the form
                 FormBuilder.contextPath = '${pageContext.request.contextPath}';
-                FormBuilder.formPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/preview/';
+                FormBuilder.formPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/preview/';
+                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/element/preview';
                 FormBuilder.init("${formId}");
 
                 <c:if test="${empty elementHtml}">

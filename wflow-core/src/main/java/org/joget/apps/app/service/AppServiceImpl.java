@@ -963,9 +963,9 @@ public class AppServiceImpl implements AppService {
         try {
             AppDefinition appDef = getAppDefinition(appId, version);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
-            String formJson = formDef.getJson();
-
-            if (formJson != null) {
+            
+            if (formDef != null && formDef.getJson() != null) {
+                String formJson = formDef.getJson();
                 formJson = AppUtil.processHashVariable(formJson, wfAssignment, StringUtil.TYPE_JSON, null);
                 form = (Form) formService.loadFormFromJson(formJson, formData);
             }

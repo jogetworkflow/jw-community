@@ -21,6 +21,7 @@ import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
@@ -30,11 +31,11 @@ import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.ui.ModelMap;
@@ -77,7 +78,7 @@ public class DatalistBuilderWebController {
 
         map.addAttribute("id", id);
         map.addAttribute("datalist", datalist);
-        map.addAttribute("json", listJson);
+        map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(listJson));
         return "dbuilder/builder";
     }
 
@@ -88,7 +89,7 @@ public class DatalistBuilderWebController {
         DataList dlist = dataListService.fromJson(json);
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getName());
-        datalist.setJson(json);
+        datalist.setJson(PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), json));
 
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();
@@ -101,13 +102,23 @@ public class DatalistBuilderWebController {
         String view = "dbuilder/view";
 
         // get current app to set into thread
-        appService.getAppDefinition(appId, appVersion);
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
         try {
             // get data list
             DataList dataList = new DataList();
             if (json != null && !json.trim().isEmpty()) {
-                dataList = dataListService.fromJson(json);
+                
+                String tempJson = json;
+                if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                    DatalistDefinition datalistDef = datalistDefinitionDao.loadById(id, appDef);
+
+                    if (datalistDef != null) {
+                        tempJson = PropertyUtil.propertiesJsonStoreProcessing(datalistDef.getJson(), tempJson);
+                    }
+                }
+                
+                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, null, null));
                 map.addAttribute("json", json);
             } else {
                 dataList = parseFromJsonParameter(map, dataList, id, request);
@@ -158,7 +169,7 @@ public class DatalistBuilderWebController {
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns", method = RequestMethod.POST)
     public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, HttpServletRequest request) throws Exception {
-        appService.getAppDefinition(appId, appVersion);
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
 
         // get data list
@@ -168,7 +179,7 @@ public class DatalistBuilderWebController {
         dataList = parseFromJsonParameter(map, dataList, id, request);
 
         // get binder from request
-        DataListBinder binder = createDataListBinderFromRequestInternal(binderId, request);
+        DataListBinder binder = createDataListBinderFromRequestInternal(appDef, id, binderId, request);
         if (binder != null) {
             dataList.setBinder(binder);
         }
@@ -239,7 +250,7 @@ public class DatalistBuilderWebController {
         return "dbuilder/filterTmplate";
     }
 
-    protected DataListBinder createDataListBinderFromRequestInternal(String binderId, HttpServletRequest request) {
+    protected DataListBinder createDataListBinderFromRequestInternal(AppDefinition appDef, String datalistId, String binderId, HttpServletRequest request) {
         DataListBinder binder = null;
         if (binderId != null && binderId.trim().length() > 0) {
             // create binder
@@ -253,7 +264,18 @@ public class DatalistBuilderWebController {
                     if (paramName.startsWith(PREFIX_BINDER_PROPERTY)) {
                         String[] paramValue = (String[]) request.getParameterValues(paramName);
                         String propName = paramName.substring(PREFIX_BINDER_PROPERTY.length());
-                        binder.setProperty(propName, WorkflowUtil.processVariable(CsvUtil.getDeliminatedString(paramValue), null, null));
+                        
+                        String value = CsvUtil.getDeliminatedString(paramValue);
+                        
+                        if (value.contains(SecurityUtil.ENVELOPE) || value.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                            DatalistDefinition datalist = datalistDefinitionDao.loadById(datalistId, appDef);
+                            
+                            if (datalist != null) {
+                                value = PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), value);
+                            }
+                        }
+                        
+                        binder.setProperty(propName, AppUtil.processHashVariable(value, null, null, null));
                     }
                 }
             }
@@ -270,7 +292,17 @@ public class DatalistBuilderWebController {
         // use preview json if available
         if (json != null && json.trim().length() > 0) {
             try {
-                dataList = dataListService.fromJson(json);
+                String tempJson = json;
+                if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                    DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
+
+                    if (datalist != null) {
+                        tempJson = PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), tempJson);
+                    }
+                }
+                
+                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, null, null));
                 dataList.setId(id);
             } catch (Exception ex) {
                 map.addAttribute("dataListError", ex.toString());

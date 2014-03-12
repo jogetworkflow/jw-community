@@ -23,7 +23,9 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +71,16 @@ public class FormBuilderWebController {
                 formJson = formDef.getJson();
             }
             if (formJson != null && formJson.trim().length() > 0) {
-                String elementHtml = formService.previewElement(formJson);
-                model.addAttribute("elementHtml", elementHtml);
-                model.addAttribute("elementJson", formJson);
+                String processedformJson = PropertyUtil.propertiesJsonLoadProcessing(formJson);
+                
+                try {
+                    FormUtil.setProcessedFormJson(processedformJson);
+                    String elementHtml = formService.previewElement(formJson);
+                    model.addAttribute("elementHtml", elementHtml);
+                    model.addAttribute("elementJson", processedformJson);
+                } finally {
+                    FormUtil.clearProcessedFormJson();
+                }
             } else {
                 // default empty form
                 String tableName = formDef.getTableName();
@@ -99,27 +108,59 @@ public class FormBuilderWebController {
         return "fbuilder/formBuilder";
     }
 
-    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/preview/")
-    public String previewForm(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("json") String json) {
+    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/preview/")
+    public String previewForm(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId, @RequestParam("json") String json) {
+        try {
+            FormUtil.setProcessedFormJson(json);
 
-        model.addAttribute("appId", appId);
-        model.addAttribute("appVersion", appVersion);
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+            model.addAttribute("appId", appId);
+            model.addAttribute("appVersion", appVersion);
+            AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
-        String elementHtml = formService.previewElement(json, false);
-        model.addAttribute("elementTemplate", elementHtml);
-        model.addAttribute("elementJson", json);
+            String tempJson = json;
+            if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
 
+                if (formDef != null) {
+                    tempJson = PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), tempJson);
+                }
+            }
+
+            String elementHtml = formService.previewElement(tempJson, false);
+            model.addAttribute("elementTemplate", elementHtml);
+            model.addAttribute("elementJson", json);
+
+        } finally {
+            FormUtil.clearProcessedFormJson();
+        }
         return "fbuilder/previewForm";
     }
 
-    @RequestMapping("/fbuilder/element/preview")
-    public String previewElement(ModelMap model, @RequestParam("json") String json) {
+    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/element/preview")
+    public String previewElement(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId, @RequestParam("json") String json) {
+        try {
+            FormUtil.setProcessedFormJson(json);
 
-        String elementHtml = formService.previewElement(json);
-        model.addAttribute("elementTemplate", elementHtml);
-        model.addAttribute("elementJson", json);
+            model.addAttribute("appId", appId);
+            model.addAttribute("appVersion", appVersion);
+            AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
+            String tempJson = json;
+            if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+
+                if (formDef != null) {
+                    tempJson = PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), tempJson);
+                }
+            }
+
+            String elementHtml = formService.previewElement(tempJson);
+            model.addAttribute("elementTemplate", elementHtml);
+            model.addAttribute("elementJson", json);
+        } finally {
+            FormUtil.clearProcessedFormJson();
+        }
+        
         return "fbuilder/previewElement";
     }
     

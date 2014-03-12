@@ -494,7 +494,7 @@
             defaultValue = defaultValue.replace(/./g, '*');
             defaultValueLabel = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">'+escapeHtmlTag(defaultValue)+'</span><div class="clear"></div></div>';
         }
-
+        value = value.replace(/%%%%/g, '');
         return '<input type="password" id="'+ id +'_'+ property.name +'" name="'+ id +'_'+ property.name +'"'+ size + maxlength +' value="'+ escapeHtmlTag(value) +'"/>'+defaultValueLabel;
     }
 
@@ -1160,6 +1160,8 @@
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).html();
                 }else if(property.type.toLowerCase() == "radio"){
                     value = $(editor).find('#'+editorId+'_'+parent+property.name+':checked').val();
+                }else if(property.type.toLowerCase() == "password"){
+                    value = "%%%%" + $(editor).find('#'+editorId+'_'+parent+property.name).val() + "%%%%";
                 }else{
                     value = $(editor).find('#'+editorId+'_'+parent+property.name).val();
                 }
@@ -1198,7 +1200,7 @@
                 if(defaultValues != undefined && defaultValues[property.name] != undefined){
                     defaultValue = defaultValues[property.name];
                 }
-                if(property.required != undefined && property.required.toLowerCase() == "true" && (value == '' || value == undefined || (property.type.toLowerCase() == "elementselect" && value.className == '')) && defaultValue == ''){
+                if(property.required != undefined && property.required.toLowerCase() == "true" && (value == '' || value == undefined || value == '%%%%%%%%' || (property.type.toLowerCase() == "elementselect" && value.className == '')) && defaultValue == ''){
                     var obj = new Object();
                     obj.fieldName = property.label;
                     obj.message = optionsStack[editorId].mandatoryMessage;
