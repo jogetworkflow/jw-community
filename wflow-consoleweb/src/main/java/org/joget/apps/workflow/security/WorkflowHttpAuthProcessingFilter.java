@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
@@ -119,6 +120,9 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 if ((masterLoginUsername != null && masterLoginUsername.trim().length() > 0) &&
                         (masterLoginPassword != null && masterLoginPassword.trim().length() > 0)) {
 
+                    //decryt masterLoginPassword
+                    masterLoginPassword = SecurityUtil.decrypt(masterLoginPassword);
+                    
                     User master = new User();
                     master.setUsername(masterLoginUsername.trim());
                     master.setPassword(StringUtil.md5Base16(masterLoginPassword.trim()));

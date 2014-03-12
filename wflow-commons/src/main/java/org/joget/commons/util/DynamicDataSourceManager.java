@@ -21,6 +21,15 @@ public class DynamicDataSourceManager {
     public static final String CURRENT_PROFILE_KEY = "currentProfile";
     public static final String DEFAULT_PROFILE = "default";
 
+    private static DatasourceProfilePropertyManager profilePropertyManager;
+    
+    /**
+     * The property manager is initialized via spring injection.
+     */
+    public DynamicDataSourceManager(DatasourceProfilePropertyManager propertyManager) {
+        DynamicDataSourceManager.profilePropertyManager = propertyManager;
+    }
+    
     public static boolean testConnection(String driver, String url, String user, String password) {
         Connection conn = null;
         try {
@@ -41,7 +50,7 @@ public class DynamicDataSourceManager {
     }
 
     public static Properties getProperties() {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(determineFilePath(getCurrentProfile())));
@@ -110,7 +119,7 @@ public class DynamicDataSourceManager {
     }
 
     public static Properties getProfileProperties() {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         String defaultDataSourceFilename = determineDefaultDataSourceFilename();
         try {
@@ -234,7 +243,7 @@ public class DynamicDataSourceManager {
     }
 
     public static void writeProperty(String key, String value) {
-        Properties properties = new Properties();
+        Properties properties = profilePropertyManager.newInstance();
         FileInputStream fis = null;
         FileOutputStream fos = null;
         try {

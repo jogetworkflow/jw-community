@@ -11,7 +11,17 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <bean id="hostManager" class="org.joget.commons.util.HostManager">
+    <!-- Set the property implementation the profile property manager uses -->
+    <bean id="profilePropertyManager" class="org.joget.commons.util.DatasourceProfilePropertyManager">
+    	<property name="propertyClass" value="java.util.Properties"/>
+    </bean>
+
+    <!-- DynamicDataSourceManager will have its property set via @Autowired -->
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" >
+    	<constructor-arg ref="profilePropertyManager"/>
+    </bean>
+    
+    <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
     </bean>
 
     <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
@@ -35,7 +45,7 @@
         </tx:attributes>
     </tx:advice>
 
-    <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close">
+    <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="transactionManager" ref="atomikosTransactionManager" />
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8" />
@@ -59,7 +69,7 @@
 -->
 
     <!-- Hibernate SessionFactory -->
-    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" autowire-candidate="false">
+    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -75,7 +85,7 @@
         </property>
     </bean>
 
-    <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao">
+    <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;setupSessionFactory"/>
         <property name="cache">
@@ -83,12 +93,12 @@
         </property>
     </bean>
 
-    <bean id="setupDao" class="org.joget.commons.util.SetupDao">
+    <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;setupSessionFactory"/>
     </bean>
 
-    <bean id="setupManager" class="org.joget.commons.util.SetupManager">
+    <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="setupDao" ref="setupDao"/>
     </bean>
 

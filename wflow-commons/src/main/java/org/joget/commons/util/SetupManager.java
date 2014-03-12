@@ -8,6 +8,8 @@ public class SetupManager {
 
     public static final String SYSTEM_PROPERTY_WFLOW_HOME = "wflow.home";
     public static final String DIRECTORY_PROFILES = "app_profiles";
+    public static final String MASTER_LOGIN_PASSWORD = "masterLoginPassword";
+    public static final String SECURE_VALUE = "****SECURE VALUE*****";
 
     private static String BASE_DIRECTORY;
 

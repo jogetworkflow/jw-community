@@ -71,6 +71,7 @@ import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
@@ -3003,7 +3004,11 @@ public class ConsoleWebController {
 
         Map<String, String> settingMap = new HashMap<String, String>();
         for (Setting setting : settingList) {
-            settingMap.put(setting.getProperty(), setting.getValue());
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(setting.getProperty())) {
+                settingMap.put(setting.getProperty(), SetupManager.SECURE_VALUE);
+            } else {
+                settingMap.put(setting.getProperty(), setting.getValue());
+            }
         }
 
         Properties properties = DynamicDataSourceManager.getProperties();
@@ -3025,6 +3030,11 @@ public class ConsoleWebController {
     
     @RequestMapping("/console/setting/general/loginHash")
     public void loginHash(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("password") String password) throws JSONException, IOException {
+        if (SetupManager.SECURE_VALUE.equals(password)) {
+            password = setupManager.getSettingValue(SetupManager.MASTER_LOGIN_PASSWORD);
+            password = SecurityUtil.decrypt(password);
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(StringUtil.md5Base16(password));
@@ -3071,6 +3081,14 @@ public class ConsoleWebController {
             if (paramName.equals("dateFormatFollowLocale")) {
                 dateFormatFollowLocale = false;
                 paramValue = "true";
+            }
+
+            if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName)) {
+                if (SetupManager.SECURE_VALUE.equals(paramValue)) {
+                    paramValue = setupManager.getSettingValue(SetupManager.MASTER_LOGIN_PASSWORD);
+                } else {
+                    paramValue = SecurityUtil.encrypt(paramValue);
+                }
             }
 
             Setting setting = setupManager.getSettingByProperty(paramName);
