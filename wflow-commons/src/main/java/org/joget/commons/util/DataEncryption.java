@@ -40,4 +40,5 @@ public interface DataEncryption {
      * @return 
      */
     public String generateRandomSalt();
+    
 }
