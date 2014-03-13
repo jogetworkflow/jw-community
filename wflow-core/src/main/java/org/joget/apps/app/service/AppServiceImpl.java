@@ -477,6 +477,8 @@ public class AppServiceImpl implements AppService {
                 if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
                     if (originProcessId == null && formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null && !formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
                         originProcessId = formResult.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID);
+                    } else if (startForm.getPrimaryKeyValue(formResult) != null) {
+                        originProcessId = startForm.getPrimaryKeyValue(formResult);
                     }
 
                     // start process
