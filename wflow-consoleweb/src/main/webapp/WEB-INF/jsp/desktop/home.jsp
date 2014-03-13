@@ -1,5 +1,6 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 
 <commons:header id="desktop" />
 
@@ -15,15 +16,18 @@
         </div>
         <div id="categories">
             <a href="#" onclick="return loadPublishedApps()" id="category-published-apps" class="category"><fmt:message key="appCenter.label.publishedApps"/></a>
-            <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+            <c:if test="${isAdmin}">
+                <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+            </c:if>
         </div>
     </div>
     <div class="clear"></div>
     <div id="published-apps" class="published-apps"></div>
-    <div id="marketplace-apps" class="published-apps"></div>
+    <c:if test="${isAdmin}">
+        <div id="marketplace-apps" class="published-apps"></div>
+     </c:if>
     <div class="clear"></div>
 
-    <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:if test="${!isAdmin}">
         <style>
             #getting-started {
