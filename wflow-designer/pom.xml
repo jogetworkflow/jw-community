@@ -4,14 +4,14 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-designer</artifactId>
     <packaging>jar</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1.5</version>
     <name>wflow-designer</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-designer/</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-designer/</developerConnection>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.5/wflow-designer</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.5/wflow-designer</developerConnection>
         <tag>HEAD</tag>
-        <url>http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-designer/</url>
+        <url>http://dev.joget.org/svn/jw-community/tags/3.1.5/wflow-designer</url>
     </scm>
     <build>
         <resources>
