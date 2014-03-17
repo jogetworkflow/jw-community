@@ -2498,7 +2498,9 @@ public class ConsoleWebController {
             if (userviewDefinitionDao.loadById(userviewDefinition.getId(), appDef) != null) {
                 errors.add("console.userview.error.label.exists");
             } else {
-                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getId()) + "\",\"name\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getName()) + "\",\"description\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getDescription()) + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.CorporatiTheme\",\"properties\":{}}}},\"categories\":[]}");
+                ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+                String theme = consoleWebPlugin.getDefaultUserviewTheme();
+                userviewDefinition.setJson("{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getId()) + "\",\"name\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getName()) + "\",\"description\":\"" + StringEscapeUtils.escapeJavaScript(userviewDefinition.getDescription()) + "\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\",},\"setting\":{\"properties\":{\"theme\":{\"className\":\"" + theme + "\",\"properties\":{}}}},\"categories\":[]}");
                 invalid = !userviewDefinitionDao.add(userviewDefinition);
             }
 

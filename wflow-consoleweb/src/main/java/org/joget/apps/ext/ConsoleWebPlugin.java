@@ -179,4 +179,12 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
         }
     }
     
+    /**
+     * Return the default theme plugin for a new userview
+     * @return 
+     */
+    public String getDefaultUserviewTheme() {
+        return "org.joget.plugin.enterprise.CorporatiTheme";
+    }
+    
 }
