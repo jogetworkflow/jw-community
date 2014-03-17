@@ -1,6 +1,12 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
+<c:set var="marketplaceUrl"><fmt:message key="appCenter.link.marketplace.url"/></c:set>
+<c:set var="marketplaceContext"><fmt:message key="appCenter.link.marketplace.context"/></c:set>
+<c:set var="marketplaceTarget"><fmt:message key="appCenter.link.marketplace.target"/></c:set>
+<c:if test="${empty marketplaceContext || marketplaceContext == '???appCenter.link.marketplace.context???'}">
+    <c:set var="marketplaceContext" value="/jw4"/>
+</c:if>
 
 <commons:header id="desktop" />
 
@@ -16,14 +22,21 @@
         </div>
         <div id="categories">
             <a href="#" onclick="return loadPublishedApps()" id="category-published-apps" class="category"><fmt:message key="appCenter.label.publishedApps"/></a>
-            <c:if test="${isAdmin}">
-                <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+            <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
+                <c:choose>
+                    <c:when test="${empty marketplaceTarget || marketplaceTarget == '???appCenter.link.marketplace.target???'}">
+                        <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+                    </c:when>
+                    <c:otherwise>
+                        <a href="${marketplaceUrl}" target="${marketplaceTarget}" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+                    </c:otherwise>
+                </c:choose>
             </c:if>
         </div>
     </div>
     <div class="clear"></div>
     <div id="published-apps" class="published-apps"></div>
-    <c:if test="${isAdmin}">
+    <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
         <div id="marketplace-apps" class="published-apps"></div>
      </c:if>
     <div class="clear"></div>
@@ -213,7 +226,7 @@
         $("#published-apps").hide();
         $("#search form").remove();
         searchFilter($("#search"), $("#marketplace-apps")); 
-        loadApps("#marketplace-apps", "http://marketplace.cloud.joget.com", "/jw4");
+        loadApps("#marketplace-apps", "${marketplaceUrl}", "${marketplaceContext}");
     }
     $(function () { 
         loadPublishedApps();
