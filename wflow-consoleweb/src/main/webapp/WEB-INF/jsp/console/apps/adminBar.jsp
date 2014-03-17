@@ -55,8 +55,8 @@
         <div id="adminBar">
             <a id="appCenter" <c:if test="${empty param.desktop}"> target="_blank"</c:if> title="<fmt:message key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"></a>
             <div id="quickEditModeOption">
-                <input type="radio" id="quickEditModeOn" name="radio" /><label for="quickEditModeOn"><fmt:message key='adminBar.label.on'/></label>
-                <input type="radio" id="quickEditModeOff" name="radio" /><label for="quickEditModeOff"><fmt:message key='adminBar.label.off'/></label>
+                <input type="radio" id="quickEditModeOn" name="radio" /><label id="quickEditModeOnLabel" for="quickEditModeOn"><fmt:message key='adminBar.label.on'/></label>
+                <input type="radio" id="quickEditModeOff" name="radio" /><label id="quickEditModeOffLabel" for="quickEditModeOff"><fmt:message key='adminBar.label.off'/></label>
             </div>
             <c:if test="${!empty param.appId || !empty param.webConsole || !empty param.desktop}">
                 <c:if test="${!empty param.appId}">
