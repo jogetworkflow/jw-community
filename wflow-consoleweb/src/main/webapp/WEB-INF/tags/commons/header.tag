@@ -248,12 +248,6 @@
                                         <span class="subsubtitle"><fmt:message key="console.header.submenu.description.logs"/></span></a>
                                     </li>
                                 </c:if>
-                                <%--<li>
-                                    <a href="${pageContext.request.contextPath}/web/console/monitor/sla" class="substeps">
-                                    <span class="substeps">&nbsp;</span>
-                                    <span class="subtitle"><fmt:message key="wflowAdmin.sla.list.label.title"/></span>
-                                    <span class="subsubtitle"><fmt:message key="wflowAdmin.sla.list.label.title"/></span></a>
-                                </li>--%>
                             </ul>
                             <div class="bottom"></div>
                         </div>
@@ -265,7 +259,5 @@
             <div class="clear"></div>   
         </div>
         <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=body" />
-        <!--[if IE]><div id="beta" class="ie">Beta</div> <![endif]-->
-        <!--[if !IE]><!--><div id="beta">Beta</div><!--<![endif]-->                
         <div id="container">
             <div class="content-container">
