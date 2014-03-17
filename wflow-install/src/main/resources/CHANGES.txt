@@ -1,3 +1,15 @@
+3.1.5
+=====
+1315    Modified: wflow-consoleweb - Updated error 500 page to hide stacktrace and output it to log instead @3.1-SNAPSHOT
+1312    Fixed: wflow-core - Run Process - Fail to pickup generated id to start a process instance. @3.1-SNAPSHOT
+1309    Modified: wflow-plugin-base, wflow-core, wflow-consoleweb - Merged property editor encryption changes from trunk @3.1-SNAPSHOT
+1308    Modified: wflow-commons, wflow-consoleweb - Ported data encryption interface and changes from trunk, follow up from r1306 @3.1-SNAPSHOT
+1303    Fixed: wflow-consoleweb - JSON API - Rest Repsonse Header is wrong. @3.1-SNAPSHOT
+1295    Fixed: wflow-core - FormPdfUtil - Not able to generate pdf when data contains "&". @3.1-SNAPSHOT
+1252    Fixed: wflow-core - FormPdfUtil - Hash Variables in header and footer are not parse. @3.1-SNAPSHOT
+        Fixed: wflow-core - FormPdfUtil - Missing css. @3.1-SNAPSHOT
+1249    Fixed: wflow-consoleweb - Footer copyright does not show correctly. @3.1-SNAPSHOT
+
 3.1.4
 =====
 1232    Fixed: wflow-core - Run Process Menu - External Form behave differently when mapped to run process activity. @3.1-SNAPSHOT
