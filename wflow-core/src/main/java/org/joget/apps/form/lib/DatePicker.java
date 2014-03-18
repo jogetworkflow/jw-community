@@ -2,6 +2,7 @@ package org.joget.apps.form.lib;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -13,6 +14,8 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.web.servlet.LocaleResolver;
 
 public class DatePicker extends Element implements FormBuilderPaletteElement {
 
@@ -125,7 +128,13 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     
     protected String getJavaDateFormat(String format) {
         if (format == null || format.isEmpty()) {
-            return "MM/dd/yyyy";
+            LocaleResolver localeResolver = (LocaleResolver) AppUtil.getApplicationContext().getBean("localeResolver");  
+            Locale locale = localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest());
+            if (locale != null && locale.toString().startsWith("zh")) {
+                return "yyyy-MM-dd";
+            } else {
+                return "MM/dd/yyyy";
+            }
         }
         
         if (format.contains("DD")) {
