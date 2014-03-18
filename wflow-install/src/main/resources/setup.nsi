@@ -13,7 +13,7 @@
 
   ;Default installation folder
   ;InstallDir "$PROGRAMFILES\Joget"
-  InstallDir "C:\Joget-v4-Beta"
+  InstallDir "C:\Joget-v4"
 
   ;Get installation folder from registry if available
   ;InstallDirRegKey HKCU "Software\Joget"
@@ -257,11 +257,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget Workflow v4 Beta"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v4 Beta\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Joget Workflow v4"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Joget Workflow v4\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -323,7 +323,7 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget Workflow v4 Beta"
+  RMDir /r "$SMPROGRAMS\Joget Workflow v4"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.7.0_51"
