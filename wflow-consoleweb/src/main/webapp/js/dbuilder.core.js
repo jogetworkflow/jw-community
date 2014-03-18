@@ -108,18 +108,20 @@ DatalistBuilder = {
         temp['id'] = DatalistBuilder.datalistProperties.id;
         temp['binderId'] = DatalistBuilder.binderProperties.className;
         
-        $.post(
-            DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns',
-            temp,
-            DatalistBuilder.updateBinderPropertiesCallBack,
-            "json"
-        ).error(
-            function () {
-                if (DatalistBuilder.binderProperties.className != undefined && DatalistBuilder.binderProperties.className != "") {
-                    alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
+        if (temp['binderId'] != "") {
+            $.post(
+                DatalistBuilder.contextPath + '/web/json/console/app' + DatalistBuilder.appPath + '/builder/binder/columns',
+                temp,
+                DatalistBuilder.updateBinderPropertiesCallBack,
+                "json"
+            ).error(
+                function () {
+                    if (DatalistBuilder.binderProperties.className != undefined && DatalistBuilder.binderProperties.className != "") {
+                        alert(get_dbuilder_msg('dbuilder.errorRetrieveColumns'));
+                    }
                 }
-            }
-        );
+            );
+        }
         
         if(mode == DatalistBuilder.UPDATE){
             //reset all fields

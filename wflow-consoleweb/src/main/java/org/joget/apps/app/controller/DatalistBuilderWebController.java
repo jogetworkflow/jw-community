@@ -184,7 +184,7 @@ public class DatalistBuilderWebController {
             dataList.setBinder(binder);
         }
 
-        DataListColumn[] sourceColumns = binder.getColumns();
+        DataListColumn[] sourceColumns = (binder != null) ? binder.getColumns() : new DataListColumn[0];
  
         // sort columns by label
         List<DataListColumn> binderColumnList = Arrays.asList(sourceColumns);
