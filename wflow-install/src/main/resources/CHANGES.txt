@@ -1,3 +1,7 @@
+3.1.5.1
+=======
+1328    Fixed: wflow-common/wflow-directory - Encrypted password in directory manager plugin is not decrypt properly. @3.1-SNAPSHOT
+
 3.1.5
 =====
 1315    Modified: wflow-consoleweb - Updated error 500 page to hide stacktrace and output it to log instead @3.1-SNAPSHOT
