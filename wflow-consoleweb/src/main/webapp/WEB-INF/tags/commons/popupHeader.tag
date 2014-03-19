@@ -25,7 +25,6 @@
         <script>
             $(function() {
                 if (window.self !== window.top) {
-                    console.log($(window.self).height());
                     var wh = $(window.self).height() - 50;
                     $("body.popupBody").css("width", "99.9%");
                     $("#main-body-content").css("height", wh + "px");
