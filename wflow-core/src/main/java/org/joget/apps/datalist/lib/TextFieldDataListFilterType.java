@@ -49,7 +49,7 @@ public class TextFieldDataListFilterType extends DataListFilterTypeDefault {
         DataListFilterQueryObject queryObject = new DataListFilterQueryObject();
         String value = getValue(datalist, name, getPropertyString("defaultValue"));
         if (datalist != null && datalist.getBinder() != null && value != null && !value.isEmpty()) {
-            queryObject.setQuery(datalist.getBinder().getColumnName(name) + " like ?");
+            queryObject.setQuery("lower(" + datalist.getBinder().getColumnName(name) + ") like lower(?)");
             queryObject.setValues(new String[]{'%' + value + '%'});
 
             return queryObject;
