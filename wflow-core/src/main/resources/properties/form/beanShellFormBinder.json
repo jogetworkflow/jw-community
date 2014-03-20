@@ -7,5 +7,5 @@
         required : 'True',
         cols : '60',
         rows : '20'
-    }]
+    }%s]
 }]

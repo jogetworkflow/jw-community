@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.FormAjaxOptionsBinder;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
@@ -16,8 +17,9 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormStoreElementBinder;
 import org.joget.apps.form.model.FormStoreMultiRowElementBinder;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 
-public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormLoadMultiRowElementBinder, FormStoreMultiRowElementBinder {
+public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormLoadMultiRowElementBinder, FormStoreMultiRowElementBinder, FormAjaxOptionsBinder {
 
     @Override
     public String getClassName() {
@@ -59,7 +61,14 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
     }
 
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/form/beanShellFormBinder.json", null, true, "message/form/beanShellFormBinder");
+        String useAjax = "";
+        if (SecurityUtil.getDataEncryption() != null && SecurityUtil.getNonceGenerator() != null) {
+            useAjax = ",{name:'useAjax',label:'@@form.beanshellformbinder.useAjax@@',description:'@@form.beanshellformbinder.useAjax.desc@@',type:'checkbox',value :'false',options :[{value :'true',label :''}]}";
+        }
+        
+        Object[] arguments = new Object[]{useAjax};
+        
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/form/beanShellFormBinder.json", arguments, true, "message/form/beanShellFormBinder");
     }
     
     protected FormRowSet executeScript(String script, Map properties) {
@@ -77,5 +86,16 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
             LogUtil.error(getClass().getName(), e, "Error executing script");
             return null;
         }
+    }
+
+    public boolean useAjax() {
+        return "true".equalsIgnoreCase(getPropertyString("useAjax"));
+    }
+
+    public FormRowSet loadAjaxOptions(String[] dependencyValues) {
+        Map properties = new HashMap();
+        properties.putAll(getProperties());
+        properties.put("values", (dependencyValues == null)? new String[]{}: dependencyValues);
+        return executeScript(getPropertyString("script"), properties);
     }
 }
