@@ -7,6 +7,8 @@ import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.model.FormAjaxOptionsBinder;
+import org.joget.apps.form.model.FormAjaxOptionsElement;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
@@ -14,8 +16,9 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 
-public class SelectBox extends Element implements FormBuilderPaletteElement {
-
+public class SelectBox extends Element implements FormBuilderPaletteElement, FormAjaxOptionsElement {
+    private Element controlElement;
+    
     @Override
     public String getName() {
         return "Select Box";
@@ -135,13 +138,21 @@ public class SelectBox extends Element implements FormBuilderPaletteElement {
     }
     
     protected void dynamicOptions(FormData formData) {
-        if (getPropertyString("controlField") != null && !getPropertyString("controlField").isEmpty()) {
-            Form form = FormUtil.findRootForm(this);
-            Element e = FormUtil.findElement(getPropertyString("controlField"), form, formData);
-            if (e != null) {
-                setProperty("controlFieldParamName", FormUtil.getElementParameterName(e));
+        if (getControlElement(formData) != null) {
+            setProperty("controlFieldParamName", FormUtil.getElementParameterName(getControlElement(formData)));
+            
+            FormUtil.setAjaxOptionsElementProperties(this, formData);
+        }
+    }
+
+    public Element getControlElement(FormData formData) {
+        if (controlElement == null) {
+            if (getPropertyString("controlField") != null && !getPropertyString("controlField").isEmpty()) {
+                Form form = FormUtil.findRootForm(this);
+                controlElement = FormUtil.findElement(getPropertyString("controlField"), form, formData);
             }
         }
+        return controlElement;
     }
 }
 

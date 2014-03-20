@@ -1,5 +1,9 @@
 package org.joget.apps.form.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +16,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.MobileUtil;
@@ -27,6 +32,8 @@ import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormAction;
+import org.joget.apps.form.model.FormAjaxOptionsBinder;
+import org.joget.apps.form.model.FormAjaxOptionsElement;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
@@ -37,6 +44,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -293,7 +301,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
         String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-        if (binder != null) {
+        if (binder != null && !isAjaxOptionsSupported(element, formData)) {
             FormRowSet data = binder.load(element, primaryKeyValue, formData);
             if (data != null) {
                 formData.setOptionsBinderData(binder, data);
@@ -839,22 +847,39 @@ public class FormUtil implements ApplicationContextAware {
     public static Collection<Map> getElementPropertyOptionsMap(Element element, FormData formData) {
         Collection<Map> optionsMap = new ArrayList<Map>();
 
-        // load from "options" property
-        Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
-        if (optionProperty != null && optionProperty instanceof Collection) {
-            for (Map opt : (FormRowSet) optionProperty) {
-                optionsMap.add(opt);
-            }
-        }
-
-        // load from binder if available
-        if (formData != null) {
-            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-            FormRowSet rowSet = formData.getOptionsBinderData(element, id);
+        if (isAjaxOptionsSupported(element, formData)) {
+            FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
+            
+            Element controlElement = ajaxElement.getControlElement(formData);
+            String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+            
+            FormAjaxOptionsBinder binder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+            FormRowSet rowSet = binder.loadAjaxOptions(controlValues);
+            
             if (rowSet != null) {
                 optionsMap = new ArrayList<Map>();
                 for (Map row : rowSet) {
                     optionsMap.add(row);
+                }
+            }
+        } else {
+            // load from "options" property
+            Object optionProperty = element.getProperty(FormUtil.PROPERTY_OPTIONS);
+            if (optionProperty != null && optionProperty instanceof Collection) {
+                for (Map opt : (FormRowSet) optionProperty) {
+                    optionsMap.add(opt);
+                }
+            }
+
+            // load from binder if available
+            if (formData != null) {
+                String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                FormRowSet rowSet = formData.getOptionsBinderData(element, id);
+                if (rowSet != null) {
+                    optionsMap = new ArrayList<Map>();
+                    for (Map row : rowSet) {
+                        optionsMap.add(row);
+                    }
                 }
             }
         }
@@ -1453,5 +1478,93 @@ public class FormUtil implements ApplicationContextAware {
                 recursiveLoadFormData(appId, appVersion, c, result, formData, includeSubformData, includeReferenceElements, flatten, assignment, currentDepth);
             }
         }
-    }    
+    } 
+    
+    public static boolean isAjaxOptionsSupported(Element element, FormData formData) {
+        boolean supported = true;
+        
+        //only support ajax when data encryption and nonce generator are available
+        if (!(SecurityUtil.getDataEncryption() != null && SecurityUtil.getNonceGenerator() != null)) {
+            supported = false;
+        }
+        
+        //if control field not exist
+        if (!(element instanceof FormAjaxOptionsElement && ((FormAjaxOptionsElement) element).getControlElement(formData) != null)) {
+            supported = false;
+        }
+        
+        //if option binder not support ajax
+        if (!(element.getOptionsBinder() != null && element.getOptionsBinder() instanceof FormAjaxOptionsBinder && ((FormAjaxOptionsBinder) element.getOptionsBinder()).useAjax())) {
+            supported = false;
+        }
+        return supported;
+    }
+    
+    public static void setAjaxOptionsElementProperties(Element element, FormData formData) {
+        if (isAjaxOptionsSupported(element, formData)) {
+            FormBinder binder = (FormBinder) element.getOptionsBinder();
+            
+            String s = null;
+            try {
+                JSONObject jo = new JSONObject();
+                jo.accumulate(FormUtil.PROPERTY_CLASS_NAME, binder.getClassName());
+                jo.accumulate(FormUtil.PROPERTY_PROPERTIES, FormUtil.generatePropertyJsonObject(binder.getProperties()));
+                
+                s = jo.toString();
+            } catch (Exception e) {}
+            if (s != null) {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                element.setProperty("appId", appDef.getAppId());
+                element.setProperty("appVersion", appDef.getVersion());
+                
+                String nonce = SecurityUtil.generateNonce(new String[]{"AjaxOptions", appDef.getAppId(), s.substring(s.length() - 20)}, 1);
+                element.setProperty("nonce", nonce);
+                
+                try {
+                    //secure the data
+                    s = SecurityUtil.encrypt(s);
+                    s = URLEncoder.encode(s, "UTF-8");
+                } catch (Exception e) {}
+                element.setProperty("binderData", s);
+            }
+        }
+    }
+    
+    public static FormRowSet getAjaxOptionsBinderData(String dependencyValue, AppDefinition appDef, String nonce, String binderData) {
+        FormRowSet rowSet = new FormRowSet();
+        
+        if (binderData != null && !binderData.isEmpty() && nonce != null && !nonce.isEmpty() && appDef != null) {
+            try {
+                binderData = URLDecoder.decode(binderData, "UTF-8");
+                binderData = SecurityUtil.decrypt(binderData);
+                
+                if (SecurityUtil.verifyNonce(nonce, new String[] {"AjaxOptions", appDef.getAppId(), binderData.substring(binderData.length() - 20)})) {
+                    FormBinder binder = null;
+                    
+                    JSONObject jo = new JSONObject(binderData);
+                    // create binder object
+                    if (!jo.isNull(FormUtil.PROPERTY_CLASS_NAME)) {
+                        PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+                        
+                        String className = jo.getString(FormUtil.PROPERTY_CLASS_NAME);
+                        if (className != null && className.trim().length() > 0) {
+                            binder = (FormBinder) pluginManager.getPlugin(className);
+                            if (binder != null) {
+                                // set child properties
+                                Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(jo);
+                                binder.setProperties(properties);
+                            }
+                        }
+                    }
+                    
+                    if (binder != null) {
+                        FormAjaxOptionsBinder ab = (FormAjaxOptionsBinder) binder;
+                        rowSet = ab.loadAjaxOptions(dependencyValue.split(";"));
+                    }
+                }
+            } catch (Exception e) {}
+        }
+        
+        return rowSet;
+    }
 }

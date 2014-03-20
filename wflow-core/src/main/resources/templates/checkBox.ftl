@@ -23,8 +23,16 @@
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.SelectBox/js/jquery.dynamicoptions.js"></script>
         <script type="text/javascript">
             $(document).ready(function(){
-                $("#${elementParamName!}${element.properties.elementUniqueKey!} input").dynamicOptions({
-                    controlField : "${element.properties.controlFieldParamName!}"
+                $("#${elementParamName!}${element.properties.elementUniqueKey!}").dynamicOptions({
+                    controlField : "${element.properties.controlFieldParamName!}",
+                    paramName : "${elementParamName!}",
+                    type : "checkbox",
+                    readonly : "${element.properties.readonly!}",
+                    nonce : "${element.properties.nonce!}",
+                    binderData : "${element.properties.binderData!}",
+                    appId : "${element.properties.appId!}",
+                    appVersion : "${element.properties.appVersion!}",
+                    contextPath : "${request.contextPath}"
                 });
             });
         </script>

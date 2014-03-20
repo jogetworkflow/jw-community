@@ -39,5 +39,5 @@
         name : 'emptyLabel',
         label : '@@form.defaultformoptionbinder.emptyLabel@@',
         type : 'textfield'
-    }]
+    }%s]
 }]

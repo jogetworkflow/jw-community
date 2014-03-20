@@ -1,7 +1,9 @@
 package org.joget.apps.app.controller;
 
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -26,6 +28,7 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -278,5 +281,23 @@ public class FormBuilderWebController {
 
         model.addAttribute("formHtml", formHtml);
         return "fbuilder/embedForm";
+    }
+    
+    @RequestMapping("/json/app/(*:appId)/(~:appVersion)/form/options")
+    public void formAjaxOptions(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_dv") String dependencyValue, @RequestParam("_n") String nonce, @RequestParam("_bd") String binderData) throws JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        FormRowSet rowSet = FormUtil.getAjaxOptionsBinderData(dependencyValue, appDef, nonce, binderData);
+        
+        JSONArray jsonArray = new JSONArray();
+        if (rowSet != null) {
+            for (Map row : rowSet) {
+                Map<String, String> data = new HashMap<String, String>();
+                data.put(FormUtil.PROPERTY_LABEL, (String) row.get(FormUtil.PROPERTY_LABEL));
+                data.put(FormUtil.PROPERTY_VALUE, (String) row.get(FormUtil.PROPERTY_VALUE));
+                jsonArray.put(data);
+            }
+        }
+        
+        jsonArray.write(writer);
     }
 }

@@ -29,7 +29,15 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 $("#${elementParamName!}${element.properties.elementUniqueKey!}").dynamicOptions({
-                    controlField : "${element.properties.controlFieldParamName!}"
+                    controlField : "${element.properties.controlFieldParamName!}",
+                    paramName : "${elementParamName!}",
+                    type : "selectbox",
+                    readonly : "${element.properties.readonly!}",
+                    nonce : "${element.properties.nonce!}",
+                    binderData : "${element.properties.binderData!}",
+                    appId : "${element.properties.appId!}",
+                    appVersion : "${element.properties.appVersion!}",
+                    contextPath : "${request.contextPath}"
                 });
             });
         </script>

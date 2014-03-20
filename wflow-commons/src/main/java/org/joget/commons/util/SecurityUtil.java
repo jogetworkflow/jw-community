@@ -11,6 +11,7 @@ public class SecurityUtil implements ApplicationContextAware {
     public final static String ENVELOPE = "%%%%";
     private static ApplicationContext appContext;
     private static DataEncryption de;
+    private static NonceGenerator ng;
 
     public static ApplicationContext getApplicationContext() {
         return appContext;
@@ -36,6 +37,22 @@ public class SecurityUtil implements ApplicationContextAware {
         return de;
     }
     
+    public void setNonceGenerator(NonceGenerator ngImpl) {
+        if (ng == null) {
+            ng = ngImpl;
+        }
+    }
+    
+    public static NonceGenerator getNonceGenerator() {
+        if (ng == null) {
+            try {
+                ng = (NonceGenerator) getApplicationContext().getBean("nonceGenerator");
+            } catch (Exception e) {
+            }
+        }
+        return ng;
+    }
+
     public static String encrypt(String rawContent) {
 
         if (rawContent != null && getDataEncryption() != null) {
@@ -95,5 +112,29 @@ public class SecurityUtil implements ApplicationContextAware {
         content = content.replaceAll(ENVELOPE, "");
 
         return content;
+    }
+    
+    public static String generateNonce(String[] attributes, int lifepanHour) {
+
+        if (getNonceGenerator() != null) {
+            try {
+                return getNonceGenerator().generateNonce(attributes, lifepanHour);
+            } catch (Exception e) {
+                //Ignore
+            }
+        }
+        return null;
+    }
+    
+    public static boolean verifyNonce(String nonce, String[] attributes) {
+
+        if (nonce != null && !nonce.isEmpty() && getNonceGenerator() != null) {
+            try {
+                return getNonceGenerator().verifyNonce(nonce, attributes);
+            } catch (Exception e) {
+                //Ignore
+            }
+        }
+        return false;
     }
 }
