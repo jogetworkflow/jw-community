@@ -18,26 +18,27 @@
         }
     });
     
-    function getControlValues(target, o) {
+    function getValues(name) {
         //get enabled input field oni
-        var controlEl = $('[name='+o.controlField+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
-        var controlValues = new Array();
+        var el = $('[name='+name+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var values = new Array();
         
-        if ($(controlEl).is("select")) {
-            controlEl = $(controlEl).find("option:selected");
-        } else if ($(controlEl).is("input[type=checkbox], input[type=radio]")) {
-            controlEl = $(controlEl).filter(":checked");
+        if ($(el).is("select")) {
+            el = $(el).find("option:selected");
+        } else if ($(el).is("input[type=checkbox], input[type=radio]")) {
+            el = $(el).filter(":checked");
         } 
         
-        $(controlEl).each(function() {
-            controlValues.push($(this).val());
+        $(el).each(function() {
+            values.push($(this).val());
         });
         
-        return controlValues;
+        return values;
     }
     
     function ajaxOptions(target, o){
-        var controlValues = getControlValues(target, o);
+        var controlValues = getValues(o.controlField);
+        var values = getValues(o.paramName);
         
         var cv = controlValues.join(";");
         $.getJSON(o.contextPath + "/web/json/app/"+o.appId+"/"+o.appVersion+"/form/options",
@@ -50,13 +51,21 @@
                 if (o.type === "selectbox") {
                     var options = "";
                     for (var i=0, len=data.length; i < len; i++) {
-                        options += "<option value=\""+UI.escapeHTML(data[i].value)+"\">"+UI.escapeHTML(data[i].label)+"</option>"
+                        var selected = "";
+                        if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
+                            selected = "selected=\"selected\"";
+                        }
+                        options += "<option "+selected+" value=\""+UI.escapeHTML(data[i].value)+"\">"+UI.escapeHTML(data[i].label)+"</option>"
                     }
                     $(target).html(options);
                 } else {
                     var options = "";
                     for (var i=0, len=data.length; i < len; i++) {
-                        options += "<label><input id=\""+o.paramName+"\" name=\""+o.paramName+"\" type=\""+o.type+"\" value=\""+UI.escapeHTML(data[i].value)+"\" />"+UI.escapeHTML(data[i].label)+"</label>";
+                        var checked = "";
+                        if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
+                            checked = "checked=\"checked\"";
+                        }
+                        options += "<label><input "+checked+" id=\""+o.paramName+"\" name=\""+o.paramName+"\" type=\""+o.type+"\" value=\""+UI.escapeHTML(data[i].value)+"\" />"+UI.escapeHTML(data[i].label)+"</label>";
                     }
                     $(target).html(options);
                     
@@ -72,7 +81,7 @@
     }
     
     function showHideOption(target, o){
-        var controlValues = getControlValues(target, o);
+        var controlValues = getValues(o.controlField);
         
         if ($(target).is("select")) {
             if ($(target).closest(".form-cell").find('select.dynamic_option_container').length == 0) {
