@@ -25,7 +25,7 @@
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     
-    <c:if test="${!empty userSecurity && !userSecurity.allowSessionTimeout}">
+    <c:if test="${empty userSecurity || (!empty userSecurity && !userSecurity.allowSessionTimeout)}">
     <script type="text/javascript">
         $(document).ready(function(){
             $('body').append('<img id="image_alive" width="1" height="1" src="${pageContext.request.contextPath}/images/v3/clear.gif?" alt="">');
