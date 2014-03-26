@@ -34,7 +34,18 @@ var Mobile = {
         }
     },
 
+    init: function() {
+        // add extra space on top for ios7 status bar
+        var isCordova = $.cookie("cordova") === "true";
+        var updateStatusBar = isCordova && navigator.userAgent.match(/iphone|ipad|ipod/i) && parseInt(navigator.appVersion.match(/OS (\d)/)[1], 10) >= 7;
+        if (updateStatusBar) {
+            document.body.style.webkitTransform = 'translate3d(0, 20px, 0)';
+        }
+    },
+
     initPage: function() {
+        Mobile.init();
+        
         // change form action URL
         $("form.form-container").each(function(index, el) {
             var action = $(el).attr("action");
@@ -231,3 +242,7 @@ $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
         options.isLocal = true;
     }
 });
+
+$(function() {
+    Mobile.init();    
+})
