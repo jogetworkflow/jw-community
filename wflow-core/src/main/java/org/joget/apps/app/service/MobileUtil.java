@@ -13,6 +13,19 @@ public class MobileUtil {
     private MobileUtil(){
     }
 
+    private static Boolean mobileDisabled;
+    
+    public static boolean isMobileDisabled() {
+        return mobileDisabled != null && mobileDisabled;
+    }
+    
+    public void setDisableMobile(boolean disabled) {
+        // only allow setting once
+        if (mobileDisabled == null) {
+            mobileDisabled = disabled;
+        }
+    }
+    
     /**
      * Checks whether the current thread is being called from a mobile browser
      * @return 

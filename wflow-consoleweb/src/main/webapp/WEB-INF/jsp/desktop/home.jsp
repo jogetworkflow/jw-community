@@ -1,4 +1,5 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="marketplaceUrl"><fmt:message key="appCenter.link.marketplace.url"/></c:set>
@@ -134,12 +135,15 @@
 
 <commons:footer/>
 
+<c:set var="mobileDisabled" value="<%= MobileUtil.isMobileDisabled() %>"/>
 <script>
+    <c:if test="${!mobileDisabled}">
     var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
     var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")' title='User Agent: " + navigator.userAgent + "'>" + mobileLinkTitle + "</a>";
     $("#header #account").prepend(mobileLink + " | ");
-    var url = "${pageContext.request.contextPath}/mobile";
+    var url = "${pageContext.request.contextPath}/web/mobile";
     Mobile.directToMobileSite(url);
+    </c:if>
 
     var loadApps = function(container, baseUrl, contextPath) {
         container = container || "#published-apps";

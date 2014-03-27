@@ -8,7 +8,7 @@
 <%@ page contentType="text/html" pageEncoding="utf-8"%>
 
 <%
-if (MobileUtil.isMobileUserAgent(request)) {
+if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
 }
 %>

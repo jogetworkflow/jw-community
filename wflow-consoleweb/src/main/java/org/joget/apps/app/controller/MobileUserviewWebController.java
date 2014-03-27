@@ -58,7 +58,7 @@ public class MobileUserviewWebController {
         }
 
         Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0) {
+        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
             return "error404";
         }
 
@@ -117,7 +117,7 @@ public class MobileUserviewWebController {
         }
 
         Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0) {
+        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
             return "error404";
         }
 
@@ -145,6 +145,10 @@ public class MobileUserviewWebController {
 
     @RequestMapping({"/mobile", "/mobile/", "/mobile/apps"})
     public String mobileRunApps(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+        if (MobileUtil.isMobileDisabled()) {
+            return "error404";
+        }
+        
         // get list of published apps.
         Collection<AppDefinition> resultAppDefinitionList = appService.getPublishedApps(null, true, false);
         

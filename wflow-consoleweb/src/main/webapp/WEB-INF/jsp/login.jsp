@@ -4,7 +4,7 @@
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 
 <%
-if (MobileUtil.isMobileUserAgent(request)) {
+if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
 }
 %>

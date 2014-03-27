@@ -1,3 +1,5 @@
+<%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,11 +11,14 @@
         <script src="../js/jquery/jquery-1.9.1.min.js"></script>
         <script src="../js/jquery/jquery-migrate-1.2.1.min.js"></script>
         <script src="../mobile/jqm/jquery.cookie.js"></script>
+        <c:set var="mobileDisabled" value="<%= MobileUtil.isMobileDisabled() %>"/>
+        <c:if test="${!mobileDisabled}">
         <script src="../mobile/mobile.js"></script>
         <script>
             var url = "../web/mobile";
             Mobile.directToMobileSite(url);
         </script>
+        </c:if>
         <link href="../js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     </head>
     <body id="splash">
@@ -27,7 +32,7 @@
                 Loading App Center
             </div>
             <div id="footer">
-                <a href="http://www.joget.com">&copy; Joget Workflow - Open Dynamics Inc</a>
+                <a href="http://www.joget.com">&copy; Joget Workflow</a>
             </div>
         </div>
     </body>
