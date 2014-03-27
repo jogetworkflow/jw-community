@@ -1681,6 +1681,7 @@ public class ConsoleWebController {
                 }
             }
         }
+        checkAppPublishedVersion(appDef);
         if (!processFound) {
             // specific process not found, get list of processes
             if (processList != null && processList.size() == 1) {
@@ -2571,6 +2572,7 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
@@ -3077,10 +3079,19 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
         return "console/apps/formList";
+    }
+
+    protected void checkAppPublishedVersion(AppDefinition appDef) {
+        String appId = appDef.getId();
+        Long publishedVersion = appService.getPublishedVersion(appId);
+        if (publishedVersion == null || publishedVersion <= 0) {
+            appDef.setPublished(Boolean.FALSE);
+        }
     }
 
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/forms")
