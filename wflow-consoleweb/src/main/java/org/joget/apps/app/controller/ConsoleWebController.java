@@ -1521,6 +1521,7 @@ public class ConsoleWebController {
             return;
         }
         
+        response.setContentType("application/xml; charset=utf-8");
         PackageDefinition packageDef = appDef.getPackageDefinition();
         if (packageDef != null) {
             byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
@@ -1555,7 +1556,6 @@ public class ConsoleWebController {
                 }
             }
         }
-        response.setContentType("application/xml; charset=utf-8");
     }
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/package/deploy", method = RequestMethod.POST)

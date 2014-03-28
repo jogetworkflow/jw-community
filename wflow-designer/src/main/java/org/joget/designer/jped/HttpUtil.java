@@ -242,7 +242,7 @@ public class HttpUtil {
             InputStream instream = entity.getContent();
             try {
                 contents = "";
-                BufferedReader reader = new BufferedReader(new InputStreamReader(instream));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
                 String line = reader.readLine();
                 while (line != null) {
                     contents += line;
