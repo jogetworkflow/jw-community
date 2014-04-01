@@ -682,6 +682,7 @@ public class FormUtil implements ApplicationContextAware {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        String paramName = FormUtil.getElementParameterName(element);
         
         if (formData != null) { // handle default value from options binder
             FormRowSet rowSet = formData.getOptionsBinderData(element, id);
@@ -709,6 +710,8 @@ public class FormUtil implements ApplicationContextAware {
         String paramValue = FormUtil.getRequestParameter(element, formData);
         if (paramValue != null && !FormUtil.isReadonly(element, formData)) {
             value = paramValue;
+        } if (FormUtil.isReadonly(element, formData) && formData != null && formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName) != null) {
+            value = formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName);
         } else {
             // load from binder if available
             if (formData != null) {
