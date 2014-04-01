@@ -6,6 +6,11 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.1
+================
+1363    Fixed: wflow-consoleweb - Fixed log4j initialization error during startup @trunk
+1362    Fixed: wflow-core - FormUtil - fk_ parameter is not working. @trunk
+
 CHANGES IN 4.0.0
 ================
 1357    Fixed: wflow-designer, wflow-consoleweb - Fixed workflow designer not loading unicode characters correctly #1879 @trunk
