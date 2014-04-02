@@ -36,3 +36,16 @@ Installation for Windows:
 8. Run tomcat7-run.bat to start the bundled Apache Tomcat application server
 9. Access the Workflow Management Console at http://localhost:8080/jw
 
+
+Java Security Settings for the Workflow Designer:
+------------------------------------------------
+
+If you encounter a security problem launching the Workflow Designer with the 
+message "Java applications are blocked by your security settings", 
+this is due to security changes introduced in Java 7 Update 51 onwards for 
+self-signed certificates.
+
+There are several solutions for this in the knowledge base article 
+Java Security Settings for the Workflow Designer 
+(http://dev.joget.org/community/display/KBv4/Java+Security+Settings+for+the+Workflow+Designer)
+ 
