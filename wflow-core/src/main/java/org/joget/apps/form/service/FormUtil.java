@@ -710,7 +710,7 @@ public class FormUtil implements ApplicationContextAware {
         String paramValue = FormUtil.getRequestParameter(element, formData);
         if (paramValue != null && !FormUtil.isReadonly(element, formData)) {
             value = paramValue;
-        } if (FormUtil.isReadonly(element, formData) && formData != null && formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName) != null) {
+        } else if (FormUtil.isReadonly(element, formData) && formData != null && formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName) != null) {
             value = formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName);
         } else {
             // load from binder if available
