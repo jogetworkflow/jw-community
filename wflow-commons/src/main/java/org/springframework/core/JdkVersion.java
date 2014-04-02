@@ -21,6 +21,8 @@ package org.springframework.core;
  * that Spring is operating on, to allow for automatically
  * adapting to the present platform's capabilities.
  *
+ * PATCHED: Added support for 1.8 JVM
+ *
  * <p>Note that Spring requires JVM 1.4 or higher, as of Spring 2.5.
  *
  * @author Rod Johnson
@@ -54,6 +56,10 @@ public abstract class JdkVersion {
 	 */
 	public static final int JAVA_17 = 4;
 
+	/**
+	 * PATCH: Constant identifying the 1.8 JVM (Java 8).
+	 */
+	public static final int JAVA_18 = 5;
 
 	private static final String javaVersion;
 
@@ -62,7 +68,11 @@ public abstract class JdkVersion {
 	static {
 		javaVersion = System.getProperty("java.version");
 		// version String should look like "1.4.2_10"
-		if (javaVersion.indexOf("1.7.") != -1) {
+		// PATCH: check for 1.8 JVM
+		if (javaVersion.indexOf("1.8.") != -1) {
+			majorJavaVersion = JAVA_18;
+		} // END PATCH
+		else if (javaVersion.indexOf("1.7.") != -1) {
 			majorJavaVersion = JAVA_17;
 		}
 		else if (javaVersion.indexOf("1.6.") != -1) {
