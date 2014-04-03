@@ -48,6 +48,7 @@
         <!-- Task assignment and form download paths: permissions controlled by assignment  -->
         <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/client/app/**/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/client/app/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
                 
         <!-- Plugin web service paths: permissions controlled by plugin -->
