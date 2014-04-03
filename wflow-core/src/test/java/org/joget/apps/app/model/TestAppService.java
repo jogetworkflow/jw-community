@@ -360,7 +360,20 @@ public class TestAppService {
             FormRowSet loadedRowSet = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_ID, id);
             FormRow loadedRow = loadedRowSet.get(0);
             assertTrue(name.equals(loadedRow.getProperty("name")));
+            
+            // store updated row data using request
+            String updatedName = "updated name";
+            String updatedState = "updated state";
+            FormData formData = new FormData();
+            formData.setPrimaryKeyValue(id);
+            formData.addRequestParameterValues("name", new String[] { updatedName });
+            formData.addRequestParameterValues("state", new String[] { updatedState });
+            appService.submitForm(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_ID, formData, false);
 
+            // load updated row data
+            loadedRowSet = appService.loadFormData(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_FORM_ID, id);
+            loadedRow = loadedRowSet.get(0);
+            assertTrue(updatedName.equals(loadedRow.getProperty("name")) && updatedState.equals(loadedRow.getProperty("state")));
         } finally {
             // delete form data
             formDataDao.delete(TEST_FORM_ID, TEST_FORM_ID, new String[]{"row1"});
