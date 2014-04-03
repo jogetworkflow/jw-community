@@ -70,7 +70,6 @@ public class EmailTool extends DefaultApplicationPlugin {
             if ("true".equalsIgnoreCase(isHtml)) {
                 replaceMap = new HashMap<String, String>();
                 replaceMap.put("\\n", "<br/>");
-                emailMessage = emailMessage.replaceAll("\\n", "<br/>");
             }
             
             emailSubject = WorkflowUtil.processVariable(emailSubject, formDataTable, wfAssignment);
