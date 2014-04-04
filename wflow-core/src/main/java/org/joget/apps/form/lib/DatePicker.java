@@ -42,16 +42,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-        if (!FormUtil.isFormSubmitted(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
-            try {
-                if (!displayFormat.equals(getPropertyString("dataFormat"))) {
-                    SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
-                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                    Date date = data.parse(value);
-                    value = display.format(date);
-                }
-            } catch (Exception e) {}
-        }
+        value = formattedValue(value, displayFormat, formData);
         
         dataModel.put("displayFormat", displayFormat.toUpperCase());
         
@@ -68,9 +59,17 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            String displayFormat = getJavaDateFormat(getPropertyString("format"));
-            
-            value = formattedValue(value, displayFormat, formData);
+            if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+                try {
+                    String displayFormat = getJavaDateFormat(getPropertyString("format"));
+                    if (!displayFormat.equals(getPropertyString("dataFormat"))) {
+                        SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
+                        SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                        Date date = display.parse(value);
+                        value = data.format(date);
+                    }
+                } catch (Exception e) {}
+            }
             if (value != null) {
                 // set value into Properties and FormRowSet object
                 FormRow result = new FormRow();
