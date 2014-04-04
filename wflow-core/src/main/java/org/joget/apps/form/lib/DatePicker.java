@@ -68,17 +68,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
-                try {
-                    String displayFormat = getJavaDateFormat(getPropertyString("format"));
-                    if (!displayFormat.equals(getPropertyString("dataFormat"))) {
-                        SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
-                        SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                        Date date = display.parse(value);
-                        value = data.format(date);
-                    }
-                } catch (Exception e) {}
-            }
+            String displayFormat = getJavaDateFormat(getPropertyString("format"));
+            
+            value = formattedValue(value, displayFormat, formData);
             if (value != null) {
                 // set value into Properties and FormRowSet object
                 FormRow result = new FormRow();
@@ -172,6 +164,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getPropertyString("format"));
+            value = formattedValue(value, displayFormat, formData);
+            
             valid = DateUtil.validateDateFormat(value, displayFormat);
             
             if (!valid) {
@@ -180,5 +174,20 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         }
         
         return valid;
+    }
+    
+    private String formattedValue(String value, String displayFormat, FormData formData) {
+        if (!FormUtil.isFormSubmitted(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+            try {
+                if (!displayFormat.equals(getPropertyString("dataFormat"))) {
+                    SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
+                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    Date date = data.parse(value);
+                    value = display.format(date);
+                }
+            } catch (Exception e) {
+            }
+        }
+        return value;
     }
 }
