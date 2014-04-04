@@ -8,6 +8,7 @@ For details on upgrading to v4, please refer to http://dev.joget.org/community/d
 
 CHANGES IN 4.0.2
 ================
+1385    Fixed: wflow-core - Date Picker - validation not working correctly in Multi Paged Form. @trunk
 1379    Modified: wflow-consoleweb - Updated applicationContext to require login for client assignment @trunk
 1374    Added: wflow-core - Added unit test for storing form data through request parameters @trunk
 1373    Fixed: wflow-core - Fixed email tool inserting redundant line breaks when marked as HTML content, introduced in r947 @trunk
