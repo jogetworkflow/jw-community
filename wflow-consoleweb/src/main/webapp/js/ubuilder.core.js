@@ -196,7 +196,13 @@ UserviewBuilder = {
             onblur    : 'submit',
             rows      : 1,
             width     : '80%',
-            minwidth  : 80
+            minwidth  : 80,
+            data: function(value, settings) {
+                var div = document.createElement('div');
+                div.innerHTML = value;
+                var decoded = div.firstChild.nodeValue;
+                return decoded;
+            }
         });
     },
 
@@ -500,7 +506,13 @@ UserviewBuilder = {
             onblur    : 'submit',
             rows      : 1,
             width     : '80%',
-            minwidth  : 80
+            minwidth  : 80,
+            data: function(value, settings) {
+                var div = document.createElement('div');
+                div.innerHTML = value;
+                var decoded = div.firstChild.nodeValue;
+                return decoded;
+            }
         });
     },
 
