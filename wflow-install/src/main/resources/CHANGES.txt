@@ -1,3 +1,7 @@
+3.1.5.2
+=======
+1334    Fixed: wflow-core - Date Picker - Wrong format in Chinese locale. @3.1-SNAPSHOT
+
 3.1.5.1
 =======
 1328    Fixed: wflow-common/wflow-directory - Encrypted password in directory manager plugin is not decrypt properly. @3.1-SNAPSHOT
