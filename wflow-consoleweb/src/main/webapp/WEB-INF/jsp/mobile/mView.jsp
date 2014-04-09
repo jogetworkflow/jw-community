@@ -3,6 +3,11 @@
 <%@page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
 
+<c:set var="mobileViewDisabled" value="${userview.setting.properties.mobileViewDisabled}"/>
+<c:if test="${mobileViewDisabled}">
+    <c:redirect url="/web/userview/${appId}/${userview.properties.id}/${key}"/>
+</c:if>
+
 <c:set var="landingPage" value="landing"/>
 <c:if test="${empty menuId && !empty userview.properties.homeMenuId}">
     <c:set var="homeRedirectUrl" scope="request" value="/web/"/>

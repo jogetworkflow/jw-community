@@ -12,7 +12,8 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     pageContext.setAttribute("mobileUserAgent", Boolean.TRUE);
 }
 %>
-<c:if test="${mobileUserAgent && (empty cookie['desktopSite'].value || cookie['desktopSite'].value != 'true')}">
+<c:set var="mobileViewDisabled" value="${userview.setting.properties.mobileViewDisabled}"/>
+<c:if test="${mobileUserAgent && !mobileViewDisabled && (empty cookie['desktopSite'].value || cookie['desktopSite'].value != 'true')}">
     <c:redirect url="/web/mobile/${appId}/${userview.properties.id}/${key}"/>
 </c:if>
 
