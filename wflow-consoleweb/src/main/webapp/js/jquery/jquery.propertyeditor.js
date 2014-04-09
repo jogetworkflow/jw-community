@@ -212,7 +212,7 @@
         //do normal validation check
         $.each(options.propertiesDefinition, function(i, page){
             if(page.properties != undefined){
-                validatePage(editorId, null, page.properties, properties, options.defaultPropertyValues, '');
+                validatePage(editorId, page.properties, properties, options.defaultPropertyValues, '');
             }
         });
 
@@ -222,7 +222,7 @@
                 var validator = pageValidationStack[currentPageId]['validators'][key];
 
                 if(validator.type.toLowerCase() == "ajax"){
-                    validateAjax(editorId, currentPageId, pageValidationStack[currentPageId].properties, properties, validator, "editor");
+                    validateAjax(editorId, currentPageId, null, pageValidationStack[currentPageId].properties, properties, validator, "editor");
                 }
             }
         }
@@ -1185,7 +1185,7 @@
                 var validator = pageValidationStack[pageId]['validators'][key];
 
                 if(validator.type.toLowerCase() == "ajax"){
-                    validateAjax(editorId, pageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator, "page");
+                    validateAjax(editorId, pageId, nextPageId, pageValidationStack[pageId].properties, getPageData(editorId, pageValidationStack[pageId].properties, ''), validator, "page");
                 }
             }
         }else{
@@ -1388,7 +1388,7 @@
         return properties;
     }
 
-    function validatePage(editorId, pageId, pagePropertiesDefinition, data, defaultValues, parent){
+    function validatePage(editorId, pagePropertiesDefinition, data, defaultValues, parent){
         var editor = $('div#'+editorId);
         var errors = new Array();
         if(pagePropertiesDefinition != undefined && pagePropertiesDefinition.length != 0){
@@ -1430,16 +1430,12 @@
                     if(elementStack[editorId+'_'+parent+property.name] != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition != undefined && elementStack[editorId+'_'+parent+property.name].propertiesDefinition.length > 0){
                         $.each(elementStack[editorId+'_'+parent+property.name].propertiesDefinition, function(i, page){
                             if(page.properties != undefined){
-                                validatePage(editorId, pageId, page.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
+                                validatePage(editorId, page.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
                             }
                         });
                     }else if(value != undefined && value.className != undefined && value.className != ""){
-                       if(pageId != null){
-                            validationProgressStack[pageId].count = validationProgressStack[pageId].count + 1;
-                        }else{
-                            validationProgressStack[editorId].count = validationProgressStack[editorId].count + 1;
-                        }
-
+                        validationProgressStack[editorId].count = validationProgressStack[editorId].count + 1;
+                        
                         $.ajax({
                             url: replaceContextPath(elementStack[editorId+'_'+parent+property.name].url, optionsStack[editorId].contextPath),
                             context: {
@@ -1461,17 +1457,12 @@
                                     
                                     if(d.length > 0){
                                         $.each(d, function(i, page){
-                                            validatePage(editorId, pageId, page.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
+                                            validatePage(editorId, age.properties, value.properties, null, editorId+'_'+parent+property.name+'_');
                                         });
                                     }
                                 }
-                                if(pageId != null){
-                                    validationProgressStack[pageId].count = validationProgressStack[pageId].count - 1;
-                                    nextPageAction(pageId);
-                                }else{
-                                    validationProgressStack[editorId].count = validationProgressStack[editorId].count - 1;
-                                    saveAction(editorId);
-                                }
+                                validationProgressStack[editorId].count = validationProgressStack[editorId].count - 1;
+                                saveAction(editorId);
                             }
                         });
                     }
@@ -1479,24 +1470,15 @@
             });
         }
 
-        if(pageId != null){
-            validationProgressStack[pageId].count = validationProgressStack[pageId].count - 1;
-            if(errors.length != 0){
-                validationProgressStack[pageId].valid = false;
-                validationProgressStack[pageId].errors = validationProgressStack[pageId].errors.concat(errors);
-            }
-            nextPageAction(pageId);
-        }else{
-            validationProgressStack[editorId].count = validationProgressStack[editorId].count - 1;
-            if(errors.length != 0){
-                validationProgressStack[editorId].valid = false;
-                validationProgressStack[editorId].errors = validationProgressStack[editorId].errors.concat(errors);
-            }
-            saveAction(editorId);
+        validationProgressStack[editorId].count = validationProgressStack[editorId].count - 1;
+        if (errors.length != 0) {
+            validationProgressStack[editorId].valid = false;
+            validationProgressStack[editorId].errors = validationProgressStack[editorId].errors.concat(errors);
         }
+        saveAction(editorId);
     }
 
-    function validateAjax(editorId, pageId, pagePropertiesDefinition, data, validator, mode){
+    function validateAjax(editorId, pageId, nextPageId, pagePropertiesDefinition, data, validator, mode){
         //remove previous error message
         $('#'+pageId + ' > .property-editor-property-container > .property-editor-page-errors').remove();
         
@@ -1542,7 +1524,7 @@
                         validationProgressStack[pageId].valid = false;
                         validationProgressStack[pageId].errors = validationProgressStack[pageId].errors.concat(errors);
                     }
-                    nextPageAction(pageId);
+                    changePageAction(pageId, nextPageId);
                 }else{
                     validationProgressStack[editorId].count = validationProgressStack[editorId].count - 1;
                     if(errors.length != 0){
