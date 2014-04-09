@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-jdbc</artifactId>
     <packaging>jar</packaging>
-    <version>3.1.5.2</version>
+    <version>3.1-SNAPSHOT</version>
     <name>wflow-jdbc</name>
     <url>http://www.joget.org</url>
     <build>
