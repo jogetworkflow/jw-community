@@ -2,14 +2,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-app</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1.5.2</version>
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</developerConnection>
-        <url>http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-app/</url>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.5.2/wflow-app</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.5.2/wflow-app</developerConnection>
+        <url>http://dev.joget.org/svn/jw-community/tags/3.1.5.2/wflow-app</url>
     </scm>
     <modules>
         <module>../wflow-jdbc</module>

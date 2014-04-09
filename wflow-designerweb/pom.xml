@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-designerweb</artifactId>
     <packaging>war</packaging>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.1.5.2</version>
     <name>wflow-designerweb</name>
     <url>http://www.joget.org</url>
     <dependencies>
