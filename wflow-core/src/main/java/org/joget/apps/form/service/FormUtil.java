@@ -741,6 +741,7 @@ public class FormUtil implements ApplicationContextAware {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
         String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        String paramName = FormUtil.getElementParameterName(element);
 
         // handle multiple values
         if (value != null) {
@@ -775,7 +776,10 @@ public class FormUtil implements ApplicationContextAware {
         // read from request if available, TODO: handle null values e.g. checkbox
         if (id != null) {
             String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
-            if (paramValues != null) {
+            if (paramValues != null && !FormUtil.isReadonly(element, formData)) {
+                values = Arrays.asList(paramValues);
+            } else if (FormUtil.isReadonly(element, formData) && formData != null && formData.getRequestParameter(FormService.PREFIX_FOREIGN_KEY + paramName) != null) {
+                paramValues = formData.getRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + paramName);
                 values = Arrays.asList(paramValues);
             } else {
                 // load from binder if available
