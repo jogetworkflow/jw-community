@@ -21,6 +21,8 @@
                 if ($(this).find(".grid-row").length == 0) {
                     methods.addRow.apply($(this), arguments);
                 }
+                
+                $(this).find("th:last-child").after("<th style=\"border: 0 none;\"></th>");
             });
         },
 
