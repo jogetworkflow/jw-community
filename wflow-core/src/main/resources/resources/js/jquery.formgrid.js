@@ -21,6 +21,8 @@
                 if ($(this).find(".grid-row").length == 0) {
                     methods.addRow.apply($(this), arguments);
                 }
+                
+                $(this).find("th:last-child").after("<th style=\"border: 0 none;\"></th>");
             });
         },
 
@@ -33,7 +35,7 @@
                  width: "none",
                  submit: "OK"
             });
-
+            
             // add delete link for each row
             $(this).find(".grid-row").each(function() {
                 if ($(this).find(".grid-row-del").length == 0) {
