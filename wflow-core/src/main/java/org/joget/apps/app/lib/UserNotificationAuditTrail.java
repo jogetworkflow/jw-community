@@ -15,6 +15,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ThreadSessionUtil;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
@@ -131,7 +132,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                 email.setSmtpPort(Integer.parseInt(smtpPort));
                                             }
                                             if (smtpUsername != null && !smtpUsername.isEmpty()) {
-                                                email.setAuthentication(smtpUsername, smtpPassword);
+                                                String decryptedSmtpPassword = smtpPassword;
+                                                if (decryptedSmtpPassword != null) {
+                                                    decryptedSmtpPassword = SecurityUtil.decrypt(decryptedSmtpPassword);
+                                                }
+                                                email.setAuthentication(smtpUsername, decryptedSmtpPassword);
                                             }
                                             if(security!= null){
                                                 if(security.equalsIgnoreCase("SSL") ){

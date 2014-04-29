@@ -22,6 +22,7 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
@@ -88,6 +89,9 @@ public class EmailTool extends DefaultApplicationPlugin {
                 email.setSmtpPort(Integer.parseInt(smtpPort));
             }
             if (smtpUsername != null && !smtpUsername.isEmpty()) {
+                if (smtpPassword != null) {
+                    smtpPassword = SecurityUtil.decrypt(smtpPassword);
+                }
                 email.setAuthentication(smtpUsername, smtpPassword);
             }
             if(security!= null){
