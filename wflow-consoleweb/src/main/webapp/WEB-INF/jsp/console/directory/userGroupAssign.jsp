@@ -38,6 +38,7 @@
                    checkboxCallback1="assignGroups"
                    checkboxButton2="general.method.label.cancel"
                    checkboxCallback2="closeDialog"
+                   checkboxOptional2="true"
                    searchItems="name|Name"
                    fields="['id','name','description','organization.name']"
                    column1="{key: 'id', label: 'console.directory.group.common.label.id', sortable: true}"

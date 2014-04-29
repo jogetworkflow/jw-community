@@ -138,11 +138,19 @@
     <c:forEach var="count" begin="0" end="10">
         <c:set var="button">checkboxButton${count}</c:set>
         <c:set var="callback">checkboxCallback${count}</c:set>
+        <c:set var="optional">checkboxOptional${count}</c:set>
         <c:if test="${!empty attributeMap[button]}">
             <script type="text/javascript">
-                function ${var}_${divToUpdate}_${attributeMap[callback]}_callback(){
-                ${attributeMap[callback]}(${var}.getSelectedRows());
-                        }
+                function ${var}_${divToUpdate}_${attributeMap[callback]}_callback() {
+                    var selectedRows = ${var}.getSelectedRows();
+                    <c:if test="${attributeMap[optional] != 'true'}">
+                    if (!selectedRows || selectedRows.length === 0 || (selectedRows.length === 1 && selectedRows[0] === "")) {
+                        alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
+                        return;
+                    }
+                    </c:if>
+                    ${attributeMap[callback]}(selectedRows);
+                }
             </script>
             <button type="button" onclick="${var}_${divToUpdate}_${attributeMap[callback]}_callback()"><fmt:message key="${attributeMap[button]}"/></button>
         </c:if>

@@ -49,6 +49,7 @@
                    checkboxCallback1="assignReportTo"
                    checkboxButton2="general.method.label.cancel"
                    checkboxCallback2="closeDialog"
+                   checkboxOptional2="true"
                    searchItems="name|Name"
                    fields="['user.id','user.username','user.firstName','user.lastName','employeeCode','role','deparment.name', 'grade.name']"
                    column1="{key: 'user.username', label: 'console.directory.user.common.label.username', sortable: true}"

@@ -154,6 +154,7 @@
                        checkbox="${!isCustomDirectoryManager}"
                        checkboxButton1="console.directory.user.group.assign.label"
                        checkboxCallback1="assignGroups"
+                       checkboxOptional1="true"
                        checkboxButton2="console.directory.user.group.unassign.label"
                        checkboxCallback2="unassignGroups"
                        searchItems="name|Name"

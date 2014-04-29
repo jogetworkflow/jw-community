@@ -25,6 +25,7 @@
                    checkboxSelectSingle="true"
                    checkboxButton1="console.app.version.label.newVersion"
                    checkboxCallback1="newVersion"
+                   checkboxOptional1="true"
                    checkboxButton2="console.app.version.label.publish"
                    checkboxCallback2="publishVersion"
                    checkboxButton3="console.app.version.label.unpublish"

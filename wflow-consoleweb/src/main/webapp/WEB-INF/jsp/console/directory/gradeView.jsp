@@ -75,6 +75,7 @@
                        checkbox="${!isCustomDirectoryManager}"
                        checkboxButton1="console.directory.grade.user.assign.label"
                        checkboxCallback1="assignUsers"
+                       checkboxOptional1="true"
                        checkboxButton2="console.directory.grade.user.unassign.label"
                        checkboxCallback2="unassignUsers"
                        searchItems="name|Name"

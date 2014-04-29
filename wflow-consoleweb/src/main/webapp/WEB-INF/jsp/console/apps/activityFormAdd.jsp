@@ -40,6 +40,7 @@
                                    hrefPost="true"
                                    checkboxButton1="console.form.create.label"
                                    checkboxCallback1="createForm"
+                                   checkboxOptional1="true"
                                    searchItems="name|Form Name"
                                    fields="['id','name','dateCreated','dateModified']"
                                    column1="{key: 'name', label: 'console.form.common.label.name', sortable: true}"
