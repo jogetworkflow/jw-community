@@ -15,9 +15,8 @@ import org.enhydra.jawe.components.graph.GraphManager;
 import org.enhydra.jawe.JaWEManager;
 
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import org.apache.commons.logging.LogFactory;
 
 public class Viewer {
 
@@ -29,7 +28,7 @@ public class Viewer {
         try {
             jaweManager.init();
         } catch (Exception e) {
-            Logger.getLogger(Viewer.class.getName()).log(Level.SEVERE, null, e);
+            LogFactory.getLog(Viewer.class.getName()).error(e);
         }
     }
 
@@ -42,7 +41,7 @@ public class Viewer {
         if (img != null) {
             // output to jpeg
             FileOutputStream fos = new FileOutputStream(file);
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "Saving process image to JPEG using ImageIO");
+            LogFactory.getLog(Viewer.class.getName()).info("Saving process image to JPEG using ImageIO");
             ImageIO.write(img, "jpeg", fos);
             fos.flush();
             fos.close();
@@ -55,7 +54,7 @@ public class Viewer {
         BufferedImage img = generateProcessImage(xpdl, packageId, processDefId, runningActivityIds);
         if (img != null) {
             // output to jpeg
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "Saving process image to JPEG using ImageIO");
+            LogFactory.getLog(Viewer.class.getName()).info("Saving process image to JPEG using ImageIO");
             ImageIO.write(img, "jpeg", out);
             out.flush();
         }
@@ -64,7 +63,7 @@ public class Viewer {
 
     public BufferedImage generateProcessImage(String xpdl, String packageId, String processDefId, String[] runningActivityIds) {
 
-        Logger.getLogger(getClass().getName()).log(Level.INFO, "Generating process image");
+        LogFactory.getLog(Viewer.class.getName()).info("Generating process image");
 
         JaWEController jaweController = jaweManager.getJaWEController();
         synchronized (jaweController) {
@@ -97,12 +96,11 @@ public class Viewer {
                                     graph.addSelectionCell(go);
                                 }
                             } catch (Exception ex) {
-                                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                                LogFactory.getLog(Viewer.class.getName()).error(ex);
                             }
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-                        System.err.println("Problems while updating selection");
+                        LogFactory.getLog(Viewer.class.getName()).error("Problems while updating selection", ex);
                     }
                 }
 
@@ -122,11 +120,11 @@ public class Viewer {
                     graph.paint(graphics);
                 }
 
-                Logger.getLogger(getClass().getName()).log(Level.INFO, "Completed generating process image");
+                LogFactory.getLog(Viewer.class.getName()).info("Completed generating process image");
 
                 return img;
             }catch(Exception e){
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+                LogFactory.getLog(Viewer.class.getName()).error(e);
                 return null;
             } finally {
                 try {
