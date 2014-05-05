@@ -54,5 +54,35 @@ FormUtil = {
         field = $(field).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         
         return field;
+    },
+    
+    getGridCells : function(cellFieldId){
+        var fieldId = cellFieldId.split(".")[0];
+        
+        var field = $("[name="+fieldId+"]");
+        if ($(field).length === 0) {
+            field = $("[name$=_"+fieldId+"]");
+        }
+        
+        //to prevent return field with similar name, get the field with shorter name (Field in the subform)
+        if ($(field).length > 1) {
+            var fieldname;
+            $(field).each(function(){
+                if (fieldname === undefined) {
+                    fieldname = $(this).attr("name");
+                }
+                if ($(this).attr("name").length < fieldname.length) {
+                    fieldname = $(this).attr("name");
+                }
+                field = $("[name="+fieldname+"]");
+            });
+        }
+        
+        field = $(field).filter(".grid:visible");
+        
+        cellFieldId = cellFieldId.replace(/\./g, '_');
+        var cells = $(field).find("[name=" + cellFieldId + "], [name$=_" + cellFieldId + "]");
+        
+        return cells;
     }
 }
