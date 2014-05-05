@@ -32,6 +32,11 @@
     <listener>
         <listener-class>org.joget.apps.app.web.ContextListener</listener-class>
     </listener>
+    <!-- Uncomment this listener to support concurrent session control
+    <listener>
+        <listener-class>org.springframework.security.ui.session.HttpSessionEventPublisher</listener-class>
+    </listener>
+    -->
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

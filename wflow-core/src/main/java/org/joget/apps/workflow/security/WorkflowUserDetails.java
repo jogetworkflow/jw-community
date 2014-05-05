@@ -8,12 +8,14 @@ import org.joget.workflow.util.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.GrantedAuthority;
 import org.springframework.security.GrantedAuthorityImpl;
+import org.springframework.security.concurrent.SessionIdentifierAware;
 import org.springframework.security.userdetails.UserDetails;
 
-public class WorkflowUserDetails implements UserDetails {
+public class WorkflowUserDetails implements UserDetails, SessionIdentifierAware {
 
     private User user;
 
@@ -65,5 +67,14 @@ public class WorkflowUserDetails implements UserDetails {
 
     public boolean isEnabled() {
         return user.getActive() == 1;
+    }
+
+    public String getSessionId() {
+        String sessionId = getUsername();
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            sessionId = request.getSession().getId();
+        }
+        return sessionId;
     }
 }

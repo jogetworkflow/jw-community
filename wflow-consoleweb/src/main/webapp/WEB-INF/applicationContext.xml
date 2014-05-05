@@ -80,6 +80,9 @@
 
         <security:logout logout-success-url="/web/login"/>
         <security:anonymous />
+        
+        <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions, -1 means no limit  -->
+        <security:concurrent-session-control max-sessions="-1" exception-if-maximum-exceeded="true" expired-url="/web/login" />
     </security:http>
     
     <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
