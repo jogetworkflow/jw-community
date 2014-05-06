@@ -21,6 +21,26 @@ body #page.quickEditModeActive fieldset#form-canvas, body #page.quickEditModeAct
     padding: 0px;
 }
 
+body .pg-navigator {
+    display:none;
+}
+
+body tr.pg-tr-hide {
+    display:table-row;
+}
+
+body .grid-action-edit,
+body .grid-action-delete,
+body .grid.enableSorting a.grid-action-moveup,
+body .grid.enableSorting a.grid-action-movedown,
+body .grid-action-add{
+    display:none;
+}
+
+body .section-actions{
+    display:none;
+}
+
 @media print {    
     body #main div.span3 {
         width: 0px;
