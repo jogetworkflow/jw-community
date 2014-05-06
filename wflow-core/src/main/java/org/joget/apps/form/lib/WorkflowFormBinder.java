@@ -1,5 +1,6 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,6 +69,8 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
                 variableList = workflowManager.getActivityVariableList(activityId);
             } else if (processId != null && !processId.isEmpty()) {
                 variableList = workflowManager.getProcessVariableList(processId); 
+            } else {
+                variableList = new ArrayList<WorkflowVariable>();
             }
             Map<String, String> variableMap = new HashMap<String, String>();
             for (WorkflowVariable variable : variableList) {
