@@ -60,9 +60,15 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
             }
 
             // handle workflow variables
+            String activityId = formData.getActivityId();
             String processId = formData.getProcessId();
             WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableList(processId);
+            Collection<WorkflowVariable> variableList = null;
+            if (activityId != null && !activityId.isEmpty()) {
+                variableList = workflowManager.getActivityVariableList(activityId);
+            } else if (processId != null && !processId.isEmpty()) {
+                variableList = workflowManager.getProcessVariableList(processId); 
+            }
             Map<String, String> variableMap = new HashMap<String, String>();
             for (WorkflowVariable variable : variableList) {
                 Object val = variable.getVal();
@@ -84,8 +90,9 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
 
             // handle workflow variables
             if (!rows.isMultiRow()) {
+                String activityId = formData.getActivityId();
                 String processId = formData.getProcessId();
-                if (processId != null) {
+                if (activityId != null || processId != null) {
                     WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
 
                     // recursively find element(s) mapped to workflow variable
@@ -97,7 +104,11 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
                     for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
                         String variableName = i.next();
                         String variableValue = variableMap.get(variableName);
-                        workflowManager.processVariable(processId, variableName, variableValue);
+                        if (activityId != null) {
+                            workflowManager.activityVariable(activityId, variableName, variableValue);
+                        } else {
+                            workflowManager.processVariable(processId, variableName, variableValue);
+                        }
                     }
                 }
             }
