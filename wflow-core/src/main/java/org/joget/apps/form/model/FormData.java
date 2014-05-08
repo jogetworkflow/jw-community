@@ -16,6 +16,7 @@ public class FormData {
 
     private String primaryKeyValue;
     private String processId;
+    private String activityId;
     protected Map<FormLoadBinder, FormRowSet> loadBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<FormLoadBinder, FormRowSet> optionsBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<String, String> errorMap = new ListOrderedMap();
@@ -46,6 +47,14 @@ public class FormData {
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+
+    public String getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(String activityId) {
+        this.activityId = activityId;
     }
 
     /**

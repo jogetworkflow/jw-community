@@ -253,6 +253,7 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public PackageActivityForm viewAssignmentForm(AppDefinition appDef, WorkflowAssignment assignment, FormData formData, String formUrl) {
+        String activityId = assignment.getActivityId();
         String processId = assignment.getProcessId();
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
@@ -265,6 +266,7 @@ public class AppServiceImpl implements AppService {
         if (formData == null) {
             formData = new FormData();
         }
+        formData.setActivityId(activityId);
         formData.setProcessId(processId);
         formData.setPrimaryKeyValue(originProcessId);
         
