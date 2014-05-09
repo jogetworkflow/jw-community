@@ -6,6 +6,24 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.3
+================
+1417    Modified: wflow-consoleweb - Embed Datalist - Support for persisting selections. #1925 @trunk
+1414    Modified: wflow-consoleweb - Updated Userview print css. @trunk
+1412    Fixed: wflow-core - WorkflowFormBinder - Workflow variable work inconsistently due to value set directly to process level #1975. @trunk
+1411    Modified: wflow-core -Hide mobile options in userview setting when mobile is disabled @trunk
+1410    Fixed: wflow-consoleweb - formUtil.js - Added method getGridCells. @trunk
+1409    Added: wflow-core, wflow-consoleweb - Added support to configure Spring Security concurrent session control #1963 @trunk
+1408    Modified: wflow-consoleweb - Modified jsontable lists to add alert where appropriate when no items are selected @trunk
+1407    Modified: wflow-designerweb - Modified logging in Viewer.java to use commons-logging #1949, #1952 @trunk
+1406    Fixed: wflow-consoleweb - Fixed admin bar showing and messed layout in Bootstrap theme when printing form and userview @trunk
+1405    Modified: wflow-core - Email tools unable to decrypt passwords when using hash variables #1959 @trunk
+1403    Fixed: wflow-core - Grid - Missing HTML Markup for column header. #1938 @trunk
+1402    Fixed: wflow-core - FormUtil - Value of Read-only multi options field still modifiable. #1916 @trunk
+1398    Fixed: wflow-consoleweb - Property editor - Ajax validation not working @trunk
+1397    Fixed: wflow-consoleweb - Fixed userview headers, footers and category labels encoding characters when editing @trunk
+1392    Fixed: wflow-consoleweb - Fixed mobile view disabled not working when accessing userview directly @trunk
+
 CHANGES IN 4.0.2
 ================
 1385    Fixed: wflow-core - Date Picker - validation not working correctly in Multi Paged Form. @trunk
