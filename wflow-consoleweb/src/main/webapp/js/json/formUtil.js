@@ -64,6 +64,9 @@ FormUtil = {
             field = $("[name$=_"+fieldId+"]");
         }
         
+        //filter those in hidden section
+        field = $(field).filter(':parents(.section-visibility-hidden)');
+        
         //to prevent return field with similar name, get the field with shorter name (Field in the subform)
         if ($(field).length > 1) {
             var fieldname;
@@ -78,11 +81,14 @@ FormUtil = {
             });
         }
         
-        field = $(field).filter(".grid:visible");
-        
         cellFieldId = cellFieldId.replace(/\./g, '_');
         var cells = $(field).find("[name=" + cellFieldId + "], [name$=_" + cellFieldId + "]");
         
         return cells;
     }
 }
+
+//filter parents
+jQuery.expr[':'].parents = function(a,i,m){
+    return jQuery(a).parents(m[3]).length < 1;
+};

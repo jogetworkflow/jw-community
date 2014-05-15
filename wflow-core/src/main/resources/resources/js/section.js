@@ -34,9 +34,11 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, controlEl, control
     var match  = thisObject.checkValue(thisObject, controlEl, controlVal, isRegex);
     if (match) {
         targetEl.css("display", "block");
+        targetEl.removeClass("section-visibility-hidden");
         thisObject.enableInputField(targetEl);
     } else {
         targetEl.css("display", "none");
+        targetEl.addClass("section-visibility-hidden");
         thisObject.disableInputField(targetEl);
     }
 }
@@ -71,32 +73,52 @@ VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
     }
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
+    var thisObject = this;
+    
     var names = new Array();
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
+        } 
+        if ($(this).is("[name]")) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {
                 names.push(n);
             }
-        } 
-    });
-    $.each(names, function(i){
-        var newObject = $('<input name="'+names[i]+'" class="display:none;" />');
-        $(targetEl).append(newObject);
-        $("[name=" + names[i] + "]").trigger("change");
-        $(newObject).remove();
-    });
-}
-VisibilityMonitor.prototype.enableInputField = function(targetEl) {
-    var names = new Array();
-    $(targetEl).find('.section-visibility-disabled').removeClass(".section-visibility-disabled").removeAttr("disabled").each(function(){
-        var n = $(this).attr("name");
-        if ($.inArray(n, names) < 0 && n != "") {
-            names.push(n);
         }
     });
+    thisObject.triggerChange(targetEl, names);
+}
+VisibilityMonitor.prototype.enableInputField = function(targetEl) {
+    var thisObject = this;
+    
+    var names = new Array();
+    $(targetEl).find('input, select, textarea, .form-element').each(function(){
+        if($(this).is(".section-visibility-disabled")){
+            $(this).removeClass(".section-visibility-disabled").removeAttr("disabled");
+        } 
+        if ($(this).is("[name]")) {
+            var n = $(this).attr("name");
+            if ($.inArray(n, names) < 0 && n != "") {
+                names.push(n);
+            }
+        }
+    });
+    
+    thisObject.triggerChange(targetEl, names);
+}
+VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
     $.each(names, function(i){
+        var temp = false;
+        var newObject = $("[name=" + names[i] + "]");
+        if (newObject.length === 0) {
+            newObject = $('<input name="'+names[i]+'" class="display:none;" />');
+            $(targetEl).append(newObject);
+            temp = true;
+        }
         $("[name=" + names[i] + "]").trigger("change");
+        if (temp) {
+            $(newObject).remove();
+        }
     });
 }
