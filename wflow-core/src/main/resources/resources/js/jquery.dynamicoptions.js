@@ -84,11 +84,11 @@
         var controlValues = getValues(o.controlField);
         
         if ($(target).is("select")) {
-            if ($(target).closest(".form-cell").find('select.dynamic_option_container').length == 0) {
+            if ($(target).closest(".form-cell, .subform-cell").find('select.dynamic_option_container').length == 0) {
                 $(target).after('<div class="ui-screen-hidden"><select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select></div>');
             }
             
-            $(target).html($(target).closest(".form-cell").find('select.dynamic_option_container').html());
+            $(target).html($(target).closest(".form-cell, .subform-cell").find('select.dynamic_option_container').html());
             
             $(target).find("option").each(function(){
                 var option = $(this);
@@ -96,8 +96,8 @@
                     $(option).remove();
                 }
             });
-        } else {
-              
+        } else { 
+            
             $(target).find("input").each(function(){
                 var option = $(this);
                 var label = $(option).parent();
