@@ -6,6 +6,12 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.3.1
+==================
+1431    Fixed: wflow-consoleweb - UI - iframe in popup dialog does not show correctly in userview. @trunk
+1429    Fixed: wflow-core/wflow-consoleweb - Correction for r1410. @trunk
+1428    Fixed: wflow-core - Dynamic Options - Not working in subform. @trunk
+
 CHANGES IN 4.0.3
 ================
 1417    Modified: wflow-consoleweb - Embed Datalist - Support for persisting selections. #1925 @trunk
