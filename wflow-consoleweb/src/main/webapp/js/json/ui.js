@@ -114,8 +114,12 @@ PopupDialog.prototype = {
               newFrame.setAttribute("name", "jqueryDialogFrame");
               newFrame.setAttribute("frameborder", "0");
               newFrame.setAttribute("width", "100%");
-              newFrame.setAttribute("height", this.height-20);
-              newFrame.setAttribute("scrolling", "no");
+              if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
+                  newFrame.setAttribute("height", this.height-20);
+                  newFrame.setAttribute("scrolling", "no");
+              } else {
+                  newFrame.setAttribute("height", this.height-40);
+              }
               newDiv.appendChild(newFrame);
               document.body.appendChild(newDiv);
           }
