@@ -168,11 +168,12 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
     @Override
     public String getColumnName(String name) {
-        Form form = getSelectedForm();
-        if (name != null && !name.isEmpty()) {
+        if (name != null && !name.isEmpty() && !FormUtil.PROPERTY_ID.equals(name)) {
+            Form form = getSelectedForm();
+            
             FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
             Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME));
-            if (columnNames.contains(name) && !FormUtil.PROPERTY_ID.equals(name)) {
+            if (columnNames.contains(name)) {
                 name = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + name;
             } else if (FormUtil.PROPERTY_DATE_CREATED.equals(name) || FormUtil.PROPERTY_DATE_MODIFIED.equals(name)) {
                 name = "cast(" + name + " as string)";
