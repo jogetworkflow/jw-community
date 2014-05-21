@@ -72,6 +72,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.PagedList;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.DeadlineThreadManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.TransactionStatus;
@@ -88,6 +89,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private JtaTransactionManager transactionManager;
     protected TransactionTemplate transactionTemplate;
     private WorkflowProcessLinkDao workflowProcessLinkDao;
+    private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
 
@@ -127,6 +129,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
         this.transactionManager = transactionManager;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         setPath("/");
+    }
+
+    public WorkflowAssignmentDao getWorkflowAssignmentDao() {
+        return workflowAssignmentDao;
+    }
+
+    public void setWorkflowAssignmentDao(WorkflowAssignmentDao workflowAssignmentDao) {
+        this.workflowAssignmentDao = workflowAssignmentDao;
     }
 
     /**
@@ -3241,7 +3251,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (rows != null && rows > 0) {
                 filter.setLimit(rows);
             }
-
+            
             // execute
             WfAssignmentIterator ai = sc.get_iterator_assignment();
             ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
@@ -3291,8 +3301,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     }
                 }
                 assignmentList.add(ass);
-            }
-
+            } 
+            
             // set participant info
             participantsForAssignment(assignmentList);
 
@@ -3305,6 +3315,29 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        return assignmentList;
+    }
+    
+    /**
+     * Returns a list of assignments with lite info for the current user.
+     * @param packageId
+     * @param processDefId
+     * @param processId
+     * @param activityDefId
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return 
+     */
+    public Collection<WorkflowAssignment> getAssignmentListLite(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        
+        String username = getWorkflowUserManager().getCurrentUsername();
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started", sort, desc, start, rows);
+        
         return assignmentList;
     }
 

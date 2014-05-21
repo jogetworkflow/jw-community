@@ -19,6 +19,7 @@
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="setupManager" ref="setupManager"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+        <property name="workflowAssignmentDao" ref="workflowAssignmentDao"/>
     </bean>
 
     <bean id="workflowUtil" class="org.joget.workflow.util.WorkflowUtil">
@@ -39,6 +40,10 @@
         <property name="mappingResources">
             <list>
                 <value>/org/joget/workflow/model/WorkflowProcessLink.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkAssignment.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivity.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -50,6 +55,11 @@
     </bean>
 
     <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+        <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
+    </bean>
+    
+    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.WorkflowAssignmentDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
     </bean>
