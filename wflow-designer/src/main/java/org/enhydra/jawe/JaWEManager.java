@@ -679,7 +679,7 @@ public class JaWEManager {
             //END CUSTOM
             if (JaWE.getJaWEVersion() != JaWE.COMMUNITY_VERSION) {
                 String msg = "JaweManager -> Problems while instantiating XPDL Element Editor class '" + xpdleeClass + "' - using default implementation!";
-                loggingManager.error(msg, ex);
+                loggingManager.info(msg, ex);
             } else {
                 loggingManager.info("JaWEManager -> Working with '" + NewStandardXPDLElementEditor.class.getName() + "' implementation of XPDL Element Editor ");
             }
