@@ -10,7 +10,7 @@
                 ${value!?html}
                 <input type="hidden" name="${elementParamName!}_path" value="${tempFilePath!?html}"/>
             <#else>
-                <a href="${request.contextPath}${filePath!?html}">${value}</a>
+                <a href="${request.contextPath}${filePath!?html}" target="_blank" >${value}</a>
                 <input type="hidden" name="${elementParamName!}_path" value="${value!?html}"/>
             </#if>
             <#if value != '' && element.properties.readonly! != 'true'>
