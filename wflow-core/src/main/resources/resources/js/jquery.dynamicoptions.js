@@ -12,6 +12,7 @@
                     $('[name='+o.controlField+']').live("change", function(){
                         ajaxOptions(target, o);
                     });
+                    ajaxOptions(target, o);
                 }
             }
             return target;
