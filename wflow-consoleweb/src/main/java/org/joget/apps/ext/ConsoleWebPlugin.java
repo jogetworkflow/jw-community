@@ -11,7 +11,10 @@ import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.base.PluginWebSupport;
 import org.springframework.context.MessageSource;
@@ -184,6 +187,16 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      * @return 
      */
     public String getDefaultUserviewTheme() {
+        String className = ResourceBundleUtil.getMessage("userview.default.theme.classname");
+        
+        if (className != null && !className.isEmpty()) {
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            Plugin plugin = pluginManager.getPlugin(className);
+            if (plugin != null && plugin instanceof UserviewTheme) {
+                return className;
+            }
+        }
+        
         return "org.joget.plugin.enterprise.CorporatiTheme";
     }
     
