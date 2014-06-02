@@ -274,4 +274,20 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String text = (result != null) ? result.toString() : null;
         return text;
     }
+    
+    @Override
+    protected Object evaluate(String propertyName) {
+        if (propertyName != null && !propertyName.isEmpty()) {
+            try {
+                Object value = super.evaluate(propertyName);
+
+                //handle for lowercase propertyName
+                if (value == null) {
+                    value = super.evaluate(propertyName.toLowerCase());
+                }
+                return value;
+            } catch (Exception e) {}
+        }
+        return null;
+    }
 }
