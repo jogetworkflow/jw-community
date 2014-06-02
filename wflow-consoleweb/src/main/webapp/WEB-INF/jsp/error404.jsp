@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div id="footer">
-                <a href="http://www.joget.com">&copy; Joget Workflow - Open Dynamics Inc</a>
+                <a href="http://www.joget.com">&copy; Joget Workflow - Joget Inc</a>
             </div>
         </div>
     </body>
