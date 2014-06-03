@@ -19,7 +19,7 @@
                 label:'@@form.form.tableName@@',
                 type:'textfield',
                 required:'True',
-                regex_validation : '^[a-zA-Z0-9_]+$',
+                regex_validation : '^[a-zA-Z0-9_]{1,20}$',
                 validation_message : '@@form.form.invalidId@@'
             },
             {

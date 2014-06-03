@@ -47,6 +47,7 @@ import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
+import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -1494,8 +1495,12 @@ public class ConsoleWebController {
         }
         
         AppDefinition appDef = null;
-        if (appZip != null) {
-            appDef = appService.importApp(appZip.getBytes());
+        try {
+            if (appZip != null) {
+                appDef = appService.importApp(appZip.getBytes());
+            }
+        } catch (ImportAppException e) {
+            errors.add(e.getMessage());
         }
 
         if (appDef == null || !errors.isEmpty()) {

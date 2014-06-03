@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.form.model.Form;
@@ -323,7 +324,7 @@ public interface AppService {
      * @param data
      * @return
      */
-    AppDefinition importApp(byte[] zip);
+    AppDefinition importApp(byte[] zip) throws ImportAppException;
 
     /**
      * Reads app XML from zip content.
@@ -347,7 +348,7 @@ public interface AppService {
      * @param xpdl
      * @return 
      */
-    AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl);
+    AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) throws ImportAppException;
     
     /**
      * Import plugins (JAR) from within a zip content.

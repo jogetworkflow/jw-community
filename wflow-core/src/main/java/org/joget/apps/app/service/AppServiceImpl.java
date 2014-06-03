@@ -37,6 +37,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
@@ -66,6 +67,7 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -1310,7 +1312,7 @@ public class AppServiceImpl implements AppService {
     }
     
     @Override
-    public AppDefinition importApp(byte[] zip) {
+    public AppDefinition importApp(byte[] zip) throws ImportAppException {
         TimeZone current = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
         
@@ -1330,6 +1332,8 @@ public class AppServiceImpl implements AppService {
             importPlugins(zip);
 
             return newAppDef;
+        } catch (ImportAppException e) {
+            throw e;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
         } finally {
@@ -1387,7 +1391,7 @@ public class AppServiceImpl implements AppService {
      * @return 
      */
     @Override
-    public AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) {
+    public AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) throws ImportAppException {
         Boolean overrideEnvVariable = false;
         Boolean overridePluginDefault = false;
         
@@ -1418,25 +1422,36 @@ public class AppServiceImpl implements AppService {
         newAppDef.setLicense(appDef.getLicense());
         appDefinitionDao.saveOrUpdate(newAppDef);
 
-        if (appDef.getDatalistDefinitionList() != null) {
-            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                o.setAppDefinition(newAppDef);
-                datalistDefinitionDao.add(o);
-                LogUtil.debug(getClass().getName(), "Added list " + o.getId());
-            }
-        }
-
         if (appDef.getFormDefinitionList() != null) {
             for (FormDefinition o : appDef.getFormDefinitionList()) {
                 o.setAppDefinition(newAppDef);
                 formDefinitionDao.add(o);
             }
             
-            for (FormDefinition o : appDef.getFormDefinitionList()) {
-                // initialize db table by making a dummy load
-                String dummyKey = "xyz123";
-                formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
-                LogUtil.debug(getClass().getName(), "Initialized form " + o.getId() + " with table " + o.getTableName());
+            String currentTable = "";
+            try {
+                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                    currentTable = o.getTableName();
+                    // initialize db table by making a dummy load
+                    String dummyKey = "xyz123";
+                    formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
+                    LogUtil.debug(getClass().getName(), "Initialized form " + o.getId() + " with table " + o.getTableName());
+                }
+            } catch (Exception e) {
+                //error creating form data table, rollback
+                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                    formDefinitionDao.delete(o.getId(), newAppDef);
+                }
+                appDefinitionDao.delete(newAppDef);
+                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable}));
+            }
+        }
+        
+        if (appDef.getDatalistDefinitionList() != null) {
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                o.setAppDefinition(newAppDef);
+                datalistDefinitionDao.add(o);
+                LogUtil.debug(getClass().getName(), "Added list " + o.getId());
             }
         }
 

@@ -57,8 +57,9 @@
         
         function validateField(){
             var idMatch = /^[0-9a-zA-Z_]+$/.test($("#id").attr("value"));
-            var tableNameMatch = /^[0-9a-zA-Z_]+$/.test($("#tableName").attr("value"));
-            if(!idMatch || !tableNameMatch){
+            var tableName = $("#tableName").attr("value");
+            var tableNameMatch = /^[0-9a-zA-Z_]+$/.test(tableName);
+            if(!idMatch || !tableNameMatch || tableName.length > 20){
                 var alertString = '';
                 if(!idMatch){
                     alertString = '<fmt:message key="console.form.error.label.idInvalid"/>';
@@ -71,6 +72,14 @@
                         alertString += "\n";
                     }
                     alertString += '<fmt:message key="console.form.error.label.tableNameInvalid"/>';
+                }
+                if(tableName.length > 20){
+                    if(alertString == ''){
+                        $("#tableName").focus();
+                    }else{
+                        alertString += "\n";
+                    }
+                    alertString += '<fmt:message key="console.form.error.label.tableNameLengthInvalid"/>';
                 }
                 alert(alertString);
             }else{
