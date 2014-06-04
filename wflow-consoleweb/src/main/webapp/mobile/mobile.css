@@ -63,6 +63,9 @@ iframe {
     padding: 12px 0px;
     display: inline-block;
 }
+.ui-mobile .form-cell .ui-checkbox label, .ui-mobile .subform-cell .ui-checkbox label,.ui-mobile .form-cell .ui-radio label, .ui-mobile .subform-cell .ui-radio label {
+    padding: 0.5em 1em 0.5em 2.5em ;
+}
 .ui-mobile .form-errors {
     text-align: center;
     padding: 5px 5px 20px 5px;    
