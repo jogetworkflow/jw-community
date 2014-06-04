@@ -1,7 +1,11 @@
 package org.joget.commons.util;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -50,6 +54,24 @@ public class TimeZoneUtil {
             list.put("10", "(GMT +10:00) Canberra, Guam, Melbourne, Sydney, Vladivostok");
             list.put("11", "(GMT +11:00) Magadan, New Caledonia, Solomon Islands");
             list.put("12", "(GMT +12:00) Auckland, Wellington, Fiji, Marshall Island");
+            
+            String[] timezones = TimeZone.getAvailableIDs();
+            List<String> sortedKeys=new ArrayList<String>(Arrays.asList(timezones));
+            Collections.sort(sortedKeys);
+            
+            ListOrderedMap otherList = new ListOrderedMap();
+            for (String tzid : sortedKeys) {
+                TimeZone tz = TimeZone.getTimeZone(tzid);
+                if (!tz.getDisplayName(true, TimeZone.SHORT).startsWith("GMT")) {
+                    String display = "(" + tz.getDisplayName(true, TimeZone.SHORT) + ") ";
+                    String tzname = tzid.replace("/", " - ");
+                    tzname = tzname.replace("_", " ");
+                    display += tzname;
+                    otherList.put(tzid, display);
+                }
+            }
+            
+            list.putAll(otherList);
         }
 
         return list;
@@ -84,10 +106,14 @@ public class TimeZoneUtil {
                 Double rawoffset = Double.parseDouble(gmt) * 60 * 60 * 1000;
                 tz = TimeZone.getAvailableIDs(rawoffset.intValue())[0];
             } else {
-                if (Integer.parseInt(gmt) > 0) {
-                    gmt = "+" + gmt;
+                try {
+                    if (Integer.parseInt(gmt) > 0) {
+                        gmt = "+" + gmt;
+                    }
+                    tz = TimeZone.getTimeZone("GMT" + gmt).getID();
+                } catch (NumberFormatException e) {
+                    tz = gmt;
                 }
-                tz = TimeZone.getTimeZone("GMT" + gmt).getID();
             }
 
             if (tz != null && tz.trim().length() > 0) {
