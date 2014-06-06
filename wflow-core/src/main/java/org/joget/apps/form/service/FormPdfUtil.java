@@ -145,6 +145,9 @@ public class FormPdfUtil {
         //remove id
         html = html.replaceAll("id=\"([^\\\"]*)\"", "");
         
+        //remove hidden td
+        html = html.replaceAll("<td\\s?style=\\\"[^\\\"]*display:none;[^\\\"]?\\\"[^>]*>.*?</\\s?td>", "");
+        
         if (showAllSelectOptions != null && showAllSelectOptions) {
             Pattern pattern = Pattern.compile("<label>[^<]*(<input[^>]*type=\\\"([^\\\"]*)\\\"[^>]*>)[^>]*</label>");
             Matcher matcher = pattern.matcher(html);
@@ -340,10 +343,10 @@ public class FormPdfUtil {
         Matcher matcher = pattern.matcher(html);
         while (matcher.find()) {
             String text = matcher.group(0);
-            if (text.contains("&") && !text.contains("&amp;")) {
+            if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;")) {
                 String replace = text;
                 replace = replace.replaceAll("&", " &amp;");
-
+                
                 html = html.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
             }
         }
