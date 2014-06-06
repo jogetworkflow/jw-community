@@ -7,6 +7,9 @@
     <packaging>jar</packaging>
     <name>wflow-plugin-archetype</name>
     <url>http://www.joget.org</url>
+    <properties>
+        <dollar>$</dollar>
+    </properties>
     <build>
         <resources>
             <resource>
