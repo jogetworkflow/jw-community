@@ -79,6 +79,21 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
+            
+            var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
+            
+            //mobile
+            if ($(this).is(mobileSelector) 
+                    || $(this).parent().is(mobileSelector) 
+                    || $(this).parent().parent().is(mobileSelector)) {
+                if ($(this).is("[type='checkbox'], [type='radio']")) {
+                    $(this).checkboxradio("disable");
+                } else if ($(this).is("select")) {
+                    $(this).selectmenu("disable");
+                } else {
+                    $(this).textinput("disable");
+                }
+            }
         } 
         if ($(this).is("[name]")) {
             var n = $(this).attr("name");
@@ -95,7 +110,22 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var names = new Array();
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
         if($(this).is(".section-visibility-disabled")){
-            $(this).removeClass(".section-visibility-disabled").removeAttr("disabled");
+            $(this).removeClass("section-visibility-disabled").removeAttr("disabled");
+            
+            var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
+            
+            //mobile
+            if ($(this).is(mobileSelector) 
+                    || $(this).parent().is(mobileSelector) 
+                    || $(this).parent().parent().is(mobileSelector)) {
+                if ($(this).is("[type='checkbox'], [type='radio']")) {
+                    $(this).checkboxradio("enable");
+                } else if ($(this).is("select")) {
+                    $(this).selectmenu("enable");
+                } else {
+                    $(this).textinput("enable");
+                }
+            }
         } 
         if ($(this).is("[name]")) {
             var n = $(this).attr("name");
