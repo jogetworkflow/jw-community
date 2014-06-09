@@ -198,10 +198,14 @@ UserviewBuilder = {
             width     : '80%',
             minwidth  : 80,
             data: function(value, settings) {
-                var div = document.createElement('div');
-                div.innerHTML = value;
-                var decoded = div.firstChild.nodeValue;
-                return decoded;
+                if (value !== "") {
+                    var div = document.createElement('div');
+                    div.innerHTML = value;
+                    var decoded = div.firstChild.nodeValue;
+                    return decoded;
+                } else {
+                    return value;
+                }
             }
         });
     },
@@ -508,10 +512,14 @@ UserviewBuilder = {
             width     : '80%',
             minwidth  : 80,
             data: function(value, settings) {
-                var div = document.createElement('div');
-                div.innerHTML = value;
-                var decoded = div.firstChild.nodeValue;
-                return decoded;
+                if (value !== "") {
+                    var div = document.createElement('div');
+                    div.innerHTML = value;
+                    var decoded = div.firstChild.nodeValue;
+                    return decoded;
+                } else {
+                    return value;
+                }
             }
         });
     },
