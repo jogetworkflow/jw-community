@@ -6,6 +6,26 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.4
+================
+1462    Fixed: wflow-plugin-archetype - Plugin parameters are not set correctly. @trunk
+1461    Fixed: wflow-core - Mobile - Section visibility control not working. #2087 @trunk
+        Fixed: wflow-core - Mobile - Date picker covered by other field. @trunk
+1458    Fixed: wflow-core - FormPdfUtil - Fail to parse grid html when it contains data of rich text editor. #2081 @trunk
+1457    Fixed: wflow-consoleweb - Mobile Form - Radio Button and Checkbox covered by label. #2079 @trunk
+1455    Modified: wflow-commons - TimeZoneUtil - Added options for other timezones to support DST. #2086 @trunk
+1453    Modified: wflow-core/wflow-consoleweb - Create Form - Limit table name to 20 characters. #2071 @trunk
+        Fixed: wflow-core/wflow-consoleweb - Import App - Show proper message and rollback changes when import aborted due to table creation fail. #2071 @trunk
+1451    Modified: wflow-core - DataListDecorator - Support evaluate column value with a fallback lowercase name. #2072 @trunk
+1450    Modified: All - Updated copyright references to Joget Inc, and updated license governing laws to California @trunk
+1446    Modified: wflow-consoleweb - Userveiw - Allow to set default userview theme classname by message key "userview.default.theme.classname". #2063 @trunk
+1445    Modified: wflow-consoleweb - Form CSS - Removed overflow hidden form form section. @trunk
+1444    Fixed: wflow-core - Dynamic Options - Ajax Options does not reload when form loaded. @trunk
+1443    Modified: wflow-cores - File Upload - Set link target to blank. @trunk
+1442    Modified: wflow-designer - Modified initialization logging to info instead of error #2003 #2014 @trunk
+1441    Fixed: wflow-enterprise-plugins - DatalistInboxMenu - Performance issue when number of assignments is huge. #1958 @trunk
+1439    Modified: wflow-core - FormRowDataListBinder - Improve performance of getColumnName method. @trunk
+
 CHANGES IN 4.0.3.1
 ==================
 1431    Fixed: wflow-consoleweb - UI - iframe in popup dialog does not show correctly in userview. @trunk
