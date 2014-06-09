@@ -8,6 +8,7 @@ For details on upgrading to v4, please refer to http://dev.joget.org/community/d
 
 CHANGES IN 4.0.4
 ================
+1464    Fixed: wflow-consoleweb - Userview Builder - Not able to edit userview description. @trunk
 1462    Fixed: wflow-plugin-archetype - Plugin parameters are not set correctly. @trunk
 1461    Fixed: wflow-core - Mobile - Section visibility control not working. #2087 @trunk
         Fixed: wflow-core - Mobile - Date picker covered by other field. @trunk
