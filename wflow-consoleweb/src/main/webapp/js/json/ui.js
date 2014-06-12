@@ -17,6 +17,55 @@ UI = {
           params += "&__u_=" + UI.userview_id;
       }
       return params;
+   },
+   getPopUpHeight: function(height) {
+       if (height === undefined || height === "") {
+           height = "90%";
+       }
+       var windowHeight = $(window).height();
+       var minHeight = 200;
+       var maxHeight = windowHeight - 100;
+           
+       if (isNaN(height) && height.indexOf("%") !== -1) {
+           var tempHeight = parseFloat(height.replace("%", ""));
+           height = windowHeight * tempHeight / 100;
+       }
+       
+       if (height > maxHeight) {
+           height = maxHeight;
+       }
+       
+       if (height < minHeight) {
+            height = minHeight;
+       }
+       return height;
+   }, 
+   getPopUpWidth: function(width) {
+       if (width === undefined || width === "") {
+           width = "90%";
+       }
+       var windowWidth = $(window).width();
+       var minWidth = 200;
+       var maxWidth = windowWidth - 100;
+           
+       if (isNaN(width) && width.indexOf("%") !== -1) {
+           var tempWidth = parseFloat(width.replace("%", ""));
+           width = windowWidth * tempWidth / 100;
+       }
+       
+       if (width > maxWidth) {
+           width = maxWidth;
+       }
+       
+       if (width < minWidth) {
+           width = minWidth;
+       }
+       return width;
+   },
+   adjustPopUpDialog: function(dialogbox) {
+       // center dialogbox
+       dialogbox.center('x');
+       dialogbox.center('y');
    }
 }
 
