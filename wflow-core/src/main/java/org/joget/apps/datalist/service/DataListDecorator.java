@@ -183,7 +183,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String targetString = "";
         String confirmationString = "";
 
-        if (link == null) {
+        if (link == null || text == null || text.isEmpty()) {
             link = text;
         } else {
             if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
