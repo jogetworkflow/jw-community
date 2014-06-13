@@ -1,11 +1,12 @@
 <div class="form-cell" ${elementMetaData!}>
 <#if element.properties.readonly! != 'true'>
+    <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.custom.datepicker.js"></script>
     <#if request.getAttribute("currentLocale")!?starts_with("zh") >
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
     </#if>
 <script type="text/javascript">
     $(document).ready(function() {
-        $("#${elementParamName!}_${element.properties.elementUniqueKey!}").datepicker({
+        $("#${elementParamName!}_${element.properties.elementUniqueKey!}").cdatepicker({
                         showOn: "button",
                         buttonImage: "${request.contextPath}/css/images/calendar.png",
                         buttonImageOnly: true,
@@ -16,6 +17,15 @@
                         </#if>
                         <#if element.properties.yearRange! != ''>
                         ,yearRange: "${element.properties.yearRange}"
+                        </#if>
+                        <#if element.properties.startDateFieldId! != ''>
+                        ,startDateFieldId: "${element.properties.startDateFieldId}"
+                        </#if>
+                        <#if element.properties.endDateFieldId! != ''>
+                        ,endDateFieldId: "${element.properties.endDateFieldId}"
+                        </#if>
+                        <#if element.properties.currentDateAs! != ''>
+                        ,currentDateAs: "${element.properties.currentDateAs}"
                         </#if>
         });
     });

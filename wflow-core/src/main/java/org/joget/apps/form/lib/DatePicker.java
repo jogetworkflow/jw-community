@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormData;
@@ -18,7 +19,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.web.servlet.LocaleResolver;
 
 public class DatePicker extends Element implements FormBuilderPaletteElement {
-
+    
     @Override
     public String getName() {
         return "Date Picker";
@@ -160,19 +161,105 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         Boolean valid = true;
         String id = FormUtil.getElementParameterName(this);
         String value = FormUtil.getElementPropertyValue(this, formData);
-        
+               
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getPropertyString("format"));
-            value = formattedValue(value, displayFormat, formData);
+            String formattedValue = formattedValue(value, displayFormat, formData);
             
-            valid = DateUtil.validateDateFormat(value, displayFormat);
+            valid = DateUtil.validateDateFormat(formattedValue, displayFormat);
             
             if (!valid) {
                 formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.invalidFormat"));
             }
+            
+            Form form = null;
+            if (!getPropertyString("startDateFieldId").isEmpty() ||
+                !getPropertyString("endDateFieldId").isEmpty()) {
+                form = FormUtil.findRootForm(this);
+            }
+            
+            String startDate = "";
+            String endDate = "";
+            
+            if (!getPropertyString("startDateFieldId").isEmpty()) {
+                Element e = FormUtil.findElement(getPropertyString("startDateFieldId"), form, formData);
+                if (e != null) {
+                    String compareValue = FormUtil.getElementPropertyValue(e, formData);
+                    if (compareValue != null && !compareValue.isEmpty()) {
+                        String formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        if (!DateUtil.compare(formattedCompare, value, displayFormat) && !formattedCompare.equals(value)) {
+                            valid = false;
+                            startDate = formattedCompare;
+                        }
+                    }
+                }
+            }
+            
+            if (!getPropertyString("endDateFieldId").isEmpty()) {
+                Element e = FormUtil.findElement(getPropertyString("endDateFieldId"), form, formData);
+                if (e != null) {
+                    String compareValue = FormUtil.getElementPropertyValue(e, formData);
+                    if (compareValue != null && !compareValue.isEmpty()) {
+                        String formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        if (!DateUtil.compare(value, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
+                            valid = false;
+                            endDate = formattedCompare;
+                        }
+                    }
+                }
+            }
+            
+            String type = getPropertyString("currentDateAs");
+            if (!type.isEmpty()) {
+                SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                String formattedCompare = display.format(new Date());
+                String start, end;
+                if ("minDate".equals(type)) {
+                    start = formattedCompare;
+                    end = formattedValue;
+                } else {
+                    start = formattedValue;
+                    end = formattedCompare;
+                }
+                
+                if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(value)) {
+                    valid = false;
+                    
+                    if ("minDate".equals(type)) {
+                        if (startDate.isEmpty() || !DateUtil.compare(formattedCompare, startDate, displayFormat)) {
+                            startDate = formattedCompare;
+                        }
+                    } else {
+                        if (endDate.isEmpty() || !DateUtil.compare(endDate, formattedCompare, displayFormat)) {
+                            endDate = formattedCompare;
+                        }
+                    }
+                }
+                
+                if (!startDate.isEmpty()) {
+                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.minDate", new String[]{startDate}));
+                }
+                
+                if (!endDate.isEmpty()) {
+                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.maxDate", new String[]{endDate}));
+                }
+            }
         }
         
         return valid;
+    }
+    
+    private String formatCompareValue(String value, String displayFormat) {
+        String dataFormat = getPropertyString("dataFormat");
+        if (dataFormat != null && !dataFormat.isEmpty() && !displayFormat.equals(dataFormat)) {
+            try {
+                SimpleDateFormat data = new SimpleDateFormat(dataFormat);
+                SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                Date date = data.parse(value);
+                value = display.format(date);
+            } catch (Exception e) {}
+        }
+        return value;
     }
     
     private String formattedValue(String value, String displayFormat, FormData formData) {

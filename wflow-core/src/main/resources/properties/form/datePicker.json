@@ -34,7 +34,7 @@
     },
     {
         name : 'value',
-        label : 'Default @@form.datepicker.value@@',
+        label : '@@form.datepicker.value@@',
         type : 'textfield'
     },
     {
@@ -44,11 +44,42 @@
         description : '@@form.datepicker.dataFormat.eg@@'
     },
     {
+        label : '@@form.datepicker.validation@@',
+        type : 'header'
+    },
+    {
         name : 'validator',
         label : '@@form.datepicker.validator@@',
         type : 'elementselect',
         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
         url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        name : 'startDateFieldId',
+        label : '@@form.datepicker.startDateFieldId@@',
+        type : 'textfield'
+    },
+    {
+        name : 'endDateFieldId',
+        label : '@@form.datepicker.endDateFieldId@@',
+        type : 'textfield'
+    },
+    {
+        name : 'currentDateAs',
+        label : '@@form.datepicker.currentDateAs@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'minDate',
+            label : '@@form.datepicker.currentDateAs.min@@'
+        },
+        {
+            value : 'maxDate',
+            label : '@@form.datepicker.currentDateAs.max@@'
+        }]
     },
     {
         label : '@@form.datepicker.ui@@',
