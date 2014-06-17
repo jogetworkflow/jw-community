@@ -119,6 +119,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class ConsoleWebController {
@@ -2687,7 +2688,7 @@ public class ConsoleWebController {
                 data.put("id", message.getId());
                 data.put("messageKey", message.getMessageKey());
                 data.put("locale", message.getLocale());
-                data.put("message", StringEscapeUtils.escapeHtml(message.getMessage()));
+                data.put("message", HtmlUtils.htmlEscape(message.getMessage()));
                 jsonObject.accumulate("data", data);
             }
         }
@@ -2890,7 +2891,7 @@ public class ConsoleWebController {
             for (EnvironmentVariable environmentVariable : environmentVariableList) {
                 Map data = new HashMap();
                 data.put("id", environmentVariable.getId());
-                data.put("value", StringEscapeUtils.escapeHtml(environmentVariable.getValue()));
+                data.put("value", HtmlUtils.htmlEscape(environmentVariable.getValue()));
                 data.put("remarks", environmentVariable.getRemarks());
                 jsonObject.accumulate("data", data);
             }
@@ -3175,7 +3176,7 @@ public class ConsoleWebController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("tableName", tableNameList);
         if (callback != null && callback.trim().length() != 0) {
-            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
+            writer.write(HtmlUtils.htmlEscape(callback) + "(" + jsonObject + ");");
         } else {
             jsonObject.write(writer);
         }
@@ -3781,7 +3782,7 @@ public class ConsoleWebController {
                 data.put("id", message.getId());
                 data.put("key", message.getKey());
                 data.put("locale", message.getLocale());
-                data.put("message", StringEscapeUtils.escapeHtml(message.getMessage()));
+                data.put("message", HtmlUtils.htmlEscape(message.getMessage()));
                 jsonObject.accumulate("data", data);
             }
         }
@@ -4271,7 +4272,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
+            writer.write(HtmlUtils.htmlEscape(callback) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {
@@ -4281,7 +4282,7 @@ public class ConsoleWebController {
 
     protected static void writeJson(Writer writer, JSONArray jsonArray, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(StringEscapeUtils.escapeHtml(callback) + "(");
+            writer.write(HtmlUtils.htmlEscape(callback) + "(");
         }
         jsonArray.write(writer);
         if (callback != null && callback.trim().length() > 0) {
