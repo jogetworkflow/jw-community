@@ -51,7 +51,7 @@
             </div>
             <div id="logo"></div>
             <div data-role="content">
-                <ul id="appList" data-role="listview" data-filter="true" data-inset="true">
+                <ul id="appList" data-role="listview" data-filter="false" data-inset="true">
                     <c:forEach items="${appDefinitionList}" var="appDefinition">
                         <c:set var="userviewDefinitionList" value="${appDefinition.userviewDefinitionList}"/>
                         <c:forEach items="${userviewDefinitionList}" var="userviewDefinition">

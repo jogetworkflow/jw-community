@@ -201,7 +201,7 @@
             <div data-role="content" class="ui-content" role="main">
                 <c:choose>
                     <c:when test="${empty menuId || menuId == landingPage}">
-                        <ul id="menu" data-role="listview" data-filter="true" data-inset="true" class="ui-listview" data-filter-theme="d" data-theme="d" data-divider-theme="d">
+                        <ul id="menu" data-role="listview" data-filter="false" data-inset="true" class="ui-listview" data-filter-theme="d" data-theme="d" data-divider-theme="d">
                             <c:forEach items="${userview.categories}" var="category" varStatus="cStatus">
                                 <c:if test="${category.properties.hide ne 'yes'}">                                        
                                     <li data-role="list-divider">

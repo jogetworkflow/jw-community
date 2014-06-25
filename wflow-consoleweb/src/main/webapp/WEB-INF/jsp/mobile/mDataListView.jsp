@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.datalist.model.DataList"%>
@@ -5,6 +6,8 @@
 <%@ page import="org.joget.apps.datalist.model.DataListColumnFormat"%>
 <%@ page import="org.joget.commons.util.StringUtil"%>
 <%@ page import="java.util.Collection"%>
+<%@ page import="org.displaytag.util.ParamEncoder"%>
+<%@ page import="org.displaytag.tags.TableTagParameters"%>
 
 <c:set var="landingPage" value="landing"/>
 <!DOCTYPE html>
@@ -80,7 +83,6 @@
             <div id="logo"></div>
             <div data-role="content" class="ui-content" role="main">
                     
-                <c:set target="${dataList}" property="pageSize" value="500" />
                 <c:set var="columns" value="${dataList.columns}"/>
                 
                 <%-- Get first action as primary link --%>
@@ -146,8 +148,20 @@
                     <c:set var="dataSplitIcon" value="delete"/>
                 </c:if>
                             
+                <%-- Calculate paging --%>
+                <c:set var="dataListId" value="${dataList.id}"/>
+                <c:set var="paramPage" value="<%= new ParamEncoder(pageContext.findAttribute(\"dataListId\").toString()).encodeParameterName(TableTagParameters.PARAMETER_PAGE) %>"/>
+                <c:set var="currentPage" value="${param[paramPage]}"/>
+                <c:if test="${empty currentPage}">
+                    <c:set var="currentPage" value="${1}"/>
+                </c:if>
+                <c:set var="previousPage" value="${currentPage - 1}"/>
+                <c:set var="nextPage" value="${currentPage + 1}"/>
+                <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="0" value="${(dataList.size / dataList.pageSize)}" /></c:set>
+                <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>               
+
                 <%-- Display datalist --%>            
-                <ul id="dataList" data-role="listview" data-filter="true" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
+                <ul id="dataList" data-role="listview" data-filter="false" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
                     <li data-role="list-divider"><c:out value="${dataList.name}"/></li>
                     <c:forEach items="${dataList.rows}" var="row" varStatus="status">
                         <li>
@@ -183,8 +197,20 @@
                                 <a href="#" onclick="<c:out value="${onClickCode}"/>"><c:out value="${secondDataListAction.linkLabel}"/></a>
                             </c:if>
                         </li>
-                    </c:forEach>                    
-                </ul>                
+                    </c:forEach>     
+                </ul>    
+                    
+                <%-- Display paging buttons --%>
+                <div class="buttons">
+                    <c:if test="${currentPage > 1}">
+                        <c:url var="previousUrl" value="${menuId}?${paramPage}=${previousPage}" />
+                        <button class="buttonPrevious" onclick="$.mobile.changePage('${previousUrl}')">&lt;&lt;</button>
+                    </c:if>
+                    <c:if test="${hasNextPage}">
+                        <c:url var="nextUrl" value="${menuId}?${paramPage}=${nextPage}" />
+                        <button class="buttonNext" onclick="$.mobile.changePage('${nextUrl}')">&gt;&gt;</button>
+                    </c:if>
+                </div>
             </div>		
 
         </div>

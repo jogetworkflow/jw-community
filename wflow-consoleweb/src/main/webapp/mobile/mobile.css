@@ -145,7 +145,32 @@ iframe.boxy-content {
 .ui-datepicker {
     z-index: 2 !important;
 }
-
+.ui-mobile .buttons button {
+    width: 100px;
+    float: left;
+    margin-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+.ui-mobile #dataList a.ui-link {
+    background: #f6f6f6;
+    border: solid 1px #ddd;
+    border-radius: .3125em;
+    color: #333;
+    text-shadow: 0 1px 0 #f3f3f3;
+    text-decoration: none !important;
+    margin: .5em;
+    padding: .7em 1em;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    float: left;
+}
 #userview {
     background: url(../images/cover.jpg);
 }
