@@ -5,6 +5,7 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.Map;
 import org.joget.apps.form.model.Element;
@@ -12,6 +13,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.FileManager;
+import static org.joget.commons.util.FileManager.getBaseDirectory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -25,6 +27,72 @@ public class FileUtil implements ApplicationContextAware {
 
     public static ApplicationContext getApplicationContext() {
         return appContext;
+    }
+    
+    public static void checkAndUpdateFileName(FormRowSet results, Element element, String primaryKeyValue) {
+        for (int i = 0; i < results.size(); i++) {
+            FormRow row = results.get(i);
+            String id = row.getId();
+            if (id != null && !id.isEmpty()) {
+                Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+                if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
+                    for (Iterator<String> j = tempFilePathMap.keySet().iterator(); j.hasNext();) {
+                        String fieldId = j.next();
+                        String path = tempFilePathMap.get(fieldId);
+                        File file = FileManager.getFileByPath(path);
+                        if (file != null) {
+                            String fileName = file.getName();
+                            String uploadPath = getUploadPath(element, id);
+
+                            fileName = validateFileName(fileName, uploadPath);
+
+                            if (row.containsKey(fieldId)) {
+                                row.put(fieldId, fileName);
+                            }
+                            
+                            if (!fileName.equals(file.getName())) {
+                                String newPath = path.replace(file.getName(), fileName);
+                                
+                                file.renameTo(new File(file.getParentFile(), fileName));
+                                tempFilePathMap.put(fieldId, newPath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+            
+    }
+    
+    public static String validateFileName(String fileName, String path) {
+        String tempPath = path + fileName;
+        boolean fileExist = true;
+        int count = 1;
+        
+        String ext = "", name = "";
+                
+        if (fileName.endsWith(FileManager.THUMBNAIL_EXT)) {
+            ext = FileManager.THUMBNAIL_EXT;
+            fileName = fileName.replace(FileManager.THUMBNAIL_EXT, "");
+        }
+        
+        name = fileName.substring(0, fileName.lastIndexOf("."));
+        ext = fileName.substring(fileName.lastIndexOf(".")) + ext;
+        fileName = name + ext;
+        
+        do {
+            File file = new File(tempPath);
+            
+            if (file.exists()) {
+                fileName = name + "("+count+")" + ext;
+                tempPath = path + fileName;
+            } else {
+                fileExist = false;
+            }
+            count ++;
+        } while (fileExist);
+        
+        return fileName;
     }
 
     public static void storeFileFromFormRowSet(FormRowSet results, Element element, String primaryKeyValue) {
@@ -114,7 +182,7 @@ public class FileUtil implements ApplicationContextAware {
             }
         }
 
-        return formUploadPath + File.separator + "app_formuploads" + File.separator + tableName + File.separator + primaryKeyValue + File.separator;
+        return formUploadPath + "app_formuploads" + File.separator + tableName + File.separator + primaryKeyValue + File.separator;
     }
 
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {

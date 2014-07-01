@@ -1208,6 +1208,8 @@ public class AppServiceImpl implements AppService {
             // update DB schema
             formDataDao.updateSchema(form, rows);
             
+            FileUtil.checkAndUpdateFileName(results, form, primaryKeyValue);
+            
             // save data
             formDataDao.saveOrUpdate(form, results);
             LogUtil.debug(getClass().getName(), "  -- Saved form data row [" + primaryKeyValue + "] for form [" + form.getProperty(FormUtil.PROPERTY_ID) + "] from table [" + form.getProperty(FormUtil.PROPERTY_TABLE_NAME) + "]");
