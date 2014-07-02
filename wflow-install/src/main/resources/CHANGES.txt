@@ -6,6 +6,16 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.5
+================
+1478    Modified: wflow-consoleweb - Message Bundle - Update label for zh_CN. #2146 @trunk
+1477    Modified: wflow-core - FileUtil/AppServiceImpl - Append number to the file name when a file already exist. @trunk
+1476    Modified: wflow-consoleweb - Added paging for datalist and removed filter in mobile userview #2130 @trunk
+1475    Fixed: wflow-consoleweb - Chinese character message not showing up in App Properties #2115 #2114 @trunk
+1474    Modified: wflow-core/wflow-consoleweb - Date Picker - Support for Start Date & End Date checking. @trunk
+1473    Modified: wflow-core - Datalist Action - Do not show link when there is no text for the link. #2105 @trunk
+1472    Modified: wflow-consoleweb - UI - Add JS method to calculate popup dialog size. @trunk
+
 CHANGES IN 4.0.4
 ================
 1464    Fixed: wflow-consoleweb - Userview Builder - Not able to edit userview description. @trunk
