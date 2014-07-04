@@ -51,13 +51,6 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
             // determine actual path for the file uploads
             String primaryKeyValue = getPrimaryKeyValue(formData);
             String fileName = value;
-            if (fileName != null) {
-                try {
-                    fileName = URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20");
-                } catch (UnsupportedEncodingException ex) {
-                    // ignore
-                }
-            }
             String formDefId = "";
             Form form = FormUtil.findRootForm(this);
             if (form != null) {
