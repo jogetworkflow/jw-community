@@ -53,7 +53,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
             String fileName = value;
             if (fileName != null) {
                 try {
-                    fileName = URLEncoder.encode(value, "UTF-8");
+                    fileName = URLEncoder.encode(value, "UTF-8").replaceAll("\\+", "%20");
                 } catch (UnsupportedEncodingException ex) {
                     // ignore
                 }
@@ -66,7 +66,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
             String encodedFileName = fileName;
             if (fileName != null) {
                 try {
-                    encodedFileName = URLEncoder.encode(fileName, "UTF8");
+                    encodedFileName = URLEncoder.encode(fileName, "UTF8").replaceAll("\\+", "%20");
                 } catch (UnsupportedEncodingException ex) {
                     // ignore
                 }
