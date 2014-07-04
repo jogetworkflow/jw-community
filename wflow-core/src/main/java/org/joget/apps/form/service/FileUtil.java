@@ -5,15 +5,15 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URLDecoder;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.FileManager;
-import static org.joget.commons.util.FileManager.getBaseDirectory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -30,6 +30,8 @@ public class FileUtil implements ApplicationContextAware {
     }
     
     public static void checkAndUpdateFileName(FormRowSet results, Element element, String primaryKeyValue) {
+        Set<String> existedFileName = new HashSet<String>();
+        
         for (int i = 0; i < results.size(); i++) {
             FormRow row = results.get(i);
             String id = row.getId();
@@ -39,22 +41,41 @@ public class FileUtil implements ApplicationContextAware {
                     for (Iterator<String> j = tempFilePathMap.keySet().iterator(); j.hasNext();) {
                         String fieldId = j.next();
                         String path = tempFilePathMap.get(fieldId);
-                        File file = FileManager.getFileByPath(path);
-                        if (file != null) {
-                            String fileName = file.getName();
-                            String uploadPath = getUploadPath(element, id);
+                        if (!path.endsWith(FileManager.THUMBNAIL_EXT)) {
+                            File file = FileManager.getFileByPath(path);
+                            if (file != null) {
+                                String fileName = file.getName();
+                                String uploadPath = getUploadPath(element, id);
 
-                            fileName = validateFileName(fileName, uploadPath);
+                                String newFileName = validateFileName(fileName, uploadPath, existedFileName);
+                                existedFileName.add(newFileName);
 
-                            if (row.containsKey(fieldId)) {
-                                row.put(fieldId, fileName);
-                            }
-                            
-                            if (!fileName.equals(file.getName())) {
-                                String newPath = path.replace(file.getName(), fileName);
-                                
-                                file.renameTo(new File(file.getParentFile(), fileName));
-                                tempFilePathMap.put(fieldId, newPath);
+                                if (row.containsKey(fieldId)) {
+                                    row.put(fieldId, newFileName);
+                                }
+
+                                if (!newFileName.equals(file.getName())) {
+                                    String newPath = path.replace(file.getName(), newFileName);
+
+                                    file.renameTo(new File(file.getParentFile(), newFileName));
+                                    tempFilePathMap.put(fieldId, newPath);
+                                    
+                                    //handle thumb image
+                                    String thumbPath = path + FileManager.THUMBNAIL_EXT;
+                                    File thumbFile = FileManager.getFileByPath(thumbPath);
+                                    if (thumbFile != null && tempFilePathMap.containsValue(thumbPath)) {
+                                        String newThumbFilename = newFileName + FileManager.THUMBNAIL_EXT;
+                                        String newThumbPath = thumbPath.replace(thumbFile.getName(), newThumbFilename);
+
+                                        thumbFile.renameTo(new File(thumbFile.getParentFile(), newThumbFilename));
+
+                                        for (String key : tempFilePathMap.keySet()) {
+                                            if (tempFilePathMap.get(key).equals(thumbPath)) {
+                                                tempFilePathMap.put(key, newThumbPath);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -64,26 +85,19 @@ public class FileUtil implements ApplicationContextAware {
             
     }
     
-    public static String validateFileName(String fileName, String path) {
+    public static String validateFileName(String fileName, String path, Set<String> existedFileName) {
         String tempPath = path + fileName;
         boolean fileExist = true;
         int count = 1;
         
-        String ext = "", name = "";
-                
-        if (fileName.endsWith(FileManager.THUMBNAIL_EXT)) {
-            ext = FileManager.THUMBNAIL_EXT;
-            fileName = fileName.replace(FileManager.THUMBNAIL_EXT, "");
-        }
-        
-        name = fileName.substring(0, fileName.lastIndexOf("."));
-        ext = fileName.substring(fileName.lastIndexOf(".")) + ext;
+        String name = fileName.substring(0, fileName.lastIndexOf("."));
+        String ext = fileName.substring(fileName.lastIndexOf("."));
         fileName = name + ext;
         
         do {
             File file = new File(tempPath);
             
-            if (file.exists()) {
+            if (file.exists() || existedFileName.contains(fileName)) {
                 fileName = name + "("+count+")" + ext;
                 tempPath = path + fileName;
             } else {
