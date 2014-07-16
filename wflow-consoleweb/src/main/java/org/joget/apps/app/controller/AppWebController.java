@@ -179,6 +179,7 @@ public class AppWebController {
                 model.addAttribute("errorCount", formData.getFormErrors().size());
                 model.addAttribute("submitted", Boolean.TRUE);
                 model.addAttribute("activityForm", startFormDef);
+                model.addAttribute("appDef", appDef);
                 return "client/app/processFormStart";
             }
         } else {

@@ -238,12 +238,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                 // generate form HTML
                 String formHtml = formService.retrieveFormHtml(startForm, formData);
+                AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
 
                 // show form
                 setProperty("headerTitle", process.getName());
                 setProperty("view", "formView");
                 setProperty("formHtml", formHtml);
                 setProperty("activityForm", startFormDef);
+                setProperty("appDef", appDef);
             } else {
                 // empty start page
                 setProperty("headerTitle", process.getPackageName() + " (version " + process.getVersion() + ")");
@@ -302,6 +304,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                     // generate form HTML
                     String formHtml = formService.retrieveFormErrorHtml(startForm, formData);
+                    AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
 
                     // show form
                     setProperty("headerTitle", process.getName());
@@ -311,6 +314,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("errorCount", formData.getFormErrors().size());
                     setProperty("submitted", Boolean.TRUE);
                     setProperty("activityForm", startFormDef);
+                    setProperty("appDef", appDef);
                 }
             } else {
                 // start process 
@@ -363,6 +367,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 String formUrl = getUrl() + "?_action=assignmentSubmit&activityId=" + activityId;
                 PackageActivityForm activityForm = appService.viewAssignmentForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), activityId, formData, formUrl);
                 Form form = activityForm.getForm();
+                AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
 
                 // generate form HTML
                 String formHtml = formService.retrieveFormHtml(form, formData);
@@ -372,6 +377,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 setProperty("view", "formView");
                 setProperty("formHtml", formHtml);
                 setProperty("activityForm", activityForm);
+                setProperty("appDef", appDef);
+                setProperty("assignment", assignment);
             } catch (Exception e) {
                 LogUtil.error(RunProcess.class.getName(), e, "");
             }

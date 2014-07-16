@@ -87,6 +87,8 @@
         <script>$("#processForm").submit();</script>
     </c:when>
     <c:when test="${properties.view eq 'formView'}">
+        <c:set var="appDef" scope="request" value="${properties.appDef}"/>
+        <c:set var="assignment" scope="request" value="${properties.assignment}"/>
         <c:set var="activityForm" scope="request" value="${properties.activityForm}"/>
         <c:set var="formHtml" scope="request" value="${properties.formHtml}"/>
         <c:set var="stay" scope="request" value="${properties.stay}"/>
