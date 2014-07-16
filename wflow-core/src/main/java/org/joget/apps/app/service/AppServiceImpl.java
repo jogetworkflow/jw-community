@@ -879,7 +879,7 @@ public class AppServiceImpl implements AppService {
         PackageDefinition packageDef = null;
         AppDefinition appDef = null;
         String packageId = workflowManager.getPackageIdFromDefinition(packageXpdl);
-
+        
         // get app version
         if (appId != null && !appId.isEmpty()) {
             appDef = loadAppDefinition(appId, version);
@@ -929,8 +929,8 @@ public class AppServiceImpl implements AppService {
                 packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
             }
             
-            //if package version is 1, set process start white list to admin user
-            if (packageVersion == 1) {
+            //if app version is the only version for the app, set process start white list to admin user
+            if (appDefinitionDao.countVersions(appId) == 1) {
                 Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageVersion.toString());
                 for (WorkflowProcess wp : processList) {
                     String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
