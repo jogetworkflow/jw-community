@@ -290,7 +290,7 @@ public class PropertyUtil {
                             String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
                             tempS = SecurityUtil.encrypt(tempS);
 
-                            newJson = newJson.replaceAll(s, tempS);
+                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), tempS);
                         }
                     }
                 }
