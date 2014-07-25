@@ -15,6 +15,7 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
+import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListQueryParam;
 import org.joget.apps.datalist.service.DataListService;
@@ -148,6 +149,25 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             dataList.setSize(getDataTotalRowCount());
             dataList.setRows(getRows(dataList));
 
+            //overide datalist result to use userview result
+            DataListActionResult ac = dataList.getActionResult();
+            if (ac != null) {
+                if (ac.getMessage() != null && !ac.getMessage().isEmpty()) {
+                    setAlertMessage(ac.getMessage());
+                }
+                if (ac.getType() != null && DataListActionResult.TYPE_REDIRECT.equals(ac.getType()) &&
+                        ac.getUrl() != null && !ac.getUrl().isEmpty()) {
+                    if ("REFERER".equals(ac.getUrl())) {
+                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                        if (request != null && request.getHeader("Referer") != null) {
+                            setRedirectUrl(request.getHeader("Referer"));
+                        }
+                    } else {
+                        setRedirectUrl(ac.getUrl());
+                    }
+                }
+            }
+            
             // set data list
             setProperty("dataList", dataList);
         } catch (Exception ex) {

@@ -1,16 +1,19 @@
 package org.joget.apps.userview.lib;
 
+import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
+import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.commons.util.StringUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
@@ -94,6 +97,25 @@ public class DataListMenu extends UserviewMenu {
     public String getJspPage() {
         // get data list
         DataList dataList = getDataList();
+        
+        //overide datalist result to use userview result
+        DataListActionResult ac = dataList.getActionResult();
+        if (ac != null) {
+            if (ac.getMessage() != null && !ac.getMessage().isEmpty()) {
+                setAlertMessage(ac.getMessage());
+            }
+            if (ac.getType() != null && DataListActionResult.TYPE_REDIRECT.equals(ac.getType()) &&
+                    ac.getUrl() != null && !ac.getUrl().isEmpty()) {
+                if ("REFERER".equals(ac.getUrl())) {
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null && request.getHeader("Referer") != null) {
+                        setRedirectUrl(request.getHeader("Referer"));
+                    }
+                } else {
+                    setRedirectUrl(ac.getUrl());
+                }
+            }
+        }
 
         // set data list
         setProperty("dataList", dataList);
