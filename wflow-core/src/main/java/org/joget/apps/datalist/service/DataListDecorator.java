@@ -233,20 +233,20 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 if (confirmation == null) {
                     confirmation = "";
                 }
-                StringUtil.stripAllHtmlTag(confirmation);
+                confirmation = StringUtil.stripAllHtmlTag(confirmation);
                 targetString = "onclick=\"return dlPopupAction(this, '" + confirmation + "')\"";
             } else if (target != null && "post".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
                 }
-                StringUtil.stripAllHtmlTag(confirmation);
+                confirmation = StringUtil.stripAllHtmlTag(confirmation);
                 targetString = "onclick=\"return dlPostAction(this, '" + confirmation + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + target + "\"";
                 }
                 if (confirmation != null && confirmation.trim().length() > 0) {
-                    StringUtil.stripAllHtmlTag(confirmation);
+                    confirmation = StringUtil.stripAllHtmlTag(confirmation);
                     confirmationString = " onclick=\"return confirm('" + confirmation + "')\"";
                 }
             }
