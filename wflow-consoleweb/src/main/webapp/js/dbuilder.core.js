@@ -602,7 +602,7 @@ DatalistBuilder = {
         //=====================
         // handle edit properties label
         $(optionDiv).children(".element-edit-properties").click(function() {
-            DatalistBuilder.showActionProperties(columnId, DatalistBuilder.chosenRowActions);
+            DatalistBuilder.showRowActionProperties(columnId, DatalistBuilder.chosenRowActions);
         })
         
         // handle delete
@@ -922,6 +922,132 @@ DatalistBuilder = {
         } else {
             return;
         }
+        var propertyValues = action.properties;
+
+        var options = {
+            tinyMceScript: DatalistBuilder.tinymceUrl,
+            contextPath: DatalistBuilder.contextPath,
+            propertiesDefinition : propertiesDefinition,
+            propertyValues : propertyValues,
+            closeAfterSaved : true,
+            showCancelButton : true,
+            cancelCallback: function() {
+                DatalistBuilder.propertyDialog.hide()
+            },
+            saveCallback: function(container, properties) {
+                // hide dialog
+                DatalistBuilder.propertyDialog.hide()
+                // update element properties
+                DatalistBuilder.updateActionCallback(columnId, actions, properties);
+            }
+        }
+        
+        $("#form-property-editor").html("");
+        DatalistBuilder.propertyDialog.show();
+        $("#form-property-editor").propertyEditor(options);
+        DatalistBuilder.propertyDialog.center('x');
+        DatalistBuilder.propertyDialog.center('y');
+    },
+    
+    showRowActionProperties : function(columnId, actions) {
+        var propertiesDefinition;
+        var action = actions[columnId];
+        var availableAction = DatalistBuilder.availableActions[action.className];
+        if (availableAction && availableAction.propertyOptions) {
+            propertiesDefinition = eval("(" + availableAction.propertyOptions + ")");
+        } else {
+            return;
+        }
+        
+        propertiesDefinition.push({
+            title : get_dbuilder_msg('dbuilder.rowAction.visibility'),
+            properties : [{
+                name : 'rules',
+                label : get_dbuilder_msg('dbuilder.rowAction.rules'),
+                type : 'grid',
+                columns : [{
+                    key : 'join',
+                    label : get_dbuilder_msg('dbuilder.rowAction.join'),
+                    options : [{
+                        value : 'AND',
+                        label : get_dbuilder_msg('dbuilder.rowAction.join.and')
+                    },
+                    {
+                        value : 'OR',
+                        label : get_dbuilder_msg('dbuilder.rowAction.join.or')
+                    }]
+                },
+                {
+                    key : 'field',
+                    label : get_dbuilder_msg('dbuilder.rowAction.field')
+                },
+                {
+                    key : 'operator',
+                    label : get_dbuilder_msg('dbuilder.rowAction.operator'),
+                    options : [{
+                        value : '=',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.equal')
+                    },
+                    {
+                        value : '<>',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.notEqual')
+                    },
+                    {
+                        value : '>',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.greaterThan')
+                    },
+                    {
+                        value : '>=',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.greaterThanOrEqual')
+                    },
+                    {
+                        value : '<',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.lessThan')
+                    },
+                    {
+                        value : '<=',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.lessThanOrEqual')
+                    },
+                    {
+                        value : 'LIKE',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.like')
+                    },
+                    {
+                        value : 'NOT LIKE',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.notLike')
+                    },
+                    {
+                        value : 'IN',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.in')
+                    },
+                    {
+                        value : 'NOT IN',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.notIn')
+                    },
+                    {
+                        value : 'IS TRUE',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.isTrue')
+                    },
+                    {
+                        value : 'IS FALSE',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.isFalse')
+                    },
+                    {
+                        value : 'IS EMPTY',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.isEmpty')
+                    },
+                    {
+                        value : 'IS NOT EMPTY',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.isNotEmpty')
+                    }]
+                },
+                {
+                    key : 'value',
+                    label : get_dbuilder_msg('dbuilder.rowAction.value')
+                }]
+            }]
+        });
+        
         var propertyValues = action.properties;
 
         var options = {
