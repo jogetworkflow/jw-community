@@ -47,7 +47,8 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
         String label = getPropertyString("label");
         String cellClass = ((Boolean) dataModel.get("includeMetaData")) ? "form-cell" : "subform-cell";
         String noFrame = ("true".equalsIgnoreCase(getPropertyString("noframe"))) ? " no-frame" : "";
-        String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container"+noFrame+"'>";
+        String readonly = ("true".equalsIgnoreCase(getPropertyString(FormUtil.PROPERTY_READONLY))) ? " readonly" : "";
+        String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container"+noFrame+readonly+"'>";
         html += "<span class='subform-title'>" + label + "</span>";
         if (subForm != null) {
             String subFormHtml = subForm.render(formData, false);
