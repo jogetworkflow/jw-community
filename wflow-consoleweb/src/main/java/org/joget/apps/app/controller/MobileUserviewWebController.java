@@ -362,6 +362,57 @@ public class MobileUserviewWebController {
         out.write(manifest);
         out.flush();
     }
+    
+    @RequestMapping({"/mapp/(*:appId)/(*:userviewId)/(~:key)", "/mapp/(*:appId)/(*:userviewId)", "/mapp/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
+    public String embedMobileView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key) throws Exception {
+        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Content-type", "application/xml");
+        
+        //require login to use
+        if (WorkflowUtil.isCurrentUserAnonymous()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+        
+        Long appVersion = appService.getPublishedVersion(appId);
+        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
+        // retrieve app and userview
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
+        map.addAttribute("appId", appId);
+        map.addAttribute("appDefinition", appDef);
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("key", key);
+        map.addAttribute("menuId", menuId);
+        //try to support more by not setting mobile view
+        //MobileUtil.setMobileView(request, Boolean.TRUE);
+        UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+        if (userviewDef != null) {
+            String json = userviewDef.getJson();
+            Userview userview = userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, false);
+            boolean loginRequired = "true".equals(userview.getSetting().getProperty("mobileLoginRequired"));
+            if (loginRequired) {
+                boolean isAnonymous = WorkflowUtil.isCurrentUserAnonymous();
+                if (isAnonymous) {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return null;
+                }
+            }
+            
+            map.addAttribute("userview", userview);
+        }
+        LogUtil.debug(getClass().getName(), "Mobile App Request: " + request.getRequestURI());
+        return "mapp/view";
+    }
 
     private Map<String, Cookie> getCookiesMap(HttpServletRequest request) {
         Map<String, Cookie> cookiesMap = new HashMap<String, Cookie>();
