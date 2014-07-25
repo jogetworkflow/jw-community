@@ -45,7 +45,7 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     }
 
     public String getTarget() {
-        return getPropertyString("target");
+        return "post";
     }
 
     public String getHrefParam() {

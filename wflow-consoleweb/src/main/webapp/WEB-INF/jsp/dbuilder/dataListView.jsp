@@ -219,6 +219,18 @@ t.printStackTrace(new java.io.PrintWriter(out));
         }
         return false;
     }
+    function dlPostAction(element, message) {
+        var url = $(element).attr("href");
+        var showPopup = true;
+        if (message != "") {
+            showPopup = confirm(message);
+        }
+        if (showPopup) {
+            $(element).closest("form").attr("action", $(element).attr("href"));
+            $(element).closest("form").submit();
+        }
+        return false;
+    }
     function showConfirm(element, message) {
         var table = $(element).parent().parent().find('table');
         if ($(table).find("input[type=checkbox][name|=d]:checked").length > 0) {

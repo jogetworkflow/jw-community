@@ -235,6 +235,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
                 StringUtil.stripAllHtmlTag(confirmation);
                 targetString = "onclick=\"return dlPopupAction(this, '" + confirmation + "')\"";
+            } else if (target != null && "post".equalsIgnoreCase(target)) {
+                if (confirmation == null) {
+                    confirmation = "";
+                }
+                StringUtil.stripAllHtmlTag(confirmation);
+                targetString = "onclick=\"return dlPostAction(this, '" + confirmation + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + target + "\"";
