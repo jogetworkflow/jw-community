@@ -5,7 +5,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.jsp.PageContext;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -155,7 +157,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (actions != null) {
             for (DataListAction action : actions) {
                 String label = StringUtil.stripHtmlRelaxed(action.getLinkLabel());
-                String link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation());
+                String link = "";
+                if (isRowActionVisible(action)) {
+                    link = generateLink(action.getHref(), action.getTarget(), action.getHrefParam(), action.getHrefColumn(), label, action.getConfirmation());
+                }
                 output += " " + link + " </td><td class=\"row_action\"> ";
             }
             output = output.substring(0, output.length() - 30);
@@ -289,5 +294,81 @@ public class DataListDecorator extends CheckboxTableDecorator {
             } catch (Exception e) {}
         }
         return null;
+    }
+    
+    protected boolean isRowActionVisible(DataListAction rowAction) {
+        boolean visible = true;
+        
+        Object[] rules = (Object[]) rowAction.getProperty("rules");
+        if (rules != null && rules.length > 0) {
+            for (Object o : rules) {
+                Map ruleMap = (HashMap) o;
+                
+                String join = ruleMap.get("join").toString();
+                String fieldId = ruleMap.get("field").toString();
+                String operator = ruleMap.get("operator").toString();
+                String compareValue = ruleMap.get("value").toString();
+                Object tempValue = evaluate(fieldId);
+                String value = (tempValue != null)?tempValue.toString():"";
+                
+                boolean result = false;
+                if (value != null && !value.isEmpty()) {
+                    if ("=".equals(operator) && compareValue.equals(value)) {
+                        result = true;
+                    } else if ("<>".equals(operator) && !compareValue.equals(value)) {
+                        result = true;
+                    } else if (">".equals(operator) || "<".equals(operator) || ">=".equals(operator) || "<=".equals(operator)) {
+                        try {
+                            double valueNum = Double.parseDouble(value);
+                            double compareValueNum = Double.parseDouble(compareValue);
+                            
+                            if (">".equals(operator) && valueNum > compareValueNum) {
+                                result = true;
+                            } else if ("<".equals(operator) && valueNum < compareValueNum) {
+                                result = true;
+                            } else if (">=".equals(operator) && valueNum >= compareValueNum) {
+                                result = true;
+                            } else if ("<=".equals(operator) && valueNum <= compareValueNum) {
+                                result = true;
+                            }
+                        } catch (NumberFormatException e) {}
+                    } else if ("LIKE".equals(operator) && value.toLowerCase().contains(compareValue.toLowerCase())) {
+                        result = true;
+                    } else if ("NOT LIKE".equals(operator) && !value.toLowerCase().contains(compareValue.toLowerCase())) {
+                        result = true;
+                    } else if ("IN".equals(operator) || "NOT IN".equals(operator)) {
+                        String[] compareValues = compareValue.split(";");
+                        List<String> compareValuesList = new ArrayList<String>(Arrays.asList(compareValues));
+                        if ("IN".equals(operator) && compareValuesList.contains(value)) {
+                            result = true;
+                        } else if ("NOT IN".equals(operator) && !compareValuesList.contains(value)) {
+                            result = true;
+                        }
+                    } else if ("IS TRUE".equals(operator) || "IS FALSE".equals(operator)) {
+                        try {
+                            boolean valueBoolean = Boolean.parseBoolean(value);
+                            
+                            if ("IS TRUE".equals(operator) && valueBoolean) {
+                                result = true;
+                            } else if ("IS FALSE".equals(operator) && !valueBoolean) {
+                                result = true;
+                            }
+                        } catch(Exception e) {}
+                    } else if ("IS NOT EMPTY".equals(operator)) {
+                        result = true;
+                    }
+                } else if ("IS EMPTY".equals(operator)) {
+                    result = true;
+                }
+                
+                if ("AND".equals(join)) {
+                    visible = visible && result;
+                } else if ("OR".equals(join)){
+                    visible = visible || result; 
+                }
+            }
+        }
+        
+        return visible;
     }
 }
