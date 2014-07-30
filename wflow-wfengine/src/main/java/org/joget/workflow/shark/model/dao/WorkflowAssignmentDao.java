@@ -70,4 +70,50 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         
         return ass;
     }
+    
+    public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
+        Collection<String> params = new ArrayList<String>();
+        
+        if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
+            condition += " where 1=1";
+            
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and p.processDefId like ?";
+                params.add(packageId + "#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and p.processDefId = ?";
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and p.processId = ?";
+                params.add(processId);
+            }
+            
+            if (activityDefId != null && !activityDefId.isEmpty()) {
+                condition += " and a.activityDefId = ?";
+                params.add(activityDefId);
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.assigneeName = ?";
+                params.add(username);
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                condition += " and s.name = ?";
+                params.add(state);
+            }
+        }
+        Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));
+        
+        if (total != null) {
+            return total.intValue();
+        }
+        return 0;
+    }
 }

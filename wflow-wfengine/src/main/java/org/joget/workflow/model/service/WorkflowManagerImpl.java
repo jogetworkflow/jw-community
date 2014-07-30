@@ -3596,40 +3596,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public int getAssignmentSize(Boolean accepted, String processDefId) {
-        SharkConnection sc = null;
-        int size = 0;
-
-        try {
-
-            sc = connect();
-
-            AssignmentQuery aq = new AssignmentQuery();
-            // filter by user
-            String username = getWorkflowUserManager().getCurrentUsername();
-            aq.setQueryResourceId(username);
-
-            // filter by process def id
-            if (processDefId != null && processDefId.trim().length() > 0) {
-                aq.setQueryActivityProcessDefName(processDefId);
-            }
-
-            // filter by acceptance
-            if (accepted != null) {
-                aq.setQueryIsAccepted(accepted.booleanValue());
-            }
-
-            size = aq.getCount();
-
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return size;
+        //accepted is not using anymore
+        return getAssignmentSize(null, processDefId, null, null);
     }
 
     /**
@@ -3651,58 +3619,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
             processDefId = getConvertedLatestProcessDefId(processDefId);
         }
         
-        SharkConnection sc = null;
-        int size = 0;
-
-        try {
-
-            sc = connect();
-
-            Shark shark = Shark.getInstance();
-            AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
-            WMSessionHandle sessionHandle = sc.getSessionHandle();
-            // filter by user
-            String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
-
-            // filter by packageId id
-            if (packageId != null && packageId.trim().length() > 0) {
-                filter = aieb.and(sessionHandle, filter, aieb.addPackageIdEquals(sessionHandle, packageId));
-            }
-
-            // filter by process definition id
-            if (processDefId != null && processDefId.trim().length() > 0) {
-                String processKey = MiscUtilities.getProcessMgrProcDefId(processDefId);
-                //String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
-                filter = aieb.and(sessionHandle, filter, aieb.addProcessDefIdEquals(sessionHandle, processKey));
-                //filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
-            }
-
-            // filter by process instance id
-            if (processId != null && processId.trim().length() > 0) {
-                filter = aieb.and(sessionHandle, filter, aieb.addProcessIdEquals(sessionHandle, processId));
-            }
-
-            // filter by ActivityDefId
-            if (activityDefId != null && activityDefId.trim().length() > 0) {
-                filter = aieb.and(sessionHandle, filter, aieb.addActivityDefIdEquals(sessionHandle, activityDefId));
-            }
-
-            // execute
-            WfAssignmentIterator ai = sc.get_iterator_assignment();
-            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
-
-            return ai.how_many();
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-        } finally {
-            try {
-                disconnect(sc);
-            } catch (Exception e) {
-                LogUtil.error(getClass().getName(), e, "");
-            }
-        }
-        return size;
+        String username = getWorkflowUserManager().getCurrentUsername();
+        String state = "open.not_running.not_started";
+        
+        return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }
 
     /**
