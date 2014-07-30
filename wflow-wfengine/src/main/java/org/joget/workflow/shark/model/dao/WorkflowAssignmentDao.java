@@ -73,7 +73,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     
     public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
         //required to disable lazy loading 
-        String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
+        String condition = "join e.process p join e.activity a join a.state s"; 
         Collection<String> params = new ArrayList<String>();
         
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {
