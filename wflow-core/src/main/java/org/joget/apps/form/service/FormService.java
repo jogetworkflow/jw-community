@@ -248,6 +248,9 @@ public class FormService {
                 // no primary key value specified, generate new primary key value
                 primaryKeyValue = UuidGenerator.getInstance().getUuid();
                 updatedFormData.setPrimaryKeyValue(primaryKeyValue);
+                
+                //set to request param
+                formData.addRequestParameterValues(FormUtil.PROPERTY_ID, new String[]{primaryKeyValue});
             }
             // no errors, save form data
             updatedFormData = executeFormStoreBinders(form, updatedFormData);
