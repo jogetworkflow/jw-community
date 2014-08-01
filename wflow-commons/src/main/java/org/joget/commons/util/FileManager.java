@@ -25,10 +25,10 @@ public class FileManager {
             String filename = path;
             try {
                 filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
-                File uploadFile = new File(getBaseDirectory() + filename);
+                File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
-                    new File(getBaseDirectory() + path).mkdirs();
+                    new File(getBaseDirectory(), path).mkdirs();
 
                     // write file
                     out = new FileOutputStream(uploadFile);
@@ -52,7 +52,7 @@ public class FileManager {
     public static File getFileByPath(String path) {
         if (path != null) {
             try {
-                File file = new File(getBaseDirectory() + URLDecoder.decode(path, "UTF-8"));
+                File file = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
                 if (file.exists() && !file.isDirectory()) {
                     return file;
                 }
@@ -98,7 +98,8 @@ public class FileManager {
         BufferedOutputStream out = null;
 
         try{
-            Image image = Toolkit.getDefaultToolkit().getImage(getBaseDirectory() + URLDecoder.decode(path, "UTF-8"));
+            File imageFile = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
+            Image image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
             MediaTracker mediaTracker = new MediaTracker(new Container());
             mediaTracker.addImage(image, 0);
             mediaTracker.waitForID(0);
@@ -118,7 +119,7 @@ public class FileManager {
             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
             
-            out = new BufferedOutputStream(new FileOutputStream(getBaseDirectory() + URLDecoder.decode(path, "UTF-8") + THUMBNAIL_EXT));
+            out = new BufferedOutputStream(new FileOutputStream(imageFile.getAbsolutePath() + THUMBNAIL_EXT));
             ImageIO.write(thumbImage, "jpeg", out);
 
             out.flush();

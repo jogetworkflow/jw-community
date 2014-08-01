@@ -9,8 +9,8 @@
 
         <c:url var="url" value="" />
         <form:form id="createForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/form/submit?builderMode=${param.builderMode}" method="POST" commandName="formDefinition" cssClass="form">
-            <input type="hidden" name="activityDefId" value="${activityDefId}"/>
-            <input type="hidden" name="processDefId" value="${processDefId}"/>
+            <input type="hidden" name="activityDefId" value="<c:out value="${activityDefId}"/>"/>
+            <input type="hidden" name="processDefId" value="<c:out value="${processDefId}"/>"/>
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">
@@ -52,7 +52,7 @@
                     });
                 }
             }
-            ConnectionManager.get('${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/tableNameList', loadTableNameData);
+            ConnectionManager.get('<c:out value="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/tableNameList"/>', loadTableNameData);
         });
         
         function validateField(){

@@ -48,42 +48,42 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
     </resources>
     <application-desc main-class="org.joget.designer.Designer">
         <c:if test="${!empty param.file}">
-            <argument>${serverPath}/test/${param.file}</argument>
+            <argument>${serverPath}/test/<c:out value="${param.file}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.url}">
-            <argument>${param.url}</argument>
+            <argument><c:out value="${param.url}"/></argument>
         </c:if>
             <fmt:setBundle basename="custom" var="custom"/>
             <argument>title:<fmt:message key="Title" bundle="${custom}"/></argument>
         <c:if test="${!empty param.path}">
-            <argument>path:${param.path}</argument>
+            <argument>path:<c:out value="${param.path}"/></argument>
         </c:if>
         <c:if test="${!empty param.appId}">
-            <argument>appId:${param.appId}</argument>
+            <argument>appId:<c:out value="${param.appId}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.appVersion}">
-            <argument>appVersion:${param.appVersion}</argument>
+            <argument>appVersion:<c:out value="${param.appVersion}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.locale}">
-            <argument>locale:${param.locale}</argument>
+            <argument>locale:<c:out value="${param.locale}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.username}">
-            <argument>username:${param.username}</argument>
+            <argument>username:<c:out value="${param.username}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.hash}">
-            <argument>hash:${param.hash}</argument>
+            <argument>hash:<c:out value="${param.hash}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.domain}">
-            <argument>domain:${param.domain}</argument>
+            <argument>domain:<c:out value="${param.domain}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.port}">
-            <argument>port:${param.port}</argument>
+            <argument>port:<c:out value="${param.port}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.context}">
-            <argument>context:${param.context}</argument>
+            <argument>context:<c:out value="${param.context}" escapeXml="true"/></argument>
         </c:if>
         <c:if test="${!empty param.session}">
-            <argument>session:${param.session}</argument>
+            <argument>session:<c:out value="${param.session}" escapeXml="true"/></argument>
         </c:if>
     </application-desc>
 </jnlp>

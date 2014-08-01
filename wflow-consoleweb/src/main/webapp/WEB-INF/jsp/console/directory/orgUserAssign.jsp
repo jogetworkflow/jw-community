@@ -50,7 +50,7 @@
                         parent.location.reload(true);
                     }
                 }
-                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/${id}/user/assign/submit', callback, 'ids='+ selectedIds);
+                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/org/${id}/user/assign/submit"/>', callback, 'ids='+ selectedIds);
             }
         }
 

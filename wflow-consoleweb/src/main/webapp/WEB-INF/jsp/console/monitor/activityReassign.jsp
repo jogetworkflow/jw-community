@@ -61,7 +61,7 @@
                 if($('#replaceUser option[value="'+username+'"]').length > 0){
                     alert('<fmt:message key="console.monitoring.running.label.reassign.error"/>');
                 }else{
-                    var params = "username=" + escape(username) + "&state=${state}&processDefId=${processDefId}&activityId=${activityId}&processId=${processId}&replaceUser=" + escape(replaceUser);
+                    var params = "username=" + escape(username) + "<c:url value="&state=${state}&processDefId=${processDefId}&activityId=${activityId}&processId=${processId}&replaceUser="/>" + escape(replaceUser);
                     ConnectionManager.post('${pageContext.request.contextPath}/web/json/monitoring/running/activity/reassign', callback, params);
                 }
             }

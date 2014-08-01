@@ -11,7 +11,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><fmt:message key="dbuilder.title"/> - ${datalist.name}</title>
+        <title><fmt:message key="dbuilder.title"/> - <c:out value="${datalist.name}"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
@@ -51,10 +51,10 @@
             $(document).ready(function() {
 
                 DatalistBuilder.tinymceUrl = '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js';
-                DatalistBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderSave/';
-                DatalistBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderPreview/';
+                DatalistBuilder.saveUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderSave/"/>';
+                DatalistBuilder.previewUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderPreview/"/>';
                 DatalistBuilder.contextPath = '${pageContext.request.contextPath}';
-                DatalistBuilder.appPath = '/${appId}/${appVersion}';
+                DatalistBuilder.appPath = '<c:out value="/${appId}/${appVersion}"/>';
 
                 //tabbed
                 $('#builder-steps li').click( function(){
@@ -79,7 +79,7 @@
                     }
                 });
 
-                DatalistBuilder.setJson(${json}, "${id}");
+                DatalistBuilder.setJson(${json}, "<c:out value="${id}"/>");
                 DatalistBuilder.init();
                 
                 $('#builder-steps-properties').click( function(){
@@ -173,7 +173,7 @@
                             <a href="#" id="list-json-link" style="font-size: smaller" onclick="return false"><fmt:message key="console.builder.advanced"/></a>
                             <div id="list-info" style="display: none">
                                 <form id="list-preview" action="?" method="post">
-                                    <textarea id="list-json" name="json" cols="80" rows="10" style="font-size: smaller">${json}</textarea>
+                                    <textarea id="list-json" name="json" cols="80" rows="10" style="font-size: smaller"><c:out value="${json}"/></textarea>
                                 </form>
                                 <button onclick="updateList()"><fmt:message key="console.builder.update"/></button>
                             </div>

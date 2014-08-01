@@ -16,6 +16,7 @@
 </script>
 
 <script type="text/javascript" src="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/js/json/util.js"></script>
+<script type="text/javascript" src="${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/js/json/ui.js"></script>
 
 <c:set var="id" value="1"/>
 <c:if test="${!empty param.id}"><c:set var="id" value="${param.id}"/></c:if>
@@ -75,13 +76,13 @@
                             var assignmentCallback = "inboxPopupDialog_${fn:escapeXml(id)}('" + activityId + "')";
 
                             <c:if test="${!empty param.assignmentCallback}">
-                                assignmentCallback = "${param.assignmentCallback}.success(assignmentArray_${fn:escapeXml(id)}[" + i + "])";
+                                assignmentCallback = "<c:out value="${param.assignmentCallback}" escapeXml="true"/>.success(assignmentArray_${fn:escapeXml(id)}[" + i + "])";
                             </c:if>
 
-                            inbox += '    <a href="javascript: ' + assignmentCallback + ';" class="' + cssClass + '">' + activityName + '</a>';
+                            inbox += '    <a href="javascript: ' + assignmentCallback + ';" class="' + cssClass + '">' + UI.escapeHTML(activityName) + '</a>';
 
                             inbox += '    <span class="portlet_table_date_created">'+dateCreated+'</span>';
-                            inbox += '    <div class="portlet_table_process">'+processName+' - version '+processVersion+'</div>';
+                            inbox += '    <div class="portlet_table_process">'+UI.escapeHTML(processName)+' - version '+processVersion+'</div>';
                             inbox += '</div>';
 
                             $('#assignmentList_${fn:escapeXml(id)}').append(inbox);

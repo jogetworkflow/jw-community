@@ -16,7 +16,7 @@
                 height: 400px;
             }
         </style>
-        <iframe id="assignmentExternalForm" src="${activityForm.formUrl}appId=${appDef.id}&appVersion=${appDef.version}&processId=${assignment.processId}&activityId=${assignment.activityId}&processVersion=${assignment.processVersion}&processRequesterId=${assignment.processRequesterId}&username=<%= WorkflowUtil.getCurrentUsername() %>" frameborder="0" style="${activityForm.formIFrameStyle}"></iframe>
+        <iframe id="assignmentExternalForm" src="<c:out value="${activityForm.formUrl}appId=${appDef.id}&appVersion=${appDef.version}&processId=${assignment.processId}&activityId=${assignment.activityId}&processVersion=${assignment.processVersion}&processRequesterId=${assignment.processRequesterId}"/>&username=<%= WorkflowUtil.getCurrentUsername() %>" frameborder="0" style="<c:out value="${activityForm.formIFrameStyle}"/>"></iframe>
     </c:when>
     <c:otherwise>
 

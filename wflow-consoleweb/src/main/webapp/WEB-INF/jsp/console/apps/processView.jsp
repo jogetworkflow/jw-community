@@ -430,14 +430,14 @@
             );*/
             <c:if test="${!empty param.activityDefId}">
                     setTimeout(function() {
-                        var topy = $("#activityForm_${param.activityDefId}").offset().top - 100;
+                        var topy = $("#activityForm_<c:out value="${param.activityDefId}" escapeXml="true"/>").offset().top - 100;
                         topy = parseInt(topy);
                         window.scrollTo(0, topy);
                     }, 100);
             </c:if>
             <c:if test="${!empty param.participantId}">
                     setTimeout(function() {
-                        var topy = $("#participant_${param.participantId}").offset().top - 100;
+                        var topy = $("#participant_<c:out value="${param.participantId}" escapeXml="true"/>").offset().top - 100;
                         topy = parseInt(topy);
                         window.scrollTo(0, topy);
                     }, 100);
@@ -447,7 +447,7 @@
                 var tabView = new TabView('processTabView', 'top');
                 tabView.init();
             <c:if test="${!empty param.tab}">
-                tabView.select('#${param.tab}');
+                tabView.select('#<c:out value="${param.tab}"/>');
             </c:if>
             <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/form/edit/${form.id}"/>
 

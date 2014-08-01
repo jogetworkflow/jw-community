@@ -12,7 +12,7 @@
         <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
         <init-param>
             <param-name>logLevel</param-name>
-            <param-value>DEBUG</param-value>
+            <param-value>WARNING</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

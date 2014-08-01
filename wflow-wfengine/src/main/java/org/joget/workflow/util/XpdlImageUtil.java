@@ -61,23 +61,24 @@ public class XpdlImageUtil {
         WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
         WorkflowProcess process = workflowManager.getProcess(processDefId);
 
-        return SetupManager.getBaseDirectory() + IMAGE_FOLDER + File.separator + process.getPackageId() + File.separator;
+        File path = new File(SetupManager.getBaseDirectory(), IMAGE_FOLDER + File.separator + process.getPackageId() + File.separator);
+        return path.getAbsolutePath();
     }
 
     public static File getXpdlImage(String designerwebBaseUrl, String processDefId) {
-        File file = new File(getXpdlImagePath(processDefId) + processDefId + IMAGE_EXTENSION);
+        File file = new File(getXpdlImagePath(processDefId), processDefId + IMAGE_EXTENSION);
         if (!file.exists()) {
             generateXpdlImage(designerwebBaseUrl, processDefId);
-            file = new File(getXpdlImagePath(processDefId) + processDefId + IMAGE_EXTENSION);
+            file = new File(getXpdlImagePath(processDefId), processDefId + IMAGE_EXTENSION);
         }
         return file;
     }
 
     public static File getXpdlThumbnail(String designerwebBaseUrl, String processDefId) {
-        File file = new File(getXpdlImagePath(processDefId) + THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION);
+        File file = new File(getXpdlImagePath(processDefId), THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION);
         if (!file.exists()) {
             generateXpdlImage(designerwebBaseUrl, processDefId);
-            file = new File(getXpdlImagePath(processDefId) + THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION);
+            file = new File(getXpdlImagePath(processDefId), THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION);
         }
         return file;
     }
@@ -105,7 +106,7 @@ public class XpdlImageUtil {
             String fileName = processDefId + IMAGE_EXTENSION;
             File file = new File(baseDir);
             file.mkdirs();
-            file = new File(baseDir + fileName);
+            file = new File(baseDir, fileName);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
             String url = designerwebBaseUrl + "/viewer/viewer.jsp?processId=" + process.getEncodedId();
@@ -175,7 +176,7 @@ public class XpdlImageUtil {
         BufferedOutputStream out = null;
 
         try{
-            Image image = Toolkit.getDefaultToolkit().getImage(path + processDefId + IMAGE_EXTENSION);
+            Image image = Toolkit.getDefaultToolkit().getImage(new File(path, processDefId + IMAGE_EXTENSION).getAbsolutePath());
             MediaTracker mediaTracker = new MediaTracker(new Container());
             mediaTracker.addImage(image, 0);
             mediaTracker.waitForID(0);
@@ -195,7 +196,7 @@ public class XpdlImageUtil {
             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
 
-            out = new BufferedOutputStream(new FileOutputStream(path + THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION));
+            out = new BufferedOutputStream(new FileOutputStream(new File(path, THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION)));
             ImageIO.write(thumbImage, "jpeg", out);
 
             out.flush();

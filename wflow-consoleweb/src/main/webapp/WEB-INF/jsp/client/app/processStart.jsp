@@ -3,7 +3,7 @@
 <commons:popupHeader />
 
     <c:if test="${!empty param.css}">
-        <link rel="stylesheet" type="text/css" href="${param.css}">
+        <link rel="stylesheet" type="text/css" href="<c:out value="${param.css}"/>">
     </c:if>
 
     <div id="main-body-header">
@@ -20,14 +20,14 @@
             </div>
             <div style="text-align: center">
                 <p>&nbsp;</p>
-                <a href="javascript:closeDialog('${param.cancel}')"><fmt:message key="client.app.run.process.label.start.cancel"/></a>
+                <a id="cancel" href="javascript:closeDialog('<c:out value="${param.cancel}" />')"><fmt:message key="client.app.run.process.label.start.cancel"/></a>
             </div>
         </form>
     </div>
 
     <script type="text/javascript">
         $(document).ready(function(){
-            var cancel = '${param.cancel}';
+            var cancel = '<c:out value="${param.cancel}" />';
 
             if(cancel == '' || cancel == 'false'){
                 if(window.parent == window)

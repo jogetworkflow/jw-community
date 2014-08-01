@@ -14,7 +14,7 @@
             $(".actions").append(button);
 
             // set parent ID
-            var gridId = "${id}";
+            var gridId = "<c:out value="${id}"/>";
 
             // click handler
             $(button).click(function(e) {
@@ -23,7 +23,7 @@
                 var data = getSelectedData();
                 
                 if (window.parent && $("th.select_checkbox").length > 0) {
-                    var json = $("iframe#${param._frameId}", window.parent.document).attr("_cachedSelection");
+                    var json = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document).attr("_cachedSelection");
                     if (json !== undefined) {
                         var cachedData = JSON.parse(json);
                         if (cachedData !== undefined) {
@@ -46,7 +46,7 @@
             
             //to support presist selection for checkbox
             if (window.parent && $("th.select_checkbox").length > 0) {
-                var iframe = $("iframe#${param._frameId}", window.parent.document);
+                var iframe = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document);
                 
                 //cache selection on sorting, filter and change page
                 $("th a, .pagelinks a, .filter-cell input[type=submit]").click(function() {
@@ -78,7 +78,7 @@
         function cacheSelection(iframe) {
             var data = getSelectedData();
             
-            var json = $("iframe#${param._frameId}", window.parent.document).attr("_cachedSelection");
+            var json = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document).attr("_cachedSelection");
             if (json !== undefined) {
                 var cachedData = JSON.parse(json);
                 if (cachedData !== undefined) {

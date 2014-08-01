@@ -134,7 +134,7 @@
     var tabView = new TabView('propertiesTab', 'top');
     tabView.init();
     <c:if test="${!empty param.tab}">
-        tabView.select('#${param.tab}');
+        tabView.select('#<c:out value="${param.tab}"/>');
     </c:if>
 
     $(document).ready(function(){

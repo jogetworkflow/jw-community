@@ -7,20 +7,24 @@ import org.apache.commons.logging.LogFactory;
 public class LogUtil {
 
     public static void info(String className, String message) {
-        LogFactory.getLog(className).info(message);
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        LogFactory.getLog(className).info(clean);
     }
 
     public static void debug(String className, String message) {
-        LogFactory.getLog(className).debug(message);
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        LogFactory.getLog(className).debug(clean);
     }
 
     public static void warn(String className, String message) {
-        LogFactory.getLog(className).warn(message);
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        LogFactory.getLog(className).warn(clean);
     }
 
     public static void error(String className, Throwable e, String message) {
         if (message != null && message.trim().length() > 0) {
-            LogFactory.getLog(className).error(message, e);
+            String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
+            LogFactory.getLog(className).error(clean, e);
         } else {
             LogFactory.getLog(className).error(e.toString(), e);
         }

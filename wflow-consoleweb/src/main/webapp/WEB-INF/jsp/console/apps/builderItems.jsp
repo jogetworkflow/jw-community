@@ -111,7 +111,7 @@
     <script type="text/javascript">
         <ui:popupdialog var="builderwCreateDialog" src=""/>
         <c:if test="${!empty param.showCreate}">
-            showCreateForm('${param.showCreate}');
+            showCreateForm('<c:out value="${param.showCreate}" escapeXml="true"/>');
         </c:if>
         function navCreate(type){
             window.location.href = "?showCreate="+type;

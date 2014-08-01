@@ -356,10 +356,10 @@
                     if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                         var callback = {
                             success : function(response) {
-                                 parent.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=${participantId}';
+                                 parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=${participantId}"/>';
                             }
                         }
-                        var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/remove', callback, null);
+                        var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/remove"/>', callback, null);
                     }
                     return false;
                 } else {
@@ -369,17 +369,17 @@
         </c:if>
 
         function submitPlugin(id){
-            document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
+            document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure"/>?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
         }
 
         function post(type, params){
             if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                 var callback = {
                     success : function(response) {
-                        parent.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=' + response;
+                        parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}"/>?tab=participantList&participantId=' + response;
                     }
                 }
-                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/submit/'+type, callback, params);
+                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/submit/"/>'+type, callback, params);
             }
             return false;
         }

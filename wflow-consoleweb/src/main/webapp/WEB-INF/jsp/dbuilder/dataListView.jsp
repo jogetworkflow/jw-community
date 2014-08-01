@@ -20,7 +20,7 @@
     <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
     <c:if test="${isQuickEditEnabled}">
     <div class="quickEdit" style="display: none">
-        <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
+        <a href="<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}"/>" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
     </div>
     </c:if>
     
@@ -30,18 +30,18 @@
         <c:if test="${!empty actionResult}">
             <c:if test="${!empty actionResult.message}">
                 <script>
-                    alert("${actionResult.message}");
+                    alert("<c:out value="${actionResult.message}"/>");
                 </script>
             </c:if>
             <c:choose>
                 <c:when test="${actionResult.type == 'REDIRECT' && actionResult.url == 'REFERER'}">
                     <script>
-                        location.href = "${header['Referer']}";
+                        location.href = "<c:out value="${header['Referer']}"/>";
                     </script>
                 </c:when>
                 <c:when test="${actionResult.type == 'REDIRECT'  && !empty actionResult.url}">
                     <script>
-                        location.href = "${actionResult.url}";
+                        location.href = "<c:out value="${actionResult.url}"/>";
                     </script>
                 </c:when>
                 <c:otherwise>   

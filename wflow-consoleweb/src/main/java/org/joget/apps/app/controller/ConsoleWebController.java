@@ -4199,15 +4199,22 @@ public class ConsoleWebController {
         Properties keys = new Properties();
 
         //get message key from property file
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
-        if (inputStream != null) {
-            keys.load(inputStream);
-            map.addAttribute("name", name);
-            map.addAttribute("keys", keys.keys());
-            
-            return "console/i18n/lang";
-        } else {
-            return "error404";
+        InputStream inputStream = null;
+        try {
+            inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
+            if (inputStream != null) {
+                keys.load(inputStream);
+                map.addAttribute("name", name);
+                map.addAttribute("keys", keys.keys());
+
+                return "console/i18n/lang";
+            } else {
+                return "error404";
+            }
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
     }
 

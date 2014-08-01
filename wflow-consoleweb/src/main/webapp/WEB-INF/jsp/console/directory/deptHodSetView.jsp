@@ -66,7 +66,7 @@
                         parent.location.reload(true);
                     }
                 }
-                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/${id}/hod/set/submit', callback, 'userId='+ selectedId);
+                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/dept/${id}/hod/set/submit"/>', callback, 'userId='+ selectedId);
             }
         }
 
