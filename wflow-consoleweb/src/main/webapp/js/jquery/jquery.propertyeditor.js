@@ -1289,7 +1289,7 @@
                         }
 
                         $.each(d, function(i, page){
-                            pagehtml += renderPage(editorId, elementStack[id].name + '_' + i, page, option, elementId, parentId);
+                            pagehtml += renderPage(editorId, i, page, option, elementId, parentId);
                         });
 
                         addElementPropertiesPage(editorId, currentPage, pagehtml);
