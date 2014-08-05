@@ -506,6 +506,7 @@ public class AppServiceImpl implements AppService {
                             result.setActivities(new ArrayList<WorkflowActivity>());
                         }
                     } else {
+                        workflowManager.removeProcessInstance(processId);
                         result = null;
                     }
                 }
