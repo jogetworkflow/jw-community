@@ -280,7 +280,7 @@ public class AppServiceImpl implements AppService {
 
         // decorate form with actions
         Collection<FormAction> formActionList = new ArrayList<FormAction>();
-        if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty()) {
+        if (activityForm != null && activityForm.getFormId() != null && !activityForm.getFormId().isEmpty() && !activityForm.isDisableSaveAsDraft()) {
             Element saveButton = (Element) pluginManager.getPlugin(SaveAsDraftButton.class.getName());
             saveButton.setProperty(FormUtil.PROPERTY_ID, "saveAsDraft");
             saveButton.setProperty("label", ResourceBundleUtil.getMessage("form.button.saveAsDraft"));

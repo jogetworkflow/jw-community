@@ -1919,6 +1919,28 @@ public class ConsoleWebController {
         jsonObject.accumulate("auto", autoContinue);
         writeJson(writer, jsonObject, callback);
     }
+    
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/draft", method = RequestMethod.POST)
+    public void consoleActivitySaveAsDraftSubmit(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam String disable) throws JSONException, IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+
+        // set and save
+        PackageActivityForm paf = packageDef.getPackageActivityForm(processDefId, activityDefId);
+        if (paf == null) {
+            paf = new PackageActivityForm();
+            paf.setProcessDefId(processDefId);
+            paf.setActivityDefId(activityDefId);
+        }
+        boolean disableSaveAsDraft = Boolean.parseBoolean(disable);
+        paf.setDisableSaveAsDraft(disableSaveAsDraft);
+        packageDefinitionDao.addAppActivityForm(appId, appDef.getVersion(), paf);
+
+        // write output
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("disable", disableSaveAsDraft);
+        writeJson(writer, jsonObject, callback);
+    }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin")
     public String consoleActivityPlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {

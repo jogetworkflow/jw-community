@@ -29,6 +29,8 @@ public class PackageActivityForm implements Serializable, Cloneable {
     @Element(required = false)
     private boolean autoContinue;
     @Element(required = false)
+    private Boolean disableSaveAsDraft;
+    @Element(required = false)
     private Form form;
 
     /**
@@ -105,6 +107,17 @@ public class PackageActivityForm implements Serializable, Cloneable {
 
     public void setAutoContinue(boolean autoContinue) {
         this.autoContinue = autoContinue;
+    }
+
+    public Boolean isDisableSaveAsDraft() {
+        if (disableSaveAsDraft == null) {
+            disableSaveAsDraft = false;
+        }
+        return disableSaveAsDraft;
+    }
+
+    public void setDisableSaveAsDraft(Boolean disableSaveAsDraft) {
+        this.disableSaveAsDraft = disableSaveAsDraft;
     }
 
     public Form getForm() {

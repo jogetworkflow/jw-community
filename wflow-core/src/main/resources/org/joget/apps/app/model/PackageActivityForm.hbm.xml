@@ -16,6 +16,7 @@
         <property name="formUrl" type="string"/>
         <property name="formIFrameStyle" type="string"/>
         <property name="autoContinue" type="boolean"/>
+        <property name="disableSaveAsDraft" type="boolean"/>
         <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false">
             <column name="packageId"/>
             <column name="packageVersion"/>

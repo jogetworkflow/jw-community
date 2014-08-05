@@ -263,6 +263,16 @@
                                                     <dt>&nbsp;</dt>
                                                     <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<c:out value="${activity.id}"/>')"/></div></dd>
                                                 </dl>
+                                                <c:if test="${activity.id ne 'runProcess'}">
+                                                    <dl>
+                                                        <dt>&nbsp;</dt>
+                                                        <c:set var="disableSaveAsDraft" value=""/>
+                                                        <c:if test="${activityForm.isDisableSaveAsDraft()}">
+                                                            <c:set var="disableSaveAsDraft" value="checked"/>
+                                                        </c:if>
+                                                        <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>
+                                                    </dl>
+                                                </c:if>
                                             </c:if>
                                             <c:if test="${!empty activityForm && activityForm.type == 'EXTERNAL'}">
                                                 <dl>
@@ -273,14 +283,16 @@
                                                 </dl>
                                             </c:if>
                                         </div>
-                                        <dl>
-                                            <dt>&nbsp;</dt>
-                                            <c:set var="showNext" value=""/>
-                                            <c:if test="${!empty activityForm && activityForm.autoContinue}">
-                                                <c:set var="showNext" value="checked"/>
-                                            </c:if>
-                                            <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
-                                        </dl>
+                                        <div style="padding-left: 1em;">
+                                            <dl>
+                                                <dt>&nbsp;</dt>
+                                                <c:set var="showNext" value=""/>
+                                                <c:if test="${!empty activityForm && activityForm.autoContinue}">
+                                                    <c:set var="showNext" value="checked"/>
+                                                </c:if>
+                                                <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
+                                            </dl>
+                                        </div>
                                     </div>
                                 </div>
                             </c:if>
@@ -610,6 +622,11 @@
                 function toggleContinueNextAssignment(processDefId, activityDefId, checkbox){
                     var params = "auto="+$(checkbox).is(':checked');
                     ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/' + processDefId + '/activity/' + activityDefId + '/continue', autoCallback, params);
+                }
+                
+                function toggleDisableSaveAsDraft(processDefId, activityDefId, checkbox){
+                    var params = "disable="+$(checkbox).is(':checked');
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/' + processDefId + '/activity/' + activityDefId + '/draft', autoCallback, params);
                 }
         </script>
 
