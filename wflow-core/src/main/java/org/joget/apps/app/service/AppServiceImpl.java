@@ -494,14 +494,19 @@ public class AppServiceImpl implements AppService {
                     formResult.setProcessId(processId);
 
                     // submit form
-                    formResult = formService.submitForm(startForm, formData, true);
-                    result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
+                    formResult = formService.submitForm(startForm, formResult, true);
+                    errors = formResult.getFormErrors();
+                    if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
+                        result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
 
-                    // set next activity if configured
-                    boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
-                    if (!autoContinue) {
-                        // clear next activities
-                        result.setActivities(new ArrayList<WorkflowActivity>());
+                        // set next activity if configured
+                        boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
+                        if (!autoContinue) {
+                            // clear next activities
+                            result.setActivities(new ArrayList<WorkflowActivity>());
+                        }
+                    } else {
+                        result = null;
                     }
                 }
             }
