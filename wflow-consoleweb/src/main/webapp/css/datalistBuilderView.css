@@ -164,6 +164,10 @@
     margin-top:15px;
 }
 
+.dataList .column-hidden {
+    display: none;
+}
+
 .pagelinks .pc{
     display:inline-block;
     width:20px;

@@ -695,6 +695,20 @@ DatalistBuilder = {
                     label : get_dbuilder_msg('dbuilder.sortable.yes'),
                     value : 'true'
                 }]
+            },
+            {
+                label : get_dbuilder_msg('dbuilder.hidden'),
+                name  : 'hidden',
+                required : 'true',
+                type : 'selectbox',
+                options : [{
+                    label : get_dbuilder_msg('dbuilder.hidden.no'),
+                    value : 'false'
+                },
+                {
+                    label : get_dbuilder_msg('dbuilder.hidden.yes'),
+                    value : 'true'
+                }]
             }]
         },{
             title : get_dbuilder_msg('dbuilder.actionMapping'),

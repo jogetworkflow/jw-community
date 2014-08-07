@@ -35,6 +35,7 @@ public class JsonUtil {
     public static final String PROPERTY_BINDER = "binder";
     public static final String PROPERTY_COLUMNS = "columns";
     public static final String PROPERTY_SORTABLE = "sortable";
+    public static final String PROPERTY_HIDDEN = "hidden";
     public static final String PROPERTY_ROW_ACTIONS = "rowActions";
     public static final String PROPERTY_ACTION = "action";
     public static final String PROPERTY_ACTIONS = "actions";
@@ -286,6 +287,9 @@ public class JsonUtil {
                 }
                 if (column.has(PROPERTY_SORTABLE) && !column.isNull(PROPERTY_SORTABLE)) {
                     dataListColumn.setSortable(column.getBoolean(PROPERTY_SORTABLE));
+                }
+                if (column.has(PROPERTY_HIDDEN) && !column.isNull(PROPERTY_HIDDEN)) {
+                    dataListColumn.setHidden(column.getBoolean(PROPERTY_HIDDEN));
                 }
                 if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
                     DataListAction action = parseActionFromJsonObject(column);

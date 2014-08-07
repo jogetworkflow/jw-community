@@ -120,12 +120,14 @@
                 </c:if>
                 <c:forEach items="${dataList.columns}" var="column">
                     <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
+                    <c:set var="columnHiddenCss" value=""/>
+                    <c:if test="${column.hidden}"><c:set var="columnHiddenCss" value=" column-hidden"/></c:if>
                     <display:column
                         property="column(${column.name})"
                         title="${columnLabel}"
                         sortable="${column.sortable}"
-                        headerClass="column_${column.name}"
-                        class="column_${column.name}"
+                        headerClass="column_${column.name} ${columnHiddenCss}"
+                        class="column_${column.name} ${columnHiddenCss}"
                         />
                 </c:forEach>
                 <c:if test="${!empty dataList.rowActions[0]}">

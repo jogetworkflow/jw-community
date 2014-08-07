@@ -29,6 +29,10 @@ public class DataListColumn {
      */
     private boolean sortable;
     /**
+     * Flag to indicate if column is hidden
+     */
+    private boolean hidden;
+    /**
      * Optional action for this column
      */
     private DataListAction action;
@@ -85,6 +89,14 @@ public class DataListColumn {
         this.sortable = sortable;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+    
     public DataListAction getAction() {
         return action;
     }
