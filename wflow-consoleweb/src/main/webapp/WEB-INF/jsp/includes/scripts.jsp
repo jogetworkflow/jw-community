@@ -39,4 +39,15 @@
         }   
     </script>
     </c:if>
+    
+    <!-- disabled using backspace key to navigate back in IE-->
+    <script type="text/javascript">
+        if ($.browser.msie) {
+            $(document).on("keydown", function (e) {
+                if (e.which === 8 && !$(e.target).is("input:not([readonly]), textarea:not([readonly])")) {
+                    e.preventDefault();
+                }
+            });
+        }
+    </script>   
 </c:if>
