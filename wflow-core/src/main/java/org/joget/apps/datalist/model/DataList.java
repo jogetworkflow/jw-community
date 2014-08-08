@@ -72,8 +72,12 @@ public class DataList {
 
     //Required when using session
     public void init() {
-        rows = getRows();
-        size = getSize();
+        try {
+            rows = getRows();
+            size = getSize();
+        } catch(Exception e) {
+            LogUtil.error(DataList.class.getName(), e, "");
+        }
 
         if (isReloadRequired()) {
             actionResult = new DataListActionResult();
@@ -362,7 +366,8 @@ public class DataList {
                 return getBinder().getData(this, getBinder().getProperties(), getFilterQueryObjects(), param.getSort(), param.getDesc(), param.getStart(), param.getSize());
             }
         } catch (Exception e) {
-            LogUtil.error(DataList.class.getName(), e, "");
+            LogUtil.error(DataList.class.getName(), e, "Error retrieving binder rows");
+            throw new RuntimeException(e);
         }
         return null;
     }
@@ -376,7 +381,7 @@ public class DataList {
                     size = 0;
                 }
             } catch (Exception e) {
-                LogUtil.error(DataList.class.getName(), e, "");
+                LogUtil.error(DataList.class.getName(), e, "Error retrieving binder row count");
                 size = 0;
             }
         }

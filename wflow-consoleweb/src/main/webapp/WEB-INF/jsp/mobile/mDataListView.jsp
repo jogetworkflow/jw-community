@@ -160,10 +160,13 @@
                 <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="0" value="${(dataList.size / dataList.pageSize)}" /></c:set>
                 <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>               
 
-                <%-- Display datalist --%>            
+                <%-- Display datalist --%>
+                <c:catch var="dataListBinderException">
+                    <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
+                </c:catch>
                 <ul id="dataList" data-role="listview" data-filter="false" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
                     <li data-role="list-divider"><c:out value="${dataList.name}"/></li>
-                    <c:forEach items="${dataList.rows}" var="row" varStatus="status">
+                    <c:forEach items="${dataListRows}" var="row" varStatus="status">
                         <li>
                             <c:if test="${!empty firstDataListAction}">
                                 <c:set var="rowValue" value="${row[firstDataListAction.hrefColumn]}"/>
@@ -197,7 +200,20 @@
                                 <a href="#" onclick="<c:out value="${onClickCode}"/>"><c:out value="${secondDataListAction.linkLabel}"/></a>
                             </c:if>
                         </li>
-                    </c:forEach>     
+                    </c:forEach>    
+                    <c:if test="${!empty dataListBinderException}">
+                    <%
+                        String exceptionMessage = "";
+                        Throwable cause = (Throwable) pageContext.findAttribute("dataListBinderException");
+                        while (cause.getCause() != null) {
+                            cause = cause.getCause();
+                        }
+                        exceptionMessage = cause.getMessage();
+                    %>                        
+                        <li>
+                            <c:out value="<%= exceptionMessage %>"/>
+                        </li>
+                    </c:if>
                 </ul>    
                     
                 <%-- Display paging buttons --%>

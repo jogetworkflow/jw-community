@@ -168,6 +168,11 @@
     display: none;
 }
 
+.dataList .datalist-error {
+    font-weight: bold;
+    color: #F00;
+}
+
 .pagelinks .pc{
     display:inline-block;
     width:20px;

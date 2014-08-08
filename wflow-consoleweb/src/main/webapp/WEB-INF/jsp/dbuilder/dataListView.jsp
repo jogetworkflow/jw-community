@@ -49,7 +49,9 @@
                 </c:otherwise>
             </c:choose>
         </c:if>
-        <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
+        <c:catch var="dataListBinderException">
+            <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
+        </c:catch>
         <c:set var="dataListSize" scope="request" value="${dataList.size}"/>
         <c:set var="dataListPageSize" scope="request" value="${dataList.pageSize}"/>
         <c:set var="decorator" scope="request" value="${dataList.primaryKeyDecorator}"/>
@@ -70,8 +72,19 @@
             <c:set var="selectionType" value="single" />
         </c:if>
         
-        <!-- Display Filters -->
+        <c:if test="${!empty dataListBinderException}">
+            <%
+            String exceptionMessage = "";
+            Throwable cause = (Throwable)pageContext.findAttribute("dataListBinderException");
+            while(cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            exceptionMessage = cause.getMessage();
+            %>
+            <div class="datalist-error"><c:out value="<%= exceptionMessage %>"/></div>
+        </c:if>
         
+        <!-- Display Filters -->        
         <c:if test="${!empty dataList.filterTemplates[0]}">
             <form name="filters_${dataListId}" id="filters_${dataListId}" action="?" method="POST">
                 <div class="filters">
