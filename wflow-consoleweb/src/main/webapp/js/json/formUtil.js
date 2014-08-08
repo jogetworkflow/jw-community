@@ -83,7 +83,8 @@ FormUtil = {
         
         cellFieldId = cellFieldId.replace(/\./g, '_');
         var cells = $(field).find("[name=" + cellFieldId + "], [name$=_" + cellFieldId + "]");
-        
+        //filter those in template 
+        cells = $(cells).filter(':parents(.grid-row-template)');
         return cells;
     }
 }
