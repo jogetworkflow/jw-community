@@ -1001,6 +1001,7 @@ DatalistBuilder = {
         // set id
         if (id) {
             DatalistBuilder.datalistProperties.id = id;
+            obj.id = id;
         }
         
         DatalistBuilder.binderProperties = obj.binder;
