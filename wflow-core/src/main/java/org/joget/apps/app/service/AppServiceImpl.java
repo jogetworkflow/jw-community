@@ -1256,6 +1256,10 @@ public class AppServiceImpl implements AppService {
             String value = new String(appDefinitionXml, "UTF-8");
             value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentBag", "java.util.ArrayList");
             value = value.replaceAll("org\\.hibernate\\.collection\\.PersistentMap", "java.util.HashMap");
+            
+            //for backward compatible 
+            value = value.replaceAll("<disableSaveAsDraft>", "<!--disableSaveAsDraft>");
+            value = value.replaceAll("</disableSaveAsDraft>", "</disableSaveAsDraft-->");
 
             return value.getBytes("UTF-8");
         } catch (Exception ex) {
@@ -1327,6 +1331,12 @@ public class AppServiceImpl implements AppService {
         try {
             byte[] appData = getAppDataXmlFromZip(zip);
             byte[] xpdl = getXpdlFromZip(zip);
+            
+            //for backward compatible
+            Map<String, String> replacement = new HashMap<String, String>();
+            replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
+            replacement.put("</disableSaveAsDraft-->", "</disableSaveAsDraft>");
+            appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
             Serializer serializer = new Persister();
             AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), "UTF-8");

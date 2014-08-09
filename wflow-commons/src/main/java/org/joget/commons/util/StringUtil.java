@@ -303,4 +303,20 @@ public class StringUtil {
         }
         return bytes;
     }
+    
+    public static byte[] searchAndReplaceByteContent(byte[] bytes, Map<String, String> replacements) {
+        if (replacements != null && !replacements.isEmpty()) {
+            try {
+                String content = new String(bytes);
+                
+                for (String search : replacements.keySet()) {
+                    content = content.replaceAll(search, replacements.get(search));
+                }
+                bytes = content.getBytes("UTF-8");
+            } catch (Exception e) {
+                //ignore
+            }
+        }
+        return bytes;
+    }
 }
