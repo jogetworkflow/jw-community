@@ -50,7 +50,7 @@ public class FormService {
     public String previewElement(String json, boolean includeMetaData) {
         Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
         FormData formData = new FormData();
-        formData.addRequestParameterValues(PREVIEW_MODE, new String[]{"true"});
+        formData.addFormResult(PREVIEW_MODE, "true");
         String html = "";
         try {
             formData = executeFormOptionsBinders(element, formData);

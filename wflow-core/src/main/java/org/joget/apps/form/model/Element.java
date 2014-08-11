@@ -266,7 +266,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     }
     
     public Boolean isAuthorize(FormData formData) {
-        if (formData.getRequestParameter(FormService.PREVIEW_MODE) != null) {
+        if (formData.getFormResult(FormService.PREVIEW_MODE) != null) {
             return true;
         }
         
