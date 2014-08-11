@@ -30,6 +30,7 @@ public class FormService {
 
     public static final String PREFIX_FOREIGN_KEY = "fk_";
     public static final String PREFIX_FOREIGN_KEY_EDITABLE = "fke_";
+    public static final String PREVIEW_MODE = "_PREVIEW_MODE";
 
     /**
      * Use case to generate HTML from a JSON element definition.
@@ -49,6 +50,7 @@ public class FormService {
     public String previewElement(String json, boolean includeMetaData) {
         Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
         FormData formData = new FormData();
+        formData.addRequestParameterValues(PREVIEW_MODE, new String[]{"true"});
         String html = "";
         try {
             formData = executeFormOptionsBinders(element, formData);

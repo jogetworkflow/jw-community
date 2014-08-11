@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.directory.model.User;
@@ -265,6 +266,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     }
     
     public Boolean isAuthorize(FormData formData) {
+        if (formData.getRequestParameter(FormService.PREVIEW_MODE) != null) {
+            return true;
+        }
+        
         Boolean isAuthorize = true;
         
         Map permissionMap = (Map) getProperty("permission");
