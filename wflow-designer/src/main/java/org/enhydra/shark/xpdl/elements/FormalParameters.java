@@ -57,34 +57,36 @@ public class FormalParameters extends XMLCollection {
 
     @Override
     public int remove(XMLElement el) {
-        // remove editable variable for all existing activities when a variable is removed
-        DataField df = (DataField)el;
-        XMLElement parent = getParent();
-        if (parent instanceof WorkflowProcess) {
-            parent.setNotifyListeners(false);
-            parent.setNotifyMainListeners(false);
-            WorkflowProcess wp = (WorkflowProcess)parent;
-            Activities acts = wp.getActivities();
-            for (int i=0; i<acts.size(); i++) {
-                Activity act = (Activity)acts.get(i);
-                if (act.getActivityType() == XPDLConstants.ACTIVITY_TYPE_NO) {
-                    ExtendedAttributes attributes = act.getExtendedAttributes();
-                    int position = -1;
-                    for (int j=0; j<attributes.size(); j++) {
-                        ExtendedAttribute attribute = (ExtendedAttribute)attributes.get(j);
-                        String attrName = attribute.getName();
-                        if (("VariableToProcess_UPDATE".equals(attrName) || ("VariableToProcess_VIEW".equals(attrName))) && df.getId().equals(attribute.getVValue())) {
-                            position = j;
-                            break;
+        if (el instanceof DataField) {
+            // remove editable variable for all existing activities when a variable is removed
+            DataField df = (DataField)el;
+            XMLElement parent = getParent();
+            if (parent instanceof WorkflowProcess) {
+                parent.setNotifyListeners(false);
+                parent.setNotifyMainListeners(false);
+                WorkflowProcess wp = (WorkflowProcess)parent;
+                Activities acts = wp.getActivities();
+                for (int i=0; i<acts.size(); i++) {
+                    Activity act = (Activity)acts.get(i);
+                    if (act.getActivityType() == XPDLConstants.ACTIVITY_TYPE_NO) {
+                        ExtendedAttributes attributes = act.getExtendedAttributes();
+                        int position = -1;
+                        for (int j=0; j<attributes.size(); j++) {
+                            ExtendedAttribute attribute = (ExtendedAttribute)attributes.get(j);
+                            String attrName = attribute.getName();
+                            if (("VariableToProcess_UPDATE".equals(attrName) || ("VariableToProcess_VIEW".equals(attrName))) && df.getId().equals(attribute.getVValue())) {
+                                position = j;
+                                break;
+                            }
+                        }
+                        if (position >= 0) {
+                            attributes.remove(position);
                         }
                     }
-                    if (position >= 0) {
-                        attributes.remove(position);
-                    }
                 }
+                parent.setNotifyListeners(true);
+                parent.setNotifyMainListeners(true);
             }
-            parent.setNotifyListeners(true);
-            parent.setNotifyMainListeners(true);
         }
         int result = super.remove(el);
         return result;
