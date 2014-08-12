@@ -1,3 +1,4 @@
+<%@page import="java.net.URLDecoder"%>
 <%@page contentType="image/jpeg" import="java.io.OutputStream,java.awt.image.BufferedImage,org.joget.designer.Viewer"%><%
     request.setCharacterEncoding("UTF-8");
     String xpdl = request.getParameter("xpdl");
@@ -12,6 +13,7 @@
 
     response.setContentType("image/jpeg");
     OutputStream output = response.getOutputStream();
-    new Viewer().outputProcessImage(xpdl, packageId, processDefId, runningActivityIds, output);
+    String decodedXpdl = URLDecoder.decode(xpdl, "UTF-8");
+    new Viewer().outputProcessImage(decodedXpdl, packageId, processDefId, runningActivityIds, output);
     output.flush();
 %>
