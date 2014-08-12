@@ -8,7 +8,6 @@ For details on upgrading to v4, please refer to http://dev.joget.org/community/d
 
 CHANGES IN 4.0.6
 ================
-1551    Fixed: wflow-wfengine - Fixed process image not being generated correctly due to xpdl not being encoded @trunk
 1549    Fixed: wflow-core, wflow-consoleweb - Fixed inconsistency in error message for invalid form table name #2060 @trunk
 1545    Fixed: wflow-designer - Process subflow parameter cannot be deleted #2179 @trunk
 1543    Fixed: wflow-core - Process Start White List - Secure by default caused the process start white list always reset to admin only when deploy process. r2241 @trunk

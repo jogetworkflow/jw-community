@@ -19,7 +19,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -124,7 +123,7 @@ public class XpdlImageUtil {
             HttpClient httpClient = new HttpClient();
             PostMethod post = new PostMethod(url);
             NameValuePair[] data = {
-                new NameValuePair("xpdl", URLEncoder.encode(new String(xpdlBytes, "UTF-8"), "UTF-8")),
+                new NameValuePair("xpdl", new String(xpdlBytes, "UTF-8")),
                 new NameValuePair("packageId", process.getPackageId()),
                 new NameValuePair("processId", processDefId)
             };
