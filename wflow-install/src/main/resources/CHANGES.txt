@@ -6,6 +6,31 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES IN 4.0.6
+================
+1545    Fixed: wflow-designer - Process subflow parameter cannot be deleted #2179 @trunk
+1543    Fixed: wflow-core - Process Start White List - Secure by default caused the process start white list always reset to admin only when deploy process. r2241 @trunk
+1539    Modified: wflow-core - Form Builder - Ignore permission in Form Preview. #2243 @trunk
+1533    Fixed: wflow-consoleweb - Fixed datalist json definition update overwrites id #2237 @trunk
+1532    Modified: wflow-core, wflow-consoleweb - Catch and display exception message from datalist binder #2203 @trunk
+1531    Fixed: wflow-consoleweb - formUtil.js - Cells return from getGridCells method included cell in template. #2240 @trunk
+1530    Modified: wflow-consoleweb - Disable backspace key to navigate back in IE. r2234 @trunk
+1529    Added: wflow-core, wflow-consoleweb - Added option to set datalist column as hidden @trunk
+1527    Added: wflow-consolweb - update zh_CN message resource bundle for r1525. @trunk
+1525    Added: wflow-core/wflow-consolweb - Process - Added option to remove "Save as Draft" button from assignment form. #2222 @trunk
+1521    Fixed: wflow-core - Run Process - Errors from store binder are ignored. #2213 @trunk
+1520    Fixed: wflow-consoleweb - Property Editor - Remove redundancy element name from the id of property page. @trunk
+1518    Modified: General - Fixes and changes based on Veracode PCI security report @trunk
+1517    Fixed: wflow-core - Form Service - New generated record id is not available is request params. #2164 @trunk
+1515    Modified: wflow-wfengine - WorkflowManager - Improve performance of getAssignmentSize. #2201 @trunk
+1513    Fixed: wflow-core - DatalistDecorator - Strip html tag in confirmation message of row action is not working.@trunk
+1512    Fixed: wflow-core/wflow-consoleweb - Form Row Delete Datalist Action - Not working when used as row action. #2181 @trunk
+1510    Added: wflow-consoleweb - Data List Builder - Add support for row action visibility control. @trunk
+1509    Modified: wflow-core - Inbox/Data List Menu - Using userview function to show alert and redirection instead of function of datalist. @trunk
+1508    Modified: wflow-consoleweb - Form/Sub Form - Add "readonly" css class when it is readonly. #2196 @trunk
+1502    Fixed: wflow-consoleweb - Property Editor - Page navigation not working correctly when there are third level of element exist. #2184 @trunk
+        Added: wflow-consoleweb - Property Editor - Support for dynamic/dependency properties. @trunk
+
 CHANGES IN 4.0.5.2
 ==================
 1497    Fixed: wflow-plugin-base - PropertyUtil - Fail to encrypt content contains "$" character. #2171 @trunk
