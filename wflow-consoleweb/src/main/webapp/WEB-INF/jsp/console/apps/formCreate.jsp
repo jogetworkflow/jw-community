@@ -79,7 +79,7 @@
                     }else{
                         alertString += "\n";
                     }
-                    alertString += '<fmt:message key="console.form.error.label.tableNameLengthInvalid"/>';
+                    alertString += '<fmt:message key="form.form.invalidId"/>';
                 }
                 alert(alertString);
             }else{

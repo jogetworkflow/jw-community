@@ -1447,21 +1447,27 @@ public class AppServiceImpl implements AppService {
             }
             
             String currentTable = "";
+            Collection<String> importedForms = new ArrayList<String>();
             try {
                 for (FormDefinition o : appDef.getFormDefinitionList()) {
                     currentTable = o.getTableName();
                     // initialize db table by making a dummy load
                     String dummyKey = "xyz123";
                     formDataDao.loadWithoutTransaction(o.getId(), o.getTableName(), dummyKey);
+                    importedForms.add(o.getId());
                     LogUtil.debug(getClass().getName(), "Initialized form " + o.getId() + " with table " + o.getTableName());
                 }
             } catch (Exception e) {
                 //error creating form data table, rollback
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    formDefinitionDao.delete(o.getId(), newAppDef);
+                for (String formId : importedForms) {
+                    formDefinitionDao.delete(formId, newAppDef);
                 }
                 appDefinitionDao.delete(newAppDef);
-                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable}));
+                String errorMessage = "";
+                if (currentTable.length() > 20) {
+                    errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                }
+                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}));
             }
         }
         

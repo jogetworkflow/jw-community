@@ -75,7 +75,9 @@ public class XMLUtil {
             transformer.transform(source, result);
             outputStream.flush();
         } finally {
-            outputStream.close();
+            if (outputStream != null) {
+                outputStream.close();
+            }
         }
     }
 }
