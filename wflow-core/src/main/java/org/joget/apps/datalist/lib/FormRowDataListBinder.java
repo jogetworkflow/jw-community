@@ -153,8 +153,9 @@ public class FormRowDataListBinder extends DataListBinderDefault {
                 FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
                 if (formDef != null) {
                     String formJson = formDef.getJson();
+                    
                     if (formJson != null) {
-                        form = (Form) formService.createElementFromJson(formJson);
+                        form = (Form) formService.createElementFromJson(formJson, false);
                         cachedFormDefId = formDefId;
                         cachedForm = form;
                     }
