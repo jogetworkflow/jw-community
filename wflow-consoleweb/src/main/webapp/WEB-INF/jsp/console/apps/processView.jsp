@@ -267,7 +267,7 @@
                                                     <dl>
                                                         <dt>&nbsp;</dt>
                                                         <c:set var="disableSaveAsDraft" value=""/>
-                                                        <c:if test="${activityForm.isDisableSaveAsDraft()}">
+                                                        <c:if test="${activityForm.disableSaveAsDraft}">
                                                             <c:set var="disableSaveAsDraft" value="checked"/>
                                                         </c:if>
                                                         <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>

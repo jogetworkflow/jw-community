@@ -109,7 +109,7 @@ public class PackageActivityForm implements Serializable, Cloneable {
         this.autoContinue = autoContinue;
     }
 
-    public Boolean isDisableSaveAsDraft() {
+    public Boolean getDisableSaveAsDraft() {
         if (disableSaveAsDraft == null) {
             disableSaveAsDraft = false;
         }
