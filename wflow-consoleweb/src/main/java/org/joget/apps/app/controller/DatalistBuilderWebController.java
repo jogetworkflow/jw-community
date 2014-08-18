@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -328,7 +329,7 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping("/app/(*:appId)/(~:appVersion)/datalist/embed")
-    public String embedDatalist(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
+    public String embedDatalist(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(listId, appDef);
         String json = datalistDefinition.getJson();
@@ -341,6 +342,15 @@ public class DatalistBuilderWebController {
         model.addAttribute("dataList", dataList);
         model.addAttribute("setting", callbackSetting);
         model.addAttribute("callback", callback);
-        return "dbuilder/embedDatalist";
+        
+        if (request.getParameter("_mapp") != null) {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Content-type", "application/xml");
+        
+            return "mapp/embedDatalist";
+        } else {   
+            return "dbuilder/embedDatalist";
+        }
     }
 }

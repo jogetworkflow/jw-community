@@ -13,6 +13,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/flexigrid/flexigrid.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js?build=<fmt:message key="build.number"/>"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui_ext.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/md5/jquery.md5.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.cookie.js"></script>

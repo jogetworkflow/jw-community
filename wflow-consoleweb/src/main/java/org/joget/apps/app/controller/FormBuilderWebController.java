@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -172,14 +173,14 @@ public class FormBuilderWebController {
     }
     
     @RequestMapping("/app/(*:appId)/(~:appVersion)/form/embed")
-    public String appEmbedForm(ModelMap model, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+    public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         AppUtil.setCurrentAppDefinition(appDef);
-        return embedForm(model, request, buttonLabel, json, callback, callbackSetting, id, action);
+        return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action);
     }
 
     @RequestMapping("/form/embed")
-    public String embedForm(ModelMap model, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+    public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
         FormData formData = new FormData();
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
@@ -280,7 +281,16 @@ public class FormBuilderWebController {
         }
 
         model.addAttribute("formHtml", formHtml);
-        return "fbuilder/embedForm";
+        
+        if (request.getParameter("_mapp") != null) {
+            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Content-type", "application/xml");
+        
+            return "mapp/embedForm";
+        } else {    
+            return "fbuilder/embedForm";
+        }
     }
     
     @RequestMapping("/json/app/(*:appId)/(~:appVersion)/form/options")

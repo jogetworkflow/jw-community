@@ -46,6 +46,7 @@
             });
 
             ${userview.setting.theme.javascript}
+            UI.base = "${pageContext.request.contextPath}";
             UI.userview_app_id = '${appId}';
             UI.userview_id = '${userview.properties.id}';
         </script>
