@@ -110,6 +110,8 @@ public class DataListMenu extends UserviewMenu {
                     HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                     if (request != null && request.getHeader("Referer") != null) {
                         setRedirectUrl(request.getHeader("Referer"));
+                    } else {
+                        setRedirectUrl("REFERER");
                     }
                 } else {
                     setRedirectUrl(ac.getUrl());
