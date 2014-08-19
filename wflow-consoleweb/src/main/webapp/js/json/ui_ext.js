@@ -7,7 +7,7 @@ JPopup = {
                 var newWidth = UI.getPopUpWidth(width);
                 var newHeight = UI.getPopUpHeight(height);
                 
-                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:false,show:false,fixed: true});
+                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:false,show:false,fixed: true});
             } else {
                 JPopup.dialogboxes[id] = Boxy.get($("#"+id));
             }
