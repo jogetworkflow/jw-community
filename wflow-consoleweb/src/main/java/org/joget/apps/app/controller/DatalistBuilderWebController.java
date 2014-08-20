@@ -218,6 +218,7 @@ public class DatalistBuilderWebController {
             HashMap hm = new HashMap();
             hm.put("name", sourceColumn.getName());
             hm.put("label", sourceColumn.getLabel());
+            hm.put("displayLabel", AppUtil.processHashVariable(sourceColumn.getLabel(), null, null, null, appDef));
             hm.put("sortable", true);
             hm.put("filterable", true);
             hm.put("type", sourceColumn.getType());

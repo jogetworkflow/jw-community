@@ -153,18 +153,41 @@ DatalistBuilder = {
             temp = {
                 "id"         : column.name.toString(),
                 "label"      : column.label.toString(),
+                "displayLabel" : column.displayLabel.toString(),
                 "name"       : column.name.toString()
             }
             fields[temp.id] = temp;
         }
         DatalistBuilder.availableColumns = fields;
-
+        
         //call the decorator to populate fields
         DatalistBuilder.initFields();
 
         //attach events to the columns
         DatalistBuilder.initEvents();
+        
+        //refreash column and filter label
+        $("#databuilderContentColumns").children().each( function(){
+            var e = $(this).attr("id");
+            var column = DatalistBuilder.chosenColumns[e];
+            
+            var c = DatalistBuilder.availableColumns[column.name];
+            if (c !== undefined && c.label === column.label && c.label !== c.displayLabel) {
+                DatalistBuilder.renderColumn(e);
+            }
+        });
 
+        //filters
+        $("#databuilderContentFilters").children().each( function(){
+            var e = $(this).attr("id");
+            var filter = DatalistBuilder.chosenFilters[e];
+            
+            var c = DatalistBuilder.availableColumns[filter.name];
+            if (c !== undefined && filter.label === c.label && c.label !== c.displayLabel) {
+                DatalistBuilder.renderFilter(e);
+            }
+        });
+        
         //change to designer's tab
         $("#builder-steps-designer").trigger("click");
     },
@@ -179,7 +202,7 @@ DatalistBuilder = {
             if (field.id == field.label) {
                 cssClass = " key";
             }
-            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + UI.escapeHTML(field.label) + '</label></div></li>';
+            var element = '<li><div class="builder-palette-column" id="' + field.id + '"><label class="label' + cssClass + '">' + UI.escapeHTML(field.displayLabel) + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
     },
@@ -352,7 +375,12 @@ DatalistBuilder = {
     },
 
     renderFilter : function(columnId){
-        var filter = DatalistBuilder.chosenFilters[columnId];
+        var filter = $.extend({}, DatalistBuilder.chosenFilters[columnId]);
+        
+        if (DatalistBuilder.availableColumns[filter.name] !== undefined && filter.label === DatalistBuilder.availableColumns[filter.name].label) {
+            filter.label = DatalistBuilder.availableColumns[filter.name].displayLabel;
+        }
+        
         var elementHtml = DatalistBuilder.retrieveFilterHTML(columnId, filter);
         
         if( $('#databuilderContentFilters #' + columnId).size() != 0 ){
@@ -462,8 +490,12 @@ DatalistBuilder = {
                 sortable = '(Z->A)';
             }
         }
+        var label = column.label;
+        if (DatalistBuilder.availableColumns[column.name] !== undefined && label === DatalistBuilder.availableColumns[column.name].label) {
+            label = DatalistBuilder.availableColumns[column.name].displayLabel;
+        }
 
-        var string = '<li class="databuilderItem column" id="' + columnId + '"><div class="databuilderItemTitle">' + UI.escapeHTML(column.label) + '&nbsp;' + sortable + '</div>';
+        var string = '<li class="databuilderItem column" id="' + columnId + '"><div class="databuilderItemTitle">' + UI.escapeHTML(label) + '&nbsp;' + sortable + '</div>';
         string += '<div class="databuilderItemContent">';
         string += '<ul>';
 
