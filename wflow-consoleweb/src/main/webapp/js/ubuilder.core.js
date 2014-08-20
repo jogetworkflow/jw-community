@@ -459,10 +459,18 @@ UserviewBuilder = {
     },
 
     updateFromJson: function() {
-        var form = $('#userview-preview');
-        form.attr("action", "?");
-        form.attr("target", "");
-        $('#userview-preview').submit();
+        UserviewBuilder.addToUndo();
+        var json = $('#userview-json').val();
+        
+        //exclude id from update
+        var id = this.data.properties.id;
+
+        //load the last data from undo stack
+        this.loadUserview(null, this.getData(json));
+
+        this.data.properties.id = id;
+        UserviewBuilder.adjustJson();
+        
         return false;
     },
 
