@@ -93,7 +93,7 @@
                         theme_advanced_toolbar_align : "left",
                         theme_advanced_statusbar_location : "bottom",
                         
-                        extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
+                        valid_elements : "+*[*]",
 
                         height : "300px",
                         width : "95%"
@@ -1674,7 +1674,7 @@
                 theme_advanced_toolbar_align : "left",
                 theme_advanced_statusbar_location : "bottom",
                 
-                extended_valid_elements : "iframe[src|width|height|name|align|frameborder|scrolling|style]",
+                valid_elements : "+*[*]",
 
                 height : "300px",
                 width : "95%"
