@@ -784,18 +784,13 @@ public class FormUtil implements ApplicationContextAware {
             } else {
                 // load from binder if available
                 if (formData != null) {
-                    FormRowSet rowSet = formData.getLoadBinderData(element);
-                    if (rowSet != null) {
+                    String binderValue = formData.getLoadBinderDataProperty(element, id);
+                    if (binderValue != null) {
                         values = new ArrayList<String>();
-                        for (FormRow row : rowSet) {
-                            String propValue = row.getProperty(id);
-                            if (propValue != null) {
-                                StringTokenizer st = new StringTokenizer(propValue, FormUtil.PROPERTY_OPTIONS_DELIMITER);
-                                while (st.hasMoreTokens()) {
-                                    String val = st.nextToken();
-                                    values.add(val);
-                                }
-                            }
+                        StringTokenizer st = new StringTokenizer(binderValue, FormUtil.PROPERTY_OPTIONS_DELIMITER);
+                        while (st.hasMoreTokens()) {
+                            String val = st.nextToken();
+                            values.add(val);
                         }
                     }
                 }
