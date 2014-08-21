@@ -143,7 +143,7 @@
 
                     <table>
                         <tr>
-                            <td width="175" valign="top">
+                            <td width="0" valign="top">
                                 <fieldset id="builder-palette">
                                     <div id="builder-palette-top"></div>
                                     <div id="builder-palette-body">
@@ -169,7 +169,7 @@
                                     </div>
                                 </fieldset>
                             </td>
-                            <td valign="top">
+                            <td valign="top" style="padding-left: 175px;">
                                 <fieldset id="form-canvas">
                                     <legend><fmt:message key="fbuilder.canvas"/></legend>
                                     <div class="form-container-div">

@@ -434,20 +434,18 @@ UserviewBuilder = {
 
     //Submit userview json to server for saving
     save : function(){
-        if(this.saveChecker != 0){
-            UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saving'));
-            var self = this;
-            $.post(this.saveUrl + this.data.properties.id, {json : this.getJson()} , function(data) {
-                var d = JSON.decode(data);
-                if(d.success == true){
-                    UserviewBuilder.updateSaveStatus("0");
-                    UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot");
-                }else{
-                    alert(get_ubuilder_msg('ubuilder.saveFailed'));
-                }
-                UserviewBuilder.showMessage("");
-            }, "text");
-        }
+        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saving'));
+        var self = this;
+        $.post(this.saveUrl + this.data.properties.id, {json : this.getJson()} , function(data) {
+            var d = JSON.decode(data);
+            if(d.success == true){
+                UserviewBuilder.updateSaveStatus("0");
+                UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot");
+            }else{
+                alert(get_ubuilder_msg('ubuilder.saveFailed'));
+            }
+            UserviewBuilder.showMessage("");
+        }, "text");
     },
 
     //Post userview json for preview it in new windows
@@ -459,18 +457,10 @@ UserviewBuilder = {
     },
 
     updateFromJson: function() {
-        UserviewBuilder.addToUndo();
-        var json = $('#userview-json').val();
-        
-        //exclude id from update
-        var id = this.data.properties.id;
-
-        //load the last data from undo stack
-        this.loadUserview(null, this.getData(json));
-
-        this.data.properties.id = id;
-        UserviewBuilder.adjustJson();
-        
+        var form = $('#userview-preview');
+        form.attr("action", "?");
+        form.attr("target", "");
+        $('#userview-preview').submit();
         return false;
     },
 
