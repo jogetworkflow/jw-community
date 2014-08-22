@@ -2755,7 +2755,7 @@ public class ConsoleWebController {
             String filename = appId + "_" + version + "_" + locale + ".po";
 
             // set response headers
-            response.setContentType("text/plain");
+            response.setContentType("text/plain; charset=utf-8");
             response.addHeader("Content-Disposition", "attachment; filename=" + filename);
             output = response.getOutputStream();
 
