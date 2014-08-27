@@ -124,6 +124,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
                 if (file != null) {
                     result.putTempFilePath(id, value);
                     result.setProperty(id, file.getName());
+                    
+                    String paramName = FormUtil.getElementParameterName(this);
+                    formData.addRequestParameterValues(paramName, new String[]{file.getName()});
                 } else {
                     result.setProperty(id, value);
                 }
