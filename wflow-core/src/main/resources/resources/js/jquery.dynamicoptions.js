@@ -83,6 +83,7 @@
     
     function showHideOption(target, o){
         var controlValues = getValues(o.controlField);
+        var values = getValues(o.paramName);
         
         if ($(target).is("select")) {
             if ($(target).closest(".form-cell, .subform-cell").find('select.dynamic_option_container').length == 0) {
@@ -95,6 +96,10 @@
                 var option = $(this);
                 if ($(option).attr("grouping") != "" && $.inArray($(option).attr("grouping"), controlValues) == -1) {
                     $(option).remove();
+                } else {
+                    if ($.inArray($(option).attr("value"), values) !== -1) {
+                        $(option).attr("selected", "selected");
+                    }
                 }
             });
         } else { 
