@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@page import="org.joget.apps.userview.model.UserviewMenu"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
 
@@ -150,8 +151,6 @@
             Mobile.contextPath = "${pageContext.request.contextPath}";
             Mobile.updateCache();  
         </script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js"></script>
     </head>
     <body class="ui-mobile-viewport">
@@ -238,5 +237,6 @@
                     
         <div class="ui-loader" style="top: 332px; "></div>
         <div id="online-status"></div>
+        <%= AppUtil.getSystemAlert() %> 
     </body>    
 </html>

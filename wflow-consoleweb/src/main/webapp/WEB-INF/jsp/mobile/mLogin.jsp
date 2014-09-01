@@ -1,5 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!empty appId}">
@@ -72,6 +74,9 @@
                             <tr><td><fmt:message key="console.login.label.username" />: </td><td><input type='text' id='j_username' name='j_username' value='<c:if test="${not empty param.login_error}"><c:out value="${SPRING_SECURITY_LAST_USERNAME}"/></c:if>'/></td></tr>
                             <tr><td><fmt:message key="console.login.label.password" />:</td><td><input type='password' id='j_password' name='j_password'></td></tr>
                             <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="<fmt:message key="console.login.label.login" />" /></td></tr>
+                            <tr><td colspan="2">
+                                <%= DirectoryUtil.getLoginFormFooter() %>
+                            </td></tr>
                         </table>
                     </form>
 
@@ -87,7 +92,7 @@
         </div>
 
         <div class="ui-loader" style="top: 332px; "><h1><fmt:message key="mobile.apps.loading"/></h1></div>
-
+        <%= AppUtil.getSystemAlert() %> 
     </body>    
 </html>
 

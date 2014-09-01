@@ -189,3 +189,6 @@ iframe.boxy-content {
 #version {
     font-size: 9px;
 }
+#jqueryDialogDiv {
+    background:#fff;              
+}

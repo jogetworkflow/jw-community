@@ -47,4 +47,11 @@
 <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.0-rc.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/json/ui.js"></script>
+<script src="${pageContext.request.contextPath}/js/json/util.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+<script>
+    $(document).ready(function(){
+        Mobile.contextPath = "${pageContext.request.contextPath}";
+    });
+</script>    
