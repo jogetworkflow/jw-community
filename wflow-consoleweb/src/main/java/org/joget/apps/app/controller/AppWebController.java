@@ -368,7 +368,8 @@ public class AppWebController {
         try {
             // set attachment filename
             if (Boolean.valueOf(attachment).booleanValue()) {
-                response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20"));
+                String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
+                response.setHeader("Content-Disposition", "attachment; filename="+name+"; filename*=UTF-8''" + name);
             }
 
             // send output
