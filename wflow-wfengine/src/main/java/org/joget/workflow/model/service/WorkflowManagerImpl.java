@@ -3336,7 +3336,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started", sort, desc, start, rows);
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open", sort, desc, start, rows);
         
         return assignmentList;
     }
@@ -3620,7 +3620,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        String state = "open.not_running.not_started";
+        String state = "open";
         
         return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }

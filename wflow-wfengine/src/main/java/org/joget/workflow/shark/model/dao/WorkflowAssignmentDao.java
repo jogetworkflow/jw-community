@@ -44,8 +44,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and s.name = ?";
-                params.add(state);
+                condition += " and s.name like ?";
+                params.add(state + ".%");
             }
         }
         Collection<SharkAssignment> shAss = find(ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
@@ -105,8 +105,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and s.name = ?";
-                params.add(state);
+                condition += " and s.name like ?";
+                params.add(state + ".%");
             }
         }
         Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));
