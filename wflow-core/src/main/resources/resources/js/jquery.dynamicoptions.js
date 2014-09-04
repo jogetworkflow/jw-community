@@ -3,6 +3,8 @@
         dynamicOptions : function(o){
             var target = this;
             if($(target)){
+                $('[name='+o.controlField+']').addClass("control-field");
+                
                 if (o.nonce === '') {
                     $('[name='+o.controlField+']').live("change", function(){
                         showHideOption(target, o);

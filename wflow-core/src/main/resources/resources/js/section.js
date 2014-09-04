@@ -21,6 +21,8 @@ VisibilityMonitor.prototype.init = function() {
     var controlVal = this.controlValue;
     var isRegex = this.isRegex;
     
+    $(controlEl).addClass("control-field");
+    
     thisObject.handleChange(targetEl, controlEl, controlVal, isRegex);
     
     controlEl.live("change", function() {
@@ -95,7 +97,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name]")) {
+        if ($(this).is("[name].control-field")) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {
                 names.push(n);
@@ -127,7 +129,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name]")) {
+        if ($(this).is("[name].control-field")) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {
                 names.push(n);
