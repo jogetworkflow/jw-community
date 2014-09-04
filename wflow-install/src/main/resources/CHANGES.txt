@@ -8,6 +8,7 @@ For details on upgrading to v4, please refer to http://dev.joget.org/community/d
 
 CHANGES in 4.0.8
 ================
+1610    Fixed: wflow-core - Section - Large form performance issue. #2316 @trunk
 1607    Fixed: wflow-wfengine - Workflow Assignment Dao - Missing assignment due to wrong state is set. #2314 @ trunk
 1604    Fixed: wflow-consoleweb - Form - File attachment is appended with extra character in file extension when download in IE. @ trunk
 1603    Fixed: wflow-consoleweb - Select Box - Value is not correct for dependency field during edit. #2307 @ trunk
