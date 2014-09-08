@@ -1,3 +1,15 @@
+3.1.6
+=====
+1616    Modified: wflow-consoleweb - Disable backspace key to navigate back in IE. #2234 @3.1-SNAPSHOT
+1605    Fixed: wflow-consoleweb - Form - File attachment is appended with extra character in file extension when download in IE. @ 3.1-SNAPSHOT
+1546    Fixed: wflow-designer - Process subflow parameter cannot be deleted #2179 @3.1-SNAPSHOT
+1534    Fixed: wflow-consoleweb - Fixed datalist json definition update overwrites id #2237 @3.1-SNAPSHOT
+1493    Fixed: wflow-core - Check Box - Fixed readonly not working in IE9. #2169 @3.1-SNAPSHOT
+1460    Fixed: wflow-core - FormPdfUtil - Fail to parse grid html when it contains data of rich text editor. #2081 @3.1-SNAPSHOT
+1448    Modified: All - Updated copyright references to Joget Inc, and updated license governing laws to California @3.1-SNAPSHOT
+1416    Fixed: wflow-core - WorkflowFormBinder - Workflow variable work inconsistently due to value set directly to process level #1975. @3.1-SNAPSHOT
+1404    Fixed: wflow-core - Grid - Missing HTML Markup for column header. #1938 @3.1-SNAPSHOT
+
 3.1.5.2
 =======
 1334    Fixed: wflow-core - Date Picker - Wrong format in Chinese locale. @3.1-SNAPSHOT
