@@ -50,6 +50,7 @@
 <script src="${pageContext.request.contextPath}/js/json/ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/json/util.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+<script src="${pageContext.request.contextPath}/mobile/mobile_util.js"></script>
 <script>
     $(document).ready(function(){
         Mobile.contextPath = "${pageContext.request.contextPath}";
