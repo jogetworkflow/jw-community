@@ -24,7 +24,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (processDefId != null && !processDefId.isEmpty()) {
-                condition += " and p.processDefId = ?";
+                condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
                 params.add(processDefId);
             }
             
@@ -85,7 +86,8 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (processDefId != null && !processDefId.isEmpty()) {
-                condition += " and p.processDefId = ?";
+                condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
                 params.add(processDefId);
             }
             
@@ -115,5 +117,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             return total.intValue();
         }
         return 0;
+    }
+    
+    private String ignoreVersion(String processDefId) {
+        processDefId = processDefId.replaceAll("#[0-9]+#", "#%#");
+        return processDefId;
     }
 }
