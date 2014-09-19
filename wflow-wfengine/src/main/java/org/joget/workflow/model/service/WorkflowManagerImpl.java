@@ -3212,8 +3212,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             // filter by process definition id
             if (processDefId != null && processDefId.trim().length() > 0) {
+                String pkgId = MiscUtilities.getProcessMgrPkgId(processDefId);
                 String processKey = MiscUtilities.getProcessMgrProcDefId(processDefId);
-                String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
+                //String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
+                filter = aieb.and(sessionHandle, filter, aieb.addPackageIdEquals(sessionHandle, pkgId));
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessDefIdEquals(sessionHandle, processKey));
                 //filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
             }
@@ -3639,8 +3641,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             // filter by process definition id
             if (processDefId != null && processDefId.trim().length() > 0) {
+                String pkgId = MiscUtilities.getProcessMgrPkgId(processDefId);
                 String processKey = MiscUtilities.getProcessMgrProcDefId(processDefId);
                 //String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
+                filter = aieb.and(sessionHandle, filter, aieb.addPackageIdEquals(sessionHandle, pkgId));
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessDefIdEquals(sessionHandle, processKey));
                 //filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
             }
