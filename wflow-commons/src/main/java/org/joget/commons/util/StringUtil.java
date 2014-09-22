@@ -293,7 +293,7 @@ public class StringUtil {
     public static byte[] searchAndReplaceByteContent(byte[] bytes, String search, String replacement) {
         if (search != null && replacement != null) {
             try {
-                String content = new String(bytes);
+                String content = new String(bytes, "UTF-8");
 
                 content = content.replaceAll(search, replacement);
                 bytes = content.getBytes("UTF-8");
@@ -307,7 +307,7 @@ public class StringUtil {
     public static byte[] searchAndReplaceByteContent(byte[] bytes, Map<String, String> replacements) {
         if (replacements != null && !replacements.isEmpty()) {
             try {
-                String content = new String(bytes);
+                String content = new String(bytes, "UTF-8");
                 
                 for (String search : replacements.keySet()) {
                     content = content.replaceAll(search, replacements.get(search));
