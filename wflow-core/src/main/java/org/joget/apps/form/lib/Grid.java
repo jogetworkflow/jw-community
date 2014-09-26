@@ -1,5 +1,6 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
@@ -18,7 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Grid extends Element implements FormBuilderPaletteElement {
+public class Grid extends Element implements FormBuilderPaletteElement, FormContainer {
     private FormRowSet cachedRowSet;
 
     @Override
@@ -285,6 +287,17 @@ public class Grid extends Element implements FormBuilderPaletteElement {
         } catch (Exception e) {}
         
         return decorator;
+    }
+    
+    @Override
+    public Collection<String> getDynamicFieldNames() {
+        Collection<String> fieldNames = new ArrayList<String>();
+        
+        if (getStoreBinder() == null) {
+            fieldNames.add(getPropertyString(FormUtil.PROPERTY_ID));
+        }
+        
+        return fieldNames;
     }
 }
 
