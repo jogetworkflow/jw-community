@@ -245,6 +245,12 @@ public class FormService {
         Map<String, String> errors = updatedFormData.getFormErrors();
         if (!updatedFormData.getStay() && errors == null || errors.isEmpty()) {
             // generate primary key if necessary
+            Element primaryElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
+            if (primaryElement != null) {
+                //format data to generate id
+                FormUtil.executeElementFormatData(primaryElement, formData);
+            }
+            
             String primaryKeyValue = form.getPrimaryKeyValue(updatedFormData);
             if (primaryKeyValue == null || primaryKeyValue.trim().length() == 0) {
                 // no primary key value specified, generate new primary key value
