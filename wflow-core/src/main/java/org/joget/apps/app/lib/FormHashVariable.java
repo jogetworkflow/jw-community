@@ -74,7 +74,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                         if (val != null) {
                             return val.toString();
                         } else {
-                            LogUtil.info(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
+                            LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
                             return "";
                         }
                     }
