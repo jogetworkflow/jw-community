@@ -143,8 +143,6 @@
                 attachDescriptionEvent(editor);
                 attachHashVariablePropertyEvent(editorId, editor);
                 
-                initDynamicOptions(editor);
-
                 //element select onchange event
                 $(editor).find('.property-type-elementselect .property-input select').change(function(){
                     appendElementPropertiesPage($(this));
@@ -156,6 +154,8 @@
                         appendElementPropertiesPage($(this));
                     }
                 });
+                
+                initDynamicOptions(editor);
 
                 $(editor).find('.property-page-show:first .property-editor-property-container .property-editor-property:first .property-input').find('input, select, textarea').focus();
 
@@ -1634,8 +1634,6 @@
         
         attachDescriptionEvent(content);
         
-        initDynamicOptions(content);
-
         //element select onchange event
         $(content).find('.property-type-elementselect .property-input select').change(function(){
             appendElementPropertiesPage(this);
@@ -1650,6 +1648,8 @@
             }
         });
         
+        initDynamicOptions(content);
+
         //if tinymce ald exist, using command to init it
         if(tinyMceInitialed){
             $(content).find('.tinymce').each(function(){
