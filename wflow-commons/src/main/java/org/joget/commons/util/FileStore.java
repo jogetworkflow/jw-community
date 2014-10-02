@@ -24,11 +24,11 @@ public class FileStore {
         SetupManager setupManager = (SetupManager) SecurityUtil.getApplicationContext().getBean("setupManager");
         Setting setting = setupManager.getSettingByProperty("fileSizeLimit");
 
-        if (setting != null && setting.getValue() != null) {
+        if (setting != null && setting.getValue() != null && !setting.getValue().isEmpty()) {
             try {
                 fileSizeLimit = Integer.parseInt(setting.getValue());
             } catch (Exception e) {
-                LogUtil.info(FileStore.class.getName(), "System Setting for File Size limit is not a valid number");
+                LogUtil.debug(FileStore.class.getName(), "System Setting for File Size limit is not a valid number");
             }
         }
     }
