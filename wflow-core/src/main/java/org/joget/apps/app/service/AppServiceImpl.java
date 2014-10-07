@@ -1384,13 +1384,25 @@ public class AppServiceImpl implements AppService {
                 LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion);
                 Collection<WorkflowProcess> runningProcessList = workflowManager.getRunningProcessList(packageId, null, null, fromVersion.toString(), null, null, 0, null);
 
+                Collection<WorkflowProcess> processes = workflowManager.getProcessList(packageId, toVersion.toString());
+                Collection<String> newProcessDefIds = new ArrayList<String>();
+                for (WorkflowProcess process : processes) {
+                    newProcessDefIds.add(process.getId());
+                }
+                
                 for (WorkflowProcess process : runningProcessList) {
                     String processId = null;
                     try {
                         processId = process.getInstanceId();
                         String processDefId = process.getId();
                         processDefId = processDefId.replace("#" + fromVersion.toString() + "#", "#" + toVersion.toString() + "#");
-                        workflowManager.processCopyFromInstanceId(processId, processDefId, true);
+                        
+                        if (newProcessDefIds.contains(processDefId)) {
+                            workflowManager.processCopyFromInstanceId(processId, processDefId, true);
+                        } else {
+                            workflowManager.processAbort(processId);
+                            LogUtil.info(getClass().getName(), "Process Def ID " + processDefId + " does not exist. Aborted process " + processId + ".");
+                        }
                     } catch (Exception e) {
                         LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
                     }
