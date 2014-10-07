@@ -7,6 +7,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
     
     <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
@@ -30,5 +31,16 @@
         <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
         <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
 
+    <script>
+        $(function() {
+            $("#preview input[type=submit], #preview .actions button").attr("disabled", "disabled");
+            $("#preview tbody a").attr("onclick", "return false");
+            $("#preview .actions button, #preview tbody a").click(function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            });
+        });
+    </script>
 </body>
 </html>
