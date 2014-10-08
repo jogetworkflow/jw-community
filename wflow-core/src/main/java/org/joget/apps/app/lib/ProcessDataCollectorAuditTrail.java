@@ -48,7 +48,9 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
                 if (auditTrail.getMethod().startsWith("process")) {
                     process = workflowManager.getRunningProcessById(auditTrail.getMessage());
-                    trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
+                    if (!"processAbort".equals(auditTrail.getMethod())) {
+                        trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
+                    }
                 } else {
                     activity = workflowManager.getActivityById(auditTrail.getMessage());
                     trackActivity = workflowManager.getRunningActivityInfo(auditTrail.getMessage());
