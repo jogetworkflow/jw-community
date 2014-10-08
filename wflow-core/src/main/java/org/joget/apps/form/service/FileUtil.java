@@ -196,7 +196,7 @@ public class FileUtil implements ApplicationContextAware {
             }
         }
 
-        return formUploadPath + "app_formuploads" + File.separator + tableName + File.separator + primaryKeyValue + File.separator;
+        return formUploadPath + File.separator + "app_formuploads" + File.separator + tableName + File.separator + primaryKeyValue + File.separator;
     }
 
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {
