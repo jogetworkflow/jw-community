@@ -48,9 +48,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
                 if (auditTrail.getMethod().startsWith("process")) {
                     process = workflowManager.getRunningProcessById(auditTrail.getMessage());
-                    if (!"processAbort".equals(auditTrail.getMethod())) {
-                        trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
-                    }
+                    trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
                 } else {
                     activity = workflowManager.getActivityById(auditTrail.getMessage());
                     trackActivity = workflowManager.getRunningActivityInfo(auditTrail.getMessage());
@@ -101,6 +99,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         return auditTrail.getMethod().equals("getDefaultAssignments")
                 || auditTrail.getMethod().equals("processAbort")
                 || auditTrail.getMethod().equals("processCompleted")
+                || auditTrail.getMethod().equals("assignmentAbort")
                 || auditTrail.getMethod().equals("assignmentAccept")
                 || auditTrail.getMethod().equals("assignmentComplete")
                 || auditTrail.getMethod().equals("assignmentForceComplete")

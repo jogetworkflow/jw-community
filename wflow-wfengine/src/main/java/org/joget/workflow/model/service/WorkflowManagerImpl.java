@@ -2622,7 +2622,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // audit trail for aborted activity instances
             Collection<WorkflowActivity> activityList = getActivityList(processId, 0, 1000, null, false); //getProcessActivityInstanceList(processId);
             for (WorkflowActivity activity : activityList) {
-                WorkflowUtil.addAuditTrail(this.getClass().getName(), "processAbort", activity.getId());
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId());
             }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");

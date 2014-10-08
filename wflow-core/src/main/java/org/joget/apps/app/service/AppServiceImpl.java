@@ -1377,10 +1377,14 @@ public class AppServiceImpl implements AppService {
      */
     protected void updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion) {
         final String profile = DynamicDataSourceManager.getCurrentProfile();
+        final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        
         Thread backgroundThread = new Thread(new Runnable() {
 
             public void run() {
                 HostManager.setCurrentProfile(profile);
+                AppUtil.setCurrentAppDefinition(appDef);
+                
                 LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion);
                 Collection<WorkflowProcess> runningProcessList = workflowManager.getRunningProcessList(packageId, null, null, fromVersion.toString(), null, null, 0, null);
 
