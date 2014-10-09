@@ -1,3 +1,9 @@
+3.1.7
+=====
+1668    Fixed: wflow-core - NullPointerException on updating process when ProcessDataCollectorAuditTrail active #2430 @3.1-SNAPSHOT
+1652    Fixed: wflow-core - App Service - Null Pointer Exception during updating process instance to newer version but the process definition is not deleted in package. #2421 @3.1-SNAPSHOT
+1635    Fixed: wflow-wfengine - WorkflowManagerImpl - Package is ignored when get assignment list with filter by processDefId. @3.1-SNAPSHOT
+
 3.1.6
 =====
 1616    Modified: wflow-consoleweb - Disable backspace key to navigate back in IE. #2234 @3.1-SNAPSHOT
