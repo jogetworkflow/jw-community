@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-install</artifactId>
     <packaging>pom</packaging>
-    <version>3.1.7</version>
+    <version>3.1-SNAPSHOT</version>
     <name>wflow-install</name>
     <url>http://www.joget.org</url>
     <properties>
@@ -13,9 +13,9 @@
         <nsis.makensis.bin>makensis</nsis.makensis.bin>
     </properties>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.7/wflow-install</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/tags/3.1.7/wflow-install</developerConnection>
-        <url>http://dev.joget.org/svn/jw-community/tags/3.1.7/wflow-install</url>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-install/</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-install/</developerConnection>
+        <url>http://dev.joget.org/svn/jw-community/branches/3.1-SNAPSHOT/wflow-install/</url>
     </scm>
     <modules>
         <module>../wflow-app</module>
