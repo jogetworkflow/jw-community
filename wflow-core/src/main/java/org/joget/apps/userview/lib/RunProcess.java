@@ -13,6 +13,7 @@ import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
@@ -107,8 +108,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
             if (startFormDef == null || startFormDef.getFormId() == null) {
+                String url = getUrl();
+                
+                if (MobileUtil.isMobileView()) {
+                    url = url.replace("/web/userview", "/web/mobile");
+                }
+                
                 String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
-                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + getUrl() + "?_action=start" + "\" style=\"display:none\"></form>\n";
+                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + url + "?_action=start" + "\" style=\"display:none\"></form>\n";
                 menu += "<script>"
                         + "function menu_" + getPropertyString("id") + "_postForm() {";
                 if ("true".equals(getRequestParameter("isPreview"))) {
