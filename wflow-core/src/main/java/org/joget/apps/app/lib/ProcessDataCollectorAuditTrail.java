@@ -101,6 +101,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         return auditTrail.getMethod().equals("getDefaultAssignments")
                 || auditTrail.getMethod().equals("processAbort")
                 || auditTrail.getMethod().equals("processCompleted")
+                || auditTrail.getMethod().equals("assignmentAbort")
                 || auditTrail.getMethod().equals("assignmentAccept")
                 || auditTrail.getMethod().equals("assignmentComplete")
                 || auditTrail.getMethod().equals("assignmentForceComplete")
