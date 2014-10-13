@@ -14,7 +14,7 @@ public class User implements Serializable, Auditable {
     public static final int INACTIVE = 0;
     private String id;
     @NotBlank
-    @RegExp(value = "^[.0-9a-zA-Z_-]+$")
+    @RegExp(value = "^[\\.@0-9a-zA-Z_-]+$")
     private String username;
     private String password;
     @NotBlank
