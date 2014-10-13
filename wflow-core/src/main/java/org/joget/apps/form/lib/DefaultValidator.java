@@ -8,6 +8,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormValidator;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 
 public class DefaultValidator extends FormValidator {
 
@@ -179,10 +180,7 @@ public class DefaultValidator extends FormValidator {
         if (values != null && values.length > 0) {
             for (String val : values) {
                 if (val != null && !val.isEmpty()) {
-                    String expression = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z-]{2,})$";
-                    Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-                    Matcher matcher = pattern.matcher(val);
-                    if (!matcher.matches()) {
+                    if (!StringUtil.validateEmail(val, true)) {
                         result = false;
                         data.addFormError(id, message);
                         break;

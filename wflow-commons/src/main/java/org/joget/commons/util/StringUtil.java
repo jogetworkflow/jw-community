@@ -319,4 +319,26 @@ public class StringUtil {
         }
         return bytes;
     }
+    
+    public static boolean validateEmail(String email, boolean multiple) {
+        String[] emails;
+        if (multiple) {
+            emails = email.split(";");
+        } else {
+            emails = new String[]{email};
+        }
+        
+        boolean valid = true;
+        for (String e : emails) {
+            String expression = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-+]+)*(\\.[A-Za-z-]{2,})$";
+            Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(e.trim());
+            if (!matcher.matches()) {
+                valid = false;
+                break;
+            }
+        }
+                
+        return valid;        
+    }
 }
