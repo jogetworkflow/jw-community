@@ -23,8 +23,10 @@
 
     <c:set scope="request" var="dataList" value="${properties.dataList}"/>
 
-    <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
-
+    <c:if test="${!empty dataList}">
+        <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
+    </c:if>    
+        
     <c:if test="${!empty properties.customFooter}">
         ${properties.customFooter}
     </c:if>    

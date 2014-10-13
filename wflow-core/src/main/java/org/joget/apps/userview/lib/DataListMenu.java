@@ -1,5 +1,7 @@
 package org.joget.apps.userview.lib;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -95,32 +97,44 @@ public class DataListMenu extends UserviewMenu {
 
     @Override
     public String getJspPage() {
-        // get data list
-        DataList dataList = getDataList();
-        
-        //overide datalist result to use userview result
-        DataListActionResult ac = dataList.getActionResult();
-        if (ac != null) {
-            if (ac.getMessage() != null && !ac.getMessage().isEmpty()) {
-                setAlertMessage(ac.getMessage());
-            }
-            if (ac.getType() != null && DataListActionResult.TYPE_REDIRECT.equals(ac.getType()) &&
-                    ac.getUrl() != null && !ac.getUrl().isEmpty()) {
-                if ("REFERER".equals(ac.getUrl())) {
-                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                    if (request != null && request.getHeader("Referer") != null) {
-                        setRedirectUrl(request.getHeader("Referer"));
-                    } else {
-                        setRedirectUrl("REFERER");
-                    }
-                } else {
-                    setRedirectUrl(ac.getUrl());
-                }
-            }
-        }
+        try {
+            // get data list
+            DataList dataList = getDataList();
 
-        // set data list
-        setProperty("dataList", dataList);
+            if (dataList != null) {
+                //overide datalist result to use userview result
+                DataListActionResult ac = dataList.getActionResult();
+                if (ac != null) {
+                    if (ac.getMessage() != null && !ac.getMessage().isEmpty()) {
+                        setAlertMessage(ac.getMessage());
+                    }
+                    if (ac.getType() != null && DataListActionResult.TYPE_REDIRECT.equals(ac.getType()) &&
+                            ac.getUrl() != null && !ac.getUrl().isEmpty()) {
+                        if ("REFERER".equals(ac.getUrl())) {
+                            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                            if (request != null && request.getHeader("Referer") != null) {
+                                setRedirectUrl(request.getHeader("Referer"));
+                            } else {
+                                setRedirectUrl("REFERER");
+                            }
+                        } else {
+                            setRedirectUrl(ac.getUrl());
+                        }
+                    }
+                }
+
+                // set data list
+                setProperty("dataList", dataList);
+            } else {
+                setProperty("error", "Data List \"" + getPropertyString("datalistId") + "\" not exist.");
+            }
+        } catch (Exception ex) {
+            StringWriter out = new StringWriter();
+            ex.printStackTrace(new PrintWriter(out));
+            String message = ex.toString();
+            message += "\r\n<pre class=\"stacktrace\">" + out.getBuffer() + "</pre>";
+            setProperty("error", message);
+        }    
         return "userview/plugin/datalist.jsp";
     }
 
@@ -133,19 +147,24 @@ public class DataListMenu extends UserviewMenu {
         String id = getPropertyString("datalistId");
         AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
         DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(id, appDef);
-        DataList dataList = dataListService.fromJson(datalistDefinition.getJson());
         
-        if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
-            dataList.addBinderProperty(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
+        if (datalistDefinition != null) {
+            DataList dataList = dataListService.fromJson(datalistDefinition.getJson());
+
+            if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
+                dataList.addBinderProperty(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
+            }
+            if (getKey() != null && getKey().trim().length() > 0) {
+                dataList.addBinderProperty(Userview.USERVIEW_KEY_VALUE, getKey());
+            }
+
+            dataList.setActionPosition(getPropertyString("buttonPosition"));
+            dataList.setSelectionType(getPropertyString("selectionType"));
+            dataList.setCheckboxPosition(getPropertyString("checkboxPosition"));
+
+            return dataList;
+        } else {
+            return null;
         }
-        if (getKey() != null && getKey().trim().length() > 0) {
-            dataList.addBinderProperty(Userview.USERVIEW_KEY_VALUE, getKey());
-        }
-        
-        dataList.setActionPosition(getPropertyString("buttonPosition"));
-        dataList.setSelectionType(getPropertyString("selectionType"));
-        dataList.setCheckboxPosition(getPropertyString("checkboxPosition"));
-        
-        return dataList;
     }
 }
