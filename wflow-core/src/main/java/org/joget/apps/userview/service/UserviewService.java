@@ -85,6 +85,11 @@ public class UserviewService {
         String appId = appDef.getId();
         String appVersion = appDef.getVersion().toString();
         Userview userview = new Userview();
+        
+        //if screenshot, set user to null (anonymous)
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"))) {
+            currentUser = null;
+        }
 
         try {
             //set userview properties

@@ -820,7 +820,7 @@ UserviewBuilder = {
         var appcontainer = $("<div><i class='icon-spinner icon-spin icon-2x'></i><div style='opacity:0'></div></div>");
         $(container).append(appcontainer);
         $.ajax({
-            url: path,
+            url: path + "?_isScreenCapture=true",
             success: function(data) {
                 var iframe = document.createElement('iframe');
                 var iwidth = 1024; //$(window).width()
