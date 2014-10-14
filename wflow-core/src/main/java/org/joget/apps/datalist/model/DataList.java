@@ -306,7 +306,7 @@ public class DataList {
             page = null;
         }
         
-        if (getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) != null) {
+        if (getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) != null && getDataListParam(TableTagParameters.PARAMETER_EXPORTING) != null) {
             // exporting, set full list
             page = "1";
             setPageSize(DataList.MAXIMUM_PAGE_SIZE);
@@ -570,7 +570,11 @@ public class DataList {
     }
 
     public String getDataListEncodedParamName(String name) {
-        return new ParamEncoder(getId()).encodeParameterName(name);
+        if (!TableTagParameters.PARAMETER_EXPORTING.equals(name)) {
+            return new ParamEncoder(getId()).encodeParameterName(name);
+        } else {
+            return name;
+        }
     }
 
     public boolean isShowPageSizeSelector() {

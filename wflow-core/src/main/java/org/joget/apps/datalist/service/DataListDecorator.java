@@ -263,7 +263,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
             result = SecurityUtil.decrypt(result.toString());
             
             // sanitize output
-            if (dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null) {
+            if (dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null || dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTING) == null) {
                 boolean renderHtml = column.isRenderHtml();
                 if (renderHtml) {
                     result = StringUtil.stripHtmlRelaxed(result.toString());
