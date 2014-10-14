@@ -117,9 +117,6 @@
                 </div>
             </c:if>
             
-            <c:if test="${param.embed}">
-                <input type="hidden" name="embed" id="embed" value="true"/>
-            </c:if>
             <display:table id="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                 <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                     <c:choose>
