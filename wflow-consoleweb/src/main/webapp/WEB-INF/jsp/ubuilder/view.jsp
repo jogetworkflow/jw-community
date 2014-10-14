@@ -359,7 +359,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             long duration = sw.getTotalTimeMillis();
             pageContext.setAttribute("duration", duration);
         %>    
-        <div class="small">[${duration}ms]</div>
+        <%--div class="small">[${duration}ms]</div--%>
         
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
