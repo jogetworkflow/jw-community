@@ -28,9 +28,9 @@ FormBuilder = {
         // initialize canvas
         FormBuilder.initCanvas(id);
 
-        FormBuilder.generateJSON();
+        var formJson = FormBuilder.generateJSON();
         
-        FormBuilder.originalJson = FormBuilder.generateJSON();
+        FormBuilder.originalJson = formJson;
     },
 
     initPalette: function() {
@@ -806,7 +806,8 @@ FormBuilder = {
     },
     
     isSaved : function(){
-        if(FormBuilder.originalJson == FormBuilder.generateJSON()){
+        var formCells = $(".form-container-div .form-cell").length > 0;
+        if(formCells && FormBuilder.originalJson === FormBuilder.generateJSON()){
             return true;
         }else{
             return false;
