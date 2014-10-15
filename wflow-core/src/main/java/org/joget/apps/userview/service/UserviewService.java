@@ -87,8 +87,12 @@ public class UserviewService {
         Userview userview = new Userview();
         
         //if screenshot, set user to null (anonymous)
-        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"))) {
+        String currentThreadUser = null;
+        boolean isScreenCapture = workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"));
+        if (isScreenCapture) {
             currentUser = null;
+            currentThreadUser = workflowUserManager.getCurrentThreadUser();
+            workflowUserManager.setCurrentThreadUser(WorkflowUserManager.ROLE_ANONYMOUS);
         }
 
         try {
@@ -231,6 +235,10 @@ public class UserviewService {
             userview.setCategories(categories);
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "Create Userview Error!!");
+        } finally {
+            if (isScreenCapture) {
+                workflowUserManager.setCurrentThreadUser(currentThreadUser);
+            }
         }
         return userview;
     }
