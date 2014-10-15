@@ -8,7 +8,7 @@
 
     <div id="main-body-content" style="text-align: left">
         <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload/submit" enctype="multipart/form-data">
-            <c:if test="${true || !empty errorMessage}">
+            <c:if test="${!empty errorMessage}">
                 <div class="form-errors">${errorMessage}</div>
             </c:if>
             <div class="form-row">
