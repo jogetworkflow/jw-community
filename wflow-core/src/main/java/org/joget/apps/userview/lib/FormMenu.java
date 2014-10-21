@@ -361,7 +361,7 @@ public class FormMenu extends UserviewMenu {
         formData.setPrimaryKeyValue(primaryKeyValue);
 
         if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-            formData.addRequestParameterValues(getPropertyString("keyName"), new String[]{getKey()});
+            formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
         }
 
         // retrieve form

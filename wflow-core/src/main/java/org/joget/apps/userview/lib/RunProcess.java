@@ -236,7 +236,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             }
 
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-                formData.addRequestParameterValues(getPropertyString("keyName"), new String[]{getKey()});
+                formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
             }
 
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
@@ -296,7 +296,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-                formData.addRequestParameterValues(getPropertyString("keyName"), new String[]{getKey()});
+                formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
             }
 
             // get workflow variables
@@ -367,7 +367,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
 
                 if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-                    formData.addRequestParameterValues(getPropertyString("keyName"), new String[]{getKey()});
+                    formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
                 }
 
                 // get form
