@@ -1078,6 +1078,8 @@
                 var options = optionsStack[editorId];
                 if(options.propertyValues != undefined && options.propertyValues[targetName] != undefined && options.propertyValues[targetName] != ""){
                     targetValue = options.propertyValues[targetName];
+                } else {
+                    targetValue = "";
                 }
             }
             ajaxUrl += loadOptionsStack[key].targetName + "=" + escape(targetValue);
