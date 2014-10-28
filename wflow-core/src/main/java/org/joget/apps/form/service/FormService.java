@@ -22,6 +22,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +52,9 @@ public class FormService {
         Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
         FormData formData = new FormData();
         formData.addFormResult(PREVIEW_MODE, "true");
+        
+        formData = retrieveFormDataFromRequest(formData, WorkflowUtil.getHttpServletRequest());
+        
         String html = "";
         try {
             formData = executeFormOptionsBinders(element, formData);

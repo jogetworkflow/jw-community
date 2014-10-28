@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 
 public class Form extends Element implements FormBuilderEditable, FormContainer {
@@ -28,6 +29,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
         String template = "form.ftl";
+        
+        //for preview
+        if (formData.getFormResult(FormService.PREVIEW_MODE) != null) {
+            setFormMeta("json", new String[]{formData.getRequestParameter("json")});
+        }
 
         // get current app
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
