@@ -153,6 +153,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
                     // loop thru results to set value and label
                     for (FormRow row : results) {
+                        FormRow newRow = new FormRow();
                         String id = row.getProperty(idColumn);
                         String label = row.getProperty(labelColumn);
                         String grouping = "";
@@ -161,11 +162,11 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                         }
 
                         if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
-                            row.setProperty(FormUtil.PROPERTY_VALUE, id);
-                            row.setProperty(FormUtil.PROPERTY_LABEL, label);
-                            row.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
+                            newRow.setProperty(FormUtil.PROPERTY_VALUE, id);
+                            newRow.setProperty(FormUtil.PROPERTY_LABEL, label);
+                            newRow.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
 
-                            filtered.add(row);
+                            filtered.add(newRow);
                         }
                     }
                 }
