@@ -220,10 +220,20 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
+        
+        if (getPropertyString("processDefId").isEmpty()) {
+            setProperty("view", "noProcess");
+            return;
+        }
 
         WorkflowProcess process = appService.getWorkflowProcessForApp(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"));
+        if (process == null) {
+            setProperty("view", "noProcess");
+            return;
+        }
+        
         setProperty("process", process);
-
+        
         if (isUnauthorized(process.getId())) {
             // check for start mapped form
             String formUrl = getUrl() + "?_action=start";

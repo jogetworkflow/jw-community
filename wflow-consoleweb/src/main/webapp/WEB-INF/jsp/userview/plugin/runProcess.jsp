@@ -126,6 +126,11 @@
             <fmt:message key="client.app.run.process.label.assignment.unavailable" />
         </p>
     </c:when>
+    <c:when test="${properties.view eq 'noProcess'}">
+        <p>
+            <fmt:message key="client.app.run.process.label.process.unavailable" />
+        </p>
+    </c:when>    
 </c:choose>
 </div>
 <div style="clear:both;"></div>
