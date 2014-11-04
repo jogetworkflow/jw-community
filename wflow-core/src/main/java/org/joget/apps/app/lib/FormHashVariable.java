@@ -9,7 +9,6 @@ import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.FormRow;
-import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessLink;
@@ -28,6 +27,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
             variableKey = variableKey.substring(0, variableKey.indexOf("["));
             
             if (primaryKey.isEmpty()) {
+                LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
                 return "";
             }
         }
@@ -81,7 +81,8 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                 }
             } catch (Exception ex) {}
         }
-        return null;
+        LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
+        return "";
     }
 
     public String getName() {
