@@ -805,9 +805,12 @@ FormBuilder = {
         return false;
     },
     
+    isEmpty : function() {
+        return ($(".form-container-div .form-cell").length === 0);
+    },
+    
     isSaved : function(){
-        var formCells = $(".form-container-div .form-cell").length > 0;
-        if(formCells && FormBuilder.originalJson === FormBuilder.generateJSON()){
+        if(FormBuilder.originalJson === FormBuilder.generateJSON()){
             return true;
         }else{
             return false;
