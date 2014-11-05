@@ -21,7 +21,8 @@
     properties : [{
         name : 'label',
         label : '@@form.customhtml.label@@',
-        type : 'textfield'
+        type : 'textfield',
+        value : ''
     },
     {
         name : 'autoPopulate',
