@@ -81,8 +81,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                 }
             } catch (Exception ex) {}
         }
-        LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
-        return "";
+        return null;
     }
 
     public String getName() {
