@@ -11,6 +11,7 @@ import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -28,13 +29,17 @@ public class AppPluginUtil implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         appContext = context;
     }
-
+    
     public static Map getDefaultProperties(Plugin plugin, String properties, AppDefinition appDef) {
+        return getDefaultProperties(plugin, properties, appDef, null);
+    }
+
+    public static Map getDefaultProperties(Plugin plugin, String properties, AppDefinition appDef, WorkflowAssignment assignment) {
         
         Map propertyMap = new HashMap();
 
         try {
-            properties = AppUtil.processHashVariable(properties, null, null, null, appDef);
+            properties = AppUtil.processHashVariable(properties, assignment, null, null, appDef);
             if (!(plugin instanceof PropertyEditable)) {
                 propertyMap = CsvUtil.getPluginPropertyMap(properties);
             } else {

@@ -79,7 +79,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
 
             if (plugin != null) {
-                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef);
+                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef, assignment);
                 propertiesMap.put("workflowAssignment", assignment);
                 propertiesMap.put("pluginManager", pluginManager);
                 propertiesMap.put("appDef", appDef);
