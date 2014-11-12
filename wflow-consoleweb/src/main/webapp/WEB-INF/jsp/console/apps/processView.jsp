@@ -90,7 +90,7 @@
                                     <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${participant.id}"/>
                                 </span>
                                 <span class="row-button">
-                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('<c:out value="${participant.id}"/>', '${fn:escapeXml(fn:replace(participant.name, '\'', '\\\''))}')"/>
+                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('<c:out value="${participant.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(participant.name, '\\\'', '\\\\\\\''))}"/>')"/>
                                 </span>
                                 <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                     <div id="participant_${participant.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -250,7 +250,7 @@
                                             <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('<c:out value="${activity.id}"/>', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('<c:out value="${activity.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(activityDisplayName, '\\\'', '\\\\\\\''))}"/>')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -325,7 +325,7 @@
                                         <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('<c:out value="${activity.id}"/>', '${fn:escapeXml(fn:replace(activityDisplayName, '\'', '\\\''))}')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('<c:out value="${activity.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(activityDisplayName, '\\\'', '\\\\\\\''))}"/>')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
