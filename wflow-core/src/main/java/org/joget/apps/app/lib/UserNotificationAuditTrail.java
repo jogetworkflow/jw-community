@@ -106,7 +106,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                 //LogUtil.info(getClass().getName(), "Attempting to get resource ids....");
                                 Thread.sleep(4000);
                                 wfActivity = workflowManager.getActivityById(activityInstanceId);
-                                userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                                if (wfActivity != null && wfActivity.getProcessId() != null) {
+                                    userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                                }
                                 numOfAttempt++;
                             }
 
