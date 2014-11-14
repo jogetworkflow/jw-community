@@ -745,7 +745,7 @@ _html2canvas.Generate.ListRoman = function(number) {
  */
 
 _html2canvas.Parse = function ( images, options ) {
-    window.scroll(0,0);
+    //window.scroll(0,0);
 
     var support = {
         rangeBounds: false,
