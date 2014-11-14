@@ -7,7 +7,7 @@
                 $(element).datepicker(o);
                 
                 if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
-                    var startDate = $('[name='+o.startDateFieldId+']');
+                    var startDate = FormUtil.getField(o.startDateFieldId);
                     
                     startDate.live("change", function(){
                         setDateRange(startDate, "minDate", element);
@@ -16,7 +16,7 @@
                 }
                 
                 if (o.endDateFieldId  !== undefined && o.endDateFieldId !== "") {
-                    var endDate = $('[name='+o.endDateFieldId+']');
+                    var endDate = FormUtil.getField(o.endDateFieldId);
                     
                     endDate.live("change", function(){
                         setDateRange(endDate, "maxDate", element);

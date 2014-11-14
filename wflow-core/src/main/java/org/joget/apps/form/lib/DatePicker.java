@@ -186,7 +186,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                 if (e != null) {
                     String compareValue = FormUtil.getElementPropertyValue(e, formData);
                     if (compareValue != null && !compareValue.isEmpty()) {
-                        String formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        String formattedCompare = compareValue;
+                        if (e instanceof DatePicker) {
+                            formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        }
                         if (!DateUtil.compare(formattedCompare, value, displayFormat) && !formattedCompare.equals(value)) {
                             valid = false;
                             startDate = formattedCompare;
@@ -200,7 +203,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                 if (e != null) {
                     String compareValue = FormUtil.getElementPropertyValue(e, formData);
                     if (compareValue != null && !compareValue.isEmpty()) {
-                        String formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        String formattedCompare = compareValue;
+                        if (e instanceof DatePicker) {
+                            formattedCompare = formatCompareValue(compareValue, displayFormat);
+                        }
                         if (!DateUtil.compare(value, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
                             valid = false;
                             endDate = formattedCompare;
@@ -235,14 +241,14 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                         }
                     }
                 }
+            }
                 
-                if (!startDate.isEmpty()) {
-                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.minDate", new String[]{startDate}));
-                }
-                
-                if (!endDate.isEmpty()) {
-                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.maxDate", new String[]{endDate}));
-                }
+            if (!startDate.isEmpty()) {
+                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.minDate", new String[]{startDate}));
+            }
+
+            if (!endDate.isEmpty()) {
+                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.maxDate", new String[]{endDate}));
             }
         }
         
