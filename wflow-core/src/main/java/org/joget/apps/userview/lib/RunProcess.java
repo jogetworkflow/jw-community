@@ -115,7 +115,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 }
                 
                 String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
-                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + url + "?_action=start" + "\" style=\"display:none\"></form>\n";
+                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + url + "?_action=run" + "\" style=\"display:none\"></form>\n";
                 menu += "<script>"
                         + "function menu_" + getPropertyString("id") + "_postForm() {";
                 if ("true".equals(getRequestParameter("isPreview"))) {
@@ -179,14 +179,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getJspPage() {
-        if ("start".equals(getRequestParameterString("_action"))) {
+        if ("start".equals(getRequestParameterString("_action")) || "run".equals(getRequestParameterString("_action"))) {
             // only allow POST
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             if (request != null && !"POST".equalsIgnoreCase(request.getMethod())) {
                 return "userview/plugin/unauthorized.jsp";
             }
             
-            startProcess();
+            startProcess(getRequestParameterString("_action"));
         } else if ("assignmentView".equals(getRequestParameterString("_action"))) {
             assignmentView();
         } else if ("assignmentSubmit".equals(getRequestParameterString("_action"))) {
@@ -206,17 +206,17 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     setProperty("view", "featureDisabled");
                 } else {
-                    viewProcess();
+                    viewProcess(null);
                     setProperty("view", "processFormPost");
                 }
             } else {
-                viewProcess();
+                viewProcess(null);
             }
         }
         return "userview/plugin/runProcess.jsp";
     }
 
-    private void viewProcess() {
+    private void viewProcess(PackageActivityForm startFormDef) {
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -248,8 +248,11 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
                 formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
             }
-
-            PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
+            
+            if (startFormDef == null) {
+                startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
+            }
+            
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 Form startForm = startFormDef.getForm();
 
@@ -286,7 +289,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         }
     }
 
-    private void startProcess() {
+    private void startProcess(String action) {
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -309,11 +312,17 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 formData.addRequestParameterValues(FormService.PREFIX_FOREIGN_KEY + getPropertyString("keyName"), new String[]{getKey()});
             }
 
+            String formUrl = getUrl() + "?_action=start";
+            PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
+            if (startFormDef != null && "run".equals(action)) {
+                viewProcess(startFormDef);
+                return;
+            }
+            
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            String formUrl = getUrl() + "?_action=start";
             WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
-            PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
+            
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 if (result == null) {
                     // validation error, get form
