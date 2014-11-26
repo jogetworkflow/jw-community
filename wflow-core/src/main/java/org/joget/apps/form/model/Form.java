@@ -53,12 +53,13 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             
             String paramName = FormUtil.getElementParameterName(this);
             setFormMeta(paramName+"_SUBMITTED", new String[]{"true"});
+            String primaryKey = this.getPrimaryKeyValue(formData);
 
             if (getParent() == null) {
                 if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
                     setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (formData.getPrimaryKeyValue() != null) {
-                    setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getPrimaryKeyValue()});
+                } else if (primaryKey != null) {
+                    setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{primaryKey});
                 } else {
                     setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{""});
                 }
@@ -66,8 +67,8 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                 String uniqueId = getCustomParameterName();
                 if (formData.getRequestParameter(uniqueId + "_FORM_META_ORIGINAL_ID") != null) {
                     setFormMeta(uniqueId + "_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (formData.getPrimaryKeyValue() != null) {
-                    setFormMeta(uniqueId + "_FORM_META_ORIGINAL_ID", new String[]{getPrimaryKeyValue(formData)});
+                } else if (primaryKey != null) {
+                    setFormMeta(uniqueId + "_FORM_META_ORIGINAL_ID", new String[]{primaryKey});
                 } else {
                     setFormMeta(uniqueId + "_FORM_META_ORIGINAL_ID", new String[]{""});
                 }
