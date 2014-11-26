@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -270,7 +271,7 @@ public class FormPdfUtil {
         html = escapeSpecialCharacter(html, "span");
         html = escapeSpecialCharacter(html, "th");
         html = escapeSpecialCharacter(html, "p");
-
+        
         //remove br
         html = html.replaceAll("</\\s?br>", "");
 
@@ -344,10 +345,8 @@ public class FormPdfUtil {
         Matcher matcher = pattern.matcher(html);
         while (matcher.find()) {
             String text = matcher.group(0);
-            if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;")) {
-                String replace = text;
-                replace = replace.replaceAll("&", " &amp;");
-                
+            if (text.contains("&") && !text.contains("&amp;") && !text.contains("&lt;") && !text.contains("&gt;") && !text.contains("&#")) {
+                String replace = StringEscapeUtils.escapeXml(text);
                 html = html.replaceAll(StringUtil.escapeRegex(text), StringUtil.escapeRegex(replace));
             }
         }
