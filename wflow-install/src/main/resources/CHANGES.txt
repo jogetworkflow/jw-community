@@ -6,6 +6,26 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES in 4.0.12
+=================
+1725    Fixed: wflow-core : FormPdfUtil - Some Chinese characters are escaped twice. #2593 @trunk
+1724    Modified: wflow-core : Run Process - Change implementation of menu link. #2575 @trunk
+1723    Fixed: wflow-consoleweb : Userview Builder - Window scroll to top when save. #2569 @trunk
+1722    Fixed: wflow-core : Date Picker - Start Date and End Date field value converted to wrong format if it is not a date picker field during validation. #2568 @trunk
+1721    Fixed: wflow-core : User Notification - Email is not sent sometime. #2565 @trunk
+1718    Fixed: wflow-consoleweb - Fixed fn:escapeXml in process view page in Websphere 8.5 #2554 @trunk
+1717    Modified: wflow-core : CorporatiTheme - Scroll navigation to show current menu after page changed. #2558 @trunk
+1715    Fixed: wflow-core : AppWorkflowHelper - Process tool plugin properties are not supporting assignment related hash variable by default. #2544 @trunk
+1713    Fixed: wflow-core : Custom HTML - Adding unconfigure custom HTML causes freemarker.core.InvalidReferenceException. #2539 @trunk
+1712    Fixed: wflow-consoleweb - Correction for r1682. #2457 @trunk
+1709    Fixed: wflow-consoleweb - UI - Label correction. #2447 @trunk
+1707    Fixed: wflow-core/wflow-consoleweb - Run Process Menu - Null Pointer Exception is not handled. @trunk
+1705    Fixed: wflow-core - Form Builder - Internal Server Error when Form Preview with interactive element. #2513 @trunk
+1702    Fixed: wflow-core - Form Options Binder - Caused a Hibernate exception when a Form Data Update Tool trying to update the same table. #2502 @trunk
+1697    Fixed: wflow-consoleweb - Minnor change in header.tag for weblogic. #2493 @trunk
+1696    Fixed: wflow-core - Date Picker - Readonly Date Picker still editable when it is set to manual input. #2500 @trunk
+1695    Fixed: wflow-consoleweb - Property Editor - Invalid value is passed as parameter for dependency Ajax options. @trunk
+
 CHANGES in 4.0.11
 =================
 1690    Fixed: wflow-core - Form Menu/ Run Process Menu - Field value failed to populated with userview key value. #2483 @trunk
