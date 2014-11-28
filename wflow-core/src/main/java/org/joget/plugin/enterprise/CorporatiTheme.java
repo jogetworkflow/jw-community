@@ -59,10 +59,10 @@ public class CorporatiTheme extends UserviewTheme {
             js += "});});";
         }
         
-        js += "\n$(document).ready(function(){var ctop = $(\".menu.current\").offset().top;";
+        js += "\n$(document).ready(function(){if($(\".menu.current\").length === 1) {var ctop = $(\".menu.current\").offset().top;";
         js += "if (ctop > 140) {";
         js += "$(\"#navigation\").scrollTop($(\".menu.current\").offset().top - 140);";
-        js += "}});";
+        js += "}}});";
         
         return js;
     }
