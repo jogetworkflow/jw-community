@@ -7,6 +7,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -39,7 +40,7 @@ public class AppPluginUtil implements ApplicationContextAware {
         Map propertyMap = new HashMap();
 
         try {
-            properties = AppUtil.processHashVariable(properties, assignment, null, null, appDef);
+            properties = AppUtil.processHashVariable(properties, assignment, StringUtil.TYPE_JSON, null, appDef);
             if (!(plugin instanceof PropertyEditable)) {
                 propertyMap = CsvUtil.getPluginPropertyMap(properties);
             } else {
@@ -58,7 +59,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                     String json = pluginDefaultProperties.getPluginProperties();
 
                     //process basic hash variable
-                    json = AppUtil.processHashVariable(json, null, null, null, appDef);
+                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
                     defaultPropertyMap = PropertyUtil.getPropertiesValueFromJson(json);
                 }
