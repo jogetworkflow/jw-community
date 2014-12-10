@@ -289,7 +289,7 @@
         }
 
         if(page.validators != undefined){
-            pageValidationStack[id + '_' + 'page_' + i] = page;
+            pageValidationStack[id + parent + '_' + 'page_' + i] = page;
         }
         
         var html = '<div id="' + id + parent + '_' + 'page_' + i + '" '+ element +'class="property-editor-page' + hiddenClass + '">';
