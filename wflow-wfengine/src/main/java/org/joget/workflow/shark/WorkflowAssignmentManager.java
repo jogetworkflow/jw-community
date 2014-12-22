@@ -24,7 +24,13 @@ public class WorkflowAssignmentManager extends HistoryRelatedAssignmentManager {
         //initialization
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
         WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+        String actDefId = actId.substring(actId.indexOf(instanceId) + instanceId.length() + 1);
 
+        List<String> migrationUser = workflowManager.getMigrationAssignmentUserList(instanceId, actDefId);
+        if (migrationUser != null) {
+            return migrationUser;
+        }
+        
         String procDefId = workflowManager.getProcessDefIdByInstanceId(instanceId);
         WorkflowProcess process = workflowManager.getProcess(procDefId);
         String currentUsername = (String) shandle.getVendorData();

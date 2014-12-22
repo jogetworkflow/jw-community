@@ -92,6 +92,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
+    private Map<String, List<String>> migrationAssignmentUserList = new HashMap<String, List<String>>();
 
     /*--- Spring bean getters and setters ---*/
     public WorkflowUserManager getWorkflowUserManager() {
@@ -2732,6 +2733,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 boolean abortFirstActivity = true;
                 for (WorkflowActivity act : activityList) {
                     String activityDef = act.getActivityDefId();
+                    
+                    List<String> users = getAssignmentResourceIds(act.getProcessDefId(), act.getProcessId(), act.getId());
+                    if (users != null && !users.isEmpty()) {
+                        migrationAssignmentUserList.put(newProcessId + "_" + activityDef, users);
+                    }
+                    
                     boolean actStarted = activityStart(newProcessId, activityDef, abortFirstActivity);
                     abortFirstActivity = false;
                     if (actStarted) {
@@ -3839,7 +3846,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             String blockActivityId = null; // TODO: handle block activity?
             ExecutionAdministration ea = shark.getExecutionAdministration();
             ea.startActivity(sessionHandle, processId, blockActivityId, activityDef);
-
+            
             result = true;
 
         } catch (Exception ex) {
@@ -4529,6 +4536,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
         } else {
             return false;
         }
+    }
+    
+    public List<String> getMigrationAssignmentUserList(String processId, String activityDefId) {
+        String key = processId + "_" + activityDefId;
+        List<String> users = migrationAssignmentUserList.get(key);
+        
+        //remove after retrieved
+        if (users != null) {
+            migrationAssignmentUserList.remove(key);
+        }
+        
+        return users;
     }
 
     protected PackageAdministration getSharkPackageAdmin(WMSessionHandle sessionHandle) throws Exception {

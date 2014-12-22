@@ -202,4 +202,7 @@ public interface WorkflowManager {
     Boolean isUserInWhiteList(String processDefId); // TODO: VERIFY USAGE??
 
     String getConvertedLatestProcessDefId(String processDefId); // TODO: VERIFY USAGE??
+    
+    //for process version migration 
+    List<String> getMigrationAssignmentUserList(String processId, String activityDefId);
 }
