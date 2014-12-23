@@ -63,7 +63,6 @@ import org.enhydra.shark.CustomWfActivityWrapper;
 import org.enhydra.shark.CustomWfResourceImpl;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
 import org.enhydra.shark.api.common.AssignmentFilterBuilder;
-import org.enhydra.shark.instancepersistence.data.AssignmentQuery;
 import org.enhydra.shark.instancepersistence.data.ProcessQuery;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
@@ -92,8 +91,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
-    private Map<String, List<String>> migrationAssignmentUserList = new HashMap<String, List<String>>();
-
+    
+    private static ThreadLocal migrationAssignmentUserList = new ThreadLocal() {
+        @Override
+        protected synchronized Object initialValue() {
+            return new HashMap<String, List<String>>();
+        }
+    };
+    
     /*--- Spring bean getters and setters ---*/
     public WorkflowUserManager getWorkflowUserManager() {
         return userManager;
@@ -2736,7 +2741,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     
                     List<String> users = getAssignmentResourceIds(act.getProcessDefId(), act.getProcessId(), act.getId());
                     if (users != null && !users.isEmpty()) {
-                        migrationAssignmentUserList.put(newProcessId + "_" + activityDef, users);
+                        ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).put(newProcessId + "_" + activityDef, users);
                     }
                     
                     boolean actStarted = activityStart(newProcessId, activityDef, abortFirstActivity);
@@ -4540,11 +4545,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
     
     public List<String> getMigrationAssignmentUserList(String processId, String activityDefId) {
         String key = processId + "_" + activityDefId;
-        List<String> users = migrationAssignmentUserList.get(key);
+        List<String> users = ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).get(key);
         
         //remove after retrieved
         if (users != null) {
-            migrationAssignmentUserList.remove(key);
+            ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).remove(key);
         }
         
         return users;
