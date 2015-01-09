@@ -11,6 +11,29 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     public final static String ENTITY_NAME="SharkAssignment";
     
     public Collection<WorkflowAssignment> getAssignments(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        //sorting
+        if (sort != null && !sort.isEmpty()) {
+            if ("processDefId".equals(sort)) {
+                sort = "p.processDefId";
+            } else if ("processVersion".equals(sort)) {
+                sort = "p.processVersion";
+            } else if ("processId".equals(sort)) {
+                sort = "p.processId";
+            } else if ("processName".equals(sort)) {
+                sort = "p.processName";
+            } else if ("processRequesterId".equals(sort)) {
+                sort = "p.processRequesterId";
+            } else if ("activityName".equals(sort)) {
+                sort = "a.activityName";
+            } else if ("activityDefId".equals(sort)) {
+                sort = "a.activityDefId";
+            } else if ("dateCreated".equals(sort)) {
+                sort = "a.activated";
+            } else if ("assigneeName".equals(sort)) {
+                sort = "e.assigneeName";
+            }
+        }
+        
         //required to disable lazy loading 
         String condition = "join fetch e.process p join fetch e.activity a  join fetch a.state s";
         Collection<String> params = new ArrayList<String>();
