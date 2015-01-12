@@ -136,9 +136,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         }
         
         if (format.contains("MM")) {
-            format = format.replaceAll("MM", "MMM");
+            format = format.replaceAll("MM", "MMMMM");
         } else {
-            format = format.replaceAll("M", "MMMM");
+            format = format.replaceAll("M", "MMM");
         }
         
         if (format.contains("mm")) {
