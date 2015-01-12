@@ -314,7 +314,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
             String formUrl = getUrl() + "?_action=start";
             PackageActivityForm startFormDef = appService.viewStartProcessForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, formUrl);
-            if (startFormDef != null && "run".equals(action)) {
+            if (startFormDef != null && startFormDef.getForm() != null && "run".equals(action)) {
                 viewProcess(startFormDef);
                 return;
             }
