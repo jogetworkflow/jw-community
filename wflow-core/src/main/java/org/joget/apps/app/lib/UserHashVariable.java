@@ -17,9 +17,21 @@ public class UserHashVariable extends DefaultHashVariablePlugin {
     
     @Override
     public String processHashVariable(String variableKey) {
-        String username = variableKey.substring(0, variableKey.indexOf("."));
-        String attribute = variableKey.substring(variableKey.indexOf(".") + 1);
-
+        //if variableKey contains unprocessing hash variable as username
+        if (variableKey.startsWith("{") && variableKey.contains("}")) {
+            return null;
+        }
+        
+        String username = variableKey;
+        String attribute = "";
+        for (String v : availableSyntax()) {
+            v = v.replaceAll("user.USERNAME", "");
+            if (username.contains(v)) {
+                username = username.replaceAll(v, "");
+                attribute = v.substring(1);
+            }
+        }
+        
         return getUserAttribute(username, attribute);
     }
 
