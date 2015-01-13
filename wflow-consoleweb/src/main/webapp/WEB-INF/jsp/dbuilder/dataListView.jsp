@@ -168,7 +168,7 @@
                             <c:if test="${!empty action.confirmation}">
                                 <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
                             </c:if>
-                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                            <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation} data-target="${action.target}"><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                         </c:if>
                     </c:forEach>
                 </div>
@@ -238,6 +238,7 @@ t.printStackTrace(new java.io.PrintWriter(out));
             showPopup = confirm(message);
         }
         if (showPopup) {
+            $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
             $(element).closest("form").attr("action", $(element).attr("href"));
             $(element).closest("form").submit();
         }
