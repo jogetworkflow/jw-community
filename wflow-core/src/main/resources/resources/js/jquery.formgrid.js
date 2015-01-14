@@ -28,12 +28,15 @@
 
         initCells: function() {
             // make cells editable
-            $(this).find(".grid-cell").editable(methods.updateCell, {
+            $(this).find(".grid-row .grid-cell").editable(methods.updateCell, {
                  type: "text",
                  tooltip: "Click to edit",
                  cssclass: "grid-cell-input",
                  width: "none",
-                 submit: "OK"
+                 submit: "OK",
+                 data : function (content, setting) {
+                     return $(this).next("input").val();
+                 }
             });
             
             // add delete link for each row
