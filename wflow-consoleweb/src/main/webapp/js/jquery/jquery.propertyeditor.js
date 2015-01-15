@@ -1347,6 +1347,9 @@
 
                             $.each(property.columns, function(i, column){
                                 obj[column.key] = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                                if (obj[column.key] !== null && obj[column.key] !== undefined) {
+                                    obj[column.key] = obj[column.key].trim();
+                                }
                             });
                             gridValue.push(obj);
                         }
@@ -1367,7 +1370,12 @@
                                 if (n > 2) {
                                     value += ';';
                                 }
-                                value += $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                                var fieldValue = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                                if (fieldValue === undefined || fieldValue === null) {
+                                    fieldValue = "";
+                                }
+                                
+                                value += fieldValue.trim();
                                 properties[column.key] = value;
                             });
                         }
@@ -1391,13 +1399,21 @@
                             value = value.replace(/;$/i, '');
                         }
                     }else if(property.type.toLowerCase() == "htmleditor"){
-                        value = $(editor).find('#'+editorId+parent+'_'+property.name).html();
+                        value = $(editor).find('#'+editorId+parent+'_'+property.name).html().trim();
                     }else if(property.type.toLowerCase() == "radio"){
                         value = $(editor).find('#'+editorId+parent+'_'+property.name+':checked').val();
                     }else if(property.type.toLowerCase() == "password"){
-                        value = "%%%%" + $(editor).find('#'+editorId+parent+'_'+property.name).val() + "%%%%";
+                        value = $(editor).find('#'+editorId+parent+'_'+property.name).val();
+                        if (value === undefined || value === null) {
+                            value = "";
+                        }
+                        value = "%%%%" + value.trim() + "%%%%";
                     }else{
                         value = $(editor).find('#'+editorId+parent+'_'+property.name).val();
+                        if (value === undefined || value === null) {
+                            value = "";
+                        }
+                        value = value.trim();
                     }
 
                     properties[property.name] = value;
