@@ -191,11 +191,13 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
         <script type="text/javascript">
             function userviewPrint(){
                 $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/css/userview_print.css" type="text/css" media="print"/>');
+                $('body').addClass("userview_print");
                 setTimeout("do_print()", 1000); 
             }
 
             function do_print(){
                 window.print();
+                $('body').removeClass("userview_print");
                 $('#userview_print_css').remove();
             }
             

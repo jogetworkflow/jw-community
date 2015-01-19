@@ -282,3 +282,15 @@ body.embeded #page {
 #footer {
     display: none;
 }
+
+@media print {
+    body.userview_print #main {
+        left:0;
+        top:0; 
+        width: 100%;
+        position: relative;
+    }
+    body.userview_print #main #content{
+        width: 95%;
+    }
+}
