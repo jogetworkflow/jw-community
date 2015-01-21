@@ -1407,7 +1407,7 @@
                         if (value === undefined || value === null) {
                             value = "";
                         }
-                        value = "%%%%" + value.trim() + "%%%%";
+                        value = "%%%%" + value + "%%%%";
                     }else{
                         value = $(editor).find('#'+editorId+parent+'_'+property.name).val();
                         if (value === undefined || value === null) {
