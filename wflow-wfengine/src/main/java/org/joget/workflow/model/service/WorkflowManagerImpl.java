@@ -4575,7 +4575,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     protected Date getDueDateProceedByPlugin(String processId, String activityId, long limitInSecond, Date createdTime, Date startTime) {
         WorkflowDeadline deadline = new WorkflowDeadline();
-        deadline.setDeadlineLimit((int) limitInSecond * 1000);
+        deadline.setDeadlineLimit(limitInSecond * 1000);
 
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
         WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
@@ -4584,7 +4584,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(createdTime);
-        calendar.add(Calendar.MILLISECOND, newDeadline.getDeadlineLimit());
+        calendar.add(Calendar.SECOND, (int) (newDeadline.getDeadlineLimit()/1000));
         return calendar.getTime();
     }
 

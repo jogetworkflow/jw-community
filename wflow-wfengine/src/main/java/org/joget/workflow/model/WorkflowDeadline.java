@@ -6,15 +6,15 @@ import java.util.regex.Pattern;
 
 public class WorkflowDeadline {
 
-    private int deadlineLimit;
+    private long deadlineLimit;
     private String deadlineExpression;
     private Map context;
 
-    public int getDeadlineLimit() {
+    public long getDeadlineLimit() {
         return deadlineLimit;
     }
 
-    public void setDeadlineLimit(int deadlineLimit) {
+    public void setDeadlineLimit(long deadlineLimit) {
         this.deadlineLimit = deadlineLimit;
         setExpressionFromLimit();
     }
