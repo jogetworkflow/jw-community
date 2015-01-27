@@ -2270,6 +2270,7 @@ CREATE TABLE `app_package_activity_form` (
   `formUrl` varchar(255) DEFAULT NULL,
   `formIFrameStyle` varchar(255) DEFAULT NULL,
   `autoContinue` bit(1) DEFAULT NULL,
+  `disableSaveAsDraft` bit(1) DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKA8D741D5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKA8D741D5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
