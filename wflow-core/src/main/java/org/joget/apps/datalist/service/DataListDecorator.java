@@ -127,9 +127,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String text = formatColumn(column, row, columnValue);
 
         // strip tags if media type is not HTML
-        boolean renderHtml = column.isRenderHtml();
-        if (renderHtml && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            text = StringUtil.stripAllHtmlTag(text);
+        String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
+        String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
+        if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
+            boolean renderHtml = column.isRenderHtml();
+            if (renderHtml && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+                text = StringUtil.stripAllHtmlTag(text);
+            }
         }
 
         // handle links
@@ -263,14 +267,16 @@ public class DataListDecorator extends CheckboxTableDecorator {
             result = SecurityUtil.decrypt(result.toString());
             
             // sanitize output
-            //if (dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTTYPE) == null || dataList.getDataListParam(TableTagParameters.PARAMETER_EXPORTING) == null) {
+            String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
+            String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
+            if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
                 boolean renderHtml = column.isRenderHtml();
                 if (renderHtml) {
                     result = StringUtil.stripHtmlRelaxed(result.toString());
                 } else {
                     result = StringEscapeUtils.escapeHtml(result.toString());
                 }
-            //}
+            }
         }
 
         Collection<DataListColumnFormat> formats = column.getFormats();
