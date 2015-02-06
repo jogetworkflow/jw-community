@@ -279,7 +279,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                             if (!a.getType().equals(WorkflowActivity.TYPE_ROUTE) && !a.getType().equals(WorkflowActivity.TYPE_TOOL)) {
                                 Map<String, String> option = new HashMap<String, String>();
                                 option.put("value", p.getIdWithoutVersion() + "-" + a.getActivityDefId());
-                                option.put("label", p.getName() + " - " + a.getName());
+                                option.put("label", p.getName() + " (" + p.getIdWithoutVersion() + ")" + " - " + a.getName() + " (" + a.getActivityDefId() + ")");
                                 jsonArray.put(option);
                             }
                         }

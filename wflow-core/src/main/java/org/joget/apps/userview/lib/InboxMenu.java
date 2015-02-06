@@ -537,7 +537,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                 for (WorkflowProcess p : processList) {
                     Map<String, String> option = new HashMap<String, String>();
                     option.put("value", p.getIdWithoutVersion());
-                    option.put("label", p.getName());
+                    option.put("label", p.getName() + " (" + p.getIdWithoutVersion() + ")");
                     jsonArray.put(option);
                 }
 
