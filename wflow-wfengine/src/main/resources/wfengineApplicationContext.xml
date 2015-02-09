@@ -62,6 +62,7 @@
     <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.WorkflowAssignmentDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
+        <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
 
     <bean id="xpdlImageExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">

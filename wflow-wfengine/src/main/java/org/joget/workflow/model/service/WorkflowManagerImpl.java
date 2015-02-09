@@ -4478,19 +4478,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     public void internalAddWorkflowProcessLink(String parentProcessId, String processInstanceId) {
-        WorkflowProcessLink wfProcessLink = new WorkflowProcessLink();
-        WorkflowProcessLink parentWfProcessLink = getWorkflowProcessLink(parentProcessId);
-        wfProcessLink.setParentProcessId(parentProcessId);
-
-        if (parentWfProcessLink != null) {
-            wfProcessLink.setOriginProcessId(parentWfProcessLink.getOriginProcessId());
-        } else {
-            wfProcessLink.setOriginProcessId(parentProcessId);
-        }
-
-        wfProcessLink.setProcessId(processInstanceId);
-
-        workflowProcessLinkDao.addWorkflowProcessLink(wfProcessLink);
+        workflowProcessLinkDao.addWorkflowProcessLink(parentProcessId, processInstanceId);
     }
 
     public void internalDeleteWorkflowProcessLink(WorkflowProcessLink wfProcessLink) {

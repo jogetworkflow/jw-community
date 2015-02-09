@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.shark.model.SharkAssignment;
 
 public class WorkflowAssignmentDao extends AbstractSpringDao {
     
+    private WorkflowProcessLinkDao workflowProcessLinkDao;
     public final static String ENTITY_NAME="SharkAssignment";
     
     public Collection<WorkflowAssignment> getAssignments(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
@@ -88,6 +90,15 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 a.setProcessRequesterId(s.getProcess().getProcessRequesterId());
                 a.setProcessVersion(s.getProcess().getProcessVersion());
                 a.setAssigneeName(s.getAssigneeName());
+                
+                //subflow
+                if (a.getProcessRequesterId() != null && !a.getProcessRequesterId().isEmpty()) {
+                    a.setSubflow(true);
+                    if (workflowProcessLinkDao.getWorkflowProcessLink(a.getProcessId()) == null) {
+                        workflowProcessLinkDao.addWorkflowProcessLink(a.getProcessRequesterId(), a.getProcessId());
+                    }
+                }
+                
                 ass.add(a);
             }
         }
@@ -145,5 +156,13 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     private String ignoreVersion(String processDefId) {
         processDefId = processDefId.replaceAll("#[0-9]+#", "#%#");
         return processDefId;
+    }
+
+    public WorkflowProcessLinkDao getWorkflowProcessLinkDao() {
+        return workflowProcessLinkDao;
+    }
+
+    public void setWorkflowProcessLinkDao(WorkflowProcessLinkDao workflowProcessLinkDao) {
+        this.workflowProcessLinkDao = workflowProcessLinkDao;
     }
 }

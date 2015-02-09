@@ -10,6 +10,22 @@ import org.joget.workflow.model.WorkflowProcessLink;
 public class WorkflowProcessLinkDao extends AbstractSpringDao {
 
     public final static String ENTITY_NAME="WorkflowProcessLink";
+    
+    public void addWorkflowProcessLink(String parentProcessId, String processInstanceId){
+        WorkflowProcessLink wfProcessLink = new WorkflowProcessLink();
+        WorkflowProcessLink parentWfProcessLink = getWorkflowProcessLink(parentProcessId);
+        wfProcessLink.setParentProcessId(parentProcessId);
+
+        if (parentWfProcessLink != null) {
+            wfProcessLink.setOriginProcessId(parentWfProcessLink.getOriginProcessId());
+        } else {
+            wfProcessLink.setOriginProcessId(parentProcessId);
+        }
+
+        wfProcessLink.setProcessId(processInstanceId);
+
+        addWorkflowProcessLink(wfProcessLink);
+    }
 
     public void addWorkflowProcessLink(WorkflowProcessLink wfProcessLink){
         saveOrUpdate(ENTITY_NAME, wfProcessLink);
