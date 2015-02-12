@@ -110,9 +110,11 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                 if (paramValue != null) {
                     for (String value : paramValue) {
                         if (isRegex != null && "true".equals(isRegex)) {
-                            if (value.matches(visibilityValue)) {
-                                return true;
-                            }
+                            try {
+                                if (value.matches(visibilityValue)) {
+                                    return true;
+                                }
+                            } catch (Exception e){}
                         } else {
                             if (value.equals(visibilityValue)) {
                                 return true;
