@@ -1305,7 +1305,7 @@
 
     function removePropertiesPage(editor, id){    
         //search for child level properties page
-        if(elementStack[id].propertiesDefinition != undefined && elementStack[id].propertiesDefinition.length > 0){
+        if(elementStack[id] && elementStack[id].propertiesDefinition !== undefined && elementStack[id].propertiesDefinition.length > 0){
             $.each(elementStack[id].propertiesDefinition, function(i, page){
                 if(page.properties != undefined && page.properties.length > 0){
                     $.each(page.properties, function(j, property){
