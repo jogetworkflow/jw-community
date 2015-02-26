@@ -500,7 +500,7 @@ public class AppUtil implements ApplicationContextAware {
                 request.setAttribute("disableAdminBar", settingValue);
             }
         }
-        boolean enabled = !"true".equals(settingValue);
+        boolean enabled = !"true".equals(settingValue) && WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
         return enabled;
     }
     
