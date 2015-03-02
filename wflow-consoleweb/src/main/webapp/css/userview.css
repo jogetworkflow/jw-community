@@ -78,7 +78,7 @@ body, ul{
 }
 
 body.embeded #page{
-    width:800px;
+    width:100%;
     border: none;
 }
 
