@@ -1,7 +1,5 @@
 package org.joget.apps.form.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.sql.SQLException;
@@ -16,7 +14,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.model.MobileElement;
 import org.joget.apps.app.service.MobileUtil;
@@ -1139,6 +1136,10 @@ public class FormUtil implements ApplicationContextAware {
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 if (request != null) {
                     dataModel.put("request", request);
+                } else {
+                    Map<String, String> r = new HashMap<String, String>();
+                    r.put("contextPath", "/jw");
+                    dataModel.put("request", r);
                 }
             } catch (NoClassDefFoundError e) {
                 // ignore if servlet request is not available

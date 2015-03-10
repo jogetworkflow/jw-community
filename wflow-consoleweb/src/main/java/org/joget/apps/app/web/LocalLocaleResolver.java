@@ -30,27 +30,35 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     protected Locale determineDefaultLocale(HttpServletRequest request){
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
         
-        Locale locale = (Locale) request.getAttribute(DEFAULT_LOCALE_KEY);
+        Locale locale = null;
+        if (request != null) {
+            locale = (Locale) request.getAttribute(DEFAULT_LOCALE_KEY);
+        }
 
         if (locale == null) {
             Long tempCacheDuration = 5000L; // 5 seconds
             
             // lookup in session
             boolean defaultLocaleExpired = true;
-            Long defaultLocaleExpiry = (Long)request.getSession().getAttribute(DEFAULT_LOCALE_EXPIRY_KEY);
-            if (defaultLocaleExpiry == null || defaultLocaleExpiry.compareTo(new Long(System.currentTimeMillis())) < 0) {
-                request.getSession().removeAttribute(DEFAULT_LOCALE_KEY);
-            } else {
-                defaultLocaleExpired = false;
+            if (request != null) {
+                Long defaultLocaleExpiry = (Long)request.getSession().getAttribute(DEFAULT_LOCALE_EXPIRY_KEY);
+                if (defaultLocaleExpiry == null || defaultLocaleExpiry.compareTo(new Long(System.currentTimeMillis())) < 0) {
+                    request.getSession().removeAttribute(DEFAULT_LOCALE_KEY);
+                } else {
+                    defaultLocaleExpired = false;
+                }
+                locale = (Locale) request.getSession().getAttribute(DEFAULT_LOCALE_KEY);
             }
-            locale = (Locale) request.getSession().getAttribute(DEFAULT_LOCALE_KEY);
+            
             if (locale == null) {
                 locale = DEFAULT;
                 try {
-                    // reset profile and set hostname
-                    HostManager.setCurrentProfile(null);
-                    String hostname = request.getServerName();
-                    HostManager.setCurrentHost(hostname);
+                    if (request != null) {
+                        // reset profile and set hostname
+                        HostManager.setCurrentProfile(null);
+                        String hostname = request.getServerName();
+                        HostManager.setCurrentHost(hostname);
+                    }
                     
                     // set locale
                     String systemLocale = "";
@@ -85,15 +93,16 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                         Locale.setDefault(DEFAULT);
                     }
 
-                    request.setAttribute(DEFAULT_LOCALE_KEY, locale);
-                    
-                    // set locale and cache expiry in session
-                    if (defaultLocaleExpired) {
-                        Long expiry = System.currentTimeMillis() + tempCacheDuration;
-                        request.getSession().setAttribute(DEFAULT_LOCALE_EXPIRY_KEY, expiry);
-                        request.getSession().setAttribute(DEFAULT_LOCALE_KEY, locale);
+                    if (request != null) {
+                        request.setAttribute(DEFAULT_LOCALE_KEY, locale);
+
+                        // set locale and cache expiry in session
+                        if (defaultLocaleExpired) {
+                            Long expiry = System.currentTimeMillis() + tempCacheDuration;
+                            request.getSession().setAttribute(DEFAULT_LOCALE_EXPIRY_KEY, expiry);
+                            request.getSession().setAttribute(DEFAULT_LOCALE_KEY, locale);
+                        }
                     }
-                    
                 } catch (Exception e) {
                     LogUtil.error(getClass().getName(), e, "Error setting system locale from setting, using default locale");
                 }
@@ -106,29 +115,37 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     
     @Override
     public Locale resolveLocale(HttpServletRequest request) {
-        Locale locale = (Locale) request.getAttribute(CURRENT_LOCALE_KEY);
+        Locale locale = null;
+        
+        if (request != null) {
+            locale = (Locale) request.getAttribute(CURRENT_LOCALE_KEY);
+        }
         
         if (locale == null) {
-            if (request != null && request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
-                locale = null;
-                paramValue = request.getParameter(PARAM_NAME);
-                String[] temp = paramValue.split("_");
+            if (request != null ) {
+                if (request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
+                    locale = null;
+                    paramValue = request.getParameter(PARAM_NAME);
+                    String[] temp = paramValue.split("_");
 
-                if (temp.length == 1 && !temp[0].isEmpty()) {
-                    locale = new Locale(temp[0]);
-                } else if (temp.length == 2) {
-                    locale = new Locale(temp[0], temp[1]);
-                } else if (temp.length == 3) {
-                    locale = new Locale(temp[0], temp[1], temp[2]);
+                    if (temp.length == 1 && !temp[0].isEmpty()) {
+                        locale = new Locale(temp[0]);
+                    } else if (temp.length == 2) {
+                        locale = new Locale(temp[0], temp[1]);
+                    } else if (temp.length == 3) {
+                        locale = new Locale(temp[0], temp[1], temp[2]);
+                    }
+                    if (locale != null) {
+                        setLocale(request, null, locale);
+                    } else {
+                        setLocale(request, null, null);
+                    }
                 }
-                if (locale != null) {
-                    setLocale(request, null, locale);
-                } else {
-                    setLocale(request, null, null);
-                }
+                locale = super.resolveLocale(request);
+                request.setAttribute(CURRENT_LOCALE_KEY, locale);
+            } else {
+                locale = determineDefaultLocale(request);
             }
-            locale = super.resolveLocale(request);
-            request.setAttribute(CURRENT_LOCALE_KEY, locale);
         }
         return locale;
     }
