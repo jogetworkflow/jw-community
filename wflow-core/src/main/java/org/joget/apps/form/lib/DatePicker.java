@@ -190,7 +190,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                         if (e instanceof DatePicker) {
                             formattedCompare = formatCompareValue(compareValue, displayFormat);
                         }
-                        if (!DateUtil.compare(formattedCompare, value, displayFormat) && !formattedCompare.equals(value)) {
+                        if (!DateUtil.compare(formattedCompare, formattedValue, displayFormat) && !formattedCompare.equals(value)) {
                             valid = false;
                             startDate = formattedCompare;
                         }
@@ -207,7 +207,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                         if (e instanceof DatePicker) {
                             formattedCompare = formatCompareValue(compareValue, displayFormat);
                         }
-                        if (!DateUtil.compare(value, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
+                        if (!DateUtil.compare(formattedValue, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
                             valid = false;
                             endDate = formattedCompare;
                         }
@@ -228,7 +228,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                     end = formattedCompare;
                 }
                 
-                if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(value)) {
+                if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(formattedValue)) {
                     valid = false;
                     
                     if ("minDate".equals(type)) {
