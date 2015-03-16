@@ -7,6 +7,6 @@ public interface FormReferenceDataRetriever {
      * @param primaryKeyValues
      * @return 
      */
-    public FormRowSet loadFormRows(String[] primaryKeyValues);
+    public FormRowSet loadFormRows(String[] primaryKeyValues, FormData formData);
     
 }

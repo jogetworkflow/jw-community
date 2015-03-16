@@ -1424,7 +1424,7 @@ public class FormUtil implements ApplicationContextAware {
 
             // get values
             String[] valueArray = FormUtil.getElementPropertyValues(e, formData);
-            FormRowSet options = ((FormReferenceDataRetriever)e).loadFormRows(valueArray);
+            FormRowSet options = ((FormReferenceDataRetriever)e).loadFormRows(valueArray, formData);
             for (Map opt: options) {
                 Map optionRow = new HashMap(opt);
                 subResults.add(optionRow);
