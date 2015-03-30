@@ -629,7 +629,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         return result;
     }
-
+    
     /**
      * Returns the parameter name for the element.
      * @param element
@@ -678,7 +678,10 @@ public class FormUtil implements ApplicationContextAware {
     public static String getElementPropertyValue(Element element, FormData formData) {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-        String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        String value = "";
+        if (FormUtil.isReadonly(element, formData) || !FormUtil.isFormSubmitted(element, formData)) {
+            value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        }
         String paramName = FormUtil.getElementParameterName(element);
         
         if (formData != null) { // handle default value from options binder
@@ -737,7 +740,10 @@ public class FormUtil implements ApplicationContextAware {
 
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-        String value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        String value = "";
+        if (FormUtil.isReadonly(element, formData) || !FormUtil.isFormSubmitted(element, formData)) {
+            value = element.getPropertyString(FormUtil.PROPERTY_VALUE);
+        }
         String paramName = FormUtil.getElementParameterName(element);
 
         // handle multiple values

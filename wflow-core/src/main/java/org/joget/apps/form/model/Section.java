@@ -5,6 +5,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
 public class Section extends Element implements FormBuilderEditable, FormContainer {
+    private Boolean continueValidation = null;
 
     @Override
     public String getName() {
@@ -48,19 +49,19 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
     @Override
     public boolean continueValidation(FormData formData) {
-        boolean continueValidation = true;
+        if (continueValidation == null) {
+            if (isAuthorize(formData)) {
+                // get the control element (where value changes the target)
+                String visibilityControl = getPropertyString("visibilityControl");
 
-        if (isAuthorize(formData)) {
-            // get the control element (where value changes the target)
-            String visibilityControl = getPropertyString("visibilityControl");
-
-            if (visibilityControl != null && !visibilityControl.isEmpty()) {
-                continueValidation = isMatch(formData);
+                if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                    continueValidation = isMatch(formData);
+                } else {
+                    continueValidation = super.continueValidation(formData);
+                }
             } else {
-                continueValidation = super.continueValidation(formData);
+                continueValidation = false;
             }
-        } else {
-            continueValidation = false;
         }
         return continueValidation;
     }
