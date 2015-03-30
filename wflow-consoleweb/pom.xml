@@ -4,13 +4,13 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-consoleweb</artifactId>
     <packaging>war</packaging>
-    <version>4.0.17</version>
+    <version>4.0-SNAPSHOT</version>
     <name>wflow-consoleweb</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/tags/4.0.17/wflow-consoleweb</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/tags/4.0.17/wflow-consoleweb</developerConnection>
-        <url>http://dev.joget.org/svn/jw-community/tags/4.0.17/wflow-consoleweb</url>
+        <connection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</connection>
+        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</developerConnection>
+        <url>http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</url>
     </scm>
     <dependencies>
         <dependency>
