@@ -1263,9 +1263,9 @@ DatalistBuilder = {
         //compute the width needed for each section
         filterWidth = 0;
         widthSet = true;
-        $("#databuilderContentRowActions").children().each( function(){
+        $("#databuilderContentFilters").children().each( function(){
             if($(this).width() == 0) widthSet = false;
-            filterWidth += $(this).outerWidth();
+            filterWidth += $(this).width() + 20;
         });
         columnWidth = 0;
         $("#databuilderContentColumns").children().each( function(){
@@ -1276,13 +1276,13 @@ DatalistBuilder = {
         rowActionWidth = 0;
         $("#databuilderContentRowActions").children().each( function(){
             if($(this).width() == 0) widthSet = false;
-            rowActionWidth += $(this).outerWidth() + 5;
+            rowActionWidth += $(this).width() + 5;
         });
         if(rowActionWidth < rowActionMinWidth) rowActionWidth = rowActionMinWidth;
         actionWidth = 0;
         $("#databuilderContentActions").children().each( function(){
             if($(this).width() == 0) widthSet = false;
-            actionWidth += $(this).outerWidth();
+            actionWidth += $(this).width() + 5;
         });
         
         if(!widthSet){
