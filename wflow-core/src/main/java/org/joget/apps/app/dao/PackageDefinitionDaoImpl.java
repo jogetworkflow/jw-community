@@ -1,13 +1,22 @@
 package org.joget.apps.app.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
+import org.joget.apps.app.service.AppServiceImpl;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.LogUtil;
+import org.joget.workflow.model.WorkflowActivity;
+import org.joget.workflow.model.WorkflowParticipant;
+import org.joget.workflow.model.WorkflowProcess;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 
 /**
@@ -135,15 +144,61 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         // update package definition
         packageDef.setId(packageId);
         packageDef.setVersion(packageVersion);
-        if (packageDef.getPackageActivityFormMap() != null) {
-            packageDef.setPackageActivityFormMap(new HashMap<String, PackageActivityForm>(packageDef.getPackageActivityFormMap()));
+        
+        //remove not exist participants, activities and tools in mapping
+        Collection<String> activityIds = new ArrayList<String>();
+        Collection<String> toolIds = new ArrayList<String>();
+        Collection<String> participantIds = new ArrayList<String>();
+        Map<String, PackageActivityForm> packageActivityFormMap = new HashMap<String, PackageActivityForm>();
+        Map<String, PackageActivityPlugin> packageActivityPluginMap = new HashMap<String, PackageActivityPlugin>();
+        Map<String, PackageParticipant> packageParticipantMap = new HashMap<String, PackageParticipant>();
+        try {
+            WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+            Collection<WorkflowProcess> processList = workflowManager.getProcessList(packageDef.getAppDefinition().getAppId(), packageVersion.toString());
+            for (WorkflowProcess wp : processList) {
+                String processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
+                Collection<WorkflowActivity> activityList = workflowManager.getProcessActivityDefinitionList(wp.getId());
+                activityIds.add(processDefId+"::"+WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+                participantIds.add(processDefId+"::"+"processStartWhiteList");
+                for (WorkflowActivity a : activityList) {
+                    if (a.getType().equalsIgnoreCase("normal")) {
+                        activityIds.add(processDefId+"::"+a.getId());
+                    } else if (a.getType().equalsIgnoreCase("tool")) {
+                        toolIds.add(processDefId+"::"+a.getId());
+                    }
+                }
+
+                Collection<WorkflowParticipant> participantList = workflowManager.getProcessParticipantDefinitionList(wp.getId());
+                for (WorkflowParticipant p : participantList) {
+                    participantIds.add(processDefId+"::"+p.getId());
+                }
+            }
+
+            Map<String, PackageActivityForm> activityForms = packageDef.getPackageActivityFormMap();
+            for (String key : activityForms.keySet()) {
+                if (activityIds.contains(key)) {
+                    packageActivityFormMap.put(key, activityForms.get(key));
+                }
+            }
+            Map<String, PackageActivityPlugin> activityPluginMap = packageDef.getPackageActivityPluginMap();
+            for (String key : activityPluginMap.keySet()) {
+                if (toolIds.contains(key)) {
+                    packageActivityPluginMap.put(key, activityPluginMap.get(key));
+                }
+            }
+            Map<String, PackageParticipant> participantMap = packageDef.getPackageParticipantMap();
+            for (String key : participantMap.keySet()) {
+                if (participantIds.contains(key)) {
+                    packageParticipantMap.put(key, participantMap.get(key));
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppServiceImpl.class.getName(), e, "");
         }
-        if (packageDef.getPackageActivityPluginMap() != null) {
-            packageDef.setPackageActivityPluginMap(new HashMap<String, PackageActivityPlugin>(packageDef.getPackageActivityPluginMap()));
-        }
-        if (packageDef.getPackageParticipantMap() != null) {
-            packageDef.setPackageParticipantMap(new HashMap<String, PackageParticipant>(packageDef.getPackageParticipantMap()));
-        }
+                
+        packageDef.setPackageActivityFormMap(packageActivityFormMap);
+        packageDef.setPackageActivityPluginMap(packageActivityPluginMap);
+        packageDef.setPackageParticipantMap(packageParticipantMap);
 
         // save app and package definition
         saveOrUpdate(packageDef);
