@@ -72,7 +72,7 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
                     if (row != null && row.getCustomProperties() != null) {
                         Object val = row.getCustomProperties().get(columnName);
                         if (val != null) {
-                            return val.toString();
+                            return AppUtil.escapeHashVariable(val.toString());
                         } else {
                             LogUtil.debug(FormHashVariable.class.getName(), "#form." + variableKey + "# is NULL");
                             return "";

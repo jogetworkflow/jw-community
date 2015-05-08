@@ -295,6 +295,47 @@ public class AppUtil implements ApplicationContextAware {
         }
         return output;
     }
+    
+    public static String escapeHashVariable(String content) {
+        content = StringUtil.decryptContent(content);
+        
+        // check for hash # to avoid unnecessary processing
+        if (!containsHashVariable(content)) {
+            return content;
+        }
+
+        //parse content
+        if (content != null) {
+            Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
+            Matcher matcher = pattern.matcher(content);
+            Set<String> varList = new HashSet<String>();
+            while (matcher.find()) {
+                varList.add(matcher.group());
+            }
+
+            try {
+                if (!varList.isEmpty()) {
+                    PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+                    Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
+                                
+                    for (String var : varList) {
+                        String tempVar = var.replaceAll("#", "");
+
+                        for (Plugin p : pluginList) {
+                            HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
+                            if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
+                                var = hashVariablePlugin.escapeHashVariable(var);
+                                content = content.replaceAll(var, var.replaceAll("#", "&#35;"));
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(AppUtil.class.getName(), ex, "");
+            }
+        }
+        return content;
+    }
 
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
