@@ -2370,7 +2370,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
 
         } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
+            LogUtil.warn(getClass().getName(), ex.getMessage());
         } finally {
             try {
                 disconnect(sc);
@@ -2420,7 +2420,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
         } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
+            LogUtil.warn(getClass().getName(), ex.getMessage());
         } finally {
             try {
                 disconnect(sc);
