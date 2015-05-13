@@ -265,7 +265,7 @@ public class FormMenu extends UserviewMenu {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (!formData.getStay() && errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
                 setAlertMessage(getPropertyString("messageShowAfterComplete"));
@@ -452,7 +452,7 @@ public class FormMenu extends UserviewMenu {
             Map<String, String> errors = formData.getFormErrors();
             
             setProperty("submitted", Boolean.TRUE);
-            if (!formData.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
+            if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 setProperty("redirectUrlAfterComplete", getPropertyString("redirectUrlAfterComplete"));
                 setRedirectUrl(getPropertyString("redirectUrlAfterComplete"));
                 // redirect to next activity if available

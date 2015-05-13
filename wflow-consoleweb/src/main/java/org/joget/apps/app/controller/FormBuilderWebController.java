@@ -243,7 +243,7 @@ public class FormBuilderWebController {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (!formData.getStay() && errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
                 

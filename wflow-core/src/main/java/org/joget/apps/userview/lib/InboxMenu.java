@@ -409,7 +409,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             // check for validation errors
             Map<String, String> errors = formData.getFormErrors();
             int errorCount = 0;
-            if (!formData.getStay() && errors == null || errors.isEmpty()) {
+            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
                 // render normal template
                 formHtml = formService.generateElementHtml(form, formData);
             } else {
@@ -478,17 +478,17 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             
             Map<String, String> errors = formData.getFormErrors();
             
-            if (errors.isEmpty() && activityForm.isAutoContinue()) {
+            if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                if (nextActivity != null) { 
+                if (nextActivity != null) {
                     String redirectUrl = getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");
                     setProperty("redirectUrlAfterComplete", redirectUrl);
                     setAlertMessage("");
                     setRedirectUrl(redirectUrl);
                 }
-            } else if (!errors.isEmpty()) {
+            } else if (errors != null && !errors.isEmpty()) {
                 setRedirectUrl(null);
             }
         }

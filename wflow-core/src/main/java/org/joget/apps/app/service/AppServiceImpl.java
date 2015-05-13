@@ -339,7 +339,7 @@ public class AppServiceImpl implements AppService {
         }
 
         Map<String, String> errors = formData.getFormErrors();
-        if (!formData.getStay() && errors == null || errors.isEmpty()) {
+        if (!formData.getStay() && (errors == null || errors.isEmpty())) {
             // complete assignment
             workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
@@ -388,7 +388,7 @@ public class AppServiceImpl implements AppService {
         }
 
         Map<String, String> errors = formData.getFormErrors();
-        if (!formData.getStay() && errors == null || errors.isEmpty()) {
+        if (!formData.getStay() && (errors == null || errors.isEmpty())) {
             // complete assignment
             workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }

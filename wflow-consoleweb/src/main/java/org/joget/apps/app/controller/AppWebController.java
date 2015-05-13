@@ -296,7 +296,7 @@ public class AppWebController {
             formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
             Map<String, String> errors = formResult.getFormErrors();
-            if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
+            if (!formResult.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
@@ -311,7 +311,7 @@ public class AppWebController {
         // check for validation errors
         Map<String, String> errors = formResult.getFormErrors();
         int errorCount = 0;
-        if (!formResult.getStay() && errors == null || errors.isEmpty()) {
+        if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
             // render normal template
             html = formService.generateElementHtml(form, formResult);
         } else {

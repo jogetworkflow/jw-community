@@ -247,7 +247,7 @@ public class FormService {
             updatedFormData = validateFormData(form, formData);
         }
         Map<String, String> errors = updatedFormData.getFormErrors();
-        if (!updatedFormData.getStay() && errors == null || errors.isEmpty()) {
+        if (!updatedFormData.getStay() && (errors == null || errors.isEmpty())) {
             // generate primary key if necessary
             Element primaryElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
             if (primaryElement != null) {

@@ -443,7 +443,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
                     Map<String, String> errors = formResult.getFormErrors();
-                    if (!formResult.getStay() && errors.isEmpty() && activityForm.isAutoContinue()) {
+                    if (!formResult.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                         setAlertMessage(getPropertyString("messageShowAfterComplete"));
                         // redirect to next activity if available
                         WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
@@ -463,7 +463,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 // check for validation errors
                 Map<String, String> errors = formResult.getFormErrors();
                 int errorCount = 0;
-                if (!formResult.getStay() && errors == null || errors.isEmpty()) {
+                if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
                     // render normal template
                     html = formService.generateElementHtml(form, formResult);
                 } else {
