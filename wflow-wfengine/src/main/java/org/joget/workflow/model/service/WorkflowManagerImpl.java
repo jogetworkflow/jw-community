@@ -1457,8 +1457,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 }
                 if (sort.equals("id")) {
                     filter = aieb.setOrderById(sessionHandle, filter, !desc);
-                } else {
+                } else if (sort.equals("name")) {
                     filter = aieb.setOrderByName(sessionHandle, filter, !desc);
+                } else {
+                    filter = aieb.setOrderByActivatedTime(sessionHandle, filter, !desc);
                 }
             }
 

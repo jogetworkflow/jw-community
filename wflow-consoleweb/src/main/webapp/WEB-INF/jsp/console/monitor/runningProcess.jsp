@@ -60,8 +60,8 @@
                        jsonData="data"
                        rowsPerPage="10"
                        width="100%"
-                       sort="id"
-                       desc="false"
+                       sort="dateCreated"
+                       desc="true"
                        href="${pageContext.request.contextPath}/web/console/monitor/running/process/activity/view"
                        hrefParam="id"
                        hrefQuery="false"
@@ -73,7 +73,8 @@
                        column1="{key: 'id', label: 'console.app.activity.common.label.id', sortable: true}"
                        column2="{key: 'name', label: 'console.app.activity.common.label.name', sortable: true}"
                        column3="{key: 'state', label: 'console.app.activity.common.label.state', sortable: false}"
-                       column4="{key: 'serviceLevelMonitor', label: 'console.app.activity.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
+                       column4="{key: 'dateCreated', label: 'console.app.activity.common.label.createdTime', sortable: true}"
+                       column5="{key: 'serviceLevelMonitor', label: 'console.app.activity.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
                        />
     </div>
 </div>
