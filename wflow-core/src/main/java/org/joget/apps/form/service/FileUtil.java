@@ -18,6 +18,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -167,7 +168,14 @@ public class FileUtil implements ApplicationContextAware {
                 newDirectory.mkdirs();
             }
                 
-            file.renameTo(new File(newDirectory, file.getName()));
+            boolean result = file.renameTo(new File(newDirectory, file.getName()));
+            if (!result) {
+                try {
+                    FileCopyUtils.copy(file, new File(newDirectory, file.getName()));
+                } catch (IOException ex) {
+                    LogUtil.error(FileUtil.class.getName(), ex, ex.getMessage());
+                }
+            }
         }
     }
 
