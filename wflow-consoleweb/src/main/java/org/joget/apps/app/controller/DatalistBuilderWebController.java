@@ -153,7 +153,7 @@ public class DatalistBuilderWebController {
             Plugin p = (Plugin) action;
             HashMap hm = new HashMap();
             hm.put("name", p.getName());
-            hm.put("label", action.getLinkLabel());
+            hm.put("label", action.getLabel());
             hm.put("className", action.getClassName());
             if (action instanceof PropertyEditable) {
                 String propertyOptions = ((PropertyEditable) action).getPropertyOptions();

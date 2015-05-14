@@ -29,7 +29,7 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     }
     
     public String getLabel() {
-        return "Form Row Delete Action";
+        return "Delete";
     }
 
     public String getLinkLabel() {
