@@ -8,25 +8,25 @@ public class LogUtil {
 
     public static void info(String className, String message) {
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).info(clean);
+        LogFactory.getLog(className).info(getHost() + clean);
     }
 
     public static void debug(String className, String message) {
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).debug(clean);
+        LogFactory.getLog(className).debug(getHost() + clean);
     }
 
     public static void warn(String className, String message) {
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).warn(clean);
+        LogFactory.getLog(className).warn(getHost() + clean);
     }
 
     public static void error(String className, Throwable e, String message) {
         if (message != null && message.trim().length() > 0) {
             String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
-            LogFactory.getLog(className).error(clean, e);
+            LogFactory.getLog(className).error(getHost() + clean, e);
         } else {
-            LogFactory.getLog(className).error(e.toString(), e);
+            LogFactory.getLog(className).error(getHost() + e.toString(), e);
         }
     }
     
@@ -61,5 +61,12 @@ public class LogUtil {
             } catch (Exception e) {}
         }
         return null;
+    }
+    
+    protected static String getHost() {
+        if (HostManager.isVirtualHostEnabled()) {
+            return HostManager.getCurrentProfile() + " : ";
+        }
+        return "";
     }
 }
