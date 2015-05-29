@@ -1,0 +1,229 @@
+* {
+    font-family: PT Sans,Arial,serif;
+    font-size: 13px;
+}
+
+body, ul{
+    margin:0px;
+    padding:0px;
+}
+
+#page{
+    width:960px;
+    margin: 0 auto;
+    border-left:1px dotted gray;
+    border-right:1px dotted gray;
+}
+
+#header, #main, #footer{
+    border-bottom:1px dotted gray;
+}
+
+#navigation{
+    border-right:1px dotted gray;
+    width:209px;
+    float:left;
+    min-height:600px;
+}
+
+#content{
+    width:750px;
+    float:left;
+}
+
+.embeded #content {
+    margin: 0px;
+    padding: 0px;
+}
+
+.category-label{
+    width:100%;
+    float:left;
+}
+
+.menu-container{
+    min-height:20px;
+}
+
+.menu-link {
+    cursor: pointer;
+}
+
+#header-info{
+    margin:0 50px 10px;
+}
+
+#header-name span{
+    font-size:24px;
+    font-weight:bold;
+}
+
+#header-message{
+    margin:20px 50px 5px;
+}
+
+#header-welcome-message{
+    float:left;
+    width:500px;
+}
+
+#header-logout-text{
+    float:right;
+    text-align:right;
+    width:200px;
+}
+
+#footer-message{
+    padding:10px 50px;
+}
+
+body.embeded #page{
+    width:100%;
+    border: none;
+}
+
+body.embeded #header,
+body.embeded #footer,
+body.embeded #navigation{
+    display:none;
+}
+
+body.embeded #content{
+    float:left;
+    width:100%;
+}
+
+.clear{
+    clear:both;
+}
+
+#page #form-canvas {
+    border: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+body.rtl{
+    direction:rtl;
+}
+
+body.rtl #header-logout-text {
+    float: left;
+    text-align: left;
+}
+
+body.rtl #header-welcome-message {
+    float: right;
+}
+
+body.rtl #navigation {
+    border-right:0;
+    border-left: 1px dotted gray;
+    float: right;
+}
+
+body.rtl #content {
+    float: right;
+}
+
+.print-button{
+    background: transparent url("../images/v3/action_print.gif") 0 0 no-repeat;
+    padding-left:20px;
+    display:inline-block;
+    float:right;
+    height:16px;
+}
+#main-action-help {
+    background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    right: 5px;
+}
+
+body #ui-datepicker-div {
+    display:none;
+}
+
+#preview-label {
+    position: fixed;
+    top: 75px;
+    right: -225px;
+    width: 600px;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: 'trebuchet ms', verdana, arial, sans-serif;
+    background-color: rgb(0, 0, 0);
+    border: 1px solid rgb(170, 170, 170);
+    z-index: 500;
+    opacity: 0.5;
+    -moz-transform: rotate(45deg);  /* FF3.5/3.6 */
+    -o-transform: rotate(45deg);  /* Opera 10.5 */
+    -webkit-transform: rotate(45deg);  /* Saf3.1+ */
+    transform: rotate(45deg);
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476)"; /* IE8 */
+}
+#preview-label.ie {
+    top: -60px;
+    right: -150px;
+    width: 400px;
+    opacity: 1;
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE8 */
+    zoom: 1;
+}
+.systemAlert{
+    background:#FFFFD6;
+    position:relative;
+    padding:10px 15px;
+    z-index:7;
+}
+.systemAlertClose{
+    position:absolute;
+    top:10px;
+    right:10px;
+    cursor:pointer;
+}
+.systemAlertMessage {
+    display:inline-block;
+    margin-right:30px;
+}
+.policies {
+    color: #999;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 0 0 10px 10px;
+}
+.policies > span{
+    display:block;
+}
+.form-errors, .form-error {
+    color: red;
+    font-weight: normal;
+}
+body .ui-dialog .ui-dialog-titlebar {
+    padding: 0px;
+    background: none;
+}
+body .ui-dialog .ui-dialog-titlebar-close span {
+    margin: -9px;
+}
+body .ui-dialog .ui-dialog-content {
+    padding: 5px;
+}
+body .ui-widget-overlay {
+    height: 1000%;
+}
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}
+input[type="button"], input[type="submit"], input[type="reset"] {
+  -webkit-appearance: button;
+}

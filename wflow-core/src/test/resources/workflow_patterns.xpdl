@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xpdl:Package xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="workflow_patterns" Name="Workflow patterns" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <xpdl:PackageHeader>
+        <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>
+        <xpdl:Vendor>Together</xpdl:Vendor>
+        <xpdl:Created>2004-08-31 22:22:17</xpdl:Created>
+        <xpdl:Description>Contains workflow processes that show workflow patterns defined by Wil van der Aalst that are more or less directly supported by XPDL and Shark engine</xpdl:Description>
+    </xpdl:PackageHeader>
+    <xpdl:Script Type="text/javascript"/>
+    <xpdl:Participants>
+        <xpdl:Participant Id="test" Name="Test">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+    </xpdl:Participants>
+    <xpdl:WorkflowProcesses>
+        <xpdl:WorkflowProcess AccessLevel="PUBLIC" Id="WfBCP1_Sequence" Name="WfBCP1 Sequence">
+            <xpdl:ProcessHeader DurationUnit="D">
+                <xpdl:Created>2004-08-31 22:28:17</xpdl:Created>
+                <xpdl:Description>execute activities A, B and C in sequence</xpdl:Description>
+            </xpdl:ProcessHeader>
+            <xpdl:Activities>
+                <xpdl:Activity Id="A" Name="A">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="206,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="B" Name="B">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="356,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="C" Name="C">
+                    <xpdl:Description>Just press 'Complete' button</xpdl:Description>
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>test</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="509,48"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="test"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="A" Id="WfBCP1_Sequence_Tra1" Name="Transition" To="B">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="B" Id="WfBCP1_Sequence_Tra2" Name="Transition" To="C">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=C,X_OFFSET=661,Y_OFFSET=101,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=test,CONNECTING_ACTIVITY_ID=A,X_OFFSET=91,Y_OFFSET=101,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="test"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+    </xpdl:WorkflowProcesses>
+    <xpdl:ExtendedAttributes>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL" Value="Together Workflow Editor"/>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL_VERSION" Value="2.0-2(4?)-C-20080226-2126"/>
+        <xpdl:ExtendedAttribute Name="JaWE_CONFIGURATION" Value="default"/>
+    </xpdl:ExtendedAttributes>
+</xpdl:Package>

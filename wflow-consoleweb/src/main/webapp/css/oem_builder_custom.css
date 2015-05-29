@@ -1,0 +1,44 @@
+body {
+    background: #CED7DC;
+}
+#builder-body {
+    background: white;
+}
+#builder-logo {
+    backgroundx: url(../images/custom/builder_logo.png) no-repeat;
+    background-size: cover;
+    width: 68px;
+    height: 24px;
+    float: left;
+}
+#builder-palette h3 {
+    background: steelblue;
+    color: white;
+}
+button, input[type=button], #builder-body .element-options button, #builder-body .form-palette-options button, .property-editor-page-button-panel input[type=button] {
+    background: steelblue url(../images/custom/dropdown_btn_bg_hover.gif) 0 0 repeat-x;
+    border: solid 1px steelblue;
+    box-shadow: #ddd 0px 2px 2px;
+}
+button:hover, input[type=button]:hover, #builder-body .element-options button:hover, #builder-body .form-palette-options button:hover {
+    background: lightblue;
+    color: white;
+    border: solid 1px steelblue;
+}
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemTitle {
+    background: lightblue;
+}
+#builder-body .quickEdit, #builder-body #form-canvas .quickEdit {
+    background: azure url(../images/custom/dropdown_btn_bg_hover.gif) 0 0 repeat-x;
+    border: solid 1px steelblue;
+    padding: 0px;
+    box-shadow: #ddd 0px 2px 2px;
+}
+#builder-body .quickEdit a, #builder-body #form-canvas .quickEdit a {
+    background: azure url(../images/custom/dropdown_btn_bg_hover.gif) 0 0 repeat-x;
+    padding: 2px;
+}
+#builder-body .quickEdit a:hover, #builder-body #form-canvas .quickEdit a:hover {
+    background: lightblue;
+    color: white;
+}

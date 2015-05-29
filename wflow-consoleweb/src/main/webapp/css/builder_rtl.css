@@ -1,0 +1,187 @@
+body{
+    direction:rtl;
+}
+
+#builder-title {
+    float: right;
+}
+
+#builder_quick_navigator {
+    right: 621px;
+    left: auto;
+}
+
+.form-palette-element,
+.builder-palette-element{
+    clear:both
+}
+
+.form-palette-element img,
+.builder-palette-element img{
+    float:right;
+}
+
+.form-palette-element label,
+.builder-palette-element label {
+    padding-left: 0px;
+    padding-right: 3px;
+}
+
+#builder-bar li {
+    background: url("../images/v3/builder/steps_inactive-bg.gif") repeat-x scroll right top transparent;
+    float: right;
+    margin: 0;
+}
+
+#builder-bar a {
+    background: url(../images/v3/builder/steps_arrow_inactive_rtl.gif) left top no-repeat;
+    padding:0 10px 0 30px;
+}
+
+#builder-bar li.active {
+    background:url(../images/v3/builder/steps_active-bg.gif) right top repeat-x;
+}
+
+#builder-bar li.active a {
+    background: url(../images/v3/builder/steps_arrow_active_rtl.gif) left top no-repeat
+}
+
+#builder-bar .first-active {
+    border-right: 1px solid #989898;
+    border-left:0;
+}
+
+#builder-bar .first-inactive {
+    border-right: 1px solid #c2c1c1;
+    border-left: 0;    
+}
+
+#builder-bar li.next a {
+    background:url(../images/v3/builder/steps_active_next_rtl.gif) left top no-repeat
+}
+
+#builder-bar li.last-inactive a {
+    border-left: 1px solid #c2c1c1;
+    border-right: 0;
+}
+
+#builder-bar li.last-active a {
+    border-right: 0; 
+    border-left: 1px solid #989898; 
+}
+
+.element-options {
+    right: auto;
+    left:0;
+    text-align: left;
+}
+
+.builder_qn_items ul li a {
+    float: right !important;
+}
+
+.builder_qn_items ul li a.builder_qn_open {
+    float: left !important;
+}
+
+#builder-palette {
+    position: fixed;
+    right: -5px;
+    left: auto;
+}
+
+/*Form Builder*/
+#formbuilder .form-palette-options{
+    text-align:left;
+}
+
+#formbuilder .form-section .form-palette-options {
+    right: auto;
+    left:0;
+    top: 0;
+}
+
+#formbuilder .form-palette-options button {
+    margin-left: 0px;
+    margin-right: 2px;
+}
+
+#formbuilder .form-cell .label, .subform-cell .label {
+    float: right;
+}
+
+#formbuilder .form-column, #formbuilder .subform-column {
+    float:right;
+    border-right: 2px dashed #DDDDDD;
+    border-left:0px;
+}
+
+#formbuilder #builder-content {
+    right: 200px;
+}
+
+.form-floating-label {
+    left: 10px;
+}
+
+/*Datalist Builder*/
+#datalistbuilder td#tdDatabuilderContentRowActions {
+    float:right;
+}
+
+#datalistbuilder td#tdDatabuilderContentColumns{
+    float:left;
+}
+
+#datalistbuilder .builder-palette-column, .builder-palette-action, .form-palette-section, .form-palette-column {
+    background: url("../images/v3/builder/sidebar_element.gif") no-repeat scroll right top transparent;
+    padding: 0 30px 0 0;
+}
+
+#datalistbuilder .builder-palette-column .label {
+    float: right;
+}
+
+/*Userview Builder*/
+#userviewbuilder #canvas {
+    right: 185px;
+}
+
+#userviewbuilder #header-welcome-message {
+    float: right;
+    width: 300px;
+}
+
+#userviewbuilder #header-logout-text {
+    float: left;
+    text-align: left;
+}
+
+#userviewbuilder #userview-content {
+    float: left;
+}
+
+#userviewbuilder #userview-sidebar {
+    border-right: 0;
+    border-left: 2px dotted #DDDDDD;
+    float: right;
+}
+
+#userviewbuilder .sidebar-title {
+    left: auto;
+    right:0;
+    padding: 4px;
+}
+
+#userviewbuilder #builder-bar li.last-inactive a {
+    padding: 0 10px 0 30px;
+}
+
+#userviewbuilder #userview-advanced {
+    margin-left: 0px;
+    margin-right: 220px;
+}
+
+#ui-datepicker-div {
+    display:none;
+}

@@ -1,0 +1,230 @@
+body{
+    direction:rtl;
+}
+
+#header #logo {
+    position: absolute;
+    right: 32px;
+}
+
+#header-label {
+    left: auto;
+    right: 5px;
+}
+
+#logo-label {
+    right: 30px;
+}
+
+#header #account {
+    float: left;
+    padding-right: 0px;
+    padding-left: 20px;
+}
+
+#menu {
+    left:auto;
+    right:198px;
+}
+
+#menu span.steps{
+    padding:0 6px 0 0;
+    float:right;
+}
+
+#menu span.title {
+    padding:2px 26px 0 0;
+}
+
+#menu span.subtitle {
+    padding:0 26px 0 0;
+}
+
+#menu ul#menu-items li {
+    float: right;
+    background: url(../images/v3/console/menu_bg.png) right top repeat-x;
+}
+
+#menu ul#menu-items a {
+    background: url(../images/v3/console/menu_arrow_rtl.png) left top no-repeat;
+    padding: 0 4px 0 24px;
+}
+
+#menu ul#menu-items .dropdown {
+    right:2px;
+}
+
+#menu ul#menu-items a span.menu-bg {
+    background:url(../images/v3/console/menu_bg.png) right top repeat-x;
+    padding: 0 0 0 5px;
+}
+
+#menu ul#menu-items .active { 
+    background: url(../images/v3/console/menu_bg_selected.png) right top repeat-x;
+}
+
+#menu ul#menu-items .active a { 
+    background: url(../images/v3/console/menu_arrow_front_selected_rtl.png) left top no-repeat;
+}
+
+#menu ul#menu-items .first-active { 
+    background: url(../images/v3/console/menu_selected_first_rtl.png) right top no-repeat;
+}
+
+#menu ul#menu-items .first-inactive { 
+    background: url(../images/v3/console/menu_first_rtl.png) right top no-repeat;
+}
+
+#menu ul#menu-items .next a { 
+    background: url(../images/v3/console/menu_arrow_end_selected_rtl.png) left top no-repeat
+}
+
+#menu ul#menu-items .last-inactive a { 
+    background: url(../images/v3/console/menu_last_rtl.png) left top no-repeat;
+}
+
+#menu ul#menu-items .last-active a { 
+    background: url(../images/v3/console/menu_selected_last_rtl.png) left top no-repeat;
+}
+
+#menu .dropdown span.substeps {
+    float:right;
+    background-position:right center;
+    padding:6px 6px 5px 10px;
+}
+
+#main dd, #main-body-content dd {
+    margin-left:0px;
+    margin-right: 200px;
+}
+
+#main #main-action-help {
+    float: left;
+}
+
+#main #main-action ul li {
+    float: right;
+}
+
+#main-body-content .ui-tabs-nav li {
+    float: right;
+}
+
+#main-body-content .ui-tabs-panel{
+    text-align: right;
+}
+
+#nav span.nav-steps {
+    margin-left:5px;
+}
+
+#container {
+    padding-right: 0px;
+    padding-left: 10px;
+}
+
+#nav {
+    float: right;
+}
+
+#main {
+    left: -190px;
+    margin-left: 10px;
+    margin-right: 0px;
+}
+
+.ftl_label{
+    float:right;
+    margin-left:5px;
+}
+
+.row-content {
+    float: right;
+    text-align: right;
+}
+
+.row-button {
+    float: left;
+}
+
+.form-buttons {
+    clear:both;
+    text-align:right;
+}
+
+.form-row{
+    text-align:right;
+}
+
+.form-row label {
+    text-align:right;
+    float:right;
+}
+
+.form-row .form-input {
+    float:right;
+    text-align:right;
+}
+
+.form-row .input {
+    float:right;
+    text-align:right;
+}
+
+#main-body-content-filter {
+    float: right;
+    margin-left: 20px;
+}
+
+#main .list-thumbnail {
+    clear: right;
+    float: right;
+    margin-left: 20px;
+    padding-left: 10px;
+}
+
+#main .list-details {
+    float: right;
+}
+
+.popupBody #main-body-content {
+    padding: 1em;
+}
+
+/*Json table*/
+.flexigrid{
+    text-align:right;
+    direction:ltr;
+}
+ 
+#login-box td, #login-box .input {
+    text-align: right;
+}
+
+#ui-datepicker-div {
+    display:none;
+}
+
+#desktop #header-label {
+    right: 0px;
+}
+#desktop #logo-label {
+    display: none;
+}
+#desktop .column {
+    float: right;
+}
+#desktop .column ul {
+    text-align: right;
+    margin-right: 25px;
+}
+#desktop #content .column-narrow a {
+    text-align: right;
+}
+
+#allApps .nv-col {
+    float: right;
+}
+#nv .nv-col {
+    float: right;
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="PackageActivityForm" name="org.joget.apps.app.model.PackageActivityForm" table="app_package_activity_form">
+        <composite-id>
+            <key-property column="processDefId" name="processDefId" type="string"/>
+            <key-property column="activityDefId" name="activityDefId" type="string"/>
+            <key-many-to-one entity-name="PackageDefinition" name="packageDefinition">
+                <column name="packageId"/>
+                <column name="packageVersion"/>
+            </key-many-to-one>
+        </composite-id>
+        <property column="ouid" name="uid" type="string"/>
+        <property name="type" type="string"/>
+        <property name="formId" type="string"/>
+        <property name="formUrl" type="string"/>
+        <property name="formIFrameStyle" type="string"/>
+        <property name="autoContinue" type="boolean"/>
+        <property name="disableSaveAsDraft" type="boolean"/>
+        <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false">
+            <column name="packageId"/>
+            <column name="packageVersion"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

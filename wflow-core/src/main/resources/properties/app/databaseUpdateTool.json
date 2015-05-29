@@ -1,0 +1,50 @@
+[{
+    title : '@@app.databaseupdatetool.config@@',
+    properties : [{
+        name : 'jdbcDatasource',
+        label : '@@app.databaseupdatetool.datasource@@',
+        description : '@@app.databaseupdatetool.datasource.desc@@',
+        type : 'selectbox',
+        options : [{
+            value : 'custom',
+            label : '@@app.databaseupdatetool.customDatasource@@'
+        },{
+            value : 'default',
+            label : '@@app.databaseupdatetool.defaultDatasource@@'
+        }],
+        value : 'custom'
+    },{
+        name : 'driverClassName',
+        label : '@@app.databaseupdatetool.databaseType@@',
+        description : '@@app.databaseupdatetool.driver.desc@@',
+        type : 'textfield',
+        value : 'com.mysql.jdbc.Driver'
+    },
+    {
+        name : 'url',
+        label : '@@app.databaseupdatetool.targetDbUrl@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'username',
+        label : '@@app.databaseupdatetool.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.databaseupdatetool.password@@',
+        type : 'password'
+    }]
+},
+{
+    title : '@@app.databaseupdatetool.query@@',
+    properties : [{
+        name : 'query',
+        label : '@@app.databaseupdatetool.query@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15',
+        required : 'True'
+    }]
+}]

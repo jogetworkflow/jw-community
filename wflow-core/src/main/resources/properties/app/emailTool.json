@@ -1,0 +1,155 @@
+[{
+    title : '@@app.emailtool.config@@',
+    properties : [{
+        name : 'host',
+        label : '@@app.emailtool.host@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'port',
+        label : '@@app.emailtool.port@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'security',
+        label : '@@app.emailtool.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.emailtool.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.emailtool.security.ssl@@'
+        }]
+    },
+    {
+        name : 'username',
+        label : '@@app.emailtool.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.emailtool.password@@',
+        type : 'password'
+    }],
+    buttons : [{
+        name : 'testmail',    
+        label : '@@app.emailtool.sendTestMail@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=testmail',
+        fields : ['host', 'port', 'security', 'username', 'password'],
+        addition_fields : [
+            {
+                name : 'from',
+                label : '@@app.emailtool.from@@',
+                type : 'textfield',
+                required : 'True'
+            },
+            {
+                name : 'toSpecific',
+                label : '@@app.emailtool.toEmail@@',
+                type : 'textfield',
+                required : 'True'
+            }
+        ]
+    }]
+},
+{
+    title : '@@app.emailtool.email@@',
+    properties : [{
+        name : 'from',
+        label : '@@app.emailtool.from@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'toSpecific',
+        label : '@@app.emailtool.toEmail@@',
+        type : 'textfield'
+    },
+    {
+        name : 'toParticipantId',
+        label : '@@app.emailtool.toPid@@',
+        type : 'textfield'
+    },
+    {
+        name : 'cc',
+        label : '@@app.emailtool.cc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'bcc',
+        label : '@@app.emailtool.bcc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'subject',
+        label : '@@app.emailtool.subject@@',
+        type : 'textfield'
+    },
+    {
+        name : 'message',
+        label : '@@app.emailtool.message@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.emailtool.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@app.emailtool.attachments@@',
+    properties : [{
+        name:'formDefId',
+        label:'@@app.emailtool.form@@',
+        type:'selectbox',
+        options_ajax:'[CONTEXT_PATH]/web/json/console/app[APP_PATH]/forms/options',
+    },
+    {
+        name:'fields',
+        label:'@@app.emailtool.fields@@',
+        type:'grid',
+        columns:[{
+            key:'field',
+            label:'@@app.emailtool.fieldId@@'
+        }]
+    },
+    {
+        name:'files',
+        label:'@@app.emailtool.files@@',
+        type:'grid',
+        columns:[{
+            key:'path',
+            label:'@@app.emailtool.path@@'
+        },
+        {
+            key:'type',
+            label:'@@app.emailtool.pathType@@',
+            options: [{
+                value : 'system',
+                label : '@@app.emailtool.pathType.system@@'
+            },
+            {
+                value : 'url',
+                label : '@@app.emailtool.pathType.url@@'
+            }]
+        },
+        {
+            key:'fileName',
+            label:'@@app.emailtool.fileName@@'
+        }]
+    }]
+}]

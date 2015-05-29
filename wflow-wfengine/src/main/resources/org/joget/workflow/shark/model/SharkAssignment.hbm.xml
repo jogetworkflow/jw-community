@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="SharkAssignment" lazy="false" name="org.joget.workflow.shark.model.SharkAssignment" table="SHKAssignmentsTable">
+        <id column="oid" name="id" type="long"/>
+        <property column="ResourceId" name="assigneeName" type="string"/>
+        
+        <many-to-one entity-name="SharkActivity" insert="false" fetch="join" lazy="false" update="false" name="activity" column="ActivityId" />
+        <many-to-one entity-name="SharkProcess" insert="false" fetch="join" lazy="false" update="false" name="process" column="ActivityProcessId"/>
+    </class>
+</hibernate-mapping>
+

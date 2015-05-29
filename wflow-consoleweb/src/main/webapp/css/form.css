@@ -1,0 +1,220 @@
+#form-canvas * {
+    font-family: PT Sans,Arial,serif;
+    font-size: 13px;
+}
+#form-canvas .label {
+    color: #535353;
+}
+#form-canvas {
+    font-size: 13px;
+    display: block;
+    padding: 10px;
+    margin: 5px;
+    background: white;
+    border: solid 1px silver;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+}
+#form-canvas textarea {
+    font-size: 13px;
+}
+.form-section, .form-column, .form-cell, .subform-section, .subform-column, .subform-cell {
+    border: none 1px #dddddd;
+    padding: 0px;
+    margin: 0px;
+}
+.form-section, .subform-section {
+    /*position: relative;*/
+    border: none 2px #cccccc;
+    heightx: 100%;
+    backgroundx: #cccccc;
+    background: white;
+    colorx: #ffffff;
+    min-heightx: 50px;
+    margin-bottom: 10px;
+}
+.form-section-title span, .subform-section-title span {
+    padding: 10px;
+    margin-bottom: 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 1px 1px 0 #DDDDDD;
+    background: #efefef;
+    display: block;
+}
+.form-palette-section {
+    background: #cccccc;
+    height: 30px;
+    min-width: 200px;
+}
+.form-column, .subform-column {
+    position: relative;
+    border: none 2px #dddddd;
+    widthx: 200px;
+    float: left;
+    heightx: 100%;
+    min-height: 30px;
+    min-width: 250px;
+    padding: 0px 0px 0px 0px;
+    backgroundx: #dddddd;
+    color: #666666;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+}
+.form-column .hint, .subform-column .hint {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    color: #aaaaaa;
+    background: white;
+}
+.form-cell, .subform-cell {
+    position: relative;
+    min-height: 30px;
+    color: black;
+    clear: left;
+    padding: 5px 0px;
+}
+.form-cell .label, .subform-cell .label {
+    width: 30%;
+    display: block;
+    float: left;
+}
+.form-cell-highlight {
+    padding-bottom: 0px;
+    background: #f0ffcc;
+}
+.form-clear {
+    clear: both;
+}
+.form-error-cell {
+    border: solid 1px red;
+}
+.form-error-message {
+    color: red;
+    font-size: smaller;
+    display: block;
+}
+.subform-cell-validator,
+.form-cell-validator {
+    color: red;
+    font-size: smaller;
+}
+.form-message {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: red;
+}
+.form-cell table, .subform-cell table {
+    width: 100%;
+}
+.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+.subform-container{
+    border: 5px solid #dfdfdf; 
+    padding: 3px;
+    margin-top:5px;
+}
+.subform-container.no-frame{
+    border: 0; 
+    padding: 0;
+    margin-top:10px;
+}
+.subform-container, .subform-section {
+    background: #efefef;
+}
+.subform-container.no-frame, .subform-container.no-frame .subform-section {
+    background: transparent;
+}
+.subform-title{
+    background: #efefef;
+    position:relative;
+    top:-12px;
+}
+.subform-container.no-frame .subform-title{
+    background: transparent;
+    position:relative;
+    top:-12px;
+    font-weight: bold;
+}
+.form-column-horizontal .form-cell {
+    display: block;
+    float: left;
+    clear: none;
+    margin-right: 3px;
+}
+.form-fileupload {
+    float: left;
+}
+.form-fileupload-value {
+    display: block;
+}
+.form-cell-value, .subform-cell-value {
+    float: left;
+    width: 70%;
+}
+.form-cell-value label, .subform-cell-value label {
+    display: block;
+    float: left;
+    width: 50%;
+}
+.form-cell-full {
+    width: 100%;
+}
+#ui-datepicker-div {
+    font-size: 13px;
+}
+.form-cell-value label.readonly_label, .subform-cell-value label.readonly_label {
+    width: 100%;
+    float: none;
+}
+#preview-label {
+    position: fixed;
+    top: 75px;
+    right: -225px;
+    width: 600px;
+    padding: 10px;
+    font-size: 24px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    font-family: 'trebuchet ms', verdana, arial, sans-serif;
+    background-color: rgb(0, 0, 0);
+    border: 1px solid rgb(170, 170, 170);
+    z-index: 500;
+    opacity: 0.5;
+    -moz-transform: rotate(45deg);  /* FF3.5/3.6 */
+    -o-transform: rotate(45deg);  /* Opera 10.5 */
+    -webkit-transform: rotate(45deg);  /* Saf3.1+ */
+    transform: rotate(45deg);
+}
+.tooltips, #form-canvas .tooltips {
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+    padding: 5px 0 5px 5px;
+}
+.tooltips > span, #form-canvas .tooltips > span {
+    display:block;
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+}
+#preview-label.ie {
+    top: -60px;
+    right: -150px;
+    width: 400px;
+    opacity: 1;
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50); /* IE6,IE7 */
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(SizingMethod='auto expand', M11=0.7071067811865476, M12=-0.7071067811865475, M21=0.7071067811865475, M22=0.7071067811865476) progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; /* IE8 */
+    zoom: 1;
+}
+.quickEdit, #form-canvas .quickEdit {
+    display: none;
+}

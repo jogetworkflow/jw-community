@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xpdl:Package
+    xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0"
+    xmlns="http://www.wfmc.org/2002/XPDL1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="${packageId}" Name="${packageName}" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <xpdl:PackageHeader>
+        <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>
+        <xpdl:Vendor/>
+        <xpdl:Created/>
+    </xpdl:PackageHeader>
+    <xpdl:Script Type="text/javascript"/>
+    <xpdl:Participants>
+        <xpdl:Participant Id="participant1" Name="Participant 1">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+    </xpdl:Participants>
+    <xpdl:Applications>
+        <xpdl:Application Id="default_application"/>
+    </xpdl:Applications>
+    <xpdl:WorkflowProcesses>
+        <xpdl:WorkflowProcess Id="process1" Name="Process 1">
+            <xpdl:ProcessHeader DurationUnit="h"></xpdl:ProcessHeader>
+            <xpdl:FormalParameters></xpdl:FormalParameters>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="status" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities></xpdl:Activities>
+            <xpdl:Transitions></xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="participant1"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=participant1,CONNECTING_ACTIVITY_ID=start1,X_OFFSET=80,Y_OFFSET=40,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+    </xpdl:WorkflowProcesses>
+</xpdl:Package>

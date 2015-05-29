@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <!-- Set the property implementation the profile property manager uses -->
+    <bean id="profilePropertyManager" class="org.joget.commons.util.DatasourceProfilePropertyManager">
+    	<property name="propertyClass" value="java.util.Properties"/>
+    </bean>
+
+    <!-- DynamicDataSourceManager will have its property set via @Autowired -->
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" >
+    	<constructor-arg ref="profilePropertyManager"/>
+    </bean>
+    
+    <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
+    </bean>
+
+    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
+        <property name="forceShutdown" value="true" />
+    </bean>
+
+    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
+        <property name="transactionTimeout" value="300" />
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="userTransaction" ref="atomikosUserTransaction" />
+        <property name="allowCustomIsolationLevels" value="true"/>
+    </bean>
+
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="transactionManager"></property>
+    </bean>
+    
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="get*" read-only="true" timeout="300" />
+            <tx:method name="load*" read-only="true" timeout="300" />
+            <tx:method name="*" timeout="300" />
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.commons.util.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.commons.spring.model.*Dao.*(..))" order="1" />
+    </aop:config>
+
+    <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
+        <property name="transactionManager" ref="atomikosTransactionManager" />
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8" />
+        <property name="username" value="root" />
+        <property name="password" value="" />
+        <property name="minEvictableIdleTimeMillis" value="10000" />
+        <property name="timeBetweenEvictionRunsMillis" value="10000" />
+        <property name="numTestsPerEvictionRun" value="-1" />
+        <property name="minIdle" value="1" />
+        <property name="maxActive" value="-1" />
+        <property name="maxWait" value="10000" />
+        <property name="datasourceName" value="workflow" />
+    </bean>
+<!--
+    <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="jwdb"/>
+        <property name="lookupOnStartup" value="false"/>
+        <property name="cache" value="true" />
+        <property name="proxyInterface"  value="javax.sql.DataSource" />
+    </bean>
+-->
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/commons/spring/model/Setting.hbm.xml</value>
+                <value>/org/joget/commons/spring/model/ResourceBundleMessage.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
+        <property name="sessionFactory" ref="setupSessionFactory"/>
+        <property name="cache">
+            <ref local="resourceBundleMessageCache" />
+        </property>
+    </bean>
+
+    <bean id="resourceBundleUtil" class="org.joget.commons.util.ResourceBundleUtil">
+    </bean>
+
+    <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager">
+        <property name="sessionFactory" ref="setupSessionFactory"/>
+    </bean>
+
+    <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
+        <property name="setupDao" ref="setupDao"/>
+        <property name="cache">
+            <ref local="setupManagerCache" />
+        </property>
+    </bean>
+
+    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="acceptExisting" value="true"/>
+        <property name="configLocation">
+            <value>classpath:ehcache.xml</value>
+        </property>
+   </bean>
+
+    <bean id="resourceBundleMessageCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <bean id="setupManagerCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,68 @@
+<project name="joget" basedir=".">
+
+    <description>
+        Joget setup
+    </description>
+
+    <!-- Name of project and version -->
+    <property name="name" value="joget"/>
+    <property name="title" value="joget"/>
+    <property name="vendor" value="Joget"/>
+    <property name="url" value="http://www.joget.org"/>
+
+    <!-- set class path -->
+    <path id="lib.class.path">
+        <pathelement path="${servlet.lib}"/>
+        <pathelement path="${jsp.lib}"/>
+        <fileset dir="${lib}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Setup for database and profile -->
+    <target name="setup" description="setup db and profile" depends="create-db,create-profile">
+
+    </target>
+
+    <!-- Get database settings -->
+    <target name="setup-db" description="get database settings">
+        <input message="Please enter MySQL host name:" addproperty="db.host" defaultvalue="localhost"/>
+        <input message="Please enter MySQL port:" addproperty="db.port" defaultvalue="3306"/>
+        <input message="Please enter MySQL database name:" addproperty="db.name" defaultvalue="jwdb"/>
+        <input message="Please enter MySQL username:" addproperty="db.user" defaultvalue="root"/>
+        <input message="Please enter MySQL password:" addproperty="db.password" defaultvalue=""/>
+        <input message="Please enter profile name to create:" addproperty="profile.name" defaultvalue="default"/>
+    </target>
+
+    <!-- Create default database -->
+    <target name="create-db" description="create default database" depends="setup-db">
+        <echo message="Creating database, please wait..." />
+        <exec executable="mysql">
+            <arg value="--host=${db.host}"/>
+            <arg value="-P ${db.port}"/>
+            <arg value="--user=${db.user}"/>
+            <arg value="--password=${db.password}"/>
+            <arg value="--execute=CREATE DATABASE ${db.name}"/>
+        </exec>
+        <exec executable="mysql" input="data/jwdb-sample.sql">
+            <arg value="--host=${db.host}"/>
+            <arg value="-P ${db.port}"/>
+            <arg value="--user=${db.user}"/>
+            <arg value="--password=${db.password}"/>
+            <arg value="${db.name}"/>
+        </exec>
+    </target>
+
+    <!-- Create profile -->
+    <target name="create-profile" description="create profile" depends="setup-db">
+        <copy file="data/app_datasource-profile.template" tofile="wflow/app_datasource-${profile.name}.properties" overwrite="true" />
+        <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.host@@" value="${db.host}"/>
+        <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.port@@" value="${db.port}"/>
+        <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.name@@" value="${db.name}"/>
+        <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.user@@" value="${db.user}"/>
+        <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.password@@" value="${db.password}"/>
+        <copy file="data/app_datasource.template" tofile="wflow/app_datasource.properties" overwrite="true" />
+        <replace file="wflow/app_datasource.properties" token="@@profile.name@@" value="${profile.name}"/>
+    </target>
+
+</project>

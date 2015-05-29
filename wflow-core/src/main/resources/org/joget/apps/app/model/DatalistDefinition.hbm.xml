@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="DatalistDefinition" name="org.joget.apps.app.model.DatalistDefinition" table="app_datalist">
+        <composite-id>
+            <key-property column="appId" name="appId" type="string"/>
+            <key-property column="appVersion" name="appVersion" type="long"/>
+            <key-property column="id" name="id" type="string"/>
+        </composite-id>
+        <property index="idx_name" name="name" type="string"/>
+        <property name="description" type="text"/>
+        <property name="json" type="text"/>
+        <property name="dateCreated" type="timestamp"/>
+        <property name="dateModified" type="timestamp"/>
+        <many-to-one entity-name="AppDefinition" insert="false" name="appDefinition" update="false">
+            <column name="appId"/>
+            <column name="appVersion"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

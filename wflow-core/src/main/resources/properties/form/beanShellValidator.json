@@ -1,0 +1,20 @@
+[{
+    title : '@@form.beanshellvalidator.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@form.beanshellvalidator.script@@',
+        description : '@@form.beanshellvalidator.script.desc@@',
+        type : 'textarea',
+        required : 'True',
+        cols : '60',
+        rows : '20'
+    },
+    {
+        name : 'decoration',
+        label : '@@form.beanshellvalidator.decoration@@',
+        description : '@@form.beanshellvalidator.decoration.desc@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '5'
+    }]
+}]

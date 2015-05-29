@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Role" name="org.joget.directory.model.Role" table="dir_role">
+        <id column="id" name="id" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property column="name" name="name" type="string"/>
+        <property column="description" name="description" type="string"/>
+    <!-- join tables -->
+        <set name="users" table="dir_user_role">
+            <key column="roleId"/>
+            <many-to-many column="userId" entity-name="User"/>
+        </set>
+    </class>
+</hibernate-mapping>

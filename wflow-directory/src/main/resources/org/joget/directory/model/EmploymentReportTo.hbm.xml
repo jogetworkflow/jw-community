@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="EmploymentReportTo" name="org.joget.directory.model.EmploymentReportTo" table="dir_employment_report_to">
+        <id column="id" name="id" type="string">
+            <generator class="uuid"/>
+        </id>
+        <many-to-one column="employmentId" entity-name="Employment" name="subordinate" unique="true"/>
+        <many-to-one column="reportToId" entity-name="Employment" name="reportTo"/>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,130 @@
+{
+    "className":"org.joget.apps.form.model.Form",
+    "properties":{
+        "id":"testFormC",
+        "loadBinder":{
+            "className":"org.joget.apps.form.lib.WorkflowFormBinder"
+        },
+        "tableName":"testFormC",
+        "name":"Form C",
+        "storeBinder":{
+            "className":"org.joget.apps.form.lib.WorkflowFormBinder"
+        }
+    },
+    "elements":[{
+        "elements":[{
+            "elements":[{
+                "className":"org.joget.apps.form.lib.TextField",
+                "properties":{
+                    "id":"bid",
+                    "workflowVariable":"",
+                    "validator":{
+                        "className":"",
+                        "properties":{}
+                    },
+                    "label":"bid",
+                    "readonly":"true",
+                    "size":""
+                }
+            },{
+                "className":"org.joget.apps.form.lib.TextField",
+                "properties":{
+                    "id":"c1",
+                    "workflowVariable":"",
+                    "validator":{
+                        "className":"",
+                        "properties":{}
+                    },
+                    "label":"Field c1",
+                    "readonly":"",
+                    "size":""
+                }
+            },{
+                "className":"org.joget.apps.form.lib.TextArea",
+                "properties":{
+                    "id":"c2",
+                    "cols":"20",
+                    "validator":{
+                        "className":"",
+                        "properties":{}
+                    },
+                    "label":"Field c2",
+                    "readonly":"",
+                    "rows":"5"
+                }
+            },{
+                "className":"org.joget.apps.form.lib.SubForm",
+                "properties":{
+                    "id":"formB",
+                    "parentSubFormId":"id",
+                    "subFormParentId":"",
+                    "label":"",
+                    "formDefId":"testFormB",
+                    "json":"",
+                    "readonly":"",
+                    "loadBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
+                    },
+                    "storeBinder": {
+                        "className": "org.joget.apps.form.lib.WorkflowFormBinder",
+                        "properties": {}
+                    },
+                }
+            },{
+                "className":"org.joget.apps.form.lib.SelectBox",
+                "properties":{
+                   "id":"eref",
+                   "label":"Reference Field e",
+                   "value":"",
+                   "size":"",
+                   "multiple":"true",
+                   "readonly":"",
+                   "readonlyLabel":"",
+                   "options":[
+
+                   ],
+                   "controlField":"",
+                   "optionsBinder":{
+                      "className":"org.joget.apps.form.lib.FormOptionsBinder",
+                      "properties":{
+                         "formDefId":"testFormE",
+                         "idColumn":"id",
+                         "labelColumn":"e1",
+                         "groupingColumn":"",
+                         "extraCondition":"",
+                         "addEmptyOption":"",
+                         "emptyLabel":""
+                      }
+                   },
+                   "validator":{
+                      "className":"",
+                      "properties":{
+
+                      }
+                   },
+                   "workflowVariable":""
+                }
+            }],
+            "className":"org.joget.apps.form.model.Column",
+            "properties":{
+                "width":"99%"
+            }
+        }],
+        "className":"org.joget.apps.form.model.Section",
+        "properties":{
+            "id":"formCsection",
+            "loadBinder":{
+                "className":"",
+                "properties":{}
+            },
+            "visibilityControl":"",
+            "visibilityValue":"",
+            "storeBinder":{
+                "className":"",
+                "properties":{}
+            },
+            "label":"Form C"
+        }
+    }]
+}

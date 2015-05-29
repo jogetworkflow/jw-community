@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Package xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="%s" Name="%s" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <PackageHeader>
+        <XPDLVersion>1.0</XPDLVersion>
+        <Vendor>Together</Vendor>
+        <Created>%s</Created>
+    </PackageHeader>
+    <Script Type="text/javascript"/>
+    <Participants></Participants>
+    <Applications>
+        <Application Id="default_application"/>
+    </Applications>
+    <WorkflowProcesses></WorkflowProcesses>
+    <ExtendedAttributes>
+        <ExtendedAttribute Name="EDITING_TOOL" Value="App Generator"/>
+        <ExtendedAttribute Name="EDITING_TOOL_VERSION" Value="%s"/>
+        <ExtendedAttribute Name="JaWE_CONFIGURATION" Value="default"/>
+    </ExtendedAttributes>
+</Package>

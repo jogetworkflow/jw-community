@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="EnvironmentVariable" name="org.joget.apps.app.model.EnvironmentVariable" table="app_env_variable">
+        <composite-id>
+            <key-property column="appId" name="appId" type="string"/>
+            <key-property column="appVersion" name="appVersion" type="long"/>
+            <key-property column="id" name="id" type="string"/>
+        </composite-id>
+        <property name="value" type="text"/>
+        <property name="remarks" type="text"/>
+        <many-to-one entity-name="AppDefinition" insert="false" name="appDefinition" update="false">
+            <column name="appId"/>
+            <column name="appVersion"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

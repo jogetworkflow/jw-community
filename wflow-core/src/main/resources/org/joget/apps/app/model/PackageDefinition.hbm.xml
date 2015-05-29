@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="PackageDefinition" name="org.joget.apps.app.model.PackageDefinition" table="app_package">
+        <composite-id>
+            <key-property column="packageId" name="id" type="string"/>
+            <key-property column="packageVersion" name="version" type="long"/>
+        </composite-id>
+        <property name="name" type="string"/>
+        <property name="dateCreated" type="timestamp"/>
+        <property name="dateModified" type="timestamp"/>
+        <many-to-one entity-name="AppDefinition" name="appDefinition">
+            <column name="appId"/>
+            <column name="appVersion"/>
+        </many-to-one>
+        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityFormMap">
+            <key>
+                <column name="packageId"/>
+                <column name="packageVersion"/>
+            </key>
+            <map-key column="ouid" type="string"/>
+            <one-to-many entity-name="PackageActivityForm"/>
+        </map>
+        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityPluginMap">
+            <key>
+                <column name="packageId"/>
+                <column name="packageVersion"/>
+            </key>
+            <map-key column="ouid" type="string"/>
+            <one-to-many entity-name="PackageActivityPlugin"/>
+        </map>
+        <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageParticipantMap">
+            <key>
+                <column name="packageId"/>
+                <column name="packageVersion"/>
+            </key>
+            <map-key column="ouid" type="string"/>
+            <one-to-many entity-name="PackageParticipant"/>
+        </map>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,79 @@
+[
+    {
+        title:'@@form.section.editSection@@',
+        properties:[
+            {
+                name:'id',
+                label:'@@form.section.id@@',
+                type:'textfield',
+                required:'True'
+            },
+            {
+                name:'label',
+                label:'@@form.section.label@@',
+                type:'textfield',
+                required:'False',
+                value:'Section'
+            }
+        ]
+    },
+    {
+        title:'@@form.section.data@@',
+        properties:[
+            {
+                name:'loadBinder',
+                label:'@@form.section.loadBinder@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+            },
+            {
+                name:'storeBinder',
+                label:'@@form.section.storeBinder@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+            }
+        ]
+    },
+    {
+        title:'@@form.section.advancedOptions@@',
+        properties:[{
+                label : '@@form.section.visibility@@',
+                type : 'header'
+            },
+            {
+                name:'visibilityControl',
+                label:'@@form.section.fieldIdControl@@',
+                type:'textfield',
+                required:'False'
+            },
+            {
+                name:'visibilityValue',
+                label:'@@form.section.fieldValueControl@@',
+                type:'textfield',
+                required:'False'
+            },
+            {
+                name : 'regex',
+                label : '@@form.section.regex@@',
+                type : 'checkbox',
+                value : 'false',
+                options : [{
+                    value : 'true',
+                    label : ''
+                }]
+            },
+            {
+                label : '@@form.section.permission@@',
+                type : 'header'
+            },
+            {
+                name:'permission',
+                label:'@@form.section.permission@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+            }
+        ]
+    }
+]

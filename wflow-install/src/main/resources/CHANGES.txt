@@ -1,0 +1,88 @@
+v5 COMMUNITY
+============
+For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
+
+CHANGES IN 5.0-BETA9
+====================
+2062    Modified: wflow-consoleweb - Update message zh_CN. @5.0-SNAPSHOT
+2061	Fixed: wflow-core - Dynamic Option/ Section Visibility Control - javascript slowness. #3101 @5.0-SNAPSHOT
+2060    Fixed: wflow-consoleweb - probuilder - After deleting a start node, cannot drag-add from another newly added start node @5.0-SNAPSHOT
+2059    Fixed: wflow-consoleweb - probuilder - multiple transitions to start and end nodes corrupts the process model @5.0-SNAPSHOT
+2058    Fixed: wflow-core - Userview Theme Processer - Not handle userview permission correctly. #3099 @5.0-SNAPSHOT
+2057    Fixed: wflow-core - UserviewV5Theme - Userview setting for "Custom HTML (Before Login Form)" and "Custom HTML (After Login Form)" are not handled. @5.0-SNAPSHOT
+2056    Modified: wflow-consoleweb - Message Bundle - Updated zh_CN & zh_TW on database setup. @5.0-SNAPSHOT
+2055    Fixed: wflow-consoleweb - Property Editor - "ElementSelect" type fail to load default value. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Property Editor - Remove validation on property type on switch page. @5.0-SNAPSHOT
+2054    Modified: wflow-consoleweb - Update Chosen library to support mobile. @5.0-SNAPSHOT
+2053    Modified: wflow-wfengine, wflow-consoleweb - Removed unnecessary log messages on startup #2974 @5.0-SNAPSHOT
+2052    Fixed: wflow-consoleweb - CSS - Input submit button display differently in Chrome & Safari. @5.0-SNAPSHOT
+2051    Fixed: wflow-wfengine - Possible ClassCastException in WorkflowUtil.getHttpServletRequest in JBoss EAP 6.4 @5.0-SNAPSHOT
+2049    Fixed: wflow-commons- LogUtil - Log profile name with log message when virtual host is enabled. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA8
+====================
+2044    Modified: wflow-consoleweb - Modified sample apps @5.0-SNAPSHOT
+2043    Fixed: wflow-consoleweb - Property Editor - Ajax Option for "MultiSelect" type not able to set data correctly. @5.0-SNAPSHOT
+2042    Fixed: wflow-consoleweb - Correction for r2040. @5.0-SNAPSHOT
+2041    Fixed: wflow-consoleweb - probuilder - Transition details not retained after moving from one node to another @5.0-SNAPSHOT
+2040    Added: wflow-consoleweb - General Setting - Support for system timezone and date format @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Locale - Refactoring @5.0-SNAPSHOT
+2039    Fixed: wflow-consoleweb - Workflow engine not initialized properly after initial db setup @5.0-SNAPSHOT
+2038    Fixed: wflow-consoleweb - CTRL-3 admin bar shortcut conflicts with the CTRL-# hash variable lookup @5.0-SNAPSHOT
+2037    Fixed: wflow-consoleweb - Property Editor - "GridCombine" type not able to render data correctly @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Property Editor - "Radio" type not able to store data correctly @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Property Editor - Dependent option field not working @5.0-SNAPSHOT...
+2036    Fixed: wflow-consoleweb - Admin bar hidden behind scrollbar for Bootstrap related themes in IE @5.0-SNAPSHOT
+2035    Added: wflow-commons, wflow-consoleweb - Setup - Added first-time database setup when no datasource is configured @5.0-SNAPSHOT
+2034    Modified: wflow-consoleweb - App Center - If there are no published apps, redirect to login page for anonymous users, and display a message for normal users @5.0-SNAPSHOT
+2032    Modified: wflow-core - Run Process Menu - Support passing field value as parameter in the redirection of completion. #3053 @5.0-SNAPSHOT
+2027    Fixed: wflow-core/wflow-consoleweb - Odd if expression. #3060 @5.0-SNAPSHOT
+2026    Fixed: wflow-consoleweb/wflow-wfengine - Monitoring - Activities list is not sorted by created time. #2958 @5.0-SNAPSHOT
+2023    Modified: wflow-consoleweb - Datasource settings menu should not appear in multi-tenant site @5.0-SNAPSHOT
+2021    Fixed: wflow-core - File uploads not working on some mounted directories @5.0-SNAPSHOT
+2019    Fixed: wflow-wfengine - workflow manage - Change error log to warn when set workflow variable. #3047 @5.0-SNAPSHOT
+2017    Fixed: wflow-consoleweb - Message Bundle - Fixed duplicate key. @5.0-SNAPSHOT
+2016    Modified: wflow-wfengine- Process - Support Hash variable in conditions. @5.0-SNAPSHOT
+2015    Modified: wflow-consoleweb- CSS - Disabled button look no different with normal button. @5.0-SNAPSHOT
+2014    Modified: wflow-core- Security - Hash Variable keyed in by user are parsed by Form Hash Variable. @5.0-SNAPSHOT
+2013    Fixed: wflow-core- Correction for r2008. @5.0-SNAPSHOT
+2011    Added: wflow-consoleweb/wflow-core - Form - Support running a post form submission processing tool (Email Tool, BeanShell Tool & etc) upon form submission. @5.0-SNAPSHOT
+2010    Modified: wflow-consoleweb - Property Editor - Change implementation to Javascript OOP for better future maintenance and adding new feature. @5.0-SNAPSHOT
+        Added: wflow-consoleweb - Property Editor - Add support for Element Select type to read default plugin properties. @5.0-SNAPSHOT
+2009    Fixed: wflow-consoleweb - Authentication success/failure not being captured in the audit trail @5.0-SNAPSHOT
+2008    Fixed: wflow-core - File/ Image upload - Validation error in Multi Paged Form. #3021 @5.0-SNAPSHOT
+2007    Fixed: wflow-consoleweb - Process Builder- Split and join select box gone missing once the value set to empty @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA7
+====================
+2002    Fixed: wflow-consoleweb - Correction for r1999. @5.0-SNAPSHOT
+2001    Modified: wflow-plugin-base - Updated config.properties for Spring Security 4.0.0.RELEASE @5.0-SNAPSHOT
+2000    Fixed: wflow-consoleweb - Authentication - j_username & j_password is not working in JSON API. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Edit Profile - Not working @5.0-SNAPSHOT
+1999    Modified: wflow-consoleweb/wflow-core - Create App - Duplicate from unprotected app. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb/wflow-core - Create Form - Duplicate form from unprotected app. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb/wflow-core - Create List - Duplicate list from unprotected app. @5.0-SNAPSHOT...
+1998    Modified: All - Upgraded to Spring 4.1.6.RELEASE, Spring Security 4.0.0.RELEASE and Hibernate 4.3.9.Final @5.0-SNAPSHOT
+1997    Modified: wflow-plugin-base - Upgraded to Apache Felix 4.6.1 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA6
+====================
+1992    Fixed: wflow-consoleweb - probuilder - Activity shown as invalid for valid deadline and exception transition @5.0-SNAPSHOT
+1991    Fixed: wflow-consoleweb - Monitoring - Double encoded URL parameter in Reassign assignment. #2983 @5.0-SNAPSHOT
+1989    Fixed: wflow-consoleweb - probuilder - Subflow changed to route upon deployment @5.0-SNAPSHOT
+1988    Fixed: wflow-consoleweb - probuilder - Screenshot canvas width is too narrow, and AND route not displaying the + symbol @5.0-SNAPSHOT
+1987    Fixed: wflow-core - Process Mapping - Not able to change mapping when activity id, tool id or participant id change letter case. #2963 @5.0-SNAPSHOT
+1985    Fixed: wflow-core - Import App - Transaction exception if using Form Hash Variable in Audit Trail plugin. #2973 @5.0-SNAPSHOT
+1984    Modified: wflow-consoleweb - Updated references from v4 to v5 @5.0-SNAPSHOT
+1983    Modified: wflow-consoleweb - Process Builder - show more relevant error in activity when deadline is missing an exception transition. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA5
+====================
+1.  New App Center
+2.  New Admin Sidebar
+3.  New Web-Based Process Builder
+4.  Enhanced App Plugins
+      a) Delete Form Data Datalist Action
+      b) Multiple File Upload Support
+5.  Performance and Scalability Enhancements
+6.  Framework Upgrade - Latest Spring 4 and Hibernate 4 Upgrades

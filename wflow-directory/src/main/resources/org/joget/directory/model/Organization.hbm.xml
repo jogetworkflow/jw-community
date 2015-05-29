@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Organization" name="org.joget.directory.model.Organization" table="dir_organization">
+        <id column="id" name="id" type="string"/>
+        <property column="name" name="name" type="string"/>
+        <property column="description" name="description" type="string"/>
+        <property column="parentId" name="parentId" type="string"/>
+        <!-- join tables -->
+        <set cascade="delete" name="departments" inverse="true">
+            <key column="organizationId" on-delete="cascade"/>
+            <one-to-many entity-name="Department"/>
+        </set>
+        <set cascade="delete" name="grades" inverse="true">
+            <key column="organizationId" on-delete="cascade"/>
+            <one-to-many entity-name="Grade"/>
+        </set>
+        <set name="groups">
+            <key column="organizationId"/>
+            <one-to-many entity-name="Group"/>
+        </set>
+        <set name="employments" inverse="true">
+            <key column="organizationId" on-delete="cascade"/>
+            <one-to-many entity-name="Employment"/>
+        </set>
+        <set name="childrens">
+            <key column="parentId"/>
+            <one-to-many entity-name="Organization"/>
+        </set>
+        <many-to-one column="parentId" entity-name="Organization" insert="false" name="parent" update="false"/>
+    </class>
+</hibernate-mapping>

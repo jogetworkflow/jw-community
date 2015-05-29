@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="Employment" name="org.joget.directory.model.Employment" table="dir_employment">
+        <id column="id" name="id" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property column="userId" name="userId" type="string"/>
+        <property column="startDate" name="startDate" type="date"/>
+        <property column="endDate" name="endDate" type="date"/>
+        <property column="employeeCode" name="employeeCode" type="string"/>
+        <property column="role" name="role" type="string"/>
+        <property column="gradeId" name="gradeId" type="string"/>
+        <property column="departmentId" name="departmentId" type="string"/>
+        <property column="organizationId" name="organizationId" type="string"/>
+        <!-- join tables -->
+        <many-to-one column="userId" entity-name="User" insert="false" name="user" update="false" lazy="false"/>
+        <many-to-one column="organizationId" entity-name="Organization" insert="false" name="organization" update="false"/>
+        <many-to-one column="departmentId" entity-name="Department" insert="false" name="department" update="false"/>
+        <many-to-one column="gradeId" entity-name="Grade" insert="false" name="grade" update="false"/>
+        <set name="hods" inverse="true">
+            <key column="hod"/>
+            <one-to-many entity-name="Department"/>
+        </set>
+        <one-to-one entity-name="EmploymentReportTo" name="employmentReportTo" property-ref="subordinate"/>
+        <set name="subordinates" inverse="true" cascade="none">
+            <key column="reportToId"/>
+            <one-to-many entity-name="EmploymentReportTo"/>
+        </set>
+    </class>
+</hibernate-mapping>

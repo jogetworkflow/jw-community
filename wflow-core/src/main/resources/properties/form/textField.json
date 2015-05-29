@@ -1,0 +1,80 @@
+[{
+    title : '@@form.textfield.editTextField@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.textfield.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.textfield.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.textfield.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'TextField'
+    }]
+},
+{
+    title : '@@form.textfield.advancedOptions@@',
+    properties : [{
+        label : '@@form.textfield.data@@',
+        type : 'header'
+    },
+    {
+        name : 'value',
+        label : '@@form.textfield.value@@',
+        type : 'textfield'
+    },
+    {
+        name : 'maxlength',
+        label : '@@form.textfield.maxlength@@',
+        type : 'textfield'
+    },
+    {
+        name : 'validator',
+        label : '@@form.textfield.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    }%s,
+    {
+        label : '@@form.textfield.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'size',
+        label : '@@form.textfield.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.textfield.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.textfield.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.textfield.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.textfield.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

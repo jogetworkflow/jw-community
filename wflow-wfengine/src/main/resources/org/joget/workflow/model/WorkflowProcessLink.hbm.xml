@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="WorkflowProcessLink" lazy="false" name="org.joget.workflow.model.WorkflowProcessLink" table="wf_process_link">
+    <id column="processId" name="processId" type="string"/>
+    <property column="parentProcessId" name="parentProcessId" type="string"/>
+    <property column="originProcessId" name="originProcessId" type="string"/>
+  </class>
+</hibernate-mapping>

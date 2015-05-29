@@ -1,0 +1,168 @@
+package org.joget.apps.form.lib;
+
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.joget.apps.app.dao.EnvironmentVariableDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.EnvironmentVariable;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormBuilderPaletteElement;
+import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormRow;
+import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
+import org.springframework.context.ApplicationContext;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+public class IdGeneratorField extends Element implements FormBuilderPaletteElement {
+
+    @Override
+    public String renderTemplate(FormData formData, Map dataModel) {
+        String template = "idGeneratorField.ftl";
+
+        String value = FormUtil.getElementPropertyValue(this, formData);
+        dataModel.put("value", value);
+
+        String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
+        return html;
+    }
+
+    @Override
+    public FormRowSet formatData(FormData formData) {
+        FormRowSet rowSet = null;
+
+        // get value
+        String id = getPropertyString(FormUtil.PROPERTY_ID);
+        if (id != null) {
+            String value = FormUtil.getElementPropertyValue(this, formData);
+            if (value == null || value.trim().isEmpty()) {
+                // generate new value
+                value = getGeneratedValue(formData);
+                setProperty(FormUtil.PROPERTY_VALUE, value);
+                
+                String paramName = FormUtil.getElementParameterName(this);
+                formData.addRequestParameterValues(paramName, new String[] {value});
+            }
+            if (value != null) {
+                // set value into Properties and FormRowSet object
+                FormRow result = new FormRow();
+                result.setProperty(id, value);
+                rowSet = new FormRowSet();
+                rowSet.add(result);
+            }
+        }
+
+        return rowSet;
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    protected String getGeneratedValue(FormData formData) {
+        String value = "";
+        if (formData != null) {
+            try {
+                value = FormUtil.getElementPropertyValue(this, formData);
+                if (!(value != null && value.trim().length() > 0)) {
+                    String envVariable = getPropertyString("envVariable");
+                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                    ApplicationContext appContext = AppUtil.getApplicationContext();
+                    EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) appContext.getBean("environmentVariableDao");
+                    EnvironmentVariable env = environmentVariableDao.loadById(envVariable, appDef);
+
+                    int count = 0;
+
+                    if (env != null && env.getValue() != null && env.getValue().trim().length() > 0) {
+                        count = Integer.parseInt(env.getValue());
+                    }
+                    count += 1;
+
+                    String format = getPropertyString("format");
+                    value = format;
+                    Matcher m = Pattern.compile("(\\?+)").matcher(format);
+                    if (m.find()) {
+                        String pattern = m.group(1);
+                        String formater = pattern.replaceAll("\\?", "0");
+                        pattern = pattern.replaceAll("\\?", "\\\\?");
+
+                        DecimalFormat myFormatter = new DecimalFormat(formater);
+                        String runningNumber = myFormatter.format(count);
+                        value = value.replaceAll(pattern, runningNumber);
+                    }
+
+                    if (env == null) {
+                        env = new EnvironmentVariable();
+                        env.setAppDefinition(appDef);
+                        env.setAppId(appDef.getId());
+                        env.setAppVersion(appDef.getVersion());
+                        env.setId(envVariable);
+                        env.setRemarks("Used for plugin: " + getName());
+                        env.setValue(Integer.toString(count));
+                        environmentVariableDao.add(env);
+                    } else {
+                        env.setValue(Integer.toString(count));
+                        environmentVariableDao.update(env);
+                    }
+
+                }
+            } catch (Exception e) {
+                LogUtil.error(IdGeneratorField.class.getName(), e, "");
+            }
+        }
+        return value;
+    }
+
+    @Override
+    public String getClassName() {
+        return getClass().getName();
+    }
+
+    @Override
+    public String getName() {
+        return "Id Generator Field";
+    }
+
+    @Override
+    public String getVersion() {
+        return "3.0.0";
+    }
+
+    @Override
+    public String getDescription() {
+        return "ID Generator Element";
+    }
+
+    @Override
+    public String getFormBuilderCategory() {
+        return FormBuilderPalette.CATEGORY_CUSTOM;
+    }
+
+    @Override
+    public int getFormBuilderPosition() {
+        return 3000;
+    }
+
+    @Override
+    public String getFormBuilderIcon() {
+        return "/plugin/org.joget.apps.form.lib.IdGeneratorField/images/textField_icon.gif";
+    }
+
+    @Override
+    public String getFormBuilderTemplate() {
+        return "<label class='label'>IdGeneratorField</label><span></span>";
+    }
+
+    @Override
+    public String getLabel() {
+        return "ID Generator Field";
+    }
+
+    @Override
+    public String getPropertyOptions() {
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/form/idGeneratorField.json", null, true, "message/form/IdGeneratorField");
+    }
+}
