@@ -4117,6 +4117,11 @@ public class ConsoleWebController {
         map.addAttribute("processId", processId);
         map.addAttribute("state", state);
         map.addAttribute("processDefId", processDefId);
+        Collection<Organization> organizations = null;
+        if (DirectoryUtil.isExtDirectoryManager()) {
+            organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
+        }
+        map.addAttribute("organizations", organizations);
 
         WorkflowActivity trackWflowActivity = workflowManager.getRunningActivityInfo(activityId);
         map.addAttribute("trackWflowActivity", trackWflowActivity);

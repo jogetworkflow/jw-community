@@ -16,6 +16,18 @@
         </select>
     </p>
     <div id="user">
+        <div class="main-body-content-filter">
+            <form>
+            <fmt:message key="console.directory.user.filter.label.byOrganization"/>
+            <select id="userDataTable_filterbyOrg" onchange="filter(userDataTable, '&orgId=', this.options[this.selectedIndex].value)">
+                <option value=""><fmt:message key="console.directory.user.empty.option.label"/></option>
+                <c:forEach items="${organizations}" var="o">
+                    <c:set var="selected"><c:if test="${o.id == param.orgId}"> selected</c:if></c:set>
+                    <option value="${o.id}" ${selected}><c:out value="${o.name}"/></option>
+                </c:forEach>
+            </select>
+            </form>
+        </div>
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/user/list?${pageContext.request.queryString}"
                       var="userDataTable"
                       divToUpdate="userList"
