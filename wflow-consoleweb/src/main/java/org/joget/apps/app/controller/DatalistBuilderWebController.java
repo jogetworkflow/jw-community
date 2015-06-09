@@ -332,6 +332,13 @@ public class DatalistBuilderWebController {
     @RequestMapping("/app/(*:appId)/(~:appVersion)/datalist/embed")
     public String embedDatalist(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        String nonce = request.getParameter("_nonce");
+        if (!SecurityUtil.verifyNonce(nonce, new String[]{"EmbedList", appDef.getAppId(), appDef.getVersion().toString(), listId, nonce})) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+
         DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(listId, appDef);
         String json = datalistDefinition.getJson();
         DataList dataList = dataListService.fromJson(json);

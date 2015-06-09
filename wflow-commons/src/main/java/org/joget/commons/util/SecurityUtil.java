@@ -123,7 +123,7 @@ public class SecurityUtil implements ApplicationContextAware {
                 //Ignore
             }
         }
-        return null;
+        return "";
     }
     
     public static boolean verifyNonce(String nonce, String[] attributes) {

@@ -1,6 +1,8 @@
 package org.joget.apps.app.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -173,25 +175,38 @@ public class FormBuilderWebController {
     }
     
     @RequestMapping("/app/(*:appId)/(~:appVersion)/form/embed")
-    public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+    public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         AppUtil.setCurrentAppDefinition(appDef);
         return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action);
     }
 
     @RequestMapping("/form/embed")
-    public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException {
+    public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
         FormData formData = new FormData();
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
         Form form = formService.loadFormFromJson(json, formData);
 
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        String appId  = "";
+        String appVersion = "";
+        if (appDef != null) {
+            appId = appDef.getAppId();
+            appVersion = appDef.getVersion().toString();
+        }
+        String nonce = request.getParameter("_nonce");	
+        if (form == null || !SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, form.getPropertyString("id"), nonce})) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
+        
         if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
             callbackSetting = "{}";
         }
 
-        form.setProperty("url", "?_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
+        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
 
         if(form != null){
             //if id field not exist, automatically add an id hidden field
