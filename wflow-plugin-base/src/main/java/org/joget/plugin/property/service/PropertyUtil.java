@@ -275,6 +275,12 @@ public class PropertyUtil {
                 newJson = newJson.replaceAll(StringUtil.escapeRegex(matcher2.group(1)), SecurityUtil.ENVELOPE + matcher2.group(1) + SecurityUtil.ENVELOPE);
             }
             
+            //For datalist binder initialization (getBuilderDataColumnList) 
+            if (newJson.startsWith(PASSWORD_PROTECTED_VALUE)) {
+                sList.add(SecurityUtil.ENVELOPE + newJson + SecurityUtil.ENVELOPE);
+                newJson = SecurityUtil.ENVELOPE + newJson + SecurityUtil.ENVELOPE;
+            }
+            
             try {
                 if (!sList.isEmpty()) {
                     for (String s : sList) {
