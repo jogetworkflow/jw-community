@@ -131,13 +131,15 @@
                 <c:forEach items="${dataList.columns}" var="column">
                     <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
                     <c:set var="columnHiddenCss" value=""/>
-                    <c:if test="${column.hidden}"><c:set var="columnHiddenCss" value=" column-hidden"/></c:if>
+                    <c:set var="columnMedia" value="all"/>
+                    <c:if test="${column.hidden}"><c:set var="columnHiddenCss" value=" column-hidden"/><c:set var="columnMedia" value="html"/></c:if>
                     <display:column
                         property="column(${column.name})"
                         title="${columnLabel}"
                         sortable="${column.sortable}"
                         headerClass="column_${column.name} ${columnHiddenCss}"
                         class="column_${column.name} ${columnHiddenCss}"
+                        media="${columnMedia}"
                         />
                 </c:forEach>
                 <c:if test="${!empty dataList.rowActions[0]}">
