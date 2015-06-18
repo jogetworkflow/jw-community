@@ -30,6 +30,7 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -62,6 +63,13 @@ public class DatalistBuilderWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/datalist/builder/(*:id)")
     public String builder(ModelMap map, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
+        // verify app version
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        if (page != null) {
+            return page;
+        }
+
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -84,7 +92,14 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/builderSave/(*:id)", method = RequestMethod.POST)
-    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam("json") String json) throws Exception {
+        // verify app license
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        if (page != null) {
+            return page;
+        }
+
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
         DataList dlist = dataListService.fromJson(json);
@@ -96,6 +111,7 @@ public class DatalistBuilderWebController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("success", success);
         jsonObject.write(writer);
+        return null;
     }
 
     @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/datalist/builderPreview/(*:id)", "/client/app/(*:appId)/(*:appVersion)/datalist/(*:id)"})

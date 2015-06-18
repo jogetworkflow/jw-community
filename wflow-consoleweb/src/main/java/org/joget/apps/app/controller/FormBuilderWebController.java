@@ -15,6 +15,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.lib.SubmitButton;
 import org.joget.apps.form.model.Column;
@@ -56,6 +57,13 @@ public class FormBuilderWebController {
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
     public String formBuilder(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
+        // verify app version
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        if (page != null) {
+            return page;
+        }
+        
         // set flag in request
         FormUtil.setFormBuilderActive(true);
 

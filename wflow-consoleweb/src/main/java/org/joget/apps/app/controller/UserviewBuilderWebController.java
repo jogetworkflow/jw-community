@@ -8,11 +8,13 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +35,18 @@ public class UserviewBuilderWebController {
     AppService appService;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    PluginManager pluginManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/builder/(*:userviewId)")
     public String builder(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
+        // verify app license
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, appVersion);
+        if (page != null) {
+            return page;
+        }
+
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
@@ -71,7 +82,14 @@ public class UserviewBuilderWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
-    public void save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) throws Exception {
+        // verify app version
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, appVersion);
+        if (page != null) {
+            return page;
+        }
+
         JSONObject jsonObject = new JSONObject();
 
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
@@ -84,6 +102,7 @@ public class UserviewBuilderWebController {
         jsonObject.accumulate("success", success);
 
         jsonObject.write(writer);
+        return null;
     }
 
     @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/userview/builderPreview/(*:userviewId)","/console/app/(*:appId)/(~:appVersion)/userview/builderPreview/(*:userviewId)/(*:menuId)"}, method = RequestMethod.POST)

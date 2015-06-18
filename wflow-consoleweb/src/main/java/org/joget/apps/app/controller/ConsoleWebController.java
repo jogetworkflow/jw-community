@@ -3255,7 +3255,11 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/(*:formId)/update", method = RequestMethod.POST)
-    public String consoleFormUpdate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) {
+    public String consoleFormUpdate(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) {
+        String result = checkVersionExist(map, appId, version);
+        if (result != null) {
+            return result;
+        }        
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         // load existing form definition and update fields
@@ -3272,7 +3276,11 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/delete", method = RequestMethod.POST)
-    public String consoleFormDelete(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId) {
+    public String consoleFormDelete(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId) {
+        String result = checkVersionExist(map, appId, version);
+        if (result != null) {
+            return result;
+        }
         AppDefinition appDef = appService.getAppDefinition(appId, version);
 
         StringTokenizer strToken = new StringTokenizer(formId, ",");
