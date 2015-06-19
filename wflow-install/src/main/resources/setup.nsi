@@ -160,11 +160,11 @@ Section "Joget Workflow" SecJoget
     DoUpgrade:
     ;MessageBox MB_OK "Upgrading"
     RmDir /r "$SMPROGRAMS\Joget Workflow v3"
-    RmDir /r "$INSTDIR\apache-tomcat-7.0.52\webapps\jw"
-    RmDir /r "$INSTDIR\apache-tomcat-7.0.52\webapps\jwdesigner"
-    CreateDirectory "$INSTDIR\apache-tomcat-7.0.52\webapps"
-    File /oname=apache-tomcat-7.0.52\webapps\jw.war apache-tomcat-7.0.52\webapps\jw.war
-    File /oname=apache-tomcat-7.0.52\webapps\jwdesigner.war apache-tomcat-7.0.52\webapps\jwdesigner.war
+    RmDir /r "$INSTDIR\apache-tomcat-7.0.62\webapps\jw"
+    RmDir /r "$INSTDIR\apache-tomcat-7.0.62\webapps\jwdesigner"
+    CreateDirectory "$INSTDIR\apache-tomcat-7.0.62\webapps"
+    File /oname=apache-tomcat-7.0.62\webapps\jw.war apache-tomcat-7.0.62\webapps\jw.war
+    File /oname=apache-tomcat-7.0.62\webapps\jwdesigner.war apache-tomcat-7.0.62\webapps\jwdesigner.war
     CreateDirectory "$INSTDIR\data"
     File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
     File /r wflow*.*
@@ -179,9 +179,9 @@ Section "Joget Workflow" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-7.0.52\webapps"
-  File /oname=apache-tomcat-7.0.52\webapps\jw.war apache-tomcat-7.0.52\webapps\jw.war
-  File /oname=apache-tomcat-7.0.52\webapps\jwdesigner.war apache-tomcat-7.0.52\webapps\jwdesigner.war
+  CreateDirectory "$INSTDIR\apache-tomcat-7.0.62\webapps"
+  File /oname=apache-tomcat-7.0.62\webapps\jw.war apache-tomcat-7.0.62\webapps\jw.war
+  File /oname=apache-tomcat-7.0.62\webapps\jwdesigner.war apache-tomcat-7.0.62\webapps\jwdesigner.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   ;File docs
@@ -211,7 +211,7 @@ Section "Apache Tomcat 7" SecTomcat
 
 ${If} $INSTALL_TYPE != "${INSTALL_TYPE_UPDATE}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-7.0.52
+  File /r /x *.war apache-tomcat-7.0.62
   File tomcat7-run.bat
   File tomcat7-stop.bat
   File joget-start.bat
@@ -283,8 +283,10 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
-  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.52\webapps\jw.war
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.62\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.52\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_MINOR_UPGRADE}
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.39\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_MINOR_UPGRADE}
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\jw.war
@@ -327,10 +329,10 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.7.0_51"
-  RmDir /r "$INSTDIR\apache-tomcat-7.0.52\webapps\jw"
-  RmDir /r "$INSTDIR\apache-tomcat-7.0.52\webapps\jwdesigner"
-  Delete "$INSTDIR\apache-tomcat-7.0.52\webapps\jw.war"
-  Delete "$INSTDIR\apache-tomcat-7.0.52\webapps\jwdesigner.war"
+  RmDir /r "$INSTDIR\apache-tomcat-7.0.62\webapps\jw"
+  RmDir /r "$INSTDIR\apache-tomcat-7.0.62\webapps\jwdesigner"
+  Delete "$INSTDIR\apache-tomcat-7.0.62\webapps\jw.war"
+  Delete "$INSTDIR\apache-tomcat-7.0.62\webapps\jwdesigner.war"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
