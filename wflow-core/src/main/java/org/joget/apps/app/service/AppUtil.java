@@ -366,9 +366,9 @@ public class AppUtil implements ApplicationContextAware {
                     Map <String, HashVariablePlugin> hashVariablePluginCache = new HashMap<String, HashVariablePlugin>();
 
                     for (String var : varList) {
-                        String tempVar = var.replaceAll("#", "");
-
                         for (Plugin p : pluginList) {
+                            String tempVar = var.replaceAll("#", "");
+
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
                                 tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
@@ -419,22 +419,24 @@ public class AppUtil implements ApplicationContextAware {
                                 tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
 
                                 //get result from plugin
-                                String value = cachedPlugin.processHashVariable(tempVar);
+                                try {
+                                    String value = cachedPlugin.processHashVariable(tempVar);
 
-                                if (value != null && !StringUtil.TYPE_REGEX.equals(escapeFormat) && !StringUtil.TYPE_JSON.equals(escapeFormat)) {
-                                    value = StringUtil.escapeRegex(value);
-                                }
+                                    if (value != null) {
+                                        if (!StringUtil.TYPE_REGEX.equals(escapeFormat) && !StringUtil.TYPE_JSON.equals(escapeFormat)) {
+                                            value = StringUtil.escapeRegex(value);
+                                        }
 
-                                //escape special char in HashVariable
-                                var = cachedPlugin.escapeHashVariable(var);
+                                        //escape special char in HashVariable
+                                        var = cachedPlugin.escapeHashVariable(var);
 
-                                //replace
-                                if (value != null) {
-                                    // clean to prevent XSS
-                                    value = StringUtil.stripHtmlRelaxed(value);
+                                        // clean to prevent XSS
+                                        value = StringUtil.stripHtmlRelaxed(value);
 
-                                    content = content.replaceAll(var, StringUtil.escapeString(value, escapeFormat, replaceMap));
-                                }
+                                        content = content.replaceAll(var, StringUtil.escapeString(value, escapeFormat, replaceMap));
+                                        break;
+                                    }
+                                } catch (Exception e) {}
                             }
                         }
                     }
