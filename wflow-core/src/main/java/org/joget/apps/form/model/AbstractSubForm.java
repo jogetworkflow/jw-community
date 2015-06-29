@@ -229,6 +229,11 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                     if (FormUtil.PROPERTY_ID.equals(parentSubFormId) && rootForm.getParent() == null) {
                         formData.setPrimaryKeyValue(subFormPrimaryKeyValue);
                     }
+                    
+                    //if readonly hidden field
+                    if (parentSubFormIdElement instanceof HiddenField && FormUtil.isReadonly(parentSubFormIdElement, formData)) {
+                        parentSubFormIdElement.setProperty("value", subFormPrimaryKeyValue);
+                    }
                 }
             }
         }
@@ -267,6 +272,11 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                     if (subFormForeignKeyElement != null) {
                         String paramName = FormUtil.getElementParameterName(subFormForeignKeyElement);
                         formData.addRequestParameterValues(paramName, new String[]{rootFormPrimaryKeyValue});
+                        
+                        //if readonly hidden field
+                        if (subFormForeignKeyElement instanceof HiddenField && FormUtil.isReadonly(subFormForeignKeyElement, formData)) {
+                            subFormForeignKeyElement.setProperty("value", rootFormPrimaryKeyValue);
+                        }
                     }
                 }
 
