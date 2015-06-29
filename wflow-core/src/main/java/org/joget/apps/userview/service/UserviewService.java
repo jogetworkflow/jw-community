@@ -48,6 +48,73 @@ public class UserviewService {
     @Autowired
     @Qualifier("main")
     ExtDirectoryManager directoryManager;
+    
+    /**
+     * Get userview setting object
+     * @param appDef
+     * @param json
+     * @return setting
+     */
+    public UserviewSetting getUserviewSetting(AppDefinition appDef, String json) {
+        UserviewSetting setting = null;
+        
+        //process json with hash variable
+        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
+
+        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        
+        Map<String, Object> requestParameters = new HashMap<String, Object>();
+        requestParameters.put("appId", appDef.getAppId());
+        requestParameters.put("appVersion", appDef.getVersion().toString());
+        
+        String appId = appDef.getId();
+        String appVersion = appDef.getVersion().toString();
+        Userview userview = new Userview();
+        
+        try {
+            //set userview properties
+            JSONObject userviewObj = new JSONObject(json);
+            userview.setProperties(PropertyUtil.getPropertiesValueFromJson(userviewObj.getJSONObject("properties").toString()));
+
+            //set Setting
+            JSONObject settingObj = userviewObj.getJSONObject("setting");
+            setting = new UserviewSetting();
+            setting.setProperties(PropertyUtil.getPropertiesValueFromJson(settingObj.getJSONObject("properties").toString()));
+
+            //set theme & permission
+            try {
+                JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+                UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeObj.getJSONObject("properties").toString()));
+                theme.setRequestParameters(requestParameters);
+                theme.setUserview(userview);
+                setting.setTheme(theme);
+            } catch (Exception e) {
+                LogUtil.debug(getClass().getName(), "set theme error.");
+            }
+            try {
+                JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                UserviewPermission permission = null;
+                String permissionClassName = permissionObj.getString("className");
+                if (permissionClassName != null && !permissionClassName.isEmpty()) {
+                    permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                }
+                if (permission != null) {
+                    permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
+                    permission.setRequestParameters(requestParameters);
+                    permission.setCurrentUser(currentUser);
+                    setting.setPermission(permission);
+                }
+            } catch (Exception e) {
+                LogUtil.debug(getClass().getName(), "set permission error.");
+            }
+            userview.setSetting(setting);
+        } catch (Exception ex) {
+            LogUtil.debug(getClass().getName(), "set userview setting error.");
+        }
+
+        return setting;
+    }
 
     /**
      * Create userview fron json
@@ -68,7 +135,7 @@ public class UserviewService {
         }
 
         //process json with hash variable
-        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
+        json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
         User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
 

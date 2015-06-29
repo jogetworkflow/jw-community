@@ -64,11 +64,10 @@ import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -1742,10 +1741,10 @@ public class AppServiceImpl implements AppService {
             Collection<UserviewDefinition> newUvDefList = new ArrayList<UserviewDefinition>();
 
             for (UserviewDefinition uvDef : uvDefList) {
-                Userview userview = userviewService.createUserview(appDef, uvDef.getJson(), null, false, null, null, null, false);
-                if (userview != null && (userview.getSetting().getPermission() == null || (userview.getSetting().getPermission() != null && userview.getSetting().getPermission().isAuthorize()))
-                        && (!mobileView || !"true".equals(userview.getSetting().getProperty("mobileViewDisabled")))
-                        && (!mobileCache || "true".equals(userview.getSetting().getProperty("mobileCacheEnabled")))) {
+                UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, uvDef.getJson());
+                if (userviewSetting != null && (userviewSetting.getPermission() == null || (userviewSetting.getPermission() != null && userviewSetting.getPermission().isAuthorize()))
+                        && (!mobileView || !"true".equals(userviewSetting.getProperty("mobileViewDisabled")))
+                        && (!mobileCache || "true".equals(userviewSetting.getProperty("mobileCacheEnabled")))) {
                     newUvDefList.add(uvDef);
                 }
             }
