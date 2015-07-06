@@ -173,6 +173,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     protected DataListColumn findColumn(String columnName) {
+        boolean skipHidden = false;
+        String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
+        String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
+        if (("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
+            skipHidden = true;
+        }
+        
         // get column, temporarily just iterate thru to find
         DataListColumn column = null;
         DataListColumn[] columns = dataList.getColumns();
@@ -181,6 +188,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
             index = 0;
         } else {
             index++;
+        }
+        if (!column.getName().equals(columnName) && skipHidden && column.isHidden()) {
+            column = findColumn(columnName);
         }
         
         return column;
