@@ -153,13 +153,13 @@ public class DuplicateValueValidator extends FormValidator {
 
                 if (!FormUtil.PROPERTY_ID.equals(fieldId)) {
                     try {
-                        key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val);
+                        key = formDataDao.findPrimaryKey(formDefId, tableName, fieldId, val.trim());
                     } catch (Exception e) {
                         key = null;
                     }
                 } else {
-                    if (formDataDao.load(formDefId, tableName, val) != null) {
-                        key = val;
+                    if (formDataDao.load(formDefId, tableName, val.trim()) != null) {
+                        key = val.trim();
                     }
                 }
                 if (key != null && key.trim().length() > 0) {
