@@ -440,10 +440,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 String currentVersion = pa.getCurrentPackageVersion(sessionHandle, wp.getPackageId());
                 wp.setLatest(currentVersion == null || (currentVersion.equals(wp.getVersion())));
 
-                processMap.put(wp.getName(), wp);
+                processList.add(wp);
             }
-
-            processList = new ArrayList<WorkflowProcess>(processMap.values());
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
