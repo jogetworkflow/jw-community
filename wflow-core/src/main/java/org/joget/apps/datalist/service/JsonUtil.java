@@ -104,7 +104,11 @@ public class JsonUtil {
                 object.setDescription(obj.getString(PROPERTY_DESC));
             }
             if (obj.has(PROPERTY_PAGE_SIZE)) {
-                object.setDefaultPageSize(obj.getInt(PROPERTY_PAGE_SIZE));
+                if (obj.getInt(PROPERTY_PAGE_SIZE) == 0) {
+                    object.setDefaultPageSize(DataList.DEFAULT_PAGE_SIZE);
+                } else {
+                    object.setDefaultPageSize(obj.getInt(PROPERTY_PAGE_SIZE));
+                }
             }
             if (obj.has(PROPERTY_ORDER)) {
                 object.setDefaultOrder(obj.getString(PROPERTY_ORDER));
