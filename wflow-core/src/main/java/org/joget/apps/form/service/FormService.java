@@ -440,9 +440,10 @@ public class FormService {
                     FormRowSet binderResult = binder.store(element, rowSet, formData);
                     formData.setStoreBinderData(binder, binderResult);
                 } catch (Exception e) {
+                    String code = Long.toString(System.currentTimeMillis());
                     String formId = FormUtil.getElementParameterName(form);
-                    formData.addFormError(formId, "Error storing data: " + e.getMessage());
-                    LogUtil.error(FormService.class.getName(), e, "Error executing store binder");
+                    formData.addFormError(formId, ResourceBundleUtil.getMessage("console.form.data.error.storing", new Object[]{code}));
+                    LogUtil.error(FormService.class.getName(), e, "Error executing store binder - code : " + code);
                 }
             }
         }
