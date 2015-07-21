@@ -185,6 +185,12 @@ public class FormBuilderWebController {
     @RequestMapping("/app/(*:appId)/(~:appVersion)/form/embed")
     public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        
+        if (appDef == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         AppUtil.setCurrentAppDefinition(appDef);
         return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action);
     }
