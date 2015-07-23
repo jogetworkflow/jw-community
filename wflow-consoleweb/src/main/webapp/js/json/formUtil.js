@@ -108,8 +108,12 @@ FormUtil = {
         
         if (fields !== undefined) {
             $.each(fields, function(i, v){
-                var values = FormUtil.getValues(v['field']).join(";");
-
+                var values = [];
+                
+                if (v['field'] !== "") {
+                    values = FormUtil.getValues(v['field']).join(";");
+                }
+                
                 if (values.length === 0 && v['defaultValue'] !== "") {
                     values = v['defaultValue'];
                 }
