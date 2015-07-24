@@ -91,8 +91,12 @@ public class FileUtil implements ApplicationContextAware {
         boolean fileExist = true;
         int count = 1;
         
-        String name = fileName.substring(0, fileName.lastIndexOf("."));
-        String ext = fileName.substring(fileName.lastIndexOf("."));
+        String name = fileName;
+        String ext = "";
+        if (fileName.contains(".")) {
+            name = fileName.substring(0, fileName.lastIndexOf("."));
+            ext = fileName.substring(fileName.lastIndexOf("."));
+        }
         fileName = name + ext;
         
         do {
