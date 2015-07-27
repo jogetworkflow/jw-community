@@ -1,12 +1,11 @@
 package org.joget.apps.datalist.model;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
@@ -53,6 +52,7 @@ public class DataList {
     private DataListCollection rows;
     private DataListActionResult actionResult;
     private Integer size;
+    private Integer total;
     private Integer pageSize;
     private int defaultPageSize = DEFAULT_PAGE_SIZE;
     private String pageSizeList;
@@ -362,6 +362,8 @@ public class DataList {
     public DataListCollection getRows(Integer customSize, Integer customStart) {
         try {
             if (getBinder() != null) {
+                //force get total before get rows to bypass additional filter
+                getTotal();
                 DataListQueryParam param = getQueryParam(customSize, customStart);
                 return getBinder().getData(this, getBinder().getProperties(), getFilterQueryObjects(), param.getSort(), param.getDesc(), param.getStart(), param.getSize());
             }
@@ -376,6 +378,8 @@ public class DataList {
         if (size == null) {
             try {
                 if (getBinder() != null) {
+                    //force get total before get size to bypass additional filter
+                    getTotal();
                     size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
                 } else {
                     size = 0;
@@ -390,6 +394,28 @@ public class DataList {
 
     public void setSize(Integer size) {
         this.size = size;
+    }
+    
+    public int getTotal() {
+        if (total == null) {
+            try {
+                if (getBinder() != null) {
+                    filterQueryBuild = true;
+                    total = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
+                    filterQueryBuild = false;
+                } else {
+                    total = 0;
+                }
+            } catch (Exception e) {
+                LogUtil.error(DataList.class.getName(), e, "Error retrieving binder row count");
+                total = 0;
+            }
+        }
+        return total;
+    }
+
+    public void setTotal(Integer total) {
+        this.total = total;
     }
     
     public DataListDecorator getPrimaryKeyDecorator() {
@@ -603,7 +629,7 @@ public class DataList {
     private String getPageSizeSelectorTemplate() {
         String template = "<select id='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "' name='" + getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "'>";
         String value = getPageSize().toString();
-
+            
         String[] list = getPageSizeList().split(",");
 
         for (String o : list) {
