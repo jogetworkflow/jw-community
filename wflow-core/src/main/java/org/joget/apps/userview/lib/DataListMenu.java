@@ -70,7 +70,7 @@ public class DataListMenu extends UserviewMenu {
             // get datalist and row count
             DataList dataList = getDataList();
             if (dataList != null) {
-                int rowCount = dataList.getSize();
+                int rowCount = dataList.getTotal();
 
                 // sanitize label
                 String label = getPropertyString("label");
