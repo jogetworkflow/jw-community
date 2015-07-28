@@ -6,6 +6,23 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES in 4.0.20
+=================
+2169	Fixed: wflow-core - Datalist Menu - Filtering changes the number of rows in Userview Menu. #3298 @trunk
+2166	Modified: wflow-core - Datalist - Added method to get total record. @trunk
+2161	Fixed: wflow-core - FileUtil - Exception when a file does not has extension in validateFileName method. #3295 @trunk
+2158	Modified: wlfow-consoleweb - Improve label naming consistency
+2155	Fixed: wflow-consoleweb - formUtil.js - FormUtil.getFieldsAsUrlQueryString() not working correctly when field Id is empty. #3282 @trunk
+2151	Fixed: wflow-core - Embed Form/ Datalist - Handle for NPE when app not found. #3284 @trunk
+2141	Fixed: wflow-core - Form - Errors being propagated back to the user. #3258 @trunk
+2137	Modified: wflow-core - Data List - Proper handle the case when page size is set to 0. @trunk
+2133	Fixed: wflow-wfengine - WorkflowManageImpl - getProcessList does not return all processes when there are process name are same #3257 @trunk
+2131	Fixed: wflow-core - Duplicate Value Validator - Doesn't trim leading white-spaces. #3251 @trunk
+2128	Fixed: wflow-core - Datalist Export - Formatter not working correctly when datalist contains hidden column. #3230 @trunk
+2119	Fixed: wflow-core - AbstractSubForm - Handle key for readonly hidden field. #3213 @trunk
+2118	Fixed: wflow-core - Published Userview - Category permission checks are ran during retrieving userview list. #3202 @trunk
+2116	Fixed: wflow-core - Hash variable - Fixed logic issue and remove unnecessary processing. @trunk
+
 CHANGES in 4.0.19
 =================
 2103    Modified: wflow-install - Upgraded to Apache Tomcat 7.0.62 @trunk
