@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.0-rc.1.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.5.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/mobile.css">
 <style>
     .ui-content {
@@ -46,7 +46,7 @@
 <script src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-<script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.0-rc.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.5.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/json/ui.js"></script>
 <script src="${pageContext.request.contextPath}/js/json/ui_ext.js"></script>
 <script src="${pageContext.request.contextPath}/js/json/util.js"></script>
