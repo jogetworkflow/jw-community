@@ -107,6 +107,13 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return "";
     }
+    
+    public static boolean hasSecurityEnvelope(String content) {
+        if (content != null && content.startsWith(ENVELOPE) && content.endsWith(ENVELOPE) && getDataEncryption() != null) {
+            return true;
+        }
+        return false;
+    }
 
     protected static String cleanPrefixPostfix(String content) {
         content = content.replaceAll(ENVELOPE, "");
