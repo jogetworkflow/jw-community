@@ -632,6 +632,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     } else if (actEnt.getType().equalsIgnoreCase("route")) {
                         wa.setType(WorkflowActivity.TYPE_ROUTE);
                         break;
+                    } else if (actEnt.getType().equalsIgnoreCase("subflow")) {
+                       wa.setType(WorkflowActivity.TYPE_SUBFLOW);
+                       wa.setPerformer(actEnt.getId());
+                       break;
                     }
                 }
 

@@ -10,6 +10,7 @@ public class WorkflowActivity implements Serializable {
     public static final String TYPE_NORMAL = "normal";
     public static final String TYPE_TOOL = "tool";
     public static final String TYPE_ROUTE = "route";
+    public static final String TYPE_SUBFLOW = "subflow";
     private String id;
     private String name;
     private String priority;
