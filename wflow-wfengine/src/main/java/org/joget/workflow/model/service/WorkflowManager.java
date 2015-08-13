@@ -20,6 +20,10 @@ public interface WorkflowManager {
     void activityVariable(String activityInstanceId, String variableId, Object variableValue);
 
     void processVariable(String processInstanceId, String variableId, Object variableValue);
+    
+    void activityVariables(String activityInstanceId, Map<String, String> variables);
+
+    void processVariables(String processInstanceId, Map<String, String> variables);
 
     String getProcessVariable(String processInstanceId, String variableId);
 

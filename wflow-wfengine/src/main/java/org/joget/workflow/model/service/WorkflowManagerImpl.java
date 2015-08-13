@@ -2379,6 +2379,51 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
     }
+    
+    /**
+     * Set the workflow variables based on an activity instance ID.
+     * @param activityInstanceId
+     * @param variables
+     */
+    public void activityVariables(String activityInstanceId, Map<String, String> variables) {
+
+        SharkConnection sc = null;
+
+        try {
+            if (activityInstanceId == null || activityInstanceId.trim().length() == 0 || variables == null || variables.isEmpty()) {
+                return;
+            }
+
+            sc = connect();
+
+            Shark shark = Shark.getInstance();
+            WfActivityIterator ai = sc.get_iterator_activity();
+            ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            WMFilter filter = new WMFilter();
+
+            if (activityInstanceId != null && activityInstanceId.trim().length() > 0) {
+                filter = aieb.addIdEquals(sessionHandle, activityInstanceId);
+            }
+
+            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
+            WfActivity[] wfActivityList = ai.get_next_n_sequence(0);
+
+            if (wfActivityList.length > 0) {
+                WfActivity wfActivity = wfActivityList[0];
+                wfActivity.set_result(variables);
+            }
+        } catch (Exception ex) {
+            LogUtil.warn(getClass().getName(), ex.getMessage());
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
 
     /**
      * Set the workflow variable based on an process instance ID.
@@ -2421,6 +2466,63 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         } catch (Exception ex) {
             LogUtil.warn(getClass().getName(), ex.getMessage());
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
+    
+    /**
+     * Set the workflow variables based on an process instance ID.
+     * @param processInstanceId
+     * @param variables
+     */
+    public void processVariables(String processInstanceId, Map<String, String> variables) {
+
+        SharkConnection sc = null;
+
+        try {
+            if (processInstanceId == null || processInstanceId.trim().length() == 0 || variables == null || variables.isEmpty()) {
+                return;
+            }
+
+            sc = connect();
+
+            Shark shark = Shark.getInstance();
+            WfProcessIterator pi = sc.get_iterator_process();
+            ProcessFilterBuilder pfb = shark.getProcessFilterBuilder();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            WMFilter filter = new WMFilter();
+
+            if (processInstanceId != null && processInstanceId.trim().length() > 0) {
+                filter = pfb.addIdEquals(sessionHandle, processInstanceId);
+            }
+
+            pi.set_query_expression(pfb.toIteratorExpression(sessionHandle, filter));
+            WfProcess[] wfProcessList = pi.get_next_n_sequence(0);
+
+
+            if (wfProcessList.length > 0) {
+                WfProcess wfProcess = wfProcessList[0];
+                
+                //to ignore non exist variable.
+                for (String key : variables.keySet()) {
+                    try {
+                        Map processContext = wfProcess.process_context();
+                        processContext.put(key, variables.get(key));
+                        wfProcess.set_process_context(processContext);
+                    } catch (Exception e) {
+                        LogUtil.warn(getClass().getName(), e.getMessage());
+                    }
+                }
+            }
+
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
         } finally {
             try {
                 disconnect(sc);
@@ -4005,11 +4107,26 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param variableMap key=variable name and value=variable value
      */
     public void assignmentVariables(String activityId, Map<String, String> variableMap) {
-        if (variableMap != null) {
-            for (Iterator<String> i = variableMap.keySet().iterator(); i.hasNext();) {
-                String key = i.next();
-                String value = variableMap.get(key);
-                assignmentVariable(activityId, key, value);
+        SharkConnection sc = null;
+
+        try {
+
+            sc = connect();
+
+            WfAssignment a = getSharkAssignment(sc, activityId);
+            if (!JSPClientUtilities.isMine(sc, a)) {
+                throw new Exception("I don't own activity " + activityId);
+            }
+
+            a.activity().set_result(variableMap);
+
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
             }
         }
     }
