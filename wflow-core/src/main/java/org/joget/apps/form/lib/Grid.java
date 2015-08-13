@@ -281,12 +281,10 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
             String min = getPropertyString("validateMinRow");
             
             if ((min != null && !min.isEmpty())) {
-                try {
-                    int minNumber = Integer.parseInt(min);
-                    if (minNumber > 0) {
-                        decorator = "*";
-                    }
-                } catch (Exception e) {}
+                int minNumber = Integer.parseInt(min);
+                if (minNumber > 0) {
+                    decorator = "*";
+                }
             }
         } catch (Exception e) {}
         
