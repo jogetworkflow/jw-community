@@ -179,14 +179,14 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 masterLoginPassword = SecurityUtil.decrypt(masterLoginPassword);
 
                 if ((masterLoginUsername != null && masterLoginUsername.trim().length() > 0) &&
-                        (masterLoginPassword != null && masterLoginPassword.trim().length() > 0)) {
+                        (masterLoginPassword != null && masterLoginPassword.length() > 0)) {
 
                     User master = new User();
                     master.setUsername(masterLoginUsername.trim());
-                    master.setPassword(StringUtil.md5Base16(masterLoginPassword.trim()));
+                    master.setPassword(StringUtil.md5Base16(masterLoginPassword));
 
                     if (username.trim().equals(master.getUsername()) &&
-                            ((password != null && StringUtil.md5Base16(password.trim()).equalsIgnoreCase(master.getPassword())) ||
+                            ((password != null && StringUtil.md5Base16(password).equalsIgnoreCase(master.getPassword())) ||
                             (loginHash != null && loginHash.trim().equalsIgnoreCase(master.getLoginHash())))) {
                         currentUser = directoryManager.getUserByUsername(loginAs);
                         if (currentUser != null) {
@@ -206,12 +206,12 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 }
             } else {
                 if (loginHash != null) {
-                    password = loginHash;
+                    password = loginHash.trim();
                 }
                 if (password != null) {
                     // use existing authentication manager
                     try {
-                        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username.trim(), password.trim());
+                        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username.trim(), password);
                         super.setDetails(request, authRequest);
 
                         auth = getAuthenticationManager().authenticate(authRequest);
