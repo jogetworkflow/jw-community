@@ -165,6 +165,18 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="disableListRenderHtml"><fmt:message key="console.setting.general.label.disableListRenderHtml"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['disableListRenderHtml'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="disableListRenderHtml" name="disableListRenderHtml" ${checked} />
+                    </div>
+                </span>
+            </div>            
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.timeSettings"/></span>
             </div>

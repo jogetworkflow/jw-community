@@ -3377,7 +3377,8 @@ public class ConsoleWebController {
         booleanSettingsList.add("dateFormatFollowLocale");
         booleanSettingsList.add("disableAdminBar");
         booleanSettingsList.add("disableWebConsole");
-
+        booleanSettingsList.add("disableListRenderHtml");
+        
         //request params
         Enumeration e = request.getParameterNames();
         while (e.hasMoreElements()) {

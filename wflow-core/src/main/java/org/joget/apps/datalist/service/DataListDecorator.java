@@ -21,6 +21,7 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.workflow.util.WorkflowUtil;
 
 /**
  * DisplayTag column decorator to modify columns e.g. format, add links, etc.
@@ -32,6 +33,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     List checkedIds;
     String id;
     String fieldName;
+    Boolean listRenderHtml = true;
     
     private int index = 0;
 
@@ -48,6 +50,11 @@ public class DataListDecorator extends CheckboxTableDecorator {
         } else {
             checkedIds = new ArrayList(0);
         }
+        
+        String disableListRenderHtml = WorkflowUtil.getSystemSetupValue("disableListRenderHtml");
+        if (disableListRenderHtml != null && disableListRenderHtml.equals("true")) {
+            listRenderHtml = false;
+        } 
     }
 
     @Override
@@ -130,8 +137,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
         String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
         if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
-            boolean renderHtml = column.isRenderHtml();
-            if (renderHtml && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+            if (isRenderHtml(column) && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
                 text = StringUtil.stripAllHtmlTag(text);
             }
         }
@@ -280,8 +286,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
             String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
             String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
             if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
-                boolean renderHtml = column.isRenderHtml();
-                if (renderHtml) {
+                if (isRenderHtml(column)) {
                     result = StringUtil.stripHtmlRelaxed(result.toString());
                 } else {
                     result = StringEscapeUtils.escapeHtml(result.toString());
@@ -392,5 +397,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
         
         return visible;
+    }
+    
+    protected boolean isRenderHtml(DataListColumn column) {
+        if (column != null && column.isRenderHtml() != null) {
+            return column.isRenderHtml();
+        } else {
+            return listRenderHtml;
+        }
     }
 }

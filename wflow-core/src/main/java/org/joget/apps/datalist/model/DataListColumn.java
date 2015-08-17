@@ -50,7 +50,7 @@ public class DataListColumn {
     /**
      * Flag to indicate whether to render the column as HTML content
      */
-    private boolean renderHtml = true;
+    private Boolean renderHtml = null;
 
     /**
      * Convenience method to add a format to this column
@@ -121,7 +121,7 @@ public class DataListColumn {
         this.type = type;
     }
     
-    public boolean isRenderHtml() {
+    public Boolean isRenderHtml() {
         return renderHtml;
     }
 
