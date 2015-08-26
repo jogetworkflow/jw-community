@@ -302,7 +302,11 @@ public class DataList {
         Integer recordSize = getPageSize();
         Integer start = 0;
         
-        if (page != null && page.trim().length() > 0 && getSize() <= ((Integer.parseInt(page)-1) * recordSize)) {
+        try {
+            if (page != null && page.trim().length() > 0 && getSize() <= ((Integer.parseInt(page)-1) * recordSize)) {
+                page = null;
+            }
+        } catch(NumberFormatException e) {
             page = null;
         }
         
