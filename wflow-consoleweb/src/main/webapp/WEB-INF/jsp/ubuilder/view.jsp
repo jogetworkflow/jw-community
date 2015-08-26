@@ -84,9 +84,6 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 
 <c:catch var="bodyError">
 <c:set var="bodyContent">
-    <c:if test="${!empty userview.setting.theme.beforeContent}">
-        ${userview.setting.theme.beforeContent}
-    </c:if>
     <c:choose>
         <c:when test="${!empty userview.current}">
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
@@ -120,9 +117,6 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             </p>
         </c:otherwise>
     </c:choose>
-    <c:if test="${!empty userview.setting.theme.pageBottom}">
-        ${userview.setting.theme.pageBottom}
-    </c:if>
 </c:set>
 
 <c:set var="alertMessageProperty" value="<%= UserviewMenu.ALERT_MESSAGE_PROPERTY %>"/>
@@ -325,8 +319,15 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                         </div>
                         </c:if>
                         <div id="content">
-                        ${bodyContent}
-                        <c:if test="${!empty bodyError}"><c:out value="${bodyError}" escapeXml="true"/></c:if>
+                            
+                            <c:if test="${!empty userview.setting.theme.beforeContent}">
+                                ${userview.setting.theme.beforeContent}
+                            </c:if>
+                            ${bodyContent}
+                            <c:if test="${!empty bodyError}"><c:out value="${bodyError}" escapeXml="true"/></c:if>
+                            <c:if test="${!empty userview.setting.theme.pageBottom}">
+                                ${userview.setting.theme.pageBottom}
+                            </c:if>
                         </div>
                     </c:otherwise>
                 </c:choose>

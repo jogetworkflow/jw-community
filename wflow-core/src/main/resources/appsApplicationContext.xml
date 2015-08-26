@@ -202,11 +202,15 @@
 
     <bean id="auditTrailInterceptor" class="org.joget.apps.app.service.AuditTrailInterceptor">
     </bean>
-
+    
+    <bean id="sqlFilterAspect" class="org.joget.apps.app.service.SqlFilterAspect">
+    </bean>
+    
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.service.AppService.*(..))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..))" order="1" />
-        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />
+        <aop:advisor advice-ref="sqlFilterAspect" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="2" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
     </aop:config>
 
