@@ -7,6 +7,8 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
 import org.joget.report.model.ReportApp;
@@ -60,10 +62,12 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 final WorkflowProcess wfTrackProcess = trackProcess;
                 final WorkflowActivity wfActivity = activity;
                 final WorkflowActivity wfTrackActivity = trackActivity;
-
+                final String profile = DynamicDataSourceManager.getCurrentProfile();
+                
                 new Thread(new Runnable() {
 
                     public void run() {
+                        HostManager.setCurrentProfile(profile);
                         String method = auditTrail.getMethod();
                         String appId = auditTrail.getAppId();
                         String appVersion = auditTrail.getAppVersion();
