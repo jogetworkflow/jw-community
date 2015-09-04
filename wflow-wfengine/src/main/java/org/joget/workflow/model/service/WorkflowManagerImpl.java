@@ -4763,7 +4763,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         WfProcess wfProcess = (wfProcesses.length > 0 ? wfProcesses[0] : null);
                         if (wfProcess != null) {
                             WfActivity[] wfActivityTempList = wfProcess.get_sequence_step(0);
-                            return getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), wfActivityTempList);
+                            WorkflowActivity act = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), wfActivityTempList);
+                            if (act != null) {
+                                return act;
+                            }
                         }
                     } else {
                         WfAssignment ass = getSharkAssignment(connect(), activityId);
