@@ -153,6 +153,8 @@ public class UserviewService {
         String appVersion = appDef.getVersion().toString();
         Userview userview = new Userview();
         
+        boolean userviewPermission = true;
+        
         //if screenshot, set user to null (anonymous)
         String currentThreadUser = null;
         boolean isScreenCapture = workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"));
@@ -195,6 +197,8 @@ public class UserviewService {
                     permission.setRequestParameters(requestParameters);
                     permission.setCurrentUser(currentUser);
                     setting.setPermission(permission);
+                    
+                    userviewPermission = permission.isAuthorize();
                 }
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
@@ -202,100 +206,103 @@ public class UserviewService {
             userview.setSetting(setting);
 
             //set categories
-            JSONArray categoriesArray = userviewObj.getJSONArray("categories");
             Collection<UserviewCategory> categories = new ArrayList<UserviewCategory>();
-            for (int i = 0; i < categoriesArray.length(); i++) {
-                JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
-
-                UserviewCategory category = new UserviewCategory();
-                category.setProperties(PropertyUtil.getPropertiesValueFromJson(categoryObj.getJSONObject("properties").toString()));
-
-                boolean hasPermis = false;
-                if (preview) {
-                    hasPermis = true;
-                } else {
-                    //check for permission
-                    JSONObject permissionObj = null;
-                    UserviewPermission permission = null;
-
-                    try {
-                        permissionObj = categoryObj.getJSONObject("properties").getJSONObject("permission");
-                        String permissionClassName = permissionObj.getString("className");
-                        if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                            permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
-                        }
-                    } catch (Exception e) {
-                        LogUtil.debug(getClass().getName(), "set category permission error.");
-                    }
-
-                    if (permission != null) {
-                        permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
-                        permission.setRequestParameters(requestParameters);
-                        permission.setCurrentUser(currentUser);
-
-                        hasPermis = permission.isAuthorize();
-                    } else {
-                        hasPermis = true;
-                    }
-                }
-
-                if (hasPermis) {
-                    //set menus
-                    JSONArray menusArray = categoryObj.getJSONArray("menus");
-                    Collection<UserviewMenu> menus = new ArrayList<UserviewMenu>();
-                    for (int j = 0; j < menusArray.length(); j++) {
-                        try {
-                            //set menu
-                            JSONObject menuObj = (JSONObject) menusArray.get(j);
-                            UserviewMenu menu = (UserviewMenu) pluginManager.getPlugin(menuObj.getString("className"));
-                            
-                            // check for mobile support
-                            boolean isMobileView = MobileUtil.isMobileView();
-                            if (isMobileView && (menu instanceof MobileElement) && !((MobileElement)menu).isMobileSupported()) {
-                                // mobile not supported, skip this menu
-                                continue;
-                            }
             
-                            menu.setProperties(PropertyUtil.getPropertiesValueFromJson(menuObj.getJSONObject("properties").toString()));
-                            menu.setRequestParameters(requestParameters);
-                            menu.setUserview(userview);
-                            String mId = getMenuId(menu);
-                            menu.setProperty("menuId", mId);
+            if (userviewPermission) {
+                JSONArray categoriesArray = userviewObj.getJSONArray("categories");
+                for (int i = 0; i < categoriesArray.length(); i++) {
+                    JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
 
-                            if (preview) {
-                                menu.setUrl(contextPath + "/web/console/app/" + appId + "/" + appVersion + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + mId);
-                            } else {
-                                menu.setKey(key);
-                                String prefix = "/web/userview/";
-                                
-                                if (embed) {
-                                    prefix = "/web/embed/userview/";
-                                }
-                                
-                                menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? URLEncoder.encode(key, "UTF-8") : "") + "/" + mId);
-                            }
+                    UserviewCategory category = new UserviewCategory();
+                    category.setProperties(PropertyUtil.getPropertiesValueFromJson(categoryObj.getJSONObject("properties").toString()));
 
-                            //set Current, if current menu id is empty, search the 1st valid menu
-                            if ((("".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())
-                                    || (menuId != null && menuId.equals(mId))) {
-                                userview.setCurrent(menu);
-                                userview.setCurrentCategory(category);
-                            }
-                            
-                            //set home menu Id
-                            if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
-                                userview.setProperty("homeMenuId", mId);
-                            }
+                    boolean hasPermis = false;
+                    if (preview) {
+                        hasPermis = true;
+                    } else {
+                        //check for permission
+                        JSONObject permissionObj = null;
+                        UserviewPermission permission = null;
 
-                            menus.add(menu);
+                        try {
+                            permissionObj = categoryObj.getJSONObject("properties").getJSONObject("permission");
+                            String permissionClassName = permissionObj.getString("className");
+                            if (permissionClassName != null && !permissionClassName.isEmpty()) {
+                                permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                            }
                         } catch (Exception e) {
-                            LogUtil.debug(getClass().getName(), "Userview Menu class file not found");
+                            LogUtil.debug(getClass().getName(), "set category permission error.");
+                        }
+
+                        if (permission != null) {
+                            permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
+                            permission.setRequestParameters(requestParameters);
+                            permission.setCurrentUser(currentUser);
+
+                            hasPermis = permission.isAuthorize();
+                        } else {
+                            hasPermis = true;
                         }
                     }
 
-                    if (menus.size() > 0) {
-                        category.setMenus(menus);
-                        categories.add(category);
+                    if (hasPermis) {
+                        //set menus
+                        JSONArray menusArray = categoryObj.getJSONArray("menus");
+                        Collection<UserviewMenu> menus = new ArrayList<UserviewMenu>();
+                        for (int j = 0; j < menusArray.length(); j++) {
+                            try {
+                                //set menu
+                                JSONObject menuObj = (JSONObject) menusArray.get(j);
+                                UserviewMenu menu = (UserviewMenu) pluginManager.getPlugin(menuObj.getString("className"));
+
+                                // check for mobile support
+                                boolean isMobileView = MobileUtil.isMobileView();
+                                if (isMobileView && (menu instanceof MobileElement) && !((MobileElement)menu).isMobileSupported()) {
+                                    // mobile not supported, skip this menu
+                                    continue;
+                                }
+
+                                menu.setProperties(PropertyUtil.getPropertiesValueFromJson(menuObj.getJSONObject("properties").toString()));
+                                menu.setRequestParameters(requestParameters);
+                                menu.setUserview(userview);
+                                String mId = getMenuId(menu);
+                                menu.setProperty("menuId", mId);
+
+                                if (preview) {
+                                    menu.setUrl(contextPath + "/web/console/app/" + appId + "/" + appVersion + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + mId);
+                                } else {
+                                    menu.setKey(key);
+                                    String prefix = "/web/userview/";
+
+                                    if (embed) {
+                                        prefix = "/web/embed/userview/";
+                                    }
+
+                                    menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? URLEncoder.encode(key, "UTF-8") : "") + "/" + mId);
+                                }
+
+                                //set Current, if current menu id is empty, search the 1st valid menu
+                                if ((("".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())
+                                        || (menuId != null && menuId.equals(mId))) {
+                                    userview.setCurrent(menu);
+                                    userview.setCurrentCategory(category);
+                                }
+
+                                //set home menu Id
+                                if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
+                                    userview.setProperty("homeMenuId", mId);
+                                }
+
+                                menus.add(menu);
+                            } catch (Exception e) {
+                                LogUtil.debug(getClass().getName(), "Userview Menu class file not found");
+                            }
+                        }
+
+                        if (menus.size() > 0) {
+                            category.setMenus(menus);
+                            categories.add(category);
+                        }
                     }
                 }
             }
