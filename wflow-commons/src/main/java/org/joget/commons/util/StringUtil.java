@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.validator.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
@@ -328,12 +329,11 @@ public class StringUtil {
             emails = new String[]{email};
         }
         
+        EmailValidator validator = EmailValidator.getInstance();
+        
         boolean valid = true;
         for (String e : emails) {
-            String expression = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-+]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9-+]+)*(\\.[A-Za-z-]{2,})$";
-            Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = pattern.matcher(e.trim());
-            if (!matcher.matches()) {
+            if (!validator.isValid(e.trim())) {
                 valid = false;
                 break;
             }
