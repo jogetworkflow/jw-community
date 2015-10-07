@@ -52,14 +52,6 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
         // load form data from DB
         FormRowSet rows = super.load(element, primaryKey, formData);
         if (rows != null) {
-            FormRow row = null;
-            if (rows.isEmpty()) {
-                row = new FormRow();
-                rows.add(row);
-            } else {
-                row = rows.iterator().next();
-            }
-
             // handle workflow variables
             String activityId = formData.getActivityId();
             String processId = formData.getProcessId();
@@ -72,14 +64,25 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
             } else {
                 variableList = new ArrayList<WorkflowVariable>();
             }
-            Map<String, String> variableMap = new HashMap<String, String>();
-            for (WorkflowVariable variable : variableList) {
-                Object val = variable.getVal();
-                if (val != null) {
-                    variableMap.put(variable.getId(), val.toString());
+            
+            if (variableList != null && !variableList.isEmpty()) {
+                FormRow row = null;
+                if (rows.isEmpty()) {
+                    row = new FormRow();
+                    rows.add(row);
+                } else {
+                    row = rows.iterator().next();
                 }
+                
+                Map<String, String> variableMap = new HashMap<String, String>();
+                for (WorkflowVariable variable : variableList) {
+                    Object val = variable.getVal();
+                    if (val != null) {
+                        variableMap.put(variable.getId(), val.toString());
+                    }
+                }
+                loadWorkflowVariables(element, row, variableMap);
             }
-            loadWorkflowVariables(element, row, variableMap);
         }
         return rows;
     }

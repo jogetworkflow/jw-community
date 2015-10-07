@@ -50,12 +50,20 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
         dataModel.put("quickEditEnabled", isQuickEditEnabled);
         if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             dataModel.put("isAuthorize", true);
+            dataModel.put("isRecordExist", true);
             
             String paramName = FormUtil.getElementParameterName(this);
             setFormMeta(paramName+"_SUBMITTED", new String[]{"true"});
             String primaryKey = this.getPrimaryKeyValue(formData);
 
             if (getParent() == null) {
+                if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null || primaryKey != null) {
+                    FormRowSet data = formData.getLoadBinderData(this);
+                    if (data == null || data.isEmpty()) {
+                        dataModel.put("isRecordExist", false);
+                    }
+                }
+                
                 if (formData.getRequestParameter("_FORM_META_ORIGINAL_ID") != null) {
                     setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
                 } else if (primaryKey != null) {

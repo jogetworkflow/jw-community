@@ -5,22 +5,26 @@
     </div>
     </#if>
     
-    <#if !element.parent??>
-    <form id="${element.properties.id!}" name="${element.properties.id!}" class="form-container <#if element.properties.readonly! == 'true'>readonly</#if>" ${elementMetaData!} <#if element.properties.url??>action="${element.properties.url}"</#if> method="POST" enctype="multipart/form-data">
-    </#if>
-        <#assign keys = element.formMetas?keys>
-        <#list keys as key>
-            <#assign metaValues = element.formMetas[key]>
-            <#list metaValues as v>
-                <input type="hidden" value="${v!?html}" name="${key}" />
+    <#if isRecordExist >
+        <#if !element.parent??>
+        <form id="${element.properties.id!}" name="${element.properties.id!}" class="form-container <#if element.properties.readonly! == 'true'>readonly</#if>" ${elementMetaData!} <#if element.properties.url??>action="${element.properties.url}"</#if> method="POST" enctype="multipart/form-data">
+        </#if>
+            <#assign keys = element.formMetas?keys>
+            <#list keys as key>
+                <#assign metaValues = element.formMetas[key]>
+                <#list metaValues as v>
+                    <input type="hidden" value="${v!?html}" name="${key}" />
+                </#list>
             </#list>
-        </#list>
-        <#if error??><div class="form-error-message">${error}</div></#if>
-        <#list element.children as e>
-            ${e.render(formData, includeMetaData!false)}
-        </#list>
-    <#if !element.parent??>
-    </form>
+            <#if error??><div class="form-error-message">${error}</div></#if>
+            <#list element.children as e>
+                ${e.render(formData, includeMetaData!false)}
+            </#list>
+        <#if !element.parent??>
+        </form>
+        </#if>
+    <#else>
+        <h3>@@form.form.message.recordNotFound@@</h3>
     </#if>
 <#else>
     <#if element.properties.noPermissionMessage?? && element.properties.noPermissionMessage! != "">
