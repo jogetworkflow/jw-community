@@ -57,11 +57,12 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             String primaryKey = this.getPrimaryKeyValue(formData);
 
             if (getParent() == null) {
-                boolean isRuntime = (formData.getFormResult(FormService.PREVIEW_MODE) == null || !dataModel.containsKey("elementMetaData"));
+                boolean isRuntimeLoad = (formData.getFormResult(FormService.PREVIEW_MODE) == null || !dataModel.containsKey("elementMetaData"))
+                        && !FormUtil.isFormSubmitted(this, formData);
                 boolean urlHasId = (formData.getRequestParameter("id") != null || formData.getRequestParameter("fk_id") != null
                             || formData.getRequestParameter("fke_id") != null || formData.getRequestParameter("recordId") != null);
                 
-                if (isRuntime && urlHasId) {
+                if (isRuntimeLoad && urlHasId) {
                     //check for record exist
                     FormRowSet data = formData.getLoadBinderData(this);
                     if (data == null || data.isEmpty()) {
