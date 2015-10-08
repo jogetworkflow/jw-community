@@ -41,12 +41,49 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
         String customHTML = (String) getProperty("value");
 
         if (customHTML != null && !customHTML.isEmpty()) {
-            Pattern pattern = Pattern.compile("name=\\\"([a-zA-Z0-9_-]*)\\\"");
+            //input field
+            Pattern pattern = Pattern.compile("<input[^>]*>");
             Matcher matcher = pattern.matcher(customHTML);
-
             while (matcher.find()) {
-                String name = matcher.group(1);
-                fieldNames.add(name);
+                String inputString = matcher.group(0);
+
+                //get the name
+                Pattern patternName = Pattern.compile("name=\"([^\\\"]*)\"");
+                Matcher matcherName = patternName.matcher(inputString);
+                if (matcherName.find()) {
+                    String name = matcherName.group(1);
+                    fieldNames.add(name);
+                }
+            }
+
+            //textarea
+            Pattern patternTextarea = Pattern.compile("<textarea[^>]*>.*?</textarea>", Pattern.DOTALL);
+            Matcher matcherTextarea = patternTextarea.matcher(customHTML);
+            while (matcherTextarea.find()) {
+                String textareaString = matcherTextarea.group(0);
+
+                //get the name
+                Pattern patternName = Pattern.compile("name=\"([^\\\"]*)\"");
+                Matcher matcherName = patternName.matcher(textareaString);
+                if (matcherName.find()) {
+                    String name = matcherName.group(1);
+                    fieldNames.add(name);
+                }
+            }
+
+            //Select Box
+            Pattern patternSelect = Pattern.compile("<select[^>]*>.*?</select>", Pattern.DOTALL);
+            Matcher matcherSelect = patternSelect.matcher(customHTML);
+            while (matcherSelect.find()) {
+                String selectString = matcherSelect.group(0);
+
+                //get the name
+                Pattern patternName = Pattern.compile("name=\"([^\\\"]*)\"");
+                Matcher matcherName = patternName.matcher(selectString);
+                if (matcherName.find()) {
+                    String name = matcherName.group(1);
+                    fieldNames.add(name);
+                }
             }
         }
         return fieldNames;
@@ -56,41 +93,32 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
     public FormRowSet formatData(FormData formData) {
         FormRowSet rowSet = null;
         FormRow result = null;
+        
+        for (String name : getDynamicFieldNames()) {
+            //create dummy element object
+            Element element = new TextField();
+            element.setProperty("id", name);
 
-        String customHTML = (String) getProperty("value");
-
-        if (customHTML != null && !customHTML.isEmpty()) {
-            Pattern pattern = Pattern.compile("name=\\\"([a-zA-Z0-9_-]*)\\\"");
-            Matcher matcher = pattern.matcher(customHTML);
-
-            while (matcher.find()) {
-                String name = matcher.group(1);
-
-                //create dummy element object
-                Element element = new TextField();
-                element.setProperty("id", name);
-
-                //get value from the formData
-                String[] values = FormUtil.getElementPropertyValues(element, formData);
-                if (values != null && values.length > 0) {
-                    // check for empty submission via parameter
-                    String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
-                    if (paramValues == null || paramValues.length == 0) {
-                        values = new String[]{""};
-                    }
-
-                    // formulate values
-                    String delimitedValue = FormUtil.generateElementPropertyValues(values);
-
-                    if (rowSet == null) {
-                        rowSet = new FormRowSet();
-                        result = new FormRow();
-                        rowSet.add(result);
-                    }
-
-                    // set value into Properties and FormRowSet object
-                    result.setProperty(name, delimitedValue);
+            //get value from the formData
+            String[] values = FormUtil.getElementPropertyValues(element, formData);
+            if (values != null && values.length > 0) {
+                // check for empty submission via parameter
+                String[] paramValues = FormUtil.getRequestParameterValues(element, formData);
+                if (paramValues == null || paramValues.length == 0) {
+                    values = new String[]{""};
                 }
+
+                // formulate values
+                String delimitedValue = FormUtil.generateElementPropertyValues(values);
+
+                if (rowSet == null) {
+                    rowSet = new FormRowSet();
+                    result = new FormRow();
+                    rowSet.add(result);
+                }
+
+                // set value into Properties and FormRowSet object
+                result.setProperty(name, delimitedValue);
             }
         }
         return rowSet;
