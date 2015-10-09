@@ -2073,6 +2073,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // retrieve the user who accepted the particular activity
             String username = admin.getActivityResourceUsername(sessionHandle, processInstanceId, activityInstanceId);
             wfAct.setNameOfAcceptedUser(username);
+            
+            if (username == null || username.isEmpty()) {
+                //check is sub flow
+                CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processInstanceId, activityInstanceId);
+                String subflowId = wrapper.getSubflowProcessId();
+                if (subflowId != null) {
+                    wfAct.setNameOfAcceptedUser(subflowId);
+                    wfAct.setType(WorkflowActivity.TYPE_SUBFLOW);
+                }
+            }
 
             double limit = -1;
             if (actAttributeList != null) {
