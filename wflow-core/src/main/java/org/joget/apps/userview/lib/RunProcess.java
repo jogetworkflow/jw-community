@@ -504,7 +504,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         if (workflowManager.isUserInWhiteList(processDefId)) {
             return true;
         } else {
-            setProperty("headerTitle", "Unauthorized");
+            setProperty("headerTitle", ResourceBundleUtil.getMessage("general.header.unauthorized"));
             setProperty("view", "unauthorized");
             return false;
         }
