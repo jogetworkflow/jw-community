@@ -40,11 +40,17 @@ public class Viewer {
         BufferedImage img = generateProcessImage(xpdl, packageId, processDefId, runningActivityIds);
         if (img != null) {
             // output to jpeg
-            FileOutputStream fos = new FileOutputStream(file);
-            LogFactory.getLog(Viewer.class.getName()).info("Saving process image to JPEG using ImageIO");
-            ImageIO.write(img, "jpeg", fos);
-            fos.flush();
-            fos.close();
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(file);
+                LogFactory.getLog(Viewer.class.getName()).info("Saving process image to JPEG using ImageIO");
+                ImageIO.write(img, "jpeg", fos);
+                fos.flush();
+            } finally {
+                if (fos != null) {
+                    fos.close();
+                }
+            }
         }
 
     }
