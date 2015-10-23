@@ -26,6 +26,9 @@
 <div id="main-body-content" style="text-align: left;">
 
 <c:choose>
+    <c:when test="${empty plugin}">
+        <span class="form-errors" style="display:block"><fmt:message key="console.plugin.label.pluginNoProperties"/></span>
+    </c:when>
     <c:when test="${empty propertyEditable}">
         <dl>
             <dt><fmt:message key="console.plugin.label.name"/></dt>

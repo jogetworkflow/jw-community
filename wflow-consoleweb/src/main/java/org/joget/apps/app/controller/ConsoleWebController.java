@@ -1456,6 +1456,13 @@ public class ConsoleWebController {
     public void consoleAppExport(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         ServletOutputStream output = null;
         try {
+            // verify app
+            AppDefinition appDef = appService.getAppDefinition(appId, version);
+            if (appDef == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
             // determine output filename
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String timestamp = sdf.format(new Date());
@@ -2283,16 +2290,15 @@ public class ConsoleWebController {
                     map.addAttribute("defaultProperties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
                 }
             }
+            if (plugin instanceof PropertyEditable) {
+                map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+            }
+
+            String url = request.getContextPath() + "/web/console/app/" + appId + "/" + version + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/participant/" + participantId + "/submit/plugin?param_value=" + plugin.getClass().getName();
+
+            map.addAttribute("plugin", plugin);
+            map.addAttribute("actionUrl", url);
         }
-
-        if (plugin instanceof PropertyEditable) {
-            map.addAttribute("propertyEditable", (PropertyEditable) plugin);
-        }
-
-        String url = request.getContextPath() + "/web/console/app/" + appId + "/" + version + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/participant/" + participantId + "/submit/plugin?param_value=" + plugin.getClass().getName();
-
-        map.addAttribute("plugin", plugin);
-        map.addAttribute("actionUrl", url);
 
         return "console/plugin/pluginConfig";
     }
@@ -2751,6 +2757,13 @@ public class ConsoleWebController {
     public void consoleAppMessageGeneratePODownload(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "locale", required = false) String locale) throws IOException {
         ServletOutputStream output = null;
         try {
+            // verify app
+            AppDefinition appDef = appService.getAppDefinition(appId, version);
+            if (appDef == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            
             // determine output filename
             String filename = appId + "_" + version + "_" + locale + ".po";
 

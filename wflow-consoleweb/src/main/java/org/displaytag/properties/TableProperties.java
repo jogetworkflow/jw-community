@@ -428,10 +428,10 @@ public final class TableProperties implements Cloneable
     private static Properties loadBuiltInProperties() throws TablePropertiesLoadException
     {
         Properties defaultProperties = new Properties();
-
+        InputStream is = null;
         try
         {
-            InputStream is = TableProperties.class.getResourceAsStream(DEFAULT_FILENAME);
+            is = TableProperties.class.getResourceAsStream(DEFAULT_FILENAME);
             if (is == null)
             {
                 throw new TablePropertiesLoadException(TableProperties.class, DEFAULT_FILENAME, null);
@@ -441,7 +441,22 @@ public final class TableProperties implements Cloneable
         catch (IOException e)
         {
             throw new TablePropertiesLoadException(TableProperties.class, DEFAULT_FILENAME, e);
-        }
+        } 
+        finally
+        {
+            if (is != null)
+            {
+                try 
+                {
+                    is.close();
+                } 
+                catch (IOException ex) 
+                {
+                    // ignore
+                }
+            }
+        }    
+            
 
         return defaultProperties;
     }
