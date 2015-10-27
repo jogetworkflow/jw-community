@@ -218,17 +218,17 @@
                                 <jarResource>
                                     <groupId>org.apache.httpcomponents</groupId>
                                     <artifactId>httpclient</artifactId>
-                                    <version>4.2.5</version>
+                                    <version>4.5.1</version>
                                 </jarResource>
                                 <jarResource>
                                     <groupId>org.apache.httpcomponents</groupId>
                                     <artifactId>httpmime</artifactId>
-                                    <version>4.2.5</version>
+                                    <version>4.5.1</version>
                                 </jarResource>
                                 <jarResource>
                                     <groupId>org.apache.httpcomponents</groupId>
                                     <artifactId>httpcore</artifactId>
-                                    <version>4.2.4</version>
+                                    <version>4.4.3</version>
                                 </jarResource>
                                 <jarResource>
                                     <groupId>log4j</groupId>

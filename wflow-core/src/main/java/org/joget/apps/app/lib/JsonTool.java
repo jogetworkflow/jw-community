@@ -7,8 +7,11 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -60,18 +63,18 @@ public class JsonTool extends DefaultApplicationPlugin {
         WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
 
         String jsonUrl = (String) properties.get("jsonUrl");
-        GetMethod get = null;
+        CloseableHttpClient client = null;
+        HttpGet get = null;
         try {
-            HttpClient client = new HttpClient();
+            client = HttpClients.createDefault();
 
             jsonUrl = WorkflowUtil.processVariable(jsonUrl, "", wfAssignment);
 
             jsonUrl = StringUtil.encodeUrlParam(jsonUrl);
 
-            get = new GetMethod(jsonUrl);
-            client.executeMethod(get);
-            InputStream in = get.getResponseBodyAsStream();
-            String jsonResponse = streamToString(in);
+            get = new HttpGet(jsonUrl);
+            HttpResponse response = client.execute(get);
+            String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
 
             Map object = PropertyUtil.getPropertiesValueFromJson(jsonResponse);
 
@@ -81,8 +84,15 @@ public class JsonTool extends DefaultApplicationPlugin {
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
-            if (get != null) {
-                get.releaseConnection();
+            try {
+                if (get != null) {
+                    get.releaseConnection();
+                }
+                if (client != null) {
+                    client.close();
+                }
+            } catch (IOException ex) {
+                LogUtil.error(getClass().getName(), ex, "");
             }
         }
 

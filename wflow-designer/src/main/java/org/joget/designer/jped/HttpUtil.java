@@ -16,11 +16,8 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLException;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,24 +32,25 @@ import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.enhydra.jawe.ResourceManager;
 import org.joget.designer.Designer;
 
@@ -90,10 +88,10 @@ public class HttpUtil {
     public static String httpPost(CookieStore cookieStore, String url, int port, String sessionId, String cookieDomain, String cookiePath, String username, String password, boolean trustAllSsl, boolean failOnError, String filename, File file) throws IOException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException, AuthenticationException {
         String contents = null;
         
-        HttpClient httpClient = new DefaultHttpClient();
+        HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         // Set no redirect
-        ((DefaultHttpClient)httpClient).setRedirectStrategy(new RedirectStrategy() {
+        httpClientBuilder.setRedirectStrategy(new RedirectStrategy() {
             @Override
             public boolean isRedirected(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) {
                 return false;
@@ -108,8 +106,7 @@ public class HttpUtil {
         // Prepare a request object
         HttpPost httpRequest = new HttpPost(url);
         if (file != null) {
-            MultipartEntity reqEntity = new MultipartEntity();
-            reqEntity.addPart("packageXpdl", new FileBody(file));
+            HttpEntity reqEntity = MultipartEntityBuilder.create().addPart("packageXpdl", new FileBody(file)).build();
             httpRequest.setEntity(reqEntity);            
         } else {
             if (username != null && password != null) {
@@ -133,27 +130,26 @@ public class HttpUtil {
             cookie.setPath(cookiePath);
             cookieStore.addCookie(cookie); 
         }
-        ((DefaultHttpClient)httpClient).setCookieStore(cookieStore);                 
+        httpClientBuilder.setDefaultCookieStore(cookieStore);                 
 
         // Prepare SSL trust
-        HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
-        SSLSocketFactory sslsf = new SSLSocketFactory(new TrustStrategy() {
-            public boolean isTrusted(final X509Certificate[] chain, String authType) throws CertificateException {
-                return true;
-            }
-        }, (X509HostnameVerifier) hostnameVerifier);
+        SSLContextBuilder builder = new SSLContextBuilder();
+        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
         if (SSL_TRUSTED || trustAllSsl) {
-            httpClient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", port, sslsf));
+            httpClientBuilder.setSSLSocketFactory(sslsf);
         }
         
         // Execute the request
+        CloseableHttpClient httpClient = httpClientBuilder.build();
         HttpResponse response = null;
         try {
             response = httpClient.execute(httpRequest);
         } catch (SSLException se) {
             int result = JOptionPane.showConfirmDialog(null, ResourceManager.getLanguageDependentString("InvalidSSLPrompt"), ResourceManager.getLanguageDependentString("InvalidSSLTitle"), JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
-                httpClient.getConnectionManager().getSchemeRegistry().register(new Scheme("https", port, sslsf));
+                httpClientBuilder.setSSLSocketFactory(sslsf);
+                httpClient = httpClientBuilder.build();
                 response = httpClient.execute(httpRequest);
                 SSL_TRUSTED = true;
             }
@@ -208,7 +204,7 @@ public class HttpUtil {
                 String loginUrl = Designer.URLPATH + "/web/json/directory/user/sso";
                 String ssoResponse = HttpUtil.httpPost(cookieStore, loginUrl, port, null, cookieDomain, cookiePath, username, credentials, true, true, null, null);
                 String isAdminStr = "isAdmin";
-                if (ssoResponse.indexOf(isAdminStr) < 0) {
+                if (!ssoResponse.contains(isAdminStr)) {
                     throw new AuthenticationException();
                 }
                 List<Cookie> cookies = cookieStore.getCookies();
@@ -273,7 +269,7 @@ public class HttpUtil {
             // When HttpClient instance is no longer needed,
             // shut down the connection manager to ensure
             // immediate deallocation of all system resources
-            httpClient.getConnectionManager().shutdown();
+            httpClient.close();
         }        
         return contents;
     }

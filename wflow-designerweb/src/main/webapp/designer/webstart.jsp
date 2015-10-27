@@ -41,9 +41,9 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <jar href="commons-logging-1.0.4.jar"/>
         <jar href="officelnfs-2.7.jar"/>
         <jar href="log4j-1.2.8.jar"/>
-        <jar href="httpclient-4.2.5.jar"/>
-        <jar href="httpcore-4.2.4.jar"/>
-        <jar href="httpmime-4.2.5.jar"/>
+        <jar href="httpclient-4.5.1.jar"/>
+        <jar href="httpcore-4.4.3.jar"/>
+        <jar href="httpmime-4.5.1.jar"/>
         <jar href="nimrod-laf-1.2.jar"/>
     </resources>
     <application-desc main-class="org.joget.designer.Designer">
