@@ -485,20 +485,22 @@ public class FormUtil implements ApplicationContextAware {
         if (element == null) {
             element = form;
         }
-        if (element instanceof FormAction) {
-            FormAction action = (FormAction) element;
-            if (action != null) {
-                boolean isActive = action.isActive(form, formData);
-                if (isActive) {
-                    updatedFormData = action.actionPerformed(form, formData);
+        if (element.isAuthorize(formData)) {
+            if (element instanceof FormAction) {
+                FormAction action = (FormAction) element;
+                if (action != null) {
+                    boolean isActive = action.isActive(form, formData);
+                    if (isActive) {
+                        updatedFormData = action.actionPerformed(form, formData);
+                    }
                 }
             }
-        }
-        // recurse into children
-        Collection<Element> children = element.getChildren(formData);
-        if (children != null) {
-            for (Element child : children) {
-                updatedFormData = FormUtil.executeActions(form, child, formData);
+            // recurse into children
+            Collection<Element> children = element.getChildren(formData);
+            if (children != null) {
+                for (Element child : children) {
+                    updatedFormData = FormUtil.executeActions(form, child, formData);
+                }
             }
         }
         return updatedFormData;
