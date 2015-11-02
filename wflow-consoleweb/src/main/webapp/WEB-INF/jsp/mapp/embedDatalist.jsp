@@ -7,8 +7,6 @@
 <script src="${pageContext.request.contextPath}/js/json2.js"></script>
 
 <div class="uview_body">
-    <c:set var="json" value="${fn:replace(json, '\\\\', '\\\\\\\\')}"/>
-    <c:set var="json" value="${fn:replace(json, '\"', '\\\\\"')}"/>
     
     <script type="text/javascript">
         $(document).ready(function(){

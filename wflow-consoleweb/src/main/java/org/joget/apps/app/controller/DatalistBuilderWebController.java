@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -375,11 +376,12 @@ public class DatalistBuilderWebController {
         }
         
         String json = datalistDefinition.getJson();
+        String escapedJson = StringEscapeUtils.escapeJavaScript(json);
         DataList dataList = dataListService.fromJson(json);
         dataList.setSelectionType(selectionType);
         
         model.addAttribute("id", id);
-        model.addAttribute("json", json);
+        model.addAttribute("json", escapedJson);
         model.addAttribute("buttonLabel", buttonLabel);
         model.addAttribute("dataList", dataList);
         model.addAttribute("setting", callbackSetting);
