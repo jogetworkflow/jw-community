@@ -170,7 +170,7 @@
                             <a href="#" id="userview-json-link" style="font-size: smaller" onclick="return false"><fmt:message key="console.builder.advanced"/></a>
                             <div id="userview-info" style="display: none">
                                 <form id="userview-preview" action="?" target="_blank" method="post">
-                                    <textarea id="userview-json" name="json" cols="80" rows="10" style="font-size: smaller">${json}</textarea>
+                                    <textarea id="userview-json" name="json" cols="80" rows="10" style="font-size: smaller"><c:out value="${json}"/></textarea>
                                 </form>
                                 <button onclick="UserviewBuilder.updateFromJson()"><fmt:message key="console.builder.update"/></button>
                             </div>

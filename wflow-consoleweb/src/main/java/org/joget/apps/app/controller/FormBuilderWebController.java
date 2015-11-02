@@ -81,8 +81,15 @@ public class FormBuilderWebController {
         if (formDef != null) {
             String formJson = null;
             if (json != null && !json.trim().isEmpty()) {
-                // read custom JSON from request
-                formJson = json;
+                try {
+                    // validate JSON
+                    new JSONObject(json);
+
+                    // read custom JSON from request
+                    formJson = json;
+                } catch (JSONException ex) {
+                    formJson = "{}";
+                }
             } else {
                 // get JSON from form definition
                 formJson = formDef.getJson();

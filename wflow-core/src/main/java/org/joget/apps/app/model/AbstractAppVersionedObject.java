@@ -2,6 +2,7 @@ package org.joget.apps.app.model;
 
 import java.io.Serializable;
 import org.simpleframework.xml.Element;
+import org.springmodules.validation.bean.conf.loader.annotation.handler.RegExp;
 
 /**
  * Abstract class to represent an object that is under app versioned.
@@ -11,6 +12,7 @@ public class AbstractAppVersionedObject implements Serializable {
     public static final String ID_SEPARATOR = "_";
     private AppDefinition appDefinition;
     @Element(required = false)
+    @RegExp(value = "^[0-9a-zA-Z_-]+$")
     private String id;
     @Element(required = false)
     private String appId;

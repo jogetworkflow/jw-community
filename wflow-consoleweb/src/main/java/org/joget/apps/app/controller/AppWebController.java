@@ -66,7 +66,7 @@ public class AppWebController {
         }
 
         // set app and process details
-        model.addAttribute("appId", appId);
+        model.addAttribute("appId", appDef.getId());
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("process", processDef);
@@ -139,7 +139,7 @@ public class AppWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         WorkflowProcess processDef = appService.getWorkflowProcessForApp(appId, appDef.getVersion().toString(), processDefId);
         String processDefIdWithVersion = processDef.getId();
-        model.addAttribute("appId", appId);
+        model.addAttribute("appId", appDef.getId());
         model.addAttribute("appVersion", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("process", processDef);

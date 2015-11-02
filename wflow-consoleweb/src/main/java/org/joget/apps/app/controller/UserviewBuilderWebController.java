@@ -16,6 +16,7 @@ import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,8 +57,15 @@ public class UserviewBuilderWebController {
 
         String userviewJson = null;
         if (json != null && !json.trim().isEmpty()) {
-            // read custom JSON from request
-            userviewJson = json;
+            try {
+                // validate JSON
+                new JSONObject(json);
+
+                // read custom JSON from request
+                userviewJson = json;
+            } catch (JSONException ex) {
+                userviewJson = "{}";
+            }
         } else {
             // get JSON from form definition
             userviewJson = userview.getJson();

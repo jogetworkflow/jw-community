@@ -78,8 +78,15 @@ public class DatalistBuilderWebController {
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
         String listJson = null;
         if (json != null && !json.trim().isEmpty()) {
-            // read custom JSON from request
-            listJson = json;
+            try {
+                // validate JSON
+                new JSONObject(json);
+                
+                // read custom JSON from request
+                listJson = json;
+            } catch (JSONException ex) {
+                listJson = "{}";
+            }
         } else {
             // get JSON from form definition
             listJson = datalist.getJson();

@@ -1,6 +1,6 @@
 package org.joget.commons.spring.web;
 
-import org.joget.commons.util.FileStore;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -93,6 +94,22 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
 
             super.setAttribute(key, value);
         }
+
+        @Override
+        public String getQueryString() {
+            String queryString = super.getQueryString();
+            if (queryString != null) {
+                String escapedQueryString = null;
+                try {
+                    escapedQueryString = UriUtils.encodeQuery(queryString, "UTF-8");
+                } catch (UnsupportedEncodingException ex) {
+                    // ignore
+                }
+                return escapedQueryString;
+            } else {
+                return queryString;
+            }
+        }        
     }
 
     private class IteratorEnumeration implements Enumeration {

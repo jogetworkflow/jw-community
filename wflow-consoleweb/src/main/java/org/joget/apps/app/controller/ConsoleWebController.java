@@ -1466,7 +1466,7 @@ public class ConsoleWebController {
             // determine output filename
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
             String timestamp = sdf.format(new Date());
-            String filename = APP_ZIP_PREFIX + appId + "-" + version + "-" + timestamp + ".zip";
+            String filename = APP_ZIP_PREFIX + appDef.getId() + "-" + appDef.getVersion() + "-" + timestamp + ".zip";
 
             // set response headers
             response.setContentType("application/zip");
@@ -1474,7 +1474,7 @@ public class ConsoleWebController {
             output = response.getOutputStream();
 
             // export app
-            appService.exportApp(appId, version, output);
+            appService.exportApp(appDef.getId(), appDef.getVersion().toString(), output);
 
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -1666,7 +1666,7 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
@@ -1702,7 +1702,7 @@ public class ConsoleWebController {
                 map.clear();
                 // redirect to the only process
                 WorkflowProcess wp = processList.iterator().next();
-                return "redirect:/web/console/app/" + appId + "/" + version + "/processes/" + wp.getIdWithoutVersion();
+                return "redirect:/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + wp.getIdWithoutVersion();
             } else {
                 // show process list
                 map.addAttribute("processList", processList);
@@ -2294,7 +2294,7 @@ public class ConsoleWebController {
                 map.addAttribute("propertyEditable", (PropertyEditable) plugin);
             }
 
-            String url = request.getContextPath() + "/web/console/app/" + appId + "/" + version + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/participant/" + participantId + "/submit/plugin?param_value=" + plugin.getClass().getName();
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/participant/" + participantId + "/submit/plugin?param_value=" + plugin.getClass().getName();
 
             map.addAttribute("plugin", plugin);
             map.addAttribute("actionUrl", url);
@@ -2645,7 +2645,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/message/submit/(*:action)", method = RequestMethod.POST)
     public String consoleAppMessageSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("message") Message message, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
@@ -2687,7 +2687,7 @@ public class ConsoleWebController {
             }
         } else {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=message";
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=message";
             map.addAttribute("url", url);
             return "console/dialogClose";
         }
@@ -2765,7 +2765,7 @@ public class ConsoleWebController {
             }
             
             // determine output filename
-            String filename = appId + "_" + version + "_" + locale + ".po";
+            String filename = appDef.getId() + "_" + appDef.getVersion() + "_" + locale + ".po";
 
             // set response headers
             response.setContentType("text/plain; charset=utf-8");
@@ -2821,7 +2821,7 @@ public class ConsoleWebController {
         }
         
         if (errorMsg != null) {
-            map.addAttribute("appId", appId);
+            map.addAttribute("appId", appDef.getId());
             map.addAttribute("appVersion", appDef.getVersion());
             map.addAttribute("appDefinition", appDef);
             map.addAttribute("errorMessage", errorMsg);
@@ -2830,7 +2830,7 @@ public class ConsoleWebController {
         }
         
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=message";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=message";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }
@@ -2861,7 +2861,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/envVariable/submit/(*:action)", method = RequestMethod.POST)
     public String consoleAppEnvVariableSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("environmentVariable") EnvironmentVariable environmentVariable, BindingResult result) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
@@ -2903,7 +2903,7 @@ public class ConsoleWebController {
             }
         } else {
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=variable";
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=variable";
             map.addAttribute("url", url);
             return "console/dialogClose";
         }
@@ -2966,7 +2966,7 @@ public class ConsoleWebController {
     @RequestMapping("/console/app/(*:appId)/(~:version)/pluginDefault/config")
     public String consoleAppPluginDefaultConfig(ModelMap map, HttpServletRequest request, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String action) throws UnsupportedEncodingException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
@@ -2988,7 +2988,7 @@ public class ConsoleWebController {
             map.addAttribute("propertyEditable", (PropertyEditable) plugin);
         }
 
-        String url = request.getContextPath() + "/web/console/app/" + appId + "/" + version + "/pluginDefault/submit/";
+        String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/pluginDefault/submit/";
         if (pluginDefaultProperties == null) {
             url += "create";
         } else {
@@ -3006,7 +3006,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/pluginDefault/submit/(*:param_action)", method = RequestMethod.POST)
     public String consoleAppPluginDefaultSubmit(ModelMap map, HttpServletRequest request, @RequestParam("param_action") String action, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_id") String id, @RequestParam(required = false) String pluginProperties) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
@@ -3065,7 +3065,7 @@ public class ConsoleWebController {
             pluginDefaultPropertiesDao.update(pluginDefaultProperties);
         }
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appId + "/" + version + "/properties?tab=pluginDefault";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=pluginDefault";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }
@@ -4407,11 +4407,11 @@ public class ConsoleWebController {
         
         // save into image file
         version = (version != null) ? version : "";
-        String filename = appId + "_" + version + "_" + userviewId + ".png";
+        String filename = appDef.getId() + "_" + appDef.getVersion() + "_" + userviewId + ".png";
         String path = SetupManager.getBaseDirectory() + "app_screenshots";
         new File(path).mkdirs();
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
-        File f = new File(path + File.separator + filename);
+        File f = new File(path, filename);
         ImageIO.write(image, "png", f);
         
         LogUtil.debug(getClass().getName(), "Created screenshot for userview " + userviewId + " in " + appId);
@@ -4422,7 +4422,7 @@ public class ConsoleWebController {
         version = (version != null) ? version : "";
         String filename = appId + "_" + version + "_" + userviewId + ".png";
         String path = SetupManager.getBaseDirectory() + "app_screenshots";
-        File f = new File(path + File.separator + filename);
+        File f = new File(path, filename);
         if (!f.exists()) {
             String realContextPath = ((WebApplicationContext)AppUtil.getApplicationContext()).getServletContext().getRealPath("/");
             String defaultImage = realContextPath + File.separator + "/home/sampleapp.png";
