@@ -1302,7 +1302,7 @@ DatalistBuilder = {
         $("#builder-canvas").css("width", minWidth + 10);
         
         // update JSON definition
-        var jsonString = '(' + DatalistBuilder.getJson() + ')';
+        var jsonString = DatalistBuilder.getJson();
         $('#list-json').val(jsonString);
     },
     
