@@ -3,6 +3,7 @@ package org.joget.commons.spring.model;
 import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.LogUtil;
 import java.io.Serializable;
+import java.text.Normalizer;
 import java.util.Collection;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import java.util.List;
@@ -110,7 +111,8 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
                         String query = "SELECT e FROM " + entityName + " e " + condition;
 
                         if (sort != null && !sort.equals("")) {
-                            query += " ORDER BY " + sort;
+                            String filteredSort = filterSpace(sort);
+                            query += " ORDER BY " + filteredSort;
 
                             if (desc) {
                                 query += " DESC";
@@ -162,5 +164,20 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
 
         return count;
     }
+    
+    /**
+     * Normalizes and truncates a String if there is a space.
+     * @param str
+     * @return 
+     */
+    protected String filterSpace(String str) {
+        if (str != null) {
+            str = Normalizer.normalize(str, Normalizer.Form.NFKC);
+            if (str.contains(" ")) {
+                str = str.substring(0, str.indexOf(" "));
+            }
+        }
+        return str;
+    }    
 }
 
