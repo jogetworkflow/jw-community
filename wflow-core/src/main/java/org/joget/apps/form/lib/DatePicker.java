@@ -60,7 +60,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+            if (!FormUtil.isReadonly(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
                 try {
                     String displayFormat = getJavaDateFormat(getPropertyString("format"));
                     if (!displayFormat.equals(getPropertyString("dataFormat"))) {
@@ -159,96 +159,98 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     @Override
     public Boolean selfValidate(FormData formData) {
         Boolean valid = true;
-        String id = FormUtil.getElementParameterName(this);
-        String value = FormUtil.getElementPropertyValue(this, formData);
-               
-        if (value != null && !value.isEmpty()) {
-            String displayFormat = getJavaDateFormat(getPropertyString("format"));
-            String formattedValue = formattedValue(value, displayFormat, formData);
-            
-            valid = DateUtil.validateDateFormat(formattedValue, displayFormat);
-            
-            if (!valid) {
-                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.invalidFormat"));
-            }
-            
-            Form form = null;
-            if (!getPropertyString("startDateFieldId").isEmpty() ||
-                !getPropertyString("endDateFieldId").isEmpty()) {
-                form = FormUtil.findRootForm(this);
-            }
-            
-            String startDate = "";
-            String endDate = "";
-            
-            if (!getPropertyString("startDateFieldId").isEmpty()) {
-                Element e = FormUtil.findElement(getPropertyString("startDateFieldId"), form, formData);
-                if (e != null) {
-                    String compareValue = FormUtil.getElementPropertyValue(e, formData);
-                    if (compareValue != null && !compareValue.isEmpty()) {
-                        String formattedCompare = compareValue;
-                        if (e instanceof DatePicker) {
-                            formattedCompare = formatCompareValue(compareValue, displayFormat);
-                        }
-                        if (!DateUtil.compare(formattedCompare, formattedValue, displayFormat) && !formattedCompare.equals(value)) {
-                            valid = false;
-                            startDate = formattedCompare;
-                        }
-                    }
-                }
-            }
-            
-            if (!getPropertyString("endDateFieldId").isEmpty()) {
-                Element e = FormUtil.findElement(getPropertyString("endDateFieldId"), form, formData);
-                if (e != null) {
-                    String compareValue = FormUtil.getElementPropertyValue(e, formData);
-                    if (compareValue != null && !compareValue.isEmpty()) {
-                        String formattedCompare = compareValue;
-                        if (e instanceof DatePicker) {
-                            formattedCompare = formatCompareValue(compareValue, displayFormat);
-                        }
-                        if (!DateUtil.compare(formattedValue, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
-                            valid = false;
-                            endDate = formattedCompare;
-                        }
-                    }
-                }
-            }
-            
-            String type = getPropertyString("currentDateAs");
-            if (!type.isEmpty()) {
-                SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                String formattedCompare = display.format(new Date());
-                String start, end;
-                if ("minDate".equals(type)) {
-                    start = formattedCompare;
-                    end = formattedValue;
-                } else {
-                    start = formattedValue;
-                    end = formattedCompare;
-                }
-                
-                if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(formattedValue)) {
-                    valid = false;
-                    
-                    if ("minDate".equals(type)) {
-                        if (startDate.isEmpty() || !DateUtil.compare(formattedCompare, startDate, displayFormat)) {
-                            startDate = formattedCompare;
-                        }
-                    } else {
-                        if (endDate.isEmpty() || !DateUtil.compare(endDate, formattedCompare, displayFormat)) {
-                            endDate = formattedCompare;
-                        }
-                    }
-                }
-            }
-                
-            if (!startDate.isEmpty()) {
-                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.minDate", new String[]{startDate}));
-            }
+        if (!FormUtil.isReadonly(this, formData)) {
+            String id = FormUtil.getElementParameterName(this);
+            String value = FormUtil.getElementPropertyValue(this, formData);
 
-            if (!endDate.isEmpty()) {
-                formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.maxDate", new String[]{endDate}));
+            if (value != null && !value.isEmpty()) {
+                String displayFormat = getJavaDateFormat(getPropertyString("format"));
+                String formattedValue = formattedValue(value, displayFormat, formData);
+
+                valid = DateUtil.validateDateFormat(formattedValue, displayFormat);
+
+                if (!valid) {
+                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.invalidFormat"));
+                }
+
+                Form form = null;
+                if (!getPropertyString("startDateFieldId").isEmpty() ||
+                    !getPropertyString("endDateFieldId").isEmpty()) {
+                    form = FormUtil.findRootForm(this);
+                }
+
+                String startDate = "";
+                String endDate = "";
+
+                if (!getPropertyString("startDateFieldId").isEmpty()) {
+                    Element e = FormUtil.findElement(getPropertyString("startDateFieldId"), form, formData);
+                    if (e != null) {
+                        String compareValue = FormUtil.getElementPropertyValue(e, formData);
+                        if (compareValue != null && !compareValue.isEmpty()) {
+                            String formattedCompare = compareValue;
+                            if (e instanceof DatePicker) {
+                                formattedCompare = formatCompareValue(compareValue, displayFormat);
+                            }
+                            if (!DateUtil.compare(formattedCompare, formattedValue, displayFormat) && !formattedCompare.equals(value)) {
+                                valid = false;
+                                startDate = formattedCompare;
+                            }
+                        }
+                    }
+                }
+
+                if (!getPropertyString("endDateFieldId").isEmpty()) {
+                    Element e = FormUtil.findElement(getPropertyString("endDateFieldId"), form, formData);
+                    if (e != null) {
+                        String compareValue = FormUtil.getElementPropertyValue(e, formData);
+                        if (compareValue != null && !compareValue.isEmpty()) {
+                            String formattedCompare = compareValue;
+                            if (e instanceof DatePicker) {
+                                formattedCompare = formatCompareValue(compareValue, displayFormat);
+                            }
+                            if (!DateUtil.compare(formattedValue, formattedCompare , displayFormat) && !formattedCompare.equals(value)) {
+                                valid = false;
+                                endDate = formattedCompare;
+                            }
+                        }
+                    }
+                }
+
+                String type = getPropertyString("currentDateAs");
+                if (!type.isEmpty()) {
+                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    String formattedCompare = display.format(new Date());
+                    String start, end;
+                    if ("minDate".equals(type)) {
+                        start = formattedCompare;
+                        end = formattedValue;
+                    } else {
+                        start = formattedValue;
+                        end = formattedCompare;
+                    }
+
+                    if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(formattedValue)) {
+                        valid = false;
+
+                        if ("minDate".equals(type)) {
+                            if (startDate.isEmpty() || !DateUtil.compare(formattedCompare, startDate, displayFormat)) {
+                                startDate = formattedCompare;
+                            }
+                        } else {
+                            if (endDate.isEmpty() || !DateUtil.compare(endDate, formattedCompare, displayFormat)) {
+                                endDate = formattedCompare;
+                            }
+                        }
+                    }
+                }
+
+                if (!startDate.isEmpty()) {
+                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.minDate", new String[]{startDate}));
+                }
+
+                if (!endDate.isEmpty()) {
+                    formData.addFormError(id, ResourceBundleUtil.getMessage("form.datepicker.error.maxDate", new String[]{endDate}));
+                }
             }
         }
         
