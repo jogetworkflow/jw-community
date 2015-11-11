@@ -24,7 +24,6 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public static final String DEFAULT_LOCALE_KEY = "defaultLocale";
     public static final String DEFAULT_LOCALE_EXPIRY_KEY = "locale_expiry";
     public static final String CURRENT_LOCALE_KEY = "currentLocale";
-    private String paramValue;
     
     @Override
     protected Locale determineDefaultLocale(HttpServletRequest request){
@@ -123,9 +122,9 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         
         if (locale == null) {
             if (request != null ) {
-                if (request.getParameter(PARAM_NAME) != null && !request.getParameter(PARAM_NAME).equals(paramValue)) {
+                if (request.getParameter(PARAM_NAME) != null) {
                     locale = null;
-                    paramValue = request.getParameter(PARAM_NAME);
+                    String paramValue = request.getParameter(PARAM_NAME);
                     String[] temp = paramValue.split("_");
 
                     if (temp.length == 1 && !temp[0].isEmpty()) {
