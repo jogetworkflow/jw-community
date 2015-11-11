@@ -38,7 +38,7 @@ public class SqlFilterAspect implements MethodInterceptor {
     
     boolean isInjection(String value) {
         return value.contains(" ") || value.contains("(") || value.contains(")") 
-                || value.contains(";");
+                || value.contains(";") || value.contains("/*");
     }
 
     
