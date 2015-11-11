@@ -160,7 +160,7 @@
 <form id="ui_link_form" style="display:none"></form>
 
 <script type="text/javascript">
-    var ${var} = new JsonTable("${divToUpdate}", "${url}");
+    var ${var} = new JsonTable("${divToUpdate}", "<ui:escape value="${url}" format="html"/>");
     var myColumnDefs = [
     <c:set var="first" value="true"/>
 

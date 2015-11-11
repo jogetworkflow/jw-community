@@ -89,6 +89,10 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             LocaleContextHolder.resetLocaleContext();
+            
+            response.setHeader("X-Content-Type-Options", "nosniff");
+            response.setHeader("X-Content-Security-Policy", "default-src 'self'");
+            response.setHeader("X-WebKit-CSP", "default-src 'self'");
         }
     }
     
