@@ -452,6 +452,7 @@ public class PluginManager implements ApplicationContextAware {
             boolean isValid = false;
             try {
                 JarFile jarFile = new JarFile(outputFile);
+                jarFile.close();
                 isValid = true;
             } catch (IOException ex) {
                 //delete invalid file
