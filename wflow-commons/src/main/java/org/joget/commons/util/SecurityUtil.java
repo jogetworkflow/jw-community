@@ -1,5 +1,7 @@
 package org.joget.commons.util;
 
+import java.net.URI;
+import java.util.List;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -143,5 +145,17 @@ public class SecurityUtil implements ApplicationContextAware {
             }
         }
         return false;
+    }
+    
+    public static String getDomainName(String url) {
+        try {
+            URI uri = new URI(url);
+            return uri.getHost();
+        } catch (Exception e) {}
+        return null;
+    }
+    
+    public static boolean isAllowedDomain(String domain, List<String> whitelist) {
+        return whitelist != null && domain != null && whitelist.contains(domain);
     }
 }

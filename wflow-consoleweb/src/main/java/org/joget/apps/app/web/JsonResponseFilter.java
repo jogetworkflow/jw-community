@@ -1,8 +1,8 @@
 package org.joget.apps.app.web;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
 import org.json.JSONObject;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -97,14 +97,14 @@ public class JsonResponseFilter implements Filter {
             if (callback != null && !callback.isEmpty()) {
                 SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
                 String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
-                String domain = StringUtil.getDomainName(httpRequest.getHeader("referer"));
+                String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
                 List<String> whitelist = new ArrayList<String>();
                 whitelist.add(httpRequest.getServerName());
                 if (jsonpWhitelist != null) {
                     whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
                 }
                 
-                if (!StringUtil.isAllowedDomain(domain, whitelist)) {
+                if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
                     wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
                     return;
                 }

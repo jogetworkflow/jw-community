@@ -41,19 +41,6 @@ public class StringUtil {
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
     }
-    
-    public static String getDomainName(String url) {
-        try {
-            URI uri = new URI(url);
-            String domain = uri.getHost();
-            return domain.startsWith("www.") ? domain.substring(4) : domain;
-        } catch (Exception e) {}
-        return null;
-    }
-    
-    public static boolean isAllowedDomain(String domain, List<String> whitelist) {
-        return whitelist != null && domain != null && whitelist.contains(domain);
-    }
 
     public static String encodeUrlParam(String url) {
         String urlResult = url;
