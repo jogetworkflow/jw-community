@@ -1,6 +1,7 @@
 package org.joget.commons.util;
 
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -39,6 +40,19 @@ public class StringUtil {
         java.lang.reflect.Field field = ReflectionUtils.findField(whitelistRelaxed.getClass(), "protocols");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
+    }
+    
+    public static String getDomainName(String url) {
+        try {
+            URI uri = new URI(url);
+            String domain = uri.getHost();
+            return domain.startsWith("www.") ? domain.substring(4) : domain;
+        } catch (Exception e) {}
+        return null;
+    }
+    
+    public static boolean isAllowedDomain(String domain, List<String> whitelist) {
+        return whitelist != null && domain != null && whitelist.contains(domain);
     }
 
     public static String encodeUrlParam(String url) {

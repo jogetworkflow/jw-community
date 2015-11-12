@@ -286,6 +286,16 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="jsonpWhitelist"><fmt:message key="console.setting.general.label.jsonpWhitelist"/></label>
+                        <span class="form-input">
+                            <input id="jsonpWhitelist" type="text" name="jsonpWhitelist" value="<c:out value="${settingMap['jsonpWhitelist']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.submit"/>" />
             </div>
