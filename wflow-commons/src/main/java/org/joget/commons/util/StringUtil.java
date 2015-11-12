@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.validator.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
@@ -22,8 +23,14 @@ import org.springframework.util.ReflectionUtils;
 
 public class StringUtil {
 
-    public static String TYPE_REGEX = "regex";
-    public static String TYPE_JSON = "json";
+    public static final String TYPE_REGEX = "regex";
+    public static final String TYPE_JSON = "json";
+    public static final String TYPE_JAVASCIPT = "javascript";
+    public static final String TYPE_HTML = "html";
+    public static final String TYPE_XML = "xml";
+    public static final String TYPE_JAVA = "java";
+    public static final String TYPE_SQL = "sql";
+    public static final String TYPE_URL = "url";
 
     static final Whitelist whitelistRelaxed;
     static {
@@ -158,16 +165,34 @@ public class StringUtil {
                 inStr = inStr.replaceAll(pairs.getKey(), escapeRegex(pairs.getValue()));
             }
         }
-
-        if (format == null) {
+        
+        if (format == null || inStr == null) {
             return inStr;
         }
-        if (format.equals(TYPE_REGEX)) {
-            return escapeRegex(inStr);
+        
+        String[] formats = format.split(";");
+        for (String f : formats) {
+            if (TYPE_REGEX.equals(f)) {
+                inStr = escapeRegex(inStr);
+            } else if (TYPE_JSON.equals(f)) {
+                inStr = JSONObject.escape(inStr);
+            } else if (TYPE_JAVASCIPT.equals(f)) {
+                inStr = StringEscapeUtils.escapeJavaScript(inStr);
+            } else if (TYPE_HTML.equals(f)) {
+                inStr = StringEscapeUtils.escapeHtml(inStr);
+            } else if (TYPE_XML.equals(f)) {
+                inStr = StringEscapeUtils.escapeXml(inStr);
+            } else if (TYPE_JAVA.equals(f)) {
+                inStr = StringEscapeUtils.escapeJava(inStr);
+            } else if (TYPE_SQL.equals(f)) {
+                inStr = StringEscapeUtils.escapeSql(inStr);
+            } else if (TYPE_URL.equals(f)) {
+                try {
+                    inStr = URLEncoder.encode(inStr, "UTF-8");
+                } catch (Exception e) {/* ignored */}
+            }
         }
-        if (format.equals(TYPE_JSON)) {
-            return escapeRegex(JSONObject.escape(inStr));
-        }
+        
         return inStr;
     }
 
