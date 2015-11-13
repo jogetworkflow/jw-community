@@ -160,7 +160,9 @@
 <form id="ui_link_form" style="display:none"></form>
 
 <script type="text/javascript">
-    var ${var} = new JsonTable("${divToUpdate}", "<ui:escape value="${url}" format="html"/>");
+    <c:set var="escapedUrl"><ui:escape value="${url}" format="html"/></c:set>
+    <c:set var="escapedUrl" value="${fn:replace(escapedUrl, '&amp;', '&')}"/>
+    var ${var} = new JsonTable("${divToUpdate}", "${escapedUrl}");
     var myColumnDefs = [
     <c:set var="first" value="true"/>
 
