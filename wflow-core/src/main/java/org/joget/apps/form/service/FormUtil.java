@@ -55,6 +55,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Utility methods for the Form module.
@@ -1106,7 +1108,23 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static String generateElementHtml(final Element element, final FormData formData, final String templatePath, Map dataModel) {
         PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
-        return pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/" + templatePath, "message/form/" + element.getName().replace(" ", ""));
+        String content = pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/" + templatePath, "message/form/" + element.getName().replace(" ", ""));
+        
+        String readonly = "_EDITABLE";
+        if (FormUtil.isReadonly(element, formData)) {
+             readonly = "_READONLY";
+        }
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            if (request != null) {
+                request.setAttribute(element.getClassName() + readonly, true);
+                request.setAttribute(element.getClassName(), true);
+            }
+        } catch (NoClassDefFoundError e) {
+            // ignore if servlet request is not available
+        }
+        
+        return content;
     }
 
     /**

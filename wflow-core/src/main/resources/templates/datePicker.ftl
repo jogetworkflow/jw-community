@@ -1,8 +1,10 @@
 <div class="form-cell" ${elementMetaData!}>
 <#if element.properties.readonly! != 'true'>
-    <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.custom.datepicker.js"></script>
-    <#if request.getAttribute("currentLocale")!?starts_with("zh") >
-        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
+    <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??) >
+        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.custom.datepicker.js"></script>
+        <#if request.getAttribute("currentLocale")!?starts_with("zh") >
+            <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
+        </#if>
     </#if>
 <script type="text/javascript">
     $(document).ready(function() {
