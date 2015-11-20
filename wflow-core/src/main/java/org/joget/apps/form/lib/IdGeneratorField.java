@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPalette;
@@ -16,9 +15,6 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
-import org.springframework.context.ApplicationContext;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class IdGeneratorField extends Element implements FormBuilderPaletteElement {
 
@@ -61,7 +57,6 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
         return rowSet;
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE)
     protected String getGeneratedValue(FormData formData) {
         String value = "";
         if (formData != null) {
@@ -70,16 +65,9 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
                 if (!(value != null && value.trim().length() > 0)) {
                     String envVariable = getPropertyString("envVariable");
                     AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                    ApplicationContext appContext = AppUtil.getApplicationContext();
-                    EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) appContext.getBean("environmentVariableDao");
-                    EnvironmentVariable env = environmentVariableDao.loadById(envVariable, appDef);
-
-                    int count = 0;
-
-                    if (env != null && env.getValue() != null && env.getValue().trim().length() > 0) {
-                        count = Integer.parseInt(env.getValue());
-                    }
-                    count += 1;
+                    EnvironmentVariableDao environmentVariableDao = (EnvironmentVariableDao) AppUtil.getApplicationContext().getBean("environmentVariableDao");
+                    
+                    Integer count = environmentVariableDao.getIncreasedCounter(envVariable, "Used for plugin: " + getName(), appDef);
 
                     String format = getPropertyString("format");
                     value = format;
@@ -93,21 +81,6 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
                         String runningNumber = myFormatter.format(count);
                         value = value.replaceAll(pattern, runningNumber);
                     }
-
-                    if (env == null) {
-                        env = new EnvironmentVariable();
-                        env.setAppDefinition(appDef);
-                        env.setAppId(appDef.getId());
-                        env.setAppVersion(appDef.getVersion());
-                        env.setId(envVariable);
-                        env.setRemarks("Used for plugin: " + getName());
-                        env.setValue(Integer.toString(count));
-                        environmentVariableDao.add(env);
-                    } else {
-                        env.setValue(Integer.toString(count));
-                        environmentVariableDao.update(env);
-                    }
-
                 }
             } catch (Exception e) {
                 LogUtil.error(IdGeneratorField.class.getName(), e, "");

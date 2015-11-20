@@ -9,4 +9,6 @@ public interface EnvironmentVariableDao extends AppVersionedObjectDao<Environmen
     public Collection<EnvironmentVariable> getEnvironmentVariableList(String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows);
 
     public Long getEnvironmentVariableListCount(String filterString, AppDefinition appDefinition);
+    
+    public Integer getIncreasedCounter(String id, String remark, AppDefinition appDef);
 }

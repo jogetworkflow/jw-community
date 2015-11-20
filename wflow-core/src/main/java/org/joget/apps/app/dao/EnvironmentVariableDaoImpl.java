@@ -72,4 +72,34 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
         }
         return result;
     }
+    
+    @Override
+    public Integer getIncreasedCounter(final String id, final String remark, final AppDefinition appDef) {
+        Integer count = 0;
+        
+        try {
+            EnvironmentVariable env = loadByIdForUpdate(id, appDef);
+            if (env != null && env.getValue() != null && env.getValue().trim().length() > 0) {
+                count = Integer.parseInt(env.getValue());
+            }
+            count += 1;
+
+            if (env == null) {
+                env = new EnvironmentVariable();
+                env.setAppDefinition(appDef);
+                env.setAppId(appDef.getId());
+                env.setAppVersion(appDef.getVersion());
+                env.setId(id);
+                env.setRemarks(remark);
+                env.setValue(Integer.toString(count));
+                add(env);
+            } else {
+                env.setValue(Integer.toString(count));
+                update(env);
+            }
+        } catch (Exception e) {
+            LogUtil.error(EnvironmentVariableDaoImpl.class.getName(), e, id);
+        }
+        return count;
+    }
 }
