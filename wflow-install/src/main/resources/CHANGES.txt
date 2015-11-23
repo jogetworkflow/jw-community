@@ -6,6 +6,19 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES in 4.0.26
+=================
+2468	Fixed: wflow-core - ID Generator Field - Concurrent write issue. #3629 @trunk
+2458	Fixed: wflow-consoleweb - Safari - Refused to execute inline script because it violates the following Content Security Policy directive @trunk
+2457	Fixed: wflow-core - Form - CSS fail to load in IE9 and below because of IE CSS limits. @trunk
+2440	Modified: wflow-common/wflow-consoleweb - Security - Added domain whitelist checking for JSONP call. #3604 @trunk
+2437	Fixed: wflow-commons, wflow-core, wflow-consoleweb - Prevent possible reflected XSS #3603 @trunk
+        Modfied: wflow-commons - Added security header "X-Content-Type-Options: nosniff", "X-Content-Security-Policy: default-src 'self'", "X-WebKit-CSP: default-src 'self'". @trunk
+2433	Fixed: wflow-plugin-base - Explicitly close file on plugin upload #3527 @trunk
+2432	Fixed: wflow-consoleweb - Avoid using singleton member variable in LocalLocaleResolver #3527 @trunk
+2430	Fixed: wflow-consoleweb - Removed unused mock folder. #3603 @trunk
+2429	Fixed: wflow-core - Prevent SQL injection in shark engine. #3602 @trunk
+
 CHANGES in 4.0.25
 =================
 2421	Fixed - wflow-core - Date Picker - Validation error when readonly. #3580 @trunk
