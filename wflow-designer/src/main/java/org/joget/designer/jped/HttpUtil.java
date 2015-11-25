@@ -142,135 +142,137 @@ public class HttpUtil {
         
         // Execute the request
         CloseableHttpClient httpClient = httpClientBuilder.build();
-        HttpResponse response = null;
         try {
-            response = httpClient.execute(httpRequest);
-        } catch (SSLException se) {
-            int result = JOptionPane.showConfirmDialog(null, ResourceManager.getLanguageDependentString("InvalidSSLPrompt"), ResourceManager.getLanguageDependentString("InvalidSSLTitle"), JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.YES_OPTION) {
-                httpClientBuilder.setSSLSocketFactory(sslsf);
-                httpClient = httpClientBuilder.build();
+            HttpResponse response = null;
+            try {
                 response = httpClient.execute(httpRequest);
-                SSL_TRUSTED = true;
+            } catch (SSLException se) {
+                int result = JOptionPane.showConfirmDialog(null, ResourceManager.getLanguageDependentString("InvalidSSLPrompt"), ResourceManager.getLanguageDependentString("InvalidSSLTitle"), JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    httpClientBuilder.setSSLSocketFactory(sslsf);
+                    httpClient = httpClientBuilder.build();
+                    response = httpClient.execute(httpRequest);
+                    SSL_TRUSTED = true;
+                }
             }
-        }
 
-        // Examine the response status
-        if (response == null) {
-            throw new HttpResponseException(403, ResourceManager.getLanguageDependentString("InvalidSSLMessage"));
-        }
-        StatusLine status = response.getStatusLine();
-        if (status  == null || status.getStatusCode() == 302 || status.getStatusCode() == 401 || status.getStatusCode() == 500) {
-            if (failOnError) {
-                throw new AuthenticationException(ResourceManager.getLanguageDependentString("AuthenticationFailed"));
+            // Examine the response status
+            if (response == null) {
+                throw new HttpResponseException(403, ResourceManager.getLanguageDependentString("InvalidSSLMessage"));
             }
-            // Request is unauthenticated, attempt to authenticate
-            String credentials = password;
-            if (credentials == null) {
-                // prompt for username and password
-                JTextField uField = new JTextField(15);
-                uField.setText(username);
-                JPasswordField pField = new JPasswordField(15);
-                pField.addHierarchyListener(new HierarchyListener() {
-                    public void hierarchyChanged(HierarchyEvent e) {
-                        final Component c = e.getComponent();
-                        if (c.isShowing() && (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-                            Window toplevel = SwingUtilities.getWindowAncestor(c);
-                            toplevel.addWindowFocusListener(new WindowAdapter() {
-                                @Override
-                                public void windowGainedFocus(WindowEvent e) {
-                                    c.requestFocus();
-                                }
-                            });
+            StatusLine status = response.getStatusLine();
+            if (status  == null || status.getStatusCode() == 302 || status.getStatusCode() == 401 || status.getStatusCode() == 500) {
+                if (failOnError) {
+                    throw new AuthenticationException(ResourceManager.getLanguageDependentString("AuthenticationFailed"));
+                }
+                // Request is unauthenticated, attempt to authenticate
+                String credentials = password;
+                if (credentials == null) {
+                    // prompt for username and password
+                    JTextField uField = new JTextField(15);
+                    uField.setText(username);
+                    JPasswordField pField = new JPasswordField(15);
+                    pField.addHierarchyListener(new HierarchyListener() {
+                        public void hierarchyChanged(HierarchyEvent e) {
+                            final Component c = e.getComponent();
+                            if (c.isShowing() && (e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                                Window toplevel = SwingUtilities.getWindowAncestor(c);
+                                toplevel.addWindowFocusListener(new WindowAdapter() {
+                                    @Override
+                                    public void windowGainedFocus(WindowEvent e) {
+                                        c.requestFocus();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    JPanel pPanel = new JPanel(new GridLayout(2,2));
+                    pPanel.add(new JLabel(ResourceManager.getLanguageDependentString("UsernameKey")));
+                    pPanel.add(uField);
+                    pPanel.add(new JLabel(ResourceManager.getLanguageDependentString("PasswordKey")));
+                    pPanel.add(pField);
+                    int okCxl = JOptionPane.showConfirmDialog(null, pPanel, ResourceManager.getLanguageDependentString("SessionTimedOut"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+                    if (okCxl == JOptionPane.OK_OPTION) {
+                        username = uField.getText();
+                        credentials = new String(pField.getPassword());
+                        Designer.USERNAME = username;
+                    } else if (okCxl == JOptionPane.CANCEL_OPTION) {
+                        return null;
+                    }
+                }
+                try {
+                    // login and store session cookie
+                    String loginUrl = Designer.URLPATH + "/web/json/directory/user/sso";
+                    String ssoResponse = HttpUtil.httpPost(cookieStore, loginUrl, port, null, cookieDomain, cookiePath, username, credentials, true, true, null, null);
+                    String isAdminStr = "isAdmin";
+                    if (!ssoResponse.contains(isAdminStr)) {
+                        throw new AuthenticationException();
+                    }
+                    List<Cookie> cookies = cookieStore.getCookies();
+                    for (Cookie ck: cookies) {
+                        if ("JSESSIONID".equalsIgnoreCase(ck.getName())) {
+                            sessionId = ck.getValue();
+                            Designer.SESSION = sessionId;
                         }
                     }
-                });
-                JPanel pPanel = new JPanel(new GridLayout(2,2));
-                pPanel.add(new JLabel(ResourceManager.getLanguageDependentString("UsernameKey")));
-                pPanel.add(uField);
-                pPanel.add(new JLabel(ResourceManager.getLanguageDependentString("PasswordKey")));
-                pPanel.add(pField);
-                int okCxl = JOptionPane.showConfirmDialog(null, pPanel, ResourceManager.getLanguageDependentString("SessionTimedOut"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (okCxl == JOptionPane.OK_OPTION) {
-                    username = uField.getText();
-                    credentials = new String(pField.getPassword());
-                    Designer.USERNAME = username;
-                } else if (okCxl == JOptionPane.CANCEL_OPTION) {
-                    return null;
-                }
+
+                    // repeat request with username and password
+                    contents = HttpUtil.httpPost(cookieStore, url, port, sessionId, cookieDomain, cookiePath, username, credentials, true, true, filename, file);
+
+                    // return contents
+                    return contents;
+                } catch(AuthenticationException ate) {
+                    JOptionPane.showMessageDialog(null, ResourceManager.getLanguageDependentString("InvalidLogin"));
+                    // repeat request
+                    return HttpUtil.httpPost(null, url, port, sessionId, cookieDomain, cookiePath, username, null, false, false, filename, file);
+                } catch(HttpResponseException hre) {
+                    throw new AuthenticationException(ResourceManager.getLanguageDependentString("InvalidLogin"));
+                }            
             }
-            try {
-                // login and store session cookie
-                String loginUrl = Designer.URLPATH + "/web/json/directory/user/sso";
-                String ssoResponse = HttpUtil.httpPost(cookieStore, loginUrl, port, null, cookieDomain, cookiePath, username, credentials, true, true, null, null);
-                String isAdminStr = "isAdmin";
-                if (!ssoResponse.contains(isAdminStr)) {
-                    throw new AuthenticationException();
-                }
-                List<Cookie> cookies = cookieStore.getCookies();
-                for (Cookie ck: cookies) {
-                    if ("JSESSIONID".equalsIgnoreCase(ck.getName())) {
-                        sessionId = ck.getValue();
-                        Designer.SESSION = sessionId;
+
+            // Get hold of the response entity
+            HttpEntity entity = response.getEntity();
+
+            // If the response does not enclose an entity, there is no need
+            // to worry about connection release
+            if (entity != null) {
+                InputStream instream = entity.getContent();
+                try {
+                    contents = "";
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
+                    String line = reader.readLine();
+                    while (line != null) {
+                        contents += line;
+                        line = reader.readLine();
                     }
+
+                } catch (IOException ex) {
+
+                    // In case of an IOException the connection will be released
+                    // back to the connection manager automatically
+                    throw ex;
+
+                } catch (RuntimeException ex) {
+
+                    // In case of an unexpected exception you may want to abort
+                    // the HTTP request in order to shut down the underlying
+                    // connection and release it back to the connection manager.
+                    httpRequest.abort();
+                    throw ex;
+
+                } finally {
+
+                    // Closing the input stream will trigger connection release
+                    instream.close();
+
                 }
-                
-                // repeat request with username and password
-                contents = HttpUtil.httpPost(cookieStore, url, port, sessionId, cookieDomain, cookiePath, username, credentials, true, true, filename, file);
-                
-                // return contents
-                return contents;
-            } catch(AuthenticationException ate) {
-                JOptionPane.showMessageDialog(null, ResourceManager.getLanguageDependentString("InvalidLogin"));
-                // repeat request
-                return HttpUtil.httpPost(null, url, port, sessionId, cookieDomain, cookiePath, username, null, false, false, filename, file);
-            } catch(HttpResponseException hre) {
-                throw new AuthenticationException(ResourceManager.getLanguageDependentString("InvalidLogin"));
-            }            
-        }
-
-        // Get hold of the response entity
-        HttpEntity entity = response.getEntity();
-
-        // If the response does not enclose an entity, there is no need
-        // to worry about connection release
-        if (entity != null) {
-            InputStream instream = entity.getContent();
-            try {
-                contents = "";
-                BufferedReader reader = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
-                String line = reader.readLine();
-                while (line != null) {
-                    contents += line;
-                    line = reader.readLine();
-                }
-
-            } catch (IOException ex) {
-
-                // In case of an IOException the connection will be released
-                // back to the connection manager automatically
-                throw ex;
-
-            } catch (RuntimeException ex) {
-
-                // In case of an unexpected exception you may want to abort
-                // the HTTP request in order to shut down the underlying
-                // connection and release it back to the connection manager.
-                httpRequest.abort();
-                throw ex;
-
-            } finally {
-
-                // Closing the input stream will trigger connection release
-                instream.close();
-
-            }
-
+            }    
+        } finally {
             // When HttpClient instance is no longer needed,
             // shut down the connection manager to ensure
             // immediate deallocation of all system resources
             httpClient.close();
-        }        
+        }    
         return contents;
     }
     

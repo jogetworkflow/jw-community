@@ -69,9 +69,12 @@ public class JaWE {
                 try {
                     fis = new FileInputStream(mainConfig);
                     props.load(fis);
-                    fis.close();
                 } catch (Exception ex) {
                     System.err.println("Something went wrong while reading configuration from the file " + mainConfig.getAbsolutePath());
+                } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
                 }
             }
             String conf_home = JaWEConstants.JAWE_CONF_HOME + "/" + props.getProperty(JaWEConstants.JAWE_CURRENT_CONFIG_HOME);

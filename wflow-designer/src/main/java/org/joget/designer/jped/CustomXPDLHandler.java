@@ -53,11 +53,9 @@ public class CustomXPDLHandler extends PluggableXPDLHandler {
 
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("Unable to open URL " + pkgReference, e);
-            } finally {
-                return pkg;
+                //throw new RuntimeException("Unable to open URL " + pkgReference, e);
             }
-
+            return pkg;
         } else {
             return super.openPackage(pkgReference, handleExternalPackages);
         }

@@ -1400,60 +1400,72 @@ public class JaWEController extends Observable implements
             // output stream will either be the FileOutputStream in the
             // case of save as, or the ByteArrayOutputStream if we are
             // saving an existing file
-            OutputStream os;
-            if (isNewFile) {
-                // try to open random access file as rw, if it fails
-                // the saving shouldn't occur
-                try {
-                    File f = new File(filename);
-                    RandomAccessFile r = new RandomAccessFile(f, "rw");
-                    FileLock flck = r.getChannel().tryLock();
-                    flck.release();
-                    r.close(); // Harald Meister
-                    // this exception happens when using jdk1.4 under Linux
-                    // if it happens, just catch it and proceed with saving
-                    // because Linux with jdk1.4.0 doesn't support locking
-                } catch (IOException ioe) {
-                    // ioe.printStackTrace();
-                    // this happens when the locking fails, and null is returned,
-                    // and after that release method is called on the null;
-                    // This means that the file we want to save the given
-                    // package as, is already locked, so we do not allow saving
-                } catch (NullPointerException npe) {
-                    throw new Exception();
+            OutputStream os = null;
+            try {
+                if (isNewFile) {
+                    // try to open random access file as rw, if it fails
+                    // the saving shouldn't occur
+                    RandomAccessFile r = null;
+                    FileLock flck = null;
+                    try {
+                        File f = new File(filename);
+                        r = new RandomAccessFile(f, "rw");
+                        flck = r.getChannel().tryLock();
+
+                        // this exception happens when using jdk1.4 under Linux
+                        // if it happens, just catch it and proceed with saving
+                        // because Linux with jdk1.4.0 doesn't support locking
+                    } catch (IOException ioe) {
+                        // ioe.printStackTrace();
+                        // this happens when the locking fails, and null is returned,
+                        // and after that release method is called on the null;
+                        // This means that the file we want to save the given
+                        // package as, is already locked, so we do not allow saving
+                    } catch (NullPointerException npe) {
+                        throw new Exception();
+                    } finally {
+                        if (flck != null) {
+                            flck.release();
+                        }
+                        if (r != null) {
+                            r.close(); // Harald Meister
+                        }
+                    }
+                    // if we are at this point, this means either the locking
+                    // succeeded, or we use jdk1.4 under Linux that does not
+                    // support locking
+                    os = new FileOutputStream(filename);
+                } else {
+                    os = new ByteArrayOutputStream();
                 }
-                // if we are at this point, this means either the locking
-                // succeeded, or we use jdk1.4 under Linux that does not
-                // support locking
-                os = new FileOutputStream(filename);
-            } else {
-                os = new ByteArrayOutputStream();
-            }
 
-            // Here we get all document elements set
-            JaWEManager.getInstance().getXPDLHandler().getXPDLRepositoryHandler().toXML(document, pkg);
+                // Here we get all document elements set
+                JaWEManager.getInstance().getXPDLHandler().getXPDLRepositoryHandler().toXML(document, pkg);
 
-            // Use a Transformer for output
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setOutputProperty("indent", "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-            transformer.setOutputProperty("encoding", settings.getEncoding());
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(os);
-            transformer.transform(source, result);
+                // Use a Transformer for output
+                TransformerFactory tFactory = TransformerFactory.newInstance();
+                Transformer transformer = tFactory.newTransformer();
+                transformer.setOutputProperty("indent", "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                transformer.setOutputProperty("encoding", settings.getEncoding());
+                DOMSource source = new DOMSource(document);
+                StreamResult result = new StreamResult(os);
+                transformer.transform(source, result);
 
-            if (!isNewFile && raf != null && os instanceof ByteArrayOutputStream) {
-                if (raf != null) {
-                    // must go to the beginning - otherwise, it will not
-                    // truncate the file correctly in some Java-OS combination
-                    raf.seek(0);
-                    raf.getChannel().truncate(0);
-                    raf.write(((ByteArrayOutputStream) os).toByteArray());
+                if (!isNewFile && raf != null && os instanceof ByteArrayOutputStream) {
+                    if (raf != null) {
+                        // must go to the beginning - otherwise, it will not
+                        // truncate the file correctly in some Java-OS combination
+                        raf.seek(0);
+                        raf.getChannel().truncate(0);
+                        raf.write(((ByteArrayOutputStream) os).toByteArray());
+                    }
+                }
+            } finally {
+                if (os != null) {
+                    os.close();
                 }
             }
-
-            os.close();
 
             XPDLListenerAndObservable xpdl = getXPDLListenerObservable(pkg);
             if (xpdl != null) {
@@ -2402,7 +2414,9 @@ public class JaWEController extends Observable implements
                         ex);
             } finally {
                 try {
-                    fis.close();
+                    if (fis != null) {
+                        fis.close();
+                    }
                 } catch (Exception ex) {
                 }
             }

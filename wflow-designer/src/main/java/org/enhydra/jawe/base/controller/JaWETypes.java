@@ -887,7 +887,15 @@ public class JaWETypes extends JaWEComponentSettings {
                 if (!f.exists()) {
                     return null;
                 }
-                parser.parse(new InputSource(new FileInputStream(f)));
+                FileInputStream fis = null;
+                try{
+                    fis = new FileInputStream(f);
+                    parser.parse(new InputSource(fis));
+                } finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                }
             } else {
                 parser.parse(new InputSource(new StringReader(toParse)));
             }
