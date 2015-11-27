@@ -58,6 +58,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import org.enhydra.shark.CustomWfActivityWrapper;
 import org.enhydra.shark.CustomWfResourceImpl;
@@ -2591,7 +2592,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             ExecutionAdministration ea = shark.getExecutionAdministration();
 
             ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
-            WMFilter filter = aieb.addHasAssignmentForUser(sessionHandle, username, 0);
+            WMFilter filter = aieb.addHasAssignmentForUser(sessionHandle, StringEscapeUtils.escapeSql(username), 0);
             WMFilter filter2 = aieb.addStateEquals(sessionHandle, "open.not_running.not_started");
             WMFilter filter3 = aieb.addStateEquals(sessionHandle, "open.not_running.suspended");
             WMFilter filter4 = aieb.or(sessionHandle, filter2, filter3);
@@ -3206,7 +3207,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
             // filter by acceptance
             if (accepted != null && accepted.booleanValue()) {
@@ -3341,7 +3342,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
             // filter by package id
             if (packageId != null && packageId.trim().length() > 0) {
@@ -3493,7 +3494,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
             // filter by processDefIds
             if (processDefIds != null && processDefIds.length > 0) {
@@ -3613,7 +3614,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
             // filter by processDefIds
             if (processDefIds != null && processDefIds.length > 0) {
@@ -3995,7 +3996,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
 
             WMFilter filter = aieb.addActivityIdEquals(sessionHandle, activityId);
-            filter = aieb.and(sessionHandle, filter, aieb.addUsernameEquals(sessionHandle, replaceUser));
+            filter = aieb.and(sessionHandle, filter, aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(replaceUser)));
 
             // execute
             WfAssignmentIterator ai = sc.get_iterator_assignment();
@@ -4394,7 +4395,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         WMSessionHandle sessionHandle = sc.getSessionHandle();
         // filter by user
         String username = getWorkflowUserManager().getCurrentUsername();
-        WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+        WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
         // filter by activity id
         filter = aieb.and(sessionHandle, filter, aieb.addActivityIdEquals(sessionHandle, activityId));
@@ -4424,7 +4425,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         WMSessionHandle sessionHandle = sc.getSessionHandle();
         // filter by user
         String username = getWorkflowUserManager().getCurrentUsername();
-        WMFilter filter = aieb.addUsernameEquals(sessionHandle, username);
+        WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
 
         // filter by process id
         filter = aieb.and(sessionHandle, filter, aieb.addProcessIdEquals(sessionHandle, processId));
