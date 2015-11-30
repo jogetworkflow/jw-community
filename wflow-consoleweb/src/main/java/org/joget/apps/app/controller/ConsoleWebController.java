@@ -4396,7 +4396,7 @@ public class ConsoleWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (!appDef.isPublished()) {
             return;
-}
+        }
         
         // get base64 encoded image in POST body
         String imageBase64 = request.getParameter("base64data");
@@ -4406,8 +4406,8 @@ public class ConsoleWebController {
         byte[] decodedBytes = Base64.decodeBase64(imageBase64.getBytes());        
         
         // save into image file
-        version = (version != null) ? version : "";
-        String filename = appDef.getId() + "_" + appDef.getVersion() + "_" + userviewId + ".png";
+        String appVersion = (version != null && !version.isEmpty()) ? appDef.getVersion().toString() : "";
+        String filename = appDef.getId() + "_" + appVersion + "_" + userviewId + ".png";
         String path = SetupManager.getBaseDirectory() + "app_screenshots";
         new File(path).mkdirs();
         BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
