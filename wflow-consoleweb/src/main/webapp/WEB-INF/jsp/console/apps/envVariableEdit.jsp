@@ -20,7 +20,7 @@
                 <legend><fmt:message key="console.app.envVariable.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.id"/></label>
-                    <span class="form-input">${environmentVariable.id}<input id="id" type="hidden" value="${environmentVariable.id}" name="id"/></span>
+                    <span class="form-input"><c:out value="${environmentVariable.id}"/><input id="id" type="hidden" value="<c:out value="${environmentVariable.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.value"/></label>
