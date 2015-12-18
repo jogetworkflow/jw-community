@@ -142,9 +142,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             }
                                             if(security!= null){
                                                 if(security.equalsIgnoreCase("SSL") ){
-                                                    email.setSSL(true);
+                                                    email.setSSLOnConnect(true);
+                                                    email.setSSLCheckServerIdentity(true);
                                                 }else if(security.equalsIgnoreCase("TLS")){
-                                                    email.setTLS(true);
+                                                    email.setStartTLSEnabled(true);
+                                                    email.setSSLCheckServerIdentity(true);
                                                 }
                                             }
                                             if (cc != null && cc.length() != 0) {
