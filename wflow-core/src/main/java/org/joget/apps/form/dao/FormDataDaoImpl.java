@@ -1043,7 +1043,16 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         synchronized(this) {
             if (formRowDocument == null) {
                 InputStream is = Form.class.getResourceAsStream("/org/joget/apps/form/model/FormRow.hbm.xml");
-                formRowDocument = XMLUtil.loadDocument(is);
+                try {
+                    formRowDocument = XMLUtil.loadDocument(is);
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException ex) {
+                        }
+                    }
+                }
             }
         }
         Document document = (Document)formRowDocument.cloneNode(true);

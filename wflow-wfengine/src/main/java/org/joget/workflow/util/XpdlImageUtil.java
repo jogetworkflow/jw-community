@@ -124,25 +124,31 @@ public class XpdlImageUtil {
             HttpEntity entity = response.getEntity();
             InputStream is = entity.getContent();
 
-            byte[] buffer = new byte[1024];
-            int byteReaded = is.read(buffer);
-            while (byteReaded != -1) {
-                bos.write(buffer, 0, byteReaded);
-                byteReaded = is.read(buffer);
-            }
-            bos.flush();
+            try {
+                byte[] buffer = new byte[1024];
+                int byteReaded = is.read(buffer);
+                while (byteReaded != -1) {
+                    bos.write(buffer, 0, byteReaded);
+                    byteReaded = is.read(buffer);
+                }
+                bos.flush();
 
-            // output to file
-            byte[] contents = bos.toByteArray();
-            ByteArrayInputStream bis = new ByteArrayInputStream(contents);
-            fos = new FileOutputStream(file);
-            buffer = new byte[1024];
-            byteReaded = bis.read(buffer);
-            while (byteReaded != -1) {
-                fos.write(buffer, 0, byteReaded);
+                // output to file
+                byte[] contents = bos.toByteArray();
+                ByteArrayInputStream bis = new ByteArrayInputStream(contents);
+                fos = new FileOutputStream(file);
+                buffer = new byte[1024];
                 byteReaded = bis.read(buffer);
+                while (byteReaded != -1) {
+                    fos.write(buffer, 0, byteReaded);
+                    byteReaded = bis.read(buffer);
+                }
+                fos.flush();
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
             }
-            fos.flush();
 
             createThumbnail(baseDir, processDefId);
         } catch (Exception ex) {

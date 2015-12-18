@@ -242,16 +242,28 @@ public class JaWEManager {
             URL u = JaWEManager.class.getClassLoader().getResource(JaWEConstants.JAWE_BASIC_PROPERTYFILE_PATH + JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME);
             URLConnection urlConnection = u.openConnection();
             InputStream is = urlConnection.getInputStream();
-
-            properties = new Properties();
-            properties.load(is);
-            Utils.copyPropertyFile(JaWEConstants.JAWE_BASIC_PROPERTYFILE_PATH,
-                    JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME,
-                    false);
+            
+            try {
+                properties = new Properties();
+                properties.load(is);
+                Utils.copyPropertyFile(JaWEConstants.JAWE_BASIC_PROPERTYFILE_PATH,
+                        JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME,
+                        false);
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
 
             u = JaWEManager.class.getClassLoader().getResource(JaWEConstants.JAWE_LANGUAGE_MISC_PROPERTYFILE_PATH + JaWEConstants.JAWE_LANGUAGE_MISC_PROPERTYFILE_NAME);
             urlConnection = u.openConnection();
-            is = urlConnection.getInputStream();
+            try {
+                is = urlConnection.getInputStream();
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
 
             Utils.copyPropertyFile(JaWEConstants.JAWE_LANGUAGE_MISC_PROPERTYFILE_PATH,
                     JaWEConstants.JAWE_LANGUAGE_MISC_PROPERTYFILE_NAME,
