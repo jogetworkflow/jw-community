@@ -79,10 +79,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             }
             final Map<String, String> replace = replaceMap;
                     
-            String appId = auditTrail.getAppId();
-            String appVersion = auditTrail.getAppVersion();
-            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-            final AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+            final AppDefinition appDef = (AppDefinition) properties.get("appDef");
 
             if (smtpHost == null || smtpHost.trim().length() == 0) {
                 return null;

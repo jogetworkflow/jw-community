@@ -74,6 +74,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
 
                         propertiesMap.put("auditTrail", auditTrail);
                         propertiesMap.put("pluginManager", pluginManager);
+                        propertiesMap.put("appDef", appDef);
 
                         p.execute(propertiesMap);
                     }
