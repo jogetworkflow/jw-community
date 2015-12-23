@@ -5,6 +5,7 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -184,11 +185,24 @@ public class FileUtil implements ApplicationContextAware {
     }
 
     public static File getFile(String fileName, Element element, String primaryKeyValue) throws IOException {
+        // validate input
+        String normalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFKC);
+        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+            throw new SecurityException("Invalid filename " + normalizedFileName);
+        }
+        
+        // get file
         String path = getUploadPath(element, primaryKeyValue);
         return new File(path + fileName);
     }
 
     public static String getUploadPath(Element element, String primaryKeyValue) {
+        // validate input
+        String normalizedPrimaryKeyValue = Normalizer.normalize(primaryKeyValue, Normalizer.Form.NFKC);
+        if (normalizedPrimaryKeyValue.contains("../") || normalizedPrimaryKeyValue.contains("..\\")) {
+            throw new SecurityException("Invalid primaryKeyValue " + normalizedPrimaryKeyValue);
+        }
+
         String formUploadPath = SetupManager.getBaseDirectory();
 
         // determine base path
