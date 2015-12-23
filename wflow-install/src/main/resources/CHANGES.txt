@@ -6,6 +6,12 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES in 4.0.28
+=================
+2527	Fixed: wflow-core - Added validation to prevent path manipulation #3724 @trunk
+2526	Modified: wflow-consoleweb - Removed unused file deployJava.js @trunk
+2525	Fixed: wflow-consoleweb - Plugin Resources - Host is not set correctly. #3736 @trunk
+
 CHANGES in 4.0.27
 =================
 2518	Fixed: wflow-core - Monitoring API - call fails while using User Notification Plugin. #3745 @trunk
