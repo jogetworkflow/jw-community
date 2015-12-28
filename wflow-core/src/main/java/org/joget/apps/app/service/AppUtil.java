@@ -423,17 +423,15 @@ public class AppUtil implements ApplicationContextAware {
                                     String value = cachedPlugin.processHashVariable(tempVar);
 
                                     if (value != null) {
-                                        if (!StringUtil.TYPE_REGEX.equals(escapeFormat) && !StringUtil.TYPE_JSON.equals(escapeFormat)) {
-                                            value = StringUtil.escapeRegex(value);
-                                        }
-
+                                        value = StringUtil.escapeString(value, escapeFormat, replaceMap);
+                                        
                                         //escape special char in HashVariable
                                         var = cachedPlugin.escapeHashVariable(var);
 
                                         // clean to prevent XSS
                                         value = StringUtil.stripHtmlRelaxed(value);
-
-                                        content = content.replaceAll(var, StringUtil.escapeString(value, escapeFormat, replaceMap));
+                                        
+                                        content = content.replaceAll(var, StringUtil.escapeRegex(value));
                                         break;
                                     }
                                 } catch (Exception e) {}

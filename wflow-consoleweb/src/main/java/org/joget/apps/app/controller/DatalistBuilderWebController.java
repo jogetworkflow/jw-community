@@ -35,6 +35,7 @@ import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -143,7 +144,7 @@ public class DatalistBuilderWebController {
                     }
                 }
                 
-                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, null, null));
+                dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null));
                 map.addAttribute("json", json);
             } else {
                 dataList = parseFromJsonParameter(map, dataList, id, request);
