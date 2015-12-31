@@ -151,7 +151,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                 <c:set var="redirectUrlValue" value="${redirectBaseUrlValue}${redirectUrlValue}"/>
             </c:if>
             <c:if test="${fn:startsWith(redirectUrlValue, pageContext.request.contextPath)}">
-                <c:set var="redirectUrlValue" value="${fn:replace(redirectUrlValue, pageContext.request.contextPath, '')}"/>
+                <c:set var="redirectUrlValue" value="${fn:substring(redirectUrlValue, fn:length(pageContext.request.contextPath), fn:length(redirectUrlValue))}"/>
             </c:if>
             <c:redirect url="${redirectUrlValue}"/>
         </c:otherwise>
