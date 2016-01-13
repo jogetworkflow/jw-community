@@ -20,9 +20,14 @@ public class XpdlImageWebController {
     @RequestMapping("/console/images/xpdl/thumbnail/(*:processDefId)")
     public void getXpdlThumbnail(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         processDefId = processDefId.replaceAll(":", "#");
-
-        File file = XpdlImageUtil.getXpdlThumbnail(AppUtil.getDesignerWebBaseUrl(), processDefId);
-        if (!file.exists()) {
+        
+        File file = null;
+        try {
+            file = XpdlImageUtil.getXpdlThumbnail(AppUtil.getDesignerWebBaseUrl(), processDefId);
+        } catch(Exception e) {
+            //ingore
+        }
+        if (file == null || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
@@ -47,8 +52,13 @@ public class XpdlImageWebController {
     public void getXpdlImage(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         processDefId = processDefId.replaceAll(":", "#");
 
-        File file = XpdlImageUtil.getXpdlImage(AppUtil.getDesignerWebBaseUrl(), processDefId);
-        if (!file.exists()) {
+        File file = null;
+        try {
+            file = XpdlImageUtil.getXpdlImage(AppUtil.getDesignerWebBaseUrl(), processDefId);
+        } catch(Exception e) {
+            //ingore
+        }
+        if (file == null || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
