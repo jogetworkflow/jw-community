@@ -4169,6 +4169,11 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/monitor/log/(*:fileName)")
     public void consoleMonitorLogs(HttpServletResponse response, @RequestParam("fileName") String fileName) throws IOException {
+        if (HostManager.isVirtualHostEnabled()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+                
         ServletOutputStream stream = response.getOutputStream();
 
         String decodedFileName = fileName;
@@ -4203,7 +4208,12 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/monitor/logs/list")
-    public void consoleMonitorLogsJson(Writer writer, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+    public void consoleMonitorLogsJson(HttpServletResponse response, Writer writer, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
+        if (HostManager.isVirtualHostEnabled()) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+                
         JSONObject jsonObject = new JSONObject();
         File[] files = LogUtil.tomcatLogFiles();
         Collection<File> fileList = new ArrayList<File>();
