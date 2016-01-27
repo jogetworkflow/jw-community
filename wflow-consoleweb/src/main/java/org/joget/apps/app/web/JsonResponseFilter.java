@@ -104,15 +104,18 @@ public class JsonResponseFilter implements Filter {
                 SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
                 String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
                 String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
-                List<String> whitelist = new ArrayList<String>();
-                whitelist.add(httpRequest.getServerName());
-                if (jsonpWhitelist != null) {
-                    whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
-                }
                 
-                if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
-                    wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
-                    return;
+                if (!"*".equals(jsonpWhitelist)) {
+                    List<String> whitelist = new ArrayList<String>();
+                    whitelist.add(httpRequest.getServerName());
+                    if (jsonpWhitelist != null) {
+                        whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
+                    }
+
+                    if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
+                        wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
+                        return;
+                    }
                 }
                 wrappedResponse.setContentType("application/javascript; charset=utf-8");
             } else {
