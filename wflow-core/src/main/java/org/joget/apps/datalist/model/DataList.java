@@ -83,6 +83,9 @@ public class DataList {
             actionResult = new DataListActionResult();
             actionResult.setType(DataListActionResult.TYPE_REDIRECT);
             String queryString = WorkflowUtil.getHttpServletRequest().getQueryString();
+            if (queryString == null) {
+                queryString = "";
+            }
             String queryString2 = "";
             if (getDataListParamString(TableTagParameters.PARAMETER_SORT) != null) {
                 queryString2 += getDataListEncodedParamName(TableTagParameters.PARAMETER_SORT) + "=" + getDataListParamString(TableTagParameters.PARAMETER_SORT) + "&";
