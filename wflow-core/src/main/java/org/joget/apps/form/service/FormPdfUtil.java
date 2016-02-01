@@ -91,6 +91,10 @@ public class FormPdfUtil {
         }
         if (assignment != null) {
             formData.setProcessId(assignment.getProcessId());
+        } else if (primaryKey != null && !primaryKey.isEmpty()) {
+            //create an mock assignment for hash variable 
+            assignment = new WorkflowAssignment();
+            assignment.setProcessId(primaryKey);
         }
         
         Form form = null;
