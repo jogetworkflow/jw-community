@@ -177,11 +177,15 @@ PopupDialog.prototype = {
       var openDialog = function() {
           var newFrame = document.getElementById("jqueryDialogFrame");
           if (newFrame != null) {
-              setTimeout(function() { newFrame.setAttribute("src", newSrc); }, 100);
+              setTimeout(function() { 
+                  newFrame.setAttribute("src", newSrc);
+                  newFrame.contentWindow.focus();
+              }, 100);
           }
           $(".ui-dialog.ui-widget").css("position", "fixed");
           $(".ui-dialog.ui-widget").css("top", "5%");
           $('body').addClass("stop-scrolling");
+          $(this).parents('.ui-dialog').find('.ui-dialog-titlebar-close').blur();
       }
       var closePopupDialog = function() {
           $('body').removeClass("stop-scrolling");
