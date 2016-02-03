@@ -12,6 +12,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.Organization;
@@ -85,6 +86,11 @@ public class DepartmentPermission extends UserviewPermission implements PluginWe
                 ApplicationContext ac = AppUtil.getApplicationContext();
                 ExtDirectoryManager directoryManager = (ExtDirectoryManager) ac.getBean("directoryManager");
 
+                Map<String, String> empty = new HashMap<String, String>();
+                empty.put("value", "");
+                empty.put("label", ResourceBundleUtil.getMessage("console.directory.user.empty.option.label"));
+                jsonArray.put(empty);
+                
                 Collection<Organization> orgList = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
 
                 for (Organization o : orgList) {
