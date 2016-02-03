@@ -114,7 +114,7 @@ AssignmentManager = {
         var url = baseUrl + "/web/json/workflow/assignment/withdraw/" + activityId;
         var callback = {
 			success : function(){
-				document.location = baseUrl + "/web/json/workflow/closeDialog";
+				AssignmentManager.refreashOrCloseDialog();
 			}
 		};
 		ConnectionManager.post(url, callback, null);
@@ -130,7 +130,7 @@ AssignmentManager = {
                     var path = redirect + param + o.processId;
                     document.location = path;
                 }else
-                    document.location = baseUrl + "/web/json/workflow/closeDialog";
+                    AssignmentManager.refreashOrCloseDialog();
 			}
 		};
 		ConnectionManager.post(url, callback, null);
@@ -146,10 +146,17 @@ AssignmentManager = {
                     var path = redirect + param + o.processId;
                     document.location = path;
                 }else
-                    document.location = baseUrl + "/web/json/workflow/closeDialog";
+                    AssignmentManager.refreashOrCloseDialog();
 			}
 		};
 		ConnectionManager.post(url, callback, variableData);
+    },
+    
+    refreashOrCloseDialog : function() {
+        if(parent && parent.refreshAll)
+            parent.refreshAll();
+        if(parent && parent.closeDialog)
+            parent.closeDialog();
     }
 };
 

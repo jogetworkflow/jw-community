@@ -100,26 +100,36 @@ public class JsonResponseFilter implements Filter {
             
             String callback = httpRequest.getParameter("callback");
             
-            if (callback != null && !callback.isEmpty()) {
-                SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-                String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
-                String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
-                
-                if (!"*".equals(jsonpWhitelist)) {
-                    List<String> whitelist = new ArrayList<String>();
-                    whitelist.add(httpRequest.getServerName());
-                    if (jsonpWhitelist != null) {
-                        whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
-                    }
+            boolean allowed = true;
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
+            String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
 
-                    if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
-                        wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
-                        return;
-                    }
+            if (!"*".equals(jsonpWhitelist)) {
+                List<String> whitelist = new ArrayList<String>();
+                whitelist.add(httpRequest.getServerName());
+                if (jsonpWhitelist != null) {
+                    whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
+                }
+
+                if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
+                    allowed = false;
+                }
+            }
+            
+            if (callback != null && !callback.isEmpty()) {
+                if (!allowed) {
+                    wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
+                    return;
                 }
                 wrappedResponse.setContentType("application/javascript; charset=utf-8");
             } else {
                 wrappedResponse.setContentType("application/json; charset=utf-8");
+            }
+            
+            if (allowed && httpRequest.getHeader("Origin") != null) {
+                wrappedResponse.setHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
+                wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
             }
             
             Throwable throwable = null;

@@ -60,11 +60,6 @@ public class WorkflowJsonController {
     @Autowired
     private ReportManager reportManager;
 
-    @RequestMapping("/json/workflow/closeDialog")
-    public String remoteCloseDialog() {
-        return "remoteCloseDialog";
-    }
-
     @RequestMapping("/json/workflow/package/list")
     public void packageList(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException {
         Collection<WorkflowPackage> packageList = workflowManager.getPackageList();
