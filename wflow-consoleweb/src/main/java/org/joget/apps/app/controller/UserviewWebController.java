@@ -1,5 +1,6 @@
 package org.joget.apps.app.controller;
 
+import java.net.URLDecoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
@@ -35,7 +36,7 @@ public class UserviewWebController {
     public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed, @RequestParam(value = "embed", required = false) Boolean embedParam) throws Exception {
         if (embedParam != null && !embedParam) {
             //exit embed mode by param
-            return "redirect:/web/userview/" + appId + "/" + userviewId + "/" + ((key != null )?key:"") + "/" + menuId + '?' +request.getQueryString();
+            return "redirect:/web/userview/" + appId + "/" + userviewId + "/" + ((key != null )?key:"") + "/" + menuId + '?' + URLDecoder.decode(request.getQueryString(), "UTF-8");
         } else if (embed == null) {
             embed = true;
         }

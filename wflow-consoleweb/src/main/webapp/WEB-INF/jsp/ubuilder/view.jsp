@@ -27,14 +27,14 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
-
+<c:set var="qs"><ui:decodeurl value="${queryString}"/></c:set>
 <c:if test="${empty menuId && !empty userview.properties.homeMenuId}">
     <c:set var="homeRedirectUrl" scope="request" value="/web/"/>
     <c:if test="${embed}">
         <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}embed/"/>
     </c:if>
     <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"/>
-    <c:redirect url="${homeRedirectUrl}?${queryString}"/>
+    <c:redirect url="${homeRedirectUrl}?${qs}"/>
 </c:if>
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
@@ -59,7 +59,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
     </c:if>
-    <c:redirect url="${redirectUrl}?${queryString}"/>
+    <c:redirect url="${redirectUrl}?${qs}"/>
 </c:if>
 
 <c:set var="bodyId" scope="request" value=""/>

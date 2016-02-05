@@ -29,7 +29,8 @@
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
     </c:if>
-    <c:redirect url="${redirectUrl}?${queryString}"/>
+    <c:set var="qs"><ui:decodeurl value="${queryString}"/></c:set>
+    <c:redirect url="${redirectUrl}?${qs}"/>
 </c:if>
 
 <html>
