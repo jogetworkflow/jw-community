@@ -24,6 +24,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.BadCredentialsException;
+import org.springframework.security.context.HttpSessionContextIntegrationFilter;
 import org.springframework.security.context.SecurityContextHolder;
 import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
 import org.springframework.security.ui.AbstractProcessingFilter;
@@ -135,6 +136,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                 if (savedRequest != null) {
                     session.setAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
                 }
+                session.setAttribute(HttpSessionContextIntegrationFilter.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
             }
         }
         return requiresAuth;
