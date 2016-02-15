@@ -190,6 +190,11 @@
         <property name="sessionFactory" ref="reportSessionFactory"/>
         <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
+    
+    <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="maxPoolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    </bean>
 
     <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
     </bean>
