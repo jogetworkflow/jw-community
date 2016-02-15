@@ -1,6 +1,7 @@
 package org.joget.apps.form.model;
 
 import java.util.Map;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 
@@ -112,7 +113,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                     for (String value : paramValue) {
                         if (isRegex != null && "true".equals(isRegex)) {
                             try {
-                                if (value.matches(visibilityValue)) {
+                                if (value.matches(StringEscapeUtils.unescapeJavaScript(visibilityValue))) {
                                     return true;
                                 }
                             } catch (Exception e){}
