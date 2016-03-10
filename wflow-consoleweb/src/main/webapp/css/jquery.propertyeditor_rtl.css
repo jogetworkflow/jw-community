@@ -1,0 +1,49 @@
+.property-label-container {
+    float: right;
+}
+
+.property-input {
+    float: left;
+}
+
+.property-editor-container {
+    text-align: right;
+}
+
+.page-button-navigation{
+    float:right;
+}
+
+.page-button-navigation input{
+    float:right;
+}
+
+.page-button-action {
+    float: left;
+}
+
+.page-button-action input{
+    float: right;
+}
+
+.property-editor-page-step-indicator span{
+    float:right;
+    margin-left:3px;
+}
+
+.property-type-grid .property-input table tr th, .property-type-grid .property-input table tr td {
+    float: right;
+}
+
+.property-type-grid-action-column a{
+    float: right;
+}
+
+.property-type-grid .property-input table {
+    float:right;
+}
+
+.property-type-grid-action-add{
+    clear:both;
+    float:right;
+}

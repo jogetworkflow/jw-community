@@ -1,0 +1,63 @@
+[{
+    title : '@@app.databaseupdatetool.config@@',
+    properties : [{
+        name : 'jdbcDatasource',
+        label : '@@app.databaseupdatetool.datasource@@',
+        description : '@@app.databaseupdatetool.datasource.desc@@',
+        type : 'selectbox',
+        options : [{
+            value : 'custom',
+            label : '@@app.databaseupdatetool.customDatasource@@'
+        },{
+            value : 'default',
+            label : '@@app.databaseupdatetool.defaultDatasource@@'
+        }],
+        value : 'default'
+    },{
+        name : 'driverClassName',
+        label : '@@app.databaseupdatetool.databaseType@@',
+        description : '@@app.databaseupdatetool.driver.desc@@',
+        type : 'textfield',
+        value : 'com.mysql.jdbc.Driver',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'True'
+    },
+    {
+        name : 'url',
+        label : '@@app.databaseupdatetool.targetDbUrl@@',
+        type : 'textfield',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'True'
+    },
+    {
+        name : 'username',
+        label : '@@app.databaseupdatetool.username@@',
+        type : 'textfield',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'True'
+    },
+    {
+        name : 'password',
+        label : '@@app.databaseupdatetool.password@@',
+        type : 'password',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false'
+    }]
+},
+{
+    title : '@@app.databaseupdatetool.query@@',
+    properties : [{
+        name : 'query',
+        label : '@@app.databaseupdatetool.query@@',
+        type : 'codeeditor',
+        mode : 'sql',
+        required : 'True'
+    }]
+}]

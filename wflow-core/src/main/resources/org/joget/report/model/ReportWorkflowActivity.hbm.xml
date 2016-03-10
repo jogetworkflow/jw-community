@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="ReportWorkflowActivity" name="org.joget.report.model.ReportWorkflowActivity" table="app_report_activity">
+        <id name="uid" column="uuid" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property name="activityDefId" type="string"/>
+        <property name="activityName" type="string"/>
+        <many-to-one column="processUid" lazy="false" update="false" entity-name="ReportWorkflowProcess" name="reportWorkflowProcess"/>
+        <bag cascade="delete" inverse="true" lazy="true" name="reportWorkflowActivityInstanceList">
+            <key column="activityUid" not-null="true"/>  
+            <one-to-many entity-name="ReportWorkflowActivityInstance"/>
+        </bag>
+    </class>
+</hibernate-mapping>

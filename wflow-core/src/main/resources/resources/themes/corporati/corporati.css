@@ -1,0 +1,296 @@
+* {
+    font-size: 1em;
+}
+body#login #main {
+    width: 100%;
+    left: 0px;
+}
+body#login #content, body#unauthorize #content {
+    width: 100%;
+    left: 0px;
+}
+body#login div.form-errors {
+    text-align: center;
+    color: red;
+    width: 95%;
+}
+body.embeded #main {
+    top: 0px;
+    margin: 0px auto;
+    position: relative;
+    left: 0px;
+}
+body.embeded #content {
+    left: 0px;
+}
+body.embeded #page {
+    margin: 0px auto;
+    min-width: 600px;
+}
+#page {
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    position: relative;
+    width: 99.9%;
+    min-width: 900px;
+    margin: 0px auto;
+}
+#header {
+    background: whitesmoke;
+    background-size: 100%;
+    height: 55px;
+    border-bottom: 1px solid #E5E5E5;
+    -moz-box-shadow: 0px 0px 20px silver;
+    -webkit-box-shadow: 0px 0px 20px silver;
+    box-shadow: 0px 0px 20px silver;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+}
+#header-info, #header-inner {
+    position: fixed;
+    top: 2px;
+    left: 0px;
+    margin: 0px;
+    height: 34px;
+    width: 100%;
+    padding: 10px;
+    z-index: 1;
+    -moz-box-shadow: 0px 0px 10px gray;
+    -webkit-box-shadow: 0px 0px 10px gray;
+    box-shadow: 0px 0px 10px gray;
+}
+#header-info {
+    min-height: 64px;
+}
+#header-inner p {
+    margin-top: 0px;
+    padding-top: 0px;
+}
+#header-name {
+    padding-top: 0px;
+    padding-left: 9px;
+}
+#header-name a {
+    text-decoration: none;
+    font-size: 14pt;
+    color: #666;
+}
+#header-name span {
+    font-weight: bold;
+    font-size: 18px;
+    color: black;
+}
+#header-description {
+    padding-left: 9px;
+    color: #535353;
+    font-style: normal;
+}
+#header-message {
+    position: fixed;
+    top: 0px;
+    right: 10px;
+    background: #333;
+    margin: 0px;
+    height: 20px;
+    width: auto;
+    color: #CCC!important;
+    padding: 4px;
+    z-index: 1;
+    -moz-border-radius: 0px 0px 10px 10px;
+    -webkit-border-radius: 0px 0px 10px 10px;
+    border-radius: 0px 0px 10px 10px;
+    -moz-box-shadow: 0px 0px 10px gray;
+    -webkit-box-shadow: 0px 0px 10px gray;
+    box-shadow: 0px 0px 10px gray;
+}
+#header-logout-text {
+    float: right;
+    text-align: right;
+    width: auto;
+    padding: 2px 20px;
+}
+#header-logout-text span {
+    background: url(gears.png) no-repeat top right;
+    padding-right: 20px;
+}
+#header-logout-text a {
+    text-decoration: none;
+    color: #CCC!important;
+}
+#header-welcome-message {
+    position: fixed;
+    top: 57px;
+    padding-left: 200px;
+    left: 0px;
+    width: 100%;
+    height: 28px;
+    background: whiteSmoke;
+    border-bottom: 1px solid #E5E5E5;
+    color: #DD4B39;
+    font: 13px Arial;
+    padding: 0px 0px 0px 200px;
+    margin: 0px;
+    z-index: 1;
+    -moz-box-shadowx: 0px 0px 20px gray;
+    -webkit-box-shadowx: 0px 0px 20px gray;
+    box-shadowx: 0px 0px 20px gray;
+    opacity: 0.7;
+}
+#header-welcome-message span {
+    margin: 5px 20px;
+    display: block;
+}
+#main {
+    position: absolute;
+    top: 107px;
+    left: 240px;
+    border-bottom:0;
+}
+#main ul {
+    padding-left: 20px;
+}
+
+#navigation {
+    position: fixed;
+    top: 57px;
+    left: 0px;
+    margin-left: 0px;
+    border: none;
+    border-top: solid 30px #DFDFDF;
+    width: 198px;
+    background: whiteSmoke;
+    overflow-x: hidden;
+    overflow-y: auto;
+    z-index: -1;
+    min-height: 200px;
+    height: 88%;
+    -moz-box-shadow: 0px 0px 5px gray;
+    -webkit-box-shadow: 0px 0px 5px gray;
+    box-shadow: 0px 0px 5px gray;
+}
+#navigation .menu {
+    border: none;
+    cursor: pointer;
+    padding: 0px;
+}
+#navigation a {
+    font-size: 13px;
+    color: #222;
+    text-decoration: none;
+    padding: 5px 15px 5px 20px;
+    display: block;
+    margin-right: 0px;
+}
+#navigation a:hover {
+    display: block;
+    background: #efefef;
+    color: #222;
+}
+#navigation .category-label a {
+    font-size: 13px;
+    color: #222;
+    text-decoration: none;
+    padding: 5px 15px 5px 0px;
+    display: block;
+    margin-right: 0px;
+    margin-left:20px;
+}
+#navigation .category-label span {
+    font-size: 13px;
+    color: #222;
+    text-decoration: none;
+    padding: 5px 15px 5px 0px;
+    display: block;
+    margin-right: 0px;
+    margin-left:20px;
+}
+#navigation .category-label a span {
+    padding: 0;
+    margin-left:0px;
+}
+#navigation .menu-link {
+    padding-left: 35px;
+}
+#navigation .menu-link:hover span {
+    color:  #222;
+}
+#navigation .category-label {
+    font-weight: bold;
+    background: url(arrow.png) no-repeat 6px 6px;
+}
+#navigation .category-label:hover {
+    background: url(arrow.png) no-repeat 6px 6px #efefef;
+}
+#navigation .category-label span {
+    display: block;
+    font-size: 13px;
+}
+#navigation #category-container {
+    padding: 0px;
+    margin: 0px;
+    overflow-y: auto;
+}
+#navigation .category {
+    border-top: solid 1px #E5E5E5;
+    margin: 10px 10px 10px 0px;
+}
+#navigation .first {
+    border-top: none;
+    margin: 0px;
+}
+#navigation .menu-container .current span {
+    color: #DD4B39;
+    font-weight: bold;
+    position: relative;
+    left: -6px;
+}
+#navigation .menu-container .current a {
+    border-left: 5px solid #DD4B39;
+}
+#content {
+    margin: 10px;
+    min-width: 700px;
+    width: auto;
+    position: relative;
+    left: 0px;
+}
+#page .form-section-title span, .subform-section-title span {
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border: 1px solid #E4E4E4;
+    background: whiteSmoke;
+}
+#page .form-button, #page .actions button {
+    webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    min-height: 35px;
+    cursor: default;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    margin-right: 16px;
+    line-height: 27px;
+    min-width: 54px;
+    outline: 0;
+    padding: 0 8px;
+    cursor: pointer;
+    border: 1px solid gainsboro;
+    background-color: whiteSmoke;
+}
+#footer {
+    display: none;
+}
+
+@media print {
+    body.userview_print #main {
+        left:0;
+        top:0; 
+        width: 100%;
+        position: relative;
+    }
+    body.userview_print #main #content{
+        width: 95%;
+    }
+}

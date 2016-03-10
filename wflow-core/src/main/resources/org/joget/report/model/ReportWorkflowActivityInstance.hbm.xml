@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+  <class entity-name="ReportWorkflowActivityInstance" name="org.joget.report.model.ReportWorkflowActivityInstance" table="app_report_activity_instance">
+    <id name="instanceId" type="string"/>
+    <property name="performer" type="string"/>
+    <property name="state" type="string"/>
+    <property name="status" type="string"/>
+    <property name="nameOfAcceptedUser" type="string"/>
+    <property name="assignmentUsers" type="text"/>
+    <property name="due" type="timestamp"/>
+    <property name="createdTime" type="timestamp"/>
+    <property name="startedTime" type="timestamp"/>
+    <property name="finishTime" type="timestamp"/>
+    <property name="delay" type="long"/>
+    <property name="timeConsumingFromCreatedTime" type="long"/>
+    <property name="timeConsumingFromStartedTime" type="long"/>
+    <many-to-one column="activityUid" lazy="false" update="false" entity-name="ReportWorkflowActivity" name="reportWorkflowActivity"/>
+    <many-to-one column="processInstanceId" lazy="false" update="true" entity-name="ReportWorkflowProcessInstance" name="reportWorkflowProcessInstance"/>
+  </class>
+</hibernate-mapping>

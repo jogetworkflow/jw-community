@@ -1,0 +1,91 @@
+[{
+    title : '@@form.grid.editGrid@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.grid.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.grid.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.grid.label@@',
+        type : 'textfield',
+        value : 'Grid'
+    },
+    {
+        name : 'options',
+        label : '@@form.grid.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.grid.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.grid.label@@'
+        }]
+    }]
+},
+{
+    title : '@@form.grid.uiAndValidation@@',
+    properties : [{
+        label : '@@form.grid.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.grid.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.grid.validation@@',
+        type : 'header'
+    },
+    {
+        name : 'validator',
+        label : '@@form.grid.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormMultiRowValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        name : 'validateMinRow',
+        label : '@@form.grid.validateMinRow@@',
+        type : 'textfield'
+    },
+    {
+        name : 'validateMaxRow',
+        label : '@@form.grid.validateMaxRow@@',
+        type : 'textfield'
+    },
+    {
+        name : 'errorMessage',
+        label : '@@form.grid.errorMessage@@',
+        type : 'textfield',
+        value : '@@form.grid.invalidNumberOfRow@@'
+    }]
+},
+{
+    title : '@@form.grid.data@@',
+    properties : [{
+        name : 'loadBinder',
+        label : '@@form.grid.loadBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        name : 'storeBinder',
+        label : '@@form.grid.storeBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    }]
+}]

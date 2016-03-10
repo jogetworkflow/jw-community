@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+              http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <import resource="classpath:directoryApplicationContext.xml" />
+
+    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl">
+        <constructor-arg><ref bean="setupDataSource" /></constructor-arg>
+        <constructor-arg><ref bean="transactionManager" /></constructor-arg>
+        <property name="workflowUserManager" ref="workflowUserManager"/>
+        <property name="setupManager" ref="setupManager"/>
+        <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+        <property name="workflowAssignmentDao" ref="workflowAssignmentDao"/>
+    </bean>
+
+    <bean id="workflowUtil" class="org.joget.workflow.util.WorkflowUtil">
+    </bean>
+
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.shark.model.dao.*Dao.*(..))" order="1" />
+    </aop:config>
+
+    <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager">
+    </bean>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="workflowSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <qualifier value="workflow"/>
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/workflow/model/WorkflowProcessLink.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkAssignment.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivity.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">16</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+    </bean>
+    
+    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.WorkflowAssignmentDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+        <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+    </bean>
+
+    <bean id="xpdlImageExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="maxPoolSize" value="10" />
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    </bean>
+</beans>

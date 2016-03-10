@@ -1,0 +1,328 @@
+@import url("builder.css");
+
+/*Custom builder style*/
+#builder-bar a {
+    padding:0 30px 0 10px;
+}
+
+#builder-bar li.last-inactive a {
+    padding:0 30px 0 10px;
+}
+
+#builder-bar a span.steps-bg {
+    widthx:180px;
+}
+
+.builder-palette-element{
+    border: dotted 1px #dddddd;
+    cursor: pointer;
+    line-height: 28px;
+    padding: 0px;
+    margin: 0px;
+    color: #4C4C4C;
+}
+
+.builder-palette-element label{
+    padding-left: 3px;
+}
+/*End custom builder style*/
+
+#toolbar{
+    border: 1px solid #D6D6D6;
+    padding: 5px;
+    margin: 5px;
+    background: #ECECEC;
+    -moz-box-shadow: 0 0 6px gray;
+    -webkit-box-shadow: 0 0 6px gray;
+    box-shadow: 0 0 6px gray;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    display:none;
+}
+
+#toolbar ul{
+    list-style-type:none;
+    padding:0px;
+    margin:0px;
+}
+
+#toolbar ul li{
+    float:left;
+    padding:3px 5px;
+}
+
+#canvas {
+    position: relative;
+    top: 0px;
+    left: 185px;
+    display: block;
+    width: 700px;
+    min-height: 450px;
+    border: 1px solid #D6D6D6;
+    padding: 5px;
+    margin: 5px;
+    background: #ffffff;
+    -moz-box-shadow: 0 0 6px gray;
+    -webkit-box-shadow: 0 0 6px gray;
+    box-shadow: 0 0 6px gray;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+}
+
+#canvas legend{
+    display:none;
+}
+
+.editable-info{
+    position:relative;
+}
+
+.editable, .category-label-editable{
+    cursor: pointer;
+}
+
+.editable input, .category-label-editable input{
+    margin-top:15px;
+}
+
+#userview-header{
+    border-top:2px dotted #DDDDDD;
+}
+
+#userview-header, #userview-main, #userview-footer{
+    border-bottom:2px dotted #DDDDDD;
+}
+
+#header-info{
+    margin:0 50px 10px;
+}
+
+#header-name span{
+    font-size:24px;
+    font-weight:bold;
+}
+
+#header-message{
+    margin:20px 50px 5px;
+}
+
+#header-welcome-message{
+    float:left;
+    width:300px;
+}
+
+#header-logout-text{
+    float:right;
+    text-align:right;
+    width:200px;
+}
+
+#footer-message{
+    margin:10px 50px;
+}
+
+#userview-sidebar{
+    position:relative;
+    padding-top:30px;
+    width:400px;
+    min-height:300px;
+    border-right:2px dotted #DDDDDD;
+    float:left;
+}
+
+.sidebar-title {
+    padding: 4px;
+    font-weight: bold;
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+#userview-content{
+    width:290px;
+    height:200px;
+    text-align:center;
+    float:right;
+    padding-top:100px;
+}
+
+#userview-content span{
+    font-size:40px;
+    color:#ECECEC;
+    font-style:italic;
+    font-weight:bold;
+}
+
+.tips{
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:100%;
+    color:#aaaaaa;
+    font-size:10px;
+    text-align:center;
+    font-weight:bold;
+    font-style:italic;
+}
+
+.category{
+    background: #eee;
+    position:relative;
+    border:2px dotted #DDDDDD;
+    margin:2px;
+    padding:0 3px 3px;
+}
+
+.category-label{
+    cursor: move;
+    padding:9px 4px 7px;
+}
+
+.menu-label{
+    cursor: move;
+    padding:4px;
+}
+
+.category-label span{
+    font-weight:bold;
+}
+
+.menu-container{
+    position:relative;
+    min-height:24px;
+    padding:15px 5px 5px;
+    margin:5px 2px;
+    background-color:#fff;
+}
+
+.menu-container-highlight{
+    background-color:#E3E3E3;
+}
+
+.menu{
+    position:relative;
+    margin:2px;
+    border:2px dotted #CCCCCC;
+}
+
+.category-bottom {
+    height: 5px;
+    margin-right: 2px;
+    position: relative;
+}
+
+.category-bottom:hover {
+    height: 24px;
+}
+
+.element-options {
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    text-align: right;
+    background: none;
+    z-index: 100;
+    top: 0px;
+    right: 0px;
+}
+
+.element-options button {
+    text-decoration: none;
+    color: black;
+    font-size: 13px;
+    height: 20px;
+    min-width: 20px;
+    line-height: 15px;
+    padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+    cursor: pointer;
+    border: solid 1px #666666;
+    opacity: .6;
+    -moz-opacity: .6;
+    filter: alpha(opacity=60);
+    z-index: 300;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.element-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.element-options button:hover span {
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    margin-left: -25%;
+}
+.element-options button:hover {
+    padding: 0 4px;
+    background: lightgreen;
+}
+
+.category > .element-options button {
+    background: #fff;
+    -moz-box-shadow: 0 0 2px gray;
+    -webkit-box-shadow: 0 0 2px gray;
+    box-shadow: 0 0 2px gray;
+}
+
+.category > .element-options button:hover {
+    background : #aaa
+}
+
+.element-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+
+.element-options button.element-delete:hover{
+    background: #FA7390;
+}
+
+.element-options button.disabled, .element-options button.disabled:hover{
+    color:#fff;
+    background: darkslategray;
+    display:none;
+}
+
+.clear{
+    clear:both;
+}
+
+#userview-advanced {
+    clear: both;
+    margin-left: 220px;
+    margin-top: 20px;
+}
+#main-action-help {
+    background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    left: 939px;
+}
+
+#builder-screenshot {
+    display: none;
+}

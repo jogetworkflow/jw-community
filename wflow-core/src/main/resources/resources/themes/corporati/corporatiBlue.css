@@ -1,0 +1,19 @@
+#header {
+    background: url(header_blue.jpg) #006FAF;
+}
+#header-name span {
+    color: whitesmoke;
+}
+#header-description {
+    color: #dfdfdf;
+}
+#header-message {
+    background: #0C4B77;
+    -moz-box-shadow: 0px 0px 10px #535353;
+    -webkit-box-shadow: 0px 0px 10px #535353;
+    box-shadow: 0px 0px 10px #535353;
+}
+#header-inner, #header-inner a {
+    color: whitesmoke;
+    text-decoration: none;
+}

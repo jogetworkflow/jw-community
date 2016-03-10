@@ -1,0 +1,12 @@
+[
+    {
+        title:'@@datalist.tfdlft.config@@',
+        properties:[
+            {
+                name:'defaultValue',
+                label:'@@datalist.tfdlft.defaultValue@@',
+                type:'textfield'
+            }
+        ]
+    }
+]

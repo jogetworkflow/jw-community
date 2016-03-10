@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+    
+    <import resource="classpath:commonsApplicationContext.xml" />
+    <import resource="classpath:pluginBaseApplicationContext.xml" />
+
+    <bean id="directorySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>org/joget/directory/model/Department.hbm.xml</value>
+                <value>org/joget/directory/model/Employment.hbm.xml</value>
+                <value>org/joget/directory/model/EmploymentReportTo.hbm.xml</value>
+                <value>org/joget/directory/model/Grade.hbm.xml</value>
+                <value>org/joget/directory/model/Group.hbm.xml</value>
+                <value>org/joget/directory/model/Organization.hbm.xml</value>
+                <value>org/joget/directory/model/Role.hbm.xml</value>
+                <value>org/joget/directory/model/User.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="userDao" class="org.joget.directory.dao.UserDaoImpl">
+        <property name="groupDao" ref="groupDao" />
+        <property name="employmentDao" ref="employmentDao" />
+        <property name="roleDao" ref="roleDao" />
+        <property name="departmentDao" ref="departmentDao" />
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+
+    <bean id="employmentDao" class="org.joget.directory.dao.EmploymentDaoImpl">
+        <property name="employmentReportToDao" ref="employmentReportToDao" />
+        <property name="userDao" ref="userDao" />
+        <property name="organizationDao" ref="organizationDao" />
+        <property name="gradeDao" ref="gradeDao" />
+        <property name="departmentDao" ref="departmentDao" />
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+
+    <bean id="employmentReportToDao" class="org.joget.directory.dao.EmploymentReportToDaoImpl">
+        <property name="sessionFactory" ref="directorySessionFactory"/>
+    </bean>
+    
+    <bean id="departmentDao" class="org.joget.directory.dao.DepartmentDaoImpl">
+        <property name="organizationDao" ref="organizationDao" />
+        <property name="employmentDao" ref="employmentDao"/>
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+    
+    <bean id="groupDao" class="org.joget.directory.dao.GroupDaoImpl">
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+    
+    <bean id="organizationDao" class="org.joget.directory.dao.OrganizationDaoImpl">
+        <property name="gradeDao" ref="gradeDao" />
+        <property name="groupDao" ref="groupDao" />
+        <property name="employmentDao" ref="employmentDao" />
+        <property name="departmentDao" ref="departmentDao"/>
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+    
+    <bean id="gradeDao" class="org.joget.directory.dao.GradeDaoImpl">
+        <property name="organizationDao" ref="organizationDao" />
+        <property name="employmentDao" ref="employmentDao" />
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+    
+    <bean id="roleDao" class="org.joget.directory.dao.RoleDaoImpl">
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+
+    <bean id="directoryManager" class="org.joget.directory.model.service.DirectoryManagerProxyImpl" primary="true">
+        <qualifier value="main" />
+        <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
+        <property name="setupManager" ref="setupManager" />
+        <property name="pluginManager" ref="pluginManager" />
+    </bean>
+
+    <bean id="defaultDirectoryManager" class="org.joget.directory.model.service.DirectoryManagerImpl" primary="true" >
+        <qualifier value="default" />
+        <property name="userDao" ref="userDao" />
+        <property name="employmentDao" ref="employmentDao" />
+        <property name="departmentDao" ref="departmentDao" />
+        <property name="groupDao" ref="groupDao" />
+        <property name="organizationDao" ref="organizationDao" />
+        <property name="gradeDao" ref="gradeDao" />
+        <property name="roleDao" ref="roleDao" />
+    </bean>
+
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.directory.model.service.DirectoryManagerImpl.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
+    </aop:config>
+
+</beans>

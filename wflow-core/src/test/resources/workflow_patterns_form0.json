@@ -1,0 +1,74 @@
+{
+    "className": "org.joget.apps.form.model.Form",
+    "elements": [
+    {
+        "className": "org.joget.apps.form.model.Section",
+        "elements": [
+        {
+            "className": "org.joget.apps.form.model.Column",
+            "elements": [
+            {
+                "className": "org.joget.apps.form.lib.TextField",
+                "properties": {
+                    "id": "id",
+                    "label": "ID",
+                    "readonly": "",
+                    "size": "",
+                    "validator": {
+                        "className": "",
+                        "properties": {}
+                    },
+                    "workflowVariable": ""
+                }
+            },
+            {
+                "className": "org.joget.apps.form.lib.TextField",
+                "properties": {
+                    "id": "name",
+                    "label": "Name",
+                    "readonly": "",
+                    "size": "",
+                    "validator": {
+                        "className": "",
+                        "properties": {}
+                    },
+                    "workflowVariable": ""
+                }
+            },
+            {
+                "className": "org.joget.apps.form.lib.TextField",
+                "properties": {
+                    "id": "state",
+                    "label": "State",
+                    "readonly": "",
+                    "size": "",
+                    "validator": {
+                        "className": "",
+                        "properties": {}
+                    },
+                    "workflowVariable": ""
+                }
+            }
+            ],
+            "properties": {
+                "width": "99%"
+            }
+        }
+        ],
+        "properties": {
+            "label": "Section"
+        }
+    }
+    ],
+    "properties": {
+        "id": "workflow_patterns_form0",
+        "loadBinder": {
+            "className": "org.joget.apps.form.lib.WorkflowFormBinder"
+        },
+        "name": "Test Form 1",
+        "storeBinder": {
+            "className": "org.joget.apps.form.lib.WorkflowFormBinder"
+        },
+        "tableName": "workflow_patterns_form0"
+    }
+}

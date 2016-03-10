@@ -1,0 +1,316 @@
+#adminBar {
+    display: block;
+    position: fixed;
+    right: 0px;
+    top: -3px;
+    padding: 2px 2px 10px 2px;
+    width: 42px;
+    background: #ececec url(../images/v3/logo_mono.png) no-repeat 8px 7px;
+    border-radius: 0px;
+    z-index: 10000;
+    box-shadow: silver -1px -1px 1px 1px;
+    opacity: 0.95;
+    height: 100%;
+}
+body.embeded #adminBar {
+    display: none;
+}
+#appcenter #adminBar {
+    background-image: none;
+}
+#appcenter #adminBar #adminBarButtons {
+    margin-top: 0px;
+}
+#adminBar #quickEditModeOption {
+    margin: 15px 0px;
+}
+#adminBar #quickEditModeOption input {
+    display: none;
+}
+#adminBar #quickEditModeOption .ui-state-active {
+    border: solid 1px lightgreen;
+}
+#adminBar #quickEditModeOption .ui-corner-left {
+    border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+}
+#adminBar #quickEditModeOption .ui-corner-right {
+    border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+}
+#adminBar #quickEditModeOption label {
+    margin-bottom: 0px;
+    display: none;
+    font-family: PT Sans,Arial,serif;
+    font-size: 9px;
+    text-align: center;
+    font-weight: normal;
+    border: 1px solid #aaaaaa;
+    color: #212121;
+    opacity: 0.5;
+}
+#adminBar #quickEditModeOption label.ui-state-active {
+    border: solid 1px lightblue;
+    opacity: 1;
+}
+#adminBar #quickEditModeOnLabel {
+    border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+    background: #ffffff;
+}
+#adminBar #quickEditModeOffLabel {
+    border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+    background: #ffffff;
+}
+#adminBar .ui-buttonset .ui-button {
+    margin-left: 0;
+    margin-right: -.3em;
+    width: 40px;
+    height: 20px;
+}
+#adminBar .ui-button-text-only .ui-button-text {
+    padding: 4px;
+    font-size: 9px;
+}
+#adminBar #appCenter {
+    display: inline-block;
+    height: 40px;
+    width: 100%;
+}
+#adminBar #adminBarButtons {
+    margin-top: 20px;
+}
+#adminBar .adminBarButton {
+    display: block;
+    background: transparent;
+    color: #000;
+    font-size: 9px;
+    line-height: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 0px .3px;
+    padding: 3px 0px;
+    border-radius: 0px;
+    border-top: solid 1px white;
+    border-bottom: solid 1px #ccc;
+}
+#adminBar .adminBarButton:hover {
+    background: white;
+}
+#adminBar .adminBarButton i {
+    font-size: 13px;
+}
+#quickOverlay { 
+    height: 100%; 
+    width: 100%; 
+    position: fixed; 
+    top: 0px; 
+    background: black; 
+    z-index: 2000; 
+    opacity: 0.5 
+}
+#quickOverlayButton { 
+    position: fixed;
+    top: 0px;
+    right: 2%;
+    z-index: 15000;
+    padding: 3px 6px;
+    background: white;
+    opacity: 0.9;
+    border-radius: 50px;
+    font-size: 20px;
+    border: solid 1px #333;
+}
+#quickOverlayButton a { 
+    text-decoration: none;
+}
+#quickOverlayButton i { 
+    font-size: 30px;
+}
+#quickOverlayFrame { 
+    position: fixed; 
+    height: 100%; 
+    width: 90%; 
+    top: 5px; 
+    left: 5%; 
+    z-index: 3000; 
+    border: none; 
+    box-shadow: 0px 0px 2px 2px; 
+    min-height: 500px; 
+    min-width: 780px; 
+    background:white 
+}
+.quickEdit, #form-canvas .quickEdit {
+    display: none;
+    min-width: 100px;
+    max-width: 200px;
+    position: relative;
+    top: 1px;
+    left: 1px;
+    font-size: 9px;
+    line-height: 14px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0px 0px 2px 0px;
+    padding: 2px 5px;
+    background: #e7fab6;
+    border-radius: 5px;
+    z-index: 0;
+    box-shadow: #A0C847 0px 0px 2px 2px;
+    opacity: 0.8;
+    overflow: hidden;
+}
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    padding: 0px;
+    line-height: 14px;
+    width: 100%;
+}
+.quickEdit:hover, #navigation .quickEdit:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, .adminBarButton:hover {
+    background: lightgreen;
+}
+#page.quickEditModeActive fieldset#form-canvas, #page.quickEditModeActive fieldset#form-canvas .subform-container, #page.quickEditModeActive .dataList, #page.quickEditModeActive #category-container {
+    border: solid 5px #e7fab6;
+    padding: 1px;
+}
+#page.quickEditModeActive fieldset#form-canvas [class^="icon-"], #page.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
+    font-family: FontAwesome;
+}
+#adminBar.adminBarActive {
+    right: 0px;
+    transition: right 0.2s ease-in-out;
+}
+#adminBar.adminBarInactive {
+    right: -39px;
+    transition: right 0.2s ease-in-out;
+}
+
+/*-- Light theme admin bar --*/
+/*
+#adminBar {
+    background: #ececec url(../images/v3/logo_mono.png) no-repeat 8px 7px;
+    box-shadow: silver -1px -1px 1px 1px;
+}
+#adminBar .adminBarButton {
+    background: transparent;
+    color: #000;
+    border-top: solid 1px white;
+    border-bottom: solid 1px #ccc;
+}
+#adminBar .adminBarButton:hover {
+    background: white;
+}
+*/
+
+/*-- Dark theme admin bar --*/
+#adminBar {
+    background: #222 url(../images/v3/logo_white.png) no-repeat 8px 7px;
+    box-shadow: #000 0px -1px 1px 1px;
+}
+#adminBar .adminBarButton {
+    background: transparent;
+    color: #ccc;
+    border-top: none;
+    border-bottom: solid 1px #999;
+}
+#adminBar .adminBarButton:hover {
+    background: black;
+    color: white;
+}
+
+/*-- Performance Analyzer --*/
+#analyzerJson { 
+    display: none 
+}
+#navigation .menu.analyzer, .form-section.analyzer, .form-column.analyzer, .form-cell.analyzer, .subform-section.analyzer, .subform-column.analyzer, .subform-cell.analyzer, #content.analyzer { 
+    border: solid 1px orange; 
+    margin: 1px; 
+    border-radius: 4px; 
+}
+.analyzer-page { 
+    display: none;
+    padding: 2px; 
+    position: absolute; 
+    z-index: 10000; 
+    border: solid 1px orange; 
+    background: lightgoldenrodyellow; 
+}
+.analyzer-label { 
+    display: none;
+    opacity: 0.95; 
+    position: absolute; 
+    max-width: 600px; 
+    z-index: 5; 
+};
+.analyzer-label, #form-canvas .analyzer-label { 
+    position: absolute; 
+    border-radius: 4px; 
+    padding: 5px; 
+    max-width: 500px; 
+    z-index: 1000; 
+    opacity: 0.95; 
+    font-size: 9px; 
+    font-family: sans-serif; 
+}
+.analyzer-info { 
+    display: none; 
+    margin-left: 20px; 
+    margin-top: 0px; 
+    z-index: 1000; 
+    min-width: 200px; 
+}
+.analyzer-label:hover .analyzer-info, .analyzer-info:hover { 
+    display: list-item; 
+    z-index: 2000 
+}
+.analyzer-label:hover { 
+    border: solid 1px orange; 
+    background: lightgoldenrodyellow; 
+}
+.analyzer-info span, #navigation .current .analyzer-info span, #form-canvas .analyzer-info span, .analyzer-page span { 
+    font-size: 8.5px; 
+    font-family: sans-serif; 
+    color: #555; 
+    font-weight: normal; 
+    z-index: 2000 
+}
+.analyzer-info-info { 
+    float: left; 
+    clear: left; 
+    text-align: left; 
+    line-height: 16px; 
+}
+.analyzer-label .analyzer-info-info { 
+    width: 90%;
+}    
+.analyzer-info-duration { 
+    float: right; 
+    clear: right; 
+    min-width: 30px; 
+    text-align: right; 
+}
+.duration, #form-canvas .duration, .analyzer-info-duration { 
+    background: lightgoldenrodyellow; 
+    color: #555; 
+    font-size: 8.5px; 
+    border: solid 1px orange; 
+    border-radius: 2px; 
+    padding: 2px; 
+    font-size: 10px; 
+    font-weight: normal; 
+}
+.embeded .hasAnalyzer {
+  padding-top: 20px;
+}
+.embeded .hasAnalyzer .analyzer-page {
+    top:0;
+}

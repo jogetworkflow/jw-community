@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="User" name="org.joget.directory.model.User" table="dir_user">
+        <id column="id" name="id" type="string"/>
+        <property column="username" name="username" type="string"/>
+        <property column="password" name="password" type="string"/>
+        <property column="firstName" name="firstName" type="string"/>
+        <property column="lastName" name="lastName" type="string"/>
+        <property column="email" name="email" type="string"/>
+        <property column="timeZone" name="timeZone" type="string"/>
+        <property column="locale" name="locale" type="string"/>
+        <property column="active" name="active" type="integer"/>
+        <!-- join tables -->
+        <set name="roles" table="dir_user_role">
+            <key column="userId"/>
+            <many-to-many column="roleId" entity-name="Role"/>
+        </set>
+        <set name="groups" table="dir_user_group" lazy="true" inverse="false">
+            <key column="userId"/>
+            <many-to-many column="groupId" entity-name="Group"/>
+        </set>
+        <set name="employments" inverse="true">
+            <key column="userId"/>
+            <one-to-many entity-name="Employment"/>
+        </set>
+    </class>
+</hibernate-mapping>

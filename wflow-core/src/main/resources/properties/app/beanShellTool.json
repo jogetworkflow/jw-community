@@ -1,0 +1,10 @@
+[{
+    title : '@@app.beanshelltool.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@app.beanshelltool.script@@',
+        type : 'codeeditor',
+        required : 'True',
+        mode : 'java'
+    }]
+}]

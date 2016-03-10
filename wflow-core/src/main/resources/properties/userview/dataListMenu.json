@@ -1,0 +1,115 @@
+[{
+    title : '@@userview.datalistmenu.editList@@',
+    properties : [{
+        name : 'id',
+        label : 'ID',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.datalistmenu.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.datalistmenu.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.datalistmenu.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'List'
+    },
+    {
+        name : 'datalistId',
+        label : '@@userview.datalistmenu.listId@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/datalist/options'
+    }]
+},
+{
+    title : '@@userview.datalistmenu.ui@@',
+    properties : [{
+        name : 'rowCount',
+        label : '@@userview.datalistmenu.rowCount@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },{
+        name : 'buttonPosition',
+        label : '@@userview.datalistmenu.buttonPosition@@',
+        type : 'selectbox',
+        value : 'bottomLeft',
+        options : [{
+            value : 'topLeft',
+            label : '@@userview.datalistmenu.buttonPosition.topLeft@@'
+        },{
+            value : 'topRight',
+            label : '@@userview.datalistmenu.buttonPosition.topRight@@'
+        },{
+            value : 'bottomLeft',
+            label : '@@userview.datalistmenu.buttonPosition.bottomLeft@@'
+        },{
+            value : 'bottomRight',
+            label : '@@userview.datalistmenu.buttonPosition.bottomRight@@'
+        },{
+            value : 'bothLeft',
+            label : '@@userview.datalistmenu.buttonPosition.bothLeft@@'
+        },{
+            value : 'bothRight',
+            label : '@@userview.datalistmenu.buttonPosition.bothRight@@'
+        }]
+    },{
+        name : 'selectionType',
+        label : '@@userview.datalistmenu.selectionType@@',
+        type : 'selectbox',
+        value : 'multiple',
+        options : [{
+            value : 'multiple',
+            label : '@@userview.datalistmenu.selectionType.multiple@@'
+        },{
+            value : 'single',
+            label : '@@userview.datalistmenu.selectionType.single@@'
+        }]
+    },{
+        name : 'checkboxPosition',
+        label : '@@userview.datalistmenu.checkboxPosition@@',
+        type : 'selectbox',
+        value : 'left',
+        options : [{
+            value : 'left',
+            label : '@@userview.datalistmenu.checkboxPosition.left@@'
+        },{
+            value : 'right',
+            label : '@@userview.datalistmenu.checkboxPosition.right@@'
+        },{
+            value : 'both',
+            label : '@@userview.datalistmenu.checkboxPosition.both@@'
+        },{
+            value : 'no',
+            label : '@@userview.datalistmenu.checkboxPosition.no@@'
+        }]
+    },{
+        name : 'customHeader',
+        label : '@@userview.datalistmenu.customHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.datalistmenu.customFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+},
+{
+    title : '@@userview.datalistmenu.advanced@@',
+    properties : [{
+        name : 'keyName',
+        label : '@@userview.datalistmenu.userviewKeyName@@',
+        type : 'textfield'
+    }]
+}]

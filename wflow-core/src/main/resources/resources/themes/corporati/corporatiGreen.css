@@ -1,0 +1,26 @@
+#header {
+    background: url(header_green.jpg) #39836C;
+}
+#header-name span {
+    color: whitesmoke;
+}
+#header-description {
+    color: yellow;
+}
+#header-message {
+    background: darkGreen;
+    -moz-box-shadow: 0px 0px 10px green;
+    -webkit-box-shadow: 0px 0px 10px green;
+    box-shadow: 0px 0px 10px green;
+}
+#header-inner, #header-inner a {
+    color: whitesmoke;
+    text-decoration: none;
+}
+#landing .landing-column h2 {
+    background: #39836C;
+    color: white;
+}
+#landing a, .landing-li-title {
+    color: #006faf;
+}

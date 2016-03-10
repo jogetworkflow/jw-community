@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+    <import resource="classpath:appsApplicationContext.xml" />
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="authenticationProvider" />
+    </security:authentication-manager>
+
+    <!-- Open paths -->        
+    <security:http pattern="/web/login" security="none"/>
+    <security:http pattern="/web/mlogin" security="none"/>
+
+    <!-- Protected paths -->
+    <security:http pattern="/**" use-expressions="false" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">        
+        <security:access-denied-handler error-page="/web/unauthorized"/>
+        <security:csrf disabled="true"/>
+        <security:headers defaults-disabled="true">
+            <security:content-type-options />
+        </security:headers>
+        
+        <!-- Open paths which require user object for locale and timezone-->
+        <security:intercept-url pattern="/web/index" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/unauthorized" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/help/guide" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/home" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        
+        <!-- Userview paths: permissions handled within the userview and forms -->
+        <security:intercept-url pattern="/web/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/userview/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/embed/userview/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/app/**/form/embed" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/app/**/datalist/embed" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mlogin/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/mobile" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/mobile/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mobilecache/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/mapp/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        
+        <!-- Open JSON APIs: permissions controlled within assignment ownership, userview permission and process whitelist -->
+        <security:intercept-url pattern="/web/json/app/**/form/options" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/directory/user/sso" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/workflow/currentUsername" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/workflow/process/start/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/workflow/assignment/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/apps/published/userviews" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/apps/published/processes" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+
+        <!-- Javascript API paths: JS API invokes JSON API, so permissions controlled there  --> 
+        <security:intercept-url pattern="/web/js/**"  access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        
+        <!-- RSS feed: permissions controlled by assignment -->
+        <security:intercept-url pattern="/web/rss/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+                
+        <!-- Task assignment and form download paths: permissions controlled by assignment  -->
+        <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/client/app/**/**/form/download/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/client/app/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+                
+        <!-- Plugin web service paths: permissions controlled by plugin -->
+        <security:intercept-url pattern="/web/json/plugin/**/service" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/app/**/plugin/**/service" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:intercept-url pattern="/web/json/plugin/list**" access="ROLE_ADMIN"/>
+        <security:intercept-url pattern="/plugin/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        
+        <!-- Web Console normal user paths -->
+        <security:intercept-url pattern="/web/console/run/inbox" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/run/processes" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/run/apps" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/profile" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/profile/submit" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_USER"/>
+
+        <!-- Login, logout and app center -->
+        <security:intercept-url pattern="/web/desktop" access="IS_AUTHENTICATED_ANONYMOUSLY"/>    
+        <security:intercept-url pattern="/web/login" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:form-login login-page="/web/login" username-parameter="j_username" password-parameter="j_password" login-processing-url="/j_spring_security_check" default-target-url="/index.jsp" authentication-failure-url="/web/login?login_error=1" />
+        <security:logout logout-url="/j_spring_security_logout" logout-success-url="/web/login"/>
+        <security:anonymous username="roleAnonymous"/>
+        
+        <!-- Secure by default -->
+        <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN"/>
+        <security:intercept-url pattern="/web/**" access="ROLE_ADMIN"/>
+
+        <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions  -->
+        <!--
+        <security:session-management>
+            <security:concurrency-control max-sessions="-1" error-if-maximum-exceeded="true" expired-url="/web/login" />
+        </security:session-management>
+        -->
+        
+        <!-- Support Basic Authentication -->
+        <security:http-basic />
+        
+        <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" /> 
+    </security:http>
+        
+    <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
+        <property name="directoryManager" ref="directoryManager"/>
+    </bean>
+
+    <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
+        <property name="authenticationManager" ref="authenticationManager" />
+        <property name="workflowUserManager" ref="workflowUserManager"/>
+        <property name="directoryManager" ref="directoryManager"/>
+        <property name="setupManager" ref="setupManager"/>
+        <property name="localeResolver" ref="localeResolver"/>
+        <property name="auditTrailManager" ref="auditTrailManager"/>
+        <property name="allowSessionCreation" value="true" />
+    </bean>
+    
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <constructor-arg value="/web/login"/>
+        <property name="forceHttps" value="false" />
+    </bean>
+
+    <!-- END Spring Security -->
+    
+    <import resource="classpath:webApplicationContext.xml" />
+</beans>

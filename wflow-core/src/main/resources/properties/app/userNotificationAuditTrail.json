@@ -1,0 +1,154 @@
+[{
+    title : '@@app.usernotificationaudittrail.config@@',
+    properties : [{
+        name : 'base',
+        label : '@@app.usernotificationaudittrail.baseUrl@@',
+        type : 'textfield',
+        description : '@@app.usernotificationaudittrail.baseUrl.desc@@',
+        required : 'True'
+    },
+    {
+        name : 'host',
+        label : '@@app.usernotificationaudittrail.host@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'port',
+        label : '@@app.usernotificationaudittrail.port@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'security',
+        label : '@@app.usernotificationaudittrail.security@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'TLS',
+            label : '@@app.usernotificationaudittrail.security.tls@@'
+        },
+        {
+            value : 'SSL',
+            label : '@@app.usernotificationaudittrail.security.ssl@@'
+        }]
+    },
+    {
+        name : 'username',
+        label : '@@app.usernotificationaudittrail.username@@',
+        type : 'textfield'
+    },
+    {
+        name : 'password',
+        label : '@@app.usernotificationaudittrail.password@@',
+        type : 'password'
+    }],
+    buttons : [{
+        name : 'testmail',    
+        label : '@@app.emailtool.sendTestMail@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=testmail',
+        fields : ['host', 'port', 'security', 'username', 'password'],
+        addition_fields : [
+            {
+                name : 'from',
+                label : '@@app.emailtool.from@@',
+                type : 'textfield',
+                required : 'True'
+            },
+            {
+                name : 'toSpecific',
+                label : '@@app.emailtool.toEmail@@',
+                type : 'textfield',
+                required : 'True'
+            }
+        ]
+    }]
+},
+{
+    title : '@@app.usernotificationaudittrail.email@@',
+    properties : [{
+        name : 'from',
+        label : '@@app.usernotificationaudittrail.from@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'cc',
+        label : '@@app.usernotificationaudittrail.cc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'subject',
+        label : '@@app.usernotificationaudittrail.subject@@',
+        type : 'textfield',
+        value : 'New Task: #assignment.activityName#'
+    },
+    {
+        name : 'emailMessage',
+        label : '@@app.usernotificationaudittrail.message@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15',
+        value : 'A new task has been created by the process #assignment.processName#'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.usernotificationaudittrail.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@app.usernotificationaudittrail.notificationLink@@',
+    properties : [{
+        name : 'url',
+        label : '@@app.usernotificationaudittrail.url@@',
+        type : 'textfield'
+    },
+    {
+        name : 'urlName',
+        label : '@@app.usernotificationaudittrail.urlName@@',
+        type : 'textfield'
+    },
+    {
+        name : 'parameterName',
+        label : '@@app.usernotificationaudittrail.parameterName@@',
+        description : '@@app.usernotificationaudittrail.parameterName.desc@@',
+        type : 'textfield',
+        value : 'activityId'
+    },
+    {
+        name : 'passoverMethod',
+        label : '@@app.usernotificationaudittrail.passoverMethod@@',
+        type : 'selectbox',
+        value : 'param',
+        options : [{
+            value : 'none',
+            label : '@@app.usernotificationaudittrail.passoverMethod.none@@'
+        },
+        {
+            value : 'append',
+            label : '@@app.usernotificationaudittrail.passoverMethod.append@@'
+        },
+        {
+            value : 'param',
+            label : '@@app.usernotificationaudittrail.passoverMethod.param@@'
+        }]
+    }]
+},
+{
+    title : '@@app.usernotificationaudittrail.advanced@@',
+    properties : [{
+        name : 'exclusion',
+        label : '@@app.usernotificationaudittrail.activityExclusion@@',
+        type : 'multiselect',
+        size : '10',
+        options_ajax : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.UserNotificationAuditTrail/service?action=getActivities'
+    }]
+}]

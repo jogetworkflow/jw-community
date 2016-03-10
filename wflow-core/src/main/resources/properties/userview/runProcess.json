@@ -1,0 +1,94 @@
+[{
+    title : '@@userview.runprocess.editRunProcess@@',
+    properties : [{
+        name : 'id',
+        label : 'Id',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.runprocess.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.runprocess.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.runprocess.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@userview.runprocess.runProcess@@'
+    },
+    {
+        name : 'processDefId',
+        label : '@@userview.runprocess.process@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.RunProcess/service?action=getOptions'
+    },
+    {
+        name : 'runProcessDirectly',
+        label : '@@userview.runprocess.runProcessDirectly@@',
+        type : 'checkbox',
+        value : 'Yes',
+        options : [{
+            value : 'Yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'showInPopupDialog',
+        label : '@@userview.runprocess.showInPopup@@',
+        type : 'checkbox',
+        value : 'No',
+        options : [{
+            value : 'Yes',
+            label : ''
+        }]
+    }]
+},
+{
+    title : 'Redirection',
+    properties : [{
+        name : 'messageShowAfterComplete',
+        label : '@@userview.runprocess.messageAfterStarted@@',
+        type : 'textarea'
+    },
+    {
+        name : 'redirectUrlAfterComplete',
+        label : '@@userview.runprocess.redirectAfterStarted@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fieldPassover',
+        label : '@@userview.formmenu.fieldNamePassover@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fieldPassoverMethod',
+        label : '@@userview.formmenu.fieldPassoverMethod@@',
+        type : 'selectbox',
+        value : 'append',
+        options : [{
+            value : 'append',
+            label : '@@userview.formmenu.append@@'
+        },
+        {
+            value : 'param',
+            label : '@@userview.formmenu.asParam@@'
+        }]
+    },
+    {
+        name : 'paramName',
+        label : '@@userview.formmenu.paramName@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@userview.runprocess.advanced@@',
+    properties : [{
+        name : 'keyName',
+        label : '@@userview.runprocess.userviewKeyName@@',
+        type : 'textfield'
+    }]
+}]

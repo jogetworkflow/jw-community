@@ -1,0 +1,157 @@
+[{
+    title : '@@userview.formmenu.editForm@@',
+    properties : [{
+        name : 'id',
+        label : 'Id',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.formmenu.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.formmenu.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.formmenu.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@userview.formmenu.form@@'
+    },
+    {
+        name : 'formId',
+        label : '@@userview.formmenu.form@@',
+        type : 'selectbox',
+        required : 'True',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app/%s/%s/forms/options'
+    },
+    {
+        name : 'showInPopupDialog',
+        label : '@@userview.formmenu.showInPopup@@',
+        type : 'checkbox',
+        value : 'No',
+        options : [{
+            value : 'Yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonly',
+        label : '@@userview.formmenu.readonly@@',
+        type : 'checkbox',
+        value : 'No',
+        options : [{
+            value : 'Yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@userview.formmenu.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@userview.formmenu.redirection@@',
+    properties : [{
+        name : 'messageShowAfterComplete',
+        label : '@@userview.formmenu.messageAfterSubmit@@',
+        type : 'textarea'
+    },
+    {
+        name : 'redirectUrlAfterComplete',
+        label : '@@userview.formmenu.redirectAfterSubmit@@',
+        type : 'textfield'
+    },
+    {
+        name : 'redirectUrlOnCancel',
+        label : '@@userview.formmenu.redirectOnCancel@@',
+        type : 'textfield'
+    },
+    {
+        name : 'redirectTargetOnCancel',
+        label : '@@userview.formmenu.redirectTargetOnCancel@@',
+        type : 'selectbox',
+        value : 'top',
+        options : [{
+            value : 'top',
+            label : '@@userview.formmenu.target.top@@'
+        },
+        {
+            value : 'window',
+            label : '@@userview.formmenu.target.window@@'
+        }]
+    },
+    {
+        name : 'fieldPassover',
+        label : '@@userview.formmenu.fieldNamePassover@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fieldPassoverMethod',
+        label : '@@userview.formmenu.fieldPassoverMethod@@',
+        type : 'selectbox',
+        value : 'append',
+        options : [{
+            value : 'append',
+            label : '@@userview.formmenu.append@@'
+        },
+        {
+            value : 'param',
+            label : '@@userview.formmenu.asParam@@'
+        }]
+    },
+    {
+        name : 'paramName',
+        label : '@@userview.formmenu.paramName@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@userview.formmenu.ui@@',
+    properties : [{
+        name : 'submitButtonLabel',
+        label : '@@userview.formmenu.submitButtonLabel@@',
+        type : 'textfield'
+    },
+    {
+        name : 'cancelButtonLabel',
+        label : '@@userview.formmenu.cancelButtonLabel@@',
+        type : 'textfield'
+    },
+    {
+        name : 'customHeader',
+        label : '@@userview.formmenu.customHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.formmenu.customFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+},
+{
+    title : '@@userview.formmenu.advanced@@',
+    properties : [{
+        name : 'keyName',
+        label : '@@userview.formmenu.userviewKeyName@@',
+        type : 'textfield'
+    },
+    {
+        name : 'loadDataWithKey',
+        label : '@@userview.formmenu.loadDataUsingKey@@',
+        type : 'checkbox',
+        options : [{
+            value : 'Yes',
+            label : 'Yes'
+        }]
+    }]
+}]

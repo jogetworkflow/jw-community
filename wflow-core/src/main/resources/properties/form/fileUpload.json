@@ -1,0 +1,123 @@
+[{
+    title : '@@form.fileupload.editFileUpload@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.fileupload.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.fileupload.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.fileupload.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'FileUpload'
+    }]
+},
+{
+    title : '@@form.fileupload.advancedOptions@@',
+    properties : [{
+        label : '@@form.fileupload.data@@',
+        type : 'header'
+    },
+    {
+        name : 'validator',
+        label : '@@form.fileupload.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        name : 'maxSize',
+        label : '@@form.fileupload.maxSize@@',
+        type : 'textfield',
+        regex_validation : '^[0-9]+$',
+        validation_message : '@@form.fileupload.invalidSize@@'
+    },
+    {
+        name : 'maxSizeMsg',
+        label : '@@form.fileupload.maxSize.msg@@',
+        type : 'textfield',
+        value : '@@form.fileupload.maxSize.msg.fileTooBig@@'
+    },
+    {
+        name : 'fileType',
+        label : '@@form.fileupload.fileType@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fileTypeMsg',
+        label : '@@form.fileupload.fileType.msg@@',
+        type : 'textfield',
+        value : '@@form.fileupload.fileType.msg.invalidFileType@@'
+    },
+    {
+        label : '@@form.section.permission@@',
+        type : 'header'
+    },
+    {
+        name:'permissionType',
+        label:'@@form.section.permission@@',
+        type:'selectbox',
+        value : '',
+        options : [{
+            value : '', label : '@@form.fileupload.permission.loggedInUsers@@'
+        },{
+            value : 'public', label : '@@form.fileupload.permission.public@@'
+        },{
+            value : 'custom', label : '@@form.fileupload.permission.custom@@'
+        }]
+    },
+    {
+        name:'permissionPlugin',
+        label:'@@form.fileupload.customPermission@@',
+        type:'elementselect',
+        control_field: 'permissionType',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'true',
+        options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
+        url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    },
+    {
+        label : '@@form.fileupload.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'size',
+        label : '@@form.fileupload.size@@',
+        type : 'textfield'
+    },
+    {
+        name : 'multiple',
+        label : '@@form.fileupload.multiple@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonly',
+        label : '@@form.fileupload.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'attachment',
+        label : '@@form.fileupload.download@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+}]

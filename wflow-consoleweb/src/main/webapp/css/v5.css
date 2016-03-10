@@ -1,0 +1,811 @@
+@import url('v3.css');
+
+body {
+    background: rgb(247, 249, 249);
+}
+body#appcenter, body#webconsole, body#login {
+    background: rgb(236, 240, 241); //#CED7DC;
+}
+a {
+    color: #555;
+}
+.ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button {
+    font-family: Arial,sans-serif;
+}
+.ui-autocomplete {
+    border: solid 1px #ccc;
+}
+
+/*--- Side Sub Menu ---*/
+#main {
+    width: 85%;
+    margin-left: 190px;
+    top: -8px;
+}
+#menu {
+    left: 180px;
+}
+#nav #nav-title {
+    background: rgb(236, 240, 241);
+    padding: 15px 15px;
+    margin: 0px;
+    width: 170px;
+    color: #646A52;
+    min-height: 25px;
+    border-top: 0px;
+    font-size: 15px;
+    font-weight: 800;
+    text-align: left;
+}
+#nav #nav-title p {
+    margin: 5px 0px;
+    display: inline-block;
+}
+#nav #nav-title a {
+    font-weight: normal;
+    display: inline-block;
+    margin: 2px 0px;
+}
+#nav #nav-body {
+    min-width: 190px;
+    background: rgb(247, 249, 249);
+}
+#nav span.nav-subtitle {
+    display: inline-block;
+    padding: 5px 0px 0px 0px;
+    font-size: 14px;
+    color: #4C4C4C;
+    width: 150px;
+    text-align: left;
+    font-weight: normal;
+}
+#nav span.nav-subtitle a {
+    color: red;
+}
+#nav #nav-links {
+}
+#nav span.nav-steps {
+    padding: 1px 6px 2px 4px;
+    color: #333;
+    background: none repeat scroll 0% 0% #8FBC8F;
+    margin-right: 6px;
+    border-radius: 40px;
+    width: 12px;
+    display: inline-block;
+    padding: 4px;
+    line-height: 12px;
+    text-align: center;
+}
+#nav li.nav-selected span.nav-steps {
+    background: #fff;
+}
+#nav #nav-list li.nav-selected {
+    background: none repeat scroll 0% 0% #8FBC8F;
+    width: 95%;
+}
+#nav #nav-list li {
+    padding: 0px 10px 0px 10px;
+    margin: 0px 0px 1px;
+    overflow: hidden;
+}
+#nav #nav-list li:hover {
+    background: #8FBC8F;
+    width: 95%;
+}
+#nav #nav-list #nav-apps-link {
+    margin-top: 20px;
+}
+#nav #nav-list #nav-app-versions, #nav #nav-list #nav-app-published {
+    display: none;
+}
+#nav #nav-app-forms #appDefinitionName {
+    display: none;
+}
+/*--- End Side Sub Menu ---*/
+
+/*--- Top Sub Menu ---*/
+/*
+#main {
+    width: 100%;
+    margin-left: -1px;
+    border: solid 1px #dfdfdf;
+    box-shadow: none;
+    top: 69px;
+    padding: 10px 1px 30px 1px;
+}
+#main #main-body {
+    clear: both;
+    min-height: 450px;
+    padding: 25px 30px 20px 40px;
+}
+#main #main-actionx {
+    background: none;
+    padding: 0px 10px 0px 0px;
+    border-radius: 1px;
+    position: fixed;
+    top: 86px;
+    left: 46px;
+    background: white;
+    width: 100%;
+    z-index: 20;
+}
+#nav {
+    position: fixed;
+    top: 47px;
+    z-index: 5;
+    width: 100%;
+    min-width: 800px;
+    margin-top: 0px;
+    background: #E6FAB6;
+    border-bottom: dotted 1px #ccc;
+}
+#nav #nav-title {
+    display: block;
+    width: 100%;
+    padding: 8px 20px 8px 20px;
+}
+#nav #nav-title p {
+    margin: 0px 0px;
+}
+#nav #nav-links {
+    float: right;    
+    padding-right: 48px;
+}
+#nav #nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    margin-left: 4px;
+    white-space: nowrap;
+}
+#nav #nav-list li {
+    padding: 0 10px 0 10px;
+    margin: 0 0 1px 0;
+    overflow: hidden;
+    display: inline-block;
+    top: 4px;
+    position: relative;
+}
+#nav #nav-list li.nav-selected {
+    background: white;
+    width: inherit;
+    border-bottom: solid 1px white;
+    position: relative;
+    top: 5px;
+    border-top: solid 1px #ddd;
+    border-right: solid 1px #ddd;
+    border-left: solid 1px #ddd;
+    border-radius: 2px 2px 0px 0px;
+    box-shadow: #ddd 1px -1px 1px;
+}
+#nav #nav-list li:hover {
+    background: none;
+    width: inherit;
+    position: relative;
+}
+#nav #nav-list li:hover a {
+    position: relative;
+}
+#nav #nav-list a:hover {
+    position: relative;
+}
+#nav #nav-list li.nav-selected:hover {
+    background: white;
+    width: inherit;
+    position: relative;
+}
+#nav #nav-list a {
+    text-decoration: none;
+    font-size: 11px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0px 10px;
+    max-width: 225px;
+}
+#nav #nav-list a.button-option {
+    border: dotted 0px green;
+    backgroundx: white;
+    opacityx: 0.8;
+    padding: 0px 10px 0px 10px;
+    line-height: 26px;
+    height: 28px;
+}
+#nav #nav-list li.nav-selected a, #nav #nav-list a:hover {
+    color: inherit;
+    text-shadow: none;
+    overflow: hidden;
+}
+#nav li.nav-selected span.nav-steps {
+    background: #ddd;
+}
+#nav #nav-list #nav-apps-link {
+    margin-top: 0px;
+}
+#nav #nav-list #nav-app-versions {
+    margin-leftx: 35px;    
+    padding-right: 0px;
+}
+#nav #nav-list #nav-app-versions, #nav #nav-list #nav-app-published {
+    display: inline-block;
+}
+#nav #nav-app-forms #appDefinitionName {
+    display: inline-block;
+}
+*/
+/*--- End Top Sub Menu ---*/
+
+/*--- Button Styles --*/
+button, input[type=button], .ui-widget button, input.button-gray, .form-buttons .button input, .form-button, .row-button input, .smallbutton, #nv .nv-button, #nv .nv-button-small {
+    background: rgb(39, 174, 96);
+    font-family: Arial;
+    text-decoration: none;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;    
+    color: white;
+    border-radius: 4px;
+}
+button[disabled], input[type=button][disabled], #menu .dropdown-btn input[disabled], .form-buttons .button input[disabled], .form-button[disabled], .smallbutton[disabled], #nv .nv-button[disabled],
+button:hover, input[type=button]:hover, #menu .dropdown-btn input:hover, .form-buttons .button input:hover, .form-button:hover, .smallbutton:hover, #nv .nv-button:hover {
+    background: #45ADA8;
+    color: white;
+}
+
+/*--- Flexigrid Tables --*/
+.flexigrid div.hDiv th, .flexigrid div.hDiv {
+    background: #efefef;
+}
+.flexigrid tr.erow td, .flexigrid tr td.sorted, .flexigrid tr.erow td.sorted {
+    background: none;
+    border-right: 1px dotted #ddd;
+    border-bottom: none; 
+}
+.flexigrid div.bDiv table {
+    border-bottom: 1px solid #fff;
+}
+.flexigrid div.pDiv {
+    border: 0px; 
+}
+
+/*--- Top Action Buttons ---*/
+#main #main-action {
+    background: none;
+    padding: 8px 10px 0px 0px;
+}
+#main #main-action-buttons li a {
+    text-decoration: none;
+    margin-top: 3px;
+    margin-right: 10px;
+    display: inline-block;
+    font-size: 16px;
+}
+
+/*--- Top Header Bar ---*/
+#main-header {
+    display: none;
+    min-height: 41px;    
+    background: #222; //#547980;
+    border-bottom: solid 1px #ddd;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 100;
+}
+#main-header span, #main-header a {
+    font-family: Arial,sans-serif;
+    font-size: 16px;    
+}
+#logo {
+    background: url(../images/v3/console/logo_name.png);
+    width: 40px;
+    height: 36px;
+    display: inline-block;
+    float: left;
+    top: 1px;
+    position: relative;
+    margin-left: 4px;
+}
+#logo-title {
+    display: inline-block;
+    
+    float: left;
+    margin-top: 12px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+#header-links {
+    display: block;    
+    right: 55px;
+    position: relative;
+    margin: 0px 5px;
+    float: right;
+    clear: right;
+    top: 5px;
+}
+#header-links a {
+    padding: 5px;    
+    margin: 2px 5px;
+    display: inline-block;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+}
+#header-links a:hover {
+    background: #ddd;
+    color: #333;
+    border-radius: 4px;
+}
+#nav {
+    top: 37px;
+}
+#main-action-help {
+    top: 8px;    
+    position: absolute;
+    right: 12px;
+}
+#header-links #main-action-help {
+    top: 0px;    
+    position: static;
+    right: inherit;
+}
+
+/*--- Footer ---*/
+body#appcenter #footer {
+    top: 10px;
+    border: none;
+    background: rgb(236, 240, 241);
+}
+#footer {
+    top: 40px;
+    border: none;
+}
+
+/*--- Main Body Container ---*/
+#main-container {
+    min-width: 200px;    
+    position: relative;
+    height: auto;
+    background: white;
+    margin: 0px;
+    padding: 0px;
+    border: solid 1px #ddd;
+    top: 0px;
+    box-shadow: 0px;
+    border-bottom: none;
+}
+#appcenter #container {
+    margin: 0px;
+    top: 0px;
+    padding: 0px;
+    border: none;
+    min-width: 600px;
+}
+#login #login-container {
+    margin: auto;
+    width: auto;
+    border: 0px;
+    position: relative;
+    top: -5px;
+    background-color: white;
+}
+#webconsole #home-box, #login-box {
+    border-radius: 0px;
+} 
+#login #footer {
+    color: inherit;
+}
+
+/*--- Design Apps Page ---*/
+#main .nv-col {
+    display: inline-block;
+    vertical-align: top;
+}
+#main .nv-col a {
+    text-decoration: none;
+    padding: 6px 2px 0px 2px;
+    display: block;
+    color: #535353;
+    margin-bottom: 0px;
+    clear: both;
+}
+#main .nv-list {
+    list-style: none;
+}
+#nv .nv-link-name {
+    display: inline-block;
+    margin-bottom: 6px;
+}
+#nv .nv-link-hilite {
+    font-weight: bold;
+}
+#main .nv-link .nv-subinfo {
+    margin: 0px 0px 0px 15px;
+    padding: 6px 4px 15px 4px;
+    border-bottom: dotted 1px gray;
+    font-size: 10px;
+    line-height: 14px;
+    color: #666;
+    clear: both;
+}
+#main #nv {
+    width: auto;
+}
+#main #nv .nv-col {
+    width: 31.5%;
+    float: left;
+    padding-left: 10px;
+}
+#main #nv .nv-border, #main #nv-apps .nv-border {
+    border-right: solid 1px #efefef;
+}
+#main #nv-apps .nv-col {
+    width: 47.5%;
+    padding-left: 10px;
+}
+#main #nv-refresh {
+    position: absolute;
+    font-size: 12px;
+    text-decoration: none;
+    display: block;
+    width: auto;
+    right: 45px;
+    top: 15px;
+}
+#main #nv-refresh a {
+    display: inline;
+    color: #999999;
+    text-decoration: none;
+}
+#main #nv .filterinput, #main #nv-apps .filterinput {
+    padding-left: 17px;
+    margin-top: 5px;
+}
+
+#main #nv .filterlabel, #main #nv-apps .filterlabel {
+  position: absolute;
+  margin-top: 8px;
+  margin-left: 4px;
+  color: #aaa;
+  font-size: 14px;
+}
+.systemAlert {
+    background: #FFFFD6;
+    position: fixed;
+    padding: 10px 15px;
+    z-index: 7;
+    width: 97%;
+    top: 0px;
+    left: 0px;
+    box-shadow: #ddd 1px 1px 1px;
+}
+#appcenter .systemAlert {
+    top: 38px;
+    width: 93%;
+}
+.ui-dialog #updateInformation.ui-dialog-content {
+    text-align: center;
+}
+
+/*--- App Properties Page --*/
+#appDesc textarea#description {
+    width: 600px;
+    height: 370px;
+    margin: 15px 5px;
+}
+
+/*--- App Center ---*/
+body#appcenter .published-apps{
+   min-height: 340px;
+}
+#main-content {
+    display: inline-block;    
+    width: 98.5%;
+    min-width: 400px;
+    height: auto;
+    min-height: 500px;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    margin: 0px;
+    background: white; // #D1DDB0; //#D7D7D7;
+    border-bottom: none;
+    box-shadow: none;
+}
+#main-content h1 {
+    color: #666;
+    margin: 21px -31px;
+    /* background: #eee; */
+    padding: 20px 31px 20px 50px;
+    font-size: 30px;
+    font-family: Quattrocento;
+    background: #e7fab6;
+    width: 100%;
+}
+#main-content ul {
+    list-style: none;
+    
+    clear: both;
+}
+#main-content ul li {
+    clear: none;
+    
+    display: block;
+    float: left;
+    height: 240px;
+    margin: 0px 14px 20px 20px;
+}
+#main-content ul li a.app-link {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    box-sizing: border-box;
+    min-height: 80px;
+    color: #333;
+    background: transparent; //#eee;
+    margin-bottom: 10px;
+    width: 188px;
+    border-radius: 10px;
+    height: 100%;
+}
+#main-content ul li a.app-link:hover {
+    background: transparent;
+}
+#main-content ul li a.app-edit {
+    display: none;
+    text-decoration: none;
+    margin: 10px 20px;
+    position: absolute;
+    z-index: 10;
+}
+#main-content ul li:hover a.app-edit {
+    display: block;
+}
+#main-content ul li a.app-import {
+    margin-top: 110px;
+}
+#main-content ul li a.app-hover {
+}
+#main-content .app-icon {
+    float: left;    
+    margin: 0px;
+    width: 160px;
+    border: none;
+    height: 140px;
+    overflow: hidden;
+    position: relative;
+    left: 0px;
+    top: -10px;
+    z-index: 1;
+    border-radius: 10px;
+    border: solid 1px #ccc;
+    background: white;
+}
+#main-content .app-link:hover .app-icon {
+    border: solid 1px #ddd;
+    box-shadow: #888 0px 0px 2px;
+}
+#main-content .app-name {
+    display: inline-block;    
+    box-sizing: border-box;
+    left: 100px;
+    font-size: 16px;
+    width: 100%;
+    font-weight: 800;
+    color: #535353;
+    text-align: center;
+}
+#main-content .app-description {    
+    margin: 10px 0px;
+    display: none;
+    color: #666;
+    text-align: center;
+}
+#main-content ul li a.app-new {
+}
+#main-content ul li a.app-new:hover {
+}
+#main-content ul li a.app-new .app-icon {
+    font-size: 60px;
+    background: #666;
+    color: white;
+    text-align: center;
+    padding-top: 0px;
+    vertical-align: -webkit-baseline-middle;
+}
+#main-content ul li a.app-new .app-icon i {
+    margin-top: 42px;
+}
+#main-content #search {
+    float: right;
+    margin-right: 24px;
+    position: relative;
+    top: -72px;
+}
+#main-content #search .filterinput {
+    font-size: 18px;
+    line-height: 18px;
+    padding-left: 22px;
+}
+#main-content #search .filterlabel {
+    padding: 5px;
+    font-size: 16px;
+    position: absolute;
+    left: 0px;
+    color: #aaa;
+}
+#main-content #categories {
+    float: right;
+    
+    display: block;
+    clear: both;
+    position: relative;
+    top: -30px;
+    margin-right: 20px;
+}
+#main-content .category {
+    padding: 4px;
+    
+    margin-right: 4px;
+    text-decoration: none;
+    border: dotted 1px #666;
+    border-radius: 4px;
+}
+#main-content .category-selected {
+    background: #555;
+    
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+#main-content .menu-link-admin-top {
+    float: left;
+    clear: none;
+    height: auto;
+    top: -30px;
+    position: relative;
+    margin-left: 20px;
+    display: none;
+}
+#main-content .menu-link-admin-top a {
+    margin-right: 5px;
+}
+#main-content #apps-loading {
+    top: -30px;    
+    position: relative;
+    left: 22px;
+}
+#side-content {
+    display: none;    
+    width: 23.9%;
+    min-width: 100px;
+    right: 0px;
+    height: 100%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+    margin: 15px 0px;
+    vertical-align: top;
+    background: rgb(236, 240, 241);
+    position: absolute;
+}
+#side-content ul {
+    margin-left: 15px;
+}
+#side-content ul li {
+}
+#side-content h1 {
+    color: #666;
+    margin: 20px 0px;
+    background: transparent;
+    padding: 5px 0px;
+}
+#side-content h2 {
+    color: #666;
+    margin: 10px 0px;
+    clear: both;
+}
+#side-content h3 {
+    color: #888;
+    margin-top: 10px;
+}
+#side-content .content-column {
+    margin-bottom: 40px;
+    
+}
+#welcome-content {    
+}
+#main-content #admin-content {
+    float: left;
+    opacity: 1;
+    background: #eee;
+    border-radius: 10px;
+    width: 250px;
+    height: 145px;
+    margin-left: 16px;
+}
+.apps-notice {
+    text-align: center;
+    font-size: 28px;
+    color: #aaa;
+    margin: 30px;
+    padding: 20px;
+}
+button#installApp {
+    position: absolute;
+    top: 5px;
+    right: 32px;    
+}
+
+/*--- Old Web Console Home --*/
+#webconsole #home-container {
+    margin: 0 auto;
+    padding: 0px 20px 140px 0px;
+    width: 100%;
+    background: white;
+    position: relative;
+    top: -5px;
+}
+#webconsole #home-box {
+    border-radius: 0px;
+    background-color: #F3F9E0;
+    border: 1px solid #E9E9E9;
+    margin: 0 auto;
+    padding: 20px 20px;
+    width: 600px;
+    position: relative;
+    top: 70px;
+}
+#webconsole #home-box td, #webconsole #home-box input {
+    font-family: 'PT Sans', Arial;
+    font-size: 16px;
+    color: #535353;
+}
+#webconsole #home-box h3 {
+    color: #617722;
+    font-family: Georgia,"Times New Roman",Times,serif;
+    font-size: 18px;
+    font-weight: bold;
+}
+#webconsole .welcome-box {
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 24px;
+    color: #454545;
+    width: 42%;
+    float: left;
+    margin: 0px 20px 20px 0px;
+}
+#webconsole .welcome-clear {
+    clear: both;
+}
+
+/*--- Run Apps Page ---*/
+#runApps .screenshot {
+    display: inline-block;
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border: solid 1px #dfdfdf;
+    border-radius: 0px;
+    box-shadow: #dfdfdf 1px 1px 1px;
+    margin-top: 20px;
+}
+#runApps .screenshot_label {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: block;
+    width: 94%;
+    background: #535353;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 0px; 
+    z-index: 1;
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+

@@ -1,0 +1,506 @@
+v5 COMMUNITY
+============
+For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
+
+CHANGES IN 5.0.1
+================
+2642	Fixed: wflow-consoleweb - LocalLocaleResolver - Not able to retrieve default locale when request is null. @5.0-SNAPSHOT
+2641	Modified: wflow-core - Form Data Dao - Set max cache size for hibernate. @5.0-SNAPSHOT
+2640	Fixed: wflow-consoleweb - Popup Dialog - Background window is still active and clickable. #3911 @5.0-SNAPSHOT
+2639	Modified: wflow-consoleweb - Form - Update css. #3910 @5.0-SNAPSHOT
+2638	Modified: wflow-enterprise-plugins - Datalist Inbox - Performance issue. @5.0-SNAPSHOT
+2637	Modified: wflow-core - Grid - Data caching make the element not possible to reuse. @5.0-SNAPSHOT
+2636	Fixed: wflow-core - App Version - New version does not copy note to newer version. @5.0-SNAPSHOT
+2635	Fixed: wflow-consoleweb - Property Editor - Ajax validation not working. #3897 @5.0-SNAPSHOT
+2634	Fixed: wflow-consoleweb - Property Editor - Ajax load options on change throw error when there is no previous stored value. #3897 @5.0-SNAPSHOT
+2633	Modified: wflow-consoleweb - Form Menu - Do not show form header container div if there is no header. #3895 @5.0-SNAPSHOT
+2632	Fixed: wflow-consoleweb - Properties Editor - Codeeditor does not init/show if enable through control field. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Properties Editor - Control field cannot match empty checkbox/radio button value. @5.0-SNAPSHOT
+2631	Fixed: wflow-core - Userview Theme Processer - Help guide is not handle properly @5.0-SNAPSHOT
+2630	Modified: wflow-plugin-base - Close JarFile in a finally block #3527 @5.0-SNAPSHOT
+2629	Modified: wflow-consoleweb - Additional input validation on locale when exporting messages #3527 @5.0-SNAPSHOT
+2628	Fixed: wflow-core - Userview Theme Processer - Page not found after login. #3888 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC11
+===================
+2623    Fixed: wflow-consoleweb - Process Builder- Alignment of process builder's labels is not center. #3884 @5.0-SNAPSHOT
+2622    Fixed: wflow-consoleweb - Admin bar - Overlay dialog does not able to show same url as parant in FF & IE. #3844 @5.0-SNAPSHOT
+2619    Modified: wflow-consoleweb - Updated log4j configuration to support non-expanded war deployments @5.0-SNAPSHOT
+2618    Modified: wflow-consoleweb - Process Builder - Added additional input validation to prevent trust boundary violation @5.0-SNAPSHOT
+2613    Modified: wflow-consoleweb - Datalist - Adjust CSS for mobile. #3864 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC10
+===================
+2608	Fixed: wflow-consoleweb - Embed Datalist - Selected values are incorrect in responsive view when some rows are expanded. #3862 @5.0-SNAPSHOT
+2607	Modified: wflow-consoleweb - Process Builder - Change route name to non-mandatory. @5.0-SNAPSHOT
+2604	Fixed: wflow-core - Section - Visibility Control does not work properly when form store. #3858 @5.0-SNAPSHOT
+2603	Fixed: wflow-consoleweb - Security - URL is double encoded during redirection. #3851 @5.0-SNAPSHOT
+2600	Fixed: wflow-consoleweb - Javascript API - CORS issue. #3846 @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Javascript API - Calling completeAssignmentWithVariable resulted in an error. #3846 @5.0-SNAPSHOT
+2598	Fixed: wflow-consoleweb - Popups (e.g. form grids) show 403 forbidden when running in an Android browser or WebView @5.0-SNAPSHOT
+2596	Fixed: wflow-core - Department Permission - Default with an organization which make it not possible to select departments from multiple organizations. #3845 @5.0-SNAPSHOT
+2594	Fixed: wflow-consoleweb - Popup Dialog - tab index get stuck at close button. #3844 @5.0-SNAPSHOT
+2592	Fixed: wflow-core - Form Pdf Util - Not able to process Form Hash Variable correctly. #3840 @5.0-SNAPSHOT
+2590	Fixed: wflow-core - Data List - Incorrectly handle query string. @5.0-SNAPSHOT
+2589	Modified: wflow-consoleweb - Process Builder - Updated tool color to be more projector friendly @5.0-SNAPSHOT
+2587	Fixed: wflow-core - Form Pdf Util - Not able to show relative path, embedded or protected image. @5.0-SNAPSHOT #3827
+2586	Fixed: wflow-consoleweb - Builders - JavaScript error on page causes security violation on form submission #3822 @5.0-SNAPSHOT
+2585	Modified: wflow-consoleweb - Prevent download of logs when virtual host is enabled @5.0-SNAPSHOT
+2583	Fixed: wflow-core - Fixed regression from r2273 where datalist link parameters are appended even if href is empty @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC9
+==================
+2578	Fixed: wflow-consoleweb - Directory Manager - Directory manager plugin not implementing PropertyEditable not supported #3813 @5.0-SNAPSHOT
+2577	Fixed: wflow-consoleweb - Process Builder - New end node should not have edit and transition buttons @5.0-SNAPSHOT
+2576	Fixed: wflow-core, wflow-consoleweb - Mobile - Inbox task incorrectly links to the landing page @5.0-SNAPSHOT
+2575	Fixed: wflow-consoleweb - No locale caching when User Locale Selection is enabled, and both user and system locales are not set @5.0-SNAPSHOT
+2574	Modified: wflow-commons, wflow-consoleweb - Added additional input validation to prevent trust boundary violation @5.0-SNAPSHOT
+2573	Modified: wflow-plugin-base - Remove unused method PropertyUtil.getPropertiesJSONObject @5.0-SNAPSHOT
+2572	Fixed: wflow-consoleweb - Form Builder - Fixed 403 error in popup elements during preview @5.0-SNAPSHOT
+2571	Fixed: wflow-consoleweb - Xpdl Images - Return 404 error instead of 500 error page when the process is not exist. @5.0-SNAPSHOT #3802
+        Fixed: wflow-core - Mobile Util - Null Pointer Exception when the request does not have user agent. @5.0-SNAPSHOT #3802
+2569	Fixed: wflow-core - Email Tool, User Notification - Not support UTF-8 in email personal name. @5.0-SNAPSHOT #3789
+2568	Modified: wflow-core - Updated plugins to use PluginThread instead of Thread @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC8
+==================
+2563	Added: wflow-consoleweb - Added 403 error page @5.0-SNAPSHOT
+2562	Fixed: All - OSGI plugins showing 404 or 500 errors during selection or configuration @5.0-SNAPSHOT
+2561	Fixed: wflow-consoleweb - Userview Builder - Save button showing wrong tip. @5.0-SNAPSHOT
+2559	Fixed: wflow-core - default validator - non-mandatory numeric validator now shows “Only numbers allowed” when blank. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC7
+==================
+2549	Fixed: wflow-consoleweb - Userview - Redirection URL is parse wrongly when it contains app id, userview id or menu Id started with the same string as context path. @5.0-SNAPSHOT
+2548	Added: wflow-commons - PluginThread - Added a thread implementation to used in OSGI plugin which will auto inherit the profile. #3757 @5.0-SNAPSHOT
+        Modified: wflow-core/wflow-commons/wflow-consoleweb - HostManager - Make the host initialization consistent. @5.0-SNAPSHOT...
+2546	Fixed: wflow-core - Default Validator - Numeric validation is not correct. #3764
+2545	Modified: wflow-plugin-base - Added spring cglib packages to config.properties @5.0-SNAPSHOT
+2535	Fixed: wflow-consoleweb- Datalist Builder - Preview not working correctly for hash variable. @5.0-SNAPSHOT
+2529	Fixed: wflow-core - Added validation to prevent path manipulation #3724 @5.0-SNAPSHOT
+2528	Modified: wflow-consoleweb - Removed unused file deployJava.js @5.0-SNAPSHOT
+2524	Fixed: wflow-consoleweb - Plugin Resources - Host is not set correctly. #3736 @5.0-SNAPSHOT
+2519	Fixed: wflow-consoleweb - Form Builder - form copy and paste don’t change id if no conflict. #3711 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC6
+==================
+2513	Fixed: wflow-consoleweb - Userview - no width is set for bootstrap related theme when print. @5.0-SNAPSHOT
+2512	Fixed: wflow-core - SQL Server 2012 - Fixed form data not being stored #3707 @5.0-SNAPSHOT
+2509	Modified: wflow-core, wflow-wfengine, wflow-designer - Close connection and streams in a finally block #3724 @5.0-SNAPSHOT
+2508	Modified: wflow-core, wflow-consoleweb - Upgraded to commons-email 1.4 and enabled server identity verification #3724 @5.0-SNAPSHOT
+2506	Fixed: wflow-consoleweb - App Message - Not able add message with dot in key. @5.0-SNAPSHOT
+2505	Fixed: wflow-consoleweb - Popup Dialog - Close button not working in iphone @5.0-SNAPSHOT
+2504	Fixed: wflow-consoleweb - Datalist - open link in popup does not work correctly in iphone. #3562 @5.0-SNAPSHOT
+2503	Fixed: wflow-consoleweb - Edit User - User roles is not set. @5.0-SNAPSHOT
+2502	Modified: wflow-consoleweb - probuilder - Set subflow execution default value to synchronous @5.0-SNAPSHOT
+2501	Fixed: wflow-consoleweb - Possible reflected xss reported by AppSpider #3555 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC5
+==================
+2495	Fixed: wflow-core/wflow-consoleweb - Mobile Datalist - Action URL is not generate correctly when multiple parameters are configured. @5.0-SNAPSHOT
+2493	Fixed: wflow-core - Form - Custom Form Validator which validate multiple fields does not displaying error message correctly. #3690 @5.0-SNAPSHOT
+2492	Fixed: wflow-wfengine - workflow manager - getAssignmentListLite method does not return due date @5.0-SNAPSHOT
+        Fixed: wflow-core - Inbox Menu - due date is not populate. @5.0-SNAPSHOT
+2490	Fixed: wflow-consoleweb - JSON Domain Whitelist - Host is not set correctly. #3675 @5.0-SNAPSHOT.
+2489	Fixed: wflow-consoleweb - File Upload - Content type is not set. #3676 @5.0-SNAPSHOT.
+2488	Fixed: wflow-consoleweb - Datalist Hyperlink - Open in popup dialog can't scroll in IOS. #3562 @5.0-SNAPSHOT.
+2487	Fixed: wflow-consoleweb - Userview Builder - App center not showing userview screenshot after saving @5.0-SNAPSHOT
+2484	Fixed: wflow-consoleweb - Workflow Manager - Not able to retrieve assignment for username contains single quote. #3663 @5.0-SNAPSHOT
+2483	Modified: wflow-consoleweb - Datalist Excel Export - Update to export xlsx file. #3655 @5.0-SNAPSHOT
+2482	Fixed: wflow-consoleweb - Json Response Filter - Add log for Domain Whitelist Protection. #3646 @5.0-SNAPSHOT
+2481	Fixed: wflow-consoleweb - Userview - Not able to click other menu in preview mode due to csrf protection changes. @5.0-SNAPSHOT
+2480	Fixed: wflow-designer - Fixed possible resource not release issue. #3540 @5.0-SNAPSHOT
+2478	Fixed: wflow-consoleweb - Form - Responsive table is not display correctly for certain theme. @5.0-SNAPSHOT
+2477	Fixed: wflow-core - Run Process - Not able to start process directly using menu link due to security token. @5.0-SNAPSHOT
+2476	Fixed: wflow-consoleweb - Form - Position is not correct in printing due to responsive code. @5.0-SNAPSHOT
+2475	Fixed: wflow-consoleweb - Custom Html - Responsive css are wrong for full width display. @5.0-SNAPSHOT
+2474	Fixed: wflow-core - Form Data Dao - Not able to update db schema for PostgreSQL db. @5.0-SNAPSHOT
+2473	Fixed: wflow-consoleweb - Datalist - Adding filters throwing security error #3644 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC4
+==================
+2462	Fixed: wflow-core - ID Generator Field - Concurrent write issue. #3629 @5.0-SNAPSHOT
+2461	Modified: wflow-commons, wflow-core - Added delay before closing expired SessionFactory in the cache @5.0-SNAPSHOT
+2460	Fixed: wflow-consoleweb - IE8 - HTTP Status 403 Security Violation on all POST requests @5.0-SNAPSHOT
+2459	Fixed: wflow-consoleweb - Safari - Refused to execute inline script because it violates the following Content Security Policy directive @5.0-SNAPSHOT
+2456	Fixed: wflow-consoleweb - Form - CSS fail to load in IE9 and below because of IE CSS limits. @5.0-SNAPSHOT
+2455	Fixed: wflow-consoleweb - App Center - Apps does not load in IE8 @5.0-SNAPSHOT
+2454	Modified: wflow-consoleweb - Process Builder - Stagger xpdl thumbnail image generation to cater for multiple processes in an app @5.0-SNAPSHOT
+2453	Fixed: wflow-wfengine, wflow-consoleweb - Process Builder - Generated xpdl image is png but filename is jpg @5.0-SNAPSHOT
+2452	Fixed: wflow-consoleweb - Process Builder - 403 security violation when updating XPDL @5.0-SNAPSHOT
+2451	Fixed: wflow-designer - Workflow Designer - cannot deploy or login because of missing referer @5.0-SNAPSHOT
+2450	Fixed: wflow-core - Form/ Run Process Menu - Not able to passover unicode value in redirect url. #3621 @5.0-SNAPSHOT
+2449	Fixed: wflow-consoleweb - 403 security violation when editing and submitting a form grid popup @5.0-SNAPSHOT
+2447	Added: All - Security - Enhanced CSRF protection using CSRFGuard @5.0-SNAPSHOT
+2446	Modified: wflow-consoleweb - Security - Change domain whitelist from protecting JSONP to protect all API. @5.0-SNAPSHOT
+2443	Fixed: wflow-consoleweb - Mobile - failed login shows 401 page instead of error message in login page. @5.0-SNAPSHOT
+2442	Modified: wflow-common/wflow-consoleweb - Security - Added domain whitelist checking for JSONP call. #3604 @5.0-SNAPSHOT
+2436	Fixed: wflow-commons, wflow-core, wflow-consoleweb - Prevent possible reflected XSS #3603 @5.0-SNAPSHOT
+        Modfied: wflow-commons - Added security header "X-Content-Type-Options: nosniff", "X-Content-Security-Policy: default-src 'self'", "X-WebKit-CSP: default-src 'self'". @5.0-SNAPSHOT
+2435	Fixed: wflow-core, wflow-consoleweb - Fixed hibernate session factory cache leak @5.0-SNAPSHOT
+2434	Fixed: wflow-plugin-base - Explicitly close file on plugin upload #3527 @5.0-SNAPSHOT
+2431	Fixed: wflow-consoleweb - Removed unused mock folder. #3603 @5.0-SNAPSHOT
+2428	Fixed: wflow-core - Prevent SQL injection in shark engine. #3602 @5.0-SNAPSHOT
+2423	Fixed - wflow-core -Userview Builder - Mobile redirection not working correctly. #3590 @5.0-SNAPSHOT
+2422	Fixed - wflow-core - Request Param Hash Variable - Support separator for multi value. Syntax: #requestParam.KEY[SEPARATOR]# . #3583 @5.0-SNAPSHOT
+2420	Fixed - wflow-core - Date Picker - The value is change to a wrong format value during update when the field is set to readonly. #3580 @5.0-SNAPSHOT
+2418	Fixed: wflow-consoleweb - Datalist - Embedded datalist button does not appear in certain Tomcat versions #3576 @5.0-SNAPSHOT
+2416	Modified: wflow-consoleweb - Process Builder - Improved node and transition alignment #3577 @5.0-SNAPSHOT
+2411	Modified - wflow-consoleweb - App Center - Space is double escaped. #3575 @5.0-SNAPSHOT
+2410	Modified - wflow-consoleweb - Datalist Builder - Add "Show All Details" and "Hide All Details" button to list when the extra columns are hidden in details panel. #3571 @5.0-SNAPSHOT
+2409	Modified - wflow-consoleweb - Datalist Builder - Not able to update datalist by JSON definition. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC3
+==================
+2404    Modified - wflow-consoleweb - Forms & UI - Detailed view for description attribute does not replace \n with line breaks to show new lines properly. @5.0-SNAPSHOT
+2403    Modified - wflow-consoleweb - Admin Bar - Added CTRL+0 to toggle front-end edit mode @5.0-SNAPSHOT
+2401    Fixed: wflow-commons, wflow-core, wflow-consoleweb - Prevent possible reflected XSS #3555 @5.0-SNAPSHOT
+2400    Fixed: wflow-commons - Prevent possible blind SQL injection #3555 @5.0-SNAPSHOT
+2399    Fixed: wflow-consoleweb - Prevent possible expression language injection #3555 @5.0-SNAPSHOT
+2398    Fixed: wflow-core - Form - File size exceed system limit error is ignored silently. @5.0-SNAPSHOT
+        Fixed: wflow-core - Form - Form Errors are not clear for next submission when the errors are added by validation of the element itself. @5.0-SNAPSHOT
+2397    Fixed: wflow-consoleweb - Popup Dialog - Can't scroll in IOS. @5.0-SNAPSHOT
+2396    Fixed: wflow-consoleweb - Process Builder - Duplicate process not working correctly. @5.0-SNAPSHOT
+2394    Fixed: wflow-core - Form - Form action does not check for form permission. #3559 @5.0-SNAPSHOT
+2390    Modified: All - Dependencies - Upgraded httpclient to 4.5.1, mysql-connector-java to 5.1.37 and groovy to 2.4.5 #3535 @5.0-SNAPSHOT
+2389    Fixed: wflow-core - Form Builder - Not able to save when form has a subform due to changes in r2381. @5.0-SNAPSHOT
+2388    Fixed: wflow-consoleweb - Userview - Fixed CSS issue. #3543 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC2
+==================
+2381	Fixed: wflow-consoleweb - Form CSS - Minimized unused whitespace. @5.0-SNAPSHOT
+2380	Fixed: wflow-designerweb - Viewer - Close output stream within finally block @5.0-SNAPSHOT
+2379	Fixed: wflow-consoleweb - Input validation before setting response headers @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - InputStream in display tag init within finally block @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Possible null dereference when mapping participant plugin @5.0-SNAPSHOT
+2378	Fixed: wflow-consoleweb- Tinymce - Popup Dialog is not supporting small screen. @5.0-SNAPSHOT
+2377	Modified: wflow-commons - Setup - Automatically create app_datasource.properties if it does not exist #3524 @5.0-SNAPSHOT
+2376	Fixed: wflow-core- Form - Form column cache does not clear correctly. @5.0-SNAPSHOT
+2375	Fixed: wflow-consoleweb- Plugin Default Properties - Plugin list does not display i18n label. @5.0-SNAPSHOT
+2374	Modified: wflow-core - Datalist - Add message key "dbuilder.menu.counter.considerFilters" with value "true" to make the datalist counter in menu consider the filter criteria. #3503 @5.0-SNAPSHOT
+2373	Fixed: wflow-consoleweb - Property Editor - Next tab’s title showing at the bottom of the page once select a plugin from select box @IE11 @5.0-SNAPSHOT
+2368	Fixed: wflow-core - Form Post Processing Tool - Form data hash variable failed when the form id using ID generator. #3508 @5.0-SNAPSHOT
+2367	Fixed: wflow-consoleweb - Fixed JavaScript warning when detecting mobile on app center load @5.0-SNAPSHOT
+2366	Fixed: wflow-consoleweb - Property Editor - Multiple pages from the same plugin cannot be displayed @5.0-SNAPSHOT
+
+CHANGES IN 5.0-RC1
+==================
+2361	Fixed: wflow-core - Upload Field - Download link are incorrect after submitting a new file with existed file name. @5.0-SNAPSHOT
+2360	Fixed: wflow-consoleweb - Grid - Responsive view not working in Mobile View. @5.0-SNAPSHOT
+2359	Fixed: wflow-consoleweb - Form - Form Column with width set are not display with full width in Mobile View. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Custom HTML field - An unwanted wrapper are shown in Mobile View. @5.0-SNAPSHOT
+2358	Fixed: wflow-consoleweb/wflow-core - Userview - Alert message is not escaped for javascript. @5.0-SNAPSHOT
+2357	Fixed: wflow-consoleweb - Form - Field with configured large width broken the responsive view. @5.0-SNAPSHOT
+2356	Fixed: wflow-commons - App Center - JS error throws from mpbile.js. @5.0-SNAPSHOT
+2355	Fixed: wflow-consoleweb - SQL Server - Default SQL schema file does not fully support UTF-8 @5.0-SNAPSHOT
+2354	Fixed: wflow-commons - StringUtil - A tag with name attribute it filtered out by stripHtmlRelaxed method @5.0-SNAPSHOT
+2352	Fixed: wflow-core - Run Process Menu - Unauthorized page header s not supporting i18n. #3421 @5.0-SNAPSHOT
+2351	Fixed: wflow-directory/wflow-consoleweb - Anonymous username is not backward compatible. @5.0-SNAPSHOT
+2348	Fixed: wflow-consoleweb - Monitoring - Corrected label "Accepted User" to "Performer" in activity instance page @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Monitoring - Show subflow instance id in activity instance page if the activity is a subflow activity. #3488 @5.0-SNAPSHOT
+2347	Fixed: wflow-consoleweb - IE - Cannot login to marketplace from app center due to p3p policy @5.0-SNAPSHOT
+2346	Fixed: wflow-commons, wflow-consoleweb - v5 Theme - NullPointerException because HttpServletResponse is null e.g. after a RunProcess submission or changing tabs in Multipage forms @5.0-SNAPSHOT
+2344	Fixed: wflow-core - Custom HTML - Using jQuery syntax "$('[name="something"]')" will create a new column "something" in form data table. #3484 @5.0-SNAPSHOT
+2343	Fixed: wflow-consoleweb - Jquery - Not able to get content of iframe in IE11. @5.0-SNAPSHOT
+2342	Fixed: wflow-consoleweb - Popup dialog close button hardly readable @5.0-SNAPSHOT
+2341	Fixed: wflow-consoleweb - JBoss - Fixed servlet exception JBWEB000240 in v5 userview themes @5.0-SNAPSHOT
+2340	Fixed: wflow-consoleweb - Websphere - Possible NullPointerException when configurating a process tool plugin @5.0-SNAPSHOT
+2339	Fixed: wflow-consoleweb - Websphere - Possible NullPointerException after form submission @5.0-SNAPSHOT
+2338	Fixed: wflow-consoleweb - MSSQL - Fixed incorrect admin user ID in the default db schema @5.0-SNAPSHOT
+2335	Modified: wflow-core - Form - Show record not found message instead of empty form when an invalid id is pass to the form. #3471 @5.0-SNAPSHOT
+2332	Fixed: wflow-consoleweb - Weblogic - Process view page giving javascript error "Uncaught SyntaxError: Unexpected token ILLEGAL" because trimDirectiveWhitespaces directive is not working in jsp taglibs @5.0-SNAPSHOT
+2330	Modified: wflow-commons - StringUtil - Support special chars in validateEmail method. #3481 @5.0-SNAPSHOT
+2329	Fixed: wflow-consoleweb - Weblogic - Cannot load app center due to exception "Current file's JSP version conflicts with current tag" @5.0-SNAPSHOT
+2328	Fixed: wflow-consoleweb - Checkbox/Radio button - Not display correctly in mobile view. @5.0-SNAPSHOT
+2327	Fixed: wflow-consoleweb - probuilder - In IE, process copy/edit buttons cannot be clicked because they appear too far below when hovering over the process name @5.0-SNAPSHOT
+2326	Fixed: wflow-consoleweb - probuilder - Continually adding new processes overlaps with right menu and add button stays far right @5.0-SNAPSHOT
+2325	Fixed: wflow-consoleweb - Publish App - Note for each versions are double escaped. @5.0-SNAPSHOT
+2324	Fixed: wflow-plugin-base - Generator packages are not available to osgi plugin. @5.0-SNAPSHOT
+2323	Modified: wflow-enterpriseweb - Improve message consistency and add plugin description Enterprise plugins @5.0-SNAPSHOT
+2322	Modified: wflow-consoleweb - Improve message consistency for Form Default Validator, Duplicate Value Validator @5.0-SNAPSHOT
+2321	Fixed: wflow-consoleweb - Mobile - No favicon in mobile view @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA15
+=====================
+2316	Modified: wflow-consoleweb - Update help-zh_CN.properties & help-zh_TW.properties. @5.0-SNAPSHOT
+2315	Modified: wflow-consoleweb - App Center - Added help guides for the marketplace @5.0-SNAPSHOT
+2314	Modified: wflow-enterprise-plugins - Enable import and generate PO for protected readonly apps @5.0-SNAPSHOT
+2313	Modified: wflow-consoleweb - Enable export and properties update for protected readonly apps @5.0-SNAPSHOT
+2312	Fixed: wflow-consoleweb - App Center - Hash variables processed without app definition #3461 @5.0-SNAPSHOT
+2311	Fixed: wflow-core - Datalist - Not compatible with v4. @5.0-SNAPSHOT
+2310	Modified: wflow-consoleweb - Improve message consistency for Datalist label @5.0-SNAPSHOT
+2309	Modified: wflow-consoleweb - Improve messages for User notification, Datalist Default Formatter, Form Builder Properties
+2304	Fixed: wflow-core - Userview - Improper handle of permission set to whole userview. #3445 @5.0-SNAPSHOT
+2301	Fixed: wflow-core - datalist - Export file should not include HTML tag. #3458 @5.0-SNAPSHOT
+2298	Modified: wflow-wfengine - Deadline checker - Ignore invalid profiles @5.0-SNAPSHOT
+2295	Modified: wflow-core - Update library to bcmail-jdk15, bcprov-jdk15 and bctsp-jdk15 to version 1.46. #3453 @5.0-SNAPSHOT
+2294	Fixed: wflow-consoleweb - Property Editor - Hash Variable assistant not able to insert hash variable correctly in Code Editor field. #3444 @5.0-SNAPSHOT
+2293	Added: wflow-core, wflow-consoleweb - Audit Trail - Added logout event to the audit trail @5.0-SNAPSHOT
+2292	Modified: wflow-consoleweb/wflow-core - Grid - Support responsive. #3430 @5.0-SNAPSHOT
+2291	Fixed: wflow-consoleweb - Form/List/Userview Builder - Alert message disappear too fast. @5.0-SNAPSHOT
+2290	Fixed: wflow-core/wflow-consoleweb - V5 userview theme processer - Some basic css is missing. @5.0-SNAPSHOT
+2289	Modified: wflow-consoleweb - Column - Support responsive. #3430 @5.0-SNAPSHOT
+2288	Modified: wflow-consoleweb - Minor CSS update to header title font weight for cross browser compatibility @5.0-SNAPSHOT
+2287	Fixed: wflow-core - Date Picker - Template not able to retrieve locale in advanced grid. #3430 @5.0-SNAPSHOT
+2286	Modified: wflow-core, wflow-consoleweb - Refactored app publish/unpublish code for reuse @5.0-SNAPSHOT
+2285	Modified: wflow-consoleweb - Auto publish and redirect to app center upon import for protected readonly apps @5.0-SNAPSHOT
+2284	Fixed: wflow-core - Id Generator - Can't generate id correctly in Import Menu. #3426 @5.0-SNAPSHOT
+2283	Fixed: wflow-core - Hash Variable - Not able to parse Hash Variable when escape format is null. #3420 @5.0-SNAPSHOT
+        Fixed: wflow-core - Email Tool/ Export Form Email Tool - Not support Hash Variable in "Send test email". @5.0-SNAPSHOT
+2282	Modified: wflow-core - Date Hash Variable - Follow user timezone. @5.0-SNAPSHOT
+2281	Fixed: wflow-consoleweb - Monitor Apps - View graph shows wrong process when there are multiple processes in an app @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA14
+=====================
+2276	Fixed: wflow-consoleweb - App Center - Fixed marketplace Install App button not showing on IE @5.0-SNAPSHOT
+2275	Modified: wflow-consoleweb - App Center - Integration with the new Joget Marketplace @5.0-SNAPSHOT
+2274	Modified: wflow-commons - Datalist - Reset the form action after used by row action. @5.0-SNAPSHOT
+2273	Modified: wflow-commons - Datalist Action - Allowed to write to response. @5.0-SNAPSHOT
+        Modified: wflow-core - Datalist Action - Only set default value to "herf", "target", "hrefParam" & "hrefColumn" when necessary. @5.0-SNAPSHOT
+2272	Fixed: wflow-commons - StringUtil - logic of getUrlParams method is not correct. @5.0-SNAPSHOT
+2271	Modified: wflow-commons - StringUtil - make getUrlParams method public. @5.0-SNAPSHOT
+2270	Fixed: wflow-consoleweb - JSON API - '/json/monitoring/process/view/(processId)' and '/json/monitoring/process/copy/(processId)/(processDefId)' not working. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - JSON API - Removed unused mandatory parameter "state" from '/json/monitoring/running/activity/reassign' and '/json/monitoring/running/activity/complete'. @5.0-SNAPSHOT
+2269	Fixed: wflow-core - Form - Readonly element should not check for validation. #3400 @5.0-SNAPSHOT
+2268	Fixed: wflow-core - Remove dummy parameters of "/json/hash/options". @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Form/Datalist/Userview/Process builder - Remove confirm dialog when delete item. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Form/Datalist/Userview builder - Change saved message to auto disappear message. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA13
+=====================
+2263    Modified: wflow-plugin-base - Added org.joget.plugin.directory packages to config.properties @5.0-SNAPSHOT
+2262    Fixed: wflow-consoleweb - Property Editor - CSS of search and replace box is conflict with popup dialog css . @5.0-SNAPSHOT
+2261    Modified: wflow-consoleweb - Remove warn message from V5 theme processor. @5.0-SNAPSHOT
+        Fixed: wflow-core - Post Form Submission Tool - No way to retrieve record Id. @5.0-SNAPSHOT
+        Fixed: wflow-core - Post Form Submission Tool - Tool using workflow assignment object to retrieve record id is not working. @5.0-SNAPSHOT
+2260    Modified: wflow-consoleweb - Update POI library from 3.7 to 3.12. @5.0-SNAPSHOT
+2259    Fixed: wflow-consoleweb - Property Editor - XSS vulnerability . @5.0-SNAPSHOT
+2257    Fixed: wflow-consoleweb - Process Builder - Double quote in Name is double encoded. @5.0-SNAPSHOT
+2256    Modified: wflow-wfengine - Get next activity fail after first subflow in the process completed. #3389 @5.0-SNAPSHOT
+2254    Modified: wflow-commons - StringUtil - escapeString method support url escape and chain escaping using formats separated by ";" @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Process - Single quote in participant, activity, tool name caused mapping page error. @5.0-SNAPSHOT
+2252    Fixed: wflow-core - Process Data Collector Audit Trail - Set current profile in thread @5.0-SNAPSHOT
+2250    Fixed: wflow-consoleweb - Multiple published app versions ticked for a protected app @5.0-SNAPSHOT
+2249    Fixed: wflow-commons - StringUtil - Type variables should be final. @5.0-SNAPSHOT
+2248    Modified: wflow-commons - StringUtil - Support escape for for javascript, html, xml, java & sql @5.0-SNAPSHOT
+        Modified: wflow-core - Hash Variable - Support Hash Variable escape Syntax. Example: #envVariable.key?html# @5.0-SNAPSHOT
+2247    Modified: wflow-core - Form Row Delete Datalist Action - Option to abort all related running processes which used the deleted record. @5.0-SNAPSHOT
+        Fixed: wflow-core - Process Data Collector - Not able to save process completion status. @5.0-SNAPSHOT
+        Fixed: wflow-core - Process Data Collector - Performance issue (High CPU usage) when huge number of workflow activities executed in the same time. @5.0-SNAPSHOT...
+2246    Fixed: wflow-consoleweb - Properties editor - Cannot save when a plugin does not have any property. @5.0-SNAPSHOT
+2245    Fixed: wflow-consoleweb - Manage Plugins - Missing new added plugin types. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Manage Plugins - Plugin type select box does not support i18n. @5.0-SNAPSHOT
+2244    Modified: wflow-consoleweb - Improve message for EmailTool @5.0-SNAPSHOT
+        Modified: wflow-core - Improve message for UserNotificationAudtilTrail @5.0-SNAPSHOT
+2243    Fixed: wflow-consoleweb - Mobile View - Throws javascript errors when view form. @5.0-SNAPSHOT
+2241    Modified: wflow-install - Updated ant setup to update rather than replace the datasource properties file @5.0-SNAPSHOT
+2236    Fixed: wflow-core - Prevent SQL injection in shark engine. #3372 @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Useview - Theme disorder when display error. @5.0-SNAPSHOT
+2235    Fixed: wflow-core, wflow-consoleweb - Fixed possible XSS in datalist paging #3369 @5.0-SNAPSHOT
+2232    Fixed: wflow-consoleweb - Property Editor - Cannot read property 'properties' of null @5.0-SNAPSHOT
+2230    Modified: wflow-consoleweb - Export app - Change file extension to .jwa @5.0-SNAPSHOT
+2229    Modified: wflow-directory - Added an Abstract Class for develop a Directory Manager Plugin. @5.0-SNAPSHOT
+2227    Fixed: wflow-consoleweb, wflow-install - Fixed inconsistent charset and collation for MySQL schema @5.0-SNAPSHOT
+2226    Modified: wflow-core - Audit Trail - Added extra parameters for custom triggered audit trail events. @5.0-SNAPSHOT
+        Modified: wflow-core - Process Tool/Participant/Audit Trail Plugin - Set properties if it is instance of PropertyEditable interface. @5.0-SNAPSHOT
+2224    Modified: wflow-core - Update javadoc. @5.0-SNAPSHOT
+2223    Modified: wflow-consoleweb - Admin Bar - Added content from the ConsoleWebPlugin @5.0-SNAPSHOT
+2222    Fixed: wflow-consoleweb - Property Editor - Fixed TypeError null when loading ajax options @5.0-SNAPSHOT
+2221    Modified: wflow-plugin-base - Update javadoc for DefaultPlugin, ExtDefaultPlugin, Plugin & PropertyEditable. @5.0-SNAPSHOT
+2220    Modified: wflow-core/wflow-consoleweb - File Upload Field - Download file permission control. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA12
+=====================
+2215	Modified: wflow-consoleweb - Datalist - Add system setting "Disable HTML rendering in Datalist" to disable value containing HTML render as HTML. #3348 @5.0-SNAPSHOT
+2211	Fixed: wflow-consoleweb/wflow-core - Userview - handle case where ms office 2013 removes double slash in userview URL. #3347 @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb/wflow-core - Userview - V5 theme processer does not handle redirection after login correctly. @5.0-SNAPSHOT
+2205	Fixed: wflow-consoleweb - Login - password should not be trimmed. #3337 @5.0-SNAPSHOT
+2204	Fixed: wflow-core - Grid- Mandatory star shown for non-mandatory configuration. #3340 @5.0-SNAPSHOT
+2200	Fixed: wflow-wfengine - WorkflowManager- Not able to differential subflow in activities return from getProcessActivityDefinitionList method. #3218 @5.0-SNAPSHOT
+2199	Fixed: wflow-core/wflow-wfengine - Workflow Form Binder - Performance issue when large number of workflow variables are set. #3339 @5.0-SNAPSHOT
+2197	Modified: wflow-consoleweb - Builders - Minor adjustment to header text shadow for readability @5.0-SNAPSHOT
+2195	Modified: wflow-commons - Security Util - Added method to check for hashed content. @5.0-SNAPSHOT
+2194	Modified: wflow-consoleweb - correction for r2193 @5.0-SNAPSHOT
+2193	Modified: wflow-consoleweb - Form/List/Userview/Process Builder - Display name and version in header. @5.0-SNAPSHOT
+2192	Fixed: wflow-consoleweb - Form/List/Userview duplicate feature - Select options is not loaded correctly. @5.0-SNAPSHOT
+2191	Fixed: wflow-core - User Notification - SMTP SSL does not work with a different port @5.0-SNAPSHOT
+2190	Fixed: wflow-core - EmailTool - SMTP SSL does not work with a different port @5.0-SNAPSHOT
+2189	Fixed: wflow-consoleweb - Property Editor - Reduced full window height to show bottom buttons without scrolling @5.0-SNAPSHOT
+2187	Fixed: wflow-consoleweb - Property Editor- Text in Code Editor is selected by default . @5.0-SNAPSHOT
+2186	Added: wflow-core/ wflow-consoleweb - Property Editor - Add support for "CodeEditor" property type. @5.0-SNAPSHOT
+2185	Fixed: wflow-core - LocalLocaleResolver - Not set request attribute correctly. #3139 @5.0-SNAPSHOT
+2184	Fixed: wflow-core - Section/ Dynamic Options Field - Not able to bind to dynamic created element's change event. #3315 @5.0-SNAPSHOT
+2183	Fixed: wflow-consoleweb - Setup - First input value change does not take effect, and custom JDBC url not saved correctly @5.0-SNAPSHOT
+2182	Modified: wflow-plugin-base - OSGI - Updated config.properties to add net.sf.ehcache @5.0-SNAPSHOT
+2181	Fixed: wflow-core - Form Menu - Menu Label is not following locale when leave empty. #3132 @5.0-SNAPSHOT
+2180	Fixed: wflow-consoleweb - Analyzer overlap quick edit button. #3302 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA11
+=====================
+2171	Fixed: wflow-plugin-base - Hash Variable - Enterprise hash variables not available in certain installations #3297 @5.0-SNAPSHOT
+2170	Fixed: wflow-consoleweb - Responsive Table - Adjust breakpoint for tablets to 600px. @5.0-SNAPSHOT
+2168	Fixed: wflow-core - Datalist Menu - Filtering changes the number of rows in Userview Menu. #3298 @5.0-SNAPSHOT
+2167	Fixed: wflow-consoleweb - WorkflowHttpAuthProcessingFilter - Not able to retrieve correct profile based on host. #3277 @5.0-SNAPSHOT
+2165	Modified: wflow-core - Datalist - Added method to get total record. @5.0-SNAPSHOT
+2164	Fixed: wflow-core - MySQL - Fixed MySQL "Table definition has changed, please retry transaction" exception due to SQL Server fix r2153 @5.0-SNAPSHOT
+2163	Modified: wflow-consoleweb - Process Builder - Support duplicate process. @5.0-SNAPSHOT
+2162	Modified: wflow-consoleweb - Data List - support responsive. @5.0-SNAPSHOT
+2160	Fixed: wflow-core - FileUtil - Exception when a file does not has extension in validateFileName method. #3295 @5.0-SNAPSHOT
+2159	Modified: wflow-consoleweb - Improve label naming consistency
+2157	Modified: wflow-consoleweb - Update message bundle for zh_CN & zh_TW. @5.0-SNAPSHOT
+2156	Fixed: wflow-consoleweb - formUtil.js - Correction on r2154. #3282 @5.0-SNAPSHOT
+2154	Fixed: wflow-consoleweb - formUtil.js - FormUtil.getFieldsAsUrlQueryString() not working correctly when field Id is empty. #3282 @5.0-SNAPSHOT
+2153	Fixed: wflow-commons, wflow-core - SQL Server - Error duplicating app #3189 and exception completing assignment #3190 @5.0-SNAPSHOT
+2152	Modified: wflow-consoleweb - Form/Datalist/Userview builder - UI feedback when copy button is click. @5.0-SNAPSHOT
+2150	Fixed: wflow-core - Embed Form/ Datalist - Handle for NPE when app not found. @5.0-SNAPSHOT
+2149	Modified: wflow-consoleweb - Datalist Builder - Show filter request parameter in edit filter dialog. #3279 @5.0-SNAPSHOT
+2148	Modified: wflow-plugin-base - Plugin Manager - Provide request object to Free Marker template by default. @5.0-SNAPSHOT
+2147	Fixed: wflow-consoleweb - Form/Datalist/Userview/Process Builder- Undo/Redo shortcut key should disable when property editor is in used. @5.0-SNAPSHOT
+2146	Modified: wflow-plugin-base - OSGI - Added package export for org.joget.directory.ext @5.0-SNAPSHOT
+2145	Fixed: wflow-consoleweb - Directory Manager - Fixed Directory Manager settings page i18nLabel exception @5.0-SNAPSHOT
+2144	Modified: wflow-core/wflow-consoleweb - Datalist - Support for include/exclude a column from exported file. @5.0-SNAPSHOT
+2143	Fixed: wflow-consoleweb - Special characters in app name are not displayed correctly in the window title @5.0-SNAPSHOT
+2142	Fixed: wflow-consoleweb - Process Builder - Show app name instead of package name @5.0-SNAPSHOT
+2140	Modified: All - Plugins - Updated plugin versions @5.0-SNAPSHOT
+2139	Modified: wflow-consoleweb - Update message bundle for zh_CN & zh_TW. @5.0-SNAPSHOT
+2138	Added: wflow-consoleweb - App Center - Added seamless marketplace app installation from the App Center @5.0-SNAPSHOT
+2136	Modified: wflow-plugin-base/wflow-core/wflow-consoleweb - Plugin - Support i18n for plugin label and description. @5.0-SNAPSHOT
+2135	Fixed: wflow-consoleweb - JsonResponseFilter - Improper error message when no permission. @5.0-SNAPSHOT
+2134	Fixed: wflow-wfengine - WorkflowManageImpl - getProcessList does not return all processes when there are process name are same #3257 @5.0-SNAPSHOT
+        Fixed: wflow-wfengine - WorkflowManageImpl - process migration does not cater for subflow @5.0-SNAPSHOT
+2132	Fixed: wflow-consoleweb - JSON.js - Correction for r2111 @5.0-SNAPSHOT
+2130	Fixed: wflow-core - Duplicate Value Validator - Doesn't trim leading white-spaces. #3251 @5.0-SNAPSHOT
+2129	Fixed: wflow-core - Datalist Export - Formatter not working correctly when datalist contains hidden column. #3230 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA10
+=====================
+2123	Modified: wflow-consoleweb - Datalist Builder - Added method "DatalistBuilder.getColumnOptions(prop)". #3215 @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Property Editor - Accept javascript to populate options using "options_script". #3215 @5.0-SNAPSHOT
+2122	Fixed: wflow-consoleweb - Weblogic - Failed to compile JSP due to JSP 2.1 attribute "trimDirectiveWhitespaces" @5.0-SNAPSHOT
+2121	Fixed: wflow-consoleweb - Datalist - Missing label when trying to duplicate from another datalist during creation @5.0-SNAPSHOT
+2120	Fixed: wflow-core - Published Userview - Category permission checks are ran during retrieving userview list. #3202 @5.0-SNAPSHOT
+        Fixed: wflow-core - AbstractSubForm - Handle key for readonly hidden field. #3213 @5.0-SNAPSHOT
+2117	Fixed: wflow-core - Inbox Menu - Add cancel button to the assignment form. @v5-SNAPSHOT
+2115	Fixed: wflow-core - Hash variable - Fixed logic issue and remove unnecessary processing. @5.0-SNAPSHOT
+2114	Modified: wflow-core - App Message - Standardized cache implementation. @5.0-SNAPSHOT
+2113	Fixed: wflow-consoleweb - probuilder - After creating a node from an existing node, the transition cannot be edited @5.0-SNAPSHOT
+2112	Modified: wflow-consoleweb - Setup - Database setup fails when configured to use to an existing schema @5.0-SNAPSHOT
+2111	Fixed: wflow-consoleweb - JSON.js - Native JSON.stringify and JSON.parse are not usable when JSON.js is included in page. @5.0-SNAPSHOT
+2110	Fixed: wflow-wfengine - WorkflowManager - Process link between Subflow and main flow is not created until the first assignment is view. @5.0-SNAPSHOT
+        Modified: wflow-wfengine - WorkflowProcessLinkDao - Add method to retrieve all related links based on process instance id. @5.0-SNAPSHOT
+2105	Modified: wflow-consoleweb - Mobile - Display assignment view in mobile view for mobile user agents @5.0-SNAPSHOT
+2104	Fixed: wflow-consoleweb - Property Editor - Encrypted property value is not passing correctly in button AJAX call. @5.0-SNAPSHOT
+2102	Modified: wflow-plugin-base - OSGI - Updated config.properties to support Spring 4 and Hibernate 4 in OSGI plugins @5.0-SNAPSHOT
+2100	Modified: wflow-consoleweb - Builders - Added app version checking @5.0-SNAPSHOT
+2099	Modified: wflow-core - Section - Visibility Control not able to match for empty value when no checkbox or radio button are checked. @5.0-SNAPSHOT
+2098	Modified: wflow-core - Form - Add method to add extra form action button. @5.0-SNAPSHOT
+2097	Fixed: wflow-core - Save As Draft - Not able to save as draft once hit the submit button and having validation errors in form. @5.0-SNAPSHOT
+2095	Fixed: wflow-consoleweb- Data List - Hidden Column is shown in exported file. #3163 @5.0-SNAPSHOT
+2094	Modified: wflow-install - Updated README.txt @5.0-SNAPSHOT
+2093	Modified: wflow-consoleweb - Update zh_TW message bundle. @5.0-SNAPSHOT
+2092	Modified: wflow-consoleweb - Builders - Show text labels below buttons to prevent buttons from moving @5.0-SNAPSHOT
+2091	Modified: wflow-consoleweb - Update zh_CN message bundle. @5.0-SNAPSHOT
+2090	Fixed: wflow-core/wflow-consoleweb - Form/List - Button label not following locale setting. @5.0-SNAPSHOT
+2089	Fixed: wflow-commons, wflow-consoleweb - i18n - Error 404 and 500 pages does not support i18n @5.0-SNAPSHOT
+2088	Fixed: wflow-consoleweb - Authentication success/failure not being logged @5.0-SNAPSHOT
+2086	Fixed: wflow-plugin-base - Datalist Builder - Not able to parse binder's password field correctly when trying to get columns. #3151 @5.0-SNAPSHOT
+2084	Fixed: wflow-core - Userview Theme - Popup not following theme style. @5.0-SNAPSHOT
+2082	Fixed: wflow-commons/wflow-consoleweb - Embed datalist/form - Enhanced security checking. #3115 @5.0-SNAPSHOT
+2081	Fixed: wflow-consoleweb - Property Editor - Not working correctly when multiple options having the same key. @5.0-SNAPSHOT
+2079	Fixed: wflow-consoleweb - Monitor Apps - User list in Reassign assignment not able to filter by organization. #3144 @5.0-SNAPSHOT
+2078	Fixed: wflow-core - Database Update Tool - Mandatory checking is not correct. #3131 @5.0-SNAPSHOT
+2077	Fixed: wflow-core - Form - Form description of none English characters are captured wrongly when using duplicate form. #3136 @5.0-SNAPSHOT
+2076	Fixed: wflow-consoleweb - Property Editor - correction on r2075. @5.0-SNAPSHOT
+2075	Fixed: wflow-consoleweb - Property Editor - Checkbox is not working correctly. @5.0-SNAPSHOT
+2073	Modified: wflow-core - Custom HTML - Add specify css class and id for customization. @5.0-SNAPSHOT
+2072	Modified: wflow-plugin-base - PropertyUtil - Support default value for grid property type. @5.0-SNAPSHOT
+2071	Modified: wflow-common - Time Zone Util - Show date based on locale. @5.0-SNAPSHOT
+2070	Fixed: wflow-core - Date Hash Variable - Show date based on locale. @5.0-SNAPSHOT
+2069	Fixed: wflow-consoleweb - Embed List/Form - Handle for invalid parameters. #3115 @5.0-SNAPSHOT
+2068	Modified: wflow-consoleweb - Update message zh_TW. @5.0-SNAPSHOT
+2067	Modified: wflow-consoleweb - Update message zh_CN. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA9
+====================
+2062    Modified: wflow-consoleweb - Update message zh_CN. @5.0-SNAPSHOT
+2061	Fixed: wflow-core - Dynamic Option/ Section Visibility Control - javascript slowness. #3101 @5.0-SNAPSHOT
+2060    Fixed: wflow-consoleweb - probuilder - After deleting a start node, cannot drag-add from another newly added start node @5.0-SNAPSHOT
+2059    Fixed: wflow-consoleweb - probuilder - multiple transitions to start and end nodes corrupts the process model @5.0-SNAPSHOT
+2058    Fixed: wflow-core - Userview Theme Processer - Not handle userview permission correctly. #3099 @5.0-SNAPSHOT
+2057    Fixed: wflow-core - UserviewV5Theme - Userview setting for "Custom HTML (Before Login Form)" and "Custom HTML (After Login Form)" are not handled. @5.0-SNAPSHOT
+2056    Modified: wflow-consoleweb - Message Bundle - Updated zh_CN & zh_TW on database setup. @5.0-SNAPSHOT
+2055    Fixed: wflow-consoleweb - Property Editor - "ElementSelect" type fail to load default value. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Property Editor - Remove validation on property type on switch page. @5.0-SNAPSHOT
+2054    Modified: wflow-consoleweb - Update Chosen library to support mobile. @5.0-SNAPSHOT
+2053    Modified: wflow-wfengine, wflow-consoleweb - Removed unnecessary log messages on startup #2974 @5.0-SNAPSHOT
+2052    Fixed: wflow-consoleweb - CSS - Input submit button display differently in Chrome & Safari. @5.0-SNAPSHOT
+2051    Fixed: wflow-wfengine - Possible ClassCastException in WorkflowUtil.getHttpServletRequest in JBoss EAP 6.4 @5.0-SNAPSHOT
+2049    Fixed: wflow-commons- LogUtil - Log profile name with log message when virtual host is enabled. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA8
+====================
+2044    Modified: wflow-consoleweb - Modified sample apps @5.0-SNAPSHOT
+2043    Fixed: wflow-consoleweb - Property Editor - Ajax Option for "MultiSelect" type not able to set data correctly. @5.0-SNAPSHOT
+2042    Fixed: wflow-consoleweb - Correction for r2040. @5.0-SNAPSHOT
+2041    Fixed: wflow-consoleweb - probuilder - Transition details not retained after moving from one node to another @5.0-SNAPSHOT
+2040    Added: wflow-consoleweb - General Setting - Support for system timezone and date format @5.0-SNAPSHOT
+        Modified: wflow-consoleweb - Locale - Refactoring @5.0-SNAPSHOT
+2039    Fixed: wflow-consoleweb - Workflow engine not initialized properly after initial db setup @5.0-SNAPSHOT
+2038    Fixed: wflow-consoleweb - CTRL-3 admin bar shortcut conflicts with the CTRL-# hash variable lookup @5.0-SNAPSHOT
+2037    Fixed: wflow-consoleweb - Property Editor - "GridCombine" type not able to render data correctly @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Property Editor - "Radio" type not able to store data correctly @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Property Editor - Dependent option field not working @5.0-SNAPSHOT...
+2036    Fixed: wflow-consoleweb - Admin bar hidden behind scrollbar for Bootstrap related themes in IE @5.0-SNAPSHOT
+2035    Added: wflow-commons, wflow-consoleweb - Setup - Added first-time database setup when no datasource is configured @5.0-SNAPSHOT
+2034    Modified: wflow-consoleweb - App Center - If there are no published apps, redirect to login page for anonymous users, and display a message for normal users @5.0-SNAPSHOT
+2032    Modified: wflow-core - Run Process Menu - Support passing field value as parameter in the redirection of completion. #3053 @5.0-SNAPSHOT
+2027    Fixed: wflow-core/wflow-consoleweb - Odd if expression. #3060 @5.0-SNAPSHOT
+2026    Fixed: wflow-consoleweb/wflow-wfengine - Monitoring - Activities list is not sorted by created time. #2958 @5.0-SNAPSHOT
+2023    Modified: wflow-consoleweb - Datasource settings menu should not appear in multi-tenant site @5.0-SNAPSHOT
+2021    Fixed: wflow-core - File uploads not working on some mounted directories @5.0-SNAPSHOT
+2019    Fixed: wflow-wfengine - workflow manage - Change error log to warn when set workflow variable. #3047 @5.0-SNAPSHOT
+2017    Fixed: wflow-consoleweb - Message Bundle - Fixed duplicate key. @5.0-SNAPSHOT
+2016    Modified: wflow-wfengine- Process - Support Hash variable in conditions. @5.0-SNAPSHOT
+2015    Modified: wflow-consoleweb- CSS - Disabled button look no different with normal button. @5.0-SNAPSHOT
+2014    Modified: wflow-core- Security - Hash Variable keyed in by user are parsed by Form Hash Variable. @5.0-SNAPSHOT
+2013    Fixed: wflow-core- Correction for r2008. @5.0-SNAPSHOT
+2011    Added: wflow-consoleweb/wflow-core - Form - Support running a post form submission processing tool (Email Tool, BeanShell Tool & etc) upon form submission. @5.0-SNAPSHOT
+2010    Modified: wflow-consoleweb - Property Editor - Change implementation to Javascript OOP for better future maintenance and adding new feature. @5.0-SNAPSHOT
+        Added: wflow-consoleweb - Property Editor - Add support for Element Select type to read default plugin properties. @5.0-SNAPSHOT
+2009    Fixed: wflow-consoleweb - Authentication success/failure not being captured in the audit trail @5.0-SNAPSHOT
+2008    Fixed: wflow-core - File/ Image upload - Validation error in Multi Paged Form. #3021 @5.0-SNAPSHOT
+2007    Fixed: wflow-consoleweb - Process Builder- Split and join select box gone missing once the value set to empty @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA7
+====================
+2002    Fixed: wflow-consoleweb - Correction for r1999. @5.0-SNAPSHOT
+2001    Modified: wflow-plugin-base - Updated config.properties for Spring Security 4.0.0.RELEASE @5.0-SNAPSHOT
+2000    Fixed: wflow-consoleweb - Authentication - j_username & j_password is not working in JSON API. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Edit Profile - Not working @5.0-SNAPSHOT
+1999    Modified: wflow-consoleweb/wflow-core - Create App - Duplicate from unprotected app. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb/wflow-core - Create Form - Duplicate form from unprotected app. @5.0-SNAPSHOT
+        Modified: wflow-consoleweb/wflow-core - Create List - Duplicate list from unprotected app. @5.0-SNAPSHOT...
+1998    Modified: All - Upgraded to Spring 4.1.6.RELEASE, Spring Security 4.0.0.RELEASE and Hibernate 4.3.9.Final @5.0-SNAPSHOT
+1997    Modified: wflow-plugin-base - Upgraded to Apache Felix 4.6.1 @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA6
+====================
+1992    Fixed: wflow-consoleweb - probuilder - Activity shown as invalid for valid deadline and exception transition @5.0-SNAPSHOT
+1991    Fixed: wflow-consoleweb - Monitoring - Double encoded URL parameter in Reassign assignment. #2983 @5.0-SNAPSHOT
+1989    Fixed: wflow-consoleweb - probuilder - Subflow changed to route upon deployment @5.0-SNAPSHOT
+1988    Fixed: wflow-consoleweb - probuilder - Screenshot canvas width is too narrow, and AND route not displaying the + symbol @5.0-SNAPSHOT
+1987    Fixed: wflow-core - Process Mapping - Not able to change mapping when activity id, tool id or participant id change letter case. #2963 @5.0-SNAPSHOT
+1985    Fixed: wflow-core - Import App - Transaction exception if using Form Hash Variable in Audit Trail plugin. #2973 @5.0-SNAPSHOT
+1984    Modified: wflow-consoleweb - Updated references from v4 to v5 @5.0-SNAPSHOT
+1983    Modified: wflow-consoleweb - Process Builder - show more relevant error in activity when deadline is missing an exception transition. @5.0-SNAPSHOT
+
+CHANGES IN 5.0-BETA5
+====================
+1.  New App Center
+2.  New Admin Sidebar
+3.  New Web-Based Process Builder
+4.  Enhanced App Plugins
+      a) Delete Form Data Datalist Action
+      b) Multiple File Upload Support
+5.  Performance and Scalability Enhancements
+6.  Framework Upgrade - Latest Spring 4 and Hibernate 4 Upgrades

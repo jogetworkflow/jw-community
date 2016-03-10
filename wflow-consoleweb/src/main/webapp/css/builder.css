@@ -1,0 +1,309 @@
+* {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 13px;
+}
+body, html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #DCDCDC;
+}
+div, label, input, button, select, th, td, a, span {
+    font-size: 13px;
+}
+/*button, input[type=button], #builder-body .element-options button, #builder-body .form-palette-options button {
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    box-shadow: none;
+    background: #e7fab6;
+    font-family: Arial;
+    text-decoration: none;
+    border: solid 1px #799837;
+    cursor: pointer;
+    margin: 1px;
+}
+button:hover, input[type=button]:hover, #builder-body .element-options button:hover, #builder-body .form-palette-options button:hover {
+    background: #8FBC8F;
+    color: white;
+}*/
+.property-editor-page-button-panel input[type=button] {
+    background: rgb(39, 174, 96);
+    font-family: Arial;
+    text-decoration: none;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;    
+    color: white;
+    border-radius: 4px;
+    margin-right: 2px;
+}
+.property-editor-page-button-panel input[type=button]:disabled {
+    opacity: 0.5;
+}
+#builder-container {
+    min-width: 100%;
+    width: auto;
+}
+#builder-header {
+    position: fixed;
+    top: 0px;
+    z-index: 301;
+    width: 97%;
+    height: 32px;
+    padding: 5px 20px 0;
+    background: #555;
+    border: 1px solid #bfbfbf;
+}
+#builder-title {
+    color: white;
+    font-size: 22px;
+    text-transform: uppercase;
+    line-height: 11px;
+    padding-top: 8px;
+}
+#builder-body {
+    min-width: 97%;
+    min-height: 520px;
+    background-color: #FFFFFF;
+    padding: 0 3% 100px 0px;
+    display: table;
+}
+#builder-logo {
+    background: url(../images/v3/builder/logo.png) no-repeat;
+    background-size: cover;
+    width: 68px;
+    height: 24px;
+    float: left;
+}
+#builder-bar { 
+    padding: 0px;
+    background: white;
+    margin-bottom: -8px;
+    width: 100%;
+    position: fixed;
+    left: 0px;
+    top: 39px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    z-index: 101;
+    height: 37px;
+    border-bottom: solid 1px #ccc;
+}
+#builder-bg {
+    background: white;
+    opacity: 1;
+    position: fixed;
+    top: 31px;
+    width: 100%;
+    height: auto;
+    z-index: -1;
+}
+#builder-content, #tabpanels {
+    min-height: 380px;
+    left: 10px;
+    position: relative;
+    top: 88px;    
+}
+#builder-bar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 50px;
+    overflow: hidden;
+    display: inline-block;
+    width: auto;
+}
+#builder-bar li { 
+    background:url(../images/v3/builder/steps_inactive-bg.gif) left top repeat-x;
+    float: left;
+    margin: 0;
+}
+#builder-bar a {
+    display: block;
+    background: url(../images/v3/builder/steps_arrow_inactive.gif) right top no-repeat;
+    padding: 0 50px 0 30px;
+    text-decoration: none
+}
+#builder-bar a span.steps-bg {
+    min-width: 100px;
+    display: block;
+    font-size: 16px;
+    color: #acacac;
+    text-shadow: 1px 1px 0 #fff;
+    height:38px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#builder-bar span.title {
+    font-size: 16px;
+    height:14px;
+    color: #f1ffbf;
+    text-shadow: 1px 1px 1px #222;
+    display:block;
+    padding: 3px 0 0 0
+}
+#builder-bar span.subtitle { 
+    font-size: 11px;
+    color: #fff;
+    text-shadow: 1px 1px 1px #333;
+    line-height: 10px;
+    font-family: Verdana, Arial, Helvetica, sans-serif
+}
+#builder-bar li.active { 
+    background:url(../images/v3/builder/steps_active-bg.gif) left top repeat-x;
+}
+#builder-bar li.active a { 
+    background: url(../images/v3/builder/steps_arrow_active.gif) right top no-repeat
+}
+#builder-bar li.active a span.steps-bg { 
+    backgroundx:url(../images/v3/builder/steps_active-bg.gif) 0 0 repeat-x;
+}
+#builder-bar .first-active { 
+    border-left: 1px solid #989898;
+} 
+#builder-bar .first-inactive { 
+    border-left: 1px solid #c2c1c1;
+}
+#builder-bar li.next a { 
+    background:url(../images/v3/builder/steps_active_next.gif) right top no-repeat
+}
+#builder-bar li.last-inactive a { 
+    border-right: 1px solid #c2c1c1; background: none; padding: 0 30px
+}
+#builder-bar li.last-active a { 
+    border-right: 1px solid #989898; background: none; padding: 0 30px
+} 
+#builder-footer {
+    text-align: center;
+    color: #868686;
+    text-shadow: 1px 1px 0 #fff; 
+    padding: 20px 0 40px
+}
+#builder-palette {
+    display: block;
+    width: 170px;
+    border: 1px solid #D6D6D6;
+    padding: 0px 0px 20px 0px;
+    margin: 5px;
+    float: left;
+    position: fixed;
+    top: 70px;
+    z-index: 10;
+    background: #ECECEC;
+    left: -5px;
+    -webkit-border-radius: 0px 0px 20px 0px;
+    -moz-border-radius: 0px 0px 20px 0px;
+    border-radius: 0px 0px 20px 0px;
+}
+#builder-palette legend {
+    display: none;
+}
+#builder-palette h3 {
+    background: darkseagreen;
+    color: white;
+    text-shadow: 0px;
+    padding: 5px;
+    margin: 5px 5px;
+}
+#builder-palette ul {
+    list-style: none outside;
+    padding: 0px 5px;
+    margin-left: 0px;
+    margin-top: 0px;
+}
+#builder-palette-body {
+    height: 450px;
+    overflow: auto;
+}
+#builder-palette ul li {
+    padding-bottom: 2px;
+    widthx: 148px;
+    overflow: hidden;
+}
+#builder-palette-top {
+    background: url(../images/v3/builder/sidebar_bg.gif) 0 0 repeat-x;
+    width: 99%;
+    height: 13px;
+    display: none;
+    border-left: 1px solid #d6d6d6;
+    border-right: 1px solid #d6d6d6
+}
+#builder-palette-spacer {
+    width: 175px;
+}
+#builder-body #canvas, #builder-body #form-canvas {
+    box-shadow: 0 0 1px gray;
+    border-radius: 0px;
+}
+#form-canvas {
+    position: relative;
+    top: 0px;
+    left: 0px;
+    floatx: right;
+    display: block;
+    min-width: 700px;
+    border: none; //1px solid #D6D6D6;
+    padding: 5px;
+    margin: 5px;
+    background: #ffffff;
+}
+#form-canvas legend {
+    display: none;
+}
+.form-clear {
+    clear: both;
+}
+.ui-sortable-placeholder, .form-cell-highlight {
+    border: 1px dotted #111111;
+    visibility: visible !important;
+    height: 50px !important;
+    background: #969696;
+    color: white;
+    opacity: 0.7;
+}
+#builder-bar .controls {
+    display:inline-block;
+    margin-left:20px;
+    position: relative;
+    top:-18px;
+}
+
+#builder-bar .controls a{
+    display: inline;
+    background: transparent;
+    padding:0;
+    margin:0;
+    cursor: pointer;
+}
+
+#builder-bar .controls a.disabled{
+    color: #aaa;
+}
+#loading {
+    position: fixed;
+    top: 150px;
+    left: 35%;
+    z-index: 10000;
+    font-size: 48px;
+    color: whitesmoke;
+    background: #999;
+    padding: 20px;
+    opacity: 0.8;
+    border-radius: 10px;
+}
+
+#builder-message {
+    position: fixed;
+    top: 20px;
+    left: 450px;
+    background: yellow;
+    border-radius: 5px;
+    display: none;
+    opacity: 0.8;
+    z-index: 100000;
+    padding: 10px;
+}

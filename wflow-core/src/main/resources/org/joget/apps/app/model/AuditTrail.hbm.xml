@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="AuditTrail" lazy="false" name="org.joget.apps.app.model.AuditTrail" table="wf_audit_trail">
+        <id name="id" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property name="username" type="string"/>
+        <property name="appId" type="string"/>
+        <property name="appVersion" type="string"/>
+        <property name="clazz" type="string"/>
+        <property name="method" type="string"/>
+        <property name="message" type="text"/>
+        <property name="timestamp" type="timestamp"/>
+    </class>
+</hibernate-mapping>

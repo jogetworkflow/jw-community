@@ -1,0 +1,10 @@
+[{
+    title : '@@form.beanshellfrombinder.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@form.beanshellfrombinder.script@@',
+        type : 'codeeditor',
+        required : 'True',
+        mode : 'java'
+    }%s]
+}]

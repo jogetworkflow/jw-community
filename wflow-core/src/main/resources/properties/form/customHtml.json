@@ -1,0 +1,36 @@
+[{
+    title : '@@form.customhtml.editCustomHtml@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.customhtml.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.customhtml.invalidId@@'
+    },
+    {
+        name : 'value',
+        label : '@@form.customhtml@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+},
+{
+    title : '@@form.customhtml.advancedOptions@@',
+    properties : [{
+        name : 'label',
+        label : '@@form.customhtml.label@@',
+        type : 'textfield',
+        value : ''
+    },
+    {
+        name : 'autoPopulate',
+        label : '@@form.customhtml.autoPopulate@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+}]

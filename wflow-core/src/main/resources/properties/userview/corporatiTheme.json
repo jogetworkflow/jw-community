@@ -1,0 +1,66 @@
+[{
+    title : '@@userviewmenu.corporatiTheme.configureCustomUi@@',
+    properties : [{
+        name : 'colorScheme',
+        label : '@@userviewmenu.corporatiTheme.colorScheme@@',
+        type : 'selectbox',
+        options : [{
+            value : 'silver',
+            label : '@@userviewmenu.corporatiTheme.silver@@'
+        },{
+            value : 'green',
+            label : '@@userviewmenu.corporatiTheme.green@@'
+        },{
+            value : 'blue',
+            label : '@@userviewmenu.corporatiTheme.blue@@'
+        },{
+            value : 'red',
+            label : '@@userviewmenu.corporatiTheme.red@@'
+        },{
+            value : 'yellow',
+            label : '@@userviewmenu.corporatiTheme.yellow@@'
+        }]
+    },
+    {
+        name : 'cssUrl',
+        label : '@@userviewmenu.corporatiTheme.customCssUrl@@',
+        type : 'textfield'
+    },
+    {
+        name : 'css',
+        label : '@@userviewmenu.corporatiTheme.customCss@@',
+        type : 'codeeditor',
+        mode : 'css'
+    },
+    {
+        name : 'js',
+        label : '@@userviewmenu.corporatiTheme.customJavascript@@',
+        type : 'codeeditor',
+        mode : 'javascript'
+    },
+    {
+        name : 'collapsibleMenu',
+        label : '@@userviewmenu.corporatiTheme.collapsibleMenu@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@userviewmenu.corporatiTheme.config@@',
+    properties : [{
+        name : 'customHeader',
+        label : '@@userviewmenu.corporatiTheme.customHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'customBanner',
+        label : '@@userviewmenu.corporatiTheme.customBanner@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+}
+]

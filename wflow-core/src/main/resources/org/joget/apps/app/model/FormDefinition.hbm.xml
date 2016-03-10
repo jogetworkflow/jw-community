@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="FormDefinition" name="org.joget.apps.app.model.FormDefinition" table="app_form">
+        <composite-id>
+            <key-property column="appId" name="appId" type="string"/>
+            <key-property column="appVersion" name="appVersion" type="long"/>
+            <key-property column="formId" name="id" type="string"/>
+        </composite-id>
+        <property index="idx_name" name="name" type="string"/>
+        <property name="dateCreated" type="timestamp"/>
+        <property name="dateModified" type="timestamp"/>
+        <property name="tableName" type="string"/>
+        <property name="json" type="text"/>
+        <property name="description" type="text"/>
+        <many-to-one entity-name="AppDefinition" insert="false" name="appDefinition" update="false">
+            <column name="appId"/>
+            <column name="appVersion"/>
+        </many-to-one>
+    </class>
+</hibernate-mapping>

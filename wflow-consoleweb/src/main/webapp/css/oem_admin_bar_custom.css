@@ -1,0 +1,61 @@
+#adminBar {
+    background: steelblue url(../images/custom/logo_name.png) no-repeat 12px 5px;
+}
+#adminBar #quickEditModeOption .ui-state-active {
+    border: solid 1px lightblue;
+}
+#adminBar #quickEditModeOption label {
+    margin-bottom: 0px;
+    display: none;
+    font-family: PT Sans,Arial,serif;
+    font-size: 9px;
+    text-align: center;
+    font-weight: normal;
+    border: 1px solid #aaaaaa;
+    color: #212121;    
+}
+#adminBar #quickEditModeOption label.ui-state-active {
+    border: solid 1px lightblue;
+}
+#adminBar .adminBarButton, #adminBar .adminBarButton a {
+    background: #eeffff;
+    color: black;
+}
+.quickEdit, #form-canvas .quickEdit {
+    display: none;
+    min-width: 100px;
+    max-width: 200px;
+    position: relative;
+    top: 1px;
+    left: 1px;
+    font-size: 9px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0px 0px 2px 0px;
+    padding: 2px 5px;
+    background: #eeffff;
+    border-radius: 5px;
+    z-index: 0;
+    box-shadow: steelblue 0px 0px 2px 2px;
+    opacity: 0.8;
+    overflow: hidden;
+}
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    padding: 0px;
+    line-height: 14px;
+    width: 100%;
+}
+.quickEdit:hover, #navigation .quickEdit:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, .adminBarButton:hover, .adminBarButton a:hover {
+    background: #aaafff;
+}
+#page.quickEditModeActive fieldset#form-canvas, #page.quickEditModeActive fieldset#form-canvas .subform-container, #page.quickEditModeActive .dataList, #page.quickEditModeActive #category-container {
+    border: solid 5px #dddfff;
+    padding: 1px;
+}
+#page.quickEditModeActive fieldset#form-canvas [class^="icon-"], #page.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
+    font-family: FontAwesome;
+}

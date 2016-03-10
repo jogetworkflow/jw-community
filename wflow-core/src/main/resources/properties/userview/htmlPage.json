@@ -1,0 +1,28 @@
+[{
+    title : '@@userview.htmlpage.editHtmlPage@@',
+    properties : [{
+        name : 'id',
+        label : 'Id',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.htmlpage.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.htmlpage.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.htmlpage.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@userview.htmlpage.htmlPage@@'
+    },
+    {
+        name : 'content',
+        label : '@@userview.htmlpage.content@@',
+        type : 'htmleditor',
+        required : 'True'
+    }]
+}]

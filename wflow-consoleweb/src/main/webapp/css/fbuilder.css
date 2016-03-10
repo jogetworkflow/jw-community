@@ -1,0 +1,357 @@
+@import url("builder.css");
+
+.form-palette-element, .form-palette-section, .form-palette-column {
+    border: dotted 1px #dddddd;
+    cursor: pointer;
+    line-height: 28px;
+    padding: 0px;
+    margin: 0px;
+    padding-leftx: 30px;
+    color: #4C4C4C;
+    backgroundx: url("../images/v3/builder/sidebar_element.gif") no-repeat scroll 0 0 transparent;
+}
+.form-palette-element label, .form-palette-section label, .form-palette-column label {
+    margin-left: 3px;
+}
+.form-palette-section {
+    background: #cccccc;
+    height: 30px;
+    min-width: 200px;
+}
+.form-palette-column {
+    height: 30px;
+    width: 200px;
+}
+.form-palette-element {
+    position: relative;
+    min-height: 30px;
+    color: black;
+    min-width: 120px;
+    height: 30px;
+}
+.form-palette-element .label {
+    width: 30%;
+    display: block;
+    float: left;
+}
+.form-cell-highlight {
+    padding-bottom: 0px;
+    background: #f0ffcc;
+}
+.form-container .ui-sortable-placeholder {
+    border: 1px dotted #111111;
+    visibility: visible !important;
+    height: 50px !important;
+    background: #666666;
+    color: white;
+}
+.form-section .ui-sortable-placeholder {
+    max-width: 150px;
+}
+.form-column .ui-sortable-placeholder {
+    max-width: 100%;
+}
+.form-container .ui-sortable-placeholder * {
+    visibility: visible;
+}
+.form-palette-options {
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    text-align: right;
+    font-size: 7px;
+    background: none;
+    width: 100%;
+    z-index: 100;
+}
+.form-section .form-palette-options {
+    top: 2px;
+    right: 5px;
+}
+.form-section .form-palette-options.bottom {
+    top:auto;
+    bottom: -20px;
+    right: 0px;
+    text-align: center;
+}
+.form-column .form-palette-options {
+    top: 0px;
+    right: 5px;
+}
+.form-cell .form-palette-options {
+    top: 0px;
+    left: 0px;
+    text-align: center;
+}
+.form-palette-options button {
+    text-decoration: none;
+    color: black;
+    font-size: 13px;
+    height: 20px;
+    min-width: 20px;
+    line-height: 15px;
+    padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+    cursor: pointer;
+    border: solid 1px #666666;
+    opacity: .6;
+    -moz-opacity: .6;
+    filter: alpha(opacity=60);
+    z-index: 300;
+    background: #fff;
+    -moz-box-shadow: 0 0 2px gray;
+    -webkit-box-shadow: 0 0 2px gray;
+    box-shadow: 0 0 2px gray;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.form-palette-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.form-palette-options button:hover span{
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    min-width: 30px;
+    margin-left: -15px;
+}
+.form-palette-options button:hover {
+    padding: 0 4px;
+}
+.form-cell .form-palette-options button{
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+}
+.form-palette-options button.form-palette-remove{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+.form-palette-options button:hover {
+    background: #aaa;
+}
+.form-cell .form-palette-options button:hover{
+    background: lightgreen;
+}
+.form-palette-options button.form-palette-remove:hover{
+    background: #FA7390;
+}
+.form-palette-options button.disabled{
+    color:#fff;
+    background: darkslategray;
+    display:none;
+}
+.form-clear {
+    clear: both;
+}
+
+.form-section, .form-column, .form-cell, .subform-section, .subform-column, .subform-cell {
+    border: dotted 1px #dddddd;
+    padding: 0px;
+    margin: 0px;
+    cursor: pointer;
+}
+.form-section, .subform-section {
+    position: relative;
+    border: dashed 1px silver;
+    height: 100%;
+    background: white;
+    min-height: 50px;
+    margin-bottom: 20px;
+}
+.form-section-title, .subform-section-title {
+    min-height: 30px;
+}
+.form-section-title span, .subform-section-title span {
+    padding: 5px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 17px;
+    text-shadow: 1px 1px 0 #DDDDDD;
+    background: #efefef;
+    display: block;
+}
+.form-palette-section {
+    background: #cccccc;
+    height: 30px;
+    min-width: 200px;
+}
+.form-column, .subform-column {
+    position: relative;
+    border: dashed 2px #dddddd;
+    width: 200px;
+    float: left;
+    height: 100%;
+    min-height: 30px;
+    width: 250px;
+    padding: 0px 0px 0px 0px;
+    color: #666666;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+}
+.form-column .hint, .subform-column .hint {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    color: #aaaaaa;
+    background: white;
+}
+.form-cell, .subform-cell {
+    position: relative;
+    min-height: 30px;
+    color: black;
+    clear: left;
+    overflowx: hidden;
+}
+.form-cell .label, .subform-cell .label {
+    width: 30%;
+    display: block;
+    float: left;
+}
+.form-error-cell {
+    border: solid 1px red;
+}
+.form-error-message {
+    color: red;
+    font-size: smaller;
+    display: block;
+}
+.form-cell-validator {
+    color: red;
+    font-size: smaller;
+}
+.form-cell table, .subform-cell table {
+    width: 100%;
+}
+.form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+.subform-container{
+    border: 5px solid #dfdfdf; 
+    padding: 3px;
+    margin-top:5px;
+}
+.subform-container.no-frame{
+    border: 0; 
+    padding: 10px 0 0 0;
+    margin-top:5px;
+}
+.subform-container, .subform-section {
+    background: #efefef;
+}
+.subform-container.no-frame, .subform-container.no-frame .subform-section {
+    background: #fafafa;
+}
+.subform-title{
+    background: #efefef;
+    position:relative;
+    top:-12px;
+}
+.subform-container.no-frame .subform-title{
+    background: transparent;
+    position:relative;
+    top:-10px;
+    font-weight: bold;
+}
+#form-properties {
+    min-height: 320px;
+    position: relative;
+    top: 89px;
+    left: 10px;
+}
+.form-column-horizontal .form-cell {
+    display: block;
+    float: left;
+    clear: none;
+    min-width: 100px;
+}
+.form-column-horizontal .ui-sortable-placeholder {
+    min-width: 30px;
+    max-width: 100%;
+    display: block;
+    float: left;
+}
+.form-cell-value, .subform-cell-value {
+    float: left;
+    width: 70%;
+}
+.form-cell-value label, .subform-cell-value label {
+    display: block;
+    float: left;
+    width: 50%;
+}
+.form-cell-full {
+    width: 100%;
+}
+.form-floating-label {
+    font-size: 7px;
+    padding: 5px;
+    position: absolute;
+    right: 10px;
+    background: #efefef;
+    opacity: .8;
+    -moz-opacity: .8;
+    filter: alpha(opacity=80);
+}
+#main-action-help {
+    background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    left: 932px;
+}
+.tooltips, #form-canvas .tooltips {
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+    padding: 5px 0 5px 5px;
+}
+.tooltips > span, #form-canvas .tooltips > span {
+    display:block;
+    color: #999;
+    font-size: 11px;
+    line-height: 15px;
+}
+#formbuilder .ui-dialog {
+    z-index: 400;
+}
+#formbuilder .ui-dialog .ui-dialog-titlebar-close span {
+    margin-left: -8px;
+    margin-top: -8px;
+}
+#formbuilder .ui-dialog .ui-dialog-titlebar {
+    padding: 0px;
+    background: transparent;
+    border: 0 none;
+    display: inline;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: auto;
+    z-index: 200;
+}
+#generator-button{
+    position: fixed;
+    right:0;
+}

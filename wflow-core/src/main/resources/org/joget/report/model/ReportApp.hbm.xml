@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="ReportApp" name="org.joget.report.model.ReportApp" table="app_report_app">
+        <id name="uid" column="uuid" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property name="appId" type="string"/>
+        <property name="appVersion" type="string"/>
+        <property name="appName" type="string"/>
+        <bag cascade="delete" inverse="true" lazy="true" name="reportWorkflowPackageList">
+            <key column="appUid" not-null="true"/>  
+            <one-to-many entity-name="ReportWorkflowPackage"/>
+        </bag>
+    </class>
+</hibernate-mapping>

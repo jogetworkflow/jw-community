@@ -1,0 +1,100 @@
+[{
+    title : '@@userview.inboxmenu.editInbox@@',
+    properties : [{
+        name : 'id',
+        label : 'ID',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.inboxmenu.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.inboxmenu.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.inboxmenu.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'List'
+    },
+    {
+        name : '%s',
+        label : '@@userview.inboxmenu.assignmentToDisplay@@',
+        type : 'selectbox',
+        options : [{
+            value : '%s',
+            label : '@@userview.inboxmenu.allAssignments@@'
+        },
+        {
+            value : '%s',
+            label : '@@userview.inboxmenu.assignmentForAProcessOnly@@'
+        }]
+    },
+    {
+        name : 'processId',
+        label : '@@userview.inboxmenu.process@@',
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/app/%s/%s/plugin/org.joget.apps.userview.lib.InboxMenu/service?action=getProcesses'
+    }]
+},
+{
+    title : '@@userview.inboxmenu.ui.list@@',
+    properties : [{
+        name : 'rowCount',
+        label : '@@userview.inboxmenu.rowCount@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },{
+        name : 'buttonPosition',
+        label : '@@userview.inboxmenu.buttonPosition@@',
+        type : 'selectbox',
+        value : 'bottomLeft',
+        options : [{
+            value : 'topLeft',
+            label : '@@userview.inboxmenu.buttonPosition.topLeft@@'
+        },{
+            value : 'topRight',
+            label : '@@userview.inboxmenu.buttonPosition.topRight@@'
+        },{
+            value : 'bottomLeft',
+            label : '@@userview.inboxmenu.buttonPosition.bottomLeft@@'
+        },{
+            value : 'bottomRight',
+            label : '@@userview.inboxmenu.buttonPosition.bottomRight@@'
+        },{
+            value : 'bothLeft',
+            label : '@@userview.inboxmenu.buttonPosition.bothLeft@@'
+        },{
+            value : 'bothRight',
+            label : '@@userview.inboxmenu.buttonPosition.bothRight@@'
+        }]
+    },{
+        name : 'list-customHeader',
+        label : '@@userview.inboxmenu.customHeader.list@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'list-customFooter',
+        label : '@@userview.inboxmenu.customFooter.list@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },{
+        name : 'assignment-customHeader',
+        label : '@@userview.inboxmenu.customHeader.ass@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'assignment-customFooter',
+        label : '@@userview.inboxmenu.customFooter.ass@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+}]

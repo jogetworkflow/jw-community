@@ -1,0 +1,45 @@
+[{
+    title : '@@userview.defaulttheme.configDefaultTheme@@',
+    properties : [{
+        name : 'css',
+        label : '@@userview.defaulttheme.css@@',
+        type : 'codeeditor',
+        mode : 'css'
+    },
+    {
+        name : 'js',
+        label : '@@userview.defaulttheme.javascript@@',
+        type : 'codeeditor',
+        mode : 'javascript'
+    },
+    {
+        name : 'customHeader',
+        label : '@@userview.defaulttheme.customHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.defaulttheme.customFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'pageTop',
+        label : '@@userview.defaulttheme.htmlAfterHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'pageBottom',
+        label : '@@userview.defaulttheme.htmlBeforeFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'beforeContent',
+        label : '@@userview.defaulttheme.htmlBeforeContent@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+}]

@@ -1,0 +1,217 @@
+iframe {
+    display: none;
+}
+#online-status {
+    font-size: 11px;
+    position: fixed;
+    top: 2px;
+    left: 2px;
+    z-index: 10000;
+    opacity: 0.8;
+    color: white;
+    background: #00bb00;
+    padding: 2px;
+    display: none;
+    border-radius: 21px;
+    height: 3px;
+    width: 3px;
+    line-height: 1px;
+    border: solid 1px #535353;
+}
+.ui-content {
+    clear: both;
+    overflow-x: auto;
+}
+.ui-body-c .ui-link {
+    margin: 10px 5px 5px 5px;
+    display: block;
+    text-decoration: underline;
+    font-size: 1.1em;
+}
+.ui-mobile .navbar, .ui-mobile-viewport .ui-title .container {
+    display: none;
+}
+.ui-mobile .ui-checkbox input, .ui-mobile .ui-radio input {
+    display: none;
+}
+.ui-mobile .form-section-title span, .ui-mobile .subform-section-title span {
+    display: block;
+    border: 1px solid #bbb;
+    background: #bbb;
+    color: #333;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #eee;
+    padding: 10px;
+    border-radius: 2px;
+    margin: 5px 0px;
+}
+.ui-mobile .form-cell:not(.customHtml) > .form-cell-value, .ui-mobile .subform-cell:not(.customHtml) > .subform-cell-value {
+    padding: 7px;
+    border: solid 1px silver;
+    border-radius: 10px;
+    margin: 7px;
+    box-shadow: -1px -1px 1px silver;
+    background: #f6f6f6;
+    color: #696969;
+}
+.ui-mobile .form-cell-full {
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+.ui-mobile .form-cell label, .ui-mobile .subform-cell label {
+    padding: 12px 0px;
+    display: inline-block;
+}
+.ui-mobile .form-cell .ui-checkbox label, .ui-mobile .subform-cell .ui-checkbox label,.ui-mobile .form-cell .ui-radio label, .ui-mobile .subform-cell .ui-radio label {
+    padding: 0.5em 1em 0.5em 2.5em ;
+}
+.ui-mobile .form-errors {
+    text-align: center;
+    padding: 5px 5px 20px 5px;    
+}    
+.ui-mobile .form-error-message {
+    color: red;
+}
+.ui-mobile ul {
+    list-style: none;
+}
+.ui-mobile ul#appList li img {
+    margin: 17px 10px;
+    border: solid 1px #ddd;
+    width: 150px;
+    height: 150px;
+    background: white;
+    border-radius: 50px;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+}
+.ui-mobile .ui-html-footer {
+    clear: both;
+}
+.ui-mobile .quickEdit, .ui-mobile #form-canvas .quickEdit {
+    display: none;
+}
+.ui-mobile .form-column, .ui-mobile .subform-column {
+    width:auto !important;
+}
+.ui-mobile .form-cell, .ui-mobile .subform-cell {
+    clear: both;
+}
+.ui-mobile .print-button, .ui-mobile .ui-body-c .print-button {
+    display: none;
+}
+.ui-mobile .form-fileupload-value .ui-checkbox {
+    margin-top: 15px;
+}
+.ui-mobile .form-fileupload-value .ui-checkbox input {
+    display: block;
+}
+.boxy-inner {
+    overflow: auto;
+}
+iframe.boxy-content {
+    padding: 0px;
+}
+.ui-loader-default {
+    background: none;
+    filter: Alpha(Opacity=80);
+    opacity: .8;
+    width: 46px;
+    height: 46px;
+    margin-left: -23px;
+    margin-top: -23px;
+}
+.ui-loader .ui-icon {
+    background-color: transparent;
+    display: block;
+    margin: 0;
+    width: 44px;
+    height: 44px;
+    padding: 1px;
+    -webkit-border-radius: 36px;
+    border-radius: 36px;
+}
+.ui-icon-loading, .ui-loader .ui-icon-loading {
+    background-color: transparent;
+    background-size: 46px 46px;
+}
+.ui-listview > .ui-li-divider {
+    background: #bbb;
+}
+.ui-listview > .ui-li-static,
+.ui-listview > .ui-li-divider,
+.ui-listview > li > a.ui-btn {
+    border-width: 1px 0 0 0;
+    border-style: solid;
+}
+.ui-datepicker {
+    z-index: 2 !important;
+}
+.ui-mobile .buttons button {
+    width: 100px;
+    float: left;
+    margin-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+.ui-mobile #dataList a.ui-link {
+    background: #f6f6f6;
+    border: solid 1px #ddd;
+    border-radius: .3125em;
+    color: #333;
+    text-shadow: 0 1px 0 #f3f3f3;
+    text-decoration: none !important;
+    margin: .5em;
+    padding: .7em 1em;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    float: left;
+}
+#userview {
+    background: url(../images/cover.jpg);
+}
+#container {
+    margin: 5% 10%;
+}
+#welcome {
+    opacity: 0.8;
+}
+#splash {
+    text-align: center;
+}
+#splash h4 {
+    font-size: 14px;
+}
+#version {
+    font-size: 9px;
+}
+#jqueryDialogDiv {
+    background:#fff;              
+}
+.form-cell .tablesaw thead tr:first-child th,
+.subform-cell .tablesaw thead tr:first-child th {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+.form-cell .tablesaw-stack tbody tr,
+.subform-cell  .tablesaw-stack tbody tr {
+    border-bottom: 0;
+}
+@media (max-width: 39.9375em) {
+    .form-cell table.tablesaw td, .form-cell table.tablesaw th, .subform-cell table.tablesaw td, .subform-cell table.tablesaw th {
+        border:0;
+    }
+    .form-cell .tablesaw-stack tbody tr, .subform-cell .tablesaw-stack tbody tr {
+        border: 1px solid #dfdfdf;
+    }
+    .form-cell .tablesaw-stack .grid-action-cell, .subform-cell .tablesaw-stack .grid-action-cell{
+        text-align: right;
+    }
+}

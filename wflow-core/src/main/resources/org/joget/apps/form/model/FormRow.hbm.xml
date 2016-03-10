@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="FormRow" lazy="false" name="org.joget.apps.form.model.FormRow" table="app_fd">
+        <id name="id" type="string"/>
+        <property name="dateCreated" type="timestamp"/>
+        <property name="dateModified" type="timestamp"/>
+        <dynamic-component insert="true" name="customProperties" optimistic-lock="true" unique="false" update="true"/>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,462 @@
+@import url("builder.css");
+
+#form-canvas {
+    border: none;
+    padding: 5px;
+    -moz-box-shadow: 0 0 6px gray;
+    -webkit-box-shadow: 0 0 6px gray;
+    box-shadow: 0 0 6px gray;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #D6D6D6;    
+}
+.builder-palette-column, .builder-palette-action, .form-palette-section, .form-palette-column {
+    border: dotted 1px #dddddd;
+    cursor: pointer;
+    line-height: 28px;
+    padding: 0px;
+    margin: 0px;
+    padding-left: 30px;
+    color: #4C4C4C;
+    background: url("../images/v3/builder/sidebar_element.gif") no-repeat scroll 0 0 transparent;
+}
+.form-palette-section {
+    background: #cccccc;
+    height: 30px;
+    min-width: 200px;
+}
+.form-palette-column {
+    height: 30px;
+    width: 200px;
+}
+.builder-palette-column {
+    position: relative;
+    min-height: 30px;
+    color: black;
+    width: 120px;
+    height: 30px;
+}
+.builder-palette-column .label {
+    /*width: 30%;*/
+    display: block;
+    float: left;
+}
+
+.builder-palette-column .label.key {
+    color: gray;
+    font-style: italic;
+}
+
+.form-container .ui-sortable-placeholder {
+    border: 1px dotted #111111;
+    visibility: visible !important;
+    height: 50px !important;
+    background: #666666;
+    color: white;
+}
+.form-section .ui-sortable-placeholder {
+    max-width: 150px;
+}
+.form-column .ui-sortable-placeholder {
+    max-width: 100%;
+}
+.form-container .ui-sortable-placeholder * {
+    visibility: visible;
+}
+.form-palette-options {
+    display: block;
+    visibility: hidden;
+    position: relative;
+    text-align: right;
+    font-size: 7px;
+    background: none;
+    width: 100%;
+    z-index: 100;
+}
+.form-section .form-palette-options {
+    top: 0px;
+    right: 0px;
+    margin-bottom: 4px;
+}
+
+.form-cell .form-palette-options {
+    top: 0px;
+    left: 0px;
+    text-align: center;
+}
+.form-palette-options button {
+    text-decoration: none;
+    color: black;
+    font-size: 13px;
+    height: 20px;
+    min-width: 20px;
+    line-height: 15px;
+    padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+    cursor: pointer;
+    border: solid 1px #666666;
+    opacity: 0.9;
+    z-index: 300;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.form-palette-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.form-palette-options button:hover span{
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    margin-left: -15%;
+}
+.form-palette-options button:hover {
+    padding: 0 4px;
+}
+.form-palette-options button:hover {
+    background: lightgreen;
+}
+ul > .form-palette-options {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+}
+ul > .form-palette-options button {
+    background: #fff;
+    -moz-box-shadow: 0 0 2px gray;
+    -webkit-box-shadow: 0 0 2px gray;
+    box-shadow: 0 0 2px gray;
+}
+
+ul > .form-palette-options button:hover {
+    background : #aaa
+}
+
+.form-palette-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+
+.form-palette-options button.element-delete:hover{
+    background: #FA7390;
+}
+
+.form-palette-options button.disabled, .form-palette-options button.disabled:hover{
+    color:#fff;
+    background: darkslategray;
+    display:none;
+}
+
+.form-clear {
+    clear: both;
+}
+
+.form-section, .form-column, .form-cell {
+    /*border: dotted 1px #dddddd;*/
+    padding: 0px;
+    margin: 0px;
+    cursor: pointer;
+}
+
+.form-section {
+    position: relative;
+    /*border: dashed 2px #cccccc;*/
+    height: 100%;
+    overflow: hidden;
+    background: white;
+    min-height: 50px;
+    margin-bottom: 10px;
+}
+.form-section-title {
+    padding: 3px;
+    font-weight: bold;
+}
+.form-palette-section {
+    background: #cccccc;
+    height: 30px;
+    min-width: 200px;
+}
+.form-column {
+    position: relative;
+    border: dashed 2px #dddddd;
+    width: 200px;
+    float: left;
+    height: 100%;
+    min-height: 30px;
+    width: 250px;
+    padding: 0px 0px 0px 0px;
+    color: #666666;
+    border-top: none;
+    border-right: none;
+    border-bottom: none;
+}
+.form-column .hint {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    color: #aaaaaa;
+    background: white;
+}
+.form-cell {
+    position: relative;
+    min-height: 30px;
+    color: black;
+    clear: left;
+}
+.form-cell .label {
+    width: 30%;
+    display: block;
+    float: left;
+}
+.form-error-cell {
+    border: solid 1px red;
+}
+.form-error-message {
+    color: red;
+    font-size: smaller;
+    display: block;
+}
+.form-cell-validator {
+    color: red;
+    font-size: smaller;
+}
+
+#builder-canvas{
+    overflow: auto;
+    width: 100%;
+}
+
+ul#databuilderContentFilters {
+    list-style-type: none;
+    margin: 0 0 10px;
+    padding: 0;
+    position: relative;
+    display:block;
+    width: 680px;
+    float: left;
+    height: 58px;
+}
+
+td#tdDatabuilderContentFilters {
+    border-bottom: 2px dotted #DDDDDD;
+}
+
+ul#databuilderContentActions {
+    list-style-type: none;
+    margin: 0 0 10px;
+    padding: 0;
+    position: relative;
+    display:block;
+    width: 680px;
+    float: left;
+    height: 50px;
+}
+
+td#tdDatabuilderContentActions {
+    border-top: 2px dotted #DDDDDD;
+}
+
+ul#databuilderContentColumns {
+    border: none;
+    min-height: 165px;
+    min-width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display:block;
+    height: 170px;
+}
+
+ul#databuilderContentColumns{
+    width: 525px;
+}
+
+ul#databuilderContentRowActions{
+    width: 140px;
+    min-height: 165px;
+    min-width: 100%;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display:block;
+    height: 170px;
+}
+
+td#tdDatabuilderContentRowActions{
+    border-left: 2px dotted #DDDDDD;
+}
+
+ul#databuilderContentColumns li.databuilderItem{
+    cursor: pointer;
+    float: left;
+    position: relative;
+    min-width: 130px;
+    height: auto;
+    margin: 2px;
+}
+
+ul#databuilderContentRowActions li.databuilderRowAction{
+    cursor: pointer;
+    float: left;
+    position: relative;
+    min-width: 100px;
+    height: auto;
+    margin: 2px;
+}
+
+ul#databuilderContentActions li.databuilderAction{
+    cursor: pointer;
+    float: left;
+    position: relative;
+    min-width: 100px;
+    height: auto;
+    padding: 1px;
+}
+
+ul#databuilderContentFilters li.databuilderFilter{
+    cursor: pointer;
+    float: right;
+    position: relative;
+    min-width: 120px;
+    height: auto;
+    padding: 10px;
+}
+
+ul#databuilderContentFilters li.databuilderFilter .content{
+    border: 1px solid #DEDEDE;
+    text-align:center;
+}
+
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent,
+ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent{
+    border: 1px solid #DEDEDE;
+}
+
+ul#databuilderContentActions li.databuilderAction div.databuilderItemContent{
+    text-align: center;
+    border: 1px solid #DEDEDE;
+    width: 100%;
+}
+
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemTitle{
+    background: none repeat scroll 0 0 #E4F6C0;
+    border: 1px solid #DEDEDE;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 4px;
+    text-align: center;
+}
+
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul{
+    padding: 0;
+    margin: 0;
+}
+
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul li{
+    background: #ffffff;
+    list-style: circle inside none;
+    padding-left: 10px;
+    margin: 0;
+}
+
+ul#databuilderContentColumns li.databuilderItem div.databuilderItemContent ul li.even{
+    background: #f7f8f5;
+    list-style: circle inside none;
+    padding-left: 10px;
+    margin: 0;
+}
+
+ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul{
+    padding: 0;
+    margin: 0;
+}
+
+ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li{
+    background: #fff;
+    list-style: none;
+    padding-left: 10px;
+    white-space: nowrap;
+}
+
+ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemContent ul li.even{
+    background: #f7f8f5;
+    list-style: none;
+    padding-left: 10px;
+    white-space: nowrap;
+}
+
+ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle{
+    background: none repeat scroll 0 0 #C4D899;
+    border: 1px solid #DEDEDE;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+ul#databuilderContentActions li.databuilderAction div.databuilderItemTitle{
+    display:none;
+}
+
+ul#databuilderContentColumns .builder-palette-column, ul#databuilderContentFilters .builder-palette-column, 
+ul#databuilderContentActions .builder-palette-action, ul#databuilderContentRowActions .builder-palette-action{
+    background:none;
+    border: 1px dotted #111111;
+    visibility: visible !important;
+    height: 50px !important;
+    background: #666666;
+    color: white;
+    float: left;
+    position: relative;
+}
+
+ul#databuilderContentFilters .builder-palette-column{
+    float:right;
+}
+
+.hint {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-size: 12px;
+    color: #aaaaaa;
+    background: white;
+}
+
+#list-advanced {
+    clear: both;
+    margin-left: 220px;
+    margin-top: 100px;
+}
+#main-action-help {
+    background: url(../images/v3/console/icn_form_help.png) 0 0 no-repeat; 
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    left: 932px;
+}

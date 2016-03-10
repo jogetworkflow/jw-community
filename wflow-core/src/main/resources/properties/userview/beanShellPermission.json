@@ -1,0 +1,10 @@
+[{
+    title : '@@userview.beanshellpermission.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@userview.beanshellpermission.script@@',
+        type : 'codeeditor',
+        required : 'True',
+        mode : 'java'
+    }]
+}]

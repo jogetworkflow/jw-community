@@ -1,0 +1,102 @@
+[{
+    title : '@@form.radio.editRadio@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.radio.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.radio.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.radio.label@@',
+        type : 'textfield',
+        value : 'Radio'
+    },
+    {
+        name : 'options',
+        label : '@@form.radio.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.radio.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.radio.label@@'
+        },
+        {
+            key : 'grouping',
+            label : '@@form.radio.grouping@@'
+        }]
+    },
+    {
+        name : 'optionsBinder',
+        label : '@@form.radio.chooseOptionsBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadOptionsBinder',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.radio.advancedOptions@@',
+    properties : [{
+        label : '@@form.radio.data@@',
+        type : 'header'
+    },
+    {
+        name : 'value',
+        label : '@@form.radio.value@@',
+        type : 'textfield'
+    },
+    {
+        name : 'validator',
+        label : '@@form.radio.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        label : '@@form.radio.dependency@@',
+        type : 'header'
+    },
+    {
+        name : 'controlField',
+        label : '@@form.radio.controlField@@',
+        type : 'textfield'
+    },
+    {
+        label : '@@form.radio.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.radio.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.radio.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.radio.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.radio.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

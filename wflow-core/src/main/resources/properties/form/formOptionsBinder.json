@@ -1,0 +1,43 @@
+[{
+    title : '@@form.defaultformoptionbinder.selectForm@@',
+    properties : [
+    %s,
+    {
+        name : 'idColumn',
+        label : '@@form.defaultformoptionbinder.idColumn@@',
+        type : 'textfield'
+    },
+    {
+        name : 'labelColumn',
+        label : '@@form.defaultformoptionbinder.labelColumn@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'groupingColumn',
+        label : '@@form.defaultformoptionbinder.groupingColumn@@',
+        type : 'textfield'
+    },
+    {
+        name : 'extraCondition',
+        label : '@@form.defaultformoptionbinder.extraFilter@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '50'
+    },
+    {
+        name : 'addEmptyOption',
+        label : '@@form.defaultformoptionbinder.addEmptyOption@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'emptyLabel',
+        label : '@@form.defaultformoptionbinder.emptyLabel@@',
+        type : 'textfield'
+    }%s]
+}]

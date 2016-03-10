@@ -1,0 +1,10 @@
+.clearfix {*zoom: 1;}
+.clearfix:before, .clearfix:after {display: table; line-height: 0; content: "";}
+.clearfix:after {clear: both;}
+header, footer {margin:10px;}
+#header-link {font-size: 28px;}
+#header-message * {display: inline-block;}
+#header-message {text-align: right; margin:10px 0;}
+#page {width:960px; margin:auto;}
+#sidebar {float:left; width: 220px; margin: 0 10px;}
+#content {float:right; width: 700px; margin: 0 10px;}

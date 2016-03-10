@@ -1,0 +1,52 @@
+#header, #navigation, #footer{
+    display: none;
+} 
+
+#main, #content, #page{
+    border:0 !important;
+} 
+
+.print-button{
+    display: none;
+}
+
+body #adminBar, body .quickEdit, body #navigation .quickEdit, body #form-canvas div.quickEdit {
+    display: none;
+    visibility: hidden;
+    position: absolute;    
+}
+
+body #page.quickEditModeActive fieldset#form-canvas, body #page.quickEditModeActive fieldset#form-canvas .subform-container, body #page.quickEditModeActive .dataList, body #page.quickEditModeActive #category-container {
+    border: none;
+    padding: 0px;
+}
+
+body .pg-navigator {
+    display:none;
+}
+
+body tr.pg-tr-hide {
+    display:table-row;
+}
+
+body .grid-action-edit,
+body .grid-action-delete,
+body .grid.enableSorting a.grid-action-moveup,
+body .grid.enableSorting a.grid-action-movedown,
+body .grid-action-add{
+    display:none;
+}
+
+body .section-actions{
+    display:none;
+}
+
+@media print {    
+    body #main div.span3 {
+        width: 0px;
+    }
+
+    body #main div.span9 {
+        width: 100%;
+    }
+}
