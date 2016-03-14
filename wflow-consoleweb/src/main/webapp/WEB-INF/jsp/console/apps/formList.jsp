@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:header />
+<c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
+<commons:header title="${title}" />
 
 <div id="nav">
     <div id="nav-title">
@@ -21,7 +22,10 @@
     </div>
     <div id="main-body">
 
-        <div id='nv-refresh'><a href='#' onclick='return refreshNavigator()'><i class='icon-refresh'></i> <fmt:message key="general.method.label.refresh"/></a></div>        
+        <div id='nv-refresh'>
+            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='icon-th-list'></i></a>&nbsp;&nbsp;
+            <a href='#' onclick='return refreshNavigator()'><i class='icon-refresh'></i> <fmt:message key="general.method.label.refresh"/></a>
+        </div>
         <div id="nv-container">
         <jsp:include page="/web/console/app/${appId}/${appVersion}/navigator" flush="true"/>
         </div>

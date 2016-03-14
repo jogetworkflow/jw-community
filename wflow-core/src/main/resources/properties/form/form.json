@@ -32,8 +32,12 @@
         ]
     },
     {
-        title:'@@form.form.data@@',
+        title:'@@form.form.advanced@@',
         properties:[
+            {
+                label:'@@form.form.data@@',
+                type : 'header'
+            },
             {
                 name:'loadBinder',
                 label:'@@form.form.loadBinder@@',
@@ -47,17 +51,17 @@
                 type:'elementselect',
                 options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
                 url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-            }
-        ]
-    },
-    {
-        title:'@@form.form.permission@@',
-        properties:[
+            },
+            {
+                label:'@@form.form.permission@@',
+                type : 'header'
+            },
             {
                 name:'permission',
                 label:'@@form.form.permission@@',
                 type:'elementselect',
-                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
             },
             {
                 name:'noPermissionMessage',
@@ -65,6 +69,39 @@
                 type:'textarea',
                 rows:'2',
                 cols:'50'
+            },
+            {
+                label:'@@form.form.postProcessing@@',
+                description:'@@form.form.postProcessing.desc@@',
+                type : 'header'
+            },
+            {
+                name:'postProcessor',
+                label:'@@form.form.postProcessor@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.plugin.base.ApplicationPlugin',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
+                default_property_values_url: '[CONTEXT_PATH]/web/property/json[APP_PATH]/getDefaultProperties'
+            },
+            {
+                name:'postProcessorRunOn',
+                label:'@@form.form.postProcessorRunOn@@',
+                type:'selectbox',
+                value:'both',
+                options:[
+                    {
+                        value:'create',
+                        label:'@@form.form.postProcessorRunOn.create@@'
+                    },
+                    {
+                        value:'update',
+                        label:'@@form.form.postProcessorRunOn.update@@'
+                    },
+                    {
+                        value:'both',
+                        label:'@@form.form.postProcessorRunOn.createAndUpdate@@'
+                    }
+                ]
             }
         ]
     }

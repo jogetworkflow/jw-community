@@ -1,7 +1,6 @@
 package org.joget.commons.util;
 
 import java.math.BigInteger;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -21,7 +20,12 @@ import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.util.ReflectionUtils;
+import javax.mail.internet.MimeUtility;
 
+/**
+ * Utility methods for String processing
+ * 
+ */
 public class StringUtil {
 
     public static final String TYPE_REGEX = "regex";
@@ -36,12 +40,17 @@ public class StringUtil {
     static final Whitelist whitelistRelaxed;
     static {
         // configure jsoup whitelist
-        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div").addAttributes(":all","id","style","class","title","target");
+        whitelistRelaxed = Whitelist.relaxed().addTags("span", "div").addAttributes(":all","id","style","class","title","target", "name");
         java.lang.reflect.Field field = ReflectionUtils.findField(whitelistRelaxed.getClass(), "protocols");
         ReflectionUtils.makeAccessible(field);
         ReflectionUtils.setField(field, whitelistRelaxed, new HashMap());
     }
 
+    /**
+     * Method used to properly encode the parameters in a URL string
+     * @param url
+     * @return 
+     */
     public static String encodeUrlParam(String url) {
         String urlResult = url;
         try {
@@ -59,6 +68,13 @@ public class StringUtil {
         return urlResult;
     }
 
+    /**
+     * Method used to merge 2 query string. If same parameter found, the one from 
+     * second query string will override the first query string.
+     * @param queryString1
+     * @param queryString2
+     * @return 
+     */
     public static String mergeRequestQueryString(String queryString1, String queryString2) {
         if (queryString1 == null || queryString2 == null) {
             return queryString1;
@@ -70,16 +86,39 @@ public class StringUtil {
         return constructUrlQueryString(params);
     }
 
+    /**
+     * Add parameter and its value to url. Override the value if the parameter 
+     * is exist in the url
+     * @param url
+     * @param paramKey
+     * @param paramValue
+     * @return 
+     */
     public static String addParamsToUrl(String url, String paramKey, String paramValue) {
         return addParamsToUrl(url, paramKey, new String[]{paramValue});
     }
 
+    /**
+     * Add parameter and its values to url. Override the value if the parameter
+     * is exist in the url
+     * @param url
+     * @param paramKey
+     * @param paramValues
+     * @return 
+     */
     public static String addParamsToUrl(String url, String paramKey, String[] paramValues) {
         Map<String, String[]> params = new HashMap<String, String[]>();
         params.put(paramKey, paramValues);
         return addParamsToUrl(url, params);
     }
 
+    /**
+     * Add parameters and its values to url. Override the value if the parameter
+     * is exist in the url
+     * @param url
+     * @param params
+     * @return 
+     */
     public static String addParamsToUrl(String url, Map<String, String[]> params) {
         String urlResult = url;
         try {
@@ -103,7 +142,12 @@ public class StringUtil {
         return urlResult;
     }
 
-    private static Map<String, String[]> getUrlParams(String url) {
+    /**
+     * Converts all request parameters in url to a map
+     * @param url
+     * @return
+     */
+    public static Map<String, String[]> getUrlParams(String url) {
         Map<String, String[]> result = new HashMap<String, String[]>();
         try {
             String queryString = url;
@@ -117,7 +161,10 @@ public class StringUtil {
                     if (!a.isEmpty()) {
                         String[] param = a.split("=");
                         String key = URLDecoder.decode(param[0], "UTF-8");
-                        String value = URLDecoder.decode(param[1], "UTF-8");
+                        String value = "";
+                        if (param.length > 1 && !param[1].isEmpty()) {
+                            value = URLDecoder.decode(param[1], "UTF-8");
+                        }
                         
                         String[] values = (String[]) result.get(key);
                         if (values != null) {
@@ -137,6 +184,11 @@ public class StringUtil {
         return result;
     }
 
+    /**
+     * Builds a query string based on parameters and its values
+     * @param params
+     * @return 
+     */
     public static String constructUrlQueryString(Map<String, String[]> params) {
         String queryString = "";
         try {
@@ -153,11 +205,36 @@ public class StringUtil {
         }
         return queryString;
     }
+    
+    /**
+     * Decodes provided url
+     * @param url
+     * @return 
+     */
+    public static String decodeURL(String url) {
+        try {
+            url = URLDecoder.decode(url, "UTF-8");
+        } catch (Exception e) {
+        }
+        return url;
+    }
 
+    /**
+     * Escape regex syntax in a string
+     * @param inStr
+     * @return 
+     */
     public static String escapeRegex(String inStr) {
         return (inStr != null) ?  inStr.replaceAll("([\\\\*+\\[\\](){}\\$.?\\^|])", "\\\\$1") : null;
     }
 
+    /**
+     * Escape a string based on format and replaced string based on the replace keyword map
+     * @param inStr input String
+     * @param format TYPE_HTML, TYPE_JAVA, TYPE_JAVASCIPT, TYPE_JSON, TYPE_SQL, TYPE_XML, TYPE_URL or TYPE_REGEX. Support chain escaping by separate the format in semicolon (;)
+     * @param replaceMap A map of keyword and new keyword pair to be replaced before escaping
+     * @return 
+     */
     public static String escapeString(String inStr, String format, Map<String, String> replaceMap) {
         if (replaceMap != null) {
             Iterator it = replaceMap.entrySet().iterator();
@@ -197,13 +274,27 @@ public class StringUtil {
         return inStr;
     }
 
+    /**
+     * A comparator to compare string value with letter case ignored
+     */
     public class IgnoreCaseComparator implements Comparator<String> {
 
+        /**
+         * Compare 2 strings with letter case ignored
+         * @param strA
+         * @param strB
+         * @return 
+         */
         public int compare(String strA, String strB) {
             return strA.compareToIgnoreCase(strB);
         }
     }
 
+    /**
+     * Encrypt the content with MD5
+     * @param content
+     * @return 
+     */
     public static String md5(String content) {
         try {
             MessageDigest m = MessageDigest.getInstance("MD5");
@@ -217,6 +308,11 @@ public class StringUtil {
         return "";
     }
 
+    /**
+     * Encrypt the content with MD5 base16
+     * @param content
+     * @return 
+     */
     public static String md5Base16(String content) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -237,6 +333,11 @@ public class StringUtil {
         }
     }
     
+    /**
+     * Remove all HTML tags from the content
+     * @param content
+     * @return 
+     */
     public static String stripAllHtmlTag(String content) {
         if (content != null && !content.isEmpty()) {
             content = Jsoup.clean(content, Whitelist.none());
@@ -244,6 +345,12 @@ public class StringUtil {
         return content;
     }
     
+    /**
+     * Removed all HTML tags not in the allowed map from the content
+     * @param content
+     * @param allowedTag
+     * @return 
+     */
     public static String stripHtmlTag(String content, String[] allowedTag) {
         if (content != null && !content.isEmpty()) {
             Whitelist whitelist = Whitelist.none().addAttributes(":all","style","class","title","id","src","href","target");
@@ -258,6 +365,11 @@ public class StringUtil {
         return content;
     }
     
+    /**
+     * Remove script and unknown tag from the content
+     * @param content
+     * @return 
+     */
     public static String stripHtmlRelaxed(String content) {
         if (content != null && content.indexOf("<") >= 0) {
             content = Jsoup.clean(content, whitelistRelaxed);
@@ -265,6 +377,12 @@ public class StringUtil {
         return content;
     }
     
+    /**
+     * Encrypt all keywords in the content which wrapped in SecurityUtil.ENVELOPE
+     * with SecurityUtil.encrypt method
+     * @param content
+     * @return 
+     */
     public static String encryptContent(String content) {
         //parse content
         if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
@@ -292,6 +410,12 @@ public class StringUtil {
         return content;
     }
 
+    /**
+     * Decrypt all keywords in the content which wrapped in SecurityUtil.ENVELOPE
+     * with SecurityUtil.decrypt method
+     * @param content
+     * @return 
+     */
     public static String decryptContent(String content) {
         //parse content
         if (content != null && content.contains(SecurityUtil.ENVELOPE)) {
@@ -317,6 +441,13 @@ public class StringUtil {
         return content;
     }
     
+    /**
+     * Search a keyword and replace it with a new keyword in byte content
+     * @param bytes
+     * @param search
+     * @param replacement
+     * @return 
+     */
     public static byte[] searchAndReplaceByteContent(byte[] bytes, String search, String replacement) {
         if (search != null && replacement != null) {
             try {
@@ -331,6 +462,12 @@ public class StringUtil {
         return bytes;
     }
     
+    /**
+     * Search keywords and replace it with corresponding new keyword in byte content
+     * @param bytes
+     * @param replacements
+     * @return 
+     */
     public static byte[] searchAndReplaceByteContent(byte[] bytes, Map<String, String> replacements) {
         if (replacements != null && !replacements.isEmpty()) {
             try {
@@ -347,6 +484,13 @@ public class StringUtil {
         return bytes;
     }
     
+    /**
+     * Method used for validate an email. Options to validate multiple email separated
+     * by semicolon (;)
+     * @param email
+     * @param multiple
+     * @return 
+     */
     public static boolean validateEmail(String email, boolean multiple) {
         String[] emails;
         if (multiple) {
@@ -366,5 +510,23 @@ public class StringUtil {
         }
                 
         return valid;        
+    }
+    
+    /**
+     * Method used for encode personal name in an email. 
+     * by semicolon (;)
+     * @param email
+     * @param multiple
+     * @return 
+     */
+    public static String encodeEmail(String email) {
+        if (email.contains("<") && email.contains(">")) {
+            try {
+                email = MimeUtility.encodeWord(email.substring(0, email.indexOf("<")), "UTF-8", null) + email.substring(email.indexOf("<"));
+            } catch (Exception e) {
+                LogUtil.debug(StringUtil.class.getName(), "Not able to encode " + email);
+            }
+        }
+        return email;
     }
 }

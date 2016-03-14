@@ -25,9 +25,12 @@ VisibilityMonitor.prototype.init = function() {
     
     thisObject.handleChange(targetEl, controlEl, controlVal, isRegex);
     
-    controlEl.live("change", function() {
+    var changeEvent = function() {
         thisObject.handleChange(targetEl, controlEl, controlVal, isRegex);
-    });
+    };
+    
+    $('body').off("change", "[name=" + this.control + "]", changeEvent);
+    $('body').on("change", "[name=" + this.control + "]", changeEvent);
 }
 
 VisibilityMonitor.prototype.handleChange = function(targetEl, controlEl, controlVal, isRegex) {
@@ -58,12 +61,16 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
             controlEl = $(controlEl).find("option:selected");
         }
         
-        $(controlEl).each(function() {
-            match = thisObject.isMatch($(this).val(), controlValue, isRegex);
-            if (match) {
-                return false;
-            }
-        });
+        if ($(controlEl).length > 0) {
+            $(controlEl).each(function() {
+                match = thisObject.isMatch($(this).val(), controlValue, isRegex);
+                if (match) {
+                    return false;
+                }
+            });
+        } else {
+            match = thisObject.isMatch("", controlValue, isRegex);
+        }
     }
     return match;
 }

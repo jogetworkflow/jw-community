@@ -77,28 +77,24 @@
     },{
         name : 'list-customHeader',
         label : '@@userview.inboxmenu.customHeader.list@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     },
     {
         name : 'list-customFooter',
         label : '@@userview.inboxmenu.customFooter.list@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     },{
         name : 'assignment-customHeader',
         label : '@@userview.inboxmenu.customHeader.ass@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     },
     {
         name : 'assignment-customFooter',
         label : '@@userview.inboxmenu.customFooter.ass@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     }]
 }]

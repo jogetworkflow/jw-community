@@ -13,7 +13,7 @@ public class Column extends Element implements FormBuilderEditable, FormContaine
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override

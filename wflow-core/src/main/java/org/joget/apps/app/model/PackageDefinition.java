@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementMap;
+import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
 /**
@@ -16,11 +17,17 @@ public class PackageDefinition extends AbstractVersionedObject {
     @Element(required = false)
     private String uid;
     private AppDefinition appDefinition;
-    @ElementMap(required = false)
+    
+    @Path("packageActivityFormMap")
+    @ElementMap(required = false,inline=true)
     private Map<String, PackageActivityForm> packageActivityFormMap;
-    @ElementMap(required = false)
+    
+    @Path("packageActivityPluginMap")
+    @ElementMap(required = false,inline=true)
     private Map<String, PackageActivityPlugin> packageActivityPluginMap;
-    @ElementMap(required = false)
+    
+    @Path("packageParticipantMap")
+    @ElementMap(required = false,inline=true)
     private Map<String, PackageParticipant> packageParticipantMap;
 
     public String getPackageUid(String processDefId, String id) {

@@ -21,6 +21,7 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,7 +57,17 @@ public class MobileUserviewWebController {
         if (embed == null) {
             embed = true;
         }
+        
+        //check for empty key
+        if (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE)) {
+            key = null;
+        }
 
+        // validate input
+        SecurityUtil.validateStringInput(appId);
+        SecurityUtil.validateStringInput(menuId);        
+        SecurityUtil.validateStringInput(key);
+        SecurityUtil.validateBooleanInput(embed);
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
             return "error404";
@@ -78,7 +89,7 @@ public class MobileUserviewWebController {
             map.addAttribute("showAllAppsButton", "true");
         }
 
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("key", key);
@@ -93,7 +104,7 @@ public class MobileUserviewWebController {
             if (loginRequired) {
                 boolean isAnonymous = WorkflowUtil.isCurrentUserAnonymous();
                 if (isAnonymous) {
-                    return "redirect:/web/mlogin/" + appId + "/" + userviewId + "//landing";
+                    return "redirect:/web/mlogin/" + appId + "/" + userviewId + "/"+(key != null?key:Userview.USERVIEW_KEY_EMPTY_VALUE)+"/landing";
                 }
             }
             map.addAttribute("userview", userview);
@@ -115,6 +126,11 @@ public class MobileUserviewWebController {
         if (embed == null) {
             embed = true;
         }
+        
+        //check for empty key
+        if (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE)) {
+            key = null;
+        }
 
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
@@ -122,12 +138,16 @@ public class MobileUserviewWebController {
         }
 
         // retrieve app and userview
+        SecurityUtil.validateStringInput(appId);
+        SecurityUtil.validateStringInput(menuId);        
+        SecurityUtil.validateStringInput(key);
+        SecurityUtil.validateBooleanInput(embed);        
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("key", key);
@@ -192,7 +212,7 @@ public class MobileUserviewWebController {
                     response.addCookie(cookie);
                 }
             
-                return "redirect:/web/mobile/"+appDef.getAppId()+"/"+uv.getId()+"//landing";
+                return "redirect:/web/mobile/"+appDef.getAppId()+"/"+uv.getId()+"/"+Userview.USERVIEW_KEY_EMPTY_VALUE+"/landing";
             }
         } else {
             Cookie cookie = cookiesMap.get("all-apps");
@@ -257,12 +277,12 @@ public class MobileUserviewWebController {
                 + contextPath + "/home/logo.png\n"
                 + contextPath + "/home/style.css\n"
                 + contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.0-rc.1.css\n"
+                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.css\n"
                 + contextPath + "/mobile/mobile.css\n"
                 + contextPath + "/js/jquery/jquery-1.9.1.min.js\n"
                 + contextPath + "/js/jquery/jquery-migrate-1.2.1.min.js\n"
                 + contextPath + "/js/jquery/ui/jquery-ui-1.10.3.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.0-rc.1.min.js\n"
+                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.js\n"
                 + contextPath + "/mobile/jqm/jquery.cookie.js\n"
                 + contextPath + "/mobile/mobile.js\n"
                 + contextPath + "/mobile/mobile_util.js\n"
@@ -288,7 +308,7 @@ public class MobileUserviewWebController {
             Collection<UserviewMenu> menus = cat.getMenus();
             for (UserviewMenu menu : menus) {
                 String menuId = userviewService.getMenuId(menu);
-                manifest += contextPath + "/web/mobile/" + appDef.getId() + "/" + userviewDef.getId() + "//" + menuId + "\n";
+                manifest += contextPath + "/web/mobile/" + appDef.getId() + "/" + userviewDef.getId() + "/"+Userview.USERVIEW_KEY_EMPTY_VALUE+"/" + menuId + "\n";
             }
         }
 
@@ -332,12 +352,12 @@ public class MobileUserviewWebController {
         }
         
         manifest += contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.0-rc.1.css\n"
+                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.css\n"
                 + contextPath + "/mobile/mobile.css\n"
                 + contextPath + "/js/jquery/jquery-1.9.1.min.js\n"
                 + contextPath + "/js/jquery/jquery-migrate-1.2.1.min.js\n"
                 + contextPath + "/js/jquery/ui/jquery-ui-1.10.3.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.0-rc.1.min.js\n"
+                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.js\n"
                 + contextPath + "/mobile/jqm/jquery.cookie.js\n"
                 + contextPath + "/mobile/mobile.js\n"
                 + contextPath + "/mobile/mobile_util.js\n"
@@ -373,12 +393,21 @@ public class MobileUserviewWebController {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Content-type", "application/xml");
         
+        //check for empty key
+        if (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE)) {
+            key = null;
+        }
+        
         //require login to use
         if (WorkflowUtil.isCurrentUserAnonymous()) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
         }
         
+        // validate input
+        SecurityUtil.validateStringInput(appId);
+        SecurityUtil.validateStringInput(menuId);        
+        SecurityUtil.validateStringInput(key);
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -392,7 +421,7 @@ public class MobileUserviewWebController {
             return null;
         }
         
-        map.addAttribute("appId", appId);
+        map.addAttribute("appId", appDef.getId());
         map.addAttribute("appDefinition", appDef);
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("key", key);

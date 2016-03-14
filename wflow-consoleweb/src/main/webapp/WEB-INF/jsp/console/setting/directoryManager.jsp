@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.commons.util.HostManager"%>
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
+<%@ page import="org.springframework.util.ClassUtils"%>
 
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 <c:set var="isOverridden" value="<%= DirectoryUtil.isOverridden() %>"/>
@@ -27,7 +28,7 @@
 </style>
 <div id="nav">
     <div id="nav-title">
-
+        <p><i class="icon-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -90,8 +91,9 @@
                             <c:if test="${!empty directoryManagerPluginList}">
                                 <select name="directoryManagerImpl" id="directoryManagerImpl">
                                     <c:forEach items="${directoryManagerPluginList}" var="plugin">
-                                        <c:if test="${plugin['class'].name ne overriddenDmClassName}">
-                                            <option value="<c:out value="${plugin['class'].name}"/>"><c:out value="${plugin.name}"/> - <c:out value="${plugin.version}"/></option>
+                                        <c:set var="pluginName" value="<%= ClassUtils.getUserClass(pageContext.findAttribute(\"plugin\")).getName() %>"/>
+                                        <c:if test="${pluginName ne overriddenDmClassName}">
+                                            <option value="<c:out value="${pluginName}"/>"><c:out value="${plugin.i18nLabel}"/> - <c:out value="${plugin.version}"/></option>
                                         </c:if>
                                     </c:forEach>
                                 </select>

@@ -3,7 +3,7 @@
 
 <div id="nav">
     <div id="nav-title">
-
+        <p><i class="icon-dashboard"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -37,15 +37,15 @@
             <dt><fmt:message key="console.app.process.common.label.requester"/></dt>
             <dd><c:out value="${wfProcess.requesterId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.startedTime"/></dt>
-            <dd><c:out value="${trackWflowProcess.startedTime}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowProcess.startedTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.limit"/></dt>
             <dd><c:out value="${trackWflowProcess.limit}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.dueDate"/></dt>
-            <dd><c:out value="${trackWflowProcess.due}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowProcess.due}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.delay"/></dt>
             <dd><c:out value="${trackWflowProcess.delay}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.finishTime"/></dt>
-            <dd><c:out value="${trackWflowProcess.finishTime}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowProcess.finishTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.timeConsumingFromDateStarted"/></dt>
             <dd><c:out value="${trackWflowProcess.timeConsumingFromDateStarted}"/>&nbsp;</dd>
         </dl>
@@ -90,7 +90,7 @@
     }
 
     function viewGraph(){
-        var url = '${pageContext.request.contextPath}/web/console/monitor/process/viewGraph/${wfProcess.instanceId}';
+        var url = '${pageContext.request.contextPath}/web/console/monitor/process/graph/${wfProcess.instanceId}';
         window.open(url);
     }
     

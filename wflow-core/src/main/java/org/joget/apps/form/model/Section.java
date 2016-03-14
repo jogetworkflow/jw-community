@@ -15,7 +15,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override

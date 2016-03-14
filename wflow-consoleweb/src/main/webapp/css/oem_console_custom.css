@@ -1,0 +1,201 @@
+/*--- General Styles ---*/
+body, body#login, body#desktop, body#appcenter, body#webconsole {
+    background: #CED7DC; //azure;
+}
+a {
+    color: steelblue; //#003399;
+}
+#main-body strong {
+    color: #666aaa;
+}
+
+/*--- Header Logo ---*/
+#main-header #logo {
+    backgroundx: url(../images/custom/logo_name.png) no-repeat;
+    background: url(../images/v3/builder/logo.png) no-repeat;
+    margin-top: 4px;
+    width: 32px;
+    margin-right: 4px;
+}
+
+/*--- Footer ---*/
+#footer, #login #footer {
+    color: #999;
+}
+
+/*--- Menu Styles ---*/
+#nav #nav-title {
+    background: #d7d7d7;
+    border-top: none;
+}
+#nav #nav-list li.nav-selected, #nav #nav-list li:hover {
+    background: lightblue;
+}
+#nav span.nav-steps {
+    background: lightblue;
+}
+#nav span.nav-subtitle {
+    width: auto;
+    max-width: 700px;
+}
+
+/*--- Button Styles ---*/
+button, input[type=button], .ui-widget button, #menu .dropdown-btn input, .form-buttons .button input, .form-button, .row-button input, .smallbutton, #nv .nv-button, #nv .nv-button-small { 
+    background: steelblue url(../images/custom/dropdown_btn_bg_hover.gif) 0 0 repeat-x;
+    border: solid 1px steelblue;
+}
+button:hover, input[type=button]:hover, .ui-widget button:hover, #menu .dropdown-btn input:hover, .form-buttons .button input:hover, .form-button:hover, .row-button input:hover, .smallbutton:hover, #nv .nv-button:hover, #nv .nv-button-small:hover { 
+    background: lightblue;
+    color: steelblue;
+    border: solid 1px steelblue;
+}
+
+/*--- Flexigrid Tables ---*/
+.flexigrid tr.erow td, .flexigrid tr.erow td.sorted {
+    background: #e9f6ff;
+    border-bottom: 1px solid #f7f7f7;
+}
+
+/*--- App Center ---*/
+#main-content {
+    background: #D7D7D7;
+    width: 100%;
+}
+#main-content h1 {
+    background: lightblue;
+}
+
+/*--- Login ---*/
+#webconsole #home-box, #login-box {
+    border-radius: 0px;
+    background: lightblue;
+}
+
+/*--- Top Sub Menu ---*/
+#main {
+    width: 99.4%;
+    margin-left: 4px;
+    border: solid 1px #dfdfdf;
+    box-shadow: none;
+    top: 69px;
+    padding: 10px 1px 30px 1px;
+}
+#main #main-body {
+    clear: both;
+    min-height: 450px;
+    padding: 25px 30px 20px 40px;
+}
+#main #main-actionx {
+    background: none;
+    padding: 0px 10px 0px 0px;
+    border-radius: 1px;
+    position: fixed;
+    top: 86px;
+    left: 46px;
+    background: white;
+    width: 100%;
+    z-index: 20;
+}
+#nav {
+    position: fixed;
+    top: 39px;
+    z-index: 5;
+    width: 100%;
+    min-width: 800px;
+    margin-top: 0px;
+    background: #E6FAB6;
+    border-bottom: dotted 1px #ccc;
+}
+#nav #nav-title {
+    display: block;
+    width: 100%;
+    padding: 10px 20px 8px 20px;
+}
+#nav #nav-title p {
+    margin: 0px 0px;
+}
+#nav #nav-links {
+    float: right;    
+    padding-right: 48px;
+}
+#nav #nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    margin-left: 4px;
+    white-space: nowrap;
+}
+#nav #nav-list li {
+    padding: 0 10px 0 10px;
+    margin: 0 0 1px 0;
+    overflow: hidden;
+    display: inline-block;
+    top: 4px;
+    position: relative;
+}
+#nav #nav-list li.nav-selected {
+    background: white;
+    width: inherit;
+    border-bottom: solid 1px white;
+    position: relative;
+    top: 5px;
+    border-top: solid 1px #ddd;
+    border-right: solid 1px #ddd;
+    border-left: solid 1px #ddd;
+    border-radius: 2px 2px 0px 0px;
+    box-shadow: #ddd 1px -1px 1px;
+}
+#nav #nav-list li:hover {
+    background: none;
+    width: inherit;
+    position: relative;
+}
+#nav #nav-list li:hover a {
+    position: relative;
+}
+#nav #nav-list a:hover {
+    position: relative;
+}
+#nav #nav-list li.nav-selected:hover {
+    background: white;
+    width: inherit;
+    position: relative;
+}
+#nav #nav-list a {
+    text-decoration: none;
+    font-size: 11px;
+    height: 32px;
+    line-height: 32px;
+    padding: 0px 10px;
+    max-width: 225px;
+}
+#nav #nav-list a.button-option {
+    border: dotted 0px green;
+    backgroundx: white;
+    opacityx: 0.8;
+    padding: 0px 10px 0px 10px;
+    line-height: 26px;
+    height: 28px;
+}
+#nav #nav-list li.nav-selected a, #nav #nav-list a:hover {
+    color: inherit;
+    text-shadow: none;
+    overflow: hidden;
+}
+#nav li.nav-selected span.nav-steps {
+    background: #ddd;
+}
+#nav #nav-list #nav-apps-link {
+    margin-top: 0px;
+}
+#nav #nav-list #nav-app-versions {
+    margin-leftx: 35px;    
+    padding-right: 0px;
+}
+#nav #nav-list #nav-app-versions, #nav #nav-list #nav-app-published {
+    display: inline-block;
+}
+#nav #nav-app-forms #appDefinitionName {
+    display: inline-block;
+}

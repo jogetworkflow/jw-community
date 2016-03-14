@@ -83,7 +83,7 @@
     </c:when>
     <c:when test="${properties.view eq 'processFormPost'}">
         <p>&nbsp;</p>
-        <form id="processForm" name="processForm" method="POST" action="${properties.startUrl}"></form>
+        <form id="processForm" name="processForm" method="POST" action="${properties.startUrl}&${properties.csrfToken}"></form>
         <script>$("#processForm").submit();</script>
     </c:when>
     <c:when test="${properties.view eq 'formView'}">

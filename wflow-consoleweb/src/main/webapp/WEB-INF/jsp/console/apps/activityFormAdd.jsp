@@ -10,7 +10,7 @@
 </style>
 
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapActivities"/> - <c:out value=" ${param.activityName} (${activity.id})" escapeXml="true" />
+        <fmt:message key="console.process.config.label.mapActivities"/> - <ui:stripTag html="${param.activityName}"/> <c:out value="(${activity.id})" escapeXml="true" />
     </div>
 
     <div id="main-body-content" style="text-align: left">

@@ -2,9 +2,9 @@
 <script type="text/javascript">
 <c:choose>
     <c:when test="${!empty url}">
-        if (parent && parent.showQuickOverlay) {
+        if (parent && parent.AdminBar.showQuickOverlay) {
             parent.PopupDialog.closeDialog();
-            parent.showQuickOverlay('${url}');
+            parent.AdminBar.showQuickOverlay('${url}');
         } else {
             if (parent != self) {
                 parent.location.href="${url}";

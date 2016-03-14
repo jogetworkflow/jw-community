@@ -13,13 +13,11 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.ThreadSessionUtil;
-import org.joget.directory.model.service.DirectoryManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
-import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -37,203 +35,11 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
         return "";
-    }
-
-    public Object execute(Map properties) {
-        Object result = null;
-        try {
-            final AuditTrail auditTrail = (AuditTrail) properties.get("auditTrail");
-            final PluginManager pluginManager = (PluginManager) properties.get("pluginManager");
-            final WorkflowManager workflowManager = (WorkflowManager) pluginManager.getBean("workflowManager");
-            final WorkflowUserManager workflowUserManager = (WorkflowUserManager) pluginManager.getBean("workflowUserManager");
-            final DirectoryManager directoryManager = (DirectoryManager) pluginManager.getBean("directoryManager");
-
-            final String base = (String) properties.get("base");
-            final String smtpHost = (String) properties.get("host");
-            final String smtpPort = (String) properties.get("port");
-            final String smtpUsername = (String) properties.get("username");
-            final String smtpPassword = (String) properties.get("password");
-            final String security = (String) properties.get("security");
-
-            final String from = (String) properties.get("from");
-            final String cc = (String) properties.get("cc");
-
-            final String subject = (String) properties.get("subject");
-            final String emailMessage = (String) properties.get("emailMessage");
-            
-            final String url = (String) properties.get("url");
-            final String urlName = (String) properties.get("urlName");
-            final String parameterName = (String) properties.get("parameterName");
-            final String passoverMethod = (String) properties.get("passoverMethod");
-            final String exclusion = (String) properties.get("exclusion");
-            final String isHtml = (String) properties.get("isHtml");
-            Map<String, String> replaceMap = null;
-            if ("true".equalsIgnoreCase(isHtml)) {
-                replaceMap = new HashMap<String, String>();
-                replaceMap.put("\\n", "<br/>");
-            }
-            final Map<String, String> replace = replaceMap;
-                    
-            final AppDefinition appDef = (AppDefinition) properties.get("appDef");
-
-            if (smtpHost == null || smtpHost.trim().length() == 0) {
-                return null;
-            }
-
-            if (auditTrail != null && (auditTrail.getMethod().equals("createAssignments") || auditTrail.getMethod().equals("getDefaultAssignments") || auditTrail.getMethod().equals("assignmentReassign") || auditTrail.getMethod().equals("assignmentForceComplete"))) {
-                final String profile = DynamicDataSourceManager.getCurrentProfile();
-                new Thread(new Runnable() {
-
-                    public void run() {
-                        ThreadSessionUtil.initSession();
-                        try {
-                            HostManager.setCurrentProfile(profile);
-                            List<String> userList = new ArrayList<String>();
-                            String activityInstanceId = auditTrail.getMessage();
-                            
-                            int maxAttempt = 5;
-                            int numOfAttempt = 0;
-                            WorkflowActivity wfActivity = null;
-                            while (userList != null && userList.isEmpty() && numOfAttempt < maxAttempt) {
-                                //LogUtil.info(getClass().getName(), "Attempting to get resource ids....");
-                                Thread.sleep(4000);
-                                wfActivity = workflowManager.getActivityById(activityInstanceId);
-                                if (wfActivity != null && wfActivity.getProcessId() != null) {
-                                    userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
-                                }
-                                numOfAttempt++;
-                            }
-
-                            Collection<String> exclusionIds = new ArrayList<String>();
-                            if (exclusion != null && !exclusion.isEmpty()) {
-                                exclusionIds.addAll(Arrays.asList(exclusion.split(";")));
-                            }
-                            
-                            if (!exclusionIds.contains(WorkflowUtil.getProcessDefIdWithoutVersion(wfActivity.getProcessDefId()) + "-" + wfActivity.getActivityDefId())) {
-                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Users to notify: " + userList);
-                                if (userList != null) {
-                                    for (String username : userList) {
-                                        workflowUserManager.setCurrentThreadUser(username);
-                                        WorkflowAssignment wfAssignment = workflowManager.getAssignment(activityInstanceId);
-                                        
-                                        Collection<String> addresses = AppUtil.getEmailList(null, username, null, null);
-                                        
-                                        if (addresses != null && addresses.size() > 0) {
-                                            // create the email message
-                                            final HtmlEmail email = new HtmlEmail();
-                                            email.setHostName(smtpHost);
-                                            if (smtpPort != null && smtpPort.length() != 0) {
-                                                email.setSmtpPort(Integer.parseInt(smtpPort));
-                                            }
-                                            if (smtpUsername != null && !smtpUsername.isEmpty()) {
-                                                String decryptedSmtpPassword = smtpPassword;
-                                                if (decryptedSmtpPassword != null) {
-                                                    decryptedSmtpPassword = SecurityUtil.decrypt(decryptedSmtpPassword);
-                                                }
-                                                email.setAuthentication(smtpUsername, decryptedSmtpPassword);
-                                            }
-                                            if(security!= null){
-                                                if(security.equalsIgnoreCase("SSL") ){
-                                                    email.setSSLOnConnect(true);
-                                                    email.setSSLCheckServerIdentity(true);
-                                                }else if(security.equalsIgnoreCase("TLS")){
-                                                    email.setStartTLSEnabled(true);
-                                                    email.setSSLCheckServerIdentity(true);
-                                                }
-                                            }
-                                            if (cc != null && cc.length() != 0) {
-                                                Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);
-                                                for (String address : ccs) {
-                                                    email.addCc(address);
-                                                }
-                                            }
-
-                                            String emailToOutput = "";
-                                            for (String address : addresses) {
-                                                email.addTo(address);
-                                                emailToOutput += address + ", ";
-                                            }
-                                            email.setFrom(from);
-
-                                            if (subject != null && subject.length() != 0) {
-                                                email.setSubject(WorkflowUtil.processVariable(subject, null, wfAssignment));
-                                            }
-                                            if (emailMessage != null && emailMessage.length() != 0) {
-                                                String link = "";
-
-                                                if (url != null && !url.isEmpty()) {
-                                                    link += url;
-                                                    if ("append".equals(passoverMethod)) {
-                                                        if (!url.endsWith("/")) {
-                                                            link += "/";
-                                                        }
-                                                        link += activityInstanceId;
-                                                    } else if ("param".equals(passoverMethod)) {
-                                                        if (url.contains("?")) {
-                                                            link += "&";
-                                                        } else {
-                                                            link += "?";
-                                                        }
-                                                        link += parameterName + "=" + activityInstanceId;
-                                                    }
-                                                } else {
-                                                    String urlMapping = "";
-
-                                                    if (base.endsWith("/")) {
-                                                        urlMapping = "web/client/app/assignment/";
-                                                    } else {
-                                                        urlMapping = "/web/client/app/assignment/";
-                                                    }
-
-                                                    link = base + urlMapping + activityInstanceId;
-                                                }
-                                                
-                                                String msg;
-                                                if("true".equalsIgnoreCase(isHtml)){
-                                                    if(urlName != null && urlName.length() != 0){
-                                                        link = "<a href=\"" + link + "\">" + urlName + "</a>";
-                                                    }else{
-                                                        link = "<a href=\"" + link + "\">" + link + "</a>";
-                                                    }
-                                                    msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + link, wfAssignment, null, replace);
-                                                    msg = msg.replaceAll("\\n", "<br/>");
-                                                    email.setHtmlMsg(msg);
-                                                }else{
-                                                    msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
-                                                    email.setMsg(msg);
-                                                }
-                                            }
-                                            email.setCharset("UTF-8");
-                                            
-                                            try {
-                                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
-                                                email.send();
-                                                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
-                                            } catch (EmailException ex) {
-                                                LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
-                                            }
-                                        }
-                                    }
-                                }   
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error executing plugin");
-                        } finally {
-                            ThreadSessionUtil.closeSession();
-                        }
-                    }
-                }).start();
-            }
-            return result;
-        } catch (Exception e) {
-            LogUtil.error(UserNotificationAuditTrail.class.getName(), e, "Error executing plugin");
-            return null;
-        }
     }
 
     public String getLabel() {
@@ -246,6 +52,182 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/app/userNotificationAuditTrail.json", null, true, null);
+    }
+    
+    public Object execute(Map props) {
+        AuditTrail auditTrail = (AuditTrail) props.get("auditTrail");
+        
+        if (validation(auditTrail)) {
+            String method = auditTrail.getMethod();
+            Object[] args = auditTrail.getArgs();
+            
+            String activityInstanceId = null;
+            List<String> users = null;
+            
+            if (method.equals("getDefaultAssignments") && args.length == 3) {
+                users = (List<String>) auditTrail.getReturnObject();
+                activityInstanceId = (String) args[1];
+            } else if (method.equals("assignmentReassign") && args.length == 5) {
+                users = new ArrayList<String> ();
+                users.add((String) args[3]);
+                activityInstanceId = (String) args[2];
+            }
+            
+            if (activityInstanceId != null && !activityInstanceId.isEmpty()) {
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
+                LogUtil.info(UserNotificationAuditTrail.class.getName(), "Users to notify: " + users);
+                
+                if (wfActivity != null && !excluded((String) props.get("exclusion"), wfActivity) && users != null && !users.isEmpty()) {
+                    sendEmail(props, auditTrail, workflowManager, users, wfActivity);
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    protected void sendEmail (final Map props, final AuditTrail auditTrail, final WorkflowManager workflowManager, final List<String> users, final WorkflowActivity wfActivity) {
+        final String smtpHost = (String) props.get("host");
+        
+        if (smtpHost != null && !smtpHost.isEmpty()) {
+            final String profile = DynamicDataSourceManager.getCurrentProfile();            
+            new PluginThread(new Runnable() {
+
+                public void run() {
+                    WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+
+                    String base = (String) props.get("base");
+                    String smtpPort = (String) props.get("port");
+                    String smtpUsername = (String) props.get("username");
+                    String smtpPassword = (String) props.get("password");
+                    String security = (String) props.get("security");
+
+                    String decryptedSmtpPassword = smtpPassword;
+                    if (smtpUsername != null && !smtpUsername.isEmpty()) {
+                        if (decryptedSmtpPassword != null) {
+                            decryptedSmtpPassword = SecurityUtil.decrypt(decryptedSmtpPassword);
+                        }
+                    }
+                    
+                    String from = (String) props.get("from");
+                    String cc = (String) props.get("cc");
+
+                    String subject = (String) props.get("subject");
+                    String emailMessage = (String) props.get("emailMessage");
+
+                    String url = (String) props.get("url");
+                    String urlName = (String) props.get("urlName");
+                    String parameterName = (String) props.get("parameterName");
+                    String passoverMethod = (String) props.get("passoverMethod");
+                    String isHtml = (String) props.get("isHtml");
+
+                    Map<String, String> replace = null;
+                    if ("true".equalsIgnoreCase(isHtml)) {
+                        replace = new HashMap<String, String>();
+                        replace.put("\\n", "<br/>");
+                    }
+                    
+                    String activityInstanceId = wfActivity.getId();
+                    String link = getLink(base, url, passoverMethod, parameterName, activityInstanceId);
+                    
+                    try {
+                        for (String username : users) {
+                            Collection<String> addresses = AppUtil.getEmailList(null, username, null, null);
+
+                            if (addresses != null && addresses.size() > 0) {
+                                workflowUserManager.setCurrentThreadUser(username);
+                                WorkflowAssignment wfAssignment = null;
+                                
+                                int count = 0;
+                                do {
+                                    wfAssignment = workflowManager.getAssignment(activityInstanceId);
+                                    
+                                    if (wfAssignment == null) {
+                                        Thread.sleep(4000); //wait for assignment creation
+                                    }
+                                    count++;
+                                } while (wfAssignment == null && count < 5); // try max 5 times
+                                
+                                if (wfAssignment != null) {
+                                    // create the email message
+                                    HtmlEmail email = new HtmlEmail();
+                                    email.setHostName(smtpHost);
+                                    if (smtpPort != null && smtpPort.length() != 0) {
+                                        email.setSmtpPort(Integer.parseInt(smtpPort));
+                                    }
+                                    if (smtpUsername != null && !smtpUsername.isEmpty()) {
+                                        email.setAuthentication(smtpUsername, decryptedSmtpPassword);
+                                    }
+                                    if (security != null) {
+                                        if (security.equalsIgnoreCase("SSL")) {
+                                            email.setSSLOnConnect(true);
+                                            email.setSSLCheckServerIdentity(true);
+                                            if (smtpPort != null && smtpPort.length() != 0) {
+                                                email.setSslSmtpPort(smtpPort);
+                                            }
+                                        } else if (security.equalsIgnoreCase("TLS")) {
+                                            email.setStartTLSEnabled(true);
+                                            email.setSSLCheckServerIdentity(true);
+                                        }
+                                    }
+                                    if (cc != null && cc.length() != 0) {
+                                        Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, auditTrail.getAppDef());
+                                        for (String address : ccs) {
+                                            email.addCc(StringUtil.encodeEmail(address));
+                                        }
+                                    }
+
+                                    String emailToOutput = "";
+                                    for (String address : addresses) {
+                                        email.addTo(StringUtil.encodeEmail(address));
+                                        emailToOutput += address + ", ";
+                                    }
+                                    email.setFrom(StringUtil.encodeEmail(from));
+
+                                    if (subject != null && subject.length() != 0) {
+                                        email.setSubject(WorkflowUtil.processVariable(subject, null, wfAssignment));
+                                    }
+                                    if (emailMessage != null && emailMessage.length() != 0) {
+
+                                        String msg;
+                                        if ("true".equalsIgnoreCase(isHtml)) {
+                                            if (urlName != null && urlName.length() != 0) {
+                                                link = "<a href=\"" + link + "\">" + urlName + "</a>";
+                                            } else {
+                                                link = "<a href=\"" + link + "\">" + link + "</a>";
+                                            }
+                                            msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + link, wfAssignment, null, replace);
+                                            msg = msg.replaceAll("\\n", "<br/>");
+                                            email.setHtmlMsg(msg);
+                                        } else {
+                                            msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
+                                            email.setMsg(msg);
+                                        }
+                                    }
+                                    email.setCharset("UTF-8");
+
+                                    try {
+                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
+                                        email.send();
+                                        LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
+                                    } catch (EmailException ex) {
+                                        LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
+                                    }
+                                } else {
+                                    LogUtil.debug(UserNotificationAuditTrail.class.getName(), "Fail to retrieve assignment for " + username);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        LogUtil.error(UserNotificationAuditTrail.class.getName(), e, "Error executing plugin");
+                    }
+                }
+            }).start();
+            
+        } else {
+            LogUtil.info(this.getClassName(), "SMTP Host is not configured.");
+        }
     }
     
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -292,5 +274,53 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
         } else {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
+    }
+    
+    protected boolean validation(AuditTrail auditTrail) {
+        return auditTrail != null 
+                && (auditTrail.getMethod().equals("getDefaultAssignments")
+                || auditTrail.getMethod().equals("assignmentReassign"));
+    }
+    
+    protected boolean excluded(String exclusion, WorkflowActivity activity) {
+        Collection<String> exclusionIds = new ArrayList<String>();
+        if (exclusion != null && !exclusion.isEmpty()) {
+            exclusionIds.addAll(Arrays.asList(exclusion.split(";")));
+        }
+        
+        return exclusionIds.contains(WorkflowUtil.getProcessDefIdWithoutVersion(activity.getProcessDefId()) + "-" + activity.getActivityDefId());
+    }
+    
+    protected String getLink(String base, String url, String passoverMethod, String parameterName, String activityInstanceId) {
+        String link = "";
+
+        if (url != null && !url.isEmpty()) {
+            link += url;
+            if ("append".equals(passoverMethod)) {
+                if (!url.endsWith("/")) {
+                    link += "/";
+                }
+                link += activityInstanceId;
+            } else if ("param".equals(passoverMethod)) {
+                if (url.contains("?")) {
+                    link += "&";
+                } else {
+                    link += "?";
+                }
+                link += parameterName + "=" + activityInstanceId;
+            }
+        } else {
+            String urlMapping = "";
+
+            if (base.endsWith("/")) {
+                urlMapping = "web/client/app/assignment/";
+            } else {
+                urlMapping = "/web/client/app/assignment/";
+            }
+
+            link = base + urlMapping + activityInstanceId;
+        }
+        
+        return link;
     }
 }

@@ -2,64 +2,6 @@
 
 <commons:header id="webconsole" />
 
-<style>
-body {
-    background: url(${pageContext.request.contextPath}/images/cover.jpg);
-}
-#footer {
-    color: white;
-}
-#home-container {
-    -moz-box-shadow: 0 1px 3px #BFBFBF;
-    background-colorx: #FFFFFF;
-    borderx: 1px solid #E9E9E9;
-    margin: 0 auto;
-    padding: 0px 20px 140px 0px;
-    width: 90%;
-}
-#home-box {
-    border-radius: 8px;
-    background-color: #F3F9E0;
-    border: 1px solid #E9E9E9;
-    margin: 0 auto;
-    padding: 20px 20px;
-    width: 600px;
-    position: relative;
-    top: 70px;
-}
-#home-box td, #home-box input {
-    font-family: 'PT Sans', Arial;
-    font-size: 16px;
-    color: #535353;
-}
-#home-box h3 {
-    color: #617722;
-    font-family: Georgia,"Times New Roman",Times,serif;
-    font-size: 18px;
-    font-weight: bold;
-}
-.welcome-box {
-    background-colorx: #F3F9E0;
-    borderx: 1px solid #E9E9E9;
-    padding: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    font-size: 14px;
-    line-height: 24px;
-    color: #454545;
-    width: 42%;
-    float: left;
-    margin: 0px 20px 20px 0px;
-}
-x.welcome-box h3 {
-    color: #617722;
-    font-size: 14pt;
-}
-.welcome-clear {
-    clear: both;
-}
-</style>
-
 <div id="home-container">
     <div id="home-box">
         <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=home" flush="true" />
@@ -102,7 +44,7 @@ x.welcome-box h3 {
     HelpGuide.key = "help.web.console.home.user";
 </c:if>
     
-    if (parent && parent.showQuickOverlay) {
+    if (AdminBar.showQuickOverlay) {
         HelpGuide.key = "help.none";
     }    
 </script>

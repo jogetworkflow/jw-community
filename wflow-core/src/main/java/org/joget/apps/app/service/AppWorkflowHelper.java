@@ -41,6 +41,7 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 
 @Service("workflowHelper")
 public class AppWorkflowHelper implements WorkflowHelper {
@@ -95,6 +96,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 }
 
                 ApplicationPlugin appPlugin = (ApplicationPlugin) plugin;
+                if (appPlugin instanceof PropertyEditable) {
+                    ((PropertyEditable) appPlugin).setProperties(propertiesMap);
+                }
                 appPlugin.execute(propertiesMap);
             }
             return true;
@@ -462,6 +466,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
             propertyMap.put("pluginManager", pluginManager);
             WorkflowActivity activity = workflowManager.getActivityById(activityId);
             propertyMap.put("workflowActivity", activity);
+            if (plugin instanceof PropertyEditable) {
+                ((PropertyEditable) plugin).setProperties(propertyMap);
+            }
             
             Collection<String> pluginResult = plugin.getActivityAssignments(propertyMap);
             if (pluginResult != null && pluginResult.size() > 0) {
@@ -515,12 +522,17 @@ public class AppWorkflowHelper implements WorkflowHelper {
     public String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return AppUtil.processHashVariable(content, wfAssignment, escapeFormat, replaceMap);
     }
-
+    
     @Override
     public void addAuditTrail(String clazz, String method, String message) {
+        addAuditTrail(clazz, method, message, null, null, null);
+    }
+
+    @Override
+    public void addAuditTrail(String clazz, String method, String message, Class[] paramTypes, Object[] args, Object returnObject) {
         ApplicationContext appContext = AppUtil.getApplicationContext();
         AuditTrailManager auditTrailManager = (AuditTrailManager) appContext.getBean("auditTrailManager");
-        auditTrailManager.addAuditTrail(clazz, method, message);
+        auditTrailManager.addAuditTrail(clazz, method, message, paramTypes, args, returnObject);
     }
 
     @Override
@@ -547,7 +559,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
                 if (appDef != null) {
                     PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) AppUtil.getApplicationContext().getBean("pluginDefaultPropertiesDao");
-                    PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(plugin.getClass().getName(), appDef);
+                    PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(ClassUtils.getUserClass(plugin).getName(), appDef);
 
                     if (pluginDefaultProperties != null) {
                         Map propertiesMap = new HashMap();
@@ -569,6 +581,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         propertiesMap.put("activityAcceptedTime", activityAcceptedTime);
                         propertiesMap.put("activityActivatedTime", activityActivatedTime);
                         propertiesMap.put("pluginManager", pluginManager);
+                        
+                        if (p instanceof PropertyEditable) {
+                            ((PropertyEditable) p).setProperties(propertiesMap);
+                        }
 
                         return p.evaluateDeadline(propertiesMap);
                     }

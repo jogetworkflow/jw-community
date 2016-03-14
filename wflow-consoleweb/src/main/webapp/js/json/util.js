@@ -1,4 +1,6 @@
 ConnectionManager = {
+    tokenName : "",
+    tokenValue : "",
     post : function(url, callback, params){
               var thisWindow = window;
               $.support.cors = true;
@@ -7,6 +9,9 @@ ConnectionManager = {
                  url: url,
                  data: params,
                  dataType : "text",
+                 beforeSend: function (request) {
+                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                 },
                  xhrFields: {
                      withCredentials: true
                  },
@@ -161,6 +166,16 @@ AssignmentManager = {
 };
 
 UrlUtil = {
+    updateUrlParam : function(url, param, paramValue) {
+        var qs1 = "";
+        var qs2 = param + "=" + paramValue;
+        if (url.indexOf("?") !== -1) {
+            qs1 = url.substring(url.indexOf("?") + 1);
+            url = url.substring(0, url.indexOf("?") - 1);
+        }
+        return url + "?" + UrlUtil.mergeRequestQueryString(qs1, qs2);
+    },
+    
     encodeUrlParam : function(url){
         var urlResult = url;
         try{

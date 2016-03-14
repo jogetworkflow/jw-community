@@ -3,6 +3,7 @@ package org.joget.apps.app.model;
 import java.util.Collection;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
 /**
@@ -11,23 +12,41 @@ import org.simpleframework.xml.Root;
 @Root
 public class AppDefinition extends AbstractVersionedObject {
 
-    @ElementList(required = false)
+    @Path("packageDefinitionList")
+    @ElementList(required = false,inline=true)
     private Collection<PackageDefinition> packageDefinitionList;
-    @ElementList(required = false)
+
+    @Path("formDefinitionList")
+    @ElementList(required = false,inline=true)
     private Collection<FormDefinition> formDefinitionList;
-    @ElementList(required = false)
+
+    @Path("userviewDefinitionList")
+    @ElementList(required = false,inline=true)
     private Collection<UserviewDefinition> userviewDefinitionList;
-    @ElementList(required = false)
+
+    @Path("datalistDefinitionList")
+    @ElementList(required = false,inline=true)
     private Collection<DatalistDefinition> datalistDefinitionList;
-    @ElementList(required = false)
+
+    @Path("pluginDefaultPropertiesList")
+    @ElementList(required = false,inline=true)
     private Collection<PluginDefaultProperties> pluginDefaultPropertiesList;
-    @ElementList(required = false)
+
+    @Path("environmentVariableList")
+    @ElementList(required = false,inline=true)
     private Collection<EnvironmentVariable> environmentVariableList;
-    @ElementList(required = false)
+
+    @Path("messageList")
+    @ElementList(required = false,inline=true)
     private Collection<Message> messageList;
+    
     private Boolean published;
     @Element(required = false)
     private String license;
+    @Element(required = false)
+    private String description;
+    @Element(required = false)
+    private String meta;
 
     /**
      * For an App, the package ID is equivalent to the ID.
@@ -130,5 +149,21 @@ public class AppDefinition extends AbstractVersionedObject {
 
     public void setLicense(String license) {
         this.license = license;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMeta() {
+        return meta;
+    }
+
+    public void setMeta(String meta) {
+        this.meta = meta;
     }
 }

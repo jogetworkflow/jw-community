@@ -1,125 +1,60 @@
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
-<%@ page import="org.joget.apps.app.service.MobileUtil"%>
+<%@page import="org.joget.apps.app.service.MobileUtil"%>
+<%@page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
+<c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:set var="marketplaceUrl"><fmt:message key="appCenter.link.marketplace.url"/></c:set>
-<c:set var="marketplaceContext"><fmt:message key="appCenter.link.marketplace.context"/></c:set>
 <c:set var="marketplaceTarget"><fmt:message key="appCenter.link.marketplace.target"/></c:set>
-<c:if test="${empty marketplaceContext || marketplaceContext == '???appCenter.link.marketplace.context???'}">
-    <c:set var="marketplaceContext" value="/jw4"/>
-</c:if>
 
-<commons:header id="desktop" />
+<commons:header id="appcenter" />
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/home/style.css"/>
-    <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
-    <script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
+<script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
+<script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
 
-    <span id="main-action-help" style="display:none"></span>
-    
-    <div id="title">
-        <div id="title-label"><fmt:message key="adminBar.label.appCenter"/></div>
-        <div id="search">
-        </div>
-        <div id="categories">
-            <a href="#" onclick="return loadPublishedApps()" id="category-published-apps" class="category"><fmt:message key="appCenter.label.publishedApps"/></a>
-            <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
-                <c:choose>
-                    <c:when test="${empty marketplaceTarget || marketplaceTarget == '???appCenter.link.marketplace.target???'}">
-                        <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="${marketplaceUrl}" target="${marketplaceTarget}" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
-                    </c:otherwise>
-                </c:choose>
-            </c:if>
-        </div>
-    </div>
-    <div class="clear"></div>
-    <div id="published-apps" class="published-apps"></div>
-    <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
-        <div id="marketplace-apps" class="published-apps"></div>
-     </c:if>
-    <div class="clear"></div>
-
-    <c:if test="${!isAdmin}">
-        <style>
-            #getting-started {
-                height: 0px;
-                width: 0px;
-                overflow: hidden;
-                z-index: -100;
-                position: absolute;
-                margin-top: 100%;
-            }
-        </style>
-        <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
-    </c:if>
-    <c:if test="${isAdmin}">
-        <div id="title" class="administration">
-            <fmt:message key="appCenter.label.administration"/>
-        </div>
-        <div id="content" class="administration">
-            <div class="column border">
-                <c:set var="helpWebConsole"><fmt:message key="appCenter.help.webConsole"/></c:set>
-                <c:choose>
-                <c:when test="${!empty helpWebConsole && helpWebConsole != '???appCenter.help.webConsole???'}"><fmt:message key="appCenter.help.webConsole"/></c:when>
-                <c:otherwise>
-                <a target="_self" href="${pageContext.request.contextPath}/web/console/home">
-                    <h3>Access the Web Console</h3>
-                    <img src="${pageContext.request.contextPath}/home/webconsole.png" width="150" border="0" />
-                    <br />
-                    <h4>For Administrators and App Designers to:</h4>
-                    <ul>
-                        <li>Setup Users</li>
-                        <li>Design Apps</li>
-                        <li>Run Apps</li>
-                        <li>Monitor Apps</li>
-                    </ul>
-                </a>
-                </c:otherwise>
-                </c:choose>
-            </div>
-            <div class="column border">
-                <c:set var="helpSupport"><fmt:message key="appCenter.help.helpSupport"/></c:set>
-                <c:choose>
-                <c:when test="${!empty helpSupport && helpSupport != '???appCenter.help.helpSupport???'}"><fmt:message key="appCenter.help.helpSupport"/></c:when>
-                <c:otherwise>
-                    <h3>Get Help and Support</h3>
-                    <a target="_blank" href="http://www.joget.com/services?src=jwcv4"><img src="${pageContext.request.contextPath}/home/website.png" width="150" border="0" /></a>
-                    <br />
-                    <h4>Ways to get Help and Support:</h4>
-                    <ul>
-                        <li><a target="_blank" href="http://www.joget.com/services/support/?src=jwcv4">Enterprise Support</a></li>
-                        <li><a target="_blank" href="http://community.joget.org/?src=jwcv4">Enterprise Knowledge Base</a></li>
-                        <li><a target="_blank" href="http://www.joget.com/services/training/?src=jwcv4">Training and Consultancy Services</a></li>
-                    </ul>
-                </c:otherwise>
-                </c:choose>
-            </div>
-            <div class="column-wide">
-                <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
-            </div>
-            <div class="column-narrow">
-                <c:set var="helpResources"><fmt:message key="appCenter.help.helpResources"/></c:set>
-                <c:choose>
-                <c:when test="${!empty helpResources && helpResources != '???appCenter.help.helpResources???'}"><fmt:message key="appCenter.help.helpResources"/></c:when>
-                <c:otherwise>
-                <a target="_blank" href="http://www.joget.org/videos/tutorial/?src=jwcv4">
-                    <h4>Learn with the following resources:</h4>
-                    <ul>
-                        <li>Tutorial Videos</li>
-                        <li>Knowledge Base</li>
-                    </ul>
-                </a>
-                </c:otherwise>
-                </c:choose>
+        <div id="main-container">
+            <div id="main-content">
+                <h1><i class="icon-desktop"></i> <fmt:message key="adminBar.label.appCenter"/></h1>
+                <div id="search"></div>
+                <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
+                    <div id="categories" class="menu-link-admin">
+                        <a href="#" onclick="return loadPublishedApps()" id="category-published-apps" class="category"><fmt:message key="appCenter.label.publishedApps"/></a>
+                        <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
+                            <c:choose>
+                                <c:when test="${empty marketplaceTarget || marketplaceTarget == '???appCenter.link.marketplace.target???'}">
+                                    <a href="#" onclick="return loadMarketplaceApps()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+                                </c:when>
+                                <c:when test="${marketplaceTarget == '_popup'}">
+                                    <a href="#" onclick="return loadMarketplace()" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${marketplaceUrl}" target="${marketplaceTarget}" id="category-marketplace-apps" class="category"><fmt:message key="appCenter.label.marketplace"/></a>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:if>
+                    </div>
+                </c:if>
+                <c:if test="${isAdmin}">
+                <div class="menu-link-admin-top">
+                    <a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit"></i> <fmt:message key='console.app.create.label'/></a>   
+                    <a href="#" onclick="appImport();return false" class="app-edit smallbutton"><i class="icon-edit"></i> <fmt:message key='console.app.import.label'/></a>
+                </div>
+                <ul id="marketplace-apps" class="published-apps"></ul>
+                </c:if>
+                <ul id="published-apps" class="published-apps">
+                </ul>
+                <c:if test="${isAdmin}">
+                <div id="admin-content">
+                    <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
+                </div>
+                </c:if>
             </div>
         </div>
-    </c:if>
+
+<%= AppUtil.getSystemAlert() %>
 
     <script>    
-        <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
         <c:if test="${!isAnonymous}">
             HelpGuide.key = "help.web.desktop.user";
         </c:if>
@@ -127,11 +62,6 @@
             HelpGuide.key = "help.web.desktop.admin";
         </c:if>
     </script>
-    
-<jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
-    <jsp:param name="desktop" value="true"/>
-    <jsp:param name="appControls" value="true"/>
-</jsp:include>
 
 <commons:footer/>
 
@@ -139,16 +69,28 @@
 <script>
     <c:if test="${!mobileDisabled}">
     var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
-    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")' title='User Agent: " + navigator.userAgent + "'>" + mobileLinkTitle + "</a>";
-    $("#header #account").prepend(mobileLink + " | ");
+    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' id='header-mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")'><i class='icon-mobile-phone'>&nbsp;</i>" + mobileLinkTitle + "</a>";
+    $("#header-links").prepend(mobileLink + " ");
     var url = "${pageContext.request.contextPath}/web/mobile";
     Mobile.directToMobileSite(url);
     </c:if>
 
-    var loadApps = function(container, baseUrl, contextPath) {
+    var marketplacePopup = function(marketplaceUrl) {
+        var marketplaceAppPopupDialog = new PopupDialog("${pageContext.request.contextPath}/web/console/home", " ");
+        marketplaceAppPopupDialog.src = marketplaceUrl;
+        marketplaceAppPopupDialog.show();        
+        return false;
+    };
+
+    var loadMarketplace = function() {
+        var marketplaceAppUrl = "${pageContext.request.contextPath}/web/desktop/marketplace/app?url=" + encodeURIComponent("<c:url value="${marketplaceUrl}"/>");
+        marketplacePopup(marketplaceAppUrl);
+    };
+
+    var loadApps = function(container, customUrl) {
         container = container || "#published-apps";
-        baseUrl = baseUrl || "";
-        contextPath = contextPath || "${pageContext.request.contextPath}";
+        var isMarketplace = (container === '#marketplace-apps');
+        var jsonUrl = (customUrl) ? customUrl : "${pageContext.request.contextPath}/web/json/apps/published/userviews";
 
         // show loading icon
         $(container).empty();
@@ -157,7 +99,7 @@
 
         // load JSON
         $.ajax({ 
-            url : baseUrl + contextPath + "/web/json/apps/published/userviews",
+            url : jsonUrl,
             dataType:'jsonp',
             success:function(data) {
                 var content = "";
@@ -169,22 +111,82 @@
                     var userviews = app.userviews;
                     for( var j=0; j<userviews.length; j++){
                         var uv = userviews[j];
-                        content +=  '<div class="column">\
-                                        <div class="appdiv">\
-                                        <a class="screenshot" target="_blank" href="' + baseUrl + uv.url + '">\
-                                            <div class="screenshot_label">' + UI.escapeHTML(uv.name) + '</div>\
-                                            <img src="' + baseUrl + contextPath + '/web/userview/screenshot/' + app.id + '/' + uv.id + '" width="150" border="0" />\
-                                        </a><h3>' + UI.escapeHTML(app.name) + '</h3></div>\
-                                    </div>';
+                        content += '<li>';
+                        <c:if test="${isAdmin}">
+                            if (!isMarketplace) {
+                                content += '<a href="${pageContext.request.contextPath}/web/console/app/' + app.id + '//forms" onclick="return AdminBar.showQuickOverlay(\'${pageContext.request.contextPath}/web/console/app/' + app.id + '//forms\')" class="app-edit smallbutton"><i class="icon-edit"></i> <fmt:message key='adminBar.label.designApp'/></a>';
+                            }
+                        </c:if>
+                        var userviewUrl = uv.url;
+                        var imageUrl = uv.imageUrl;
+                        if (!imageUrl) {
+                            imageUrl = '${pageContext.request.contextPath}/web/userview/screenshot/' + app.id + '/' + uv.id;
+                        }
+                        content += '<a class="app-link" target="_blank" href="' + userviewUrl + '">\
+                                            <span class="app-icon"><img src="' + imageUrl + '" width="240" border="0"></span>\
+                                            <div class="app-name">' + uv.name + '</div>\
+                                            <div class="app-description">' + app.name + '</div>\
+                                            <div class="uv-description" style="display:none">' + uv.description + '</div>\
+                                        </a>\
+                                    </li>';
                     }
                 }
-
+                if (apps.length === 0) {
+                    <c:if test="${!isAdmin}">
+                    content += '<div class="apps-notice"><fmt:message key="mobile.apps.allApps"/>: <fmt:message key="console.run.apps.none"/></div>';
+                    </c:if>
+                    <c:if test="${isAnonymous}">
+                        location.href = "${pageContext.request.contextPath}/web/login";
+                    </c:if>
+                }
                 // show apps, hide loading icon
                 $(loading).remove();
                 $(container).append($(content));
+
+                // sort by userview name
+                var appsLi = $(".published-apps li");
+                appsLi.sort(function(a, b) {
+                    var aName = $(a).find(".app-name").text();
+                    var bName = $(b).find(".app-name").text();
+                    if (aName.indexOf("<") === 0 || aName.indexOf("#") === 0 || aName.toUpperCase() >= bName.toUpperCase()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+                appsLi.detach().appendTo($(container));
+
+                <c:if test="${isAdmin}">
+                    if (!isMarketplace) {
+                        var extraContent = '<li class="menu-link-admin">';
+                        extraContent += '<a href="#" onclick="appImport();return false" class="app-import app-edit smallbutton"><i class="icon-edit"></i> <fmt:message key='console.app.import.label'/></div>';
+                        extraContent += '<a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit"></i> <fmt:message key='console.app.create.label'/></div>';
+                        extraContent += '<a class="app-link app-new" href="#" onclick="appCreate();return false">\
+                                        <span class="app-icon"><i class="icon-plus"></i></span>\
+                                        <div class="app-name"></div>\
+                                    </a>\
+                                </li>';
+                        $(container).append($(extraContent));
+                    } else {
+                        $("#marketplace-apps a.app-link").click(function(e) {
+                            var appName = $(this).find(".app-name").text();
+                            var appUrl = $(this).attr("href");
+                            var appId = appUrl.substring(appUrl.indexOf("/web/userview/") + "/web/userview/".length);
+                            var marketplaceAppUrl = "${pageContext.request.contextPath}/web/desktop/marketplace/app?url=" + encodeURIComponent(appUrl) + "&appId=" + encodeURIComponent(appId) + "&name=" + encodeURIComponent(appName);
+                            marketplacePopup(marketplaceAppUrl);
+                            e.preventDefault();
+                        });
+                    }
+                    var adminContent = $("#admin-content");
+                    if (adminContent.length > 0) {
+                        adminContent.detach();
+                        $(container).append(adminContent);
+                        adminContent.show();
+                    }
+                </c:if>
             }
         });
-    }            
+    };            
     jQuery.expr[':'].Contains = function(a,i,m){ 
         return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
     };  
@@ -197,10 +199,10 @@
         $(input).change(function () { 
             var filter = $(this).val(); 
             if(filter) { 
-                $(list).find("a:not(:Contains(" + filter + ")),h3:not(:Contains(" + filter + "))").parent().parent().fadeOut(); 
-                $(list).find("a:Contains(" + filter + "),h3:Contains(" + filter + ")").parent().parent().show(); 
+                $(list).find(".app-name:not(:Contains(" + filter + "))").closest("li").fadeOut(); 
+                $(list).find(".app-name:Contains(" + filter + ")").closest("li").show(); 
             } else { 
-                $(list).find("div").show(); 
+                $(list).find("li").show(); 
             } 
             return false; 
         }).keyup(function () {
@@ -211,8 +213,14 @@
             }, 50);
         }); 
         $(input).focus();
-    }  
+    };  
     var loadPublishedApps = function() {
+        var adminContent = $("#admin-content");
+        if (adminContent.length > 0) {
+            adminContent.detach();
+            $("#main-content").append(adminContent);
+            adminContent.hide();
+        }        
         $(".published-apps").empty();
         $("#categories a").removeClass("category-selected");
         $("#category-published-apps").addClass("category-selected");
@@ -221,8 +229,14 @@
         $("#search form").remove();
         searchFilter($("#search"), $("#published-apps")); 
         loadApps("#published-apps");
-    }
+    };
     var loadMarketplaceApps = function() {
+        var adminContent = $("#admin-content");
+        if (adminContent.length > 0) {
+            adminContent.detach();
+            $("#main-content").append(adminContent);
+            adminContent.hide();
+        }        
         $(".published-apps").empty();
         $("#categories a").removeClass("category-selected");
         $("#category-marketplace-apps").addClass("category-selected");
@@ -230,7 +244,7 @@
         $("#published-apps").hide();
         $("#search form").remove();
         searchFilter($("#search"), $("#marketplace-apps")); 
-        loadApps("#marketplace-apps", "${marketplaceUrl}", "${marketplaceContext}");
+        loadApps("#marketplace-apps", "${marketplaceUrl}");
     }
     $(function () { 
         loadPublishedApps();

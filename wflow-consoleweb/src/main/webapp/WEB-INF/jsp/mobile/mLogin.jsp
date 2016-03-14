@@ -2,20 +2,21 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
+<%@ page import="org.joget.commons.util.SecurityUtil"%>
 
 <c:set var="isAnonymous" value="<%= WorkflowUtil.isCurrentUserAnonymous() %>"/>
 <c:if test="${!empty appId}">
     <c:set var="redirectUrl" scope="request" value=""/>
     <c:choose>
         <c:when test="${embed}">
-            <c:set var="redirectUrl" scope="request" value="/web/embed/mobile/${appId}/${userview.properties.id}/"/>
+            <c:set var="redirectUrl" scope="request" value="/web/embed/mobile/${appId}/${userview.properties.id}/landing"/>
         </c:when>
         <c:otherwise>
-            <c:set var="redirectUrl" scope="request" value="/web/mobile/${appId}/${userview.properties.id}/"/>
+            <c:set var="redirectUrl" scope="request" value="/web/mobile/${appId}/${userview.properties.id}/landing"/>
         </c:otherwise>
     </c:choose>
     <c:if test="${!empty key && key ne '______'}">
-        <c:set var="redirectUrl" scope="request" value="${redirectUrl}${key}"/>
+        <c:set var="redirectUrl" scope="request" value="${redirectUrl}${key}/landing"/>
     </c:if>
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
@@ -93,6 +94,7 @@
 
         <div class="ui-loader" style="top: 332px; "><h1><fmt:message key="mobile.apps.loading"/></h1></div>
         <%= AppUtil.getSystemAlert() %> 
+        <jsp:include page="mFooter.jsp" flush="true" />   
     </body>    
 </html>
 

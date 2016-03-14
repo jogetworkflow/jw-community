@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-directory</artifactId>
     <name>wflow-directory</name>
-    <version>4.0-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <url>http://www.joget.org</url>
     <build>
         <plugins>
@@ -47,19 +47,19 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>2.5.6.SEC03</version>
+            <version>4.1.6.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.3</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

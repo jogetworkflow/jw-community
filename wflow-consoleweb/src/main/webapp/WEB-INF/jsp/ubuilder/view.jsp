@@ -5,6 +5,7 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.apps.userview.model.Userview"%>
 <%@ page contentType="text/html" pageEncoding="utf-8"%>
 
 <%
@@ -24,14 +25,19 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
     StopWatch sw = new StopWatch(request.getRequestURI());
     sw.start("userview");
 %>
+<% response.setHeader("P3P", "CP=\"This is not a P3P policy\""); %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
     "http://www.w3.org/TR/html4/loose.dtd">
+
 <c:set var="qs"><ui:decodeurl value="${queryString}"/></c:set>
 <c:if test="${empty menuId && !empty userview.properties.homeMenuId}">
     <c:set var="homeRedirectUrl" scope="request" value="/web/"/>
     <c:if test="${embed}">
         <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}embed/"/>
+    </c:if>
+    <c:if test="${empty key}">
+        <c:set var="key" scope="request" value="<%= Userview.USERVIEW_KEY_EMPTY_VALUE %>"/>
     </c:if>
     <c:set var="homeRedirectUrl" scope="request" value="${homeRedirectUrl}userview/${appId}/${userview.properties.id}/${key}/${userview.properties.homeMenuId}"/>
     <c:redirect url="${homeRedirectUrl}?${qs}"/>
@@ -53,13 +59,20 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             <c:set var="redirectUrl" scope="request" value="${redirectUrl}${key}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="redirectUrl" scope="request" value="${redirectUrl}______"/>
-        </c:otherwise>
+            <c:set var="key" scope="request" value="<%= Userview.USERVIEW_KEY_EMPTY_VALUE %>"/>
+            <c:if test="${!empty menuId}">
+                <c:set var="redirectUrl" scope="request" value="${redirectUrl}${key}"/>
+            </c:if>    
+        </c:otherwise>    
     </c:choose>
     <c:if test="${!empty menuId}">
         <c:set var="redirectUrl" scope="request" value="${redirectUrl}/${menuId}"/>
     </c:if>
     <c:redirect url="${redirectUrl}?${qs}"/>
+</c:if>
+
+<c:if test="${empty key}">
+    <c:set var="key" scope="request" value="<%= Userview.USERVIEW_KEY_EMPTY_VALUE %>"/>
 </c:if>
 
 <c:set var="bodyId" scope="request" value=""/>
@@ -128,7 +141,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 <c:choose>
 <c:when test="${!empty alertMessageValue}">
     <script>
-        alert("${alertMessageValue}");
+        alert("<ui:escape value="${alertMessageValue}" format="javascript"/>");
     <c:if test="${!empty redirectUrlValue}">
         <c:if test="${redirectParentValue}">parent.</c:if>location.href = "${redirectUrlValue}";
     </c:if>
@@ -159,7 +172,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 </c:when>
 </c:choose>
 </c:catch>
-    
+
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -319,7 +332,6 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                         </div>
                         </c:if>
                         <div id="content">
-                            
                             <c:if test="${!empty userview.setting.theme.beforeContent}">
                                 ${userview.setting.theme.beforeContent}
                             </c:if>
@@ -366,8 +378,9 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
         
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appVersion}"/>
             <jsp:param name="userviewId" value="${userview.properties.id}"/>
-        </jsp:include>
+        </jsp:include>    
     </body>
     
 </html>

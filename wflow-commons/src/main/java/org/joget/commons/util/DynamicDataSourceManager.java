@@ -176,7 +176,8 @@ public class DynamicDataSourceManager {
             return currentProfile;
         } catch (FileNotFoundException e) {
             if (!(e.getMessage() != null && e.getMessage().contains("Too many open files"))) {
-                createDefaultProfile();
+                // As of v5, don't automatically create default profile, to allow setup on first startup
+                // createDefaultProfile();
                 LogUtil.debug(DynamicDataSourceManager.class.getName(), defaultDataSourceFilename + " not found, using default datasource");
             }
         } catch (Exception e) {
@@ -199,11 +200,16 @@ public class DynamicDataSourceManager {
         FileOutputStream fos = null;
         String defaultDataSourceFilename = determineDefaultDataSourceFilename();
         try {
-            fis = new FileInputStream(new File(defaultDataSourceFilename));
+            File datasourceFile = new File(defaultDataSourceFilename);
+            if (!datasourceFile.exists()) {
+                new File(FILE_PATH).mkdirs();
+                datasourceFile.createNewFile();
+            }
+            fis = new FileInputStream(datasourceFile);
             properties.load(fis);
             properties.setProperty(CURRENT_PROFILE_KEY, profileName);
 
-            fos = new FileOutputStream(new File(defaultDataSourceFilename));
+            fos = new FileOutputStream(datasourceFile);
             properties.store(fos, "");
             HostManager.setCurrentProfile(profileName);
         } catch (Exception e) {

@@ -9,51 +9,61 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.springframework.context.i18n.LocaleContextHolder;
 
+/**
+ * Utility methods to deal with Time Zone
+ * 
+ */
 public class TimeZoneUtil {
 
     private static String serverTimeZone;
+    private static String serverTimeZoneId;
     public static ListOrderedMap list;
 
     private TimeZoneUtil() {
     }
-
+    
+    /**
+     * Retrieve a list of Time Zone
+     * @return a map of time zone id and its description
+     */
     public static Map<String, String> getList() {
         if (list == null) {
             list = new ListOrderedMap();
-
-            list.put("-12", "(GMT -12:00) Eniwetok, Kwajalein");
-            list.put("-11", "(GMT -11:00) Midway Island, Samoa");
-            list.put("-10", "(GMT -10:00) Hawaii");
-            list.put("-9", "(GMT -09:00) Alaska");
-            list.put("-8", "(GMT -08:00) Pacific Time (US & Canada), Tijuana");
-            list.put("-7", "(GMT -07:00) Mountain Time (US & Canada), Arizona");
-            list.put("-6", "(GMT -06:00) Central Time (US & Canada), Mexico City");
-            list.put("-5", "(GMT -05:00) Eastern Time (US & Canada), Bogota, Lima, Quito");
-            list.put("-4", "(GMT -04:00) Atlantic Time (Canada), Caracas, La Paz");
-            list.put("-3.5", "(GMT -03:30) Newfoundland");
-            list.put("-3", "(GMT -03:00) Brassila, Buenos Aires, Georgetown, Falkland Is");
-            list.put("-2", "(GMT -02:00) Mid-Atlantic, Ascension Is., St. Helena");
-            list.put("-1", "(GMT -01:00) Azores, Cape Verde Islands");
-            list.put("0", "(GMT  00:00) Casablanca, Dublin, Edinburgh, London, Lisbon, Monrovia");
-            list.put("1", "(GMT +01:00) Amsterdam, Berlin, Brussels, Madrid, Paris, Rome");
-            list.put("2", "(GMT +02:00) Cairo, Helsinki, Kaliningrad, South Africa");
-            list.put("3", "(GMT +03:00) Baghdad, Riyadh, Moscow, Nairobi");
-            list.put("3.5", "(GMT +03:30) Tehran");
-            list.put("4", "(GMT +04:00) Abu Dhabi, Baku, Muscat, Tbilisi");
-            list.put("4.5", "(GMT +04:30) Kabul");
-            list.put("5", "(GMT +05:00) Ekaterinburg, Islamabad, Karachi, Tashkent");
-            list.put("5.5", "(GMT +05:30) Bombay, Calcutta, Madras, New Delhi");
-            list.put("5.75", "(GMT +05:45) Katmandu");
-            list.put("6", "(GMT +06:00) Almaty, Colombo, Dhaka, Novosibirsk");
-            list.put("6.5", "(GMT +06:30) Rangoon");
-            list.put("7", "(GMT +07:00) Bangkok, Hanoi, Jakarta");
-            list.put("8", "(GMT +08:00) Beijing, Hong Kong, Perth, Kuala Lumpur, Singapore, Taipei");
-            list.put("9", "(GMT +09:00) Osaka, Sapporo, Seoul, Tokyo, Yakutsk");
-            list.put("9.5", "(GMT +09:30) Adelaide, Darwin");
-            list.put("10", "(GMT +10:00) Canberra, Guam, Melbourne, Sydney, Vladivostok");
-            list.put("11", "(GMT +11:00) Magadan, New Caledonia, Solomon Islands");
-            list.put("12", "(GMT +12:00) Auckland, Wellington, Fiji, Marshall Island");
+            list.put("", "");
+            list.put("-12", ResourceBundleUtil.getMessage("timezone.gmt.-12"));
+            list.put("-11", ResourceBundleUtil.getMessage("timezone.gmt.-11"));
+            list.put("-10", ResourceBundleUtil.getMessage("timezone.gmt.-10"));
+            list.put("-9", ResourceBundleUtil.getMessage("timezone.gmt.-9"));
+            list.put("-8", ResourceBundleUtil.getMessage("timezone.gmt.-8"));
+            list.put("-7", ResourceBundleUtil.getMessage("timezone.gmt.-7"));
+            list.put("-6", ResourceBundleUtil.getMessage("timezone.gmt.-6"));
+            list.put("-5", ResourceBundleUtil.getMessage("timezone.gmt.-5"));
+            list.put("-4", ResourceBundleUtil.getMessage("timezone.gmt.-4"));
+            list.put("-3.5", ResourceBundleUtil.getMessage("timezone.gmt.-3.5"));
+            list.put("-3", ResourceBundleUtil.getMessage("timezone.gmt.-3"));
+            list.put("-2", ResourceBundleUtil.getMessage("timezone.gmt.-2"));
+            list.put("-1", ResourceBundleUtil.getMessage("timezone.gmt.-1"));
+            list.put("0", ResourceBundleUtil.getMessage("timezone.gmt.0"));
+            list.put("1", ResourceBundleUtil.getMessage("timezone.gmt.1"));
+            list.put("2", ResourceBundleUtil.getMessage("timezone.gmt.2"));
+            list.put("3", ResourceBundleUtil.getMessage("timezone.gmt.3"));
+            list.put("3.5", ResourceBundleUtil.getMessage("timezone.gmt.3.5"));
+            list.put("4", ResourceBundleUtil.getMessage("timezone.gmt.4"));
+            list.put("4.5", ResourceBundleUtil.getMessage("timezone.gmt.4.5"));
+            list.put("5", ResourceBundleUtil.getMessage("timezone.gmt.5"));
+            list.put("5.5", ResourceBundleUtil.getMessage("timezone.gmt.5.5"));
+            list.put("5.75", ResourceBundleUtil.getMessage("timezone.gmt.5.75"));
+            list.put("6", ResourceBundleUtil.getMessage("timezone.gmt.6"));
+            list.put("6.5", ResourceBundleUtil.getMessage("timezone.gmt.6.5"));
+            list.put("7", ResourceBundleUtil.getMessage("timezone.gmt.7"));
+            list.put("8", ResourceBundleUtil.getMessage("timezone.gmt.8"));
+            list.put("9", ResourceBundleUtil.getMessage("timezone.gmt.9"));
+            list.put("9.5", ResourceBundleUtil.getMessage("timezone.gmt.9.5"));
+            list.put("10", ResourceBundleUtil.getMessage("timezone.gmt.10"));
+            list.put("11", ResourceBundleUtil.getMessage("timezone.gmt.11"));
+            list.put("12", ResourceBundleUtil.getMessage("timezone.gmt.12"));
             
             String[] timezones = TimeZone.getAvailableIDs();
             List<String> sortedKeys=new ArrayList<String>(Arrays.asList(timezones));
@@ -77,6 +87,10 @@ public class TimeZoneUtil {
         return list;
     }
 
+    /**
+     * Retrieve Server Time Zone in GMT format
+     * @return GMT Time Zone 
+     */
     public static String getServerTimeZone() {
         if (serverTimeZone == null) {
             serverTimeZone = Integer.toString(TimeZone.getDefault().getRawOffset() / (60 * 60 * 1000));
@@ -84,19 +98,55 @@ public class TimeZoneUtil {
 
         return serverTimeZone;
     }
-
-    public static String convertToTimeZone(Date time, String gmt, String format) {
-
-        if (format == null || format.trim().length() == 0) {
-            format = "dd-MM-yyyy hh:mm aa";
+    
+    /**
+     * Retrieve Server Time Zone ID 
+     * @return 
+     */
+    public static String getServerTimeZoneID() {
+        if (serverTimeZoneId == null) {
+            serverTimeZoneId = TimeZone.getDefault().getID();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 
-        dateFormat.setTimeZone(TimeZone.getTimeZone(getTimeZoneByGMT(gmt)));
+        return serverTimeZoneId;
+    }
 
+    /**
+     * Convert Date to String based on GMT/Timezone ID and Date Format
+     * @param time Datetime to convert
+     * @param gmt GMT ("-12" to "12") or Timezone ID, NULL to use System/User selected timezone
+     * @param format Date Format
+     * @return Date in converted String 
+     */
+    public static String convertToTimeZone(Date time, String gmt, String format) {
+        if (time == null) {
+            return "";
+        }
+        
+        if (format == null || format.trim().length() == 0) {
+            format = ResourceBundleUtil.getMessage("console.setting.general.default.systemDateFormat");
+        }
+        SimpleDateFormat dateFormat;
+        try {
+            dateFormat = new SimpleDateFormat(format, LocaleContextHolder.getLocale());
+        } catch (Exception e) {
+            dateFormat = new SimpleDateFormat(ResourceBundleUtil.getMessage("console.setting.general.default.systemDateFormat"), LocaleContextHolder.getLocale());
+        }
+        
+        if (gmt != null && !gmt.isEmpty()) {
+            dateFormat.setTimeZone(TimeZone.getTimeZone(getTimeZoneByGMT(gmt)));
+        } else {
+            dateFormat.setTimeZone(LocaleContextHolder.getTimeZone());
+        }
+        
         return dateFormat.format(time);
     }
 
+    /**
+     * Get Time Zone ID by GMT 
+     * @param gmt GMT ("-12" to "12")
+     * @return Time Zone ID
+     */
     public static String getTimeZoneByGMT(String gmt) {
         if (gmt != null && gmt.trim().length() > 0) {
 

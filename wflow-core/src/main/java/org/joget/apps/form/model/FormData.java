@@ -19,6 +19,8 @@ public class FormData {
     private String activityId;
     protected Map<FormLoadBinder, FormRowSet> loadBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
     protected Map<FormLoadBinder, FormRowSet> optionsBinderMap = new HashMap<FormLoadBinder, FormRowSet>();
+    protected Map<String, String> previousErrorMap = new ListOrderedMap();
+    protected Map<String, String> fileErrorMap = new ListOrderedMap();
     protected Map<String, String> errorMap = new ListOrderedMap();
     protected Map<String, String[]> requestParamMap = new HashMap<String, String[]>();
     protected Map<FormStoreBinder, FormRowSet> binderRowSetMap = new ListOrderedMap();
@@ -55,6 +57,10 @@ public class FormData {
 
     public void setActivityId(String activityId) {
         this.activityId = activityId;
+    }
+
+    public Map<FormLoadBinder, FormRowSet> getLoadBinderMap() {
+        return loadBinderMap;
     }
 
     /**
@@ -102,6 +108,25 @@ public class FormData {
         }
         return value;
     }
+    
+    /**
+     * Retrieves the value of a property from a store binder for an element.
+     * @param element
+     * @param property
+     * @return
+     */
+    public String getStoreBinderDataProperty(Element element) {
+        String value = null;
+        if (element != null) {
+            FormStoreBinder binder = FormUtil.findStoreBinder(element);
+            FormRowSet rowSet = getStoreBinderData(binder);
+            if (rowSet != null && !rowSet.isEmpty()) {
+                FormRow firstRow = rowSet.get(0);
+                value = firstRow.getProperty(element.getPropertyString(FormUtil.PROPERTY_ID));
+            }
+        }
+        return value;
+    }
 
     /**
      * Adds data from an options binder
@@ -130,6 +155,18 @@ public class FormData {
         }
         return rowSet;
     }
+    
+    /**
+     * Adds an error from previous submission
+     * @param id
+     * @param error
+     */
+    public void addPreviousFormError(String id, String error) {
+        if (previousErrorMap.containsKey(id)) {
+            error = previousErrorMap.get(id) + "<br/>" + error;
+        }
+        previousErrorMap.put(id, error);
+    }
 
     /**
      * Adds an error
@@ -142,6 +179,26 @@ public class FormData {
         }
         errorMap.put(id, error);
     }
+    
+    /**
+     * Adds an error retrieved from file upload
+     * @param json
+     */
+    public void addFileError(String id, String error) {
+        if (fileErrorMap.containsKey(id)) {
+            error = fileErrorMap.get(id) + "<br/>" + error;
+        }
+        fileErrorMap.put(id, error);
+    }
+    
+    /**
+     * Returns the previous submission error for a specific id.
+     * @param id
+     * @return null if there is no error.
+     */
+    public String getPreviousFormError(String id) {
+        return previousErrorMap.get(id);
+    }
 
     /**
      * Returns the error for a specific id.
@@ -151,6 +208,23 @@ public class FormData {
     public String getFormError(String id) {
         return errorMap.get(id);
     }
+    
+    /**
+     * Returns the file upload error for a specific id.
+     * @param id
+     * @return null if there is no error.
+     */
+    public String getFileError(String id) {
+        return fileErrorMap.get(id);
+    }
+    
+    /**
+     * Retrieves previous submission errors for a form
+     * @return
+     */
+    public Map<String, String> getPreviousFormErrors() {
+        return previousErrorMap;
+    }
 
     /**
      * Retrieves errors for a form
@@ -159,12 +233,22 @@ public class FormData {
     public Map<String, String> getFormErrors() {
         return errorMap;
     }
+    
+    /**
+     * Retrieves file upload errors for a form
+     * @return
+     */
+    public Map<String, String> getFileErrors() {
+        return fileErrorMap;
+    }
 
     /**
      * Clears all errors in a form
      */
     public void clearFormErrors() {
+        previousErrorMap.clear();
         errorMap.clear();
+        fileErrorMap.clear();
     }
 
     /**

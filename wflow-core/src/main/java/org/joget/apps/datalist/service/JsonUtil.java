@@ -1,7 +1,13 @@
 package org.joget.apps.datalist.service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.displaytag.util.LookupUtil;
+import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,13 +19,14 @@ import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
 
 /**
- * Utility class containing methods to convert to/from JSON
+ * Utility class containing methods to create datalist from JSON
  */
 public class JsonUtil {
     
@@ -28,6 +35,7 @@ public class JsonUtil {
     public static final String PROPERTY_LABEL = "label";
     public static final String PROPERTY_DESC = "description";
     public static final String PROPERTY_PAGE_SIZE = "pageSize";
+    public static final String PROPERTY_HIDE_PAGE_SIZE = "hidePageSize";
     public static final String PROPERTY_CLASS_NAME = "className";
     public static final String PROPERTY_PROPERTIES = "properties";
     public static final String PROPERTY_ORDER = "order";
@@ -36,6 +44,8 @@ public class JsonUtil {
     public static final String PROPERTY_COLUMNS = "columns";
     public static final String PROPERTY_SORTABLE = "sortable";
     public static final String PROPERTY_HIDDEN = "hidden";
+    public static final String PROPERTY_WIDTH = "width";
+    public static final String PROPERTY_STYLE = "style";
     public static final String PROPERTY_ROW_ACTIONS = "rowActions";
     public static final String PROPERTY_ACTION = "action";
     public static final String PROPERTY_ACTIONS = "actions";
@@ -46,7 +56,7 @@ public class JsonUtil {
     public static final String PROPERTY_RENDER_HTML = "renderHtml";
 
     /**
-     * Convert from JSON string into an object. Specifically to support data list model classes.
+     * Converts from JSON string into an object. Specifically to support data list model classes.
      * @param <T>
      * @param json
      * @param classOfT
@@ -71,8 +81,8 @@ public class JsonUtil {
     }
 
     /**
-     * Convert from an object into JSON. Specifically to support data list model classes.
-     * @param obj
+     * Converts from JSON string into an object. Specifically to support data list model classes.
+     * @param json
      * @return
      */
     public static Object parseElementFromJson(String json) {
@@ -90,6 +100,12 @@ public class JsonUtil {
         return null;
     }
     
+    /**
+     * Used to creates Datalist object from JSON Object
+     * @param obj
+     * @return
+     * @throws Exception 
+     */
     public static Object parseElementFromJsonObject(JSONObject obj) throws Exception {
         DataList object = (DataList) new DataList();
         if (object != null) {
@@ -104,11 +120,10 @@ public class JsonUtil {
                 object.setDescription(obj.getString(PROPERTY_DESC));
             }
             if (obj.has(PROPERTY_PAGE_SIZE)) {
-                if (obj.getInt(PROPERTY_PAGE_SIZE) == 0) {
-                    object.setDefaultPageSize(DataList.DEFAULT_PAGE_SIZE);
-                } else {
-                    object.setDefaultPageSize(obj.getInt(PROPERTY_PAGE_SIZE));
-                }
+                object.setDefaultPageSize(obj.getInt(PROPERTY_PAGE_SIZE));
+            }
+            if (obj.has(PROPERTY_HIDE_PAGE_SIZE) && !obj.isNull(PROPERTY_HIDE_PAGE_SIZE)) {
+                object.setShowPageSizeSelector(!obj.getString(PROPERTY_HIDE_PAGE_SIZE).equals("true"));
             }
             if (obj.has(PROPERTY_ORDER)) {
                 object.setDefaultOrder(obj.getString(PROPERTY_ORDER));
@@ -146,6 +161,14 @@ public class JsonUtil {
         return object;
     }
     
+    /**
+     * Used to retrieves datalist filters from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static Collection<DataListFilter> parseFiltersFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListFilter> property = new ArrayList<DataListFilter>();
         
@@ -176,6 +199,14 @@ public class JsonUtil {
         return property;
     }
     
+    /**
+     * Used to retrieves datalist row actions from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static Collection<DataListAction> parseRowActionsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListAction> property = new ArrayList<DataListAction>();
         
@@ -188,7 +219,7 @@ public class JsonUtil {
                     String className = action.getString(PROPERTY_CLASS_NAME);
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
-                        dataListAction.setProperties(PropertyUtil.getPropertiesValueFromJson(action.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                        dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
                         dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
                         property.add(dataListAction);
                     }
@@ -198,6 +229,14 @@ public class JsonUtil {
         return property;
     }
     
+    /**
+     * Used to retrieves datalist actions from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static Collection<DataListAction> parseActionsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListAction> property = new ArrayList<DataListAction>();
         
@@ -210,7 +249,7 @@ public class JsonUtil {
                     String className = action.getString(PROPERTY_CLASS_NAME);
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
-                        dataListAction.setProperties(PropertyUtil.getPropertiesValueFromJson(action.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                        dataListAction.setProperties(PropertyUtil.getProperties(action.getJSONObject(PROPERTY_PROPERTIES)));
                         dataListAction.setProperty(PROPERTY_ID, action.getString(PROPERTY_ID));
                         property.add(dataListAction);
                     }
@@ -220,6 +259,14 @@ public class JsonUtil {
         return property;
     }
     
+    /**
+     * Used to retrieves datalist binder from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static DataListBinder parseBinderFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         if (!obj.isNull(PROPERTY_BINDER)) {
             JSONObject binderObj = obj.getJSONObject(PROPERTY_BINDER);
@@ -227,7 +274,7 @@ public class JsonUtil {
                 String className = binderObj.getString(PROPERTY_CLASS_NAME);
                 DataListBinder dataListBinder = (DataListBinder) loadPlugin(className);
                 if (dataListBinder != null) {
-                    dataListBinder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderObj.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                    dataListBinder.setProperties(PropertyUtil.getProperties(binderObj.getJSONObject(PROPERTY_PROPERTIES)));
                     return dataListBinder;
                 }
             }
@@ -235,6 +282,14 @@ public class JsonUtil {
         return null;
     }
     
+    /**
+     * Used to retrieves datalist action from JSON Object 
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static DataListAction parseActionFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         try {
             if (!obj.isNull(PROPERTY_ACTION) && !"".equals(obj.getString(PROPERTY_ACTION))) {
@@ -243,7 +298,7 @@ public class JsonUtil {
                     String className = actionObj.getString(PROPERTY_CLASS_NAME);
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
-                        dataListAction.setProperties(PropertyUtil.getPropertiesValueFromJson(actionObj.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                        dataListAction.setProperties(PropertyUtil.getProperties(actionObj.getJSONObject(PROPERTY_PROPERTIES)));
                         return dataListAction;
                     }
                 }
@@ -254,6 +309,14 @@ public class JsonUtil {
         return null;
     }
     
+    /**
+     * Used to retrieves datalist formatter from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static DataListColumnFormat parseFormatterFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         try {
             if (!obj.isNull(PROPERTY_FORMAT) && !"".equals(obj.getString(PROPERTY_FORMAT))) {
@@ -262,7 +325,7 @@ public class JsonUtil {
                     String className = formatterObj.getString(PROPERTY_CLASS_NAME);
                     DataListColumnFormat dataListColumnFormat = (DataListColumnFormat) loadPlugin(className);
                     if (dataListColumnFormat != null) {
-                        dataListColumnFormat.setProperties(PropertyUtil.getPropertiesValueFromJson(formatterObj.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                        dataListColumnFormat.setProperties(PropertyUtil.getProperties(formatterObj.getJSONObject(PROPERTY_PROPERTIES)));
                         return dataListColumnFormat;
                     }
                 }
@@ -273,6 +336,14 @@ public class JsonUtil {
         return null;
     }
     
+    /**
+     * Used to retrieves datalist column from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static Collection<DataListColumn> parseColumnsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListColumn> property = new ArrayList<DataListColumn>();
         
@@ -295,6 +366,12 @@ public class JsonUtil {
                 if (column.has(PROPERTY_HIDDEN) && !column.isNull(PROPERTY_HIDDEN)) {
                     dataListColumn.setHidden(column.getBoolean(PROPERTY_HIDDEN));
                 }
+                if (column.has(PROPERTY_WIDTH) && !column.isNull(PROPERTY_WIDTH)) {
+                    dataListColumn.setWidth(column.getString(PROPERTY_WIDTH));
+                }
+                if (column.has(PROPERTY_STYLE) && !column.isNull(PROPERTY_STYLE)) {
+                    dataListColumn.setStyle(column.getString(PROPERTY_STYLE));
+                }
                 if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
                     DataListAction action = parseActionFromJsonObject(column);
                     dataListColumn.setAction(action);
@@ -306,15 +383,26 @@ public class JsonUtil {
                     
                     dataListColumn.setFormats(formatCollection);
                 }
-                if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML)) {
+                if (column.has(PROPERTY_RENDER_HTML) && !column.isNull(PROPERTY_RENDER_HTML) && !column.getString(PROPERTY_RENDER_HTML).isEmpty()) {
                     dataListColumn.setRenderHtml(column.getBoolean(PROPERTY_RENDER_HTML));
                 }
+                
+                dataListColumn.setProperties(PropertyUtil.getProperties(column));
+                
                 property.add(dataListColumn);
             }
         }
         return property;
     }
     
+    /**
+     * Used to retrieves datalist filter type from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static DataListFilterType parseFilterTypeFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
         if (!obj.isNull(PROPERTY_FILTER_TYPE)) {
             JSONObject filterTypeObj = obj.getJSONObject(PROPERTY_FILTER_TYPE);
@@ -322,12 +410,126 @@ public class JsonUtil {
                 String className = filterTypeObj.getString(PROPERTY_CLASS_NAME);
                 DataListFilterType dataListFilterType = (DataListFilterType) loadPlugin(className);
                 if (dataListFilterType != null) {
-                    dataListFilterType.setProperties(PropertyUtil.getPropertiesValueFromJson(filterTypeObj.getJSONObject(PROPERTY_PROPERTIES).toString()));
+                    dataListFilterType.setProperties(PropertyUtil.getProperties(filterTypeObj.getJSONObject(PROPERTY_PROPERTIES)));
                     return dataListFilterType;                    
                 }
             }
         }
         return null;
+    }
+    
+    /**
+     * Used to generate a datalist definition JSON
+     * @param listId
+     * @param datalistDef
+     * @return 
+     */
+    public static String generateDefaultList(String listId, DatalistDefinition datalistDef) {
+        return generateDefaultList(listId, datalistDef, null);
+    }
+    
+    /**
+     * Used to generate a datalist definition JSON based on another datalist definition
+     * @param listId
+     * @param datalistDef
+     * @param copyDatalistDef
+     * @return 
+     */
+    public static String generateDefaultList(String listId, DatalistDefinition datalistDef, DatalistDefinition copyDatalistDef) {
+        String name = "";
+        String desc = "";
+        String json = "";
+
+        if (datalistDef != null) {
+            name = datalistDef.getName();
+            desc = datalistDef.getDescription();
+        }
+        
+        if (copyDatalistDef != null) {
+            String copyJson = copyDatalistDef.getJson();
+            try {
+                JSONObject obj = new JSONObject(copyJson);
+                obj.put("id", listId);
+                obj.put("name", name);
+                obj.put("description", desc);
+                json = obj.toString();
+            } catch (Exception e) {
+            }
+        }
+
+        if (json.isEmpty()) {
+            listId = StringEscapeUtils.escapeJavaScript(listId);
+            name = StringEscapeUtils.escapeJavaScript(name);
+            desc = StringEscapeUtils.escapeJavaScript(desc);
+            json = "{\"id\":\"" + listId + "\",\"name\":\"" + name + "\",\"pageSize\":\"0\",\"order\":\"\",\"orderBy\":\"\",\"description\":\"" + desc + "\",\"actions\":[],\"rowActions\":[],\"filters\":[],\"binder\":{\"name\":\"\",\"className\":\"\",\"properties\":{}},\"columns\":[]}";
+        }
+
+        return json;
+    }
+    
+    public static String buildMobileActionLink(Object actionObject, Object row, Object menuId) {
+        String link = "";
+        if (actionObject != null && actionObject instanceof DataListAction && row != null) {
+            DataListAction action = (DataListAction) actionObject;
+            String href = action.getHref();
+            String hrefParam = (action.getHrefParam() != null && action.getHrefParam().trim().length() > 0) ? action.getHrefParam() : "";
+            String hrefColumn = (action.getHrefColumn() != null && action.getHrefColumn().trim().length() > 0) ? action.getHrefColumn() : "";
+            link = href;
+            
+            if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
+                String[] params = hrefParam.split(";");
+                String[] columns = hrefColumn.split(";");
+                
+                for (int i = 0; i < columns.length; i++ ) {
+                    if (columns[i] != null && !columns[i].isEmpty()) {
+                        boolean isValid = false;
+                        if (params.length > i && params[i] != null && !params[i].isEmpty()) {
+                            if (link.contains("?")) {
+                                link += "&";
+                            } else {
+                                link += "?";
+                            }
+                            link += StringEscapeUtils.escapeHtml(params[i]);
+                            link += "=";
+                            isValid = true;
+                        } if (!link.contains("?")) {
+                            if (!link.endsWith("/")) {
+                                link += "/";
+                            }
+                            isValid = true;
+                        }
+                        
+                        if (isValid) {
+                            Object paramValue = "";
+                            try {
+                                paramValue = LookupUtil.getBeanProperty(row, columns[i]);
+                                
+                                //handle for lowercase propertyName
+                                if (paramValue == null) {
+                                    paramValue = LookupUtil.getBeanProperty(row, columns[i].toLowerCase());
+                                }
+                                if (paramValue != null && paramValue instanceof Date) {
+                                    paramValue = TimeZoneUtil.convertToTimeZone((Date) paramValue, null, AppUtil.getAppDateFormat());
+                                }
+                            } catch (Exception e) { }
+                            
+                            if (paramValue == null) {
+                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
+                            }
+                            try {
+                                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
+                            } catch (UnsupportedEncodingException ex) {
+                                link += paramValue;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (link.startsWith("?") && menuId != null) {
+            link = menuId + link;
+        }
+        return link;
     }
     
     private static Plugin loadPlugin(String className) {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="FormDefinition" name="org.joget.apps.app.model.FormDefinition" table="app_form">
         <composite-id>
@@ -12,6 +12,7 @@
         <property name="dateModified" type="timestamp"/>
         <property name="tableName" type="string"/>
         <property name="json" type="text"/>
+        <property name="description" type="text"/>
         <many-to-one entity-name="AppDefinition" insert="false" name="appDefinition" update="false">
             <column name="appId"/>
             <column name="appVersion"/>

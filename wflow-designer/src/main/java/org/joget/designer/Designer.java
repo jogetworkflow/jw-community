@@ -18,6 +18,8 @@ public class Designer {
     public static String CONTEXTPATH = "";
     public static String PORT = "";
     public static String SESSION = "";
+    public static String TOKEN_NAME = "";
+    public static String TOKEN_VALUE = "";
 
     /**
      * Checks to see if a package is defined and fixed (non-changeable)
@@ -54,6 +56,10 @@ public class Designer {
                 CONTEXTPATH = args[i].substring("context:".length());
             } else if (args[i].startsWith("session:")) {
                 SESSION = args[i].substring("session:".length());
+            } else if (args[i].startsWith("tokenName:")) {
+                TOKEN_NAME = args[i].substring("tokenName:".length());
+            } else if (args[i].startsWith("tokenValue:")) {
+                TOKEN_VALUE = args[i].substring("tokenValue:".length());
             } else if (args[i].startsWith("locale:")) {
                 argument[1] = args[i].substring("locale:".length());
             } else {

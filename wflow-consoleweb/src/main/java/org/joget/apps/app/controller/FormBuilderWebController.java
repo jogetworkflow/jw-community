@@ -4,8 +4,12 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +19,10 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.lib.FormRowDataListBinder;
+import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.HiddenField;
 import org.joget.apps.form.lib.SubmitButton;
 import org.joget.apps.form.model.Column;
@@ -29,6 +36,7 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -54,6 +62,8 @@ public class FormBuilderWebController {
     PluginManager pluginManager;
     @Autowired
     FormDefinitionDao formDefinitionDao;
+    @Autowired
+    FormDataDao formDataDao;
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
     public String formBuilder(ModelMap model, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
@@ -107,18 +117,13 @@ public class FormBuilderWebController {
                 }
             } else {
                 // default empty form
-                String tableName = formDef.getTableName();
-                if (tableName == null || tableName.isEmpty()) {
-                    tableName = formDef.getId();
-                }
-                String escapedFormName = StringEscapeUtils.escapeJavaScript(formDef.getName());
-                String defaultJson = "{className: 'org.joget.apps.form.model.Form',  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"" + escapedFormName + "\", \"tableName\":\"" + tableName + "\", \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" } }}";
+                String defaultJson = FormUtil.generateDefaultForm(formId, formDef);
                 String formHtml = formService.previewElement(defaultJson);
                 model.addAttribute("elementHtml", formHtml);
             }
         } else {
             // default empty form
-            String formJson = "{className: 'org.joget.apps.form.model.Form',  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"\" \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" } }}";
+            String formJson = FormUtil.generateDefaultForm(formId, null);
             String formHtml = formService.previewElement(formJson);
             model.addAttribute("elementHtml", formHtml);
         }
@@ -209,7 +214,7 @@ public class FormBuilderWebController {
             formData.setPrimaryKeyValue(id);
         }
         Form form = formService.loadFormFromJson(json, formData);
-
+        
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId  = "";
         String appVersion = "";
@@ -217,17 +222,19 @@ public class FormBuilderWebController {
             appId = appDef.getAppId();
             appVersion = appDef.getVersion().toString();
         }
-        String nonce = request.getParameter("_nonce");	
+        String nonce = request.getParameter("_nonce");
         if (form == null || !SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, form.getPropertyString("id"), nonce})) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
         
+
         if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
             callbackSetting = "{}";
         }
 
-        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel));
+        String csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
+        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
 
         if(form != null){
             //if id field not exist, automatically add an id hidden field
@@ -294,7 +301,7 @@ public class FormBuilderWebController {
                     for (Object o : row.keySet()) {
                         jsonResult.accumulate(o.toString(), row.get(o));
                     }
-                    Map<String, String> tempFilePathMap = row.getTempFilePathMap();
+                    Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
                     if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
                         jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
                     }
@@ -344,6 +351,21 @@ public class FormBuilderWebController {
             }
         }
         
+        jsonArray.write(writer);
+    }
+    
+    @RequestMapping("/json/app/(*:appId)/(~:appVersion)/form/(*:formId)/columns")
+    public void formAjaxColumns(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId) throws JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        JSONArray jsonArray = new JSONArray();
+        try {
+            Collection<Map<String, String>> columns = FormUtil.getFormColumns(appDef, formId);
+            for (Map c : columns) {        
+                jsonArray.put(c);
+            }
+        } catch (Exception e) {
+        }
+
         jsonArray.write(writer);
     }
 }

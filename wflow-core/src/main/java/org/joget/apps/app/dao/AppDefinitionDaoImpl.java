@@ -1,11 +1,10 @@
 package org.joget.apps.app.dao;
 
 import java.util.Collection;
-import org.hibernate.HibernateException;
+import java.util.Iterator;
+import net.sf.ehcache.Cache;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * DAO to load/store AppDefinition objects
@@ -13,6 +12,19 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefinition> implements AppDefinitionDao {
 
     public static final String ENTITY_NAME = "AppDefinition";
+    private Cache cache;
+
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    public void clearCache(AppDefinition obj) {
+        cache.removeAll();
+    }
 
     @Override
     public String getEntityName() {
@@ -46,6 +58,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
             super.saveOrUpdate(obj);
         }
+        clearCache(obj);
 
         // delete
         super.delete(obj);
@@ -53,49 +66,34 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
     public Long getPublishedVersion(final String appId) {
         // execute query and return result
-        Long result = (Long) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?";
+        Query q = findSession().createQuery(query);
 
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?";
-                        Query q = session.createQuery(query);
+        q.setParameter(0, appId);
 
-                        q.setParameter(0, appId);
-
-                        return ((Long) q.iterate().next()).longValue();
-                    }
-                });
-
-        return result;
+        Iterator it = q.iterate();
+        return (it.hasNext()) ? ((Long)it.next()).longValue() : null;
     }
 
     public Collection<AppDefinition> findPublishedApps(final String sort, final Boolean desc, final Integer start, final Integer rows) {
-        Collection<AppDefinition> resultList = (Collection) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT e FROM " + getEntityName() + " e WHERE 1=1 AND e.published = true";
 
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT e FROM " + getEntityName() + " e WHERE 1=1 AND e.published = true";
+        if (sort != null && !sort.equals("")) {
+            query += " ORDER BY " + sort;
 
-                        if (sort != null && !sort.equals("")) {
-                            query += " ORDER BY " + sort;
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = findSession().createQuery(query);
 
-                            if (desc) {
-                                query += " DESC";
-                            }
-                        }
-                        Query q = session.createQuery(query);
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
 
-                        int s = (start == null) ? 0 : start;
-                        q.setFirstResult(s);
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
 
-                        if (rows != null && rows > 0) {
-                            q.setMaxResults(rows);
-                        }
-
-                        return q.list();
-                    }
-                });
-
-        return resultList;
+        return q.list();
     }
 }

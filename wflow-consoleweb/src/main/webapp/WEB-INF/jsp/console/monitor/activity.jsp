@@ -3,7 +3,7 @@
 
 <div id="nav">
     <div id="nav-title">
-
+        <p><i class="icon-dashboard"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -31,14 +31,14 @@
     </div>
     <div id="main-body">
         <dl>
+            <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
+            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.id"/></dt>
             <dd><c:out value="${activity.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.definitionId"/></dt>
             <dd><c:out value="${activity.activityDefId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.name"/></dt>
             <dd><c:out value="${activity.name}"/>&nbsp;</dd>
-            <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
-            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.state"/></dt>
             <dd><c:out value="${activity.state}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.serviceLevelMonitor"/></dt>
@@ -69,24 +69,29 @@
                 &nbsp;</dd>
             </c:if>
 
-
-            <c:if test="${trackWflowActivity.status != 'Pending'}">
-                <dt><fmt:message key="console.app.activity.common.label.acceptedUser"/></dt>
-                <dd><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/>&nbsp;</dd>
-            </c:if>
+            <c:choose>
+                <c:when test="${trackWflowActivity.type == 'subflow'}">
+                    <dt><fmt:message key="console.app.activity.common.label.subflowId"/></dt>
+                    <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${trackWflowActivity.nameOfAcceptedUser}"><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/></a>&nbsp;</dd>
+                </c:when>
+                <c:when test="${trackWflowActivity.status != 'Pending'}">
+                    <dt><fmt:message key="console.app.activity.common.label.acceptedUser"/></dt>
+                    <dd><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/>&nbsp;</dd>
+                </c:when>
+            </c:choose>
 
             <dt><fmt:message key="console.app.activity.common.label.priority"/></dt>
             <dd><c:out value="${trackWflowActivity.priority}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.createdTime"/></dt>
-            <dd><c:out value="${trackWflowActivity.createdTime}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowActivity.createdTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dateLimit"/></dt>
             <dd><c:out value="${trackWflowActivity.limit}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.dueDate"/></dt>
-            <dd><c:out value="${trackWflowActivity.due}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowActivity.due}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.delay"/></dt>
             <dd><c:out value="${trackWflowActivity.delay}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.finishTime"/></dt>
-            <dd><c:out value="${trackWflowActivity.finishTime}"/>&nbsp;</dd>
+            <dd><ui:dateToString date="${trackWflowActivity.finishTime}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.timeConsumingFromDateCreated"/></dt>
             <dd><c:out value="${trackWflowActivity.timeConsumingFromDateCreated}"/>&nbsp;</dd>
         </dl>

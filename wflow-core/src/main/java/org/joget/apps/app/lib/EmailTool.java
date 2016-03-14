@@ -1,13 +1,17 @@
 package org.joget.apps.app.lib;
 
 import java.io.File;
-import java.lang.String;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.activation.FileDataSource;
 import javax.mail.internet.MimeUtility;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -20,16 +24,21 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONObject;
 
-public class EmailTool extends DefaultApplicationPlugin {
+public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupport {
 
     public String getName() {
         return "Email Tool";
@@ -40,7 +49,7 @@ public class EmailTool extends DefaultApplicationPlugin {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public Object execute(Map properties) {
@@ -55,6 +64,7 @@ public class EmailTool extends DefaultApplicationPlugin {
 
         final String from = (String) properties.get("from");
         final String cc = (String) properties.get("cc");
+        final String bcc = (String) properties.get("bcc");
         String toParticipantId = (String) properties.get("toParticipantId");
         String toSpecific = (String) properties.get("toSpecific");
 
@@ -98,6 +108,9 @@ public class EmailTool extends DefaultApplicationPlugin {
                 if(security.equalsIgnoreCase("SSL") ){
                     email.setSSLOnConnect(true);
                     email.setSSLCheckServerIdentity(true);
+                    if (smtpPort != null && smtpPort.length() != 0) {
+                        email.setSslSmtpPort(smtpPort);
+                    }
                 }else if(security.equalsIgnoreCase("TLS")){
                     email.setStartTLSEnabled(true);
                     email.setSSLCheckServerIdentity(true);
@@ -106,12 +119,18 @@ public class EmailTool extends DefaultApplicationPlugin {
             if (cc != null && cc.length() != 0) {
                 Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);
                 for (String address : ccs) {
-                    email.addCc(address);
+                    email.addCc(StringUtil.encodeEmail(address));
+                }
+            }
+            if (bcc != null && bcc.length() != 0) {
+                Collection<String> ccs = AppUtil.getEmailList(null, bcc, wfAssignment, appDef);
+                for (String address : ccs) {
+                    email.addBcc(StringUtil.encodeEmail(address));
                 }
             }
 
             final String fromStr = WorkflowUtil.processVariable(from, formDataTable, wfAssignment);
-            email.setFrom(fromStr);
+            email.setFrom(StringUtil.encodeEmail(fromStr));
             email.setSubject(emailSubject);
             email.setCharset("UTF-8");
             
@@ -125,7 +144,7 @@ public class EmailTool extends DefaultApplicationPlugin {
             if ((toParticipantId != null && toParticipantId.trim().length() != 0) || (toSpecific != null && toSpecific.trim().length() != 0)) {
                 Collection<String> tss = AppUtil.getEmailList(toParticipantId, toSpecific, wfAssignment, appDef);
                 for (String address : tss) {
-                    email.addTo(address);
+                    email.addTo(StringUtil.encodeEmail(address));
                     emailToOutput += address + ", ";
                 }
             } else {
@@ -200,12 +219,11 @@ public class EmailTool extends DefaultApplicationPlugin {
                 }
             }
 
-            Thread emailThread = new Thread(new Runnable() {
+            Thread emailThread = new PluginThread(new Runnable() {
 
                 public void run() {
                     try {
-                        HostManager.setCurrentProfile(profile);
-                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", subject=" + email.getSubject());
+                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
                         email.send();
                         LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());
                     } catch (EmailException ex) {
@@ -233,5 +251,80 @@ public class EmailTool extends DefaultApplicationPlugin {
 
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/app/emailTool.json", null, true, null);
+    }
+
+    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN);
+        if (!isAdmin) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+        
+        String action = request.getParameter("action");
+        if ("testmail".equals(action)) {
+            String message = "";
+            try {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                
+                String smtpHost = AppUtil.processHashVariable(request.getParameter("host"), null, null, null, appDef);
+                String smtpPort = AppUtil.processHashVariable(request.getParameter("port"), null, null, null, appDef);
+                String smtpUsername = AppUtil.processHashVariable(request.getParameter("username"), null, null, null, appDef);
+                String smtpPassword = AppUtil.processHashVariable(SecurityUtil.decrypt(request.getParameter("password")), null, null, null, appDef);
+                String security = AppUtil.processHashVariable(request.getParameter("security"), null, null, null, appDef);
+                String from = AppUtil.processHashVariable(request.getParameter("from"), null, null, null, appDef);
+                String to = AppUtil.processHashVariable(request.getParameter("toSpecific"), null, null, null, appDef);
+
+                final HtmlEmail email = new HtmlEmail();
+                email.setHostName(smtpHost);
+                if (smtpPort != null && smtpPort.length() != 0) {
+                    email.setSmtpPort(Integer.parseInt(smtpPort));
+                }
+                if (smtpUsername != null && !smtpUsername.isEmpty()) {
+                    if (smtpPassword != null) {
+                        smtpPassword = SecurityUtil.decrypt(smtpPassword);
+                    }
+                    email.setAuthentication(smtpUsername, smtpPassword);
+                }
+                if(security!= null){
+                    if(security.equalsIgnoreCase("SSL") ){
+                        email.setSSLOnConnect(true);
+                        email.setSSLCheckServerIdentity(true);
+                        if (smtpPort != null && smtpPort.length() != 0) {
+                            email.setSslSmtpPort(smtpPort);
+                        }
+                    }else if(security.equalsIgnoreCase("TLS")){
+                        email.setStartTLSEnabled(true);
+                        email.setSSLCheckServerIdentity(true);
+                    }
+                }
+                
+                email.setFrom(from);
+                email.setSubject(ResourceBundleUtil.getMessage("app.emailtool.testSubject"));
+                email.setCharset("UTF-8");
+                email.setHtmlMsg(ResourceBundleUtil.getMessage("app.emailtool.testMessage"));
+                
+                if (to != null && to.length() != 0) {
+                    Collection<String> tos = AppUtil.getEmailList(null, to, null, null);
+                    for (String address : tos) {
+                        email.addTo(address);
+                    }
+                }
+                
+                email.send();
+                message = ResourceBundleUtil.getMessage("app.emailtool.testEmailSent");
+            } catch (Exception e) {
+                LogUtil.error(this.getClassName(), e, "Test Email error");
+                message = ResourceBundleUtil.getMessage("app.emailtool.testEmailFail") + "\n" + StringEscapeUtils.escapeJavaScript(e.getMessage());
+            }
+            try {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.accumulate("message", message);
+                jsonObject.write(response.getWriter());
+            } catch (Exception e) {
+                //ignore
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        }
     }
 }

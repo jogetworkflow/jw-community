@@ -10,14 +10,14 @@ import javax.servlet.jsp.JspException;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.displaytag.Messages;
 import org.displaytag.exception.BaseNestableJspTagException;
 import org.displaytag.exception.SeverityEnum;
@@ -29,6 +29,7 @@ import org.displaytag.model.HeaderCell;
 import org.displaytag.model.Row;
 import org.displaytag.model.RowIterator;
 import org.displaytag.model.TableModel;
+import org.joget.commons.util.LogUtil;
 
 public class CustomExcelHssfView implements BinaryExportView {
 
@@ -65,26 +66,26 @@ public class CustomExcelHssfView implements BinaryExportView {
      * @see org.displaytag.export.BaseExportView#getMimeType()
      */
     public String getMimeType() {
-        return "application/vnd.ms-excel"; //$NON-NLS-1$
+        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     }
 
     public void doExport(OutputStream out) throws JspException {
         try {
-            HSSFWorkbook wb = new HSSFWorkbook();
-            HSSFSheet sheet = wb.createSheet("-");
+            XSSFWorkbook wb = new XSSFWorkbook();
+            XSSFSheet sheet = wb.createSheet("-");
 
             int rowNum = 0;
             int colNum = 0;
 
             if (this.header) {
                 // Create an header row
-                HSSFRow xlsRow = sheet.createRow(rowNum++);
+                XSSFRow xlsRow = sheet.createRow(rowNum++);
 
-                HSSFCellStyle headerStyle = wb.createCellStyle();
-                headerStyle.setFillPattern(HSSFCellStyle.FINE_DOTS);
+                XSSFCellStyle headerStyle = wb.createCellStyle();
+                headerStyle.setFillPattern(XSSFCellStyle.FINE_DOTS);
                 headerStyle.setFillBackgroundColor(HSSFColor.BLUE_GREY.index);
-                HSSFFont bold = wb.createFont();
-                bold.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+                XSSFFont bold = wb.createFont();
+                bold.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
                 bold.setColor(HSSFColor.WHITE.index);
                 headerStyle.setFont(bold);
 
@@ -99,8 +100,8 @@ public class CustomExcelHssfView implements BinaryExportView {
                         columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());
                     }
 
-                    HSSFCell cell = xlsRow.createCell(colNum++);
-                    cell.setCellValue(new HSSFRichTextString(columnHeader));
+                    XSSFCell cell = xlsRow.createCell(colNum++);
+                    cell.setCellValue(new XSSFRichTextString(columnHeader));
                     cell.setCellStyle(headerStyle);
                 }
             }
@@ -111,7 +112,7 @@ public class CustomExcelHssfView implements BinaryExportView {
 
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-                HSSFRow xlsRow = sheet.createRow(rowNum++);
+                XSSFRow xlsRow = sheet.createRow(rowNum++);
                 colNum = 0;
 
                 // iterator on columns
@@ -123,7 +124,7 @@ public class CustomExcelHssfView implements BinaryExportView {
                     // Get the value to be displayed for the column
                     Object value = column.getValue(this.decorated);
 
-                    HSSFCell cell = xlsRow.createCell(colNum++);
+                    XSSFCell cell = xlsRow.createCell(colNum++);
 
                     writeCell(value, cell);
                 }
@@ -137,7 +138,8 @@ public class CustomExcelHssfView implements BinaryExportView {
 
             wb.write(out);
         } catch (Exception e) {
-            throw new ExcelGenerationException(e);
+            LogUtil.error(CustomExcelHssfView.class.getName(), e, "");
+            throw new RuntimeException(e.getLocalizedMessage());
         }
     }
 
@@ -146,7 +148,7 @@ public class CustomExcelHssfView implements BinaryExportView {
      * @param value the value of the cell
      * @param cell the cell to write it to
      */
-    protected void writeCell(Object value, HSSFCell cell) {
+    protected void writeCell(Object value, XSSFCell cell) {
         if (value instanceof Number) {
             Number num = (Number) value;
             cell.setCellValue(num.doubleValue());
@@ -155,7 +157,7 @@ public class CustomExcelHssfView implements BinaryExportView {
         } else if (value instanceof Calendar) {
             cell.setCellValue((Calendar) value);
         } else {
-            cell.setCellValue(new HSSFRichTextString(escapeColumnValue(value)));
+            cell.setCellValue(new XSSFRichTextString(escapeColumnValue(value)));
         }
     }
 

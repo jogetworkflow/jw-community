@@ -1231,7 +1231,6 @@ div.view .main-body-content-subheader{
 
 .pluginConfig .property-editor-property-container {
     height: 100%;
-    min-height: 320px;
 }
 
 .form-row.plugin-config i{

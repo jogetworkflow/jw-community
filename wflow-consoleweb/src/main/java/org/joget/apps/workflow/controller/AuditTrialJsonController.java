@@ -9,7 +9,9 @@ import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AuditTrail;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +55,7 @@ public class AuditTrialJsonController {
             data.put("clazz", ResourceBundleUtil.getMessage(auditTrail.getClazz(), auditTrail.getClazz()));
             data.put("method", ResourceBundleUtil.getMessage(auditTrail.getMethod(), auditTrail.getMethod()));
             data.put("message", auditTrail.getMessage());
-            data.put("timestamp", auditTrail.getTimestamp());
+            data.put("timestamp", TimeZoneUtil.convertToTimeZone(auditTrail.getTimestamp(), null, AppUtil.getAppDateFormat()));
             jsonObject.accumulate("data", data);
         }
 
@@ -76,10 +78,6 @@ public class AuditTrialJsonController {
         jsonObject.accumulate("sort", sort);
         jsonObject.accumulate("desc", desc);
 
-        if (callback != null && callback.trim().length() != 0) {
-            writer.write(StringEscapeUtils.escapeHtml(callback) + "(" + jsonObject + ");");
-        } else {
-            jsonObject.write(writer);
-        }
+        AppUtil.writeJson(writer, jsonObject, callback);
     }
 }

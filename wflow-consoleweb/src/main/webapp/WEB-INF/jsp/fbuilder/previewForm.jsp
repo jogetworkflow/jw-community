@@ -8,14 +8,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js?build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui_ext.js?build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js?build=<fmt:message key="build.number"/>"></script>
+        <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css?build=<fmt:message key="build.number"/>" />
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
@@ -62,5 +55,6 @@
         <!--[if IE]><div id="preview-label" class="ie"><fmt:message key="fbuilder.preview"/></div><![endif]-->
         <!--[if !IE]><!--><div id="preview-label"><fmt:message key="fbuilder.preview"/></div><!--<![endif]-->        
                 
+        <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />    
     </body>
 </html>

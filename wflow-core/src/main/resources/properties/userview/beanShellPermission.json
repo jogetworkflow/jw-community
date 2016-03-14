@@ -3,9 +3,8 @@
     properties : [{
         name : 'script',
         label : '@@userview.beanshellpermission.script@@',
-        type : 'textarea',
+        type : 'codeeditor',
         required : 'True',
-        cols : '60',
-        rows : '20'
+        mode : 'java'
     }]
 }]

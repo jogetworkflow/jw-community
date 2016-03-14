@@ -18,16 +18,21 @@
     --%>
 </div>
 
+<jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
+    <jsp:param name="webConsole" value="true"/>
+    <jsp:param name="appControls" value="true"/>
+</jsp:include>
+
 <style>
 <%= WorkflowUtil.getSystemSetupValue("customCss") %>
 </style>
 
 <script>
-    if (window.parent != self && window.parent.name != "quickOverlayFrame") {
-        $("#header, #footer, #adminBar, #beta").hide();
-        $("#container, #nav").css("top", "0px");
+    if (window.parent !== self && window.parent.name !== "quickOverlayFrame") {
+        $("#main-header, #main-menu, #header, #footer, #adminBar, #beta").hide();
+        $("#container, #nav, #menu-popup").css("top", "0px");
     } else {
-        $("#header, #footer, #adminBar, #beta").show();
+        $("#main-header, #header, #footer, #adminBar, #beta").show();
     }
 </script>
 

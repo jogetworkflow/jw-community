@@ -29,16 +29,14 @@
     {
         name : 'css',
         label : '@@userviewmenu.corporatiTheme.customCss@@',
-        type : 'textarea',
-        rows : '8',
-        cols : '75'
+        type : 'codeeditor',
+        mode : 'css'
     },
     {
         name : 'js',
         label : '@@userviewmenu.corporatiTheme.customJavascript@@',
-        type : 'textarea',
-        rows : '8',
-        cols : '75'
+        type : 'codeeditor',
+        mode : 'javascript'
     },
     {
         name : 'collapsibleMenu',
@@ -55,16 +53,14 @@
     properties : [{
         name : 'customHeader',
         label : '@@userviewmenu.corporatiTheme.customHeader@@',
-        type : 'htmleditor',
-        rows : '5',
-        cols : '75'
+        type : 'codeeditor',
+        mode : 'html'
     },
     {
         name : 'customBanner',
         label : '@@userviewmenu.corporatiTheme.customBanner@@',
-        type : 'htmleditor',
-        rows : '5',
-        cols : '75'
+        type : 'codeeditor',
+        mode : 'html'
     }]
 }
 ]

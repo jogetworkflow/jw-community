@@ -1,15 +1,13 @@
 package org.joget.directory.ext;
 
 import org.joget.directory.model.service.DirectoryManagerAuthenticator;
-import java.util.Map;
 import org.joget.directory.model.service.DirectoryManager;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginProperty;
+import org.joget.plugin.base.ExtDefaultPlugin;
 
 /**
  * Delegate class to perform user authentication.
  */
-public class DirectoryManagerAuthenticatorImpl implements Plugin, DirectoryManagerAuthenticator {
+public class DirectoryManagerAuthenticatorImpl extends ExtDefaultPlugin implements DirectoryManagerAuthenticator {
 
     @Override
     public String getName() {
@@ -18,22 +16,12 @@ public class DirectoryManagerAuthenticatorImpl implements Plugin, DirectoryManag
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
     public String getDescription() {
         return "DirectoryManager Authenticator";
-    }
-
-    @Override
-    public PluginProperty[] getPluginProperties() {
-        return null;
-    }
-
-    @Override
-    public Object execute(Map properties) {
-        return null;
     }
     
     /**

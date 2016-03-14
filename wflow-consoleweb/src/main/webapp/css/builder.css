@@ -1,5 +1,5 @@
 * {
-    font-family: Tahoma,Arial,Helvetica,sans-serif;
+    font-family: Arial,Helvetica,sans-serif;
     font-size: 13px;
 }
 body, html {
@@ -12,30 +12,63 @@ body {
 div, label, input, button, select, th, td, a, span {
     font-size: 13px;
 }
+/*button, input[type=button], #builder-body .element-options button, #builder-body .form-palette-options button {
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    box-shadow: none;
+    background: #e7fab6;
+    font-family: Arial;
+    text-decoration: none;
+    border: solid 1px #799837;
+    cursor: pointer;
+    margin: 1px;
+}
+button:hover, input[type=button]:hover, #builder-body .element-options button:hover, #builder-body .form-palette-options button:hover {
+    background: #8FBC8F;
+    color: white;
+}*/
+.property-editor-page-button-panel input[type=button] {
+    background: rgb(39, 174, 96);
+    font-family: Arial;
+    text-decoration: none;
+    box-shadow: none;
+    border: none;
+    cursor: pointer;    
+    color: white;
+    border-radius: 4px;
+    margin-right: 2px;
+}
+.property-editor-page-button-panel input[type=button]:disabled {
+    opacity: 0.5;
+}
 #builder-container {
-    width: 960px;
+    min-width: 100%;
+    width: auto;
 }
 #builder-header {
     position: fixed;
     top: 0px;
     z-index: 301;
     width: 97%;
-    height: 24px;
+    height: 32px;
     padding: 5px 20px 0;
-    background: url(../images/v3/builder/hd_bar_bg.gif) 0 0 repeat-x white;
+    background: #555;
     border: 1px solid #bfbfbf;
 }
 #builder-title {
-    color: #AAA7A7;
+    color: white;
     font-size: 22px;
     text-transform: uppercase;
     line-height: 11px;
-    padding-top: 5px;
+    padding-top: 8px;
 }
 #builder-body {
-    min-width: 941px;
+    min-width: 97%;
+    min-height: 520px;
     background-color: #FFFFFF;
-    padding: 0 20px 100px 0px;
+    padding: 0 3% 100px 0px;
+    display: table;
 }
 #builder-logo {
     background: url(../images/v3/builder/logo.png) no-repeat;
@@ -45,41 +78,43 @@ div, label, input, button, select, th, td, a, span {
     float: left;
 }
 #builder-bar { 
-    padding: 2px;
-    background: none;
+    padding: 0px;
+    background: white;
     margin-bottom: -8px;
     width: 100%;
     position: fixed;
     left: 0px;
-    top: 31px;
-    -webkit-box-shadow: 0px 0px 20px silver;
-    -moz-box-shadow: 0px 0px 20px silver;
-    box-shadow: 0px 0px 20px silver;
+    top: 39px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
     z-index: 101;
-    height: 42px;
+    height: 37px;
+    border-bottom: solid 1px #ccc;
 }
 #builder-bg {
-    background: #EEE url(../images/v3/builder/tab_panel_bg.gif) left bottom repeat-x;
-    opacity: 0.8;
+    background: white;
+    opacity: 1;
     position: fixed;
     top: 31px;
     width: 100%;
-    height: 47px;
+    height: auto;
     z-index: -1;
 }
 #builder-content, #tabpanels {
     min-height: 380px;
     left: 10px;
     position: relative;
-    top: 89px;    
+    top: 88px;    
 }
 #builder-bar ul {
     list-style: none;
     padding: 0;
     margin: 0;
     height: 50px;
-    min-width: 880px;
     overflow: hidden;
+    display: inline-block;
+    width: auto;
 }
 #builder-bar li { 
     background:url(../images/v3/builder/steps_inactive-bg.gif) left top repeat-x;
@@ -107,14 +142,14 @@ div, label, input, button, select, th, td, a, span {
     font-size: 16px;
     height:14px;
     color: #f1ffbf;
-    text-shadow: 1px 1px 0 #767676;
+    text-shadow: 1px 1px 1px #222;
     display:block;
     padding: 3px 0 0 0
 }
 #builder-bar span.subtitle { 
     font-size: 11px;
     color: #fff;
-    text-shadow: 1px 1px 0 #767676;
+    text-shadow: 1px 1px 1px #333;
     line-height: 10px;
     font-family: Verdana, Arial, Helvetica, sans-serif
 }
@@ -156,7 +191,7 @@ div, label, input, button, select, th, td, a, span {
     margin: 5px;
     float: left;
     position: fixed;
-    top: 66px;
+    top: 70px;
     z-index: 10;
     background: #ECECEC;
     left: -5px;
@@ -168,9 +203,9 @@ div, label, input, button, select, th, td, a, span {
     display: none;
 }
 #builder-palette h3 {
-    background: url("../images/v3/builder/sidebar_hd_title_bg.gif") repeat-x scroll 0 0 transparent;
-    color: #fff;
-    text-shadow: 1px 1px 1px #4c4c4c;
+    background: darkseagreen;
+    color: white;
+    text-shadow: 0px;
     padding: 5px;
     margin: 5px 5px;
 }
@@ -200,6 +235,10 @@ div, label, input, button, select, th, td, a, span {
 #builder-palette-spacer {
     width: 175px;
 }
+#builder-body #canvas, #builder-body #form-canvas {
+    box-shadow: 0 0 1px gray;
+    border-radius: 0px;
+}
 #form-canvas {
     position: relative;
     top: 0px;
@@ -225,4 +264,46 @@ div, label, input, button, select, th, td, a, span {
     background: #969696;
     color: white;
     opacity: 0.7;
+}
+#builder-bar .controls {
+    display:inline-block;
+    margin-left:20px;
+    position: relative;
+    top:-18px;
+}
+
+#builder-bar .controls a{
+    display: inline;
+    background: transparent;
+    padding:0;
+    margin:0;
+    cursor: pointer;
+}
+
+#builder-bar .controls a.disabled{
+    color: #aaa;
+}
+#loading {
+    position: fixed;
+    top: 150px;
+    left: 35%;
+    z-index: 10000;
+    font-size: 48px;
+    color: whitesmoke;
+    background: #999;
+    padding: 20px;
+    opacity: 0.8;
+    border-radius: 10px;
+}
+
+#builder-message {
+    position: fixed;
+    top: 20px;
+    left: 450px;
+    background: yellow;
+    border-radius: 5px;
+    display: none;
+    opacity: 0.8;
+    z-index: 100000;
+    padding: 10px;
 }

@@ -9,10 +9,12 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -129,9 +131,11 @@ public class UserviewBuilderWebController {
             }
         }
 
-        // get the userview
-        map.addAttribute("userview", userviewService.createUserview(tempJson, menuId, true, request.getContextPath(), request.getParameterMap(), null, false));
+        Userview userviewObject = userviewService.createUserview(tempJson, menuId, true, request.getContextPath(), request.getParameterMap(), null, false);
+        UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+        map.addAttribute("userview", userviewObject);
+        map.addAttribute("processer", processer);
         map.addAttribute("json", json);
-        return "ubuilder/preview";
+        return processer.getPreviewView();
     }
 }

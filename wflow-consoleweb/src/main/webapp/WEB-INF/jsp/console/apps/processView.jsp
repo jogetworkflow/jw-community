@@ -2,7 +2,8 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:header />
+<c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
+<commons:header title="${title}" />
 
 <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
@@ -22,7 +23,7 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="console.process.config.label.launchDesigner"/></button></li>
+            <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="pbuilder.label.designProcess"/></button></li>
             <li><button id="uploadPackage" onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
             <li><button id="runProcess" onclick="runProcess()"><fmt:message key="console.process.config.label.startProcess"/></button></li>
         </ul>
@@ -90,7 +91,7 @@
                                     <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${participant.id}"/>
                                 </span>
                                 <span class="row-button">
-                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('<c:out value="${participant.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(participant.name, '\\\'', '\\\\\\\''))}"/>')"/>
+                                    <input type="button" value="<fmt:message key="console.process.config.label.mapParticipants.addEditMapping"/>" onclick="addEditParticipant('<ui:escape value="${participant.id}" format="html;javascript"/>', '<ui:escape value="${participant.name}" format="html;javascript"/>')"/>
                                 </span>
                                 <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                     <div id="participant_${participant.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -107,7 +108,7 @@
                                                                 <span class="participant-remove">
                                                                     <c:set var="participantDisplayName" value=""/>
                                                                     <c:if test="${!(status.last && status.index eq 0)}">
-                                                                        <a onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','<c:out value="${participant.id}"/>','${participantValue}')"> <img src="${pageContext.request.contextPath}/images/v3/cross-circle.png"/></a>
+                                                                        <a onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','<ui:escape value="${participant.id}" format="html;javascript"/>','${participantValue}')"> <img src="${pageContext.request.contextPath}/images/v3/cross-circle.png"/></a>
                                                                         </c:if>
                                                                         <c:choose>
                                                                             <c:when test="${participantMap[participantUid].type eq 'user'}">
@@ -186,7 +187,7 @@
                                                             </c:choose>
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'plugin'}">
-                                                            ${participantPluginMap[participantMap[participantUid].value].name} (<fmt:message key="console.plugin.label.version"/> ${participantPluginMap[participantMap[participantUid].value].version})
+                                                            ${participantPluginMap[participantMap[participantUid].value].i18nLabel} (<fmt:message key="console.plugin.label.version"/> ${participantPluginMap[participantMap[participantUid].value].version})
                                                         </c:when>
                                                         <c:when test="${participantMap[participantUid].type eq 'role'}">
                                                             <fmt:message key="console.process.config.label.mapParticipants.role.${participantMap[participantUid].value}"/>
@@ -199,9 +200,9 @@
                                                 <dt>&nbsp;</dt>
                                                 <dd>
                                                     <div>
-                                                        <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapParticipants.removeMapping"/>" onclick="participantRemoveMapping('<c:out value="${participant.id}"/>')"/>
+                                                        <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapParticipants.removeMapping"/>" onclick="participantRemoveMapping('<ui:escape value="${participant.id}" format="html;javascript"/>')"/>
                                                         <c:if test="${participantMap[participantUid].type eq 'plugin'}">
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('<c:out value="${participant.id}"/>', '<c:out value="${participant.name}"/>')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="participantConfigurePlugin('<ui:escape value="${participant.id}" format="html;javascript"/>', '<ui:escape value="${participant.name}" format="html;javascript"/>')"/>
                                                         </c:if>
                                                     </div>
                                                 </dd>
@@ -250,7 +251,7 @@
                                             <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('<c:out value="${activity.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(activityDisplayName, '\\\'', '\\\\\\\''))}"/>')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapActivities.addEditFormMapping"/>" onclick="addEditForm('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -261,7 +262,7 @@
                                                     <dt><fmt:message key="console.form.common.label.name"/></dt>
                                                     <dd><a href="#" onclick="launchFormBuilder('${form.id}');return false;"><c:out value="${form.name}"/></a></dd>
                                                     <dt>&nbsp;</dt>
-                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<c:out value="${activity.id}"/>')"/></div></dd>
+                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<ui:escape value="${activity.id}" format="html;javascript"/>')"/></div></dd>
                                                 </dl>
                                                 <c:if test="${activity.id ne 'runProcess'}">
                                                     <dl>
@@ -270,7 +271,7 @@
                                                         <c:if test="${activityForm.disableSaveAsDraft}">
                                                             <c:set var="disableSaveAsDraft" value="checked"/>
                                                         </c:if>
-                                                        <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>
+                                                        <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('${processIdWithoutVersion}','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>
                                                     </dl>
                                                 </c:if>
                                             </c:if>
@@ -279,7 +280,7 @@
                                                     <dt><fmt:message key="console.process.config.label.mapActivities.formExternal"/></dt>
                                                     <dd><a target="_blank" href="${activityForm.formUrl}">${activityForm.formUrl}</a></dd>
                                                     <dt>&nbsp;</dt>
-                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<c:out value="${activity.id}"/>')"/></div></dd>
+                                                    <dd><div><input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapActivities.removeMapping"/>" onclick="activityRemoveForm('<ui:escape value="${activity.id}" format="html;javascript"/>')"/></div></dd>
                                                 </dl>
                                             </c:if>
                                         </div>
@@ -290,7 +291,7 @@
                                                 <c:if test="${!empty activityForm && activityForm.autoContinue}">
                                                     <c:set var="showNext" value="checked"/>
                                                 </c:if>
-                                                <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<c:out value="${activity.id}"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
+                                                <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -325,7 +326,7 @@
                                         <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
                                     </span>
                                     <span class="row-button">
-                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('<c:out value="${activity.id}"/>', '<c:out value="${fn:escapeXml(fn:replace(activityDisplayName, '\\\'', '\\\\\\\''))}"/>')"/>
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditPlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"/>
                                     </span>
                                     <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
                                         <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
@@ -333,14 +334,14 @@
                                             <c:if test="${plugin ne null}">
                                                 <dl>
                                                     <dt><fmt:message key="console.plugin.label.name"/></dt>
-                                                    <dd>${plugin.name}&nbsp;</dd>
+                                                    <dd>${plugin.i18nLabel}&nbsp;</dd>
                                                     <dt><fmt:message key="console.plugin.label.version"/></dt>
                                                     <dd>${plugin.version}&nbsp;</dd>
                                                     <dt>&nbsp;</dt>
                                                     <dd>
                                                         <div>
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('<c:out value="${activity.id}"/>')"/>
-                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('<c:out value="${activity.id}"/>', '<c:out value="${activityDisplayName}"/>')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="activityConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"/>
                                                         </div>
                                                     </dd>
                                                 </dl>
@@ -390,6 +391,18 @@
         </div>
 
         <script>
+            function renderProcess() {
+                // create invisible iframe for canvas
+                var iframe = document.createElement('iframe');
+                var iwidth = 1024;
+                var iheight = 0;
+                $(iframe).attr("src", "${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/process/screenshot/${process.encodedId}");
+                $(iframe).css({
+                    'visibility':'hidden'
+                }).width(iwidth).height(iheight);
+                $(document.body).append(iframe);
+            }
+            
             function loadImage() {
                 var image = new Image();
                 image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/${process.encodedId}?rnd=" + new Date().valueOf().toString();
@@ -423,7 +436,8 @@
                 });
             
                 $(image).error(function(){
-                    setTimeout(function() { loadImage(); }, 10000);
+                    renderProcess();
+                    setTimeout(function() { loadImage(); }, 5000);
                 });
             }
 
@@ -442,14 +456,14 @@
             );*/
             <c:if test="${!empty param.activityDefId}">
                     setTimeout(function() {
-                        var topy = $("#activityForm_<c:out value="${param.activityDefId}" escapeXml="true"/>").offset().top - 100;
+                        var topy = $("#activityForm_<ui:escape value="${param.activityDefId}" format="html;javascript"/>").offset().top - 100;
                         topy = parseInt(topy);
                         window.scrollTo(0, topy);
                     }, 100);
             </c:if>
             <c:if test="${!empty param.participantId}">
                     setTimeout(function() {
-                        var topy = $("#participant_<c:out value="${param.participantId}" escapeXml="true"/>").offset().top - 100;
+                        var topy = $("#participant_<ui:escape value="${param.participantId}" format="html;javascript"/>").offset().top - 100;
                         topy = parseInt(topy);
                         window.scrollTo(0, topy);
                     }, 100);
@@ -459,7 +473,7 @@
                 var tabView = new TabView('processTabView', 'top');
                 tabView.init();
             <c:if test="${!empty param.tab}">
-                tabView.select('#<c:out value="${param.tab}"/>');
+                tabView.select('#<ui:escape value="${param.tab}" format="html;javascript"/>');
             </c:if>
             <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/form/edit/${form.id}"/>
 
@@ -499,19 +513,7 @@
                 function launchDesigner(){
                     $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
                     $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
-            <%
-                            String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
-                            String locale = "en";
-                            if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
-                                locale = WorkflowUtil.getSystemSetupValue("systemLocale");
-                            }
-            %>
-                    var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
-                    var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
-                    var path = base + '${pageContext.request.contextPath}';
-                    <c:set var="sessionId" value="${cookie.JSESSIONID.value}"/>
-                    <c:if test="${empty sessionId}"><c:set var="sessionId" value="${pageContext.request.session.id}"/></c:if>
-                    document.location = '<%= designerwebBaseUrl%>/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&domain=${pageContext.request.serverName}&port=${pageContext.request.serverPort}&context=${pageContext.request.contextPath}&session=<c:out value="${sessionId}"/>';
+                    window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>");
                 }
 
                 function launchFormBuilder(formId) {

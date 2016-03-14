@@ -2,7 +2,7 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
 <%
-    String css = request.getContextPath() + "/css/v3.css";
+    String css = request.getContextPath() + "/css/v5.css";
     String temp = WorkflowUtil.getSystemSetupValue("css");
     String customCss = WorkflowUtil.getSystemSetupValue("customCss");
     if(temp != null && temp.length() > 0)

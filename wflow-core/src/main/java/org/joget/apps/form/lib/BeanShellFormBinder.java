@@ -31,7 +31,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
@@ -44,7 +44,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         properties.put("element", element);
         properties.put("primaryKey", primaryKey);
         properties.put("formData", formData);
-        return executeScript(getPropertyString("script"), properties);
+        return executeScript(getPropertyString("script"), properties, false);
     }
 
     public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
@@ -53,7 +53,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         properties.put("element", element);
         properties.put("rows", rows);
         properties.put("formData", formData);
-        return executeScript(getPropertyString("script"), properties);
+        return executeScript(getPropertyString("script"), properties, true);
     }
 
     public String getLabel() {
@@ -71,7 +71,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         return AppUtil.readPluginResource(getClass().getName(), "/properties/form/beanShellFormBinder.json", arguments, true, "message/form/beanShellFormBinder");
     }
     
-    protected FormRowSet executeScript(String script, Map properties) {
+    protected FormRowSet executeScript(String script, Map properties, boolean throwException) throws RuntimeException {
         Object result = null;
         try {
             Interpreter interpreter = new Interpreter();
@@ -84,8 +84,11 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
             return (FormRowSet) result;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "Error executing script");
-            return null;
+            if (throwException) {
+                throw new RuntimeException("Error executing script");
+            }
         }
+        return null;
     }
 
     public boolean useAjax() {
@@ -96,6 +99,6 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         Map properties = new HashMap();
         properties.putAll(getProperties());
         properties.put("values", (dependencyValues == null)? new String[]{}: dependencyValues);
-        return executeScript(getPropertyString("script"), properties);
+        return executeScript(getPropertyString("script"), properties, false);
     }
 }

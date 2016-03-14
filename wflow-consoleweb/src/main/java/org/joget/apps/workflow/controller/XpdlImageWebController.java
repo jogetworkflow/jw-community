@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.XpdlImageUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,10 +18,10 @@ public class XpdlImageWebController {
     @RequestMapping("/console/images/xpdl/thumbnail/(*:processDefId)")
     public void getXpdlThumbnail(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         processDefId = processDefId.replaceAll(":", "#");
-        
+
         File file = null;
         try {
-            file = XpdlImageUtil.getXpdlThumbnail(AppUtil.getDesignerWebBaseUrl(), processDefId);
+            file = new File(XpdlImageUtil.getXpdlImagePath(processDefId), XpdlImageUtil.THUMBNAIL_PREFIX + processDefId + XpdlImageUtil.IMAGE_EXTENSION);
         } catch(Exception e) {
             //ingore
         }
@@ -37,7 +35,7 @@ public class XpdlImageWebController {
         int length = 0;
         
         try {
-            response.setContentType("image/jpeg");
+            response.setContentType("image/png");
             while ((in != null) && ((length = in.read(bbuf)) != -1)) {
                 out.write(bbuf, 0, length);
             }
@@ -51,10 +49,10 @@ public class XpdlImageWebController {
     @RequestMapping("/console/images/xpdl/(*:processDefId)")
     public void getXpdlImage(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
         processDefId = processDefId.replaceAll(":", "#");
-
+        
         File file = null;
         try {
-            file = XpdlImageUtil.getXpdlImage(AppUtil.getDesignerWebBaseUrl(), processDefId);
+            file = new File(XpdlImageUtil.getXpdlImagePath(processDefId), processDefId + XpdlImageUtil.IMAGE_EXTENSION);
         } catch(Exception e) {
             //ingore
         }
@@ -68,7 +66,7 @@ public class XpdlImageWebController {
         int length = 0;
         
         try {
-            response.setContentType("image/jpeg");
+            response.setContentType("image/png");
             while ((in != null) && ((length = in.read(bbuf)) != -1)) {
                 out.write(bbuf, 0, length);
             }

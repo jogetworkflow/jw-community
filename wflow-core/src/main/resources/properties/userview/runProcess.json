@@ -58,6 +58,30 @@
         name : 'redirectUrlAfterComplete',
         label : '@@userview.runprocess.redirectAfterStarted@@',
         type : 'textfield'
+    },
+    {
+        name : 'fieldPassover',
+        label : '@@userview.formmenu.fieldNamePassover@@',
+        type : 'textfield'
+    },
+    {
+        name : 'fieldPassoverMethod',
+        label : '@@userview.formmenu.fieldPassoverMethod@@',
+        type : 'selectbox',
+        value : 'append',
+        options : [{
+            value : 'append',
+            label : '@@userview.formmenu.append@@'
+        },
+        {
+            value : 'param',
+            label : '@@userview.formmenu.asParam@@'
+        }]
+    },
+    {
+        name : 'paramName',
+        label : '@@userview.formmenu.paramName@@',
+        type : 'textfield'
     }]
 },
 {

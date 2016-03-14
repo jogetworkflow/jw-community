@@ -18,12 +18,14 @@ import org.joget.workflow.model.WorkflowProcessResult;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- *
+ * Service method to manage and interact with app
  */
 public interface AppService {
 
     /**
      * Process a submitted form to complete an assignment
+     * @param appId
+     * @param version
      * @param activityId
      * @param formData
      * @param workflowVariableMap
@@ -33,7 +35,8 @@ public interface AppService {
 
     /**
      * Process a submitted form to complete an assignment
-     * @param activityId
+     * @param form
+     * @param assignment
      * @param formData
      * @param workflowVariableMap
      * @return
@@ -41,7 +44,7 @@ public interface AppService {
     FormData completeAssignmentForm(Form form, WorkflowAssignment assignment, FormData formData, Map<String, String> workflowVariableMap);
 
     /**
-     * Create a new version of an app from an existing version
+     * Create a new version of an app from an existing latest version
      * @param appId
      * @param version
      * @return
@@ -50,6 +53,9 @@ public interface AppService {
 
     /**
      * Returns the total number of form data rows for a process based on criteria
+     * 
+     * @Deprecated API used in v2. Not implemented since v3.
+     * 
      * @param formDefId
      * @param query
      * @return
@@ -62,9 +68,18 @@ public interface AppService {
      * @return A Collection of errors (if any).
      */
     Collection<String> createAppDefinition(AppDefinition appDefinition);
+    
+    /**
+     * Create a new app definition and duplicate the other app
+     * @param appDefinition
+     * @param copyAppDefinition
+     * @return A Collection of errors (if any).
+     */
+    Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copyAppDefinition);
 
     /**
      * Create a new form definition
+     * @param appDefinition
      * @param formDefinition
      * @return A Collection of errors (if any).
      */
@@ -151,8 +166,10 @@ public interface AppService {
     boolean isActivityAutoContinue(String packageId, String version, String processDefId, String activityDefId);
 
     /**
-     * Returns the origin process ID for a process instance.
-     * The origin process ID is the top-most process that is started that possibly triggers other sub-processes.
+     * Returns the origin process ID or recordId for a process instance.
+     * The return value can be the process ID of the top-most process 
+     * which is started that possibly triggers other sub-processes, or it is a record id
+     * used to start the top-most process.
      * @param processId
      * @return
      */
@@ -173,10 +190,27 @@ public interface AppService {
      */
     Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, FormData formData, String formUrl, String cancelUrl);
     
+    /**
+     * Retrieve a data form
+     * @param appId
+     * @param version
+     * @param formDefId
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @return 
+     */
     Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
 
     /**
      * Returns a Collection of form data for a process based on criteria
+     * 
+     * @Deprecated API used in v2. Not implemented since v3.
+     * 
      * @param formDefId
      * @param processId
      * @param query
@@ -190,9 +224,13 @@ public interface AppService {
 
     /**
      * Start a process through a form submission
+     * @param appId
+     * @param version
      * @param processDefId
      * @param formData
      * @param workflowVariableMap
+     * @param originProcessId
+     * @param formUrl
      * @return
      */
     WorkflowProcessResult submitFormToStartProcess(String appId, String version, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId, String formUrl);
@@ -207,6 +245,18 @@ public interface AppService {
      * @return
      */
     PackageActivityForm viewAssignmentForm(String appId, String version, String activityId, FormData formData, String formUrl);
+    
+    /**
+     * Retrieve a form for a specific activity instance
+     * @param appId
+     * @param version
+     * @param activityId
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @return
+     */
+    PackageActivityForm viewAssignmentForm(String appId, String version, String activityId, FormData formData, String formUrl, String cancelUrl);
 
     /**
      * Retrieve a form for a specific activity instance
@@ -217,6 +267,17 @@ public interface AppService {
      * @return
      */
     PackageActivityForm viewAssignmentForm(AppDefinition appDef, WorkflowAssignment assignment, FormData formData, String formUrl);
+    
+    /**
+     * Retrieve a form for a specific activity instance
+     * @param appDef
+     * @param assignment
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @return
+     */
+    PackageActivityForm viewAssignmentForm(AppDefinition appDef, WorkflowAssignment assignment, FormData formData, String formUrl, String cancelUrl);
     
     /**
      * Retrieve form mapped to start a process
@@ -231,13 +292,18 @@ public interface AppService {
 
     /**
      * Returns the form definition ID for the form mapped to the specified activity definition ID.
+     * @param appId
+     * @param version
      * @param activityDefId
+     * @param processDefId
      * @return
      */
     PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId);
     
     /**
      * Use case for form submission by ID
+     * @param appId
+     * @param version
      * @param formDefId
      * @param formData
      * @param ignoreValidation
@@ -246,7 +312,7 @@ public interface AppService {
     FormData submitForm(String appId, String version, String formDefId, FormData formData, boolean ignoreValidation);
     
     /**
-     * Use case for form submission by ID
+     * Use case for form submission by Form object
      * @param form
      * @param formData
      * @param ignoreValidation
@@ -255,7 +321,7 @@ public interface AppService {
     FormData submitForm(Form form, FormData formData, boolean ignoreValidation);
 
     /**
-     * Load specific data row (record) by primary key value
+     * Load specific data row (record) by primary key value for a specific form
      * @param appId
      * @param version
      * @param formDefId
@@ -274,12 +340,22 @@ public interface AppService {
 
     /**
      * Method to load specific data row (record) by primary key value for a specific form.
-     * This method is non-transactional to support hibernate's auto update of DB schemas.
+     * This method is transactional (since v5), but retains the method name for backward compatibility reasons.
      * @param form
      * @param primaryKeyValue
      * @return null if the form is not available, empty FormRowSet if the form is available but record is not found.
      */
     FormRowSet loadFormDataWithoutTransaction(Form form, String primaryKeyValue);
+
+    /**
+     * Method to load specific data row (record) by primary key value for a specific form.
+     * This method is transactional (since v5), but retains the method name for backward compatibility reasons.
+     * @param formDefid
+     * @param tableName
+     * @param primaryKeyValue
+     * @return null if the form is not available, empty FormRowSet if the form is available but record is not found.
+     */
+    FormRowSet loadFormDataWithoutTransaction(String formDefid, String tableName, String primaryKeyValue);
 
     /**
      * Store specific data row (record). 
@@ -302,6 +378,16 @@ public interface AppService {
     FormRowSet storeFormData(Form form, FormRowSet rows, String primaryKeyValue);
 
     /**
+     * Store specific data row (record) for a form. 
+     * @param formDefId
+     * @param tableName
+     * @param rows
+     * @param primaryKeyValue For single-row data. If null, a UUID will be generated. For multi-row data, this value is not used.
+     * @return
+     */
+    FormRowSet storeFormData(String formDefId, String tableName, FormRowSet rows, String primaryKeyValue);
+
+    /**
      * Get App definition XML
      * @param appId
      * @param version
@@ -321,7 +407,7 @@ public interface AppService {
     
     /**
      * Import app from zip file
-     * @param data
+     * @param zip
      * @return
      */
     AppDefinition importApp(byte[] zip) throws ImportAppException;
@@ -330,6 +416,7 @@ public interface AppService {
      * Reads app XML from zip content.
      * @param zip
      * @return 
+     * @throws java.lang.Exception 
      */
     byte[] getAppDataXmlFromZip(byte[] zip) throws Exception;    
 
@@ -364,10 +451,47 @@ public interface AppService {
      */
     public Long getPublishedVersion(String appId);
 
+    /**
+     * Publish a specific app version
+     * @param appId
+     * @param version set null to publish the latest version
+     * @return the published AppDefinition, null if not found
+     */
+    public AppDefinition publishApp(String appId, String version);
+    
+    /**
+     * Publish an app
+     * @param appId
+     * @return the unpublished AppDefinition, null if not found
+     */
+    public AppDefinition unpublishApp(String appId);
+    
+    /**
+     * Find a form data record id based a field name and value
+     * @param appId
+     * @param appVersion
+     * @param formId
+     * @param foreignKeyName
+     * @param foreignKeyValue
+     * @return 
+     */
     public String getPrimaryKeyWithForeignKey(String appId, String appVersion, String formId, String foreignKeyName, String foreignKeyValue);
 
+    /**
+     * Get table name of a form
+     * @param appId
+     * @param appVersion
+     * @param formDefID
+     * @return 
+     */
     public String getFormTableName(String appId, String appVersion, String formDefID);
     
+    /**
+     * Get table name of a form
+     * @param appDef
+     * @param formDefID
+     * @return 
+     */
     public String getFormTableName(AppDefinition appDef, String formDefID);
 
     /**
@@ -381,6 +505,8 @@ public interface AppService {
      * Retrieve list of published apps available to the current user. Overloaded
      * to additionally filter by mobile view support.
      * @param appId Optional filter by appId
+     * @param mobileView
+     * @param mobileCache
      * @return
      */
     public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache);
@@ -392,7 +518,29 @@ public interface AppService {
      */
     public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId);
     
+    /**
+     * Generate Message Bundle PO file to OutputStream
+     * @param appId
+     * @param version
+     * @param locale
+     * @param output
+     * @throws IOException 
+     */
     public void generatePO(String appId, String version, String locale, OutputStream output) throws IOException; 
     
+    /**
+     * Import Messages from a PO file
+     * @param appId
+     * @param version
+     * @param locale
+     * @param multipartFile
+     * @throws IOException 
+     */
     public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException;   
+    
+    /**
+     * Retrieve all apps without check for permission
+     * @return 
+     */
+    public Collection<AppDefinition> getUnprotectedAppList();
 }

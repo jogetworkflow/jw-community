@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xpdl:Package xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="${packageId}" Name="${packageName}" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <xpdl:PackageHeader>
+        <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>
+    </xpdl:PackageHeader>
+    <xpdl:Script Type="text/javascript"/>
+    <xpdl:Participants>
+        <xpdl:Participant Id="participant1" Name="Participant 1">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+    </xpdl:Participants>
+    <xpdl:WorkflowProcesses>
+        <xpdl:WorkflowProcess Id="process1" Name="Workflow Process 1">
+            <xpdl:ProcessHeader DurationUnit="h">
+            </xpdl:ProcessHeader>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="participant1"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+    </xpdl:WorkflowProcesses>
+</xpdl:Package>

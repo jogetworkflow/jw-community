@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-    <display-name>wflow-consoleweb web application</display-name>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+    <display-name>Joget Workflow</display-name>
     <context-param>
         <param-name>webAppRootKey</param-name>
         <param-value>wflow-consoleweb</param-value>
@@ -11,7 +11,7 @@
     </context-param>
     <context-param>
         <param-name>log4jConfigLocation</param-name>
-        <param-value>/WEB-INF/classes/log4j.properties</param-value>
+        <param-value>classpath:log4j.properties</param-value>
     </context-param>
     <!--
     <context-param>
@@ -24,13 +24,25 @@
         <param-value>false</param-value>
     </context-param>
     <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+        <listener-class>org.joget.commons.spring.web.CustomContextLoaderListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
     <listener>
         <listener-class>org.joget.apps.app.web.ContextListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.joget.apps.app.web.SessionListener</listener-class>
+    </listener>    
+    <listener>
+        <listener-class>org.owasp.csrfguard.CsrfGuardServletContextListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>org.owasp.csrfguard.CsrfGuardHttpSessionListener</listener-class>
     </listener>
     <!-- Uncomment this listener to support concurrent session control
     <listener>
@@ -39,7 +51,7 @@
     -->
     <servlet>
         <servlet-name>dispatcher</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-class>org.joget.commons.spring.web.CustomDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
     </servlet>
     <servlet>
@@ -51,6 +63,19 @@
         </init-param>
         <load-on-startup>3</load-on-startup>
     </servlet>
+    <servlet>
+        <servlet-name>setup</servlet-name>
+        <servlet-class>org.joget.apps.app.web.SetupServlet</servlet-class>
+        <load-on-startup>5</load-on-startup>
+    </servlet>
+    <servlet>
+        <servlet-name>JavaScriptServlet</servlet-name>
+        <servlet-class>org.owasp.csrfguard.servlet.JavaScriptServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JavaScriptServlet</servlet-name>
+        <url-pattern>/csrf</url-pattern>
+    </servlet-mapping>    
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/web/*</url-pattern>
@@ -58,6 +83,10 @@
     <servlet-mapping>
         <servlet-name>pluginResource</servlet-name>
         <url-pattern>/plugin/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>setup</servlet-name>
+        <url-pattern>/setup/*</url-pattern>
     </servlet-mapping>
     <filter>
         <filter-name>charsetFilter</filter-name>
@@ -85,13 +114,33 @@
     </filter-mapping>
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <filter-class>org.joget.commons.spring.web.CustomDelegatingFilterProxy</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/web/*</url-pattern>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/j_spring_security_check</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/j_spring_security_logout</url-pattern>
+        <dispatcher>FORWARD</dispatcher>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter>
+        <filter-name>CSRFGuard</filter-name>
+        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFGuard</filter-name>
+        <url-pattern>/web/*</url-pattern>
     </filter-mapping>
     <filter>
         <filter-name>ResponseOverrideFilter</filter-name>
@@ -123,5 +172,9 @@
     <error-page>
         <error-code>404</error-code>
         <location>/WEB-INF/jsp/error404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/WEB-INF/jsp/error403.jsp</location>
     </error-page>
 </web-app>

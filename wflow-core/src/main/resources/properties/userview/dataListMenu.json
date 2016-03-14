@@ -95,16 +95,14 @@
     },{
         name : 'customHeader',
         label : '@@userview.datalistmenu.customHeader@@',
-        type : 'textarea',
-        cols : '20',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     },
     {
         name : 'customFooter',
         label : '@@userview.datalistmenu.customFooter@@',
-        type : 'textarea',
-        cols : '20',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     }]
 },
 {

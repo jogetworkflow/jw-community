@@ -9,6 +9,10 @@ import org.joget.commons.util.LogUtil;
 public class BeanShellPermission extends UserviewPermission implements FormPermission {
     @Override
     public boolean isAuthorize() {
+        return executeScript();
+    }
+        
+    protected boolean executeScript() {    
         String script = getPropertyString("script");
         
         Object result = null;
@@ -32,7 +36,7 @@ public class BeanShellPermission extends UserviewPermission implements FormPermi
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {

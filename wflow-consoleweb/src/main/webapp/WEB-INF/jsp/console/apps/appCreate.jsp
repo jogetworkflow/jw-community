@@ -27,6 +27,25 @@
                     <label for="field1"><fmt:message key="console.app.common.label.name"/></label>
                     <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
                 </div>
+                <div class="form-row">
+                    <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
+                    <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
+                </div>
+                <div id="advancedView" style="display:none">
+                    <h5><fmt:message key="console.app.create.copy.header"/></h5>
+                    <div class="form-row">
+                        <label for="copyAppId" style="display:inline-block;width:auto;float:none;">
+                            <fmt:message key="console.app.create.copy.appId"/>
+                            
+                            <select id="copyAppId" name="copyAppId">
+                                <option></option>
+                                <c:forEach items="${appList}" var="app">
+                                    <option value="${app.id}"><c:out value="${app.name}"/></option>
+                                </c:forEach>
+                            </select>
+                        </label>
+                    </div>    
+                </div>
             </fieldset>
             <div class="form-buttons">
                 <input class="form-button" type="button" value="<fmt:message key="general.method.label.save"/>"  onclick="validateField()"/>
@@ -36,6 +55,19 @@
     </div>
     
     <script type="text/javascript">
+        
+        function showAdvancedInfo(){
+            $('#advancedView').slideToggle('slow');
+            $('#showAdvancedInfo').hide();
+            $('#hideAdvancedInfo').show();
+        }
+
+        function hideAdvancedInfo(){
+            $('#advancedView').slideToggle('slow');
+            $('#showAdvancedInfo').show();
+            $('#hideAdvancedInfo').hide();
+        }
+        
         function validateField(){
             var idMatch = /^[0-9a-zA-Z_]+$/.test($("#id").attr("value"));
             if(!idMatch){

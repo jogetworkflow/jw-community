@@ -4,7 +4,6 @@ import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.spring.model.Setting;
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 
 public class SetupDao extends AbstractSpringDao {
 
@@ -24,10 +23,6 @@ public class SetupDao extends AbstractSpringDao {
 
     public Collection<Setting> find(String condition, Object[] params, String sort, Boolean desc, Integer start, Integer rows) {
         return (Collection<Setting>) super.find(ENTITY_NAME, condition, params, sort, desc, start, rows);
-    }
-
-    public List<Setting> findAll() {
-        return (List<Setting>) super.findAll(ENTITY_NAME);
     }
 
     public Serializable save(Object obj) {

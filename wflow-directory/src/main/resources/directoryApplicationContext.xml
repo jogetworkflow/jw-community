@@ -11,7 +11,7 @@
     <import resource="classpath:commonsApplicationContext.xml" />
     <import resource="classpath:pluginBaseApplicationContext.xml" />
 
-    <bean id="directorySessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="directorySessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -30,6 +30,8 @@
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>
     </bean>
@@ -40,7 +42,6 @@
         <property name="roleDao" ref="roleDao" />
         <property name="departmentDao" ref="departmentDao" />
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
 
     <bean id="employmentDao" class="org.joget.directory.dao.EmploymentDaoImpl">
@@ -50,7 +51,6 @@
         <property name="gradeDao" ref="gradeDao" />
         <property name="departmentDao" ref="departmentDao" />
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
 
     <bean id="employmentReportToDao" class="org.joget.directory.dao.EmploymentReportToDaoImpl">
@@ -61,12 +61,10 @@
         <property name="organizationDao" ref="organizationDao" />
         <property name="employmentDao" ref="employmentDao"/>
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
     
     <bean id="groupDao" class="org.joget.directory.dao.GroupDaoImpl">
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
     
     <bean id="organizationDao" class="org.joget.directory.dao.OrganizationDaoImpl">
@@ -75,19 +73,16 @@
         <property name="employmentDao" ref="employmentDao" />
         <property name="departmentDao" ref="departmentDao"/>
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
     
     <bean id="gradeDao" class="org.joget.directory.dao.GradeDaoImpl">
         <property name="organizationDao" ref="organizationDao" />
         <property name="employmentDao" ref="employmentDao" />
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
     
     <bean id="roleDao" class="org.joget.directory.dao.RoleDaoImpl">
         <property name="sessionFactory" ref="directorySessionFactory" />
-        <property name="localSessionFactory" ref="&amp;directorySessionFactory"/>
     </bean>
 
     <bean id="directoryManager" class="org.joget.directory.model.service.DirectoryManagerProxyImpl" primary="true">
@@ -108,13 +103,8 @@
         <property name="roleDao" ref="roleDao" />
     </bean>
 
-    <bean id="directoryHibernateInterceptor" class="org.springframework.orm.hibernate3.HibernateInterceptor">
-        <property name="sessionFactory" ref="directorySessionFactory" />
-    </bean>
-    
     <aop:config>
-        <aop:advisor advice-ref="directoryHibernateInterceptor" pointcut="execution(* org.joget.directory.model.service.DirectoryManagerImpl.*(..))" order="1" />
-        <aop:advisor advice-ref="directoryHibernateInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.directory.model.service.DirectoryManagerImpl.*(..))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
     </aop:config>
 

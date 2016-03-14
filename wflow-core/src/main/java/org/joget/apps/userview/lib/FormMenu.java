@@ -17,6 +17,7 @@ import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -40,7 +41,7 @@ public class FormMenu extends UserviewMenu {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -170,10 +171,8 @@ public class FormMenu extends UserviewMenu {
         if (form != null) {
             // generate form HTML
             String formHtml = formService.retrieveFormHtml(form, formData);
-            String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
             setProperty("formHtml", formHtml);
-            setProperty("formJson", formJson);
             if (activityForm != null && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
                 setProperty("activityForm", activityForm);
                 setProperty("assignment", assignment);
@@ -243,19 +242,21 @@ public class FormMenu extends UserviewMenu {
                 passoverValue = formData.getPrimaryKeyValue();
             }
             
-            if ("append".equals(getPropertyString("fieldPassoverMethod"))) {
-                if (!redirectUrl.endsWith("/")) {
-                    redirectUrl += "/";
-                }
-                redirectUrl += passoverValue;
-            } else {
-                if (redirectUrl.contains("?")) {
-                    redirectUrl += "&";
+            try {
+                if ("append".equals(getPropertyString("fieldPassoverMethod"))) {
+                    if (!redirectUrl.endsWith("/")) {
+                        redirectUrl += "/";
+                    }
+                    redirectUrl += URLEncoder.encode(passoverValue, "UTF-8");
                 } else {
-                    redirectUrl += "?";
+                    if (redirectUrl.contains("?")) {
+                        redirectUrl += "&";
+                    } else {
+                        redirectUrl += "?";
+                    }
+                    redirectUrl += URLEncoder.encode(getPropertyString("paramName"), "UTF-8") + "=" + URLEncoder.encode(passoverValue, "UTF-8");
                 }
-                redirectUrl += getPropertyString("paramName") + "=" + passoverValue;
-            }
+            } catch (Exception e) {}
         }
 
         if (form != null) {
@@ -283,13 +284,11 @@ public class FormMenu extends UserviewMenu {
             }
 
             // show form
-            String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
             setProperty("errorCount", errorCount);
             setProperty("stay", formData.getStay());
             setProperty("submitted", Boolean.TRUE);
             setProperty("formHtml", formHtml);
-            setProperty("formJson", formJson);
             setProperty("redirectUrlAfterComplete", redirectUrl);
             if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
@@ -374,7 +373,7 @@ public class FormMenu extends UserviewMenu {
             }
         }
 
-        String submitLabel = "Submit";
+        String submitLabel = ResourceBundleUtil.getMessage("general.method.label.save");
 
         if (getPropertyString("submitButtonLabel") != null && getPropertyString("submitButtonLabel").trim().length() > 0) {
             submitLabel = getPropertyString("submitButtonLabel");
@@ -386,7 +385,7 @@ public class FormMenu extends UserviewMenu {
             if (getPropertyString("cancelButtonLabel") != null && getPropertyString("cancelButtonLabel").trim().length() > 0) {
                 cancelLabel = getPropertyString("cancelButtonLabel");
             } else {
-                cancelLabel = "Cancel";
+                cancelLabel = ResourceBundleUtil.getMessage("general.method.label.cancel");
             }
         }
         

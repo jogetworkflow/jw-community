@@ -4,6 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
+        <p><i class="icon-edit"></i> <fmt:message key="console.header.menu.label.apps"/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -30,7 +31,7 @@
                 function listFilter(header, list) { 
                     var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
                     input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-                    $(form).append(input).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).appendTo(header);  
+                    $(form).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).append(input).appendTo(header);  
                     $(input) .change( function () { 
                         var filter = $(this).val(); 
                         if(filter) { 

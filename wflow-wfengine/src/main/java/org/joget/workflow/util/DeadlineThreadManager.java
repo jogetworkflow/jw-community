@@ -30,6 +30,9 @@ public class DeadlineThreadManager {
             Properties profiles = DynamicDataSourceManager.getProfileProperties();
             Set<String> profileSet = new HashSet(profiles.values());
             for (String profile : profileSet) {
+                if (profile.contains(",")) {
+                    continue;
+                }
                 HostManager.setCurrentProfile(profile);
                 workflowManager.internalUpdateDeadlineChecker();
             }

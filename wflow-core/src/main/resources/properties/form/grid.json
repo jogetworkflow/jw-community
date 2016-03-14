@@ -49,6 +49,13 @@
         type : 'header'
     },
     {
+        name : 'validator',
+        label : '@@form.grid.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormMultiRowValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
         name : 'validateMinRow',
         label : '@@form.grid.validateMinRow@@',
         type : 'textfield'

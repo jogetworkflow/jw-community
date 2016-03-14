@@ -118,14 +118,6 @@ body{
     margin-left:5px;
 }
 
-#nav #nav-list li.nav-selected {
-    background: url("../images/v3/console/right_nav_activebar.png") no-repeat scroll left center transparent;
-}
-
-#nav #nav-list li:hover {
-    background: url(../images/v3/console/right_nav_activebar.png) left center no-repeat;
-}
-
 #container {
     padding-right: 0px;
     padding-left: 10px;

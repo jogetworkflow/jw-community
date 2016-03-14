@@ -20,6 +20,8 @@ public class FormDefinition extends AbstractAppVersionedObject {
     @Element(required = false)
     private String json;
     @Element(required = false)
+    private String description;
+    @Element(required = false)
     private Date dateCreated;
     @Element(required = false)
     private Date dateModified;
@@ -62,5 +64,13 @@ public class FormDefinition extends AbstractAppVersionedObject {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

@@ -60,7 +60,7 @@ public interface UserSecurity {
     public Boolean getAuthenticateAllApi();
     
     /**
-     * Encrypt Password.
+     * Encrypt Password with custom methodology.
      * @param username
      * @param password
      * @return the encrypted password String.
@@ -68,7 +68,7 @@ public interface UserSecurity {
     public String encryptPassword (String username, String password);
     
     /**
-     * Verify Password.
+     * Verify Password with custom methodology.
      * @param user
      * @param password
      * @return verified Boolean.
@@ -142,7 +142,7 @@ public interface UserSecurity {
     public void passwordResetPostProcessing(User user);
     
     /**
-     * Processing after a user password is deleted.
+     * Processing after a user is deleted.
      * @param username
      * @return 
      */
@@ -208,7 +208,7 @@ public interface UserSecurity {
     public void requestPostProcessing();
     
     /**
-     * Check whether data is exist for a user.
+     * Check whether a custom security data is exist for a user.
      * @param 
      * @return 
      */

@@ -1,12 +1,11 @@
 package org.joget.commons.spring.web;
 
-import org.springframework.util.PathMatcher;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.*;
 import java.net.URLDecoder;
 import java.io.UnsupportedEncodingException;
+import org.springframework.util.AntPathMatcher;
 
 /*
 Copyright 2007, Carbon Five, Inc.
@@ -31,13 +30,14 @@ specific language governing permissions and limitations under the License.
  *
  * @author alex cruikshank
  */
-public class ParameterizedPathMatcher implements PathMatcher {
+public class ParameterizedPathMatcher extends AntPathMatcher {
 
     private static final Pattern wildcardPattern = Pattern.compile("([\\\\\\/])|(\\([^\\)]+\\))|([\\*|~]{1,2})|(\\?)|(\\\\\\/)");
     private static final Pattern wildcardFreePattern = Pattern.compile("^[\\\\\\/]?([^\\(\\*\\?\\\\\\/]*[\\\\\\/])*([^\\(\\*\\?\\\\\\/]*$)?");
     private static final Pattern regexEscapePattern = Pattern.compile("[\\\\\\/\\[\\]\\^\\$\\.\\{\\}\\&\\?\\*\\+\\|\\<\\>\\!\\=]");
-    private Map<String, NamedPattern> patternCache = new HashMap<String, NamedPattern>();
+    private final Map<String, NamedPattern> patternCache = new HashMap<String, NamedPattern>();
 
+    @Override
     public boolean isPattern(String string) {
         return (string.indexOf('*') != -1 || string.indexOf('?') != -1 || string.indexOf('(') != -1);
     }
@@ -48,6 +48,7 @@ public class ParameterizedPathMatcher implements PathMatcher {
      * @param path path to test against pattern
      * @return true if the pattern matches, false otherwise.
      */
+    @Override
     public boolean match(String pattern, String path) {
         return getOrCreatePattern(pattern).matcher(path).matches();
     }
@@ -77,8 +78,24 @@ public class ParameterizedPathMatcher implements PathMatcher {
      * @param path path to test against pattern
      * @return in regex: ^[\\\/]?([^(\*\?\\\/]*[\\\/])*([^\(\*\?\\\/]*$)?
      */
+    @Override
     public String extractPathWithinPattern(String pattern, String path) {
         return getOrCreatePattern(pattern).extractPathWithinPattern(path);
+    }
+
+    @Override
+    public Map<String, String> extractUriTemplateVariables(String pattern, String path) {
+        return namedParameters(pattern, path);
+    }
+
+    @Override
+    public Comparator<String> getPatternComparator(String path) {
+        return super.getPatternComparator(path);
+    }
+
+    @Override
+    public String combine(String pattern1, String pattern2) {
+        return super.combine(pattern1, pattern2);
     }
 
     private static class NamedPattern {
@@ -181,7 +198,8 @@ public class ParameterizedPathMatcher implements PathMatcher {
         }
     }
 
-    public boolean matchStart(String arg0, String arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    @Override
+    public boolean matchStart(String pattern, String path) {
+        return super.matchStart(pattern, path);
     }
 }

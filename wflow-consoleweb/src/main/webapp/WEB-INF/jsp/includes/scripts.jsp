@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
+<%@ page import="org.joget.commons.util.SecurityUtil"%>
 
 <c:if test="${!jsonUiInRequest}">
     
@@ -18,6 +19,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/md5/jquery.md5.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.cookie.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/guiders/guiders-1.1.1.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.blockUI.js"></script>
 
     <!-- jquery clue tip -->
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/jquerycluetip/css/jquery.cluetip.css">
@@ -51,4 +53,11 @@
             });
         }
     </script>   
+    
+    <script>
+        ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+        ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+        JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+        JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+    </script>
 </c:if>

@@ -45,7 +45,7 @@ iframe {
     border-radius: 2px;
     margin: 5px 0px;
 }
-.ui-mobile .form-cell-value, .ui-mobile .subform-cell-value {
+.ui-mobile .form-cell:not(.customHtml) > .form-cell-value, .ui-mobile .subform-cell:not(.customHtml) > .subform-cell-value {
     padding: 7px;
     border: solid 1px silver;
     border-radius: 10px;
@@ -91,6 +91,9 @@ iframe {
 }
 .ui-mobile .quickEdit, .ui-mobile #form-canvas .quickEdit {
     display: none;
+}
+.ui-mobile .form-column, .ui-mobile .subform-column {
+    width:auto !important;
 }
 .ui-mobile .form-cell, .ui-mobile .subform-cell {
     clear: both;
@@ -191,4 +194,24 @@ iframe.boxy-content {
 }
 #jqueryDialogDiv {
     background:#fff;              
+}
+.form-cell .tablesaw thead tr:first-child th,
+.subform-cell .tablesaw thead tr:first-child th {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+.form-cell .tablesaw-stack tbody tr,
+.subform-cell  .tablesaw-stack tbody tr {
+    border-bottom: 0;
+}
+@media (max-width: 39.9375em) {
+    .form-cell table.tablesaw td, .form-cell table.tablesaw th, .subform-cell table.tablesaw td, .subform-cell table.tablesaw th {
+        border:0;
+    }
+    .form-cell .tablesaw-stack tbody tr, .subform-cell .tablesaw-stack tbody tr {
+        border: 1px solid #dfdfdf;
+    }
+    .form-cell .tablesaw-stack .grid-action-cell, .subform-cell .tablesaw-stack .grid-action-cell{
+        text-align: right;
+    }
 }

@@ -34,6 +34,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
@@ -95,6 +96,7 @@ public class DatalistBuilderWebController {
         }
 
         map.addAttribute("id", id);
+        map.addAttribute("filterParam", new ParamEncoder(id).encodeParameterName(DataList.PARAMETER_FILTER_PREFIX));
         map.addAttribute("datalist", datalist);
         map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(listJson));
         return "dbuilder/builder";
@@ -113,7 +115,7 @@ public class DatalistBuilderWebController {
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
         DataList dlist = dataListService.fromJson(json);
         datalist.setName(dlist.getName());
-        datalist.setDescription(dlist.getName());
+        datalist.setDescription(dlist.getDescription());
         datalist.setJson(PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), json));
 
         boolean success = datalistDefinitionDao.update(datalist);
@@ -178,7 +180,7 @@ public class DatalistBuilderWebController {
             Plugin p = (Plugin) action;
             HashMap hm = new HashMap();
             hm.put("name", p.getName());
-            hm.put("label", action.getLabel());
+            hm.put("label", p.getI18nLabel());
             hm.put("className", action.getClassName());
             if (action instanceof PropertyEditable) {
                 String propertyOptions = ((PropertyEditable) action).getPropertyOptions();
@@ -357,7 +359,7 @@ public class DatalistBuilderWebController {
     @RequestMapping("/app/(*:appId)/(~:appVersion)/datalist/embed")
     public String embedDatalist(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, HttpServletRequest request, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_listId", required = false) String listId, @RequestParam(value = "_type", required = false) String selectionType) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-
+        
         if (appDef == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -380,6 +382,10 @@ public class DatalistBuilderWebController {
         String escapedJson = StringEscapeUtils.escapeJavaScript(json);
         DataList dataList = dataListService.fromJson(json);
         dataList.setSelectionType(selectionType);
+        
+        if (buttonLabel.isEmpty()) {
+            buttonLabel = ResourceBundleUtil.getMessage("general.method.label.submit");
+        }
         
         model.addAttribute("id", id);
         model.addAttribute("json", escapedJson);

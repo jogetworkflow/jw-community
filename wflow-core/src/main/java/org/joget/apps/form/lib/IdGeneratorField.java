@@ -40,7 +40,6 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
             if (value == null || value.trim().isEmpty()) {
                 // generate new value
                 value = getGeneratedValue(formData);
-                setProperty(FormUtil.PROPERTY_VALUE, value);
                 
                 String paramName = FormUtil.getElementParameterName(this);
                 formData.addRequestParameterValues(paramName, new String[] {value});
@@ -101,7 +100,7 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override

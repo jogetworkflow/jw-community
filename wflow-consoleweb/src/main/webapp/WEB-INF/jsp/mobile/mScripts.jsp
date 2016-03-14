@@ -1,8 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.commons.util.SecurityUtil"%>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.5.min.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/mobile/mobile.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tablesaw/tablesaw.stackonly.css" />
+<link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon_uv.ico"/>
 <style>
     .ui-content {
         clear: both;
@@ -47,14 +50,31 @@
 <script src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.cookie.js"></script>
 <script src="${pageContext.request.contextPath}/mobile/jqm/jquery.mobile-1.4.5.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/json/ui.js"></script>
-<script src="${pageContext.request.contextPath}/js/json/ui_ext.js"></script>
-<script src="${pageContext.request.contextPath}/js/json/util.js"></script>
-<script src="${pageContext.request.contextPath}/mobile/mobile.js"></script>
-<script src="${pageContext.request.contextPath}/mobile/mobile_util.js"></script>
+<script src="${pageContext.request.contextPath}/js/tablesaw/tablesaw.stackonly.js"></script>
+<script src="${pageContext.request.contextPath}/js/json/ui.js?build=<fmt:message key="build.number"/>"></script>
+<script src="${pageContext.request.contextPath}/js/json/ui_ext.js?build=<fmt:message key="build.number"/>"></script>
+<script src="${pageContext.request.contextPath}/js/json/util.js?build=<fmt:message key="build.number"/>"></script>
+<script src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
+<script src="${pageContext.request.contextPath}/js/jquery/jquery.blockUI.js"></script>
+<script src="${pageContext.request.contextPath}/mobile/mobile.js?build=<fmt:message key="build.number"/>"></script>
+<script src="${pageContext.request.contextPath}/mobile/mobile_util.js?build=<fmt:message key="build.number"/>"></script>
 <script>
     $(document).ready(function(){
         UI.base = "${pageContext.request.contextPath}";
         Mobile.contextPath = "${pageContext.request.contextPath}";
+        
+        $(document).on('pageinit', function() {
+            $.unblockUI();
+        });
+        
+        $('div:jqmData(role="page")').live('pageshow',function(){
+            $( document ).trigger( "enhance.tablesaw" );
+        });
     });
 </script>    
+<script>
+    ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+    ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+    JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
+    JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+</script>

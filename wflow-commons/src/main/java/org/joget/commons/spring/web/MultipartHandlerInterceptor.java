@@ -12,7 +12,7 @@ public class MultipartHandlerInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (request instanceof MultipartHttpServletRequest) {
-            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
         }
         return true;
     }

@@ -8,6 +8,7 @@ import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.common.SharkConstants;
 import org.enhydra.shark.api.internal.scripting.Evaluator;
 import org.enhydra.shark.api.internal.working.CallbackUtilities;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowDeadline;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
@@ -77,12 +78,20 @@ import org.springframework.context.ApplicationContext;
             Map context,
             Class resultClass) throws Exception {
 
+        ApplicationContext appContext = WorkflowUtil.getApplicationContext();
+        WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+            
+        WorkflowAssignment ass= null;
+        if (procId != null && !procId.isEmpty()) {
+            ass = new WorkflowAssignment(); //dummy assignment object for form hash variable
+            ass.setActivityId(actId);
+            ass.setProcessId(procId);
+        }
+        expr = workflowMapper.processHashVariable(expr, ass, null, null);
+            
         if (context.containsKey(SharkConstants.PROCESS_STARTED_TIME)
                 && context.containsKey(SharkConstants.ACTIVITY_ACCEPTED_TIME)
                 && context.containsKey(SharkConstants.ACTIVITY_ACTIVATED_TIME)) {
-            
-            ApplicationContext appContext = WorkflowUtil.getApplicationContext();
-            WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
             
             try {
                 WorkflowDeadline workflowDeadline = new WorkflowDeadline();

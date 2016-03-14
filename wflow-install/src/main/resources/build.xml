@@ -31,11 +31,19 @@
         <input message="Please enter MySQL database name:" addproperty="db.name" defaultvalue="jwdb"/>
         <input message="Please enter MySQL username:" addproperty="db.user" defaultvalue="root"/>
         <input message="Please enter MySQL password:" addproperty="db.password" defaultvalue=""/>
+        <input message="Please enter profile name to create:" addproperty="profile.name" defaultvalue="default"/>
     </target>
 
     <!-- Create default database -->
     <target name="create-db" description="create default database" depends="setup-db">
         <echo message="Creating database, please wait..." />
+        <exec executable="mysql">
+            <arg value="--host=${db.host}"/>
+            <arg value="-P ${db.port}"/>
+            <arg value="--user=${db.user}"/>
+            <arg value="--password=${db.password}"/>
+            <arg value="--execute=CREATE DATABASE ${db.name}"/>
+        </exec>
         <exec executable="mysql" input="data/jwdb-sample.sql">
             <arg value="--host=${db.host}"/>
             <arg value="-P ${db.port}"/>
@@ -47,15 +55,15 @@
 
     <!-- Create profile -->
     <target name="create-profile" description="create profile" depends="setup-db">
-        <input message="Please enter profile name to create:" addproperty="profile.name" defaultvalue="default"/>
         <copy file="data/app_datasource-profile.template" tofile="wflow/app_datasource-${profile.name}.properties" overwrite="true" />
         <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.host@@" value="${db.host}"/>
         <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.port@@" value="${db.port}"/>
         <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.name@@" value="${db.name}"/>
         <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.user@@" value="${db.user}"/>
         <replace file="wflow/app_datasource-${profile.name}.properties" token="@@db.password@@" value="${db.password}"/>
-        <copy file="data/app_datasource.template" tofile="wflow/app_datasource.properties" overwrite="true" />
-        <replace file="wflow/app_datasource.properties" token="@@profile.name@@" value="${profile.name}"/>
+        <propertyfile file="wflow/app_datasource.properties">
+            <entry key="currentProfile" value="${profile.name}"/>
+        </propertyfile>
     </target>
 
 </project>

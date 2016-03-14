@@ -20,6 +20,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 
 public class DataListMenu extends UserviewMenu {
+    private DataList cacheDataList = null;
 
     @Override
     public String getClassName() {
@@ -46,7 +47,7 @@ public class DataListMenu extends UserviewMenu {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
@@ -139,32 +140,31 @@ public class DataListMenu extends UserviewMenu {
     }
 
     protected DataList getDataList() throws BeansException {
-        // get datalist
-        ApplicationContext ac = AppUtil.getApplicationContext();
-        AppService appService = (AppService) ac.getBean("appService");
-        DataListService dataListService = (DataListService) ac.getBean("dataListService");
-        DatalistDefinitionDao datalistDefinitionDao = (DatalistDefinitionDao) ac.getBean("datalistDefinitionDao");
-        String id = getPropertyString("datalistId");
-        AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
-        DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(id, appDef);
-        
-        if (datalistDefinition != null) {
-            DataList dataList = dataListService.fromJson(datalistDefinition.getJson());
+        if (cacheDataList == null) {
+            // get datalist
+            ApplicationContext ac = AppUtil.getApplicationContext();
+            AppService appService = (AppService) ac.getBean("appService");
+            DataListService dataListService = (DataListService) ac.getBean("dataListService");
+            DatalistDefinitionDao datalistDefinitionDao = (DatalistDefinitionDao) ac.getBean("datalistDefinitionDao");
+            String id = getPropertyString("datalistId");
+            AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
+            DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(id, appDef);
 
-            if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
-                dataList.addBinderProperty(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
+            if (datalistDefinition != null) {
+                cacheDataList = dataListService.fromJson(datalistDefinition.getJson());
+
+                if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
+                    cacheDataList.addBinderProperty(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
+                }
+                if (getKey() != null && getKey().trim().length() > 0) {
+                    cacheDataList.addBinderProperty(Userview.USERVIEW_KEY_VALUE, getKey());
+                }
+
+                cacheDataList.setActionPosition(getPropertyString("buttonPosition"));
+                cacheDataList.setSelectionType(getPropertyString("selectionType"));
+                cacheDataList.setCheckboxPosition(getPropertyString("checkboxPosition"));
             }
-            if (getKey() != null && getKey().trim().length() > 0) {
-                dataList.addBinderProperty(Userview.USERVIEW_KEY_VALUE, getKey());
-            }
-
-            dataList.setActionPosition(getPropertyString("buttonPosition"));
-            dataList.setSelectionType(getPropertyString("selectionType"));
-            dataList.setCheckboxPosition(getPropertyString("checkboxPosition"));
-
-            return dataList;
-        } else {
-            return null;
         }
+        return cacheDataList;
     }
 }

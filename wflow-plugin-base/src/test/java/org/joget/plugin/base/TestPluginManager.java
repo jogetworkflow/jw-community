@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(value=SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:pluginBaseApplicationContext.xml"})
 public class TestPluginManager {
 

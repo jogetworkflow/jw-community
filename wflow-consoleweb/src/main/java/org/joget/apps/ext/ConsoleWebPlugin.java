@@ -11,18 +11,16 @@ import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.userview.model.UserviewTheme;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.plugin.base.Plugin;
-import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.base.PluginWebSupport;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Plugin to add content to the web console header, footer and body
  */
-public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
+public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSupport {
 
     @Override
     public String getName() {
@@ -31,7 +29,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -83,8 +81,8 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      */
     public String getHeader(String path) {
         MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
-        Locale locale = new Locale(AppUtil.getAppLocale());
-        String header = messageSource.getMessage("console.header.top.subtitle", null, "", locale);
+        Locale locale = LocaleContextHolder.getLocale();
+        String header = messageSource.getMessage("console.header.top.title", null, "", locale);
         return header;
     }
 
@@ -95,7 +93,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      */
     public String getLogo(String path) {
         MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
-        Locale locale = new Locale(AppUtil.getAppLocale());
+        Locale locale = LocaleContextHolder.getLocale();
         String header = messageSource.getMessage("console.header.top.logo", null, "", locale);
         return header;
     }
@@ -107,7 +105,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      */
     public String getFooter(String path) {
         MessageSource messageSource = (MessageSource)AppUtil.getApplicationContext().getBean("messageSource");
-        Locale locale = new Locale(AppUtil.getAppLocale());
+        Locale locale = LocaleContextHolder.getLocale();
         String revision = messageSource.getMessage("console.footer.label.revision", null, "", locale);
         String footer = "&copy; Joget Workflow - Joget Inc. All Rights Reserved. " + revision;
         return footer;
@@ -135,7 +133,7 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
      */
     protected String getWelcome() {
         String content = "<div id=\"getting-started\">"
-                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; overflow:hidden;\" src=\"http://www.joget.org/updates/welcome?src=v4\" frameborder=\"0\"></iframe>"
+                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; overflow:hidden;\" src=\"http://www.joget.org/updates/welcome?src=v5\" frameborder=\"0\"></iframe>"
                 + "<a href=\"http://www.joget.org/help?src=wmc\" target=\"www.joget.org\" id=\"link\"></a>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
@@ -181,23 +179,4 @@ public class ConsoleWebPlugin implements Plugin, PluginWebSupport {
             return "redirect:/web/console/home";
         }
     }
-    
-    /**
-     * Return the default theme plugin for a new userview
-     * @return 
-     */
-    public String getDefaultUserviewTheme() {
-        String className = ResourceBundleUtil.getMessage("userview.default.theme.classname");
-        
-        if (className != null && !className.isEmpty()) {
-            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-            Plugin plugin = pluginManager.getPlugin(className);
-            if (plugin != null && plugin instanceof UserviewTheme) {
-                return className;
-            }
-        }
-        
-        return "org.joget.plugin.enterprise.CorporatiTheme";
-    }
-    
 }

@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +16,14 @@ import org.displaytag.decorator.CheckboxTableDecorator;
 import org.displaytag.model.TableModel;
 import org.displaytag.properties.MediaTypeEnum;
 import org.displaytag.tags.TableTagParameters;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
 
 /**
@@ -134,12 +137,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String text = formatColumn(column, row, columnValue);
 
         // strip tags if media type is not HTML
-        String export =  dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTING);
-        String exportType = dataList.getDataListParamString(TableTagParameters.PARAMETER_EXPORTTYPE);
-        if (!("1".equals(export) && (exportType.equals("1") || exportType.equals("2") || exportType.equals("3") || exportType.equals("5")))) {
-            if (isRenderHtml(column) && text != null && !MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-                text = StringUtil.stripAllHtmlTag(text);
-            }
+        if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+            text = StringUtil.stripAllHtmlTag(text);
+            text = StringEscapeUtils.unescapeHtml(text);
         }
 
         // handle links
@@ -316,6 +316,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 //handle for lowercase propertyName
                 if (value == null) {
                     value = super.evaluate(propertyName.toLowerCase());
+                }
+                if (value != null && value instanceof Date) {
+                    value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
                 }
                 return value;
             } catch (Exception e) {}

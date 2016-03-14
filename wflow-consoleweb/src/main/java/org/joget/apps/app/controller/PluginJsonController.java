@@ -28,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -65,9 +66,9 @@ public class PluginJsonController {
             for (Plugin plugin : pluginList) {
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
-                    data.put("id", plugin.getClass().getName());
-                    data.put("name", plugin.getName());
-                    data.put("description", plugin.getDescription());
+                    data.put("id", ClassUtils.getUserClass(plugin).getName());
+                    data.put("name", plugin.getI18nLabel());
+                    data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
 
                     jsonObject.accumulate("data", data);
@@ -101,9 +102,9 @@ public class PluginJsonController {
             for (Plugin plugin : pluginList) {
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
-                    data.put("id", plugin.getClass().getName());
-                    data.put("name", plugin.getName());
-                    data.put("description", plugin.getDescription());
+                    data.put("id", ClassUtils.getUserClass(plugin).getName());
+                    data.put("name", plugin.getI18nLabel());
+                    data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
 
                     jsonObject.accumulate("data", data);
@@ -137,9 +138,9 @@ public class PluginJsonController {
             for (Plugin plugin : pluginList) {
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
-                    data.put("id", plugin.getClass().getName());
-                    data.put("name", plugin.getName());
-                    data.put("description", plugin.getDescription());
+                    data.put("id", ClassUtils.getUserClass(plugin).getName());
+                    data.put("name", plugin.getI18nLabel());
+                    data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
 
                     jsonObject.accumulate("data", data);
@@ -192,7 +193,7 @@ public class PluginJsonController {
     }
     
     @RequestMapping("/json/hash/options")
-    public void HashVariableOptions(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+    public void HashVariableOptions(Writer writer) throws JSONException {
         try {
             Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
             

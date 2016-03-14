@@ -7,6 +7,10 @@ import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import java.util.Collection;
 
+/**
+ * Interface of Directory Manager service to interact with Directory Source
+ * 
+ */
 public interface DirectoryManager {
 
     /**

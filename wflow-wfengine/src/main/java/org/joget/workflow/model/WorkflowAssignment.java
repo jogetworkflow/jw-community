@@ -27,6 +27,7 @@ public class WorkflowAssignment implements Serializable {
     private Date dueDate;
     private List<WorkflowVariable> processVariableList;
     private List<String> assigneeList;
+    private double serviceLevelValue;
 
     public String getEncodedProcessDefId() {
         if (processDefId == null) {
@@ -190,5 +191,13 @@ public class WorkflowAssignment implements Serializable {
 
     public void setAssigneeList(List<String> assigneeList) {
         this.assigneeList = assigneeList;
+    }
+
+    public double getServiceLevelValue() {
+        return serviceLevelValue;
+    }
+
+    public void setServiceLevelValue(double serviceLevelValue) {
+        this.serviceLevelValue = serviceLevelValue;
     }
 }

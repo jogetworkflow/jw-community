@@ -16,7 +16,9 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 
 /**
- * Base class for all elements within a form. All forms, containers and form fields must override this class.
+ * A base abstract class to develop a Form Field Element plugin. 
+ * All forms, containers and form fields must extend this class.
+ * 
  */
 public abstract class Element extends ExtDefaultPlugin implements PropertyEditable{
 
@@ -26,48 +28,95 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private FormLoadBinder loadBinder;
     private FormLoadBinder optionsBinder;
     private FormStoreBinder storeBinder;
-    private FormValidator validator;
+    private Validator validator;
 
+    /**
+     * Get load binder
+     * 
+     * @return 
+     */
     public FormLoadBinder getLoadBinder() {
         return loadBinder;
     }
 
+    /**
+     * Set load binder
+     * @param loadBinder 
+     */
     public void setLoadBinder(FormLoadBinder loadBinder) {
         this.loadBinder = loadBinder;
     }
 
+    /**
+     * Gets an Options Binder
+     * @return 
+     */
     public FormLoadBinder getOptionsBinder() {
         return optionsBinder;
     }
 
+    /**
+     * Sets an Options Binder
+     * @param optionsBinder 
+     */
     public void setOptionsBinder(FormLoadBinder optionsBinder) {
         this.optionsBinder = optionsBinder;
     }
 
+    /**
+     * Gets a Store Binder
+     * @return 
+     */
     public FormStoreBinder getStoreBinder() {
         return storeBinder;
     }
 
+    /**
+     * Sets a Store Binder
+     * @param storeBinder 
+     */
     public void setStoreBinder(FormStoreBinder storeBinder) {
         this.storeBinder = storeBinder;
     }
 
-    public FormValidator getValidator() {
+    /**
+     * Gets a validator
+     * @return 
+     */
+    public Validator getValidator() {
         return validator;
     }
 
-    public void setValidator(FormValidator validator) {
+    /**
+     * Sets a validator
+     * @param validator 
+     */
+    public void setValidator(Validator validator) {
         this.validator = validator;
     }
 
+    /**
+     * Retrieves all children form field element under this field
+     * @param formData
+     * @return 
+     */
     public Collection<Element> getChildren(FormData formData) {
         return getChildren();
     }
     
+    /**
+     * Retrieves all children form field element under this field
+     * @return 
+     */
     public Collection<Element> getChildren() {
         return children;
     }
 
+    /**
+     * Sets form fields as children of this field
+     * 
+     * @param children 
+     */
     public void setChildren(Collection<Element> children) {
         this.children = children;
 
@@ -105,6 +154,11 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return customParameterName;
     }
 
+    /**
+     * Sets a custom parameter name for the HTML input name of the element
+     * 
+     * @param customParameterName 
+     */
     public void setCustomParameterName(String customParameterName) {
         setProperty("customParameterName", customParameterName);
         this.customParameterName = customParameterName;
@@ -120,6 +174,18 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return formData;
     }
     
+    /**
+     * Method for override to perform specify validation for this field.
+     * 
+     * Error message can display with following code:
+     * <pre>
+     * String id = FormUtil.getElementParameterName(this);
+     * formData.addFormError(id, "Error!!");
+     * </pre>
+     * 
+     * @param formData
+     * @return 
+     */
     public Boolean selfValidate(FormData formData) {
         //do nothing
         return true;
@@ -185,9 +251,9 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         Map dataModel = FormUtil.generateDefaultTemplateDataModel(this, formData);
 
         // set metadata for form builder
-        String elementMetaData = FormUtil.generateElementMetaData(this);
         dataModel.put("includeMetaData", includeMetaData);
         if (includeMetaData) {
+            String elementMetaData = FormUtil.generateElementMetaData(this);
             dataModel.put("elementMetaData", elementMetaData);
         }
 
@@ -234,10 +300,20 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return true;
     }
     
+    /**
+     * Set default Plugin Properties Options value to a new added Field in Form Builder.
+     * 
+     * @return 
+     */
     public String getDefaultPropertyValues(){
         return PropertyUtil.getDefaultPropertyValues(getPropertyOptions());
     }
     
+    /**
+     * Used to create multiple form data column in database by returning extra column names.
+     * 
+     * @return 
+     */
     public Collection<String> getDynamicFieldNames() {
         return null;
     }
@@ -247,6 +323,12 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return "Element {" + "className=" + getClassName() + ", properties=" + getProperties() + '}';
     }
     
+    /**
+     * Flag to indicate whether or not this field has fail the validation process
+     * 
+     * @param formData
+     * @return 
+     */
     public Boolean hasError(FormData formData) {
         String error = FormUtil.getElementError(this, formData);
         if (error != null && !error.isEmpty()) {
@@ -265,6 +347,14 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return false;
     }
     
+    /**
+     * Flag to indicate whether or not the current logged in user is authorized to view this field in the form.
+     * 
+     * It used property key "permission" to retrieve Form Permission plugin.
+     * 
+     * @param formData
+     * @return 
+     */
     public Boolean isAuthorize(FormData formData) {
         if (formData.getFormResult(FormService.PREVIEW_MODE) != null) {
             return true;

@@ -113,7 +113,7 @@ FormUtil = {
                 if (v['field'] !== "") {
                     values = FormUtil.getValues(v['field']).join(";");
                 }
-                
+            
                 if (values.length === 0 && v['defaultValue'] !== "") {
                     values = v['defaultValue'];
                 }

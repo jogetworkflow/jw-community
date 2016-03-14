@@ -5,15 +5,25 @@
             if($(target)){
                 $('[name='+o.controlField+']').addClass("control-field");
                 
-                if (o.nonce === '') {
-                    $('[name='+o.controlField+']').live("change", function(){
+                var showHideChange = function() {
+                    if (!$(target).is(".section-visibility-disabled")) {
                         showHideOption(target, o);
-                    });
+                    }
+                };
+                
+                var ajaxChange = function() {
+                    if (!$(target).is(".section-visibility-disabled")) {
+                        ajaxOptions(target, o);
+                    }
+                };
+                
+                if (o.nonce === '') {
+                    $('body').off("change", '[name='+o.controlField+']', showHideChange);
+                    $('body').on("change", '[name='+o.controlField+']', showHideChange);
                     showHideOption(target, o);
                 } else {
-                    $('[name='+o.controlField+']').live("change", function(){
-                        ajaxOptions(target, o);
-                    });
+                    $('body').off("change", '[name='+o.controlField+']', ajaxChange);
+                    $('body').on("change", '[name='+o.controlField+']', ajaxChange);
                     ajaxOptions(target, o);
                 }
             }
@@ -78,7 +88,7 @@
                         });         
                     }
                 }
-                $('[name='+o.paramName+']').trigger("change");
+                $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
             }
         );
     }
@@ -119,6 +129,6 @@
                 }
             });
         }
-        $('[name='+o.paramName+']').trigger("change");
+        $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
     }
 })(jQuery);

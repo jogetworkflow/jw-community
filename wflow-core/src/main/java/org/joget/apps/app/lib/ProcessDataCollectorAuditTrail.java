@@ -1,6 +1,7 @@
 package org.joget.apps.app.lib;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
@@ -19,6 +20,7 @@ import org.joget.report.model.ReportWorkflowProcess;
 import org.joget.report.model.ReportWorkflowProcessInstance;
 import org.joget.report.service.ReportManager;
 import org.joget.workflow.model.WorkflowActivity;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.core.task.TaskExecutor;
@@ -31,7 +33,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
@@ -50,20 +52,54 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 WorkflowProcess trackProcess = null;
                 WorkflowActivity activity = null;
                 WorkflowActivity trackActivity = null;
+                List<String> users = null;
 
                 if (method.startsWith("process")) {
                     process = workflowManager.getRunningProcessById(auditTrail.getMessage());
                     trackProcess = workflowManager.getRunningProcessInfo(auditTrail.getMessage());
                 } else {
-                    activity = workflowManager.getActivityById(auditTrail.getMessage());
-                    trackActivity = workflowManager.getRunningActivityInfo(auditTrail.getMessage());
+                    String actId = null;
+                    Object[] args = auditTrail.getArgs();
+                    
+                    if (method.equals("getDefaultAssignments") && args.length == 3) {
+                        users = (List<String>) auditTrail.getReturnObject();
+                        actId = (String) args[1];
+                    } else if (method.equals("assignmentReassign") && args.length == 5) {
+                        users = new ArrayList<String> ();
+                        users.add((String) args[3]);
+                        actId = (String) args[2];
+                    } else if (method.equals("assignmentForceComplete") && args.length == 4) {
+                        actId = (String) args[2];
+                    } else if (method.startsWith("executeTool")) {
+                        users = new ArrayList<String>();
+                        actId = ((WorkflowAssignment) args[0]).getActivityId();
+                    } else {
+                        actId = auditTrail.getMessage();
+                    }
+                    
+                    activity = workflowManager.getActivityById(actId);
+                    trackActivity = workflowManager.getRunningActivityInfo(actId);
                     process = workflowManager.getRunningProcessById(activity.getProcessId());
                     trackProcess = workflowManager.getRunningProcessInfo(activity.getProcessId());
+                    
+                    if (method.equals("executeTool")) {
+                        trackActivity.setStartedTime(trackActivity.getCreatedTime());
+                    } else if (method.equals("executeToolCompleted") || method.equals("executeActivity")) {
+                        activity.setState("closed.completed");
+                        trackActivity.setStatus("Completed");
+                        trackActivity.setStartedTime(trackActivity.getCreatedTime());
+                        trackActivity.setFinishTime(new Date());
+                        
+                        long timeTakenInSeconds = (trackActivity.getFinishTime().getTime() - trackActivity.getCreatedTime().getTime()) / 1000;
+                        
+                        trackActivity.setTimeConsumingFromDateCreatedInSeconds(timeTakenInSeconds);
+                        trackActivity.setTimeConsumingFromDateStartedInSeconds(timeTakenInSeconds);
+                    }
                 }
 
                 String profile = DynamicDataSourceManager.getCurrentProfile();
                 TaskExecutor executor = (TaskExecutor) AppUtil.getApplicationContext().getBean("reportExecutor");
-                executor.execute(new ReportTask(profile, activity, trackActivity, process, trackProcess, auditTrail.getAppId(), auditTrail.getAppVersion()));
+                executor.execute(new ReportTask(profile, activity, trackActivity, process, trackProcess, users, auditTrail.getAppId(), auditTrail.getAppVersion()));
             }
             return result;
         } catch (Exception e) {
@@ -89,12 +125,12 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                 || auditTrail.getMethod().equals("processAbort")
                 || auditTrail.getMethod().equals("processCompleted")
                 || auditTrail.getMethod().equals("assignmentAbort")
-                || auditTrail.getMethod().equals("assignmentAccept")
                 || auditTrail.getMethod().equals("assignmentComplete")
                 || auditTrail.getMethod().equals("assignmentForceComplete")
-                || auditTrail.getMethod().equals("assignmentReassignUser")
+                || auditTrail.getMethod().equals("assignmentReassign")
                 || auditTrail.getMethod().equals("executeTool")
-                || auditTrail.getMethod().equals("executeToolCompleted");
+                || auditTrail.getMethod().equals("executeToolCompleted")
+                || auditTrail.getMethod().equals("executeActivity");
     }
     
     protected class ReportTask implements Runnable {
@@ -105,13 +141,15 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         WorkflowProcess wfTrackProcess;
         WorkflowActivity wfActivity;
         WorkflowActivity wfTrackActivity;
+        List<String> users;
         
-        ReportTask(String profile, WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, String appId, String appVersion) {
+        ReportTask(String profile, WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, List<String> users, String appId, String appVersion) {
             this.profile = profile;
             this.wfActivity = wfActivity;
             this.wfTrackActivity = wfTrackActivity;
             this.wfProcess = wfProcess;
             this.wfTrackProcess = wfTrackProcess;
+            this.users = users;
             this.appId = appId;
             this.appVersion = appVersion;
         }
@@ -120,7 +158,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
         public void run() {
             HostManager.setCurrentProfile(profile);
             if (wfActivity != null) {
-                updateActivityData(wfActivity, wfTrackActivity, wfProcess, wfTrackProcess, appId, appVersion);
+                updateActivityData(wfActivity, wfTrackActivity, wfProcess, wfTrackProcess, users, appId, appVersion);
             } else {
                 updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
             }
@@ -166,7 +204,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
             return null;
         }
 
-        protected ReportWorkflowActivityInstance updateActivityData(WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, String appId, String appVersion) {
+        protected ReportWorkflowActivityInstance updateActivityData(WorkflowActivity wfActivity, WorkflowActivity wfTrackActivity, WorkflowProcess wfProcess, WorkflowProcess wfTrackProcess, List<String> users, String appId, String appVersion) {
             String activityInstanceId = wfActivity.getId();
 
             WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
@@ -194,14 +232,19 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
                     //get assignment users
                     try {
-                        Thread.sleep(2000);
-                        int maxAttempt = 5;
-                        int numOfAttempt = 0;
-                        while ((userList == null || userList.isEmpty()) && numOfAttempt < maxAttempt) {
-                            LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
-                            userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
-                            Thread.sleep(2000);
-                            numOfAttempt++;
+                        if (users == null) {
+                            int numOfAttempt = 0;
+                            do {
+                                LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
+                                userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+
+                                if (userList == null) {
+                                    Thread.sleep(2000); //wait for assignment creation
+                                }
+                                numOfAttempt++;
+                            } while (userList == null && numOfAttempt < 5); // try max 5 times
+                        } else {
+                            userList = users;
                         }
 
                         LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
@@ -209,7 +252,11 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                         LogUtil.error(getClass().getName(), e, "Error executing report plugin");
                     }
                 } else {
-                    userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                    if (users == null) {
+                        userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                    } else {
+                        userList = users;
+                    }
                 }
 
                 String assignmentUsers = "";

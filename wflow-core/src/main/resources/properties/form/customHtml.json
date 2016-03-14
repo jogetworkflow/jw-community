@@ -11,9 +11,8 @@
     {
         name : 'value',
         label : '@@form.customhtml@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '25'
+        type : 'codeeditor',
+        mode : 'html'
     }]
 },
 {

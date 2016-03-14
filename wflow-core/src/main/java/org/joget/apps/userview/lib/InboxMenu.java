@@ -27,7 +27,6 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PagedList;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -43,6 +42,7 @@ import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
 public class InboxMenu extends UserviewMenu implements PluginWebSupport {
+    private DataList cacheDataList = null;
 
     public static final String PREFIX_SELECTED = "selected_";
     public static final String PROPERTY_FILTER = "appFilter";
@@ -74,7 +74,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
@@ -182,14 +182,15 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected DataList getDataList() {
-        // get datalist
-        ApplicationContext ac = AppUtil.getApplicationContext();
-        AppService appService = (AppService) ac.getBean("appService");
-        DataListService dataListService = (DataListService) ac.getBean("dataListService");
-        String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", null, true, "message/userview/inboxMenu");
-        DataList dataList = dataListService.fromJson(json);
-
-        return dataList;
+        if (cacheDataList == null) {
+            // get datalist
+            ApplicationContext ac = AppUtil.getApplicationContext();
+            AppService appService = (AppService) ac.getBean("appService");
+            DataListService dataListService = (DataListService) ac.getBean("dataListService");
+            String json = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/inboxMenuListJson.json", null, true, "message/userview/inboxMenu");
+            cacheDataList = dataListService.fromJson(json);
+        }
+        return cacheDataList;
     }
 
     protected DataListCollection getRows(DataList dataList) {
@@ -221,18 +222,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
             if (packageId != null || processDefId != null) {
                 DataListQueryParam param = dataList.getQueryParam(null, null);
-
+                               
                 // get assignments
                 WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
-                PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
+                Collection<WorkflowAssignment> assignmentList = workflowManager.getAssignmentListLite(packageId, processDefId, null, null, param.getSort(), param.getDesc(), param.getStart(), param.getSize());
 
-                DirectoryManager directoryManager = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
-                WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
-                String gmt = "";
-                if (user != null) {
-                    gmt = user.getTimeZone();
-                }
                 String format = AppUtil.getAppDateFormat();
                 for (WorkflowAssignment assignment : assignmentList) {
                     Map data = new HashMap();
@@ -242,13 +236,10 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                     data.put("processName", assignment.getProcessName());
                     data.put("activityName", assignment.getActivityName());
                     data.put("processVersion", assignment.getProcessVersion());
-                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), gmt, format));
+                    data.put("dateCreated", TimeZoneUtil.convertToTimeZone(assignment.getDateCreated(), null, format));
                     data.put("acceptedStatus", assignment.isAccepted());
-                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), gmt, format) : "-");
-
-                    double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(assignment.getActivityId());
-
-                    data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+                    data.put("dueDate", assignment.getDueDate() != null ? TimeZoneUtil.convertToTimeZone(assignment.getDueDate(), null, format) : "-");
+                    data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(assignment.getServiceLevelValue()));
 
                     // set results
                     resultList.add(data);
@@ -341,10 +332,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         if (form != null) {
             // generate form HTML
             String formHtml = formService.retrieveFormHtml(form, formData);
-            String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
             setProperty("formHtml", formHtml);
-            setProperty("formJson", formJson);
             if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
                 setProperty("activityForm", activityForm);
                 setProperty("assignment", assignment);
@@ -364,6 +353,8 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         String formUrl = addParamToUrl(getUrl(), "_action", "submit");
         formUrl = addParamToUrl(formUrl, "_mode", "assignment");
         formUrl = addParamToUrl(formUrl, "activityId", activityId);
+        
+        String cancelUrl = getUrl();
 
         AppService appService;
         ApplicationContext ac = AppUtil.getApplicationContext();
@@ -373,7 +364,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         
         formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
         
-        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
+        PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl, cancelUrl);
         return activityForm;
     }
 
@@ -424,13 +415,11 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             }
 
             // show form
-            String formJson = formService.generateElementJson(form);
             setProperty("view", "formView");
             setProperty("stay", formData.getStay());
             setProperty("submitted", Boolean.TRUE);
             setProperty("errorCount", errorCount);
             setProperty("formHtml", formHtml);
-            setProperty("formJson", formJson);
             if (assignment != null) {
                 setProperty("headerTitle", assignment.getProcessName() + " - " + assignment.getActivityName());
             }
@@ -449,7 +438,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected Form submitAssignmentForm(FormData formData, WorkflowAssignment assignment, PackageActivityForm activityForm) {
-        Form nextForm = null;
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -481,7 +469,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
             if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
-                if (nextActivity != null) {
+                if (nextActivity != null) { 
                     String redirectUrl = getUrl() + "?_mode=assignment&activityId=" + nextActivity.getActivityId();
                     setProperty("messageShowAfterComplete", "");
                     setProperty("redirectUrlAfterComplete", redirectUrl);
@@ -551,12 +539,6 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
     }
 
     protected String addParamToUrl(String url, String name, String value) {
-        if (url.contains("?")) {
-            url += "&";
-        } else {
-            url += "?";
-        }
-
-        return url += name + "=" + value;
+        return StringUtil.addParamsToUrl(url, name, value);
     }
 }

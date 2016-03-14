@@ -85,5 +85,11 @@ response.addDateHeader("Last-Modified", java.util.Calendar.getInstance().getTime
         <c:if test="${!empty param.session}">
             <argument>session:<c:out value="${param.session}" escapeXml="true"/></argument>
         </c:if>
+        <c:if test="${!empty param.tokenName}">
+            <argument>tokenName:<c:out value="${param.tokenName}" escapeXml="true"/></argument>
+        </c:if>
+        <c:if test="${!empty param.tokenValue}">
+            <argument>tokenValue:<c:out value="${param.tokenValue}" escapeXml="true"/></argument>
+        </c:if>
     </application-desc>
 </jnlp>

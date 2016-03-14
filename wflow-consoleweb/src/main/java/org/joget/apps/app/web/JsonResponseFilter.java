@@ -54,30 +54,32 @@ public class JsonResponseFilter implements Filter {
         }
         
         private void buildJsonBody(int sc, String msg) {
-            if (sc >= 400) {
-                // replace error 500 with generic message
-                if (sc == 500) {
-                    msg = "System error, please refer to log files";
-                }
-                try {
-                    setContentType("application/json; charset=utf-8");
-                    
-                    JSONObject jsonObject = new JSONObject();
-                    Map error = new HashMap();
-                    error.put("code", Integer.toString(sc));
-                    error.put("message", msg);
-                    error.put("date", new Date());
-                    jsonObject.accumulate("error", error);
+            if (!super.isCommitted()) {
+                if (sc >= 400) {
+                    // replace error 500 with generic message
+                    if (sc == 500) {
+                        msg = "System error, please refer to log files";
+                    }
+                    try {
+                        setContentType("application/json; charset=utf-8");
 
-                    jsonObject.write(getWriter());
+                        JSONObject jsonObject = new JSONObject();
+                        Map error = new HashMap();
+                        error.put("code", Integer.toString(sc));
+                        error.put("message", msg);
+                        error.put("date", new Date());
+                        jsonObject.accumulate("error", error);
 
+                        jsonObject.write(getWriter());
+
+                        super.setStatus(sc, msg);
+                        super.flushBuffer();
+                    } catch (Exception e) {
+                        LogUtil.error(JsonResponseFilter.class.getName(), e, "Unable to build json");
+                    }
+                } else {
                     super.setStatus(sc, msg);
-                    super.flushBuffer();
-                } catch (Exception e) {
-                    LogUtil.error(JsonResponseFilter.class.getName(), e, "Unable to build json");
                 }
-            } else {
-                super.setStatus(sc, msg);
             }
         }
     }
@@ -92,44 +94,37 @@ public class JsonResponseFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             
             // reset profile and set hostname
-            HostManager.setCurrentProfile(null);
-            String hostname = httpRequest.getServerName();
-            HostManager.setCurrentHost(hostname);
+            HostManager.initHost();
             
             StatusCodeCaptureWrapper wrappedResponse = new StatusCodeCaptureWrapper(httpResponse);
             
             String callback = httpRequest.getParameter("callback");
             
-            boolean allowed = true;
             SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
             String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
-            String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
-
             if (!"*".equals(jsonpWhitelist)) {
+                String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
                 List<String> whitelist = new ArrayList<String>();
                 whitelist.add(httpRequest.getServerName());
                 if (jsonpWhitelist != null) {
                     whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
                 }
-
                 if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
-                    allowed = false;
+                    LogUtil.info(JsonResponseFilter.class.getName(), "Possible CSRF attack from url("+httpRequest.getRequestURI()+") referer(" + httpRequest.getHeader("referer") + ") IP(" + httpRequest.getRemoteAddr() + ")");
+                    wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
+                    return;
                 }
             }
             
             if (callback != null && !callback.isEmpty()) {
-                if (!allowed) {
-                    wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
-                    return;
-                }
                 wrappedResponse.setContentType("application/javascript; charset=utf-8");
             } else {
                 wrappedResponse.setContentType("application/json; charset=utf-8");
-            }
-            
-            if (allowed && httpRequest.getHeader("Origin") != null) {
-                wrappedResponse.setHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
-                wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
+                
+                if (httpRequest.getHeader("Origin") != null) {
+                    wrappedResponse.setHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
+                    wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
+                }
             }
             
             Throwable throwable = null;
@@ -148,6 +143,8 @@ public class JsonResponseFilter implements Filter {
                 if (throwable instanceof TypeMismatchException) {
                     status = HttpServletResponse.SC_BAD_REQUEST;
                 }
+            } catch(IllegalStateException ise) {
+                //ignore
 	    } catch (IllegalArgumentException e) {
                 throwable = e;
                 status = HttpServletResponse.SC_BAD_REQUEST;

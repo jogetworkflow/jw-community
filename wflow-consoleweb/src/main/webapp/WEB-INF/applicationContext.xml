@@ -6,18 +6,36 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:security="http://www.springframework.org/schema/security"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context-2.5.xsd
-       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.2.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
     <import resource="classpath:appsApplicationContext.xml" />
 
-    <security:authentication-manager alias="authenticationManager"/>
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="authenticationProvider" />
+    </security:authentication-manager>
 
-    <security:http auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" access-denied-page="/web/unauthorized" servlet-api-provision="false">
+    <!-- Open paths -->        
+    <security:http pattern="/web/login" security="none"/>
+    <security:http pattern="/web/mlogin" security="none"/>
+
+    <!-- Protected paths -->
+    <security:http pattern="/**" use-expressions="false" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">        
+        <security:access-denied-handler error-page="/web/unauthorized"/>
+        <security:csrf disabled="true"/>
+        <security:headers defaults-disabled="true">
+            <security:content-type-options />
+        </security:headers>
+        
+        <!-- Open paths which require user object for locale and timezone-->
+        <security:intercept-url pattern="/web/index" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/unauthorized" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/help/guide" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/home" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        
         <!-- Userview paths: permissions handled within the userview and forms -->
         <security:intercept-url pattern="/web/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/embed/ulogin/**" access="ROLE_ADMIN, ROLE_USER" />
@@ -47,8 +65,8 @@
         <security:intercept-url pattern="/web/rss/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
                 
         <!-- Task assignment and form download paths: permissions controlled by assignment  -->
-        <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
-        <security:intercept-url pattern="/web/client/app/**/**/form/download/**" access="ROLE_ADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/client/app/**/**/form/download/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/client/app/assignment/**" access="ROLE_ADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/client/app/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
                 
@@ -66,57 +84,48 @@
         <security:intercept-url pattern="/web/console/profile/submit" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_USER"/>
 
-        <!-- Open paths -->        
-        <security:intercept-url pattern="/web/login" filters="none"/>
-        <security:intercept-url pattern="/web/index" filters="none"/>
-        <security:intercept-url pattern="/web/unauthorized" filters="none"/>
-        <security:intercept-url pattern="/web/help/guide" filters="none"/>
-        <security:intercept-url pattern="/web/home" filters="none"/>
-        <security:intercept-url pattern="/web/desktop" filters="none"/>
-
+        <!-- Login, logout and app center -->
+        <security:intercept-url pattern="/web/desktop" access="IS_AUTHENTICATED_ANONYMOUSLY"/>    
+        <security:intercept-url pattern="/web/login" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        <security:form-login login-page="/web/login" username-parameter="j_username" password-parameter="j_password" login-processing-url="/j_spring_security_check" default-target-url="/index.jsp" authentication-failure-url="/web/login?login_error=1" />
+        <security:logout logout-url="/j_spring_security_logout" logout-success-url="/web/login"/>
+        <security:anonymous username="roleAnonymous"/>
+        
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN"/>
         <security:intercept-url pattern="/web/**" access="ROLE_ADMIN"/>
 
-        <security:logout logout-success-url="/web/login"/>
-        <security:anonymous />
+        <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions  -->
+        <!--
+        <security:session-management>
+            <security:concurrency-control max-sessions="-1" error-if-maximum-exceeded="true" expired-url="/web/login" />
+        </security:session-management>
+        -->
         
-        <!-- Concurrent session control, set max-sessions to allowed number of concurrent sessions, -1 means no limit  -->
-        <security:concurrent-session-control max-sessions="-1" exception-if-maximum-exceeded="true" expired-url="/web/login" />
+        <!-- Support Basic Authentication -->
+        <security:http-basic />
+        
+        <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" /> 
     </security:http>
-    
+        
     <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
-        <security:custom-authentication-provider />
         <property name="directoryManager" ref="directoryManager"/>
     </bean>
 
     <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
-        <security:custom-filter position="AUTHENTICATION_PROCESSING_FILTER" />
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="directoryManager" ref="directoryManager"/>
         <property name="setupManager" ref="setupManager"/>
         <property name="localeResolver" ref="localeResolver"/>
-        <property name="defaultTargetUrl" value="/index.jsp"/>
-        <property name="authenticationFailureUrl" value="/web/login?login_error=1" />
+        <property name="auditTrailManager" ref="auditTrailManager"/>
         <property name="allowSessionCreation" value="true" />
     </bean>
     
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.ui.webapp.AuthenticationProcessingFilterEntryPoint">
-        <property name="loginFormUrl" value="/web/login" />
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <constructor-arg value="/web/login"/>
         <property name="forceHttps" value="false" />
-    </bean>
-
-    <bean id="basicProcessingFilter" class="org.joget.apps.workflow.controller.WorkflowBasicProcessingFilter">
-        <property name="authenticationManager"><ref bean="authenticationManager"/></property>
-         <security:custom-filter before="AUTHENTICATION_PROCESSING_FILTER"/>
-        <property name="authenticationEntryPoint"><ref bean="authenticationEntryPoint"/></property>
-    </bean>
-
-    <bean id="authenticationEntryPoint"
-        class="org.springframework.security.ui.basicauth.BasicProcessingFilterEntryPoint">
-        <property name="realmName" value="Protected Realm"/>
     </bean>
 
     <!-- END Spring Security -->

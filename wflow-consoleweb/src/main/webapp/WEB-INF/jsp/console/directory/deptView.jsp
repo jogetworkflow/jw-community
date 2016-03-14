@@ -4,6 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
+        <p><i class="icon-group"></i> <fmt:message key='console.header.menu.label.users'/></p>
         <p><fmt:message key="console.directory.org.common.label"/>: <span class="nav-subtitle"><c:out value="${department.organization.name}"/></span></p>
     </div>
     <div id="nav-body">

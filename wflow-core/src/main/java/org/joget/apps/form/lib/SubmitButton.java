@@ -1,10 +1,12 @@
 package org.joget.apps.form.lib;
 
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
 
 /**
  * Form button to save form data (with validation)
@@ -20,7 +22,7 @@ public class SubmitButton extends FormButton {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -30,8 +32,8 @@ public class SubmitButton extends FormButton {
 
     @Override
     public FormData actionPerformed(Form form, FormData formData) {
-        FormService formService = (FormService) FormUtil.getApplicationContext().getBean("formService");
-        FormData updatedFormData = formService.submitForm(form, formData, false);
+        AppService appService = (AppService) FormUtil.getApplicationContext().getBean("appService");
+        FormData updatedFormData = appService.submitForm(form, formData, false);
         return updatedFormData;
     }
 

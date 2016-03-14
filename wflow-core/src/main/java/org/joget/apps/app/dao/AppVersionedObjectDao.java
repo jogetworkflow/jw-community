@@ -3,7 +3,6 @@ package org.joget.apps.app.dao;
 import java.util.Collection;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public interface AppVersionedObjectDao<T extends AbstractAppVersionedObject> {
 
@@ -24,7 +23,5 @@ public interface AppVersionedObjectDao<T extends AbstractAppVersionedObject> {
     Collection<T> find(String condition, Object[] params, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows);
 
     Long count(String condition, Object[] params, AppDefinition appDefinition);
-    
-    HibernateTemplate getHibernateTemplate();
     
 }

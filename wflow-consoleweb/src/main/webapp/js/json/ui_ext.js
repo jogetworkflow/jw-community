@@ -1,4 +1,6 @@
 JPopup = {
+    tokenName : "",
+    tokenValue : "",
     dialogboxes : new Array(),
     
     create: function (id, title, width, height) {
@@ -10,7 +12,11 @@ JPopup = {
                 if (!title || title === "") {
                     title = "&nbsp;";
                 }
-                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:true,show:false,fixed: false});
+                var isIphone = false;
+                if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                    isIphone = true;
+                }
+                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !isIphone, modal:true});
             } else {
                 JPopup.dialogboxes[id] = Boxy.get($("#"+id));
             }
@@ -29,6 +35,8 @@ JPopup = {
         JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
+        JPopup.fixIOS(id);
+        
         UI.adjustPopUpDialog(JPopup.dialogboxes[id]);
         
         if (action !== undefined && action.toLowerCase() === "get") {
@@ -37,6 +45,7 @@ JPopup = {
             });
         }
         
+        url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
         var form = $('<form method="post" data-ajax="false" style="display:none;" target="'+id+'" action="'+url+'"></form>'); 
         $(document.body).append(form); 
         
@@ -54,5 +63,19 @@ JPopup = {
     
     hide : function (id) {
         JPopup.dialogboxes[id].hide();
+    },
+    
+    fixIOS : function(id) {
+        if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+            $('#' + id).wrap(function () {
+                var $this = $(this);
+                return $('<div />').css({
+                    width: $this.attr('width'),
+                    height: $this.attr('height'),
+                    overflow: 'auto',
+                    '-webkit-overflow-scrolling': 'touch'
+                });
+            });
+        }
     }
 }

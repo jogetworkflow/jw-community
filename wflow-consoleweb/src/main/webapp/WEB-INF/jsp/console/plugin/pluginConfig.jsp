@@ -10,9 +10,12 @@
 <c:if test="${!empty propertyEditable}">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
     <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
     <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
@@ -20,11 +23,24 @@
 </c:if>
 
 <div id="main-body-header">
-    <fmt:message key="console.plugin.label.pluginConfiguration"/> <c:out value=" ${param.title}" escapeXml="true" />
+    <c:choose>
+        <c:when test="${!empty title}">
+            <c:out value=" ${title}" escapeXml="true" />
+        </c:when>
+        <c:otherwise>
+            <fmt:message key="console.plugin.label.pluginConfiguration"/> <ui:stripTag html=" ${param.title}"/>
+        </c:otherwise>    
+    </c:choose>
 </div>
 
 <div id="main-body-content" style="text-align: left;">
-
+<c:if test="${!empty errors}">
+    <span class="form-errors" style="display:block">
+        <c:forEach items="${errors}" var="error">
+            <fmt:message key="${error}"/>
+        </c:forEach>
+    </span>
+</c:if>
 <c:choose>
     <c:when test="${empty plugin}">
         <span class="form-errors" style="display:block"><fmt:message key="console.plugin.label.pluginNoProperties"/></span>
@@ -173,6 +189,10 @@
                 }
                 alert(errorMsg);
             }
+            
+            function cancel(container){
+                document.location = "${cancelUrl}";
+            }
 
             $(document).ready(function(){
                 var options = {
@@ -189,12 +209,20 @@
                     <c:if test="${!empty defaultProperties && fn:substring(defaultProperties, 0, 1) eq '{'}">
                         defaultPropertyValues : ${defaultProperties},
                     </c:if>
-                    <c:if test="${skipValidation}">
+                    <c:if test="${!empty skipValidation && skipValidation}">
                         skipValidation : ${skipValidation},
                     </c:if>
-                    showCancelButton: false,
+                    <c:choose>
+                        <c:when test="${!empty cancelUrl}">
+                            cancelCallback: cancel,
+                            showCancelButton: true,        
+                        </c:when>
+                        <c:otherwise>
+                            showCancelButton: false,
+                        </c:otherwise>    
+                    </c:choose>        
                     saveCallback: savePlugin,
-                    saveButtonLabel: '<fmt:message key="general.method.label.submit"/>',
+                    saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
                     cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
                     closeAfterSaved: false,
                     validationFailedCallback: savePluginFailed

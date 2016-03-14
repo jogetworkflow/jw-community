@@ -9,14 +9,14 @@
         
         <c:if test="${!stay && submitted && errorCount == 0}">
             <script type="text/javascript">
-                var setting = ${setting};
+                var setting = <ui:stripTag html="${setting}"  relaxed="true"/>;
                 setting['result'] = '${jsonResult}';
-                if (window.parent && window.parent.${callback}){
-                    window.parent.${callback}(setting);
-                }else if (window.opener && window.opener.${callback}){
-                    window.opener.${callback}(setting);
-                }else if(${callback}){
-                    ${callback}(setting);
+                if (window.parent && window.parent.<ui:stripTag html="${callback}"/>){
+                    window.parent.<ui:stripTag html="${callback}"/>(setting);
+                }else if (window.opener && window.opener.<ui:stripTag html="${callback}"/>){
+                    window.opener.<ui:stripTag html="${callback}"/>(setting);
+                }else if(<ui:stripTag html="${callback}"/>){
+                    <ui:stripTag html="${callback}"/>(setting);
                 }
                 window.close();
             </script>

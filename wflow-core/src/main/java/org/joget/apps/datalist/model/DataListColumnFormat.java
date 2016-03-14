@@ -3,12 +3,13 @@ package org.joget.apps.datalist.model;
 import org.joget.plugin.property.model.PropertyEditable;
 
 /**
- * Formatter for columns
+ * Interface of Datalist Column Formatter plugin
  */
 public interface DataListColumnFormat extends PropertyEditable {
 
     /**
-     *
+     * Format column value 
+     * 
      * @param dataList
      * @param column
      * @param row

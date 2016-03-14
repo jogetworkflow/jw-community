@@ -3,20 +3,32 @@ package org.joget.apps.form.lib;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.FileDownloadSecurity;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
 import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.FileManager;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.ExtDirectoryManager;
+import org.joget.plugin.base.PluginManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 
-public class FileUpload extends Element implements FormBuilderPaletteElement {
+public class FileUpload extends Element implements FormBuilderPaletteElement, FileDownloadSecurity {
 
     @Override
     public String getName() {
@@ -25,7 +37,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -38,48 +50,65 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
         String template = "fileUpload.ftl";
 
         // set value
-        String value = FormUtil.getElementPropertyValue(this, formData);
+        String[] values = FormUtil.getElementPropertyValues(this, formData);
         
-        // check if the file is in temp file
-        File file = FileManager.getFileByPath(value);
-        if (file != null) {
-            dataModel.put("tempFilePath", value);
-            dataModel.put("value", file.getName());
-        } else if (value != null && !value.isEmpty()) {
-            dataModel.put("value", value);
+        //check is there a stored value
+        String storedValue = formData.getStoreBinderDataProperty(this);
+        if (storedValue != null) {
+            values = storedValue.split(";");
+        }
+        
+        
+        Map<String, String> tempFilePaths = new HashMap<String, String>();
+        Map<String, String> filePaths = new HashMap<String, String>();
+        
+        String primaryKeyValue = getPrimaryKeyValue(formData);
+        String formDefId = "";
+        Form form = FormUtil.findRootForm(this);
+        if (form != null) {
+            formDefId = form.getPropertyString(FormUtil.PROPERTY_ID);
+        }
+        String appId = "";
+        String appVersion = "";
+
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+
+        if (appDef != null) {
+            appId = appDef.getId();
+            appVersion = appDef.getVersion().toString();
+        }
+                
+        for (String value : values) {
+            // check if the file is in temp file
+            File file = FileManager.getFileByPath(value);
             
-            // determine actual path for the file uploads
-            String primaryKeyValue = getPrimaryKeyValue(formData);
-            String fileName = value;
-            String formDefId = "";
-            Form form = FormUtil.findRootForm(this);
-            if (form != null) {
-                formDefId = form.getPropertyString(FormUtil.PROPERTY_ID);
-            }
-            String encodedFileName = fileName;
-            if (fileName != null) {
-                try {
-                    encodedFileName = URLEncoder.encode(fileName, "UTF8").replaceAll("\\+", "%20");
-                } catch (UnsupportedEncodingException ex) {
-                    // ignore
+            if (file != null) {
+                tempFilePaths.put(value, file.getName());
+            } else if (value != null && !value.isEmpty()) {
+                // determine actual path for the file uploads
+                String fileName = value;
+                String encodedFileName = fileName;
+                if (fileName != null) {
+                    try {
+                        encodedFileName = URLEncoder.encode(fileName, "UTF8").replaceAll("\\+", "%20");
+                    } catch (UnsupportedEncodingException ex) {
+                        // ignore
+                    }
                 }
+                
+                String filePath = "/web/client/app/" + appId + "/" + appVersion + "/form/download/" + formDefId + "/" + primaryKeyValue + "/" + encodedFileName + ".";
+                if (Boolean.valueOf(getPropertyString("attachment")).booleanValue()) {
+                    filePath += "?attachment=true";
+                }
+                filePaths.put(filePath, value);
             }
-
-            String appId = "";
-            String appVersion = "";
-
-            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-
-            if (appDef != null) {
-                appId = appDef.getId();
-                appVersion = appDef.getVersion().toString();
-            }
-
-            String filePath = "/web/client/app/" + appId + "/" + appVersion + "/form/download/" + formDefId + "/" + primaryKeyValue + "/" + encodedFileName + ".";
-            if (Boolean.valueOf(getPropertyString("attachment")).booleanValue()) {
-                filePath += "?attachment=true";
-            }
-            dataModel.put("filePath", filePath);
+        }
+        
+        if (!tempFilePaths.isEmpty()) {
+            dataModel.put("tempFilePaths", tempFilePaths);
+        }
+        if (!filePaths.isEmpty()) {
+            dataModel.put("filePaths", filePaths);
         }
         
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
@@ -93,15 +122,38 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
         String filePathPostfix = "_path";
         String id = FormUtil.getElementParameterName(this);
         if (id != null) {
-            String removalId = id + postfix;
-            String filename = formData.getRequestParameter(id);
-            String removalFlag = formData.getRequestParameter(removalId);
-            String existingFilePath = formData.getRequestParameter(id + filePathPostfix);
-            if (filename == null && "on".equals(removalFlag)) {
-                // don't remove file, reset value
-                formData.addRequestParameterValues(id, new String[]{""});
-            } else if (filename == null && existingFilePath != null && !existingFilePath.isEmpty()) {
-                formData.addRequestParameterValues(id, new String[]{existingFilePath});
+            String[] tempFilenames = formData.getRequestParameterValues(id);
+            String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
+            
+            if ((tempFilenames != null && tempFilenames.length > 0) || (tempExisting != null && tempExisting.length > 0)) {
+                List<String> filenames = new ArrayList<String>();
+                if (tempFilenames != null && tempFilenames.length > 0) {
+                    filenames.addAll(Arrays.asList(tempFilenames));
+                }
+                List<String> removalFlag = new ArrayList<String>();
+                String[] tempRemove = formData.getRequestParameterValues(id + postfix);
+                if (tempRemove != null && tempRemove.length > 0) {
+                    removalFlag.addAll(Arrays.asList(tempRemove));
+                }
+                
+                List<String> existingFilePath = new ArrayList<String>();
+                if (tempExisting != null && tempExisting.length > 0) {
+                    existingFilePath.addAll(Arrays.asList(tempExisting));
+                }
+
+                for (String filename : existingFilePath) {
+                    if (!removalFlag.contains(filename)) {
+                        filenames.add(filename);
+                    }
+                }
+
+                if (filenames.isEmpty()) {
+                    formData.addRequestParameterValues(id, new String[]{""});
+                } else if (!"true".equals(getPropertyString("multiple"))) {
+                    formData.addRequestParameterValues(id, new String[]{filenames.get(0)});
+                } else {
+                    formData.addRequestParameterValues(id, filenames.toArray(new String[]{}));
+                }
             }
         }
         return formData;
@@ -114,23 +166,36 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
         // get value
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
-            String value = FormUtil.getElementPropertyValue(this, formData);
-            if (value != null) {
+            String[] values = FormUtil.getElementPropertyValues(this, formData);
+            if (values != null && values.length > 0) {
                 // set value into Properties and FormRowSet object
                 FormRow result = new FormRow();
+                List<String> resultedValue = new ArrayList<String>();
+                List<String> filePaths = new ArrayList<String>();
                 
-                // check if the file is in temp file
-                File file = FileManager.getFileByPath(value);
-                if (file != null) {
-                    result.putTempFilePath(id, value);
-                    result.setProperty(id, file.getName());
-                    
-                    String paramName = FormUtil.getElementParameterName(this);
-                    formData.addRequestParameterValues(paramName, new String[]{file.getName()});
-                } else {
-                    result.setProperty(id, value);
+                for (String value : values) {
+                    // check if the file is in temp file
+                    File file = FileManager.getFileByPath(value);
+                    if (file != null) {
+                        filePaths.add(value);
+                        resultedValue.add(file.getName());
+
+                    } else {
+                        resultedValue.add(value);
+                    }
                 }
                 
+                if (!filePaths.isEmpty()) {
+                    result.putTempFilePath(id, filePaths.toArray(new String[]{}));
+                }
+                
+                // formulate values
+                String delimitedValue = FormUtil.generateElementPropertyValues(resultedValue.toArray(new String[]{}));
+                String paramName = FormUtil.getElementParameterName(this);
+                formData.addRequestParameterValues(paramName, resultedValue.toArray(new String[]{}));
+                        
+                // set value into Properties and FormRowSet object
+                result.setProperty(id, delimitedValue);
                 rowSet = new FormRowSet();
                 rowSet.add(result);
             }
@@ -215,5 +280,38 @@ public class FileUpload extends Element implements FormBuilderPaletteElement {
         } catch (Exception e) {}
         
         return valid;
+    }
+    
+    public boolean isDownloadAllowed(Map requestParameters) {
+        String permissionType = getPropertyString("permissionType");
+        if (permissionType.equals("public")) {
+            return true;
+        } else if (permissionType.equals("custom")) {
+            Object permissionElement = getProperty("permissionPlugin");
+            if (permissionElement != null && permissionElement instanceof Map) {
+                Map elementMap = (Map) permissionElement;
+                String className = (String) elementMap.get("className");
+                Map<String, Object> properties = (Map<String, Object>) elementMap.get("properties");
+
+                //convert it to plugin
+                PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                UserviewPermission plugin = (UserviewPermission) pm.getPlugin(className);
+                if (plugin != null && plugin instanceof FormPermission) {
+                    WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                    ExtDirectoryManager dm = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
+                    String username = workflowUserManager.getCurrentUsername();
+                    User user = dm.getUserByUsername(username);
+
+                    plugin.setProperties(properties);
+                    plugin.setCurrentUser(user);
+                    plugin.setRequestParameters(requestParameters);
+
+                    return plugin.isAuthorize();
+                }
+            }
+            return false;
+        } else {
+            return !WorkflowUtil.isCurrentUserAnonymous();
+        }
     }
 }

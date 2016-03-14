@@ -2,10 +2,15 @@
 <script type="text/javascript">
 <c:choose>
     <c:when test="${!empty url}">
-        if (parent != self) {
-            parent.location.href="${url}";
+        if (parent && parent.AdminBar !== undefined && parent.AdminBar.isAdminBarOpen()) {
+            parent.PopupDialog.closeDialog();
+            parent.AdminBar.showQuickOverlay('${url}');
         } else {
-            location.href="${url}";
+            if (parent != self) {
+                parent.location.href="${url}";
+            } else {
+                location.href="${url}";
+            }
         }
     </c:when>
     <c:otherwise>

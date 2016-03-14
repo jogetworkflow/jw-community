@@ -1,0 +1,18 @@
+[{
+    title : '@@form.beanshellmultirowvalidator.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@form.beanshellvalidator.script@@',
+        description : '@@form.beanshellmultirowvalidator.script.desc@@',
+        type : 'codeeditor',
+        required : 'True',
+        mode : 'java'
+    },
+    {
+        name : 'decoration',
+        label : '@@form.beanshellvalidator.decoration@@',
+        description : '@@form.beanshellvalidator.decoration.desc@@',
+        type : 'codeeditor',
+        mode : 'html'
+    }]
+}]

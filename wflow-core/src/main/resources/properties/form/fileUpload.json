@@ -54,6 +54,34 @@
         value : '@@form.fileupload.fileType.msg.invalidFileType@@'
     },
     {
+        label : '@@form.section.permission@@',
+        type : 'header'
+    },
+    {
+        name:'permissionType',
+        label:'@@form.section.permission@@',
+        type:'selectbox',
+        value : '',
+        options : [{
+            value : '', label : '@@form.fileupload.permission.loggedInUsers@@'
+        },{
+            value : 'public', label : '@@form.fileupload.permission.public@@'
+        },{
+            value : 'custom', label : '@@form.fileupload.permission.custom@@'
+        }]
+    },
+    {
+        name:'permissionPlugin',
+        label:'@@form.fileupload.customPermission@@',
+        type:'elementselect',
+        control_field: 'permissionType',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'true',
+        options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
+        url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    },
+    {
         label : '@@form.fileupload.ui@@',
         type : 'header'
     },
@@ -61,6 +89,16 @@
         name : 'size',
         label : '@@form.fileupload.size@@',
         type : 'textfield'
+    },
+    {
+        name : 'multiple',
+        label : '@@form.fileupload.multiple@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     },
     {
         name : 'readonly',

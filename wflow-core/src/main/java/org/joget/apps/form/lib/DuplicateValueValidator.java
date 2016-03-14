@@ -19,7 +19,7 @@ public class DuplicateValueValidator extends FormValidator {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -43,9 +43,9 @@ public class DuplicateValueValidator extends FormValidator {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         if (appDef != null) {
             String formJsonUrl = "[CONTEXT_PATH]/web/json/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/forms/options";
-            formDefField = "{name:'formDefId',label:'Form ID',type:'selectbox',required:'True',options_ajax:'" + formJsonUrl + "'}";
+            formDefField = "{name:'formDefId',label:'@@form.defaultformoptionbinder.formId@@',type:'selectbox',required:'True',options_ajax:'" + formJsonUrl + "'}";
         } else {
-            formDefField = "{name:'formDefId',label:'Form ID',type:'textfield',required:'True'}";
+            formDefField = "{name:'formDefId',label:'@@form.defaultformoptionbinder.formId@@',type:'textfield',required:'True'}";
         }
         Object[] arguments = new Object[]{formDefField};
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/form/duplicateValueValidator.json", arguments, true, "message/form/DuplicateValueValidator");

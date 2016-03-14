@@ -2,13 +2,17 @@ package org.joget.apps.workflow.security;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Locale;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.AuditTrailManager;
+import org.joget.apps.app.web.LocalLocaleResolver;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -20,42 +24,53 @@ import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationException;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.context.HttpSessionContextIntegrationFilter;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.ui.AbstractProcessingFilter;
-import org.springframework.security.ui.TargetUrlResolver;
-import org.springframework.security.ui.TargetUrlResolverImpl;
-import org.springframework.security.ui.savedrequest.SavedRequest;
-import org.springframework.security.ui.webapp.AuthenticationProcessingFilter;
-import org.springframework.security.util.TextUtils;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.security.web.util.TextEscapeUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 
-public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFilter {
+public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
     private WorkflowUserManager workflowUserManager;
     private DirectoryManager directoryManager;
     private SetupManager setupManager;
-    private LocaleResolver localeResolver;
-
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
-        return authenticate(request);
+    private LocalLocaleResolver localeResolver;
+    private AuditTrailManager auditTrailManager;
+    
+    public WorkflowHttpAuthProcessingFilter() {
+        super.setUsernameParameter("j_username");
+        super.setPasswordParameter("j_password");
     }
 
     @Override
-    public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        return authenticate(request, response);
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest request = (HttpServletRequest)servletRequest;
+        HttpServletResponse response = (HttpServletResponse)servletResponse;
         Boolean requiresAuthentication;
         try {
+            if (request != null) {
+                // reset profile and set hostname
+                HostManager.initHost();
+            }
             if (localeResolver != null) {
-                Locale locale = localeResolver.resolveLocale(request);
-                LocaleContextHolder.setLocale(locale);
+                LocaleContext localeContext = localeResolver.resolveLocaleContext(request);
+                LocaleContextHolder.setLocaleContext(localeContext, true);
             }
             
             // clear current app in thread
@@ -66,7 +81,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             
             requiresAuthentication = requiresAuthentication(request, response);
 
-            super.doFilterHttp(request, response, chain);
+            super.doFilter(request, response, chain);
             
             String uri = request.getRequestURI();
             if (requiresAuthentication && !uri.startsWith(request.getContextPath() + "/j_spring_security_check") && !response.isCommitted()) {
@@ -90,8 +105,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             LocaleContextHolder.resetLocaleContext();
-            
-            response.setHeader("X-Content-Type-Options", "nosniff");
+            auditTrailManager.clean();
         }
     }
     
@@ -122,28 +136,23 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             }
         } 
         
-        if (!requiresAuth) {
-            requiresAuth = uri.endsWith(request.getContextPath() + getFilterProcessesUrl());
-        }
-        
         if (requiresAuth) {
             // generate new session to avoid session fixation vulnerability
             HttpSession session = request.getSession(false);
             if (session != null) {
-                SavedRequest savedRequest = (SavedRequest) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
+                SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
                 session.invalidate();
                 session = request.getSession(true);
                 if (savedRequest != null) {
-                    session.setAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+                    new HttpSessionRequestCache().saveRequest(request, response);
                 }
-                session.setAttribute(HttpSessionContextIntegrationFilter.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
             }
         }
         return requiresAuth;
     }
 
-    protected Authentication authenticate(HttpServletRequest request) throws AuthenticationException {
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+    protected Authentication authenticate(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
         
         boolean isAnonymous = workflowUserManager.isCurrentUserAnonymous();
         UserSecurity us = DirectoryUtil.getUserSecurity();
@@ -164,7 +173,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
         HttpSession session = request.getSession(false);
 
         if (session != null || getAllowSessionCreation()) {
-            request.getSession().setAttribute(SPRING_SECURITY_LAST_USERNAME_KEY, TextUtils.escapeEntities(username));
+            request.getSession().setAttribute(SPRING_SECURITY_FORM_USERNAME_KEY, TextEscapeUtils.escapeEntities(username));
         }
 
         if (username != null && (password != null || loginHash != null)) {
@@ -202,7 +211,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                             LogUtil.info(getClass().getName(), "Authentication for user " + loginAs + ": " + false);
             
                             WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                            workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + loginAs + ": " + false);
+                            workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + loginAs + ": " + false, new Class[]{String.class}, new Object[]{loginAs}, false);
                         
                             throw new BadCredentialsException("");
                         }
@@ -241,7 +250,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
                         LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
             
                         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                        workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+                        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, false);
             
                         throw be;
                     }
@@ -255,7 +264,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             if (!"/WEB-INF/jsp/unauthorized.jsp".equals(request.getServletPath())) {
                 LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true);
                 WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                workflowHelper.addAuditTrail("WorkflowHttpAuthProcessingFilter", "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true);
+                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, true);
             }
         } else {
             if (us != null && us.getAuthenticateAllApi()) {
@@ -267,7 +276,7 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
     }
     
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String uri = request.getRequestURI();
         if (!uri.startsWith(request.getContextPath() + "/j_spring_security_check")) {
             // set temporary per-request authentication
@@ -275,18 +284,18 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             // clear system alert
             AppUtil.getSystemAlert();
         } else {
-            TargetUrlResolver resolver = getTargetUrlResolver();
-                    
-            if (resolver instanceof TargetUrlResolverImpl) {
-                ((TargetUrlResolverImpl)resolver).setJustUseSavedRequestOnGet(true);
-            }
-            
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                SavedRequest savedRequest = (SavedRequest) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
-            }
+//            TargetUrlResolver resolver = getTargetUrlResolver();
+//                    
+//            if (resolver instanceof TargetUrlResolverImpl) {
+//                ((TargetUrlResolverImpl)resolver).setJustUseSavedRequestOnGet(true);
+//            }
+//            
+//            HttpSession session = request.getSession(false);
+//            if (session != null) {
+//                SavedRequest savedRequest = (SavedRequest) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
+//            }
             // default spring security login
-            super.successfulAuthentication(request, response, authResult);
+            super.successfulAuthentication(request, response, chain, authResult);
         }
     }
     
@@ -297,6 +306,9 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
             // return 401 for unauthorized JSON API calls
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
+            SimpleUrlAuthenticationFailureHandler failureHandler = (SimpleUrlAuthenticationFailureHandler) getFailureHandler();
+            failureHandler.setDefaultFailureUrl("/web/login?login_error=1");
+            
             super.unsuccessfulAuthentication(request, response, ae);
         }
     }    
@@ -329,7 +341,15 @@ public class WorkflowHttpAuthProcessingFilter extends AuthenticationProcessingFi
         return localeResolver;
     }
 
-    public void setLocaleResolver(LocaleResolver localeResolver) {
+    public void setLocaleResolver(LocalLocaleResolver localeResolver) {
         this.localeResolver = localeResolver;
+    }
+
+    public AuditTrailManager getAuditTrailManager() {
+        return auditTrailManager;
+    }
+
+    public void setAuditTrailManager(AuditTrailManager auditTrailManager) {
+        this.auditTrailManager = auditTrailManager;
     }
 }

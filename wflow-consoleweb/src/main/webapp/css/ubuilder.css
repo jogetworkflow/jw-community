@@ -126,7 +126,7 @@
 #userview-sidebar{
     position:relative;
     padding-top:30px;
-    width:350px;
+    width:400px;
     min-height:300px;
     border-right:2px dotted #DDDDDD;
     float:left;
@@ -141,7 +141,7 @@
 }
 
 #userview-content{
-    width:340px;
+    width:290px;
     height:200px;
     text-align:center;
     float:right;
@@ -168,6 +168,7 @@
 }
 
 .category{
+    background: #eee;
     position:relative;
     border:2px dotted #DDDDDD;
     margin:2px;
@@ -193,7 +194,7 @@
     min-height:24px;
     padding:15px 5px 5px;
     margin:5px 2px;
-    background-color:#ECECEC;
+    background-color:#fff;
 }
 
 .menu-container-highlight{
@@ -204,6 +205,16 @@
     position:relative;
     margin:2px;
     border:2px dotted #CCCCCC;
+}
+
+.category-bottom {
+    height: 5px;
+    margin-right: 2px;
+    position: relative;
+}
+
+.category-bottom:hover {
+    height: 24px;
 }
 
 .element-options {
@@ -218,29 +229,78 @@
 }
 
 .element-options button {
+    text-decoration: none;
+    color: black;
     font-size: 13px;
-    height: 18px;
+    height: 20px;
+    min-width: 20px;
     line-height: 15px;
-    padding: 0px 2px;
-    margin-top: 4px;
+    padding: 0px;
+    margin-top: 2px;
     margin-left: 2px;
     cursor: pointer;
-    background: #f0ffcc;
     border: solid 1px #666666;
     opacity: .6;
     -moz-opacity: .6;
     filter: alpha(opacity=60);
     z-index: 300;
-    -moz-box-shadow: 0 0 6px green;
-    -webkit-box-shadow: 0 0 6px green;
-    box-shadow: 0 0 6px green;
-    -moz-border-radius: 6px 6px 6px 6px;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.element-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.element-options button:hover span {
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    margin-left: -25%;
+}
+.element-options button:hover {
+    padding: 0 4px;
+    background: lightgreen;
 }
 
-.element-options button:hover {
-    background: lightgreen;
+.category > .element-options button {
+    background: #fff;
+    -moz-box-shadow: 0 0 2px gray;
+    -webkit-box-shadow: 0 0 2px gray;
+    box-shadow: 0 0 2px gray;
+}
+
+.category > .element-options button:hover {
+    background : #aaa
+}
+
+.element-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+
+.element-options button.element-delete:hover{
+    background: #FA7390;
+}
+
+.element-options button.disabled, .element-options button.disabled:hover{
+    color:#fff;
+    background: darkslategray;
+    display:none;
 }
 
 .clear{
@@ -261,18 +321,6 @@
     margin: 5px;
     position: absolute;
     left: 939px;
-}
-
-#builder-message {
-    position: fixed;
-    top: 20px;
-    left: 450px;
-    background: yellow;
-    border-radius: 5px;
-    display: none;
-    opacity: 0.8;
-    z-index: 100000;
-    padding: 10px;
 }
 
 #builder-screenshot {

@@ -317,9 +317,6 @@ public class TestAppService {
             assertTrue(formResult.getFormErrors().isEmpty());
 
         } finally {
-            // delete form data
-            formDataDao.delete(TEST_FORM_ID, TEST_FORM_ID, new String[]{processId});
-
             // existing delete package
             deleteXpdlPackage(TEST_APP_ID);
 

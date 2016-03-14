@@ -1,130 +1,66 @@
 package org.joget.apps.form.service;
 
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.form.model.AbstractSubForm;
+import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.FormRowSet;
-import org.joget.apps.form.model.FormStoreBinder;
-import org.joget.commons.util.FileLimitException;
-import org.joget.commons.util.FileManager;
-import org.joget.commons.util.FileStore;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.StringUtil;
-import org.joget.commons.util.UuidGenerator;
-import org.joget.workflow.util.WorkflowUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-@Service("formService")
-public class FormService {
-
-    public static final String PREFIX_FOREIGN_KEY = "fk_";
-    public static final String PREFIX_FOREIGN_KEY_EDITABLE = "fke_";
-    public static final String PREVIEW_MODE = "_PREVIEW_MODE";
-
-    /**
-     * Use case to generate HTML from a JSON element definition.
-     * @param json
-     * @return
-     */
-    public String previewElement(String json) {
-        return previewElement(json, true);
-    }
-
-    /**
-     * Use case to generate HTML from a JSON element definition.
-     * @param json
-     * @param includeMetaData true to include metadata required for use in the form builder.
-     * @return
-     */
-    public String previewElement(String json, boolean includeMetaData) {
-        Element element = createElementFromJson(StringUtil.decryptContent(json), !includeMetaData);
-        FormData formData = new FormData();
-        formData.addFormResult(PREVIEW_MODE, "true");
-        
-        formData = retrieveFormDataFromRequest(formData, WorkflowUtil.getHttpServletRequest());
-        
-        String html = "";
-        try {
-            formData = executeFormOptionsBinders(element, formData);
-        } catch (Exception ex) {
-            LogUtil.error(FormService.class.getName(), ex, "Error executing form option binders");
-        }
-        try {
-            html = generateElementDesignerHtml(element, formData, includeMetaData);
-        } catch (Exception ex) {
-            LogUtil.error(FormService.class.getName(), ex, "Error generating element html");
-        }
-        return html;
-    }
+/**
+ * Service methods used to creates form from json and performs form feature actions 
+ * 
+ */
+public interface FormService {
+    String PREFIX_FOREIGN_KEY = "fk_";
+    String PREFIX_FOREIGN_KEY_EDITABLE = "fke_";
+    String PREVIEW_MODE = "_PREVIEW_MODE";
 
     /**
      * Creates an element object from a JSON definition
-     * @param formJson
+     * @param elementJson
      * @return
      */
-    public Element createElementFromJson(String elementJson) {
-        return createElementFromJson(elementJson, true);
-    }
+    Element createElementFromJson(String elementJson);
 
     /**
      * Creates an element object from a JSON definition
-     * @param formJson
+     * @param elementJson
      * @param processHashVariable
      * @return
      */
-    public Element createElementFromJson(String elementJson, boolean processHashVariable) {
-        try {
-            String processedJson = elementJson;
-            // process hash variable
-            if (processHashVariable) {
-                processedJson = AppUtil.processHashVariable(elementJson, null, StringUtil.TYPE_JSON, null);
-            }
-            
-            processedJson = processedJson.replaceAll("\\\"\\{\\}\\\"", "{}");
-
-            // instantiate element
-            Element element = FormUtil.parseElementFromJson(processedJson);
-            return element;
-        } catch (Exception ex) {
-            LogUtil.error(FormService.class.getName(), ex, null);
-            throw new RuntimeException(ex);
-        }
-    }
+    Element createElementFromJson(String elementJson, boolean processHashVariable);
 
     /**
-     * Generates HTML for the form element
+     * Invokes actions (e.g. buttons) in the form
+     * @param form
+     * @param formData
+     * @return
+     */
+    FormData executeFormActions(Form form, FormData formData);
+
+    /**
+     * Loads data for a specific row into an element by calling all load binders in the element.
      * @param element
      * @param formData
      * @return
      */
-    public String generateElementHtml(Element element, FormData formData) {
-        String html = element.render(formData, false);
-        return html;
-    }
+    FormData executeFormLoadBinders(Element element, FormData formData);
 
     /**
-     * Generates error HTML for the form element
+     * Preloads data for an element, e.g. field options, etc. by calling all option binders in the element.
      * @param element
      * @param formData
      * @return
      */
-    public String generateElementErrorHtml(Element element, FormData formData) {
-        Map dataModel = FormUtil.generateDefaultTemplateDataModel(element, formData);
-        String html = element.renderErrorTemplate(formData, dataModel);
-        return html;
-    }
+    FormData executeFormOptionsBinders(Element element, FormData formData);
+
+    /**
+     * Executes store binders for a form
+     * @param form
+     * @param formData
+     * @return
+     */
+    FormData executeFormStoreBinders(Form form, FormData formData);
 
     /**
      * Generates HTML for the form element to be used in the Form Builder
@@ -132,52 +68,38 @@ public class FormService {
      * @param formData
      * @return
      */
-    public String generateElementDesignerHtml(Element element, FormData formData, boolean includeMetaData) {
-        String html = element.render(formData, includeMetaData);
-        return html;
-    }
+    String generateElementDesignerHtml(Element element, FormData formData, boolean includeMetaData);
+
+    /**
+     * Generates error HTML for the form element
+     * @param element
+     * @param formData
+     * @return
+     */
+    String generateElementErrorHtml(Element element, FormData formData);
+
+    /**
+     * Generates HTML for the form element
+     * @param element
+     * @param formData
+     * @return
+     */
+    String generateElementHtml(Element element, FormData formData);
 
     /**
      * Generates the JSON definition for the specified form element
      * @param element
      * @return
      */
-    public String generateElementJson(Element element) {
-        String json = null;
-        try {
-            json = FormUtil.generateElementJson(element);
-        } catch (Exception ex) {
-            LogUtil.error(FormService.class.getName(), ex, "Error generating JSON for element");
-        }
-        return json;
-    }
+    String generateElementJson(Element element);
 
     /**
-     * Use case to load and view a form, with data loaded
-     * @param formDefId
-     * @param primaryKeyValue
+     * Main method to load a form with data loaded.
+     * @param form
+     * @param formData
      * @return
      */
-    public String viewForm(Form form, String primaryKeyValue) {
-        FormData formData = new FormData();
-        formData.setPrimaryKeyValue(primaryKeyValue);
-        String html = generateElementHtml(form, formData);
-        return html;
-    }
-
-    /**
-     * Use case to view a form from its JSON definition, with data loaded
-     * @param formJson
-     * @param primaryKeyValue
-     * @return
-     */
-    public String viewFormFromJson(String formJson, String primaryKeyValue) {
-        FormData formData = new FormData();
-        formData.setPrimaryKeyValue(primaryKeyValue);
-        Form form = loadFormFromJson(formJson, formData);
-        String html = generateElementHtml(form, formData);
-        return html;
-    }
+    Form loadFormData(Form form, FormData formData);
 
     /**
      * Load a form from its JSON definition, with data loaded.
@@ -185,53 +107,72 @@ public class FormService {
      * @param formData
      * @return
      */
-    public Form loadFormFromJson(String formJson, FormData formData) {
-        Form form = (Form) createElementFromJson(formJson);
-        form = loadFormData(form, formData);
-        return form;
-    }
+    Form loadFormFromJson(String formJson, FormData formData);
 
     /**
-     * Main method to load a form with data loaded.
-     * @param formJson
-     * @param formData
+     * Use case to generate HTML from a JSON element definition.
+     * @param json
      * @return
      */
-    public Form loadFormData(Form form, FormData formData) {
-        // set foreign key values
-        Set<String> readOnlyForeignKeySet = new HashSet<String>();
-        if (formData != null) {
-            Map requestParams = new HashMap(formData.getRequestParams());
-            for (Iterator i = requestParams.keySet().iterator(); i.hasNext();) {
-                String paramName = (String) i.next();
-                if (paramName.startsWith(PREFIX_FOREIGN_KEY) || paramName.startsWith(PREFIX_FOREIGN_KEY_EDITABLE)) {
-                    String foreignKey = paramName.startsWith(PREFIX_FOREIGN_KEY) ? paramName.substring(PREFIX_FOREIGN_KEY.length()) : paramName.substring(PREFIX_FOREIGN_KEY_EDITABLE.length());
-                    boolean editable = paramName.startsWith(PREFIX_FOREIGN_KEY_EDITABLE);
-                    String[] values = (String[]) requestParams.get(paramName);
+    String previewElement(String json);
 
-                    if (values != null) {
-                        formData.addRequestParameterValues(foreignKey, values);
-                        if (!editable) {
-                            readOnlyForeignKeySet.add(foreignKey);
-                            form.setFormMeta(paramName, values);
-                        }
-                    }
-                }
-            }
-        }
+    /**
+     * Use case to generate HTML from a JSON element definition.
+     * @param json
+     * @param includeMetaData true to include metadata required for use in the form builder.
+     * @return
+     */
+    String previewElement(String json, boolean includeMetaData);
 
-        formData = executeFormOptionsBinders(form, formData);
-        formData = executeFormLoadBinders(form, formData);
+    /**
+     * Recursively executes all the store binders in a form
+     * @param form
+     * @param element
+     * @param formData
+     * @return 
+     */
+    FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData);
 
-        // make foreign keys read-only
-        for (String foreignKey : readOnlyForeignKeySet) {
-            Element el = FormUtil.findElement(foreignKey, form, formData);
-            if (el != null) {
-                FormUtil.setReadOnlyProperty(el);
-            }
-        }
-        return form;
-    }
+    /**
+     * Retrieves form data submitted via a HTTP servlet request
+     * @param formData
+     * @param request
+     * @return
+     */
+    FormData retrieveFormDataFromRequest(FormData formData, HttpServletRequest request);
+
+    /**
+     * Retrieves form data submitted via a HTTP servlet request parameters map
+     * @param formData
+     * @param requestMap
+     * @return 
+     */
+    FormData retrieveFormDataFromRequestMap(FormData formData, Map requestMap);
+
+    /**
+     * Used to retrieves the Form HTML when there is errors in form
+     * @param form
+     * @param formData
+     * @return 
+     */
+    String retrieveFormErrorHtml(Form form, FormData formData);
+
+    /**
+     * Used to retrieves the Form HTML 
+     * @param form
+     * @param formData
+     * @return 
+     */
+    String retrieveFormHtml(Form form, FormData formData);
+    
+    /**
+     * Store the data of a form field element
+     * @param form
+     * @param element
+     * @param formData
+     * @return 
+     */
+    FormData storeElementData(Form form, Element element, FormData formData);
 
     /**
      * Process form submission
@@ -240,35 +181,7 @@ public class FormService {
      * @param ignoreValidation
      * @return
      */
-    public FormData submitForm(Form form, FormData formData, boolean ignoreValidation) {
-        FormData updatedFormData = formData;
-        updatedFormData = FormUtil.executeElementFormatDataForValidation(form, formData);
-        if (!ignoreValidation) {
-            updatedFormData = validateFormData(form, formData);
-        }
-        Map<String, String> errors = updatedFormData.getFormErrors();
-        if (!updatedFormData.getStay() && (errors == null || errors.isEmpty())) {
-            // generate primary key if necessary
-            Element primaryElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
-            if (primaryElement != null) {
-                //format data to generate id
-                FormUtil.executeElementFormatData(primaryElement, formData);
-            }
-            
-            String primaryKeyValue = form.getPrimaryKeyValue(updatedFormData);
-            if (primaryKeyValue == null || primaryKeyValue.trim().length() == 0) {
-                // no primary key value specified, generate new primary key value
-                primaryKeyValue = UuidGenerator.getInstance().getUuid();
-                updatedFormData.setPrimaryKeyValue(primaryKeyValue);
-                
-                //set to request param
-                formData.addRequestParameterValues(FormUtil.PROPERTY_ID, new String[]{primaryKeyValue});
-            }
-            // no errors, save form data
-            updatedFormData = executeFormStoreBinders(form, updatedFormData);
-        }
-        return updatedFormData;
-    }
+    FormData submitForm(Form form, FormData formData, boolean ignoreValidation);
 
     /**
      * Validates form data submitted for a specific form
@@ -276,200 +189,22 @@ public class FormService {
      * @param formData
      * @return
      */
-    public FormData validateFormData(Form form, FormData formData) {
-        FormUtil.executeValidators(form, formData);
-        return formData;
-    }
+    FormData validateFormData(Form form, FormData formData);
 
     /**
-     * Retrieves form data submitted via a HTTP servlet request
-     * @param request
-     * @return
-     */
-    public FormData retrieveFormDataFromRequest(FormData formData, HttpServletRequest request) {
-        if (formData == null) {
-            formData = new FormData();
-        }
-        // handle standard parameters
-        Enumeration<String> e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-            String paramName = e.nextElement();
-            String[] values = request.getParameterValues(paramName);
-            formData.addRequestParameterValues(paramName, values);
-        }
-        
-        handleFiles(formData);
-        
-        return formData;
-    }
-
-    public FormData retrieveFormDataFromRequestMap(FormData formData, Map requestMap) {
-        if (formData == null) {
-            formData = new FormData();
-        }
-        // handle standard parameters
-        for (String key : (Set<String>) requestMap.keySet()) {
-            Object paramValue = requestMap.get(key);
-            if (paramValue != null) {
-                Class type = paramValue.getClass();
-                if (type.isArray()) {
-                    formData.addRequestParameterValues(key, (String[]) paramValue);
-                } else {
-                    formData.addRequestParameterValues(key, new String[]{paramValue.toString()});
-                }
-            } else {
-                formData.addRequestParameterValues(key, new String[]{""});
-            }
-        }
-        
-        handleFiles(formData);
-        
-        return formData;
-    }
-    
-    private void handleFiles (FormData formData) {
-        try {
-            // handle multipart files
-            Map<String, MultipartFile> fileMap = FileStore.getFileMap();
-            if (fileMap != null) {
-                for (String paramName : fileMap.keySet()) {
-                    try {
-                        MultipartFile file = FileStore.getFile(paramName);
-                        if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
-                            String path = FileManager.storeFile(file);
-                            formData.addRequestParameterValues(paramName, new String[]{path});
-                        }
-                    } catch (FileLimitException ex) {
-                        formData.addFormError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
-                    }
-                }
-            }
-            
-            Collection<String> errorList = FileStore.getFileErrorList();
-            if (errorList != null && !errorList.isEmpty()) {
-                for (String paramName : errorList) {
-                    formData.addFormError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
-                }
-            }
-        } finally {
-            FileStore.clear();
-        }
-    }
-
-    /**
-     * Invokes actions (e.g. buttons) in the form
+     * Use case to load and view a form, with data loaded
      * @param form
-     * @param formData
+     * @param primaryKeyValue
      * @return
      */
-    public FormData executeFormActions(Form form, FormData formData) {
-        FormData updatedFormData = formData;
-        updatedFormData = FormUtil.executeActions(form, form, formData);
-        return updatedFormData;
-    }
+    String viewForm(Form form, String primaryKeyValue);
 
     /**
-     * Preloads data for an element, e.g. field options, etc. by calling all option binders in the element.
-     * @param element
-     * @param formData
+     * Use case to view a form from its JSON definition, with data loaded
+     * @param formJson
+     * @param primaryKeyValue
      * @return
      */
-    public FormData executeFormOptionsBinders(Element element, FormData formData) {
-        // create new form data if necessary
-        if (formData == null) {
-            formData = new FormData();
-        }
-
-        // find and call all option binders in the form
-        formData = FormUtil.executeOptionBinders(element, formData);
-        return formData;
-    }
-
-    /**
-     * Loads data for a specific row into an element by calling all load binders in the element.
-     * @param element
-     * @param formData
-     * @return
-     */
-    public FormData executeFormLoadBinders(Element element, FormData formData) {
-        // create new form data if necessary
-        if (formData == null) {
-            formData = new FormData();
-        }
-
-        // find and call all option binders in the form
-        formData = FormUtil.executeLoadBinders(element, formData);
-        return formData;
-    }
-
-    /**
-     * Executes store binders for a form
-     * @param form
-     * @param formData
-     * @return
-     */
-    public FormData executeFormStoreBinders(Form form, FormData formData) {
-
-        // get formatted data from all elements
-        formData = FormUtil.executeElementFormatData(form, formData);
-
-        //recursively execute FormStoreBinders
-        formData = recursiveExecuteFormStoreBinders(form, form, formData);
-
-        return formData;
-    }
+    String viewFormFromJson(String formJson, String primaryKeyValue);
     
-    public FormData recursiveExecuteFormStoreBinders(Form form, Element element, FormData formData) {
-        if (!Boolean.parseBoolean(element.getPropertyString(FormUtil.PROPERTY_READONLY)) && element.isAuthorize(formData)) {
-        
-            //load child element store binder to store before the main form
-            Collection<Element> children = element.getChildren(formData);
-            if (children != null) {
-                for (Element child : children) {
-                    formData = recursiveExecuteFormStoreBinders(form, child, formData);
-                }
-            }
-
-            //if store binder exist && element is not readonly, run it
-            FormStoreBinder binder = element.getStoreBinder();
-            if (!(element instanceof AbstractSubForm) && binder != null) {
-                FormRowSet rowSet = formData.getStoreBinderData(element.getStoreBinder());
-
-                // execute binder
-                try {
-                    FormRowSet binderResult = binder.store(element, rowSet, formData);
-                    formData.setStoreBinderData(binder, binderResult);
-                } catch (Exception e) {
-                    String code = Long.toString(System.currentTimeMillis());
-                    String formId = FormUtil.getElementParameterName(form);
-                    formData.addFormError(formId, ResourceBundleUtil.getMessage("console.form.data.error.storing", new Object[]{code}));
-                    LogUtil.error(FormService.class.getName(), e, "Error executing store binder - code : " + code);
-                }
-            }
-        }
-        
-        return formData;
-    }
-
-    public String retrieveFormHtml(Form form, FormData formData) {
-        String formHtml = null;
-        if (form != null) {
-            if (formData == null) {
-                formData = new FormData();
-            }
-            formHtml = generateElementHtml(form, formData);
-        }
-        return formHtml;
-    }
-
-    public String retrieveFormErrorHtml(Form form, FormData formData) {
-        String formHtml = null;
-        if (form != null) {
-            if (formData == null) {
-                formData = new FormData();
-            }
-            formHtml = generateElementErrorHtml(form, formData);
-        }
-        return formHtml;
-    }
 }

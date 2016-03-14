@@ -2,7 +2,7 @@
 
 <commons:popupHeader />
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapParticipants"/> - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />
+        <fmt:message key="console.process.config.label.mapParticipants"/> - <ui:stripTag html="${param.participantName}"/> <c:out value="(${participantId})" escapeXml="true" />
     </div>
     <div id="main-body-content" style="text-align: left">
         <div id="userTabView">

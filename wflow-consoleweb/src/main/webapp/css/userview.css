@@ -224,3 +224,6 @@ body .ui-widget-overlay {
     height: 100%;
     overflow: hidden;
 }
+input[type="button"], input[type="submit"], input[type="reset"] {
+  -webkit-appearance: button;
+}

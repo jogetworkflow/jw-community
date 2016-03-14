@@ -25,7 +25,7 @@ public class DynamicDataSource extends BasicManagedDataSource {
         if (tempDriver == null || tempDriver.length() == 0 ||
                 tempUrl == null || tempUrl.length() == 0 ||
                 tempUser == null || tempUser.length() == 0) {
-            return super.createDataSource();
+            throw new SQLException("No database profile configured");
         }
 
         if (tempPassword == null) {

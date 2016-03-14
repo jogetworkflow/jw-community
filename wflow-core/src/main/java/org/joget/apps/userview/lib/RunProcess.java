@@ -14,15 +14,18 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
+import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowActivity;
@@ -62,7 +65,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {
@@ -207,6 +210,12 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("view", "featureDisabled");
                 } else {
                     viewProcess(null);
+                    String csrfToken = "";
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null) {
+                        csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
+                    }
+                    setProperty("csrfToken", csrfToken);
                     setProperty("view", "processFormPost");
                 }
             } else {
@@ -322,12 +331,10 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
             WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
-            
+            Form startForm = null;
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
+                startForm = startFormDef.getForm();
                 if (result == null) {
-                    // validation error, get form
-                    Form startForm = startFormDef.getForm();
-
                     // generate form HTML
                     String formHtml = formService.retrieveFormErrorHtml(startForm, formData);
                     AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
@@ -364,7 +371,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     }
                     return;
                 } else {
-                    processStarted();
+                    processStarted(startForm, formData);
                 }
             }
         }
@@ -478,7 +485,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
                         setProperty("view", "redirect");
                         boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));
-                        setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
+                        setRedirectUrl(getRedirectUrl(form, formResult), redirectToParent);
                     } else {
                         setProperty("view", "assignmentUpdated");
                     }
@@ -524,16 +531,51 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         }
     }
 
-    private void processStarted() {
+    private void processStarted(Form form, FormData formData) {
         setAlertMessage(getPropertyString("messageShowAfterComplete"));
         if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
             setProperty("view", "redirect");
             boolean redirectToParent = "Yes".equals(getPropertyString("showInPopupDialog"));            
-            setRedirectUrl(getPropertyString("redirectUrlAfterComplete"), redirectToParent);
+            setRedirectUrl(getRedirectUrl(form, formData), redirectToParent);
         } else {
             setProperty("headerTitle", "Process Started");
             setProperty("view", "processStarted");
         }
+    }
+    
+    protected String getRedirectUrl(Form form, FormData formData) {
+        // determine redirect URL
+        String redirectUrl = getPropertyString("redirectUrlAfterComplete");
+
+        if (form != null && formData != null && redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
+            String passoverFieldName = getPropertyString("fieldPassover");
+            Element passoverElement = FormUtil.findElement(passoverFieldName, form, formData, true);
+            
+            String passoverValue = "";
+            
+            if (passoverElement != null) {
+                passoverValue = FormUtil.getElementPropertyValue(passoverElement, formData);
+            } else if (FormUtil.PROPERTY_ID.equals(passoverFieldName)) {
+                passoverValue = formData.getPrimaryKeyValue();
+            }
+            
+            try {
+                if ("append".equals(getPropertyString("fieldPassoverMethod"))) {
+                    if (!redirectUrl.endsWith("/")) {
+                        redirectUrl += "/";
+                    }
+                    redirectUrl += URLEncoder.encode(passoverValue, "UTF-8");
+                } else {
+                    if (redirectUrl.contains("?")) {
+                        redirectUrl += "&";
+                    } else {
+                        redirectUrl += "?";
+                    }
+                    redirectUrl += URLEncoder.encode(getPropertyString("paramName"), "UTF-8") + "=" + URLEncoder.encode(passoverValue, "UTF-8");
+                }
+            } catch (Exception e) {}
+        }
+        return redirectUrl;
     }
 
     @Override

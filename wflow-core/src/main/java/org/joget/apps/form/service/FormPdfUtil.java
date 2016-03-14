@@ -26,18 +26,45 @@ import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.resource.FSEntityResolver;
 
+/**
+ * Utility class used to generate PDF file based on a form and its data
+ * 
+ */
 public class FormPdfUtil {
     private static ITextRenderer renderer;
     
+    /**
+     * Gets the renderer
+     * @return 
+     */
     public static ITextRenderer getRenderer() {
         if (renderer == null) {
             renderer = new ITextRenderer();
+            
             SharedContext sharedContext = renderer.getSharedContext();
+            CustomITexResourceLoaderUserAgent callback = new CustomITexResourceLoaderUserAgent(renderer.getOutputDevice());
+            callback.setSharedContext(sharedContext);
+            sharedContext.setUserAgentCallback(callback);
             sharedContext.setFontResolver(new ITextCustomFontResolver(sharedContext));
         }
         return renderer;
     }
     
+    /**
+     * Create PDF file based on form
+     * @param formId
+     * @param primaryKey
+     * @param appDef
+     * @param assignment
+     * @param hideEmpty
+     * @param header
+     * @param footer
+     * @param css
+     * @param showAllSelectOptions
+     * @param repeatHeader
+     * @param repeatFooter
+     * @return 
+     */
     public static byte[] createPdf(String formId, String primaryKey, AppDefinition appDef, WorkflowAssignment assignment, Boolean hideEmpty, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
             String html = getSelectedFormHtml(formId, primaryKey, appDef, assignment, hideEmpty);
@@ -52,6 +79,17 @@ public class FormPdfUtil {
         return null;
     }
     
+    /**
+     * Create PDF file based on Form HTML
+     * @param html
+     * @param header
+     * @param footer
+     * @param css
+     * @param showAllSelectOptions
+     * @param repeatHeader
+     * @param repeatFooter
+     * @return 
+     */
     public static byte[] createPdf(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         try {
             ITextRenderer r = getRenderer();
@@ -79,6 +117,15 @@ public class FormPdfUtil {
         return null;
     }
     
+    /**
+     * Get the HTML of a form
+     * @param formId
+     * @param primaryKey
+     * @param appDef
+     * @param assignment
+     * @param hideEmpty
+     * @return 
+     */
     public static String getSelectedFormHtml(String formId, String primaryKey, AppDefinition appDef, WorkflowAssignment assignment, Boolean hideEmpty) {
         String html = "";
 
@@ -108,6 +155,9 @@ public class FormPdfUtil {
             form = (Form) formService.loadFormFromJson(formJson, formData);
         }
         
+        //set form to readonly
+        FormUtil.setReadOnlyProperty(form, true, true);
+        
         if (hideEmpty != null && hideEmpty) {
             form = (Form) removeEmptyValueChild(form, form, formData);
         }
@@ -121,6 +171,17 @@ public class FormPdfUtil {
         return html;
     }
     
+    /**
+     * Prepare the HTML for PDF generation
+     * @param html
+     * @param header
+     * @param footer
+     * @param css
+     * @param showAllSelectOptions
+     * @param repeatHeader
+     * @param repeatFooter
+     * @return 
+     */
     public static String formatHtml(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
         //remove hidden field
         html = html.replaceAll("<input[^>]*type=\"hidden\"[^>]*>", "");
@@ -134,9 +195,6 @@ public class FormPdfUtil {
 
         //remove validator decorator
         html = html.replaceAll("<span\\s?class=\"[^\"]*cell-validator[^\"]?\"[^>]*>[^>]*</\\s?span>", "");
-
-        //remove functional link
-        html = html.replaceAll("<a\\s?href=\"[#|\\s]?\"[^>]*>.*?</\\s?a>", "");
 
         //remove link
         html = html.replaceAll("<link[^>]*>", "");
@@ -357,6 +415,13 @@ public class FormPdfUtil {
         return html;
     }
     
+    /**
+     * Removed the field elements which has empty value from the form
+     * @param form
+     * @param element
+     * @param formData
+     * @return 
+     */
     public static Element  removeEmptyValueChild(Form form, Element element, FormData formData) {
         Collection<Element> childs = element.getChildren();
         if (childs != null && childs.size() > 0) {
@@ -380,6 +445,11 @@ public class FormPdfUtil {
         return element;
     } 
     
+    /** 
+     * Gets the full URL of a resource
+     * @param resourceUrl
+     * @return 
+     */
     public static URL getResourceURL(String resourceUrl) {
         URL url = null;
 

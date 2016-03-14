@@ -1,9 +1,9 @@
 package org.joget.apps.form.lib;
 
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 
 /**
@@ -20,7 +20,7 @@ public class SaveAsDraftButton extends FormButton {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -30,8 +30,8 @@ public class SaveAsDraftButton extends FormButton {
 
     @Override
     public FormData actionPerformed(Form form, FormData formData) {
-        FormService formService = (FormService) FormUtil.getApplicationContext().getBean("formService");
-        FormData updatedFormData = formService.submitForm(form, formData, true);
+        AppService appService = (AppService) FormUtil.getApplicationContext().getBean("appService");
+        FormData updatedFormData = appService.submitForm(form, formData, true);
         return updatedFormData;
     }
 

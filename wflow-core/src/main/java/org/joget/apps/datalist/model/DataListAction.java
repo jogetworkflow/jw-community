@@ -23,12 +23,12 @@ public interface DataListAction extends PropertyEditable {
     String getTarget();
 
     /**
-     * Name of the parameter if linked, defaults to the current column name if not specified.
+     * Name of the parameter if linked, separated by semicolon ";" if has multiple.
      */
     String getHrefParam();
 
     /**
-     * Name of the column to use for the param value, defaults to the current column name if not specified.
+     * Name of the column to use for the param value if linked, separated by semicolon ";" if has multiple.
      */
     String getHrefColumn();
 
@@ -38,7 +38,7 @@ public interface DataListAction extends PropertyEditable {
     String getConfirmation();
 
     /**
-     * Flag that decide to show an action object or not
+     * Flag that decide to show an action object or not when no record
      */
     Boolean getVisibleOnNoRecord();
 

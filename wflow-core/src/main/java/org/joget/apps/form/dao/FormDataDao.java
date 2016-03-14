@@ -1,18 +1,14 @@
 package org.joget.apps.form.dao;
 
-import java.io.IOException;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import java.util.Collection;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
-import org.hibernate.cfg.Configuration;
-import org.w3c.dom.DOMException;
-import org.xml.sax.SAXException;
 
+/**
+ * Service method used to manage form data
+ * 
+ */
 public interface FormDataDao {
 
     /**
@@ -40,7 +36,7 @@ public interface FormDataDao {
 
     /**
      * Loads a data row for a form based on the primary key. 
-     * This method runs outside of a db transaction, to cater to hibernate's auto schema update requirement.
+     * This method is transactional (since v5), but retains the method name for backward compatibility reasons.
      * @param form
      * @param primaryKey
      * @return 
@@ -49,8 +45,8 @@ public interface FormDataDao {
 
     /**
      * Loads a data row for a form based on the primary key. 
-     * This method runs outside of a db transaction, to cater to hibernate's auto schema update requirement.
-     * @param formDefId
+     * This method is transactional (since v5), but retains the method name for backward compatibility reasons.
+     * @param formDefID
      * @param tableName
      * @param primaryKey
      * @return 
@@ -60,6 +56,7 @@ public interface FormDataDao {
     /**
      * Loads a data row for a table based on the primary key
      * @param tableName
+     * @param columnName is not used
      * @param primaryKey
      * @return null if the row does not exist
      */
@@ -150,18 +147,33 @@ public interface FormDataDao {
     public void updateSchema(Form form, FormRowSet rowSet);
     
     /**
+     * Call Hibernate to update DB schema
+     * @param formDefId
+     * @param tableName
+     * @param rowSet
+     */
+    public void updateSchema(String formDefId, String tableName, FormRowSet rowSet);
+    
+    /**
      * Delete form data by primary keys
      * @param form
      * @param primaryKeyValues 
      */
     public void delete(Form form, String[] primaryKeyValues);
 
-        /**
+    /**
      * Delete form data by primary keys
      * @param form
      * @param primaryKeyValues 
      */
     public void delete(String formDefId, String tableName, String[] primaryKeyValues);
+    
+    /**
+     * Delete form data by rows
+     * @param form
+     * @param primaryKeyValues 
+     */
+    public void delete(String formDefId, String tableName, FormRowSet rows);
 
     /**
      * Gets the generated hibernate entity name for the form
@@ -212,17 +224,4 @@ public interface FormDataDao {
      */
     public String getEntityName(String tableName, String columnName);
 
-    /**
-     * Returns a customized hibernate configuration for the form.
-     * @param config
-     * @return
-     * @throws DOMException
-     * @throws HibernateException
-     * @throws ParserConfigurationException
-     * @throws SAXException
-     * @throws IOException
-     * @throws MappingException
-     * @throws TransformerException
-     */
-    public Configuration customizeConfiguration(Configuration config) throws DOMException, HibernateException, ParserConfigurationException, SAXException, IOException, MappingException, TransformerException;
 }

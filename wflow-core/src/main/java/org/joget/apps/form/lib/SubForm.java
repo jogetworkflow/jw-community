@@ -30,7 +30,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -46,10 +46,12 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
         Form subForm = (childElements.size() > 0) ? (Form) getChildren().iterator().next() : null;
         String label = getPropertyString("label");
         String cellClass = ((Boolean) dataModel.get("includeMetaData")) ? "form-cell" : "subform-cell";
-        String noFrame = ("true".equalsIgnoreCase(getPropertyString("noframe"))) ? " no-frame" : "";
+        String noFrame = ("true".equalsIgnoreCase(getPropertyString("noframe"))) ? " no-frame" : " has-frame";
         String readonly = ("true".equalsIgnoreCase(getPropertyString(FormUtil.PROPERTY_READONLY))) ? " readonly" : "";
         String html = "<div class='" + cellClass + "' " + elementMetaData + "><div class='subform-container"+noFrame+readonly+"'>";
-        html += "<span class='subform-title'>" + label + "</span>";
+        if (!label.isEmpty()) {
+            html += "<span class='subform-title'>" + label + "</span>";
+        }
         if (subForm != null) {
             String subFormHtml = subForm.render(formData, false);
             subFormHtml = subFormHtml.replaceAll("\"form-section", "\"subform-section");

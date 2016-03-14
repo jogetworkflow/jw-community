@@ -38,13 +38,22 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 
+/**
+ * Utility methods used to generate XPDl image
+ * 
+ */
 public class XpdlImageUtil {
     
     public static final String IMAGE_FOLDER = "app_xpdlImages";
-    public static final String IMAGE_EXTENSION = ".jpg";
+    public static final String IMAGE_EXTENSION = ".png";
     public static final String THUMBNAIL_PREFIX = "thumb-";
     public static final int THUMBNAIL_SIZE = 400;
 
+    /**
+     * Gets the XPDL image path in wflow/app_xpdlImages folder
+     * @param processDefId
+     * @return 
+     */
     public static String getXpdlImagePath(String processDefId) {
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
         WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
@@ -54,6 +63,12 @@ public class XpdlImageUtil {
         return path.getAbsolutePath();
     }
 
+    /**
+     * Gets the XPDL image.
+     * @param designerwebBaseUrl
+     * @param processDefId
+     * @return 
+     */
     public static File getXpdlImage(String designerwebBaseUrl, String processDefId) {
         File file = new File(getXpdlImagePath(processDefId), processDefId + IMAGE_EXTENSION);
         if (!file.exists()) {
@@ -63,6 +78,12 @@ public class XpdlImageUtil {
         return file;
     }
 
+    /**
+     * Gets the XPDL image thumbnail. 
+     * @param designerwebBaseUrl
+     * @param processDefId
+     * @return 
+     */
     public static File getXpdlThumbnail(String designerwebBaseUrl, String processDefId) {
         File file = new File(getXpdlImagePath(processDefId), THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION);
         if (!file.exists()) {
@@ -72,10 +93,29 @@ public class XpdlImageUtil {
         return file;
     }
 
+    /**
+     * Queue a task for XPDL image generation
+     * 
+     * @deprecated this is not used in v5 since the Workflow Designer is replaced
+     * by a web-based Process Builder
+     * 
+     * @param designerwebBaseUrl
+     * @param processDefId 
+     */
     public static void generateXpdlImage(final String designerwebBaseUrl, final String processDefId) {
         generateXpdlImage(designerwebBaseUrl, processDefId, false);
     }
 
+    /**
+     * Queue a task for XPDL image generation
+     * 
+     * @deprecated this is not used in v5 since the Workflow Designer is replaced
+     * by a web-based Process Builder
+     * 
+     * @param designerwebBaseUrl
+     * @param processDefId
+     * @param asynchronous 
+     */
     public static void generateXpdlImage(final String designerwebBaseUrl, final String processDefId, boolean asynchronous) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         
@@ -83,6 +123,15 @@ public class XpdlImageUtil {
         executor.execute(new XpdlImageTask(profile, designerwebBaseUrl, processDefId));
     }
 
+    /**
+     * Create the XDPL image
+     * 
+     * @deprecated this is not used in v5 since the Workflow Designer is replaced
+     * by a web-based Process Builder
+     * 
+     * @param designerwebBaseUrl
+     * @param processDefId 
+     */
     public static void createXpdlImage(String designerwebBaseUrl, String processDefId) {
         String baseDir = getXpdlImagePath(processDefId);
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
@@ -167,6 +216,15 @@ public class XpdlImageUtil {
         }
     }
     
+    /**
+     * Create the XPDL image thumbnail
+     * 
+     * @deprecated this is not used in v5 since the Workflow Designer is replaced
+     * by a web-based Process Builder
+     * 
+     * @param path
+     * @param processDefId 
+     */
     public static void createThumbnail(String path, String processDefId) {
         int thumbWidth = THUMBNAIL_SIZE;
         int thumbHeight = THUMBNAIL_SIZE;
@@ -195,7 +253,7 @@ public class XpdlImageUtil {
             graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
 
             out = new BufferedOutputStream(new FileOutputStream(new File(path, THUMBNAIL_PREFIX + processDefId + IMAGE_EXTENSION)));
-            ImageIO.write(thumbImage, "jpeg", out);
+            ImageIO.write(thumbImage, "png", out);
 
             out.flush();
         } catch (Exception ex) {

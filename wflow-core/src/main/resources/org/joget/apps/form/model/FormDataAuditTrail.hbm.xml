@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="FormDataAuditTrail" lazy="false" name="org.joget.apps.form.model.FormDataAuditTrail" table="app_form_data_audit_trail">
+        <id name="id" type="string"/>
+        <property name="appId" type="string"/>
+        <property name="appVersion" type="string"/>
+        <property name="formId" type="string"/>
+        <property name="tableName" type="string"/>
+        <property name="username" type="string"/>
+        <property name="action" type="string"/>
+        <property name="data" type="text"/>
+        <property name="datetime" type="timestamp"/>
+    </class>
+</hibernate-mapping>

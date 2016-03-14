@@ -12,29 +12,43 @@
             value : 'default',
             label : '@@app.databaseupdatetool.defaultDatasource@@'
         }],
-        value : 'custom'
+        value : 'default'
     },{
         name : 'driverClassName',
         label : '@@app.databaseupdatetool.databaseType@@',
         description : '@@app.databaseupdatetool.driver.desc@@',
         type : 'textfield',
-        value : 'com.mysql.jdbc.Driver'
+        value : 'com.mysql.jdbc.Driver',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'True'
     },
     {
         name : 'url',
         label : '@@app.databaseupdatetool.targetDbUrl@@',
         type : 'textfield',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
         required : 'True'
     },
     {
         name : 'username',
         label : '@@app.databaseupdatetool.username@@',
-        type : 'textfield'
+        type : 'textfield',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'True'
     },
     {
         name : 'password',
         label : '@@app.databaseupdatetool.password@@',
-        type : 'password'
+        type : 'password',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false'
     }]
 },
 {
@@ -42,9 +56,8 @@
     properties : [{
         name : 'query',
         label : '@@app.databaseupdatetool.query@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '15',
+        type : 'codeeditor',
+        mode : 'sql',
         required : 'True'
     }]
 }]

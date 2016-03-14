@@ -15,10 +15,18 @@ public class MobileUtil {
 
     private static Boolean mobileDisabled;
     
+    /**
+     * Flag to indicate the mobile support is disabled by system  
+     * @return 
+     */
     public static boolean isMobileDisabled() {
         return mobileDisabled != null && mobileDisabled;
     }
     
+    /**
+     * Sets to disable the mobile support
+     * @param disabled 
+     */
     public void setDisableMobile(boolean disabled) {
         // only allow setting once
         if (mobileDisabled == null) {

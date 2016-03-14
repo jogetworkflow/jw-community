@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="ReportWorkflowPackage" name="org.joget.report.model.ReportWorkflowPackage" table="app_report_package">
         <id name="uid" column="uuid" type="string">
@@ -8,8 +8,8 @@
         <property name="packageId" type="string"/>
         <property name="packageName" type="string"/>
         <property name="packageVersion" type="string"/>
-        <many-to-one column="appUid" lazy="false" entity-name="ReportApp" name="reportApp"/>
-        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="reportWorkflowProcessList">
+        <many-to-one column="appUid" lazy="false" update="false" entity-name="ReportApp" name="reportApp"/>
+        <bag cascade="delete" inverse="true" lazy="true" name="reportWorkflowProcessList">
             <key column="packageUid" not-null="true"/>  
             <one-to-many entity-name="ReportWorkflowProcess"/>
         </bag>

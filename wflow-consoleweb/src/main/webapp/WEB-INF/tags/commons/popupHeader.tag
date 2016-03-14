@@ -18,9 +18,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         
         <c:if test="${!empty userviewThemeCss}">
-            <style type="text/css">
                 ${userviewThemeCss}
-            </style>
         </c:if>
         <script>
             $(function() {

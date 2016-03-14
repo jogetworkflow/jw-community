@@ -81,4 +81,24 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         
         return originalIds;
     }
+    
+    public Collection<WorkflowProcessLink> getLinks(String processId) {
+        Collection<WorkflowProcessLink> links = new ArrayList<WorkflowProcessLink>();
+        WorkflowProcessLink processLink = getWorkflowProcessLink(processId);
+        String conditions = "where e.originProcessId = ?";
+        if (processLink != null) {
+            processId = processLink.getOriginProcessId();
+        }
+        WorkflowProcessLink origin = new WorkflowProcessLink();
+        origin.setProcessId(processId);
+        origin.setParentProcessId(processId);
+        origin.setOriginProcessId(processId);
+        links.add(origin);
+        
+        Collection<WorkflowProcessLink> temp = super.find(ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
+        if (temp != null && !temp.isEmpty()) {
+            links.addAll(temp);
+        }
+        return links;
+    }
 }

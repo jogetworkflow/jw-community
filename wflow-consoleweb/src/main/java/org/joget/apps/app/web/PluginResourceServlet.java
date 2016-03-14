@@ -8,18 +8,16 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 public class PluginResourceServlet extends HttpServlet {
 
     public static final int BUFFER_SIZE = 65536;
     public static final long DEFAULT_HEADER_CACHE_EXPIRY = 300000L; // 5 minutes
-    @Autowired
-    PluginManager pluginManager;
     ServletConfig config;
 
     @Override
@@ -30,12 +28,10 @@ public class PluginResourceServlet extends HttpServlet {
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        // reset profile and set hostname
-        HostManager.setCurrentProfile(null);
-        String hostname = request.getServerName();
-        HostManager.setCurrentHost(hostname);
         
+        // reset profile and set hostname
+        HostManager.initHost();
+
         boolean found = false;
 
         // get plugin name and requested resource url
@@ -65,7 +61,10 @@ public class PluginResourceServlet extends HttpServlet {
                 }
 
                 // get resource input stream
-                input = pluginManager.getPluginResource(pluginName, resourceUrl);
+                PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+                if (pluginManager != null) {
+                    input = pluginManager.getPluginResource(pluginName, resourceUrl);
+                }
                 if (input != null) {
                     // set header for download
 //                    response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
@@ -120,7 +119,10 @@ public class PluginResourceServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        pluginManager.shutdown();
+        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+        if (pluginManager != null) {
+            pluginManager.shutdown();
+        }
     }
     
 }

@@ -42,6 +42,10 @@
     overflow:auto;
 }
 
+.property-editor-page-buffer {
+    height: 200px;
+}
+
 .property-editor-page-button-panel{
     padding:5px 10px;
 }
@@ -100,14 +104,12 @@
 }
 
 .property-input .default .label{
-    float:left;
-    display:block;
-    width:38px;
+    display:inline-block;
+    margin-left: 2px;
 }
 
 .property-input .default .value{
-    float:left;
-    display:block;
+    display:inline-block;
 }
 
 .property-input table tr#header{
@@ -251,4 +253,12 @@
     border: 1px solid gray;
     max-height: 150px;
     overflow:auto;
+}
+
+td.error .chosen-container, td.error input {
+    border:1px solid red;
+}
+
+.ace_editor *{
+   font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }

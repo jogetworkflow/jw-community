@@ -36,7 +36,7 @@ public class DataListService {
     }
 
     /**
-     * Retrieve a binder by ID. For now the ID is the class name
+     * Retrieve a binder plugin by ID. For now the ID is the class name
      * @param id
      * @return
      */
@@ -52,7 +52,7 @@ public class DataListService {
     }
 
     /**
-     * Retrieve an action by class name.
+     * Retrieve an action plugin by class name.
      * @param className
      * @return
      */
@@ -67,7 +67,7 @@ public class DataListService {
     }
 
     /**
-     * Returns an array of available binder IDs. For now, ID is the fully qualified class name. 
+     * Returns an array of available binder plugins. For now, ID is the fully qualified class name. 
      * @return
      */
     public DataListBinder[] getAvailableBinders() {
@@ -83,7 +83,7 @@ public class DataListService {
     }
 
     /**
-     * Returns an array of available actions. For now, ID is the fully qualified class name.
+     * Returns an array of available action plugins. For now, ID is the fully qualified class name.
      * @return
      */
     public DataListAction[] getAvailableActions() {
@@ -99,7 +99,7 @@ public class DataListService {
     }
 
     /**
-     * Returns an array of available formatters. For now, ID is the fully qualified class name.
+     * Returns an array of available formatter plugins. For now, ID is the fully qualified class name.
      * @return
      */
     public DataListColumnFormat[] getAvailableFormats() {

@@ -11,6 +11,7 @@ import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -54,7 +55,7 @@ public class DataList {
     private Integer size;
     private Integer total;
     private Integer pageSize;
-    private int defaultPageSize = DEFAULT_PAGE_SIZE;
+    private int defaultPageSize = 0;
     private String pageSizeList;
     private String defaultSortColumn;
     private String defaultOrder;
@@ -99,7 +100,7 @@ public class DataList {
             if (getDataListParamString(PARAMETER_PAGE_SIZE) != null) {
                 queryString2 += getDataListEncodedParamName(PARAMETER_PAGE_SIZE) + "=" + getDataListParamString(PARAMETER_PAGE_SIZE) + "&";
             }
-            actionResult.setUrl("?" + StringUtil.mergeRequestQueryString(queryString, queryString2));
+            actionResult.setUrl("?"+ StringUtil.mergeRequestQueryString(queryString, queryString2));
         }
     }
 
@@ -188,6 +189,13 @@ public class DataList {
     }
 
     public int getDefaultPageSize() {
+        if (defaultPageSize == 0) {
+            try {
+                defaultPageSize = Integer.parseInt(ResourceBundleUtil.getMessage("dbuilder.defaultPageSize"));
+            } catch (NumberFormatException e) {
+                defaultPageSize = DEFAULT_PAGE_SIZE;
+            }
+        }
         return defaultPageSize;
     }
 
@@ -235,9 +243,15 @@ public class DataList {
                 DataListAction r = rowActions[i];
                 if (r.getHref() == null || (r.getHref() != null && r.getHref().isEmpty())) {
                     r.setProperty("href", "?" + getActionParamName() + "=" + r.getPropertyString("id"));
-                    r.setProperty("target", "_self");
-                    r.setProperty("hrefParam", keyParam);
-                    r.setProperty("hrefColumn", key);
+                    if (r.getTarget() == null || (r.getTarget() != null && r.getTarget().isEmpty())) {
+                        r.setProperty("target", "_self");
+                    }
+                    if (r.getHrefParam() == null || (r.getHrefParam() != null && r.getHrefParam().isEmpty())) {
+                        r.setProperty("hrefParam", keyParam);
+                    }
+                    if (r.getHrefColumn() == null || (r.getHrefColumn() != null && r.getHrefColumn().isEmpty())) {
+                        r.setProperty("hrefColumn", key);
+                    }
                 }
                 rowActions[i] = r;
             }
@@ -386,7 +400,9 @@ public class DataList {
             try {
                 if (getBinder() != null) {
                     //force get total before get size to bypass additional filter
-                    getTotal();
+                    if (!"true".equals(ResourceBundleUtil.getMessage("dbuilder.menu.counter.considerFilters"))) {
+                        getTotal();
+                    }
                     size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
                 } else {
                     size = 0;
@@ -404,6 +420,10 @@ public class DataList {
     }
     
     public int getTotal() {
+        if ("true".equals(ResourceBundleUtil.getMessage("dbuilder.menu.counter.considerFilters"))) {
+            return getSize();
+        }
+        
         if (total == null) {
             try {
                 if (getBinder() != null) {

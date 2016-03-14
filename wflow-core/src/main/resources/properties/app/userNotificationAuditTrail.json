@@ -45,6 +45,26 @@
         name : 'password',
         label : '@@app.usernotificationaudittrail.password@@',
         type : 'password'
+    }],
+    buttons : [{
+        name : 'testmail',    
+        label : '@@app.emailtool.sendTestMail@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=testmail',
+        fields : ['host', 'port', 'security', 'username', 'password'],
+        addition_fields : [
+            {
+                name : 'from',
+                label : '@@app.emailtool.from@@',
+                type : 'textfield',
+                required : 'True'
+            },
+            {
+                name : 'toSpecific',
+                label : '@@app.emailtool.toEmail@@',
+                type : 'textfield',
+                required : 'True'
+            }
+        ]
     }]
 },
 {

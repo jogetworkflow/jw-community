@@ -7,7 +7,7 @@
 
 <div id="nav">
     <div id="nav-title">
-
+        <p><i class="icon-dashboard"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">

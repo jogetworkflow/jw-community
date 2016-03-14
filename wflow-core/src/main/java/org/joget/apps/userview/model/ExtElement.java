@@ -4,21 +4,34 @@ import java.util.Map;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 
+/**
+ * A base abstract class used by Userview related plugin. Use the sub abstract class 
+ * of corresponding plugin types in stead of this abstract class.
+ * 
+ */
 public abstract class ExtElement extends ExtDefaultPlugin implements PropertyEditable {
 
     private Map requestParameters;
 
+    /**
+     * Gets request parameters
+     * @return 
+     */
     public Map getRequestParameters() {
         return requestParameters;
     }
 
+    /**
+     * Sets request parameters
+     * @param requestParameters 
+     */
     public void setRequestParameters(Map requestParameters) {
         this.requestParameters = requestParameters;
     }
 
     /**
      * Convenience method to get a parameter value
-     * @param parameter
+     * @param requestParameter
      * @return
      */
     public Object getRequestParameter(String requestParameter) {
@@ -28,7 +41,7 @@ public abstract class ExtElement extends ExtDefaultPlugin implements PropertyEdi
 
     /**
      * Convenience method to get a parameter String value
-     * @param parameter
+     * @param requestParameter
      * @return Empty string instead of null.
      */
     public String getRequestParameterString(String requestParameter) {

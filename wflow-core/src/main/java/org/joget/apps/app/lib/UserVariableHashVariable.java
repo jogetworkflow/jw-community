@@ -43,7 +43,7 @@ public class UserVariableHashVariable extends DefaultHashVariablePlugin {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {

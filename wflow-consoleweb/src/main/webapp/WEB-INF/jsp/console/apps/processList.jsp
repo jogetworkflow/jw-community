@@ -2,7 +2,8 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:header />
+<c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
+<commons:header title="${title}" />
 
 <script>
     function convert(process){
@@ -37,7 +38,7 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="launchDesigner()"><fmt:message key="console.process.config.label.launchDesigner"/></button></li>
+            <li><button id="launchDesigner" onclick="launchDesigner()"><fmt:message key="pbuilder.label.designProcesses"/></button></li>
             <li><button onclick="uploadPackage()"><fmt:message key="console.process.config.label.updateProcess"/></button></li>
         </ul>
     </div>
@@ -92,21 +93,9 @@
     <ui:popupdialog var="popupDialog" src="/"/>
 
     function launchDesigner(){
-        <%
-                String designerwebBaseUrl = AppUtil.getDesignerWebBaseUrl();
-                String locale = "en";
-                if (WorkflowUtil.getSystemSetupValue("systemLocale") != null && WorkflowUtil.getSystemSetupValue("systemLocale").length() > 0) {
-                    locale = WorkflowUtil.getSystemSetupValue("systemLocale");
-                }
-        %>
         $("#updateInformation").dialog({modal:true, height:150, width:550, resizable:false, show: 'slide',overlay: {opacity: 0.5, background: "black"},zIndex: 15001});
         $("#closeInfo").click(function(){$("#updateInformation").dialog("close")});
-        var base = '${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}';
-        var url = base + "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/xpdl";
-        var path = base + '${pageContext.request.contextPath}';
-        <c:set var="sessionId" value="${cookie.JSESSIONID.value}"/>
-        <c:if test="${empty sessionId}"><c:set var="sessionId" value="${pageContext.request.session.id}"/></c:if>
-        document.location = '<%= designerwebBaseUrl%>/designer/webstart.jsp?url=' + encodeURIComponent(url) + '&path=' + encodeURIComponent(path) + '&appId=${appId}&appVersion=${appVersion}&locale=<%= locale%>&username=${username}&domain=${pageContext.request.serverName}&port=${pageContext.request.serverPort}&context=${pageContext.request.contextPath}&session=<c:out value="${sessionId}"/>';
+        window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/builder");
     }
 
     function uploadPackage(){
@@ -115,6 +104,7 @@
     }
 
     Thumbnail = {
+        count: 0,
         load: function(el) {
             var image = new Image();
             image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/thumbnail/" + el.id + "?rnd=" + new Date().valueOf().toString();
@@ -147,8 +137,24 @@
                 $(el).find(" #thumbnail").hide();
             });
             $(image).error(function(){
-                setTimeout(function() { Thumbnail.load(el);}, 10000);
+                var processDefId = el.id;
+                setTimeout(function() { 
+                    Thumbnail.render(processDefId);
+                    setTimeout(function() { Thumbnail.load(el);}, 5000);
+                }, Thumbnail.count * 5000);
+                Thumbnail.count++;
             });
+        },
+        render: function(processDefId) {
+            // create invisible iframe for canvas
+            var iframe = document.createElement('iframe');
+            var iwidth = 1024;
+            var iheight = 0;
+            $(iframe).attr("src", "${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/process/screenshot/" + processDefId);
+            $(iframe).css({
+                'visibility':'hidden'
+            }).width(iwidth).height(iheight);
+            $(document.body).append(iframe);
         },
         init: function() {
             $(".list-thumbnail").each(function() {

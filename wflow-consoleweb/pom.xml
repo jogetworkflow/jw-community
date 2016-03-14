@@ -4,13 +4,13 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-consoleweb</artifactId>
     <packaging>war</packaging>
-    <version>4.0-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <name>wflow-consoleweb</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</connection>
-        <developerConnection>scm:svn:http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</developerConnection>
-        <url>http://dev.joget.org/svn/jw-community/trunk/wflow-consoleweb/</url>
+        <connection>scm:svn:https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/wflow-consoleweb</connection>
+        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/wflow-consoleweb</developerConnection>
+        <url>https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/wflow-consoleweb</url>
     </scm>
     <dependencies>
         <dependency>
@@ -21,19 +21,18 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.4</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>2.5.6.SEC03</version>
-            <scope>test</scope>
+            <version>4.1.6.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.3</version>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -48,9 +47,9 @@
             <version>1.1.2</version>
         </dependency>
         <dependency>
-            <groupId>taglibs</groupId>
-            <artifactId>standard</artifactId>
-            <version>1.1.2</version>
+            <groupId>org.apache.taglibs</groupId>
+            <artifactId>taglibs-standard-impl</artifactId>
+            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
@@ -80,21 +79,6 @@
         </dependency>
         <dependency>
             <groupId>displaytag</groupId>
-            <artifactId>displaytag</artifactId>
-            <version>1.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.lowagie</groupId>
-                    <artifactId>itext</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>displaytag</groupId>
             <artifactId>displaytag-export-poi</artifactId>
             <version>1.2</version>
             <exclusions>
@@ -110,9 +94,19 @@
             <version>3.12</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.12</version>
+        </dependency>
+        <dependency>
             <groupId>org.w3c.jigsaw</groupId>
             <artifactId>jigsaw</artifactId>
             <version>2.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.cache</groupId>
+            <artifactId>cache-api</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -185,6 +179,27 @@
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.7</version>
+                <configuration>
+                    <complianceLevel>1.6</complianceLevel>
+                    <weaveDependencies>
+                        <weaveDependency>
+                            <groupId>org.joget</groupId>
+                            <artifactId>wflow-core</artifactId>
+                        </weaveDependency>
+                    </weaveDependencies>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -74,46 +74,22 @@ body {
 }
 
 body#splash {
-    background: url(../images/cover.jpg);
+    background: white;
     background-size: cover;
 }
 #splash #container {
-    background: white;
     margin: auto;
     padding: 10px 20px 20px 20px;
     width: 600px;
-    margin-top: 50px;
+    margin-top: 10%;
     border-radius: 20px;
+    opacity: 0;
+}
+#splash #container.fade {
     opacity: 0.9;
-}
-#splash .labs {
-    color: #b9b9b9;
-}
-#splash .homesubheader {
-    padding: 5px 20px 10px 20px;
-    border-bottom: solid 1px #E5E5E5;
-    background: #ffeeff;
-    position: absolute;
-    top: 0px;
-    right: 50px;
-    border-radius: 0px 0px 10px 10px;
-    opacity: 0.8;
-}
-#splash .homesubheader h2 {
-    font-size: 14px;
-}
-#splash a#toggleUserAgent {
-    text-decoration: none;
-    color: dimGray;
-}
-#splash #userAgent {
-    display: none;
-}
-#splash #loading {
-    font-size: 18px;
-    font-family: Arial;
-    color: #535353;
-    margin: 30px auto 60px;
+    transition: opacity 1s ease-in;
+    -moz-transition: opacity 1s ease-in;
+    -webkit-transition: opacity 1s ease-in;    
 }
 
 body#desktop {

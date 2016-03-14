@@ -24,6 +24,9 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
 
     public void addAuditTrail(String clazz, String method, String message) {
     }
+    
+    public void addAuditTrail(String clazz, String method, String message, Class[] paramTypes, Object[] args, Object returnObject) {
+    }
 
     public WorkflowDeadline executeDeadlinePlugin(String processId, String activityId, WorkflowDeadline deadline, Date processStartedTime, Date activityAcceptedTime, Date activityActivatedTime) {
         return deadline;

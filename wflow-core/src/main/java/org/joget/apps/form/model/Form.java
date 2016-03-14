@@ -1,15 +1,19 @@
 package org.joget.apps.form.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.json.JSONObject;
 
 public class Form extends Element implements FormBuilderEditable, FormContainer {
 
     private Map<String, String[]> formMetas = new HashMap<String, String[]>();
+    private Collection<FormAction> actions = new ArrayList<FormAction>();
 
     @Override
     public String getName() {
@@ -18,7 +22,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -77,6 +81,16 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                 } else {
                     setFormMeta("_FORM_META_ORIGINAL_ID", new String[]{""});
                 }
+                
+                //store form erros
+                Map<String, String> errors = formData.getFormErrors();
+                if (errors != null && !errors.isEmpty()) {
+                    try {
+                        JSONObject errorJson = new JSONObject();
+                        errorJson.put("errors", errors);
+                        setFormMeta(FormUtil.FORM_ERRORS_PARAM, new String[]{errorJson.toString()});
+                    } catch (Exception e) {}
+                }
             } else {
                 String uniqueId = getCustomParameterName();
                 if (formData.getRequestParameter(uniqueId + "_FORM_META_ORIGINAL_ID") != null) {
@@ -132,5 +146,20 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     @Override
     public FormRowSet formatData(FormData formData) {
         return null;
+    }
+
+    public Collection<FormAction> getActions() {
+        return actions;
+    }
+
+    public void setActions(Collection<FormAction> actions) {
+        this.actions = actions;
+    }
+    
+    public void addAction(FormAction action) {
+        if (this.actions == null) {
+            this.actions = new ArrayList<FormAction>();
+        }
+        this.actions.add(action);
     }
 }

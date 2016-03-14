@@ -21,7 +21,7 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override

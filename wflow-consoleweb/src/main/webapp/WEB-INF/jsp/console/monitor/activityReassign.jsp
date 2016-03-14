@@ -61,6 +61,9 @@
     </div>
 </div>
 <script>
+    $(document).ready(function(){
+        $('#userDataTable_searchTerm').hide();
+    });
     function submitUser(username){
         if(username.length > 0){
             if (confirm("<fmt:message key="console.monitoring.running.label.reassign.confirm"/>")) {

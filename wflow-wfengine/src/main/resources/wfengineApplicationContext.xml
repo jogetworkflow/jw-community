@@ -26,15 +26,16 @@
     </bean>
 
     <aop:config>
-        <aop:pointcut id="workflowManagerMethods" expression="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))"/>
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="workflowManagerMethods"/>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.shark.model.dao.*Dao.*(..))" order="1" />
     </aop:config>
 
     <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager">
     </bean>
 
     <!-- Hibernate SessionFactory -->
-    <bean id="workflowSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="workflowSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -50,18 +51,20 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">16</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
             </props>
         </property>
     </bean>
 
     <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
     </bean>
     
     <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.WorkflowAssignmentDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;workflowSessionFactory"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
 

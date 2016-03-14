@@ -1,42 +1,53 @@
 package org.joget.apps.app.dao;
 
-import java.sql.SQLException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.hibernate.HibernateException;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.Message;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> implements MessageDao {
 
     public static final String ENTITY_NAME = "Message";
-    public static Map<String, Message> cache = new HashMap<String, Message>();
+    private Cache cache;
 
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
     }
     
-    private String getCacheKey(String messageKey, String locale, String appId, String appVersion) {
-        return messageKey + Message.ID_SEPARATOR + locale + Message.ID_SEPARATOR + appId + Message.ID_SEPARATOR + appVersion;
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    private String getCacheKey(String messageKey, String locale, String appId, String version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_MSG_"+messageKey+":"+locale;
     }
 
     public Message loadByMessageKey(String messageKey, String locale, AppDefinition appDefinition) {
         String key = getCacheKey(messageKey, locale, appDefinition.getId(), appDefinition.getVersion().toString());
-        
-        if (cache.containsKey(key)) {
-            return cache.get(key);
-        } else {
+        Element element = cache.get(key);
+
+        if (element == null) {
             Message message = loadById(messageKey + Message.ID_SEPARATOR + locale, appDefinition);
-            cache.put(key, message);
+
+            if (message != null) {
+                element = new Element(key, (Serializable) message);
+                cache.put(element);
+            }
             return message;
+        } else {
+            return (Message) element.getValue();
         }
     }
 
@@ -83,28 +94,20 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         final Object[] params = generateQueryParams(appDefinition).toArray();
 
         // execute query and return result
-        Collection<String> resultList = (Collection) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + condition + " ORDER BY e.locale";
 
-                    public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                        String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + condition + " ORDER BY e.locale";
+        Query q = findSession().createQuery(query);
+        q.setFirstResult(0);
 
-                        Query q = session.createQuery(query);
-                        q.setFirstResult(0);
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
 
-                        if (params != null) {
-                            int i = 0;
-                            for (Object param : params) {
-                                q.setParameter(i, param);
-                                i++;
-                            }
-                        }
-
-                        return q.list();
-                    }
-                });
-
-        return resultList;
+        return q.list();
     }
 
     @Override
@@ -119,10 +122,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
                 for (Message object : list) {
                     if (obj.getId().equals(object.getId())) {
                         String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
-        
-                        if (cache.containsKey(key)) {
-                            cache.remove(key);
-                        }
+                        cache.remove(key);
         
                         list.remove(obj);
                         break;
@@ -143,10 +143,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     @Override
     public boolean update(Message object) {
         String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
-        
-        if (cache.containsKey(key)) {
-            cache.put(key, object);
-        }
+        cache.remove(key);
         return super.update(object);
     }
 }

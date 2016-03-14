@@ -128,16 +128,14 @@
     {
         name : 'customHeader',
         label : '@@userview.formmenu.customHeader@@',
-        type : 'textarea',
-        cols : '20',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     },
     {
         name : 'customFooter',
         label : '@@userview.formmenu.customFooter@@',
-        type : 'textarea',
-        cols : '20',
-        rows : '5'
+        type : 'codeeditor',
+        mode : 'html'
     }]
 },
 {

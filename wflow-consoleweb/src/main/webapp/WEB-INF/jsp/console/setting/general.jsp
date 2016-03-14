@@ -26,7 +26,7 @@
 </style>
 <div id="nav">
     <div id="nav-title">
-
+        <p><i class="icon-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -60,18 +60,6 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
-                        <label for="disableWebConsole"><fmt:message key="console.setting.general.label.disableWebConsole"/></label>
-                        <c:set var="checked"></c:set>
-                        <c:if test="${settingMap['disableWebConsole'] == 'true'}">
-                            <c:set var="checked">checked</c:set>
-                        </c:if>
-                        <input type="checkbox" id="disableWebConsole" name="disableWebConsole" ${checked} />
-                    </div>
-                </span>
-            </div>            
-            <div class="main-body-row">
-                <span class="row-content">
-                    <div class="form-row">
                         <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
                         <span class="form-input">
                             <input id="defaultLandingPage" type="text" name="landingPage" value="<c:out value="${settingMap['landingPage']}"/>"/>
@@ -80,6 +68,23 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="systemTimeZone"><fmt:message key="console.setting.general.label.systemTimeZone"/></label>
+                        <span class="form-input">
+                            <select id="systemTimeZone" name="systemTimeZone">
+                                <c:forEach var="timezone" items="${timezones}">
+                                    <c:set var="selected"><c:if test="${timezone.key == settingMap['systemTimeZone']}"> selected</c:if></c:set>
+                                    <option value="${timezone.key}" ${selected}>${timezone.value}</option>
+                                </c:forEach>
+                            </select>
+                            <br>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> ${timezones[serverTZ]}</i>
+                        </span>
+                    </div>
+                </span>
+            </div>            
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
@@ -98,6 +103,18 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="systemDateFormat"><fmt:message key="console.setting.general.label.systemDateFormat"/></label>
+                        <span class="form-input">
+                            <input id="systemDateFormat" type="text" name="systemDateFormat" value="<c:out value="${settingMap['systemDateFormat']}"/>"/>
+                            <br/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <fmt:message key="console.setting.general.default.systemDateFormat"/></i>
+                        </span>
+                    </div>
+                </span>
+            </div>            
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
@@ -282,6 +299,29 @@
                         <span class="form-input">
                             <input id="fileSizeLimit" type="text" name="fileSizeLimit" value="<c:out value="${settingMap['fileSizeLimit']}"/>"/>
                             <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> <fmt:message key="console.setting.general.label.noLimit"/></i>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="disablePerformanceAnalyzer"><fmt:message key="console.setting.general.label.disablePerformanceAnalyzer"/></label>
+                        <c:set var="checked"></c:set>
+                        <c:if test="${settingMap['disablePerformanceAnalyzer'] == 'true'}">
+                            <c:set var="checked">checked</c:set>
+                        </c:if>
+                        <input type="checkbox" id="disablePerformanceAnalyzer" name="disablePerformanceAnalyzer" ${checked} />
+                    </div>
+                </span>
+            </div>            
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="performanceAnalyzerThreshold"><fmt:message key="console.setting.general.label.performanceAnalyzerThreshold"/></label>
+                        <span class="form-input">
+                            <input id="performanceAnalyzerThreshold" type="text" name="performanceAnalyzerThreshold" value="<c:out value="${settingMap['performanceAnalyzerThreshold']}"/>"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span><span> 100</span></i>
                         </span>
                     </div>
                 </span>

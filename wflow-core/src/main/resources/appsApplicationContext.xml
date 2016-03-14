@@ -12,7 +12,12 @@
 
     <import resource="classpath:wfengineApplicationContext.xml" />
 
-    <bean id="formService" class="org.joget.apps.form.service.FormService">
+    <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl">
+    </bean>
+
+    <bean id="fluCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
     </bean>
 
     <bean id="formColumnCacheBean" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
@@ -23,20 +28,25 @@
         <property name="cache" ref="formColumnCacheBean"/>
     </bean>
     
-    <bean id="formHibernateTemplateCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+    <bean id="formSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.SF_CACHE"/>
+    </bean>
+    
+    <bean id="formPersistentClassCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
     <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" >
         <property name="sessionFactory" ref="formDataSessionFactory" />
-        <lookup-method name="loadCustomSessionFactory" bean="customFormDataSessionFactory" />
         <property name="formDefinitionDao" ref="formDefinitionDao" />
         <property name="formService" ref="formService" />
         <property name="formColumnCache" ref="formColumnCache" />
-        <property name="formHibernateTemplateCache" ref="formHibernateTemplateCache" />
+        <property name="formSessionFactoryCache" ref="formSessionFactoryCache" />
+        <property name="formPersistentClassCache" ref="formSessionFactoryCache" />
     </bean>
     
-    <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -45,73 +55,61 @@
         </property>
         <property name="hibernateProperties">
             <props>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.hbm2ddl.auto"></prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
-            </props>
-        </property>
-    </bean>
-
-    <bean id="customFormDataSessionFactory" class="org.joget.apps.form.dao.FormDataLocalSessionFactoryBean" scope="prototype">
-        <property name="dataSource" ref="setupDataSource"/>
-        <property name="dao" ref="formDataDao"/>
-        <property name="hibernateProperties">
-            <props>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
-                <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">16</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
             </props>
         </property>
     </bean>
 
     <bean id="appDefinitionDao" class="org.joget.apps.app.dao.AppDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
         <property name="formColumnCache" ref="formColumnCache" />
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="datalistDefinitionDao" class="org.joget.apps.app.dao.DatalistDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
         <property name="appDefinitionDao" ref="appDefinitionDao"/>
     </bean>
 
     <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
     </bean>
 
     <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
     </bean>
 
     <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;appSessionFactory"/>
     </bean>
 
-    <bean id="appSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="appSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <qualifier value="app"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -135,12 +133,14 @@
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>
     </bean>
     
     <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <bean id="reportSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <qualifier value="report"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -151,49 +151,50 @@
                 <value>/org/joget/report/model/ReportWorkflowActivity.hbm.xml</value>
                 <value>/org/joget/report/model/ReportWorkflowProcessInstance.hbm.xml</value>
                 <value>/org/joget/report/model/ReportWorkflowActivityInstance.hbm.xml</value>
+                <value>/org/joget/apps/form/model/FormDataAuditTrail.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>
     </bean>
     
     <bean id="reportAppDao" class="org.joget.report.dao.ReportAppDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportWorkflowPackageDao" class="org.joget.report.dao.ReportWorkflowPackageDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportWorkflowProcessDao" class="org.joget.report.dao.ReportWorkflowProcessDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportWorkflowActivityDao" class="org.joget.report.dao.ReportWorkflowActivityDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportWorkflowProcessInstanceDao" class="org.joget.report.dao.ReportWorkflowProcessInstanceDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportWorkflowActivityInstanceDao" class="org.joget.report.dao.ReportWorkflowActivityInstanceDaoImpl">
         <property name="sessionFactory" ref="reportSessionFactory"/>
-        <property name="localSessionFactory" ref="&amp;reportSessionFactory"/>
     </bean>
     
     <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="maxPoolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
+    </bean>
+    
+    <bean id="formDataAuditTrailDao" class="org.joget.apps.form.dao.FormDataAuditTrailDaoImpl">
+        <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
 
     <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
@@ -210,13 +211,15 @@
     
     <bean id="sqlFilterAspect" class="org.joget.apps.app.service.SqlFilterAspect">
     </bean>
-    
+   
     <aop:config>
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.service.AppService.*(..))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.report.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.form.dao.*Dao.*(..))" order="1" />
         <aop:advisor advice-ref="sqlFilterAspect" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />
-        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="2" />
-        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.is*(..)) or execution(* org.joget..*.internal*(..)))" order="2" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)))" order="1" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.apps.form.dao.FormDataDao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.internal*(..)) or execution(* org.joget..*.loadByTable*(..)) or execution(* org.joget..*.clear*(..)))" order="1" />
     </aop:config>
 
 </beans>

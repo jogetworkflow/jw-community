@@ -1,5 +1,4 @@
 #form-canvas * {
-    font-family: PT Sans,Arial,serif;
     font-size: 13px;
 }
 #form-canvas .label {
@@ -24,14 +23,15 @@
     margin: 0px;
 }
 .form-section, .subform-section {
-    /*position: relative;*/
     border: none 2px #cccccc;
-    heightx: 100%;
-    backgroundx: #cccccc;
-    background: white;
-    colorx: #ffffff;
-    min-heightx: 50px;
-    margin-bottom: 10px;
+    background: transparent;
+    margin-top: 15px;
+}
+.form-section.no_label, .subform-section.no_label {
+    margin-top: 0px;
+}
+.form-section.no_label .form-section-title, .subform-section.no_label .subform-section-title{
+    display:none;
 }
 .form-section-title span, .subform-section-title span {
     padding: 10px;
@@ -52,13 +52,9 @@
 .form-column, .subform-column {
     position: relative;
     border: none 2px #dddddd;
-    widthx: 200px;
     float: left;
-    heightx: 100%;
-    min-height: 30px;
     min-width: 250px;
     padding: 0px 0px 0px 0px;
-    backgroundx: #dddddd;
     color: #666666;
     border-top: none;
     border-right: none;
@@ -74,10 +70,12 @@
 }
 .form-cell, .subform-cell {
     position: relative;
-    min-height: 30px;
     color: black;
     clear: left;
     padding: 5px 0px;
+}
+.form-column > .subform-cell {
+    padding: 0;
 }
 .form-cell .label, .subform-cell .label {
     width: 30%;
@@ -120,29 +118,34 @@
 .subform-container{
     border: 5px solid #dfdfdf; 
     padding: 3px;
-    margin-top:5px;
+    margin-top:15px;
 }
 .subform-container.no-frame{
     border: 0; 
     padding: 0;
-    margin-top:10px;
+    margin-top:0px;
 }
 .subform-container, .subform-section {
     background: #efefef;
+}
+.subform-container.has-frame .subform-section-title span {
+    background: #dfdfdf;
 }
 .subform-container.no-frame, .subform-container.no-frame .subform-section {
     background: transparent;
 }
 .subform-title{
     background: #efefef;
-    position:relative;
-    top:-12px;
+    position:absolute;
+    top:-6px;
 }
 .subform-container.no-frame .subform-title{
     background: transparent;
     position:relative;
-    top:-12px;
+    top: 0px;
     font-weight: bold;
+    margin-top: 15px;
+    display: block;
 }
 .form-column-horizontal .form-cell {
     display: block;
@@ -217,4 +220,59 @@
 }
 .quickEdit, #form-canvas .quickEdit {
     display: none;
+}
+#section-actions {margin-top:15px;}
+.customHtml.hidden {display:none;}
+@media screen and (max-width: 767px) {
+    .form-column, .subform-column {width:100% !important;}
+    .form-container textarea, .form-container input[type="text"], .form-container input[type="password"], .form-container input[type="datetime"], .form-container input[type="datetime-local"], .form-container input[type="date"], .form-container input[type="month"], .form-container input[type="time"], .form-container input[type="week"], .form-container input[type="number"], .form-container input[type="email"], .form-container input[type="url"], .form-container input[type="search"], .form-container input[type="tel"], .form-container input[type="color"], .form-container .form-cell-value{
+        max-width: 65%;
+    }
+    .form-container .form-cell-value.form-cell-full{
+        max-width: 100%;
+    }
+    .form-container textarea[cols]{
+        width: 65%;
+    }
+}
+@media screen and (max-width: 480px) {
+    .form-cell .label, .subform-cell .label {
+        width:auto;
+        max-width: 90%;
+        float:none;
+    }
+    .form-container textarea, .form-container input[type="text"], .form-container input[type="password"], .form-container input[type="datetime"], .form-container input[type="datetime-local"], .form-container input[type="date"], .form-container input[type="month"], .form-container input[type="time"], .form-container input[type="week"], .form-container input[type="number"], .form-container input[type="email"], .form-container input[type="url"], .form-container input[type="search"], .form-container input[type="tel"], .form-container input[type="color"], .form-container .form-cell-value{
+        max-width: 90%;
+    }
+    .form-container textarea[cols]{
+        width: 90%;
+    }
+}
+.form-cell .tablesaw thead tr:first-child th,
+.subform-cell .tablesaw thead tr:first-child th {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+.form-cell .tablesaw-stack tbody tr,
+.subform-cell  .tablesaw-stack tbody tr {
+    border-bottom: 0;
+}
+span.tablesaw-cell-content {
+    padding: 0;
+}
+@media screen and (max-width: 39.9375em) {
+    .form-cell table.tablesaw td, .form-cell table.tablesaw th, .subform-cell table.tablesaw td, .subform-cell table.tablesaw th {
+        border:0;
+    }
+    .form-cell .tablesaw-stack tbody tr, .subform-cell .tablesaw-stack tbody tr {
+        border: 1px solid #dfdfdf;
+    }
+    .form-cell .tablesaw-stack .grid-action-cell, .subform-cell .tablesaw-stack .grid-action-cell{
+        text-align: right;
+    }
+}
+
+@media print {
+    .tablesaw-cell-label { display:none;}
+    table tr td p {margin:0 !important;}
 }

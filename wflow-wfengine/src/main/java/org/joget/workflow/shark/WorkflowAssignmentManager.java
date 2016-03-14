@@ -1,5 +1,7 @@
 package org.joget.workflow.shark;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
@@ -47,9 +49,18 @@ public class WorkflowAssignmentManager extends HistoryRelatedAssignmentManager {
             resultList = super.getDefaultAssignments(shandle, procDefId, actId, currentUsername, xpdlParticipant, xpdlResponsibleParticipants);
         }
         LogUtil.info(getClass().getName(), "[processId=" + instanceId + ", processDefId=" + procDefId + ", participantId=" + xpdlParticipant.participantIdOrExpression + ", next user=" + resultList + "]");
-
+        
+        Collection<Class> paramTypes = new ArrayList<Class>();
+        Collection<Object> args = new ArrayList<Object>();
+        paramTypes.add(String.class);
+        args.add(instanceId);//process instance id
+        paramTypes.add(String.class);
+        args.add(actId);//activity instance id
+        paramTypes.add(WorkflowProcess.class);
+        args.add(process); //process object
+        
         //write to audit trail
-        WorkflowUtil.addAuditTrail(this.getClass().getName(), "getDefaultAssignments", actId);
+        WorkflowUtil.addAuditTrail(this.getClass().getName(), "getDefaultAssignments", actId, paramTypes.toArray(new Class[]{}), args.toArray(), resultList);
 
         return resultList;
     }

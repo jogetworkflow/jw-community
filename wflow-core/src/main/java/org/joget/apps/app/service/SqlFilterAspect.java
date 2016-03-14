@@ -41,5 +41,4 @@ public class SqlFilterAspect implements MethodInterceptor {
                 || value.contains(";") || value.contains("/*");
     }
 
-    
 }

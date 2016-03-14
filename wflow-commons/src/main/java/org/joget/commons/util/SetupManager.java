@@ -8,6 +8,10 @@ import java.util.Map;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 
+/**
+ * Service method used to manage system settings
+ * 
+ */
 public class SetupManager {
 
     public static final String SYSTEM_PROPERTY_WFLOW_HOME = "wflow.home";
@@ -26,6 +30,10 @@ public class SetupManager {
         }
     }
 
+    /**
+     * Gets the path of base storing folder for a profile
+     * @return 
+     */
     public static String getBaseDirectory() {
         if (HostManager.isVirtualHostEnabled()) {
             // look for profile directory
@@ -41,6 +49,10 @@ public class SetupManager {
         }
     }
     
+    /**
+     * Gets the path of wflow folder
+     * @return 
+     */
     public static String getBaseSharedDirectory() {
         // shared directory e.g. profiles, plugins. This is also the default if virtual host feature is turned off.
         return BASE_DIRECTORY;
@@ -50,6 +62,10 @@ public class SetupManager {
 
     private Cache cache;
 
+    /**
+     * Method used by system to set cache object
+     * @param cache 
+     */
     public void setCache(Cache cache) {
         this.cache = cache;
         if (cache != null) {
@@ -57,6 +73,9 @@ public class SetupManager {
         }
     }
     
+    /**
+     * Method used by system to clear cache
+     */
     public void clearCache() {
         if (cache != null) {
             synchronized(cache) {
@@ -66,6 +85,9 @@ public class SetupManager {
         }
     }
     
+    /**
+     * Method used by system to refresh cache 
+     */
     public void refreshCache() {
         if (cache != null) {
             synchronized(cache) {
@@ -83,11 +105,24 @@ public class SetupManager {
         }
     }
     
+    /**
+     * Save a system setting
+     * @param setting 
+     */
     public void saveSetting(Setting setting) {
         getSetupDao().saveOrUpdate(setting);
         clearCache();
     }
 
+    /**
+     * Retrieve a list of System settings based on search criteria
+     * @param propertyFilter
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return 
+     */
     public Collection<Setting> getSettingList(String propertyFilter, String sort, Boolean desc, Integer start, Integer rows) {
         String condition = "";
         String[] params = {};
@@ -101,6 +136,11 @@ public class SetupManager {
         return getSetupDao().find(condition, params, sort, desc, start, rows);
     }
 
+    /**
+     * Gets system setting by property key. Cached if possible.
+     * @param property
+     * @return 
+     */
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
             Setting setting = null;
@@ -126,12 +166,21 @@ public class SetupManager {
         }
     }
 
+    /**
+     * Gets the system setting value by property key. Cached if possible.
+     * @param property
+     * @return 
+     */
     public String getSettingValue(String property) {        
         Setting setting = getSettingByProperty(property);
         String value = (setting != null) ? setting.getValue() : null;
         return value;
     }
 
+    /**
+     * Delete system setting by property key.
+     * @param property 
+     */
     public void deleteSetting(String property) {
         Setting setting = getSettingByProperty(property);
         if (setting != null) {
@@ -139,10 +188,18 @@ public class SetupManager {
         }
     }
 
+    /**
+     * Method used by system to gets the SetupDao implementation
+     * @return 
+     */
     public SetupDao getSetupDao() {
         return setupDao;
     }
 
+    /**
+     * Method used by system to sets the SetupDao implementation
+     * @param setupDao 
+     */
     public void setSetupDao(SetupDao setupDao) {
         this.setupDao = setupDao;
     }

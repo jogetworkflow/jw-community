@@ -1,5 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.userview.model.Userview"%>
+
+<c:set var="key" value="<%= Userview.USERVIEW_KEY_EMPTY_VALUE %>"/>
+
 <!DOCTYPE html>
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/default">
     <head>
@@ -56,7 +60,7 @@
                         <c:set var="userviewDefinitionList" value="${appDefinition.userviewDefinitionList}"/>
                         <c:forEach items="${userviewDefinitionList}" var="userviewDefinition">
                             <li>
-                                <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}//landing" rel="external">
+                                <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}/${key}/landing" rel="external">
                                     <img src="${pageContext.request.contextPath}/web/userview/screenshot/${appDefinition.id}/${userviewDefinition.id}" width="150" border="0" />
                                     <p><b><c:out value="${appDefinition.name}"/></b></p>
                                     <h4><c:out value="${userviewDefinition.name}"/></h4>
@@ -84,6 +88,7 @@
             }
         </style>
         <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />          
+        <jsp:include page="mFooter.jsp" flush="true" />   
     </body>
 
 </html>

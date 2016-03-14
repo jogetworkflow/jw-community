@@ -1,5 +1,7 @@
 package org.joget.apps.app.service;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -14,6 +16,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -28,14 +31,22 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.util.HtmlUtils;
 
+/**
+ * Utility methods is used by App in runtime
+ * 
+ */
 @Service("appUtil")
 public class AppUtil implements ApplicationContextAware {
 
@@ -47,19 +58,36 @@ public class AppUtil implements ApplicationContextAware {
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static String designerContextPath = "/jwdesigner";
 
+    /**
+     * Method used for system to set ApplicationContext
+     * @param ac
+     * @throws BeansException 
+     */
     @Override
     public void setApplicationContext(ApplicationContext ac) throws BeansException {
         appContext = ac;
     }
 
+    /**
+     * Utility method to retrieve the ApplicationContext of the system
+     * @return 
+     */
     public static ApplicationContext getApplicationContext() {
         return appContext;
     }
 
+    /**
+     * Used by system to sets designer context path
+     * @param path 
+     */
     public static void setDesignerContextPath(String path) {
         designerContextPath = path;
     }
     
+    /**
+     * Used by system to gets designer context path
+     * @return 
+     */
     public static String getDesignerContextPath() {
         return designerContextPath;
     }
@@ -83,10 +111,21 @@ public class AppUtil implements ApplicationContextAware {
         return appDef;
     }
 
+    /**
+     * Method used by system to clear the AppDefinition of current thread once the request
+     * is processing finish
+     * @throws BeansException 
+     */
     public static void resetAppDefinition() throws BeansException {
         resetAppDefinition.set(Boolean.TRUE);
     }
 
+    /**
+     * Method used by system to check whether there is an AppDefinition exist in 
+     * current thread
+     * @return
+     * @throws BeansException 
+     */
     public static boolean isAppDefinitionReset() throws BeansException {
         return resetAppDefinition.get() != null;
     }
@@ -172,7 +211,7 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
-     * Read workflow variable values from request parameters and populate into a Map
+     * Retrieves workflow variable values from request parameters and populate into a Map
      * @param request
      * @return
      */
@@ -193,7 +232,7 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
-     * Read workflow variable values from a Map and populate into another Map
+     * Retrieves workflow variable values from a Map and populate into another Map
      * @param parameters
      * @return
      */
@@ -213,19 +252,24 @@ public class AppUtil implements ApplicationContextAware {
 
     /**
      * Read locale from Setup
-     * @param
-     * @return
+     * @return Locale code
      */
     public static String getAppLocale() {
-        LocaleResolver localeResolver = (LocaleResolver) appContext.getBean("localeResolver");
-        return localeResolver.resolveLocale(WorkflowUtil.getHttpServletRequest()).toString();
+        return LocaleContextHolder.getLocale().toString();
     }
 
+    /**
+     * Read date format from Setup
+     * @return Date format
+     */
     public static String getAppDateFormat() {
         SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
 
-        if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
-            Locale locale = new Locale(getAppLocale());
+        String systemDateFormat = setupManager.getSettingValue("systemDateFormat");
+        if (systemDateFormat != null && !systemDateFormat.isEmpty()) {
+            return systemDateFormat;
+        } if ("true".equalsIgnoreCase(setupManager.getSettingValue("dateFormatFollowLocale"))) {
+            Locale locale = LocaleContextHolder.getLocale();
             DateFormat dateInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, locale);
             if (dateInstance instanceof SimpleDateFormat) {
                 return ((SimpleDateFormat) dateInstance).toPattern();
@@ -296,6 +340,11 @@ public class AppUtil implements ApplicationContextAware {
         return output;
     }
     
+    /**
+     * Used to escapes all the Hash Variables found in the content
+     * @param content
+     * @return 
+     */
     public static String escapeHashVariable(String content) {
         content = StringUtil.decryptContent(content);
         
@@ -337,10 +386,29 @@ public class AppUtil implements ApplicationContextAware {
         return content;
     }
 
+    /**
+     * Used to parses Hash Variables found in the content and replace it to the Hash
+     * Variable value
+     * @param content
+     * @param wfAssignment
+     * @param escapeFormat
+     * @param replaceMap
+     * @return 
+     */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap) {
         return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, null);
     }
 
+    /**
+     * Used to parses Hash Variables found in the content and replace it to the Hash
+     * Variable value
+     * @param content
+     * @param wfAssignment
+     * @param escapeFormat
+     * @param replaceMap
+     * @param appDef
+     * @return 
+     */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
         content = StringUtil.decryptContent(content);
         
@@ -368,7 +436,7 @@ public class AppUtil implements ApplicationContextAware {
                     for (String var : varList) {
                         for (Plugin p : pluginList) {
                             String tempVar = var.replaceAll("#", "");
-
+                            
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
                                 tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
@@ -407,11 +475,11 @@ public class AppUtil implements ApplicationContextAware {
                                         
                                         //if being process
                                         if (!nestedHashString.equals(processedNestedHashValue)) {
-                                            tempVar = tempVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
+                                            tempVar = tempVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
                                         } 
                                         
                                         //remove nested hash 
-                                        nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeString(nestedHash, StringUtil.TYPE_REGEX, null), StringUtil.escapeString(processedNestedHashValue, escapeFormat, replaceMap));
+                                        nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
                                     }
                                 }
 
@@ -420,9 +488,21 @@ public class AppUtil implements ApplicationContextAware {
 
                                 //get result from plugin
                                 try {
-                                    String value = cachedPlugin.processHashVariable(tempVar);
-
+                                    String removeFormatVar = tempVar;
+                                    String hashFormat = "";
+                                    if (removeFormatVar.contains("?")) {
+                                        hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
+                                        removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
+                                    }
+                                    
+                                    String value = cachedPlugin.processHashVariable(removeFormatVar);
+                                    
                                     if (value != null) {
+                                        //escape based on hash variable
+                                        if (hashFormat != null & !hashFormat.isEmpty()) {
+                                            value = StringUtil.escapeString(value, hashFormat, null);
+                                        }
+                                        
                                         // clean to prevent XSS
                                         value = StringUtil.stripHtmlRelaxed(value);
                                         
@@ -433,7 +513,7 @@ public class AppUtil implements ApplicationContextAware {
                                         if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
                                             value = StringUtil.escapeRegex(value);
                                         }
-                                        
+
                                         //escape special char in HashVariable
                                         var = cachedPlugin.escapeHashVariable(var);
                                         
@@ -452,11 +532,25 @@ public class AppUtil implements ApplicationContextAware {
         return content;
     }
 
+    /**
+     * Used to checks a content may contains Hash Variable or not
+     * @param content
+     * @return 
+     */
     public static boolean containsHashVariable(String content) {
         boolean result = (content != null && content.indexOf("#") >= 0);
         return result;
     }
 
+    /**
+     * Used to retrieves email list based on Participant Id and To email String.
+     * Username will auto convert to email address belongs to the user.
+     * @param toParticipantId
+     * @param toSpecific
+     * @param wfAssignment
+     * @param appDef
+     * @return 
+     */
     public static Collection<String> getEmailList(String toParticipantId, String toSpecific, WorkflowAssignment wfAssignment, AppDefinition appDef) {
         Collection<String> addresses = new HashSet<String>();
         Collection<String> users = new HashSet<String>();
@@ -529,11 +623,13 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static boolean isQuickEditEnabled() {
         String settingValue = null;
+        boolean isAdmin = false;
         
         // lookup cache in request
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             settingValue = (String)request.getAttribute("disableAdminBar");
+            isAdmin = "true".equals(request.getAttribute("isAdmin"));
         }
         if (settingValue == null) {
             // get from SetupManager
@@ -542,12 +638,14 @@ public class AppUtil implements ApplicationContextAware {
             if (settingValue == null) {
                 settingValue = "false";
             }
+            isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
             if (request != null) {
                 // cache value in request
                 request.setAttribute("disableAdminBar", settingValue);
+                request.setAttribute("isAdmin", Boolean.toString(isAdmin));
             }
         }
-        boolean enabled = !"true".equals(settingValue) && WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
+        boolean enabled = !"true".equals(settingValue) && isAdmin;
         return enabled;
     }
     
@@ -561,6 +659,10 @@ public class AppUtil implements ApplicationContextAware {
         return version;
     }
 
+    /**
+     * Used to set an once time HTML which will append to the page when next page load.
+     * @param value 
+     */
     public static void setSystemAlert(String value) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
@@ -577,6 +679,11 @@ public class AppUtil implements ApplicationContextAware {
         }
     }
 
+    /**
+     * Used by system to retrieves the once time HTML to append on the page load.
+     * The once time HTML will be remove after this method call.
+     * @return 
+     */
     public static String getSystemAlert() {
         String script = "";
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
@@ -596,9 +703,13 @@ public class AppUtil implements ApplicationContextAware {
         return script;
     }
     
+    /**
+     * Get the userview theme css depends on the userview parameter in request
+     * @return 
+     */
     public static String getUserviewThemeCss() {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null 
+        if (request != null
                 && request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0
                 && request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) {
             try {
@@ -609,8 +720,37 @@ public class AppUtil implements ApplicationContextAware {
                     UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
                     UserviewTheme theme = userviewService.getUserviewTheme(appId, uId);
 
-                    if (theme != null && theme.getCss() != null) {
-                        return theme.getCss();
+                    if (theme != null) {
+                        if (theme instanceof UserviewV5Theme) {
+                            UserviewV5Theme v5Theme = (UserviewV5Theme) theme;
+                            Map<String, Object> data = new HashMap<String, Object>();
+                            data.put("params", request.getParameterMap());
+                            data.put("context_path", request.getContextPath());
+                            data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
+                            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
+                            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+                            String locale = AppUtil.getAppLocale();
+                            data.put("locale", locale);
+                            data.put("is_popup_view", true);
+
+                            String jsCssLib = v5Theme.getJsCssLib(data);
+                            String css = v5Theme.getCss(data);
+                            String js = v5Theme.getJs(data);
+
+                            String html = jsCssLib;
+
+                            if (js != null && !js.isEmpty()) {
+                                html += "<script type=\"text/javascript\">\n" + js + "\n</script>";
+                            }
+
+                            if (css != null && !css.isEmpty()) {
+                                html += "<style type=\"text/css\">\n" + css + "\n</style>";
+                            }
+
+                            return html;
+                        } else if (theme.getCss() != null) {
+                            return "<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -619,5 +759,41 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         return "";
+    }
+    
+    /**
+     * Convenient method used to write JSON Object to the response
+     * @param writer
+     * @param jsonObject
+     * @param callback
+     * @throws IOException
+     * @throws JSONException 
+     */
+    public static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
+        if (callback != null && callback.trim().length() > 0) {
+            writer.write(HtmlUtils.htmlEscape(callback) + "(");
+        }
+        jsonObject.write(writer);
+        if (callback != null && callback.trim().length() > 0) {
+            writer.write(")");
+        }
+    }
+
+    /**
+     * Convenient method used to write JSON Array to the response
+     * @param writer
+     * @param jsonArray
+     * @param callback
+     * @throws IOException
+     * @throws JSONException 
+     */
+    public static void writeJson(Writer writer, JSONArray jsonArray, String callback) throws IOException, JSONException {
+        if (callback != null && callback.trim().length() > 0) {
+            writer.write(HtmlUtils.htmlEscape(callback) + "(");
+        }
+        jsonArray.write(writer);
+        if (callback != null && callback.trim().length() > 0) {
+            writer.write(")");
+        }
     }
 }

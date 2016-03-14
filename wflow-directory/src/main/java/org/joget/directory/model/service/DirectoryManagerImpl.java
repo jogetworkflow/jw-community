@@ -313,17 +313,20 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
             Collection<Employment> employments = user.getEmployments();
 
             //get only 1st employment record, currently only support 1 employment per user
-            Employment employment = employments.iterator().next();
+            if (employments != null && !employments.isEmpty()) {
+                Employment employment = employments.iterator().next();
 
-            if (employment.getEmploymentReportTo() != null) {
-                EmploymentReportTo employmentReportTo = employment.getEmploymentReportTo();
-                userList.add(employmentReportTo.getReportTo().getUser());
-            } else {
-                Department dept = employment.getDepartment();
-                User hod = getDepartmentHod(dept.getId());
-                
-                if (hod != null) {
-                    userList.add(hod);
+                if (employment.getEmploymentReportTo() != null) {
+                    EmploymentReportTo employmentReportTo = employment.getEmploymentReportTo();
+                    userList.add(employmentReportTo.getReportTo().getUser());
+                } else {
+                    Department dept = employment.getDepartment();
+                    if (dept != null) {
+                        User hod = getDepartmentHod(dept.getId());
+                        if (hod != null) {
+                            userList.add(hod);
+                        }
+                    }
                 }
             }
         }

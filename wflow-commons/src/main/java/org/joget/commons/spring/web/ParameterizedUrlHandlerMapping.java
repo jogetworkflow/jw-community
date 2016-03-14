@@ -94,7 +94,7 @@ public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapp
         }
         if (bestPathMatch != null) {
             handler = handlerMap.get(bestPathMatch);
-            exposePathWithinMapping(this.pathMatcher.extractPathWithinPattern(bestPathMatch, urlPath), request);
+            exposePathWithinMapping(this.pathMatcher.extractPathWithinPattern(bestPathMatch, urlPath), urlPath, request);
             request.setAttribute(PATH_PARAMETERS, bestParamters);
         }
         return handler;

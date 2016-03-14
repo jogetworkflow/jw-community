@@ -1,5 +1,3 @@
-var $jqm = $.mobile;
-
 var Mobile = {
 
     contextPath: "/jw",
@@ -70,7 +68,7 @@ var Mobile = {
                 m = new String(m).replace(/'/g, "");
                 $(el).removeAttr("onclick");
                 var switchPage = function(e) {
-                    $jqm.changePage( m, {
+                    $.mobile.changePage( m, {
                         transition: "slide", 
                         reverse:true
                     } );
@@ -226,7 +224,7 @@ $(document).bind("mobileinit", function(){
     $.mobile.autoInitializePage = false;
     $.mobile.touchOverflowEnabled = false;
 });
-$("#userview").live("pageshow", function() {
+$("#userview").on("pageshow", function() {
     Mobile.initPage();
     Mobile.checkNetworkStatus();
 });

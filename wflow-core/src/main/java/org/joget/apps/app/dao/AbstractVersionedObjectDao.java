@@ -3,13 +3,10 @@ package org.joget.apps.app.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AbstractVersionedObject;
 import org.joget.commons.spring.model.AbstractSpringDao;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 /**
  * DAO to load/store VersionedObjects objects
@@ -22,10 +19,10 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      * @return
      */
     public T loadByUid(T uid) {
-        HibernateTemplate ht = getHibernateTemplate();
-        T result = (T) ht.get(getEntityName(), uid);
+        Session session = findSession();
+        T result = (T) session.get(getEntityName(), uid);
         if (result != null) {
-            findHibernateTemplate().refresh(result);
+            session.refresh(result);
         }
         return result;
     }
@@ -42,7 +39,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
             result = versions.iterator().next();
         }
         if (result != null) {
-            findHibernateTemplate().refresh(result);
+            findSession().refresh(result);
         }
         return result;
     }
@@ -75,7 +72,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
             }
         }
         if (result != null) {
-            findHibernateTemplate().refresh(result);
+            findSession().refresh(result);
         }
         return result;
     }
@@ -96,44 +93,34 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         final Object[] params = generateQueryParams(id, appId, null, name);
 
         // execute query and return result
-        Collection<T> resultList = (Collection) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT e FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
+        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
 
-                    public Object doInHibernate(Session session) throws HibernateException {
-//                        String query = "SELECT e FROM " + getEntityName() + " e WHERE (e.id, e.version) IN ";
-//                        query += "(SELECT e2.id, MAX(e2.version) FROM " + getEntityName() + " e2 " + condition + " GROUP BY e2.id)";
-                        String query = "SELECT e FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
-                        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
+        if (sort != null && !sort.equals("")) {
+            query += " ORDER BY " + sort;
 
-                        if (sort != null && !sort.equals("")) {
-                            query += " ORDER BY " + sort;
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = findSession().createQuery(query);
 
-                            if (desc) {
-                                query += " DESC";
-                            }
-                        }
-                        Query q = session.createQuery(query);
+        int s = (start == null) ? 0 : start;
+        q.setFirstResult(s);
 
-                        int s = (start == null) ? 0 : start;
-                        q.setFirstResult(s);
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
 
-                        if (rows != null && rows > 0) {
-                            q.setMaxResults(rows);
-                        }
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
 
-                        if (params != null) {
-                            int i = 0;
-                            for (Object param : params) {
-                                q.setParameter(i, param);
-                                i++;
-                            }
-                        }
-
-                        return q.list();
-                    }
-                });
-
-        return resultList;
+        return q.list();
     }
 
     /**
@@ -148,29 +135,19 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         final Object[] params = generateQueryParams(id, appId, null, name);
 
         // execute query and return result
-        Long result = (Long) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT COUNT(*) FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
+        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
+        Query q = findSession().createQuery(query);
 
-                    public Object doInHibernate(Session session) throws HibernateException {
-//                        String query = "SELECT COUNT(*) FROM " + getEntityName() + " e WHERE (e.id, e.version) IN ";
-//                        query += "(SELECT e2.id, MAX(e2.version) FROM " + getEntityName() + " e2 " + condition + " GROUP BY e2.id)";
-                        String query = "SELECT COUNT(*) FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
-                        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
-                        Query q = session.createQuery(query);
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
 
-                        if (params != null) {
-                            int i = 0;
-                            for (Object param : params) {
-                                q.setParameter(i, param);
-                                i++;
-                            }
-                        }
-
-                        return ((Long) q.iterate().next()).longValue();
-                    }
-                });
-
-        return result;
+        return ((Long) q.iterate().next()).longValue();
     }
 
     /**
@@ -179,27 +156,18 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      * @return
      */
     public Long getLatestVersion(final String id) {
-        Long result = (Long) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
-
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?";
-                        Object[] params = {id};
-                        Query q = session.createQuery(query);
-                        if (params != null) {
-                            int i = 0;
-                            for (Object param : params) {
-                                q.setParameter(i, param);
-                                i++;
-                            }
-                        }
-                        Long value = (Long) q.iterate().next();
-                        return (value != null) ? value.longValue() : new Long(0);
-                    }
-                });
-
-//        findHibernateTemplate().refresh(result);
-        return result;
+        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?";
+        Object[] params = {id};
+        Query q = findSession().createQuery(query);
+        if (params != null) {
+            int i = 0;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+        Long value = (Long) q.iterate().next();
+        return (value != null) ? value.longValue() : new Long(0);
     }
 
     /**
@@ -340,7 +308,8 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      * @param uid
      */
     public void delete(T obj) {
-        getHibernateTemplate().refresh(obj);
+        Session session = findSession();
+        session.refresh(obj);
         delete(getEntityName(), obj);
     }
 

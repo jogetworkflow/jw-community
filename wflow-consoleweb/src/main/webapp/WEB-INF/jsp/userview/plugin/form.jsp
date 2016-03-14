@@ -52,7 +52,7 @@
 </c:if>
 <div class="viewForm-body-content">
     <c:choose>
-        <c:when test="${empty properties.customHeader}">
+        <c:when test="${empty properties.customHeader && !empty properties.headerTitle}">
             <div class="viewForm-body-header">
                 <c:out value="${properties.headerTitle}"/>
             </div>

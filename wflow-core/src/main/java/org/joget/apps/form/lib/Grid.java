@@ -3,6 +3,7 @@ package org.joget.apps.form.lib;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -21,7 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Grid extends Element implements FormBuilderPaletteElement, FormContainer {
-    private FormRowSet cachedRowSet;
+    protected Map<FormData, FormRowSet> cachedRowSet = new HashMap<FormData, FormRowSet>();
 
     @Override
     public String getName() {
@@ -30,7 +31,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
 
     @Override
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     @Override
@@ -64,7 +65,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
      * @return A FormRowSet containing the grid cell data.
      */
     protected FormRowSet getRows(FormData formData) {
-        if (cachedRowSet == null) {
+        if (!cachedRowSet.containsKey(formData)) {
             String id = getPropertyString(FormUtil.PROPERTY_ID);
             String param = FormUtil.getElementParameterName(this);
             FormRowSet rowSet = new FormRowSet();
@@ -128,10 +129,10 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
                 }
 
             }
-            cachedRowSet = rowSet;
+            cachedRowSet.put(formData, rowSet);
         }
 
-        return cachedRowSet;
+        return cachedRowSet.get(formData);
     }
 
     /**

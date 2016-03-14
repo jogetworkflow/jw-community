@@ -10,7 +10,6 @@ import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
-import org.joget.apps.app.service.AppServiceImpl;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
@@ -193,7 +192,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 }
             }
         } catch (Exception e) {
-            LogUtil.error(AppServiceImpl.class.getName(), e, "");
+            LogUtil.error(PackageDefinitionDaoImpl.class.getName(), e, "");
         }
                 
         packageDef.setPackageActivityFormMap(packageActivityFormMap);

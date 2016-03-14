@@ -1,17 +1,18 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.hibernate.HibernateException;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.form.model.FormColumnCache;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * DAO to load/store FormDefinition objects
@@ -21,6 +22,19 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public static final String ENTITY_NAME = "FormDefinition";
     
     private FormColumnCache formColumnCache;
+    private Cache cache;
+    
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    private String getCacheKey(String id, String appId, Long version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_FORM_"+id;
+    }
     
     public FormColumnCache getFormColumnCache() {
         return formColumnCache;
@@ -78,14 +92,34 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
 
         return this.count(conditions, params.toArray(), appDefinition);
     }
+    
+    protected FormDefinition load(String id, AppDefinition appDefinition) {
+        FormDefinition formDef = super.loadById(id, appDefinition);
+        return formDef;
+    }
 
     @Override
     public FormDefinition loadById(String id, AppDefinition appDefinition) {
-        return super.loadById(id, appDefinition);
+        String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
+        Element element = cache.get(cacheKey);
+
+        if (element == null) {
+            FormDefinition formDef = load(id, appDefinition);
+
+            if (formDef != null) {
+                element = new Element(cacheKey, (Serializable) formDef);
+                cache.put(element);
+            }
+            return formDef;
+        } else {
+            return (FormDefinition) element.getValue();
+        }
     }
     
     @Override
     public boolean add(FormDefinition object) {
+        formColumnCache.remove(object.getTableName());
+        
         object.setDateCreated(new Date());
         object.setDateModified(new Date());
         return super.add(object);
@@ -95,6 +129,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public boolean update(FormDefinition object) {
         // clear from cache
         formColumnCache.remove(object.getTableName());
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
         // update object
         object.setDateModified(new Date());
@@ -126,6 +161,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
                 
                 // clear from cache
                 formColumnCache.remove(obj.getTableName());
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -136,19 +172,12 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public Collection<String> getTableNameList(AppDefinition appDefinition) {
         final AppDefinition appDef = appDefinition;
         
-        Collection<String> result = (Collection<String>) this.findHibernateTemplate().execute(
-                new HibernateCallback() {
+        String query = "SELECT DISTINCT e.tableName FROM " + getEntityName() + " e where e.appId = ? and e.appVersion = ?";
 
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        String query = "SELECT DISTINCT e.tableName FROM " + getEntityName() + " e where e.appId = ? and e.appVersion = ?";
-                        
-                        Query q = session.createQuery(query);
-                        q.setParameter(0, appDef.getAppId());
-                        q.setParameter(1, appDef.getVersion());
-                        
-                        return q.list();
-                    }
-                });
-        return result;
+        Query q = findSession().createQuery(query);
+        q.setParameter(0, appDef.getAppId());
+        q.setParameter(1, appDef.getVersion());
+
+        return q.list();
     }
 }

@@ -6,11 +6,13 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewThemeProcesser;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.ui.AbstractProcessingFilter;
-import org.springframework.security.ui.savedrequest.SavedRequest;
-import org.springframework.security.util.UrlUtils;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,13 +26,15 @@ public class LoginWebController {
     AppService appService;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    WorkflowUserManager workflowUserManager;
 
     @RequestMapping("/login")
     public String login(ModelMap map, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        SavedRequest savedRequest = (SavedRequest) request.getSession().getAttribute(AbstractProcessingFilter.SPRING_SECURITY_SAVED_REQUEST_KEY);
+        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
         String savedUrl = "";
         if (savedRequest != null) {
-            savedUrl = UrlUtils.getRequestUrl(savedRequest);
+            savedUrl = savedRequest.getRedirectUrl();
         } else if (request.getHeader("referer") != null) { //for userview logout
             savedUrl = request.getHeader("referer");
         }
@@ -57,7 +61,7 @@ public class LoginWebController {
             if (savedRequest == null) { //for userview logout
                 return "redirect:/web/" + embedPrefix + "userview/" + appId + "/" + userviewId;
             }
-        } else if (savedUrl.contains("/web/mobile") || savedUrl.contains("/web/embed/mobile")) {
+        } else if ((savedUrl.contains("/web/mobile") || savedUrl.contains("/web/embed/mobile")) && !workflowUserManager.isCurrentUserAnonymous()) {
             String embedPrefix = "";
             if (savedUrl.endsWith("/web/mobile") || savedUrl.endsWith("/web/embed/mobile")) {
                 savedUrl = "";
@@ -133,20 +137,37 @@ public class LoginWebController {
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
             if (userview != null) {
                 String json = userview.getJson();
-                map.addAttribute("userview", userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key, embed));
+                Userview userviewObject = userviewService.createUserview(json, null, false, request.getContextPath(), request.getParameterMap(), key, embed);
+                UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+                map.addAttribute("userview", userviewObject);
+                map.addAttribute("processer", processer);
+                String view = processer.getLoginView();
+                if (view != null) {
+                    if (view.startsWith("redirect:")) {
+                        map.clear();
+                    }
+                    return view;
+                }
             }
 
             return "ubuilder/login";
-        } else if (savedUrl.contains("/web/mlogin") || savedUrl.contains("/web/embed/mlogin")) {
+        } else if (savedUrl.contains("/web/mlogin") || savedUrl.contains("/web/embed/mlogin") || savedUrl.contains("/web/mobile") || savedUrl.contains("/web/embed/mobile")) {
             Boolean embed = false;
-            if (savedUrl.equals("/web/mlogin") || savedUrl.equals("/web/embed/mlogin")) {
+            if (savedUrl.equals("/web/mlogin") || savedUrl.equals("/web/embed/mlogin") || savedUrl.endsWith("/web/mobile") || savedUrl.endsWith("/web/embed/mobile")) {
                 savedUrl = "";
             } else if (savedUrl.contains("/web/mlogin")) {
                 savedUrl = savedUrl.substring(savedUrl.indexOf("/web/mlogin"));
                 savedUrl = savedUrl.replace("/web/mlogin/", "");
-            } else {
+            } else if (savedUrl.contains("/web/embed/mlogin")) {
                 savedUrl = savedUrl.substring(savedUrl.indexOf("/web/embed/mlogin"));
                 savedUrl = savedUrl.replace("/web/embed/mlogin/", "");
+                embed = true;
+            } else if (savedUrl.contains("/web/mobile")) {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/mobile"));
+                savedUrl = savedUrl.replace("/web/mobile/", "");
+            } else {
+                savedUrl = savedUrl.substring(savedUrl.indexOf("/web/embed/mobile"));
+                savedUrl = savedUrl.replace("/web/embed/mobile/", "");
                 embed = true;
             }
             

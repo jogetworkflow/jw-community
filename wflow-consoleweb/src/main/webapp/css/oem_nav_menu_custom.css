@@ -1,0 +1,27 @@
+div#menu-popup ul li a:hover {
+    background: steelblue;
+    color: white;
+}
+.quickEdit, #form-canvas .quickEdit {
+    background: lightblue;
+    border: 1px solid steelblue;
+}
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+    color: black;
+    background: lightblue;
+}
+.quickEdit:hover, #navigation .quickEdit:hover, .quickEdit a:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, #form-canvas .quickEdit a:hover {
+    background: steelblue;
+    color: white;
+}
+#page.quickEditModeActive fieldset#form-canvas, #page.quickEditModeActive fieldset#form-canvas .subform-container, #page.quickEditModeActive .dataList, #page.quickEditModeActive #category-container {
+    border: solid 5px lightblue;
+    padding: 1px;
+}
+#main-menu.quickEditMode a#menu-button {
+    background: url(../images/v3/builder/logo.png) no-repeat 0px 2px lightblue;
+    border: solid 1px steelblue;
+}
+#main-menu.quickEditMode a#menu-button:hover {
+    background: url(../images/v3/builder/logo.png) no-repeat 0px 2px steelblue;
+}

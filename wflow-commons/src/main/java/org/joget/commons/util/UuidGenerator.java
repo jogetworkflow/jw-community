@@ -4,6 +4,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
 
+/**
+ * Utility methods to generate an UUID
+ * 
+ */
 public class UuidGenerator {
 
     public static UuidGenerator uuidGenerator;
@@ -13,6 +17,10 @@ public class UuidGenerator {
         '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'
     };
 
+    /**
+     * Get the UuidGenerator instance
+     * @return 
+     */
     public static UuidGenerator getInstance() {
         if (uuidGenerator == null) {
             uuidGenerator = new UuidGenerator();
@@ -41,6 +49,10 @@ public class UuidGenerator {
         seeder = new Random();
     }
 
+    /**
+     * Generate an UUID
+     * @return 
+     */
     public synchronized String getUuid() {
         long timeNow = System.currentTimeMillis();
         int timeLow = (int) timeNow & -1;

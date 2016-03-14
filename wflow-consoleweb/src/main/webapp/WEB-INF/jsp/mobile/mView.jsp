@@ -151,7 +151,7 @@
             Mobile.contextPath = "${pageContext.request.contextPath}";
             Mobile.updateCache();  
         </script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
     </head>
     <body class="ui-mobile-viewport">
 
@@ -238,5 +238,6 @@
         <div class="ui-loader" style="top: 332px; "></div>
         <div id="online-status"></div>
         <%= AppUtil.getSystemAlert() %> 
+        <jsp:include page="mFooter.jsp" flush="true" />   
     </body>    
 </html>

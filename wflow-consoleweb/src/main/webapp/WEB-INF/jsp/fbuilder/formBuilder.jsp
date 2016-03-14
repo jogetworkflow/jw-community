@@ -11,10 +11,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><fmt:message key="fbuilder.title"/> - ${formDef.name}</title>
+        <title><fmt:message key="adminBar.label.form"/>: <c:out value="${formDef.name}"/> - <fmt:message key="fbuilder.title"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
@@ -23,7 +27,9 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/fbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/fbuilder.css?build=<fmt:message key="build.number"/>" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" />
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
@@ -47,31 +53,34 @@
             };
 
             var updateForm = function() {
+                var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
                 var form = $('#form-preview');
-                form.attr("action", "?");
+                form.attr("action", "?" + securityToken);
                 form.attr("target", "");
                 $('#form-preview').submit();
                 return false;
             };
 
             var saveForm = function() {
-                if (confirm("<fmt:message key="fbuilder.save.confirm"/>")) {
-                    var json = FormBuilder.generateJSON();
-                    var saveUrl = "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/${formId}/update";
-                    $.ajax({
-                        type: "POST",
-                        data: {"json": json },
-                        url: saveUrl,
-                        dataType : "text",
-                        success: function(response) {
-                            FormBuilder.originalJson = FormBuilder.generateJSON();
-                            alert("<fmt:message key="fbuilder.saved"/>");
-                        },
-                        error: function(jqXHR, textStatus, errorThrown) {
-                            alert("<fmt:message key="fbuilder.errorSaving"/> (" + textStatus + "): " + errorThrown);
-                        }
-                    });
-                }
+                var json = FormBuilder.generateJSON();
+                var saveUrl = "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/${formId}/update";
+                $.ajax({
+                    type: "POST",
+                    data: {"json": json },
+                    url: saveUrl,
+                    dataType : "text",
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success: function(response) {
+                        FormBuilder.originalJson = FormBuilder.generateJSON();
+                        FormBuilder.showMessage("<fmt:message key="fbuilder.saved"/>");
+                        setTimeout(function(){ FormBuilder.showMessage(""); }, 2000);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("<fmt:message key="fbuilder.errorSaving"/> (" + textStatus + "): " + errorThrown);
+                    }
+                });
             }
 
             window.onbeforeunload = function() {
@@ -125,7 +134,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="fbuilder.title"/></div>
+                <div id="builder-title"><fmt:message key="fbuilder.title"/> <i> - <c:out value="${formDef.name}" /> (v${appDefinition.version})</i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appDefinition.version}/builder/navigator/f/${formId}" flush="true" />--%>
             </div>
             <div id="builder-body">
@@ -154,13 +163,13 @@
                                         <ul>
                                         <c:forEach items="${elementList}" var="element">
                                             <li>
-                                                <div class="form-palette-element" element-class="${element.className}" element-property="${element.defaultPropertyValues}">
+                                                <div class="form-palette-element" element-class="${element.className}" element-property='${element.defaultPropertyValues}'>
                                                     <c:set var="elementIconPath" value="${element.formBuilderIcon}"/>
                                                     <c:if test="${empty elementIconPath}">
                                                         <c:set var="elementIconPath" value="/images/v3/builder/sidebar_element.gif"/>
                                                     </c:if>
                                                     <img src="${pageContext.request.contextPath}${elementIconPath}" border="0" align="left" />
-                                                    <label>${element.label}</label>
+                                                    <label>${element.i18nLabel}</label>
                                                 </div>
                                             </li>
                                         </c:forEach>
@@ -198,7 +207,9 @@
                 <fmt:message key="console.builder.footer"/>
             </div>
         </div>
-
+        
+        <div id="builder-message"></div>
+            
         <script type="text/javascript">
             HelpGuide.base = "${pageContext.request.contextPath}"
             HelpGuide.attachTo = "#builder-bar";
@@ -218,7 +229,9 @@
             
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appDefinition.version}"/>
             <jsp:param name="webConsole" value="true"/>
+            <jsp:param name="builderMode" value="true"/>
         </jsp:include>
                         
     </body>

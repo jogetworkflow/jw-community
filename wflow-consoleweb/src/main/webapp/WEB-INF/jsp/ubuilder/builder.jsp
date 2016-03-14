@@ -13,11 +13,14 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><fmt:message key="ubuilder.title"/> - ${userview.name}</title>
+        <title><fmt:message key="adminBar.label.userview"/>: <c:out value="${userview.name}"/> - <fmt:message key="ubuilder.title"/></title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
@@ -27,11 +30,13 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/ubuilder.core.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/html2canvas/html2canvas.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/html2canvas/jquery.plugin.html2canvas.js"></script>        
-
+        
         <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
-
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" />
+        
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
@@ -59,7 +64,7 @@
                         <c:if test="${empty propertyOptions}">
                             <c:set var="propertyOptions" value="''"/>
                         </c:if>
-                        UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.label}', '${element.icon}',${propertyOptions});
+                        UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.i18nLabel}', '${element.icon}',${propertyOptions});
                     </c:forEach>
                 </c:forEach>
 
@@ -92,7 +97,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="ubuilder.title"/></div>
+                <div id="builder-title"><fmt:message key="ubuilder.title"/> <i> - <c:out value="${userview.name}"/> (v${appVersion})</i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />--%>
             </div>
             <div id="builder-body">
@@ -101,7 +106,7 @@
                         <li id="step-design" class="first-active active"><a href="#step-design-container"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.designUserview"/></span><span class="subtitle"><fmt:message key="ubuilder.designUserview.description"/></span></span></a></li>
                         <li id="step-setting"><a href="#step-setting-container"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.setting"/></span><span class="subtitle"><fmt:message key="ubuilder.setting.description"/></span></span></a></li>
                         <li id="step-preview"><a onclick="UserviewBuilder.preview();" title="<fmt:message key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
-                        <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.save();" title="<fmt:message key="ubuilder.save.disabled.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
+                        <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.save();" title="<fmt:message key="ubuilder.save.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
                     </ul>
                     <div id="builder-bg"></div>
                 </div>
@@ -196,7 +201,9 @@
             
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appVersion}"/>
             <jsp:param name="webConsole" value="true"/>
+            <jsp:param name="builderMode" value="true"/>
         </jsp:include>
             
     </body>

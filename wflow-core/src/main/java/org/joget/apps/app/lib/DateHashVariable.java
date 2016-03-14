@@ -1,11 +1,11 @@
 package org.joget.apps.app.lib;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.commons.util.TimeZoneUtil;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
@@ -35,7 +35,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                 cal.add(field, Integer.parseInt(amount));
             }
 
-            return new SimpleDateFormat(variableKey).format(cal.getTime());
+            return TimeZoneUtil.convertToTimeZone(cal.getTime(), null, variableKey);
         } catch (IllegalArgumentException iae) {
             return new Date().toString();
         } catch (Exception ex) {
@@ -52,7 +52,7 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
     }
 
     public String getVersion() {
-        return "3.0.0";
+        return "5.0.0";
     }
 
     public String getDescription() {

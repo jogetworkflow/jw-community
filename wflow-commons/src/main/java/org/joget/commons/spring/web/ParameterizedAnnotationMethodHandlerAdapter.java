@@ -11,9 +11,12 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
+import org.springframework.web.util.UriUtils;
 
 public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMethodHandlerAdapter {
 
@@ -37,14 +40,19 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends AnnotationMetho
             super(request);
 
             // reset profile and set hostname
-            HostManager.setCurrentProfile(null);
-            String hostname = request.getServerName();
-            HostManager.setCurrentHost(hostname);
+            HostManager.initHost();
 
             if (request instanceof MultipartHttpServletRequest) {
                 MultipartHttpServletRequest req = (MultipartHttpServletRequest) request;
                 FileStore.clear();
-                FileStore.setFileMap(req.getFileMap());
+                Map<String, MultipartFile[]> fileMap = new HashMap<String, MultipartFile[]>();
+                
+                MultiValueMap<String, MultipartFile> multiValueFileMap= req.getMultiFileMap();
+                for (String fieldName : multiValueFileMap.keySet()) {
+                    fileMap.put(fieldName, multiValueFileMap.get(fieldName).toArray(new MultipartFile[]{}));
+                }
+                
+                FileStore.setFileMap(fileMap);
             } else {
                 FileStore.clear();
             }

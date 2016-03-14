@@ -64,7 +64,7 @@ public class UserviewBuilderPalette {
         Collections.sort(elementList, new Comparator<UserviewMenu>() {
 
             public int compare(UserviewMenu o1, UserviewMenu o2) {
-                return o1.getLabel().compareTo(o2.getLabel());
+                return o1.getI18nLabel().compareTo(o2.getI18nLabel());
             }
         });
     }

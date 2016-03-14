@@ -11,20 +11,25 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title><fmt:message key="dbuilder.title"/> - <c:out value="${datalist.name}"/></title>
+        <title><fmt:message key="adminBar.label.list"/>: <c:out value="${datalist.name}"/> - <fmt:message key="dbuilder.title"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/dbuilder?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/dbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
 
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/dbuilder.css?build=<fmt:message key="build.number"/>"  />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" />
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
@@ -55,6 +60,7 @@
                 DatalistBuilder.previewUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderPreview/"/>';
                 DatalistBuilder.contextPath = '${pageContext.request.contextPath}';
                 DatalistBuilder.appPath = '<c:out value="/${appId}/${appVersion}"/>';
+                DatalistBuilder.filterParam = '<c:out value="${filterParam}"/>';
 
                 //tabbed
                 $('#builder-steps li').click( function(){
@@ -78,9 +84,9 @@
                         $("#list-info").css("display", "none");
                     }
                 });
-
-                DatalistBuilder.setJson(${json}, "<c:out value="${id}"/>");
+                
                 DatalistBuilder.init();
+                DatalistBuilder.setJson(${json}, "<c:out value="${id}"/>");
                 
                 $('#builder-steps-properties').click( function(){
                     DatalistBuilder.showDatalistProperties();
@@ -93,7 +99,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="dbuilder.title"/></div>
+                <div id="builder-title"><fmt:message key="dbuilder.title"/> <i> - <c:out value="${datalist.name}"/> (v${appVersion})</i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />--%>
             </div>
             <div id="builder-body">
@@ -190,6 +196,8 @@
                 <fmt:message key="console.builder.footer"/>
             </div>
         </div>
+            
+        <div id="builder-message"></div> 
 
         <script type="text/javascript">
             HelpGuide.base = "${pageContext.request.contextPath}"
@@ -200,7 +208,9 @@
             
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appVersion}"/>
             <jsp:param name="webConsole" value="true"/>
+            <jsp:param name="builderMode" value="true"/>
         </jsp:include>
             
     </body>

@@ -1,27 +1,27 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader /> 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css?build=<fmt:message key="build.number"/>" />
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
-
+        
         <script>
-        $(document).ready(function() {
+        $(document).ready(function() {   
             // hide submit button and add insert button
             $(".actions button").hide();
-            var button = $('<button id="insert"><c:out value="${buttonLabel}"/></button>');
+            var button = $('<button id="insert"><ui:stripTag html="${buttonLabel}"/></button>');
             $(".actions").append(button);
 
             // set parent ID
-            var gridId = "<c:out value="${id}"/>";
+            var gridId = "<ui:stripTag html="${id}"/>";
 
             // click handler
             $(button).click(function(e) {
                 e.preventDefault();
-
+                
                 var data = getSelectedData();
-
+                
                 if (window.parent && $("th.select_checkbox").length > 0) {
-                    var json = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document).attr("_cachedSelection");
+                    var json = $("iframe#<ui:stripTag html="${param._frameId}" />", window.parent.document).attr("_cachedSelection");
                     if (json !== undefined) {
                         var cachedData = JSON.parse(json);
                         if (cachedData !== undefined) {
@@ -32,33 +32,33 @@
 
                 // get selected rows
                 // formulate result
-                var setting = ${setting};
+                var setting = <ui:stripTag html="${setting}" relaxed="true"/>;
                 for (var i = 0; i < data.length; i++) {
                     setting['id'] = data[i]['id'];
                     setting['result'] = data[i]['result'];
-                    if (window.parent && window.parent.${callback}) {
-                        window.parent.${callback}(setting);
+                    if (window.parent && window.parent.<ui:stripTag html="${callback}"/>) {
+                        window.parent.<ui:stripTag html="${callback}"/>(setting);        
                     }
                 }
             });
-
+            
             //to support presist selection for checkbox
             if (window.parent && $("th.select_checkbox").length > 0) {
-                var iframe = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document);
-
+                var iframe = $("iframe#<ui:stripTag html="${param._frameId}"/>", window.parent.document);
+                
                 //cache selection on sorting, filter and change page
                 $("th a, .pagelinks a, .filter-cell input[type=submit]").click(function() {
                     cacheSelection(iframe);
                     return true;
                 });
-
+                
                 loadCachedSelection(iframe);
             }
         });
-
+        
         function loadCachedSelection(iframe) {
             var json = $(iframe).attr("_cachedSelection");
-
+            
             if (json !== undefined) {
                 var data = JSON.parse(json);
                 for (var i = data.length - 1; i >= 0 ; i--) {
@@ -72,31 +72,29 @@
                 $(iframe).attr("_cachedSelection", json);
             }
         }
-
+        
         function cacheSelection(iframe) {
             var data = getSelectedData();
-
-            var json = $("iframe#<c:out value="${param._frameId}" escapeXml="true"/>", window.parent.document).attr("_cachedSelection");
+            
+            var json = $("iframe#<ui:stripTag html="${param._frameId}" />", window.parent.document).attr("_cachedSelection");
             if (json !== undefined) {
                 var cachedData = JSON.parse(json);
                 if (cachedData !== undefined) {
                     data = $.merge(data, cachedData);
                 }
             }
-
+                    
             json = JSON.stringify(data);
-
+            
             $(iframe).attr("_cachedSelection", json);
         }
-
+        
         function getSelectedData() {
             // get selected checkboxes
             var selected = new Array();
-            $("#listGridPopup input:checkbox, #listGridPopup input:radio").each(function(idx, row) {
-                <c:if test="${dataList.selectionType != 'single'}">
-                idx--; // offset to ignore first selectall checkbox
-                </c:if>
-                if ($(row).is(':checked') && idx >= 0) {
+            $("#listGridPopup tbody tr").each(function(idx, row) {
+                var input = $(row).find("input:checkbox, input:radio");
+                if (input.length > 0 && input.is(":checked")) {
                     selected.push(idx);
                 }
             });
@@ -143,4 +141,4 @@
             <c:set scope="request" var="dataListId" value="${dataList.id}"/>
             <jsp:include page="/WEB-INF/jsp/dbuilder/dataListView.jsp" flush="true" />
         </div>
-<commons:popupFooter />
+<commons:popupFooter /> 

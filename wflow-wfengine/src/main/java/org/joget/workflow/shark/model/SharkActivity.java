@@ -4,6 +4,7 @@ public class SharkActivity {
     private String activityId;
     private String activityName;
     private String activityDefId;
+    private Long activated;
     
     private SharkActivityState state;
 
@@ -37,5 +38,13 @@ public class SharkActivity {
 
     public void setState(SharkActivityState state) {
         this.state = state;
+    }
+
+    public Long getActivated() {
+        return activated;
+}
+
+    public void setActivated(Long activated) {
+        this.activated = activated;
     }
 }

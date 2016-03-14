@@ -10,12 +10,11 @@ import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.concurrent.SessionIdentifierAware;
-import org.springframework.security.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class WorkflowUserDetails implements UserDetails, SessionIdentifierAware {
+public class WorkflowUserDetails implements UserDetails {
 
     private User user;
 
@@ -24,7 +23,7 @@ public class WorkflowUserDetails implements UserDetails, SessionIdentifierAware 
         this.user = user;
     }
 
-    public GrantedAuthority[] getAuthorities() {
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         try {
             ApplicationContext appContext = WorkflowUtil.getApplicationContext();
             DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
@@ -33,15 +32,15 @@ public class WorkflowUserDetails implements UserDetails, SessionIdentifierAware 
 
             if (roles != null && !roles.isEmpty()) {
                 for (Role role : roles) {
-                    GrantedAuthorityImpl ga = new GrantedAuthorityImpl(role.getId());
+                    GrantedAuthority ga = new SimpleGrantedAuthority(role.getId());
                     gaList.add(ga);
                 }
             }
 
-            return gaList.toArray(new GrantedAuthority[gaList.size()]);
+            return gaList;
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
-            return new GrantedAuthority[]{};
+            return new ArrayList<GrantedAuthority>();
         }
     }
 

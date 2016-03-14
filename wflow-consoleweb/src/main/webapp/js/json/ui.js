@@ -169,23 +169,45 @@ PopupDialog.prototype = {
               } else {
                   newFrame.setAttribute("height", this.height-40);
               }
+              if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                  newFrame.onload = function() {
+                      $(document).scrollTop(0);
+                      $('#jqueryDialogDiv').height($('#jqueryDialogFrame').height());
+                  };
+              }
               newDiv.appendChild(newFrame);
               document.body.appendChild(newDiv);
           }
+            if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                $('#jqueryDialogDiv').css({
+                    overflow: 'visible'
+                });
+            }
       }
 
       var openDialog = function() {
-          var newFrame = document.getElementById("jqueryDialogFrame");
-          if (newFrame != null) {
-              setTimeout(function() { 
-                  newFrame.setAttribute("src", newSrc);
-                  newFrame.contentWindow.focus();
-              }, 100);
-          }
-          $(".ui-dialog.ui-widget").css("position", "fixed");
-          $(".ui-dialog.ui-widget").css("top", "5%");
-          $('body').addClass("stop-scrolling");
-          $(this).parents('.ui-dialog').find('.ui-dialog-titlebar-close').blur();
+            var newFrame = document.getElementById("jqueryDialogFrame");
+            if (newFrame != null) {
+                setTimeout(function() { 
+                    newFrame.setAttribute("src", newSrc); 
+                    newFrame.contentWindow.focus();
+                }, 100);
+            }
+            if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                $(".ui-dialog.ui-widget").css("position", "absolute");
+                $(".ui-dialog.ui-widget").css("top", "5%");
+                $('.ui-dialog .ui-dialog-titlebar-close').css({
+                    'z-index' : '99999',
+                    'height' : '30px',
+                    'width' : '30px',
+                    'background-color' : 'red'
+                });
+            } else {
+                $(".ui-dialog.ui-widget").css("position", "fixed");
+                $(".ui-dialog.ui-widget").css("top", "5%");
+                $('body').addClass("stop-scrolling");
+            }
+            $(this).parents('.ui-dialog').find('.ui-dialog-titlebar-close').blur();
       }
       var closePopupDialog = function() {
           $('body').removeClass("stop-scrolling");
@@ -286,6 +308,10 @@ Link.prototype = {
             this.popupDialog.show.apply(this.popupDialog);
         }
         else if (this.post) {
+            if (link.indexOf("?") < 0) {
+                link += "?";
+            }
+            link += "&" + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
             var $form = $("#ui_link_form:first");
             if ($form.length > 0){
                 $form.attr("method", "POST");

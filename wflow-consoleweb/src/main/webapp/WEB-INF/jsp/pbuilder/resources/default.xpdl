@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xpdl:Package xmlns:xpdl="http://www.wfmc.org/2002/XPDL1.0" xmlns="http://www.wfmc.org/2002/XPDL1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Id="hr_expense" Name="HR Expense App" xsi:schemaLocation="http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd">
+    <xpdl:PackageHeader>
+        <xpdl:XPDLVersion>1.0</xpdl:XPDLVersion>
+        <xpdl:Vendor/>
+        <xpdl:Created/>
+    </xpdl:PackageHeader>
+    <xpdl:Script Type="text/javascript"/>
+    <xpdl:Participants>
+        <xpdl:Participant Id="claimant" Name="Claimant">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+        <xpdl:Participant Id="approver" Name="Approver">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+        <xpdl:Participant Id="system" Name="System">
+            <xpdl:ParticipantType Type="SYSTEM"/>
+        </xpdl:Participant>
+        <xpdl:Participant Id="finance" Name="Finance">
+            <xpdl:ParticipantType Type="ROLE"/>
+        </xpdl:Participant>
+    </xpdl:Participants>
+    <xpdl:Applications>
+        <xpdl:Application Id="default_application"/>
+    </xpdl:Applications>
+    <xpdl:WorkflowProcesses>
+        <xpdl:WorkflowProcess Id="process1" Name="Expense Approval Process">
+            <xpdl:ProcessHeader DurationUnit="h"/>
+            <xpdl:DataFields>
+                <xpdl:DataField Id="status" IsArray="FALSE">
+                    <xpdl:DataType>
+                        <xpdl:BasicType Type="STRING"/>
+                    </xpdl:DataType>
+                </xpdl:DataField>
+            </xpdl:DataFields>
+            <xpdl:Activities>
+                <xpdl:Activity Id="approve_claim" Name="Approve Claim">
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>approver</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="approver"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="337,49"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="route1" Name="Route 1">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="transition2"/>
+                                    <xpdl:TransitionRef Id="transition3"/>
+                                    <xpdl:TransitionRef Id="transition9"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="approver"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="477,52"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="verify_claim" Name="Verify Claim">
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>finance</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="finance"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="595,47"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="resubmit_claim" Name="Resubmit Claim">
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>claimant</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="claimant"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="593,39"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="route2" Name="Route 2">
+                    <xpdl:Route/>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Split Type="XOR">
+                                <xpdl:TransitionRefs>
+                                    <xpdl:TransitionRef Id="transition7"/>
+                                    <xpdl:TransitionRef Id="transition8"/>
+                                </xpdl:TransitionRefs>
+                            </xpdl:Split>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="finance"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="799,53"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="tool1" Name="Notify Finance Verified">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="default_application"/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>system</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="system"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="784,41"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="tool2" Name="Notify Finance Rejection">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="default_application"/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>system</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="system"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="1018,40"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="tool3" Name="Notify Approver Rejection">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="default_application"/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>system</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="system"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="460,36"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="new_claim" Name="Edit Claim">
+                    <xpdl:Implementation>
+                        <xpdl:No/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>claimant</xpdl:Performer>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="claimant"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="125,36"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+                <xpdl:Activity Id="tool4" Name="Update Record Status to Submitted">
+                    <xpdl:Implementation>
+                        <xpdl:Tool Id="default_application"/>
+                    </xpdl:Implementation>
+                    <xpdl:Performer>system</xpdl:Performer>
+                    <xpdl:TransitionRestrictions>
+                        <xpdl:TransitionRestriction>
+                            <xpdl:Join Type="XOR"/>
+                        </xpdl:TransitionRestriction>
+                    </xpdl:TransitionRestrictions>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="system"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="192,30"/>
+                        <xpdl:ExtendedAttribute Name="VariableToProcess_UPDATE" Value="status"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Activity>
+            </xpdl:Activities>
+            <xpdl:Transitions>
+                <xpdl:Transition From="approve_claim" Id="transition1" To="route1">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="route1" Id="transition2" To="resubmit_claim">
+                    <xpdl:Condition Type="CONDITION">status=='Resubmit'</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="657,228"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="route1" Id="transition3" Name="approved" To="verify_claim">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="657,243"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="verify_claim" Id="transition4" To="route2">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="resubmit_claim" Id="transition6" To="tool4">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="263,69"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="route2" Id="transition7" Name="verified" To="tool1">
+                    <xpdl:Condition Type="OTHERWISE"/>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="route2" Id="transition8" To="tool2">
+                    <xpdl:Condition Type="CONDITION">status=='Finance Rejected'</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="1072,378"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="route1" Id="transition9" To="tool3">
+                    <xpdl:Condition Type="CONDITION">status=='Rejected'</xpdl:Condition>
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="new_claim" Id="transition5" To="tool4">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="164,517"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+                <xpdl:Transition From="tool4" Id="transition10" To="approve_claim">
+                    <xpdl:ExtendedAttributes>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_BREAK_POINTS" Value="279,229"/>
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_TRANSITION_STYLE" Value="NO_ROUTING_ORTHOGONAL"/>
+                    </xpdl:ExtendedAttributes>
+                </xpdl:Transition>
+            </xpdl:Transitions>
+            <xpdl:ExtendedAttributes>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="claimant;approver;finance;system"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=system,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=1167,Y_OFFSET=54,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=system,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=946,Y_OFFSET=50,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_START_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=claimant,CONNECTING_ACTIVITY_ID=new_claim,X_OFFSET=61,Y_OFFSET=49,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT"/>
+                <xpdl:ExtendedAttribute Name="JaWE_GRAPH_END_OF_WORKFLOW" Value="JaWE_GRAPH_PARTICIPANT_ID=system,CONNECTING_ACTIVITY_ID=tool3,X_OFFSET=610,Y_OFFSET=54,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT"/>
+            </xpdl:ExtendedAttributes>
+        </xpdl:WorkflowProcess>
+    </xpdl:WorkflowProcesses>
+    <xpdl:ExtendedAttributes>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL" Value="Workflow Designer 4.0-SNAPSHOT - build 860"/>
+        <xpdl:ExtendedAttribute Name="EDITING_TOOL_VERSION" Value="2.0-2(4?)-C-20080226-2126"/>
+        <xpdl:ExtendedAttribute Name="JaWE_CONFIGURATION" Value="default"/>
+    </xpdl:ExtendedAttributes>
+</xpdl:Package>

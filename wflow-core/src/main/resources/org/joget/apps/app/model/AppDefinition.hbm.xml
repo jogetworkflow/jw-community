@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="AppDefinition" name="org.joget.apps.app.model.AppDefinition" table="app_app">
         <composite-id>
@@ -9,6 +9,8 @@
         <property index="idx_name" name="name" type="string"/>
         <property name="published" type="boolean"/>
         <property name="license" type="text"/>
+        <property name="description" type="text"/>
+        <property name="meta" type="text"/>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="formDefinitionList">

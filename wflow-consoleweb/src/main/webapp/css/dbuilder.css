@@ -87,29 +87,84 @@
     text-align: center;
 }
 .form-palette-options button {
+    text-decoration: none;
+    color: black;
     font-size: 13px;
-    height: 18px;
+    height: 20px;
+    min-width: 20px;
     line-height: 15px;
-    padding: 0px 2px;
-    margin-top: 4px;
+    padding: 0px;
+    margin-top: 2px;
     margin-left: 2px;
     cursor: pointer;
-    background: #f0ffcc;
     border: solid 1px #666666;
-    opacity: .6;
-    -moz-opacity: .6;
-    filter: alpha(opacity=60);
+    opacity: 0.9;
     z-index: 300;
-    -moz-box-shadow: 0 0 6px green;
-    -webkit-box-shadow: 0 0 6px green;
-    box-shadow: 0 0 6px green;
-    -moz-border-radius: 6px 6px 6px 6px;
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.form-palette-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.form-palette-options button:hover span{
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    margin-left: -15%;
+}
+.form-palette-options button:hover {
+    padding: 0 4px;
 }
 .form-palette-options button:hover {
     background: lightgreen;
 }
+ul > .form-palette-options {
+    position: absolute;
+    top: -15px;
+    right: 10px;
+}
+ul > .form-palette-options button {
+    background: #fff;
+    -moz-box-shadow: 0 0 2px gray;
+    -webkit-box-shadow: 0 0 2px gray;
+    box-shadow: 0 0 2px gray;
+}
+
+ul > .form-palette-options button:hover {
+    background : #aaa
+}
+
+.form-palette-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+
+.form-palette-options button.element-delete:hover{
+    background: #FA7390;
+}
+
+.form-palette-options button.disabled, .form-palette-options button.disabled:hover{
+    color:#fff;
+    background: darkslategray;
+    display:none;
+}
+
 .form-clear {
     clear: both;
 }
@@ -363,6 +418,22 @@ ul#databuilderContentRowActions li.databuilderRowAction div.databuilderItemTitle
 
 ul#databuilderContentActions li.databuilderAction div.databuilderItemTitle{
     display:none;
+}
+
+ul#databuilderContentColumns .builder-palette-column, ul#databuilderContentFilters .builder-palette-column, 
+ul#databuilderContentActions .builder-palette-action, ul#databuilderContentRowActions .builder-palette-action{
+    background:none;
+    border: 1px dotted #111111;
+    visibility: visible !important;
+    height: 50px !important;
+    background: #666666;
+    color: white;
+    float: left;
+    position: relative;
+}
+
+ul#databuilderContentFilters .builder-palette-column{
+    float:right;
 }
 
 .hint {

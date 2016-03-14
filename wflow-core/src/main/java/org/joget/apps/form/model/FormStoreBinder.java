@@ -1,7 +1,7 @@
 package org.joget.apps.form.model;
 
 /**
- * A Form Store Binder stores data from a form into a data source.
+ * A Form Store Binder stores data from an element and its children into a data source.
  */
 public interface FormStoreBinder {
 

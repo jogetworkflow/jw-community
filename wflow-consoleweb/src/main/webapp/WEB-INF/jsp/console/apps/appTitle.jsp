@@ -1,14 +1,14 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<p><fmt:message key="console.app.common.label.name"/>: <input id="appNameValue" type="hidden" value="<c:out value="${appDefinition.name}"/>"><span id="appName" class="nav-subtitle"><c:out value="${appDefinition.name}"/></span></p>
-<p><fmt:message key="console.app.common.label.version"/>: <span class="nav-subtitle"><font class="ftl_label">v${appDefinition.version} </font> <a href="#" onclick="version()"><c:choose><c:when test="${appDefinition.published}"><fmt:message key="console.app.common.label.published"/></c:when><c:otherwise><fmt:message key="console.app.common.label.notPublished"/></c:otherwise></c:choose></a> | <a href="#" onclick="version();"><fmt:message key="console.app.common.label.versions"/></a></span></p>
+<p><i class="icon-edit"></i> <fmt:message key="adminBar.label.designApp"/>: <input id="appNameValue" type="hidden" value="<c:out value="${appDefinition.name}"/>"><span id="appName" class="nav-subtitle"><c:out value="${appDefinition.name}"/></span></p>
+<p id="nav-links"><a href="#" onclick="version()" class="smallbutton"><fmt:message key="console.app.common.label.version"/> ${appDefinition.version}</a> <a href="#" onclick="version()" class="smallbutton"><c:choose><c:when test="${appDefinition.published}"><fmt:message key="console.app.common.label.published"/></c:when><c:otherwise><fmt:message key="console.app.common.label.notPublished"/></c:otherwise></c:choose></a></span></p>
 <c:if test="${!empty appInfo}"><p>${appInfo}</p></c:if>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
 
 <script>
     $(document).ready(function(){
-        $('#appName').editable(function(value, settings){
+        $('#appName, #appNameProperty').editable(function(value, settings){
             if(value==""){
                 return $('#appNameValue').val();
             }else{

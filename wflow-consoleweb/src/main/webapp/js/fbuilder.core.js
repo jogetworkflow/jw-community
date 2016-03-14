@@ -8,6 +8,13 @@ FormBuilder = {
     formPreviewUrl: "/web/fbuilder/form/preview/",
     tinymceUrl: "/js/tiny_mce/tiny_mce.js",
     originalJson: "",
+    
+    //undo & redo feature
+    tempJson : '',
+    isCtrlKeyPressed : false,
+    undoStack : new Array(),
+    redoStack : new Array(),
+    undoRedoMax : 50,
 
     init: function(id) {
 
@@ -27,6 +34,8 @@ FormBuilder = {
 
         // initialize canvas
         FormBuilder.initCanvas(id);
+        
+        FormBuilder.initUndoRedo();
 
         var formJson = FormBuilder.generateJSON();
         
@@ -110,6 +119,44 @@ FormBuilder = {
         // initialize new sections and columns
         FormBuilder.initSectionsAndColumns();
     },
+    
+    initUndoRedo : function() {
+        //Shortcut key
+        $(document).keyup(function (e) {
+            if(e.which == 17){
+                FormBuilder.isCtrlKeyPressed=false;
+            }
+        }).keydown(function (e) {
+            if(e.which == 17){
+                FormBuilder.isCtrlKeyPressed=true;
+            }
+            if ($(".property-editor-container:visible").length === 0) {
+                if(e.which == 90 && FormBuilder.isCtrlKeyPressed == true) { //CTRL+Z - undo
+                    FormBuilder.undo();
+                    return false;
+                }
+                if(e.which == 89 && FormBuilder.isCtrlKeyPressed == true) { //CTRL+Y - redo
+                    FormBuilder.redo();
+                    return false;
+                }
+            }
+        });
+        
+        //add control
+        $("#builder-steps").after("<div class='controls'></div>");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_fbuilder_msg('fbuilder.undo.disbaled.tip')+"'><i class='fa fa-undo'></i> "+get_fbuilder_msg('fbuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-redo disabled' title='"+get_fbuilder_msg('fbuilder.redo.disabled.tip')+"'><i class='fa fa-repeat'></i> "+get_fbuilder_msg('fbuilder.redo')+"</a>");
+        
+        $(".action-undo").click(function(){
+            FormBuilder.undo();
+            return false;
+        });
+        
+        $(".action-redo").click(function(){
+            FormBuilder.redo();
+            return false;
+        });
+    },
 
     initElementDefinition: function(elementClass, properties, template) {
         FormBuilder.elementPropertyDefinitions[elementClass] = properties;
@@ -138,12 +185,27 @@ FormBuilder = {
             }
         });
 
+        $(".form-section").on("mouseenter", function() {
+            FormBuilder.updatePasteIcon();
+        });
+
         // make columns sortable
         $(".form-section").sortable({
             connectWith: ".form-section",
             items: ".form-column",
+            start: function( event, ui ) {
+                FormBuilder.tempJson = FormBuilder.generateJSON();
+            },
             stop: function() {
+                $(".form-section > .form-clear.bottom").remove();
+                
+                FormBuilder.initColumnSizes();
+                FormBuilder.initSectionsAndColumns();
+                    
+                FormBuilder.addToUndo(FormBuilder.tempJson);
                 FormBuilder.generateJSON();
+                
+                $(".form-section").append("<div class='form-clear bottom'></div>");
             },
             tolerance: "pointer",
             revertDuration: 100,
@@ -154,7 +216,11 @@ FormBuilder = {
         $(".form-column").sortable({
             connectWith: ".form-column",
             items: ".form-cell",
+            start: function( event, ui ) {
+                FormBuilder.tempJson = FormBuilder.generateJSON();
+            },
             stop: function() {
+                FormBuilder.addToUndo(FormBuilder.tempJson);
                 FormBuilder.generateJSON();
             },
             tolerance: "pointer",
@@ -164,7 +230,12 @@ FormBuilder = {
 
         // make section dropabble
         $(".form-section").droppable({
+            over: function( event, ui ) {
+                FormBuilder.tempJson = FormBuilder.generateJSON();
+            },
             drop: function(event, ui) {
+                FormBuilder.addToUndo(FormBuilder.tempJson);
+                $(".form-section > .form-clear.bottom").remove();
                 var obj = $(ui.draggable);
                 if (obj.hasClass("form-palette-column")) {
                     FormBuilder.decorateColumn(obj);
@@ -174,6 +245,7 @@ FormBuilder = {
                         FormBuilder.initSectionsAndColumns();
                     }, 1000);
                 }
+                $(".form-section").append("<div class='form-clear bottom'></div>");
             },
             activeClass: "form-cell-highlight",
             accept: ".form-palette-column, .form-column",
@@ -183,7 +255,11 @@ FormBuilder = {
 
         // make column droppable
         $(".form-column").droppable({
+            over: function( event, ui ) {
+                FormBuilder.tempJson = FormBuilder.generateJSON();
+            },
             drop: function(event, ui) {
+                FormBuilder.addToUndo(FormBuilder.tempJson);
                 var column = $(this);
                 // check for drop within the column
                 if (column.hasClass("form-column") && (column.parent().find(".ui-sortable-placeholder").length > 0)) {
@@ -222,8 +298,9 @@ FormBuilder = {
     initColumnSizes: function() {
         // recalculate column sizes
         $(".form-section").each(function() {
+            
             // find number of columns
-            var tempCount = $(this).children(".form-pallete-column").length; // ignore div from palette
+            var tempCount = $(this).children(".form-palette-column").length; // ignore div from palette
             if (tempCount == 0) {
                 tempCount =  $(this).children(".ui-sortable-helper").length; // ignore sortable placeholder
             }
@@ -335,15 +412,17 @@ FormBuilder = {
         var optionHtml = "<span class='form-palette-options'>";
         if ($(obj).hasClass("form-section")) {
             // add buttons for section
-            optionHtml += "<button class='form-palette-sec' title='"+get_fbuilder_msg("fbuilder.addSection")+"'>"+get_fbuilder_msg("fbuilder.addSection")+"</button>";
-            optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'>"+get_fbuilder_msg("fbuilder.addColumn")+"</button>";
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'>"+get_fbuilder_msg("fbuilder.editSection")+"</button>";
-            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'>"+get_fbuilder_msg("fbuilder.deleteSection")+"</button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fa fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'><i class='fa fa-columns'></i><span>"+get_fbuilder_msg("fbuilder.addColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.deleteSection")+"</span></button>";
+            $(obj).append("<div class='form-clear bottom'></div>");
         } else if ($(obj).hasClass("form-column")) {
             // add buttons for column
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'>"+get_fbuilder_msg("fbuilder.editColumn")+"</button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-paste column disabled' title='"+get_fbuilder_msg("fbuilder.pasteElement")+"'><i class='fa fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteElement")+"</span></button>";
             if ($(obj).siblings(".form-column").length > 0) {
-                optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</button>";
+                optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</span></button>";
             }
             
             //Update column label
@@ -355,23 +434,29 @@ FormBuilder = {
             }else{
                 $(obj).find(".form-column-label").remove();
             }
-            
-        } else  {
+        } else if (!$(obj).hasClass("form-container ")) {
             // add buttons for other elements
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'>"+get_fbuilder_msg("fbuilder.edit")+"</button>";
-            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.delete")+"'>"+get_fbuilder_msg("fbuilder.delete")+"</button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.edit")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fa fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.delete")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.delete")+"</span></button>";
         }
         optionHtml += "</span><div class='form-clear'></div>";
+        
+        if ($(obj).hasClass("form-section")) {
+            optionHtml += "<span class='form-palette-options bottom'>";
+            optionHtml += "<button class='form-palette-sec' title='"+get_fbuilder_msg("fbuilder.addSection")+"'><i class='fa fa-plus'></i><span>"+get_fbuilder_msg("fbuilder.addSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-paste section disabled' title='"+get_fbuilder_msg("fbuilder.pasteSection")+"'><i class='fa fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteSection")+"</span></button>";
+            optionHtml += "</span><div class='form-clear'></div>";
+        }    
+        
         var optionDiv = $(optionHtml);
 
         // handle deletion
         $(optionDiv).children(".form-palette-remove").click(function() {
-            if (confirm(get_fbuilder_msg("fbuilder.delete.confirm"))) {
-                var element = $(this).parent().parent();
-                FormBuilder.deleteElement(element);
-            }
+            var element = $(this).parent().parent();
+            FormBuilder.deleteElement(element);
             return false;
-        })
+        });
 
         // handle edit
         $(optionDiv).children(".form-palette-edit").click(function() {
@@ -383,25 +468,46 @@ FormBuilder = {
 
         // handle add section
         $(optionDiv).children(".form-palette-sec").click(function() {
+            var position = ($(this).parent()).hasClass("top")?"before":"after";
             var element = $(this).parent().parent();
             if (element.hasClass("form-section")) {
-                if (true || confirm(get_fbuilder_msg("fbuilder.addSection.confirm"))) {
-                    FormBuilder.addSection(element);
-                }
+                FormBuilder.addToUndo();
+                FormBuilder.addSection(element, position);
             }
             return false;
-        })
+        });
 
         // handle add column
         $(optionDiv).children(".form-palette-col").click(function() {
             var element = $(this).parent().parent();
             if (element.hasClass("form-section")) {
-                if (true || confirm(get_fbuilder_msg("fbuilder.addColumn.confirm"))) {
-                    FormBuilder.addColumn(element);
-                }
+                FormBuilder.addToUndo();
+                FormBuilder.addColumn(element);
             }
             return false;
-        })
+        });
+
+        // handle copy
+        $(optionDiv).children(".form-palette-copy").click(function() {
+            var element = $(this).parent().parent();
+            FormBuilder.copy(element);
+            return false;
+        });
+        
+        // handle paste
+        $(optionDiv).children(".form-palette-paste").click(function() {
+            if ($(this).hasClass("disabled")) {
+                alert(get_fbuilder_msg("fbuilder.noCopiedItem"));
+                return false;
+            }
+            var position = ($(this).parent()).hasClass("top")?"before":"after";
+            var element = $(this).parent().parent();
+            if ($(element).hasClass("form-column")) {
+                position = "inner";
+            }
+            FormBuilder.paste(element, position);
+            return false;
+        });
 
         // add option bar
         $(obj).prepend(optionDiv);
@@ -429,6 +535,7 @@ FormBuilder = {
         }
         dom.properties = property;
         $(element)[0].dom = dom;
+        $(element).attr("element-id", property.id);
     },
     
     generateElementId: function(element, elementClass, prefix) {
@@ -497,6 +604,8 @@ FormBuilder = {
                 $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
+                FormBuilder.addToUndo();
+                
                 // hide dialog
                 FormBuilder.propertyDialog.hide();
 
@@ -531,6 +640,7 @@ FormBuilder = {
     updateElementProperties: function(element, properties) {
         // update element properties
         var dom = $(element)[0].dom;
+        $(element).attr("element-id", properties.id);
         if (dom) {
             dom.properties = properties;
         }
@@ -586,6 +696,9 @@ FormBuilder = {
                 data: {"json": jsonStr },
                 url: FormBuilder.contextPath + FormBuilder.elementPreviewUrl,
                 dataType : "text",
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
                 success: function(response) {
                     var newElement = $(response);
 
@@ -603,6 +716,11 @@ FormBuilder = {
                         FormBuilder.decorateElement(newElement);
                     }
                     $(element).replaceWith(newElement);
+                    
+                    if ($(element).is("form")) {
+                        FormBuilder.initCanvas($(element).attr("id"));
+                        $("#loading").remove();
+                    }
                 }
             });
 
@@ -615,6 +733,7 @@ FormBuilder = {
     },
 
     deleteElement: function(element) {
+        FormBuilder.addToUndo();
         FormBuilder.unloadElement(element);
         
         // delete element
@@ -634,13 +753,18 @@ FormBuilder = {
         }
     },
 
-    addSection: function(parent) {
+    addSection: function(parent, position) {
         // add a new section
         var section = $("<div class='form-section' element-class='org.joget.apps.form.model.Section' element-property='{label:\""+get_fbuilder_msg("fbuilder.section")+"\"}'></div>");
         FormBuilder.decorateSection(section);
         if (parent) {
+            if (position !== undefined && position === "before") {
             // add after an existing section
+                $(parent).before(section);
+            } else {
+                // add after an existing section
             $(parent).after(section);
+            }
         } else {
             $(".form-container").append(section);
         }
@@ -651,7 +775,7 @@ FormBuilder = {
     addColumn: function(section) {
         // add a new column
         var column = $("<div class='form-column' element-class='org.joget.apps.form.model.Column'></div>");
-        $(section).append(column);
+        $(section).find(".form-clear.bottom").before(column);
         FormBuilder.decorateColumn(column);
         FormBuilder.initSectionsAndColumns();
         return column;
@@ -674,7 +798,8 @@ FormBuilder = {
     },
 
     previewForm: function(){
-        $('#form-preview').attr("action", FormBuilder.contextPath + FormBuilder.formPreviewUrl);
+        var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
+        $('#form-preview').attr("action", FormBuilder.contextPath + FormBuilder.formPreviewUrl + "?" + securityToken);
         $('#form-preview').submit();
         return false;
     },
@@ -793,6 +918,7 @@ FormBuilder = {
             showCancelButton: false,
             closeAfterSaved: false,
             saveCallback: function(container, properties) {
+                FormBuilder.addToUndo();
                 // update form properties
                 FormBuilder.updateElementProperties(form, properties);
 
@@ -814,6 +940,187 @@ FormBuilder = {
             return true;
         }else{
             return false;
+        }
+    },
+    
+    getCopiedElement : function() {
+        var time = $.localStorage.getItem("formBuilder.copyTime");
+        //10 mins
+        if (time !== undefined && time !== null && ((new Date()) - (new Date(time))) > 3000000) {
+            $.localStorage.removeItem('formBuilder.copyTime');
+            $.localStorage.removeItem('formBuilder.copy');
+            return null;
+    }
+        return $.localStorage.getItem("formBuilder.copy");
+    },
+    
+    copy : function(element) {
+        var copy = $(element).clone().wrap('<p/>').parent();
+        $(copy).find(".form-palette-options, .form-clear").remove();
+        $.localStorage.setItem("formBuilder.copy", $(copy).html());
+        $.localStorage.setItem("formBuilder.copyTime", new Date());
+        FormBuilder.updatePasteIcon();
+        FormBuilder.showMessage(get_fbuilder_msg('fbuilder.copied'));
+        setTimeout(function(){ FormBuilder.showMessage(""); }, 2000);
+    },
+    
+    paste : function(element, position) {
+        var copied = FormBuilder.getCopiedElement();
+        if (copied !== undefined && copied !== null) {
+            FormBuilder.addToUndo();
+            var copiedElement = $(copied);
+            if (position === "before") {
+                $(element).before(copiedElement);
+            } else if (position === "after") {
+                $(element).after(copiedElement);
+            } else {
+                $(element).append(copiedElement);
+            }
+            // decorate all elements
+            if ($(copiedElement).hasClass("form-section")) {
+                FormBuilder.updateCopiedId(copiedElement);
+                FormBuilder.decorateSection(copiedElement);
+            
+                $(copiedElement).find(".form-column").each(function(index, obj) {
+                    FormBuilder.updateCopiedId(obj);
+                    FormBuilder.decorateColumn(obj);
+                });
+
+                $(copiedElement).find(".form-cell").each(function(index, obj) {
+                    FormBuilder.updateCopiedId(obj);
+                    FormBuilder.decorateElement(obj);
+                });
+            } else {
+                FormBuilder.updateCopiedId(copiedElement);
+                FormBuilder.decorateElement(copiedElement);
+            }
+            
+            // initialize new sections and columns
+            FormBuilder.initSectionsAndColumns();
+        }
+    },
+    
+    updateCopiedId : function (element) {
+        var propertyJson = $(element).attr("element-property");
+        var property = eval("(" + propertyJson + ")");
+        if (property !== undefined && property !== null) {
+            var id = property.id;
+            var count = 0;
+            var newId = id;
+            while ($("[element-id="+newId+"]").length > 1) {
+                count++;
+                newId = id + "_" + count;
+            }
+            
+            property.id = newId;
+            $(element).attr("element-property", JSON.encode(property));
+        }
+    },
+    
+    updatePasteIcon : function() {
+        $(".form-palette-paste").addClass("disabled");
+        var copied = FormBuilder.getCopiedElement();
+        if (copied !== undefined && copied !== null) {
+            if ($(copied).hasClass("form-section")) {
+                $(".form-palette-paste.section").removeClass("disabled");
+            } else {
+                $(".form-palette-paste.column").removeClass("disabled");
+            }
+        }
+    },
+    
+    //Undo the changes from stack
+    undo : function(){
+        if(FormBuilder.undoStack.length > 0){
+            //if redo stack is full, delete first
+            if(FormBuilder.redoStack.length >= FormBuilder.undoRedoMax){
+                FormBuilder.redoStack.splice(0,1);
+            }
+
+            //save current json data to redo stack
+            FormBuilder.redoStack.push(FormBuilder.generateJSON());
+
+            //undo-ing
+            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.undoing") + '</div>');
+            $("body").append(loading);
+            FormBuilder.loadJson(JSON.decode(FormBuilder.undoStack.pop()));
+            
+            //enable redo button if it is disabled previously
+            if(FormBuilder.redoStack.length === 1){
+                $('.action-redo').removeClass('disabled');
+                $('.action-redo').attr('title', get_fbuilder_msg('fbuilder.redo.tip'));
+            }
+
+            //if undo stack is empty, disabled undo button
+            if(FormBuilder.undoStack.length === 0){
+                $('.action-undo').addClass('disabled');
+                $('.action-undo').attr('title', get_fbuilder_msg('fbuilder.undo.disabled.tip'));
+            }
+        }
+    },
+
+    //Redo the changes from stack
+    redo : function(){
+        if(FormBuilder.redoStack.length > 0){
+            //if undo stack is full, delete first
+            if(FormBuilder.undoStack.length >= FormBuilder.undoRedoMax){
+                FormBuilder.undoStack.splice(0,1);
+            }
+
+            //save current json data to undo stack
+            FormBuilder.undoStack.push(FormBuilder.generateJSON());
+
+            //redo-ing
+            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.redoing") + '</div>');
+            $("body").append(loading);
+            FormBuilder.loadJson(JSON.decode(FormBuilder.redoStack.pop()));
+
+            //enable undo button if it is disabled previously
+            if(FormBuilder.undoStack.length == 1){
+                $('.action-undo').removeClass('disabled');
+                $('.action-undo').attr('title', get_fbuilder_msg('fbuilder.undo.tip'));
+            }
+
+            //if redo stack is empty, disabled redo button
+            if(FormBuilder.redoStack.length == 0){
+                $('.action-redo').addClass('disabled');
+                $('.action-redo').attr('title', get_fbuilder_msg('fbuilder.redo.disabled.tip'));
+            }
+        }
+    },
+
+    //Add changes info to stack
+    addToUndo : function(json){
+        //if undo stack is full, delete first
+        if(FormBuilder.undoStack.length >= FormBuilder.undoRedoMax){
+            FormBuilder.undoStack.splice(0,1);
+        }
+        
+        if (json === undefined || json === null) {
+            json = FormBuilder.generateJSON();
+        }
+        
+        //save current json data to undo stack
+        FormBuilder.undoStack.push(json);
+
+        //enable undo button if it is disabled previously
+        if(FormBuilder.undoStack.length === 1){
+            $('.action-undo').removeClass('disabled');
+            $('.action-undo').attr('title', get_fbuilder_msg('fbuilder.undo.tip'));
+        }
+    },
+    
+    loadJson : function(json){
+        $(".form-container-div").html("<form></form>");
+        FormBuilder.retrieveElementHTML($(".form-container-div form"), json);
+    },
+    
+    showMessage: function(message) {
+        if (message && message != "") {
+            $("#builder-message").html(message);
+            $("#builder-message").fadeIn();
+        } else {
+            $("#builder-message").fadeOut();
         }
     }
 }
