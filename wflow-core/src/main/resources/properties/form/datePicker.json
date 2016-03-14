@@ -1,0 +1,130 @@
+[{
+    title : '@@form.datepicker.editDatePicker@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.datepicker.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.datepicker.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.datepicker.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'Date Picker'
+    },
+    {
+        name : 'allowManual',
+        label : '@@form.datepicker.allowManual@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@form.datepicker.advancedOptions@@',
+    properties : [{
+        label : '@@form.datepicker.data@@',
+        type : 'header'
+    },
+    {
+        name : 'value',
+        label : '@@form.datepicker.value@@',
+        type : 'textfield'
+    },
+    {
+        name : 'dataFormat',
+        label : '@@form.datepicker.dataFormat@@',
+        type : 'textfield',
+        description : '@@form.datepicker.dataFormat.eg@@'
+    },
+    {
+        label : '@@form.datepicker.validation@@',
+        type : 'header'
+    },
+    {
+        name : 'validator',
+        label : '@@form.datepicker.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        name : 'startDateFieldId',
+        label : '@@form.datepicker.startDateFieldId@@',
+        type : 'textfield'
+    },
+    {
+        name : 'endDateFieldId',
+        label : '@@form.datepicker.endDateFieldId@@',
+        type : 'textfield'
+    },
+    {
+        name : 'currentDateAs',
+        label : '@@form.datepicker.currentDateAs@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'minDate',
+            label : '@@form.datepicker.currentDateAs.min@@'
+        },
+        {
+            value : 'maxDate',
+            label : '@@form.datepicker.currentDateAs.max@@'
+        }]
+    },
+    {
+        label : '@@form.datepicker.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'format',
+        label : '@@form.datepicker.format@@',
+        type : 'textfield',
+        description : '@@form.datepicker.format.eg@@'
+    },
+    {
+        name : 'yearRange',
+        label : '@@form.datepicker.yearRange@@',
+        type : 'textfield',
+        value : 'c-10:c+10',
+        required : 'true'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.datepicker.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.datepicker.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.datepicker.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.datepicker.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

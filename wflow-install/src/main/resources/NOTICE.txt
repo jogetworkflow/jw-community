@@ -1,0 +1,101 @@
+Joget Workflow
+Copyright 2009 www.joget.org
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software developed by the 
+Spring Framework Project (http://www.springframework.org).
+
+Joget Workflow Designer is an independent component that is licensed under the GPL http://www.gnu.org/copyleft/gpl.html
+
+All other products or name brands are the trademarks and copyright of 
+their respective holders.
+
+The following are respective licenses of libraries used:
+
+Apache Software Foundation Libraries:
+http://www.apache.org/licenses/LICENSE-2.0.html
+
+Antlr:
+http://www.antlr2.org/license.html
+
+ASM:
+http://asm.ow2.org/license.html
+
+Carol:
+http://carol.ow2.org/license.html
+
+Castor:
+http://castor.codehaus.org/license.html
+
+CGLib:
+http://cglib.sourceforge.net/license.html
+
+Display Tag:
+http://www.displaytag.org/10/license.html
+
+Howl:
+http://howl.ow2.org/license.html
+
+iText 1.3:
+http://www.mozilla.org/MPL/
+
+Groovy:
+http://groovy.codehaus.org/License+Information
+
+Jaxen:
+http://jaxen.codehaus.org/license.html
+
+JCL implementation over SLF4J:
+http://www.slf4j.org/license.html
+
+JCommon:
+http://www.gnu.org/licenses/lgpl.html
+
+JDOM:
+http://www.jdom.org/docs/faq.html#a0030
+
+JFree:
+http://www.gnu.org/licenses/lgpl.html
+
+Rhino:
+https://developer.mozilla.org/en-US/docs/Rhino/License
+
+SLF4J:
+http://www.slf4j.org/license.html
+
+Spring Framework Libraries:
+http://www.apache.org/licenses/LICENSE-2.0.html
+
+Stax:
+http://stax.codehaus.org/
+
+True License:
+http://www.apache.org/licenses/LICENSE-2.0.html
+
+XOM:
+http://www.xom.nu/license.xhtml
+
+Enhydra Shark 2.0.1:
+http://www.gnu.org/licenses/lgpl.html
+
+Hibernate:
+http://www.hibernate.org/license
+
+FreeMarker:
+http://freemarker.sourceforge.net/docs/app_license.html
+
+JavaBeans Activation Framework (JAF), JavaMail API:
+http://opensource.org/licenses/CDDL-1.0
+
+Java Transaction API (JTA):
+http://download.oracle.com/otndocs/jcp/7286-jta-1.0.1-spec-oth-JSpec/7286-jta-1.0.1-spec-oth-JSpec-license.html
+
+Oracle JDBC Driver:
+http://www.oracle.com/technetwork/licenses/distribution-license-152002.html
+
+Microsoft SQL JDBC Driver:
+http://msdn.microsoft.com/en-us/sqlserver/jj589698
+
+

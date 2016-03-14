@@ -1,0 +1,52 @@
+[{
+    title : '@@userview.defaulttheme.configDefaultTheme@@',
+    properties : [{
+        name : 'css',
+        label : '@@userview.defaulttheme.css@@',
+        type : 'textarea',
+        rows : '8',
+        cols : '75'
+    },
+    {
+        name : 'js',
+        label : '@@userview.defaulttheme.javascript@@',
+        type : 'textarea',
+        rows : '8',
+        cols : '75'
+    },
+    {
+        name : 'customHeader',
+        label : '@@userview.defaulttheme.customHeader@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '75'
+    },
+    {
+        name : 'customFooter',
+        label : '@@userview.defaulttheme.customFooter@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '75'
+    },
+    {
+        name : 'pageTop',
+        label : '@@userview.defaulttheme.htmlAfterHeader@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '75'
+    },
+    {
+        name : 'pageBottom',
+        label : '@@userview.defaulttheme.htmlBeforeFooter@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '75'
+    },
+    {
+        name : 'beforeContent',
+        label : '@@userview.defaulttheme.htmlBeforeContent@@',
+        type : 'textarea',
+        rows : '5',
+        cols : '75'
+    }]
+}]

@@ -1,0 +1,112 @@
+@charset "utf-8";
+/* CSS Document */
+
+	a.beer
+		{
+		background: url(coffee.png) no-repeat 4px center orange;
+		color: #fff;
+		padding: 4px;
+		padding-left: 24px;
+		border: 1px solid #fff;
+		}
+
+	ul li
+		{
+		background: url(accept.png) no-repeat left;
+		list-style: none;
+		padding: 3px;
+		padding-left: 20px;
+		}
+
+	a
+		{
+		text-decoration: none;
+		color: #0066FF;
+		}
+		
+	body
+		{
+		background: #333;
+		width: 960px;
+		margin: 0px;
+		padding: 20px;
+		padding-bottom: 200px;
+		font-family: Arial, Helvetica, sans-serif;
+		font-size: 12px;
+		color: #eee;
+		}
+		
+	h1
+		{
+		font-size: 26px;
+		font-weight: normal;
+		margin: 0px;
+		color: #0099FF;
+		}
+		
+	.code
+		{
+		background: #555;
+		padding: 10px;
+		margin-bottom: 10px;
+		display: none;
+		color: #eee;
+		}
+		
+	.title
+		{
+		background: #0099FF;
+		color: #fff;
+		padding: 10px;
+		}
+	
+	.bborder
+		{
+		background: #eee;
+		border: 0px solid #ccc;
+		padding: 3px;
+		}
+		
+	.update2
+		{
+		background:#CCFF33;
+		padding: 10px;
+		color: #000;
+		}
+		
+		.update2 p
+			{
+			margin: 0px;
+			margin-bottom: 10px;
+			}
+
+	.update
+		{
+			border: 1px solid #777;
+			height: 26px;
+			overflow: hidden;
+		}
+		
+		.update.fh
+			{
+			height: auto;
+			}
+		
+		.update p
+			{
+			margin: 10px;
+			}
+		
+		.update b.top
+			{
+			cursor: pointer;
+			display: block;
+			padding: 5px;
+			color: #fff;
+			position: relative;
+			text-transform: uppercase;
+			font-size: 12px;
+			letter-spacing: 2px;
+			border-left: 0px solid #06f;
+			border-bottom: 2px solid #0066FF;
+			}		

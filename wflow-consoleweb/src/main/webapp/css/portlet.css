@@ -1,0 +1,70 @@
+a {
+    text-decoration: none;
+}
+
+.portlet_div_search {
+    height: 40px;
+}
+
+.portlet_div_sorting {
+    float:left; 
+    width:50%;
+}
+
+.portlet_div_paging {
+    text-align:right;
+    float: right;
+    width:50%;
+}
+
+.portlet_label {
+    font-size: 10pt;
+    font-family: Arial,Helvetica,sans-serif;
+    font-weight: normal;
+}
+
+.portlet_input {
+    font: 10px;
+}
+
+.portlet_table_list {
+    height:80%;
+}
+
+.portlet_table_data {
+    width: 100%;
+    border-top: solid 1px silver;
+    padding-bottom: 15px;
+}
+
+.portlet_table_number {
+    font-size: 10pt; 
+    font-family:Arial,Helvetica,sans-serif;
+    padding-right: 10px;
+}
+
+.portlet_table_activity_pending {
+    font-size: 10pt;
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight: bolder;
+}
+
+.portlet_table_activity_accepted {
+    font-size: 9pt; 
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight: normal;
+}
+
+.portlet_table_date_created {
+    float:right;
+    font-size: 7pt;
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight: normal;
+}
+
+.portlet_table_process {
+    font-size: 8pt;
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight: normal;
+    padding-left: 22px;
+}

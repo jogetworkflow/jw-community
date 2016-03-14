@@ -1,0 +1,17 @@
+#header {
+    background: url(header_red.jpg) #C00A00;
+}
+#header-name span {
+    color: whitesmoke;
+}
+#header-description {
+    color: white;
+}
+#header-inner, #header-inner a {
+    color: whitesmoke;
+    text-decoration: none;
+}
+#landing .landing-column h2 {
+    background: #C00A00;
+    color: whiteSmoke;
+}

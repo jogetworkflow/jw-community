@@ -1,0 +1,52 @@
+[{
+    title : '@@form.defaultvalidator.configValidator@@',
+    properties : [{
+        name : 'mandatory',
+        label : '@@form.defaultvalidator.mandatory@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'type',
+        label : '@@form.defaultvalidator.type@@',
+        type : 'selectbox',
+        options : [{
+            label : '',
+            value : ''
+        },
+        {
+            label : '@@form.defaultvalidator.alphabet@@',
+            value : 'alphabet'
+        },
+        {
+            label : '@@form.defaultvalidator.alphanumeric@@',
+            value : 'alphanumeric'
+        },
+        {
+            label : '@@form.defaultvalidator.numeric@@',
+            value : 'numeric'
+        },
+        {
+            label : '@@form.defaultvalidator.email@@',
+            value : 'email'
+        },
+        {
+            label : '@@form.defaultvalidator.custom@@',
+            value : 'custom'
+        }]
+    },
+    {
+        name : 'custom-regex',
+        label : '@@form.defaultvalidator.custom.regex@@',
+        type : 'textfield'
+    },
+    {
+        name : 'message',
+        label : '@@form.defaultvalidator.message@@',
+        type : 'textfield'
+    }]
+}]

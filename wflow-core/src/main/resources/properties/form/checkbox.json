@@ -1,0 +1,103 @@
+[{
+    title : '@@form.checkbox.editCheckBox@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.checkbox.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.checkbox.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.checkbox.label@@',
+        type : 'textfield',
+        value : 'Checkbox'
+    },
+    {
+        name : 'options',
+        label : '@@form.checkbox.options@@',
+        type : 'grid',
+        columns : [{
+            key : 'value',
+            label : '@@form.checkbox.value@@'
+        },
+        {
+            key : 'label',
+            label : '@@form.checkbox.label@@'
+        },
+        {
+            key : 'grouping',
+            label : '@@form.checkbox.grouping@@'
+        }]
+    },
+    {
+        name : 'optionsBinder',
+        label : '@@form.checkbox.chooseOptionsBinder@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadOptionsBinder',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    }]
+},
+{
+    title : '@@form.checkbox.advancedOptions@@',
+    properties : [{
+        label : '@@form.checkbox.data@@',
+        type : 'header'
+    },
+    {
+        name : 'value',
+        description : '@@form.checkbox.value.desc@@',
+        label : 'Default @@form.checkbox.value@@',
+        type : 'textfield'
+    },
+    {
+        name : 'validator',
+        label : '@@form.checkbox.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        label : '@@form.checkbox.dependency@@',
+        type : 'header'
+    },
+    {
+        name : 'controlField',
+        label : '@@form.checkbox.controlField@@',
+        type : 'textfield'
+    },
+    {
+        label : '@@form.checkbox.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.checkbox.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.checkbox.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.checkbox.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.checkbox.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

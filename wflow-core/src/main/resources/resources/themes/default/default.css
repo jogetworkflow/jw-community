@@ -1,0 +1,118 @@
+a {
+    color:#0077bb;
+    font-family: 'Lucida Sans',Arial;
+    text-decoration: none;
+}
+#page {
+    border-color: -moz-use-text-color silver;
+    border-style: none solid;
+    border-width: 0 1px;
+    font-family: 'PT Sans',Arial;
+    font-size: 13px;
+    position: relative;
+}
+#header-info {
+    margin: 0 50px 10px;
+    min-height: 90px;
+}
+#header {
+    background: url("@@contextPath@@/plugin/org.joget.apps.userview.lib.DefaultTheme/themes/default/bg-header.png") no-repeat scroll 0 0 transparent;
+    height: 130px;
+}
+#header-name {
+    padding-top: 25px;
+}
+#header-link {
+    color: #0077bb;
+    font-weight: bold;
+    text-decoration: none;
+}
+#header-name span {
+    font-size: 30px;
+}
+#header-description {
+    color: #555555;
+    font-style: italic;
+}
+#header-logout-text {
+    color: #555555;
+}
+#main {
+    border: 0 none;
+}
+#sidebar {
+    -moz-border-radius: 0 0 20px 20px;
+    background: none repeat scroll 0 0 #f2f2f2;
+    border: 0 none;
+    margin: 0 0 30px 20px;
+    min-height: 450px;
+}
+#content {
+    margin-top: 10px;
+    margin-left: 10px;
+    padding: 0px 20px;
+    width: 690px;
+}
+.category {
+    margin: 15px;
+}
+.category-label {
+    background-color: #4881a9;
+    color: #FFFFFF;
+}
+.category-label span {
+    display: block;
+    font-size: 14px;
+    padding: 5px;
+}
+.category-label a {
+    color: white;
+    text-decoration: none;
+}
+.menu-container a {
+    color: #535353;
+    text-decoration: none;
+}
+.menu {
+    border-bottom: 1px dotted #757471;
+    cursor: pointer;
+    padding: 5px 5px 5px 15px;
+}
+#category-container .current, #category-container .current-category {
+    color: steelblue;
+    font-weight: bold;
+}
+.menu-link span {
+    font-weight: normal;
+}
+.menu-link:hover span {
+    color: steelblue;
+}
+.menu-container .current span {
+    color: steelblue;
+    font-weight: bold;
+}
+#footer {
+    border: 0 none;
+    color: #ffffff;
+    text-align: center;
+}
+#footer-message {
+    background: none repeat scroll 0 0 #4881a9;
+    border-top: 1px solid silver;
+    padding: 10px 50px;
+}
+#page th.sortable a {
+    font-size: 13px;
+}
+#page thead tr {
+    background-color: #DFDFDF;
+}
+body#login #content, body#unauthorize #content {
+    float: none;
+    min-height: 350px;
+    width: 920px;
+}
+#navigation {
+    background-color: #F2F2F2;
+}

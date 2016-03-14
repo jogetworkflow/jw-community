@@ -1,0 +1,108 @@
+[
+    {
+        title:'@@form.subform.editSubform@@',
+        properties:[
+            {
+                name:'id',
+                label:'@@form.subform.id@@',
+                type:'textfield',
+                required:'True',
+                regex_validation : '^[a-zA-Z0-9_]+$',
+                validation_message : '@@form.subform.invalidId@@'
+            },
+            {
+                name:'label',
+                label:'@@form.subform.label@@',
+                type:'textfield',
+                value : 'SubForm'
+            },
+            %s
+        ]
+    },
+    {
+        title:'@@form.subform.ui@@',
+        properties:[
+            {
+                label : '@@form.subform.general@@',
+                type : 'header'
+            },
+            {
+                name:'readonly',
+                label:'@@form.subform.readonly@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            },
+            {
+                name:'readonlyLabel',
+                label:'@@form.subform.readonlyLabel@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            },
+            {
+                name:'noframe',
+                label:'@@form.subform.noframe@@',
+                type:'checkbox',
+                value:'false',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        title:'@@form.subform.data@@',
+        properties:[
+            {
+                label : '@@form.subform.dataLinkage@@',
+                type : 'header'
+            },
+            {
+                name:'parentSubFormId',
+                label:'@@form.subform.parentField@@',
+                type:'textfield'
+            },
+            {
+                name:'subFormParentId',
+                label:'@@form.subform.subformField@@',
+                type:'textfield'
+            },
+            {
+                label : '@@form.subform.binder@@',
+                type : 'header'
+            },
+            {
+                name:'loadBinder',
+                label:'@@form.subform.loadBinder@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormLoadElementBinder',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
+                value:'org.joget.apps.form.lib.WorkflowFormBinder',
+                required:'True'
+            },
+            {
+                name:'storeBinder',
+                label:'@@form.subform.storeBinder@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormStoreElementBinder',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions',
+                value:'org.joget.apps.form.lib.WorkflowFormBinder',
+                required: 'True'
+            }
+        ]
+    }
+]

@@ -1,0 +1,171 @@
+#adminBar {
+    display: block;
+    position: fixed;
+    right: 0px;
+    top: 80px;
+    padding: 2px 2px 10px 2px;
+    width: 50px;
+    background: #A0C847 url(../images/v3/console/logo_name.png) no-repeat 12px 5px;
+    border-radius: 20px 0px 0px 20px;
+    z-index: 100;
+    box-shadow: gray -1px -1px 1px 1px;
+    opacity: 0.9;
+}
+body.embeded #adminBar {
+    display: none;
+}
+#adminBar #quickEditModeOption {
+    margin: 5px 5px;
+}
+#adminBar #quickEditModeOption input {
+    display: none;
+}
+#adminBar #quickEditModeOption .ui-state-active {
+    border: solid 1px lightgreen;
+}
+#adminBar #quickEditModeOption .ui-corner-left {
+    border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+}
+#adminBar #quickEditModeOption .ui-corner-right {
+    border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+}
+#adminBar #quickEditModeOption label {
+    margin-bottom: 0px;
+    display: none;
+    font-family: PT Sans,Arial,serif;
+    font-size: 9px;
+    text-align: center;
+    font-weight: normal;
+    border: 1px solid #aaaaaa;
+    color: #212121;    
+}
+#adminBar #quickEditModeOption label.ui-state-active {
+    border: solid 1px lightblue;
+}
+#adminBar #quickEditModeOnLabel {
+    border-radius: 4px 4px 0px 0px;
+    -webkit-border-radius: 4px 4px 0px 0px;
+    -moz-border-radius: 4px 4px 0px 0px;
+    background: #ffffff;
+}
+#adminBar #quickEditModeOffLabel {
+    border-radius: 0px 0px 4px 4px;
+    -webkit-border-radius: 0px 0px 4px 4px;
+    -moz-border-radius: 0px 0px 4px 4px;
+    background: #ffffff;
+}
+#adminBar .ui-buttonset .ui-button {
+    margin-left: 0;
+    margin-right: -.3em;
+    width: 40px;
+    height: 20px;
+}
+#adminBar .ui-button-text-only .ui-button-text {
+    padding: 4px;
+    font-size: 9px;
+}
+#adminBar #appCenter {
+    display: inline-block;
+    height: 40px;
+    width: 100%;
+}
+#adminBar .adminBarButton {
+    display: none;
+}
+#adminBar .adminBarButton, #adminBar .adminBarButton a {
+    display: block;
+    background: #e7fab6;
+    color: black;
+    font-size: 9px;
+    line-height: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    margin: 5px .3px;
+    padding: 2px;
+    border-radius: 5px;
+}
+#adminBar .adminBarButton i {
+    font-size: 13px;
+}
+#quickOverlay { 
+    height: 100%; 
+    width: 100%; 
+    position: fixed; 
+    top: 0px; 
+    background: black; 
+    z-index: 2000; 
+    opacity: 0.5 
+}
+#quickOverlayButton { 
+    position: fixed; 
+    top: 0px; 
+    right: 1%; 
+    z-index: 5000; 
+    padding: 5px 10px; 
+    background: white; 
+    opacity: 0.8; 
+    border-radius: 50px; 
+    font-size: 30px 
+}
+#quickOverlayButton a { 
+    text-decoration: none;
+}
+#quickOverlayButton i { 
+    font-size: 30px;
+}
+#quickOverlayFrame { 
+    position: fixed; 
+    height: 100%; 
+    width: 90%; 
+    top: 5px; 
+    left: 5%; 
+    z-index: 3000; 
+    border: none; 
+    box-shadow: 0px 0px 2px 2px; 
+    min-height: 500px; 
+    min-width: 780px; 
+    background:white 
+}
+.quickEdit, #form-canvas .quickEdit {
+    display: none;
+    min-width: 100px;
+    max-width: 200px;
+    position: relative;
+    top: 1px;
+    left: 1px;
+    font-size: 9px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0px 0px 2px 0px;
+    padding: 2px 5px;
+    background: #e7fab6;
+    border-radius: 5px;
+    z-index: 0;
+    box-shadow: #A0C847 0px 0px 2px 2px;
+    opacity: 0.8;
+    overflow: hidden;
+}
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 10px;
+    padding: 0px;
+    line-height: 14px;
+    width: 100%;
+}
+.quickEdit:hover, #navigation .quickEdit:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, .adminBarButton:hover, .adminBarButton a:hover {
+    background: lightgreen;
+}
+#page.quickEditModeActive fieldset#form-canvas, #page.quickEditModeActive fieldset#form-canvas .subform-container, #page.quickEditModeActive .dataList, #page.quickEditModeActive #category-container {
+    border: solid 5px #e7fab6;
+    padding: 1px;
+}
+#page.quickEditModeActive fieldset#form-canvas [class^="icon-"], #page.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
+    font-family: FontAwesome;
+}

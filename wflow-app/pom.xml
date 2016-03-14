@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.joget</groupId>
+    <artifactId>wflow-app</artifactId>
+    <version>4.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>wflow-app</name>
+    <url>http://www.joget.org</url>
+    <scm>
+        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-app/</connection>
+        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-app/</developerConnection>
+        <url>https://dev.joget.org/svn/jw-community/trunk/wflow-app/</url>
+    </scm>
+    <modules>
+        <module>../wflow-jdbc</module>
+        <module>../wflow-commons</module>
+        <module>../wflow-plugin-base</module>
+        <module>../wflow-plugin-archetype</module>
+        <module>../wflow-directory</module>
+        <module>../wflow-wfengine</module>
+        <module>../wflow-core</module>
+        <module>../wflow-consoleweb</module>
+        <module>../wflow-designer</module>
+        <module>../wflow-designerweb</module>
+    </modules>
+</project>
+

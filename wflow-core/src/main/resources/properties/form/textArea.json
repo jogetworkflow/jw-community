@@ -1,0 +1,81 @@
+[{
+    title : '@@form.textarea.editTextArea@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.textarea.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.textarea.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.textarea.label@@',
+        type : 'textfield',
+        value : 'TextArea'
+    }]
+},
+{
+    title : '@@form.textarea.advancedOptions@@',
+    properties : [{
+        label : '@@form.textarea.data@@',
+        type : 'header'
+    },
+    {
+        name : 'value',
+        label : '@@form.textarea.value@@',
+        type : 'textarea'
+    },
+    {
+        name : 'validator',
+        label : '@@form.textarea.validator@@',
+        type : 'elementselect',
+        options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormValidator',
+        url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+    },
+    {
+        label : '@@form.textarea.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'cols',
+        label : '@@form.textarea.cols@@',
+        type : 'textfield',
+        value : '20'
+    },
+    {
+        name : 'rows',
+        label : '@@form.textarea.rows@@',
+        type : 'textfield',
+        value : '5'
+    },
+    {
+        name : 'readonly',
+        label : '@@form.textarea.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'readonlyLabel',
+        label : '@@form.textarea.readonlyLabel@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.textarea.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.textarea.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

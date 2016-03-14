@@ -1,0 +1,51 @@
+[{
+    title : '@@form.hiddenfield.editHiddenField@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.hiddenfield.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.hiddenfield.invalidId@@'
+    },
+    {
+        name : 'value',
+        label : '@@form.hiddenfield.value@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@form.hiddenfield.advancedOptions@@',
+    properties : [{
+        label : '@@form.hiddenfield.data@@',
+        type : 'header'
+    },{
+        name : 'useDefaultWhenEmpty',
+        label : '@@form.hiddenfield.useDefaultWhenEmpty@@',
+        description : '@@form.hiddenfield.useDefaultWhenEmpty.desc@@',
+        type : 'radio',
+        value : '',
+        options : [{
+                label : '@@form.hiddenfield.useDefaultWhenEmpty.valueFirst@@',
+                value : ''
+            },
+            {
+                label : '@@form.hiddenfield.useDefaultWhenEmpty.dbFirst@@',
+                value : 'true'
+            },
+            {
+                label : '@@form.hiddenfield.useDefaultWhenEmpty.valueOnly@@',
+                value : 'valueOnly'
+            }
+        ]
+    },
+    {
+        label : '@@form.hiddenfield.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.hiddenfield.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

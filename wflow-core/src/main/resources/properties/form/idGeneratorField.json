@@ -1,0 +1,58 @@
+[{
+    title : '@@form.idgeneratorfield.editIdGeneratorField@@',
+    properties : [{
+        name : 'id',
+        label : '@@form.idgeneratorfield.id@@',
+        type : 'textfield',
+        required : 'True',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@form.idgeneratorfield.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@form.idgeneratorfield.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'IdGeneratorField'
+    },
+    {
+        name : 'envVariable',
+        description : '@@form.idgeneratorfield.envVariableDesc@@',
+        label : '@@form.idgeneratorfield.envVariableName@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'counter'
+    },
+    {
+        name : 'format',
+        label : '@@form.idgeneratorfield.format@@',
+        type : 'textfield',
+        required : 'True',
+        value : 'ID-??????'
+    }]
+},
+{
+    title : '@@form.idgeneratorfield.advancedOptions@@',
+    properties : [{
+        label : '@@form.idgeneratorfield.ui@@',
+        type : 'header'
+    },
+    {
+        name : 'hidden',
+        label : '@@form.idgeneratorfield.hidden@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        label : '@@form.idgeneratorfield.workflow@@',
+        type : 'header'
+    },
+    {
+        name : 'workflowVariable',
+        label : '@@form.idgeneratorfield.workflowVariable@@',
+        type : 'textfield'
+    }]
+}]

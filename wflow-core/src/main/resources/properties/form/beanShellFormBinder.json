@@ -1,0 +1,11 @@
+[{
+    title : '@@form.beanshellfrombinder.config@@',
+    properties : [{
+        name : 'script',
+        label : '@@form.beanshellfrombinder.script@@',
+        type : 'textarea',
+        required : 'True',
+        cols : '60',
+        rows : '20'
+    }%s]
+}]
