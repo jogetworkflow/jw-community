@@ -82,6 +82,13 @@
             }
         }
     }
+    
+    var org_filter = window.filter;
+    var filter = function(jsonTable, url, value){
+        url = "&orgId=" + $('#userDataTable_filterbyOrg').val();
+        url += "&name=" + $('#userDataTable_searchCondition').val();
+        org_filter(jsonTable, url, '');
+    };
 </script>
 
 <commons:popupFooter />
