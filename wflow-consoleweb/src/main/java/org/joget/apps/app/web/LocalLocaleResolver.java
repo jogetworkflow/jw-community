@@ -12,8 +12,8 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.directory.dao.UserDao;
 import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -65,10 +65,10 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                     String enableUserLocale = setupManager.getSettingValue("enableUserLocale");
                     if (enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true")) {
                         WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                        UserDao userDao = (UserDao) AppUtil.getApplicationContext().getBean("userDao");
+                        DirectoryManager dm = (DirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
 
                         String username = workflowUserManager.getCurrentUsername();
-                        User user = userDao.getUser(username);
+                        User user = dm.getUserByUsername(username);
                         if (user != null && user.getLocale() != null && !user.getLocale().isEmpty()) {
                             systemLocale = user.getLocale();
                         }
