@@ -451,17 +451,6 @@ PropertyEditor.Model.Editor.prototype = {
                 return false;
             }
         });
-        
-        //alert message for ajax validation
-        var errorMsg = '';
-        for(key in errors){
-            if(!(errors[key].fieldName !== '' && errors[key].fieldName !== null)){
-                errorMsg += errors[key].message + '\n';
-            }
-        }
-        if (errorMsg !== '') {
-            alert(errorMsg);
-        }
 
         if($.isFunction(this.options.validationFailedCallback)){
             this.options.validationFailedCallback(this.element, errors);
@@ -984,7 +973,7 @@ PropertyEditor.Validator.Ajax.prototype = {
                         $(page).find('.property-editor-property-container').prepend('<div class="property-editor-page-errors"></div>');
                     }
                     var  errorContainer = $(page).find(".property-editor-page-errors");
-                    $(errorContainer).find('.property-editor-property-container').append(errorsHtml);
+                    $(errorContainer).append(errorsHtml);
                 }
                 d.resolve();
             },

@@ -185,7 +185,11 @@
             function savePluginFailed(container, returnedErrors){
                 var errorMsg = '<fmt:message key="console.plugin.label.youHaveFollowingErrors"/>:\n';
                 for(key in returnedErrors){
-                    errorMsg += returnedErrors[key].fieldName + ' : ' + returnedErrors[key].message + '\n';
+                    if (returnedErrors[key].fieldName === undefined || returnedErrors[key].fieldName === "") {
+                        errorMsg += returnedErrors[key].message + '\n';
+                    } else {
+                        errorMsg += returnedErrors[key].fieldName + ' : ' + returnedErrors[key].message + '\n';
+                    }
                 }
                 alert(errorMsg);
             }
