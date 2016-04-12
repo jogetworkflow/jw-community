@@ -66,7 +66,7 @@ DatalistBuilder = {
                     closeable: true,
                     draggable: false,
                     show: false,
-                    fixed: false
+                    fixed: true
                 });
         }
         
