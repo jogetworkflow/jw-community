@@ -309,6 +309,7 @@ public class FormPdfUtil {
             replace = replace.replaceAll("&gt;", ">");
             replace = replace.replaceAll("&nbsp;", " ");
             replace = replace.replaceAll("&quot;", "\"");
+            replace = replace.replaceAll(StringUtil.escapeRegex("&nbsp;"), " ");
 
             if (!replace.contains("<p")) {
                 String[] newline = replace.split("\\\n");
@@ -328,6 +329,9 @@ public class FormPdfUtil {
             html = html.replaceAll(StringUtil.escapeRegex(textareaString), StringUtil.escapeRegex(replace));
         }
         
+        //remove &nbsp;
+        html = html.replaceAll(StringUtil.escapeRegex("&nbsp;"), " ");
+        
         //escape special character in html
         html = escapeSpecialCharacter(html, "label");
         html = escapeSpecialCharacter(html, "span");
@@ -336,7 +340,7 @@ public class FormPdfUtil {
         
         //remove br
         html = html.replaceAll("</\\s?br>", "");
-
+        
         //append style
         String style = "<style type='text/css'>";
         style += "*{font-size:12px;font-family:Arial, \"Droid Sans\";}";
