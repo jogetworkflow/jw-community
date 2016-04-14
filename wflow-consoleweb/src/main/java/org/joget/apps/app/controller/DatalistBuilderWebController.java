@@ -196,7 +196,7 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns", method = RequestMethod.POST)
-    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, HttpServletRequest request) throws Exception {
+    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         JSONObject jsonObject = new JSONObject();
 
@@ -207,7 +207,7 @@ public class DatalistBuilderWebController {
         dataList = parseFromJsonParameter(map, dataList, id, request);
 
         // get binder from request
-        DataListBinder binder = createDataListBinderFromRequestInternal(appDef, id, binderId, request);
+        DataListBinder binder = createDataListBinderFromRequestInternal(appDef, id, binderId, binderJson);
         if (binder != null) {
             dataList.setBinder(binder);
         }
@@ -279,34 +279,14 @@ public class DatalistBuilderWebController {
         return "dbuilder/filterTmplate";
     }
 
-    protected DataListBinder createDataListBinderFromRequestInternal(AppDefinition appDef, String datalistId, String binderId, HttpServletRequest request) {
+    protected DataListBinder createDataListBinderFromRequestInternal(AppDefinition appDef, String datalistId, String binderId, String binderJson) {
         DataListBinder binder = null;
         if (binderId != null && binderId.trim().length() > 0) {
             // create binder
             binder = dataListService.getBinder(binderId);
 
-            if (request != null) {
-                // get request params
-                Enumeration e = request.getParameterNames();
-                while (e.hasMoreElements()) {
-                    String paramName = (String) e.nextElement();
-                    if (paramName.startsWith(PREFIX_BINDER_PROPERTY)) {
-                        String[] paramValue = (String[]) request.getParameterValues(paramName);
-                        String propName = paramName.substring(PREFIX_BINDER_PROPERTY.length());
-                        
-                        String value = CsvUtil.getDeliminatedString(paramValue);
-                        
-                        if (value.contains(SecurityUtil.ENVELOPE) || value.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
-                            DatalistDefinition datalist = datalistDefinitionDao.loadById(datalistId, appDef);
-                            
-                            if (datalist != null) {
-                                value = PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), value);
-                            }
-                        }
-                        
-                        binder.setProperty(propName, AppUtil.processHashVariable(value, null, null, null));
-                    }
-                }
+            if (binderJson != null && !binderJson.isEmpty()) {
+                binder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderJson));
             }
         }
         return binder;

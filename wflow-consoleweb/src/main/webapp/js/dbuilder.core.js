@@ -196,9 +196,7 @@ DatalistBuilder = {
 
     updateBinderProperties : function(mode){
         var temp = {};
-        for(e in DatalistBuilder.binderProperties.properties){
-            temp['binder_' + e] = DatalistBuilder.binderProperties.properties[e];
-        }
+        temp['binderJson'] = JSON.encode(DatalistBuilder.binderProperties.properties);
         temp['id'] = DatalistBuilder.datalistProperties.id;
         temp['binderId'] = DatalistBuilder.binderProperties.className;
         
