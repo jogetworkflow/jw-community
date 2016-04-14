@@ -4,6 +4,8 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 5.0.2
 ================
+2665	Fixed: wflow-install - Fixed community linux bundle showing error 403 on first setup @5.0-SNAPSHOT
+2664	Modified: wflow-install - Updated dependency downloads to the correct HTTPS URL @5.0-SNAPSHOT
 2662    Fixed: wflow-core - FormPdfUtil-   causing pdf generation failure. #3988 @5.0-SNAPSHOT
 2661    Fixed: wflow-consoleweb - Datalist Builder - Screen shift when choosing a value of selectbox in property editor. #3985 @5.0-SNAPSHOT
 2660    Fixed: wflow-consoleweb - Property Editor - Errors from Ajax Validator does not show properly when save failure. #3935 @5.0-SNAPSHOT
