@@ -159,7 +159,7 @@
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />
-                                        <exclude name="wflow/app_datasource.properties" />
+                                        <exclude name="wflow/app_datasource.properties"  />
                                         <include name="build.xml" />
                                         <include name="joget-start.bat" />
                                         <include name="joget-stop.bat" />
@@ -205,7 +205,7 @@
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />
-                                        <exclude name="wflow/app_datasource.properties" />
+                                        <exclude name="wflow/app_datasource.properties"  />
                                         <include name="build.xml" />
                                         <include name="LICENSE.txt" />
                                         <include name="NOTICE.txt" />
