@@ -177,10 +177,15 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                         
                         String value = FormUtil.getElementPropertyValue(el, formData);
                         if (value != null && !value.isEmpty()) {
-                            File file = FileUtil.getFile(value, loadForm, primaryKey);
-                            if (file != null) {
-                                FileDataSource fds = new FileDataSource(file);
-                                email.attach(fds, MimeUtility.encodeText(file.getName()), "");
+                            String values[] = value.split(";");
+                            for (String v : values) {
+                                if (!v.isEmpty()) {
+                                    File file = FileUtil.getFile(v, loadForm, primaryKey);
+                                    if (file != null) {
+                                        FileDataSource fds = new FileDataSource(file);
+                                        email.attach(fds, MimeUtility.encodeText(file.getName()), "");
+                                    }
+                                }
                             }
                         }
                     } catch(Exception e){
