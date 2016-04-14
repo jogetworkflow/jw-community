@@ -13,9 +13,9 @@
         <nsis.makensis.bin>makensis</nsis.makensis.bin>
     </properties>
     <scm>
-        <connection>scm:svn:https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/tags/5.0.2/trunk</connection>
-        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/tags/5.0.2/trunk</developerConnection>
-        <url>https://dev.joget.org/svn/jw-community/branches/5.0-SNAPSHOT/tags/5.0.2/trunk</url>
+        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk</connection>
+        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk</developerConnection>
+        <url>https://dev.joget.org/svn/jw-community/trunk</url>
     </scm>
     <modules>
         <module>../wflow-app</module>

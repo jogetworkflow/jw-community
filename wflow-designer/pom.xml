@@ -8,9 +8,9 @@
     <name>wflow-designer</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:https://dev.joget.org/svn/jw-community/tags/5.0.2/wflow-designer</connection>
-        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/tags/5.0.2/wflow-designer</developerConnection>
-        <url>https://dev.joget.org/svn/jw-community/tags/5.0.2/wflow-designer</url>
+        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-designer</connection>
+        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-designer</developerConnection>
+        <url>https://dev.joget.org/svn/jw-community/trunk/wflow-designer</url>
     </scm>
     <build>
         <resources>
