@@ -111,10 +111,10 @@
                                 <copy file="src/main/resources/tomcat7.sh" todir="target" />
 
                                 <mkdir dir="downloads" />
-                                <get src="http://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/downloads/dependencies/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
-                                <get src="http://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
 
                                 <untar compression="gzip" dest="target">
                                     <fileset dir="downloads/">
