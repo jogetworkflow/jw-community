@@ -238,7 +238,7 @@ t.printStackTrace(new java.io.PrintWriter(out));
         });
     });
     function toggleAll(element) {
-        var table = $(element).parent().parent().parent().parent();
+        var table = $(element).closest("table");
         if ($(element).is(":checked")) {
             $(table).find("input[type=checkbox]").attr("checked", "checked");
         } else {
