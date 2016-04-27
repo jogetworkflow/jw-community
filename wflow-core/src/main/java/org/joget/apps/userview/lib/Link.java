@@ -57,7 +57,7 @@ public class Link extends UserviewMenu {
         if ("blank".equals(getPropertyString("target"))) {
             return "<a onclick=\"window.open('" + getPropertyString("url") + "');return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
         } else if ("self".equals(getPropertyString("target"))) {
-            return "<a onclick=\"window.location = '" + getPropertyString("url") + "';\" class=\"menu-link\"><span>" + label + "</span></a>";
+            return "<a onclick=\"window.location = '" + getPropertyString("url") + "';return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
         }
         return null;
     }
