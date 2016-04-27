@@ -28,17 +28,13 @@ import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -783,10 +779,10 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping("/json/workflow/assignment/view/(*:activityId)")
-    public void assignmentView(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+    public void assignmentView(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
-            return;
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("activityId", assignment.getActivityId());
@@ -817,10 +813,10 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping("/json/workflow/assignment/process/view/(*:processId)")
-    public void assignmentViewByProcess(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId) throws JSONException, IOException {
+    public void assignmentViewByProcess(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId) throws JSONException, IOException {
         WorkflowAssignment assignment = workflowManager.getAssignmentByProcess(processId);
         if (assignment == null) {
-            return;
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("activityId", assignment.getActivityId());
@@ -868,10 +864,14 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/workflow/assignment/accept/(*:activityId)", method = RequestMethod.POST)
-    public void assignmentAccept(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+    public void assignmentAccept(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentAccept(activityId);
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         LogUtil.info(getClass().getName(), "Assignment " + activityId + " accepted");
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("assignment", assignment.getActivityId());
@@ -881,10 +881,14 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/workflow/assignment/withdraw/(*:activityId)", method = RequestMethod.POST)
-    public void assignmentWithdraw(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+    public void assignmentWithdraw(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentWithdraw(activityId);
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         LogUtil.info(getClass().getName(), "Assignment " + activityId + " withdrawn");
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("assignment", assignment.getActivityId());
@@ -894,7 +898,12 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/workflow/assignment/variable/(*:activityId)/(*:variable)", method = RequestMethod.POST)
-    public void assignmentVariable(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam("variable") String variable, @RequestParam("value") String value) throws JSONException, IOException {
+    public void assignmentVariable(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam("variable") String variable, @RequestParam("value") String value) throws JSONException, IOException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentVariable(activityId, variable, value);
         LogUtil.info(getClass().getName(), "Assignment variable " + variable + " set to " + value);
@@ -905,9 +914,13 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/workflow/assignment/completeWithVariable/(*:activityId)", method = RequestMethod.POST)
-    public void assignmentCompleteWithVariable(HttpServletRequest request, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
-        appService.getAppDefinitionForWorkflowActivity(activityId);
+    public void assignmentCompleteWithVariable(HttpServletRequest request, HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
+        appService.getAppDefinitionForWorkflowActivity(activityId);
         String processId = (assignment != null) ? assignment.getProcessId() : "";
         
         if (assignment != null && !assignment.isAccepted()) {
@@ -940,9 +953,13 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/workflow/assignment/complete/(*:activityId)", method = RequestMethod.POST)
-    public void assignmentComplete(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
-        appService.getAppDefinitionForWorkflowActivity(activityId);
+    public void assignmentComplete(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId) throws JSONException, IOException {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
+        appService.getAppDefinitionForWorkflowActivity(activityId);
 
         String processId = (assignment != null) ? assignment.getProcessId() : "";
 
@@ -995,7 +1012,12 @@ public class WorkflowJsonController {
     }
     
     @RequestMapping(value = "/json/monitoring/activity/reassign", method = RequestMethod.POST)
-    public void activityReassign(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId) throws IOException, JSONException {
+    public void activityReassign(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId) throws IOException, JSONException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         workflowManager.assignmentReassign(null, null, activityId, username, replaceUser);
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("activityId", activityId);
@@ -1005,14 +1027,24 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping(value = "/json/monitoring/running/activity/reassign", method = RequestMethod.POST)
-    public void assignmentReassign(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) {
+    public void assignmentReassign(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) throws IOException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentReassign(processDefId, processId, activityId, username, replaceUser);
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 
     @RequestMapping(value = "/json/monitoring/running/activity/complete", method = RequestMethod.POST)
-    public void completeProcess(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) {
+    public void completeProcess(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) throws IOException {
+        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        if (assignment == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+        }
+        
         String username = workflowUserManager.getCurrentUsername();
         appService.getAppDefinitionForWorkflowActivity(activityId);
         workflowManager.assignmentForceComplete(processDefId, processId, activityId, username);
