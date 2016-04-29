@@ -280,7 +280,7 @@ t.printStackTrace(new java.io.PrintWriter(out));
     }
     function showConfirm(element, message) {
         var table = $(element).parent().parent().find('table');
-        if ($(table).find("input[type=checkbox][name|=d]:checked").length > 0) {
+        if ($(table).find("input[type=checkbox][name|=d]:checked", "input[type=radio][name|=d]:checked").length > 0) {
             return confirm(message);
         } else {
             alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
