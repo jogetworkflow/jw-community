@@ -150,6 +150,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     });
     
     thisObject.triggerChange(targetEl, names);
+    $(window).trigger("resize");
 }
 VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
     $.each(names, function(i){
