@@ -1099,7 +1099,7 @@ ProcessBuilder.ApiClient = {
             return;
         }
         var packageId = ProcessBuilder.Designer.model.packageId;
-        var deployUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + packageId + "//package/deploy";
+        var deployUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/"+ProcessBuilder.ApiClient.appVersion+"/package/deploy";
         var xpdl = new Blob([ProcessBuilder.Designer.xpdl], {type : 'text/xml'});
         var params = new FormData();
         params.append("packageXpdl", xpdl);
