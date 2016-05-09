@@ -10,7 +10,7 @@ JPopup = {
                 if (!title || title === "") {
                     title = "&nbsp;";
                 }
-                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:true,show:false,fixed: false});
+                JPopup.dialogboxes[id] = new Boxy('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:false,show:false,fixed: true, modal:true});
             } else {
                 JPopup.dialogboxes[id] = Boxy.get($("#"+id));
             }
