@@ -985,7 +985,7 @@ ProcessBuilder.ApiClient = {
             alert(get_pbuilder_msg("pbuilder.label.invalidApp"));
             return;
         }
-        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + appId + "/" + version + "/package/xpdl?_=" + jQuery.now();
+        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + appId + "/" + version + "/package/xpdl";
         var loadCallback = {
             success: function(data) {
                 if (data.indexOf("loginForm") > 0) {
@@ -2798,6 +2798,13 @@ ProcessBuilder.Designer = {
                 });
             }
 
+        }
+        
+        // refresh transitions
+        ProcessBuilder.Designer.refresh();
+        
+        for (var participantId in participants) {
+            ProcessBuilder.Designer.adjustParticipantSize($("#participant_"+participantId));
         }
 
         if (ProcessBuilder.Designer.editable) {
