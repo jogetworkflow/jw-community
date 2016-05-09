@@ -2804,7 +2804,9 @@ ProcessBuilder.Designer = {
         ProcessBuilder.Designer.refresh();
         
         for (var participantId in participants) {
-            ProcessBuilder.Designer.adjustParticipantSize($("#participant_"+participantId));
+            if($("#participant_"+participantId).length > 0) {
+                ProcessBuilder.Designer.adjustParticipantSize($("#participant_"+participantId));
+            }
         }
 
         if (ProcessBuilder.Designer.editable) {
