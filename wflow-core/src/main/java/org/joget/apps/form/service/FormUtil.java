@@ -41,6 +41,7 @@ import org.joget.apps.form.model.FormReferenceDataRetriever;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Validator;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -195,6 +196,9 @@ public class FormUtil implements ApplicationContextAware {
         // instantiate element
         String className = obj.getString(FormUtil.PROPERTY_CLASS_NAME);
         Element element = (Element) pluginManager.getPlugin(className);
+        if (element == null) {
+            element = new MissingElement(className);
+        }
         if (element != null) {
             // check for mobile support
             boolean isMobileView = MobileUtil.isMobileView();
@@ -1183,7 +1187,7 @@ public class FormUtil implements ApplicationContextAware {
     public static String generateElementMetaData(Element element) {
         String properties = FormUtil.getElementProcessedJson(element);
         String escaped = StringEscapeUtils.escapeHtml(properties);
-        String elementMetaData = " element-class=\"" + element.getClass().getName() + "\" element-property=\"" + escaped + "\" ";
+        String elementMetaData = " element-class=\"" + element.getClassName() + "\" element-property=\"" + escaped + "\" ";
         return elementMetaData;
     }
 
