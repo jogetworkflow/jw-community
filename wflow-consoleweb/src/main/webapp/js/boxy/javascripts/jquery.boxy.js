@@ -62,7 +62,7 @@ function Boxy(element, options) {
     this.options = jQuery.extend({}, Boxy.DEFAULTS, options || {});
     
     if (this.options.modal) {
-        this.options = jQuery.extend(this.options, {center: true, draggable: false});
+        this.options = jQuery.extend(this.options, {center: true, draggable: true});
     }
     
     // options.actuator == DOM element that opened this boxy
