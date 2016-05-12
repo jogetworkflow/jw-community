@@ -260,17 +260,21 @@ public class PluginManager implements ApplicationContextAware {
                 newBundle.update();
             }
             // clear cache
-            pluginCache.clear();
-            osgiPluginClassCache.clear();
-            noOsgiPluginClassCache.clear();
-            templateCache.clear();
-            resourceBundleCache.clear();
-            noResourceBundleCache.clear();
+            clearCache();
             return newBundle;
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle installation from " + location + ": " + be.toString());
             return null;
         }
+    }
+    
+    protected void clearCache() {
+        pluginCache.clear();
+        osgiPluginClassCache.clear();
+        noOsgiPluginClassCache.clear();
+        templateCache.clear();
+        resourceBundleCache.clear();
+        noResourceBundleCache.clear();
     }
 
     protected boolean startBundle(Bundle bundle) {
@@ -578,7 +582,7 @@ public class PluginManager implements ApplicationContextAware {
                 result = true;
 
                 // clear cache
-                pluginCache.clear();
+                clearCache();
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
             }
