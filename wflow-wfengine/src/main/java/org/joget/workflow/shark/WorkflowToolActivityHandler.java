@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.model.service.WorkflowManager;
 
 public class WorkflowToolActivityHandler extends StandardToolActivityHandler {
 
@@ -32,7 +33,7 @@ public class WorkflowToolActivityHandler extends StandardToolActivityHandler {
             String processId = act.container(shandle).manager(shandle).name(shandle);
             String activityId = act.activity_definition_id(shandle);
             String version = act.container(shandle).manager(shandle).version(shandle);
-
+            
             // retrieve assignment
             workflowAssignment = new WorkflowAssignment();
             workflowAssignment.setProcessId(act.process_id(shandle));
@@ -45,6 +46,10 @@ public class WorkflowToolActivityHandler extends StandardToolActivityHandler {
             workflowAssignment.setActivityId(act.key(shandle));
             workflowAssignment.setActivityName(act.name(shandle));
             workflowAssignment.setAssigneeId(act.getPerformerId(shandle));
+            
+            //call this just to set process link for subflow
+            WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+            workflowManager.getProcessDefIdByInstanceId(workflowAssignment.getProcessId());
 
             // retrieve workflow variables
             List<WorkflowVariable> processVariableList = new ArrayList();
