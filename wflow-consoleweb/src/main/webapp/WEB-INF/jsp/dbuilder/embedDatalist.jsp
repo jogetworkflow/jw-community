@@ -120,7 +120,9 @@
                     if (idx2 > 0) {
                         if (columns[idx2-1]) {
                             var prop = columns[idx2-1].name;
-                            var val = $(col).text();
+                            var val = $('<div>'+$(col).html()+'</div>');
+                            $(val).find(".footable-toggle").remove();
+                            val = $(val).html();
                             result[prop] = val;
                         }
                     }
