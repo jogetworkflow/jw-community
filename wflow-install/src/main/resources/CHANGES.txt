@@ -2,6 +2,25 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.3
+================
+2694	Fixed: wflow-consoleweb - Embed Datalist - Not able to return values with HTML tag . #4097 @5.0-SNAPSHOT
+2693	Fixed: wflow-wfengine - Workflow Manager - Subflow and main process does not link when tool is the first activity. #4092 @5.0-SNAPSHOT
+2692	Modified: wflow-consoleweb - Popup - Make the popup dialog modal become draggable. #4086 @5.0-SNAPSHOT
+2691	Fixed: wflow-core - Form - Missing plugin caused the form definition wrongly constructed. #4058 @5.0-SNAPSHOT
+2690	Fixed: wflow-plugin-base - Plugin Manager - Cache does not clear correctly after uninstall plugin. #4058 @5.0-SNAPSHOT
+2689	Fixed: wflow-consoleweb - Process Builder - Deploy at previous app version will update wrongly in latest app version. @5.0-SNAPSHOT
+2688	Fixed: wflow-consoleweb - Process Builder - Correction for r2687 - Layout haywire after load. #4067 @5.0-SNAPSHOT
+2687	Fixed: wflow-consoleweb - Process Builder - Layout haywire after load. #4067 @5.0-SNAPSHOT
+2685	Fixed: wflow-core - Section - Element in section is not display correctly when shown from hidden state. #4059 @5.0-SNAPSHOT
+2684	Fixed: wflow-consoleweb - Datalist - Radio button selection with confirm message are not working. #4053 @5.0-SNAPSHOT
+2682	Fixed: wflow-core - Link Menu - Page Not Found exception in mobile view when target is self. #4045 @5.0-SNAPSHOT
+2681	Fixed: wflow-consoleweb - JSON API - Null Pointer Exception is not handled correctly. #4028 @5.0-SNAPSHOT
+2680	Modified: wflow-consoleweb - Datalist - Toggle all checkbox not work correctly with jquery mobile. @5.0-SNAPSHOT
+2679	Fixed: wflow-consoleweb - Process Builder - IE cache does not load the latest process XPDL #4023 @5.0-SNAPSHOT
+2676	Fixed: wflow-consoleweb - Datalist Builder - Not able to retrieve grid and element properties of binder when populate columns in builder. @5.0-SNAPSHOT
+2675	Fixed: wflow-core - Email Tool - Not able to attach files from File Upload field with multiple files @5.0-SNAPSHOT
+
 CHANGES IN 5.0.2
 ================
 2665	Fixed: wflow-install - Fixed community linux bundle showing error 403 on first setup @5.0-SNAPSHOT
