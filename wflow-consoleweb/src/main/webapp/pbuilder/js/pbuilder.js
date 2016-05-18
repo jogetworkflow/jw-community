@@ -985,7 +985,7 @@ ProcessBuilder.ApiClient = {
             alert(get_pbuilder_msg("pbuilder.label.invalidApp"));
             return;
         }
-        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + appId + "/" + version + "/package/xpdl";
+        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + appId + "/" + version + "/package/xpdl?_=" + jQuery.now();
         var loadCallback = {
             success: function(data) {
                 if (data.indexOf("loginForm") > 0) {
