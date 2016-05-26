@@ -3146,9 +3146,13 @@ public class ConsoleWebController {
                 Map data = new HashMap();
                 data.put("id", pluginDefaultProperties.getId());
                 Plugin p = pluginManager.getPlugin(pluginDefaultProperties.getId());
-                data.put("pluginName", p.getI18nLabel());
-                data.put("pluginDescription", p.getI18nDescription());
-                jsonObject.accumulate("data", data);
+                if (p != null) {
+                    data.put("pluginName", p.getI18nLabel());
+                    data.put("pluginDescription", p.getI18nDescription());
+                    jsonObject.accumulate("data", data);
+                } else {
+                    count--;
+                }
             }
         }
 
