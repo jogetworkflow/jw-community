@@ -62,15 +62,18 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (!FormUtil.isReadonly(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
-                try {
-                    String displayFormat = getJavaDateFormat(getPropertyString("format"));
-                    if (!displayFormat.equals(getPropertyString("dataFormat"))) {
-                        SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
-                        SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                        Date date = display.parse(value);
-                        value = data.format(date);
-                    }
-                } catch (Exception e) {}
+                String binderValue = formData.getLoadBinderDataProperty(this, id);
+                if (value != null && !value.equals(binderValue)) {
+                    try {
+                        String displayFormat = getJavaDateFormat(getPropertyString("format"));
+                        if (!displayFormat.equals(getPropertyString("dataFormat"))) {
+                            SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
+                            SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                            Date date = display.parse(value);
+                            value = data.format(date);
+                        }
+                    } catch (Exception e) {}
+                }
             }
             if (value != null) {
                 // set value into Properties and FormRowSet object
