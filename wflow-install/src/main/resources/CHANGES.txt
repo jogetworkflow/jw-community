@@ -2,6 +2,16 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.4
+================
+2705    Modified: wflow-consoleweb - Popup - Make the popup dialog modal not fix position in mobile device. #4086 @5.0-SNAPSHOT
+2704    Fixed: wflow-core - Date Picker - Date corrupted by different data & display format when saved without load in Multi Paged Form. #4142 @5.0-SNAPSHOT
+2703    Modified: wflow-commons/wflow-consoleweb - Using a custom MultipartResolver to manage temp dir when Virtual Host is enabled . #4113 @5.0-SNAPSHOT
+2702    Fixed: wflow-consoleweb - Plugin Default Properties - missing plugin cause a 500 error. #4129 @5.0-SNAPSHOT
+2701    Fixed: wflow-consoleweb - JBoss - java.lang.NoClassDefFoundError when viewing assignment or process in JBoss EAP 7.0.0 #4121 @5.0-SNAPSHOT
+2700    Fixed: wflow-consoleweb - Chosen library - Modified to use contains search by default. #4101 @5.0-SNAPSHOT
+2699    Fixed: wflow-consoleweb - Process Builder - Regression bug on r2687 for r2679 @5.0-SNAPSHOT
+
 CHANGES IN 5.0.3
 ================
 2694	Fixed: wflow-consoleweb - Embed Datalist - Not able to return values with HTML tag . #4097 @5.0-SNAPSHOT
