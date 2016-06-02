@@ -17,7 +17,12 @@ import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.context.i18n.LocaleContext;
+import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import static org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME;
+import static org.springframework.web.servlet.i18n.SessionLocaleResolver.TIME_ZONE_SESSION_ATTRIBUTE_NAME;
+import org.springframework.web.util.WebUtils;
 
 public class LocalLocaleResolver extends SessionLocaleResolver implements LocaleResolver, I18nResourceProvider{
     private WorkflowUserManager workflowUserManager;
@@ -36,6 +41,35 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public final static String SYSTEM_TIMEZONE_EXPIRY_KEY = "SYSTEM_TIMEZONE_EXPIRY_KEY";
     public final static Long CACHE_DURATION =  5000L; // 5 seconds
 
+    @Override
+    public LocaleContext resolveLocaleContext(final HttpServletRequest request) {
+            return new TimeZoneAwareLocaleContext() {
+                    @Override
+                    public Locale getLocale() {
+                        Locale locale = null;
+                        if (request != null) {
+                            locale = (Locale) WebUtils.getSessionAttribute(request, LOCALE_SESSION_ATTRIBUTE_NAME);
+                        }
+                        if (locale == null) {
+                            locale = determineDefaultLocale(request);
+                        }
+                        return locale;
+                    }
+                    
+                    @Override
+                    public TimeZone getTimeZone() {
+                        TimeZone timeZone = null;
+                        if (request != null) {
+                            timeZone = (TimeZone) WebUtils.getSessionAttribute(request, TIME_ZONE_SESSION_ATTRIBUTE_NAME);
+                        }
+                        if (timeZone == null) {
+                            timeZone = determineDefaultTimeZone(request);
+                        }
+                        return timeZone;
+                    }
+            };
+    }
+        
     @Override
     protected TimeZone determineDefaultTimeZone(HttpServletRequest request) {
         TimeZone timezone = null;
