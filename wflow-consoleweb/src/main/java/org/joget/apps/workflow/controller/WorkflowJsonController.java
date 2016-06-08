@@ -431,7 +431,7 @@ public class WorkflowJsonController {
         Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(activityId);
         for (WorkflowVariable variable : variableList) {
             JSONObject variableObj = new JSONObject();
-            variableObj.accumulate(variable.getId(), variable.getVal());
+            variableObj.accumulate(variable.getId(), (variable.getVal()!=null)?variable.getVal():"");
             jsonObject.accumulate("variable", variableObj);
         }
 
@@ -442,7 +442,7 @@ public class WorkflowJsonController {
     public void getProcessVariable(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("processId") String processId, @RequestParam("variable") String variable) throws JSONException, IOException {
         String variableValue = workflowManager.getProcessVariable(processId, variable);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("variableValue", variableValue);
+        jsonObject.accumulate("variableValue", (variableValue!=null)?variableValue:"");
 
         AppUtil.writeJson(writer, jsonObject, callback);
     }
@@ -805,7 +805,7 @@ public class WorkflowJsonController {
         Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(activityId);
         for (WorkflowVariable variable : variableList) {
             JSONObject variableObj = new JSONObject();
-            variableObj.accumulate(variable.getId(), variable.getVal());
+            variableObj.accumulate(variable.getId(), (variable.getVal()!=null)?variable.getVal():"");
             jsonObject.accumulate("variable", variableObj);
         }
 
@@ -839,7 +839,7 @@ public class WorkflowJsonController {
         Collection<WorkflowVariable> variableList = workflowManager.getActivityVariableList(assignment.getActivityId());
         for (WorkflowVariable variable : variableList) {
             JSONObject variableObj = new JSONObject();
-            variableObj.accumulate(variable.getId(), variable.getVal());
+            variableObj.accumulate(variable.getId(), (variable.getVal()!=null)?variable.getVal():"");
             jsonObject.accumulate("variable", variableObj);
         }
 
@@ -856,7 +856,7 @@ public class WorkflowJsonController {
 
         for (WorkflowVariable variable : variableList) {
             JSONObject variableObj = new JSONObject();
-            variableObj.accumulate(variable.getId(), variable.getVal());
+            variableObj.accumulate(variable.getId(), (variable.getVal()!=null)?variable.getVal():"");
             jsonObject.accumulate("variable", variableObj);
         }
 
