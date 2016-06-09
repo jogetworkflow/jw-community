@@ -22,7 +22,7 @@ DatalistBuilder = {
     rowActionPrefix : "rowAction_",
     actionPrefix : "action_",
     filterPrefix : "filter_",
-    availableColumns : [],      //available columns
+    availableColumns : {},      //available columns
     availableColumnNames : [],      //available column name
     availableActions : [],      //available actions
     chosenColumns : [],         //columns chosen in the designer
@@ -238,7 +238,7 @@ DatalistBuilder = {
         //populate columns at the side bar in designer
         //loop thru the list of columns returned
         var columns = eval( data.columns );
-        var fields = new Array();
+        var fields = new Object();
         
         for(e in columns){
             column = columns[e];
