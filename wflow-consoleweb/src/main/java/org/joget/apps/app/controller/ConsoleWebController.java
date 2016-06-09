@@ -1325,7 +1325,8 @@ public class ConsoleWebController {
             // create app
             AppDefinition copy = null;
             if (copyAppId != null && !copyAppId.isEmpty()) {
-                copy = appService.getAppDefinition(copyAppId, null);
+                Long copyVersion = appService.getPublishedVersion(copyAppId);
+                copy = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             }
             
             Collection<String> errors = appService.createAppDefinition(appDefinition, copy);
@@ -2382,7 +2383,8 @@ public class ConsoleWebController {
     public String consoleDatalistSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("datalistDefinition") DatalistDefinition datalistDefinition, BindingResult result, @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "copyListId", required = false) String copyListId) {
         DatalistDefinition copy = null;
         if (copyAppId != null && !copyAppId.isEmpty() && copyListId != null && !copyListId.isEmpty()) {
-            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, null);
+            Long copyVersion = appService.getPublishedVersion(copyAppId);
+            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             copy = datalistDefinitionDao.loadById(copyListId, copyAppDef);
         }
         
@@ -2533,7 +2535,8 @@ public class ConsoleWebController {
     public String consoleUserviewSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("userviewDefinition") UserviewDefinition userviewDefinition, BindingResult result, @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "copyUserviewId", required = false) String copyUserviewId) {
         UserviewDefinition copy = null;
         if (copyAppId != null && !copyAppId.isEmpty() && copyUserviewId != null && !copyUserviewId.isEmpty()) {
-            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, null);
+            Long copyVersion = appService.getPublishedVersion(copyAppId);
+            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             copy = userviewDefinitionDao.loadById(copyUserviewId, copyAppDef);
         }
         
@@ -2748,7 +2751,7 @@ public class ConsoleWebController {
             return "console/dialogClose";
         }
     }
-
+    
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/message/list")
     public void consoleMessageListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "locale", required = false) String locale, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -3288,7 +3291,8 @@ public class ConsoleWebController {
     public String consoleFormSubmit(ModelMap model, @ModelAttribute("formDefinition") FormDefinition formDefinition, BindingResult result, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "copyAppId", required = false) String copyAppId, @RequestParam(value = "copyFormId", required = false) String copyFormId) throws UnsupportedEncodingException {
         FormDefinition copy = null;
         if (copyAppId != null && !copyAppId.isEmpty() && copyFormId != null && !copyFormId.isEmpty()) {
-            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, null);
+            Long copyVersion = appService.getPublishedVersion(copyAppId);
+            AppDefinition copyAppDef = appService.getAppDefinition(copyAppId, (copyVersion != null)?copyVersion.toString():null);
             copy = formDefinitionDao.loadById(copyFormId, copyAppDef);
         }
 
