@@ -857,7 +857,7 @@ FormBuilder = {
         // set output
         $("#form-json").text("");
         $("#form-json").text(json);
-
+        
         return json;
     },
 
@@ -949,15 +949,21 @@ FormBuilder = {
         if (time !== undefined && time !== null && ((new Date()) - (new Date(time))) > 3000000) {
             $.localStorage.removeItem('formBuilder.copyTime');
             $.localStorage.removeItem('formBuilder.copy');
+            $.localStorage.removeItem('formBuilder.copyProperty');
             return null;
-    }
-        return $.localStorage.getItem("formBuilder.copy");
+        }
+        var copied = $.localStorage.getItem("formBuilder.copy");
+        if (copied !== undefined && copied !== null) {
+            copied = $(copied).attr("element-property", $.localStorage.getItem("formBuilder.copyProperty"));
+        }
+        return copied;
     },
     
     copy : function(element) {
         var copy = $(element).clone().wrap('<p/>').parent();
         $(copy).find(".form-palette-options, .form-clear").remove();
         $.localStorage.setItem("formBuilder.copy", $(copy).html());
+        $.localStorage.setItem("formBuilder.copyProperty", $(element).attr("element-property"));
         $.localStorage.setItem("formBuilder.copyTime", new Date());
         FormBuilder.updatePasteIcon();
         FormBuilder.showMessage(get_fbuilder_msg('fbuilder.copied'));
