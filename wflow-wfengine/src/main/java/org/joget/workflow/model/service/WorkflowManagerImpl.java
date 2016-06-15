@@ -1622,7 +1622,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowActivity.setPriority(String.valueOf(wfActivity.priority()));
                 workflowActivity.setProcessStatus(process.state());
                 // check for hash variable
-                if (WorkflowUtil.containsHashVariable(wfActivity.name())) {
+                if (WorkflowUtil.containsHashVariable(workflowActivity.getName()) || WorkflowUtil.containsHashVariable(workflowActivity.getProcessName())) {
                     WorkflowAssignment ass = new WorkflowAssignment();
                     ass.setProcessId(workflowActivity.getProcessId());
                     ass.setProcessDefId(workflowActivity.getProcessDefId());
@@ -1637,7 +1637,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                     ass.setProcessVariableList(new ArrayList(getProcessVariableList(workflowActivity.getProcessId())));
                     //process activity name variable
-                    workflowActivity.setName(WorkflowUtil.processVariable(wfActivity.name(), null, ass));
+                    workflowActivity.setName(WorkflowUtil.processVariable(workflowActivity.getName(), null, ass));
+                    workflowActivity.setProcessName(WorkflowUtil.processVariable(workflowActivity.getProcessName(), null, ass));
                 }
             }
 
@@ -3236,12 +3237,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 ass.setAssigneeList(getAssignmentResourceIds(ass.getProcessDefId(), ass.getProcessId(), ass.getActivityId()));
 
-                if (WorkflowUtil.containsHashVariable(ass.getActivityName())) {
+                if (WorkflowUtil.containsHashVariable(ass.getActivityName()) || WorkflowUtil.containsHashVariable(ass.getProcessName())) {
                     Collection<WorkflowVariable> variableList = JSPClientUtilities.getVariableData(sc, activity, false);
                     ass.setProcessVariableList((List<WorkflowVariable>) variableList);
 
                     //process activity name variable
                     ass.setActivityName(WorkflowUtil.processVariable(ass.getActivityName(), null, ass));
+                    ass.setProcessName(WorkflowUtil.processVariable(ass.getProcessName(), null, ass));
                 }
 
                 Shark shark = Shark.getInstance();
@@ -3580,12 +3582,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setDueDate(wfActivity.getDue());
 
                 // check for hash variable
-                if (WorkflowUtil.containsHashVariable(ass.getActivityName())) {
+                if (WorkflowUtil.containsHashVariable(ass.getActivityName()) || WorkflowUtil.containsHashVariable(ass.getProcessName())) {
                     Collection<WorkflowVariable> variableList = JSPClientUtilities.getVariableData(sc, activity, false);
                     ass.setProcessVariableList((List<WorkflowVariable>) variableList);
 
                     //process activity name variable
                     ass.setActivityName(WorkflowUtil.processVariable(ass.getActivityName(), null, ass));
+                    ass.setProcessName(WorkflowUtil.processVariable(ass.getProcessName(), null, ass));
                 }
 
                 WfRequester requester = process.requester();
@@ -3764,12 +3767,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setDueDate(wfActivity.getDue());
 
                 // check for hash variable
-                if (WorkflowUtil.containsHashVariable(ass.getActivityName())) {
+                if (WorkflowUtil.containsHashVariable(ass.getActivityName()) || WorkflowUtil.containsHashVariable(ass.getProcessName())) {
                     Collection<WorkflowVariable> variableList = JSPClientUtilities.getVariableData(sc, activity, false);
                     ass.setProcessVariableList((List<WorkflowVariable>) variableList);
 
                     //process activity name variable
                     ass.setActivityName(WorkflowUtil.processVariable(ass.getActivityName(), null, ass));
+                    ass.setProcessName(WorkflowUtil.processVariable(ass.getProcessName(), null, ass));
                 }
 
                 WfRequester requester = process.requester();

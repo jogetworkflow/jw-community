@@ -289,6 +289,10 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                     }
                 }
                 
+                if (WorkflowUtil.containsHashVariable(a.getProcessName())) {
+                    a.setProcessName(WorkflowUtil.processVariable(a.getProcessName(), null, a));
+                }
+                
                 ass.add(a);
             }
         }
