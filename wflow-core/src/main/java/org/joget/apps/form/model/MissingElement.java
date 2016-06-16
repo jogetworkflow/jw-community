@@ -5,6 +5,9 @@ import java.util.Map;
 public class MissingElement extends Element {
     private String className = "";
 
+    public MissingElement() {
+    }
+            
     public MissingElement(String className) {
         this.className = className;
     }
