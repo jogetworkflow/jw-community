@@ -30,7 +30,7 @@
 .form-section.no_label, .subform-section.no_label {
     margin-top: 0px;
 }
-.form-section.no_label .form-section-title, .subform-section.no_label .subform-section-title{
+.form-section.no_label > .form-section-title, .subform-section.no_label > .subform-section-title{
     display:none;
 }
 .form-section-title span, .subform-section-title span {
