@@ -1,8 +1,10 @@
 package org.joget.commons.util;
 
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbcp.managed.BasicManagedDataSource;
 
 public class DynamicDataSource extends BasicManagedDataSource {
@@ -42,9 +44,27 @@ public class DynamicDataSource extends BasicManagedDataSource {
             this.url = tempUrl;
             this.username = tempUser;
             this.password = tempPassword;
+            
+            setProperties(properties);
+            
             LogUtil.info(getClass().getName(), "datasourceName=" + getDatasourceName() + ", url=" + url + ", user=" + username);
         }
         return super.createDataSource();
+    }
+    
+    protected void setProperties(Properties properties) {
+        for (Map.Entry<Object, Object> e : properties.entrySet()) {
+            String key = (String) e.getKey();
+            String value = (String) e.getValue();
+            
+            if (key.endsWith(DRIVER) || key.endsWith(URL) || key.endsWith(USER) || key.endsWith(PASSWORD) || key.endsWith("profileName") || key.endsWith("encryption")) {
+                continue;
+            }
+            
+            try {
+                BeanUtils.setProperty(this, key, value);
+            } catch (Exception ex) {/*ignore*/}
+        }
     }
 
     public String getConfigDataSourceUrl() {
