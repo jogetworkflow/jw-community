@@ -17,7 +17,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 public class PluginResourceServlet extends HttpServlet {
 
     public static final int BUFFER_SIZE = 65536;
-    public static final long DEFAULT_HEADER_CACHE_EXPIRY = 300000L; // 5 minutes
     @Autowired
     PluginManager pluginManager;
     ServletConfig config;
@@ -69,19 +68,6 @@ public class PluginResourceServlet extends HttpServlet {
                 if (input != null) {
                     // set header for download
 //                    response.addHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-                    // set expires header for caching
-                    long expires = DEFAULT_HEADER_CACHE_EXPIRY;
-                    try {
-                        String expireStr = config.getInitParameter("expires");
-                        if (expireStr != null && !expireStr.trim().isEmpty()) {
-                            expires = Long.parseLong(expireStr);
-                        }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-
-                    response.addDateHeader("Expires", System.currentTimeMillis() + expires);
 
                     String contentType = request.getSession().getServletContext().getMimeType(resourceUrl);
                     if (contentType != null) {
