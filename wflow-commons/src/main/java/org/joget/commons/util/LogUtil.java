@@ -2,6 +2,7 @@ package org.joget.commons.util;
 
 import java.io.File;
 import java.net.URLDecoder;
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
@@ -9,15 +10,23 @@ import org.apache.commons.logging.LogFactory;
  * 
  */
 public class LogUtil {
-
+    
+    protected static Log getLog(String className) {
+        return LogFactory.getLog(className);
+    }
+    
     /**
      * Log message with logger level is info
      * @param className
      * @param message 
      */
     public static void info(String className, String message) {
-        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).info(getHost() + clean);
+        Log log = getLog(className);
+        
+        if (log.isInfoEnabled()) {
+            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+            log.info(getHost() + clean);
+        }
     }
 
     /**
@@ -26,8 +35,12 @@ public class LogUtil {
      * @param message 
      */
     public static void debug(String className, String message) {
-        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).debug(getHost() + clean);
+        Log log = getLog(className);
+        
+        if (log.isDebugEnabled()) {
+            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+            LogFactory.getLog(className).debug(getHost() + clean);
+        }
     }
 
     /**
@@ -36,8 +49,12 @@ public class LogUtil {
      * @param message 
      */
     public static void warn(String className, String message) {
-        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-        LogFactory.getLog(className).warn(getHost() + clean);
+        Log log = getLog(className);
+        
+        if (log.isWarnEnabled()) {
+            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+            log.warn(getHost() + clean);
+        }
     }
 
     /**
@@ -46,11 +63,15 @@ public class LogUtil {
      * @param message 
      */
     public static void error(String className, Throwable e, String message) {
-        if (message != null && message.trim().length() > 0) {
-            String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
-            LogFactory.getLog(className).error(getHost() + clean, e);
-        } else {
-            LogFactory.getLog(className).error(getHost() + e.toString(), e);
+        Log log = getLog(className);
+        
+        if (log.isErrorEnabled()) {
+            if (message != null && message.trim().length() > 0) {
+                String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
+                log.error(getHost() + clean, e);
+            } else {
+                log.error(getHost() + e.toString(), e);
+            }
         }
     }
     
