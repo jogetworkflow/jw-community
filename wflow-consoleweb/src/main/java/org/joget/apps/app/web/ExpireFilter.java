@@ -54,8 +54,6 @@ public class ExpireFilter implements Filter {
             }
             if (url.contains(".")) {
                 String extension = url.substring(url.lastIndexOf(".") + 1);
-                System.out.println(url);
-                System.out.println(extension);
                 if (EXTS.contains(extension)) {
                     return true;
                 }
