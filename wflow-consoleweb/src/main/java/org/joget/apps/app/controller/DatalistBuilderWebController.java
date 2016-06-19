@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +31,6 @@ import org.joget.apps.datalist.model.DataListFilter;
 import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.ext.ConsoleWebPlugin;
-import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -284,8 +282,17 @@ public class DatalistBuilderWebController {
         if (binderId != null && binderId.trim().length() > 0) {
             // create binder
             binder = dataListService.getBinder(binderId);
+            
+            if (binderJson.contains(SecurityUtil.ENVELOPE) || binderJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                DatalistDefinition datalistDef = datalistDefinitionDao.loadById(datalistId, appDef);
+
+                if (datalistDef != null) {
+                    binderJson = PropertyUtil.propertiesJsonStoreProcessing(datalistDef.getJson(), binderJson);
+                }
+            }
 
             if (binderJson != null && !binderJson.isEmpty()) {
+                binderJson = AppUtil.processHashVariable(binderJson, null, null, null);
                 binder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderJson));
             }
         }
