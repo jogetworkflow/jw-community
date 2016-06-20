@@ -228,7 +228,7 @@ public class PropertyUtil {
                 if (!sList.isEmpty()) {
                     int count = 0;
                     for (String s : sList) {
-                        json = json.replaceAll(StringUtil.escapeRegex(s), PASSWORD_PROTECTED_VALUE + count);
+                        json = json.replaceAll(StringUtil.escapeRegex(s), SecurityUtil.ENVELOPE + PASSWORD_PROTECTED_VALUE + count + SecurityUtil.ENVELOPE);
                         count++;
                     }
                 }
