@@ -676,7 +676,7 @@ public class DirectoryJsonController {
             }
         }
         
-        if (WorkflowUtil.isCurrentUserAnonymous()) {
+        if (WorkflowUtil.isCurrentUserAnonymous() && (callback == null || callback.isEmpty())) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
