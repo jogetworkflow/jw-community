@@ -37,8 +37,18 @@ ConnectionManager = {
 	        dataType:    'jsonp',
 	        data:        params,
 	        processData: false,
+                timeout: 5000,
 	        success:     function(data) {
                     callback.success(data);
+                },
+                error: function(data) {
+                     try {
+                         // do nothing for now
+                         if (callback.error) {
+                             callback.error(data);
+                         }
+                     }
+                     catch (e) {}
                 }
 	    });
     },
