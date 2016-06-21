@@ -1272,7 +1272,7 @@ PropertyEditor.Type.TextField.prototype = {
             maxlength = ' maxlength="'+ this.properties.maxlength +'"';
         }
 
-        return '<input type="text" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
+        return '<input type="text" readonly onfocus="this.removeAttribute(\'readonly\');" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
     }
 };
 PropertyEditor.Type.TextField = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.TextField.prototype);
@@ -1312,7 +1312,7 @@ PropertyEditor.Type.Password.prototype = {
 
         this.value = this.value.replace(/%%%%/g, '');
         
-        return '<input type="password" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
+        return '<input type="password" readonly onfocus="this.removeAttribute(\'readonly\');" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
     },
     renderDefault: function() {
         var html = '';
