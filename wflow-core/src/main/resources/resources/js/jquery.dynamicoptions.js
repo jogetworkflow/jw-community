@@ -6,15 +6,11 @@
                 $('[name='+o.controlField+']').addClass("control-field");
                 
                 var showHideChange = function() {
-                    if (!$(target).is(".section-visibility-disabled")) {
-                        showHideOption(target, o);
-                    }
+                    showHideOption(target, o);
                 };
                 
                 var ajaxChange = function() {
-                    if (!$(target).is(".section-visibility-disabled")) {
-                        ajaxOptions(target, o);
-                    }
+                    ajaxOptions(target, o);
                 };
                 
                 if (o.nonce === '') {
@@ -88,7 +84,9 @@
                         });         
                     }
                 }
-                $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+                if (!$(target).is(".section-visibility-disabled")) {
+                    $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+                }
             }
         );
     }
@@ -129,6 +127,8 @@
                 }
             });
         }
-        $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+        if (!$(target).is(".section-visibility-disabled")) {
+            $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+        }
     }
 })(jQuery);
