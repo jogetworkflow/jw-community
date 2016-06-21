@@ -143,7 +143,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
 
         // handle links
-        DataListAction action = column.getAction();
+        DataListAction action = dataList.getColumnAction(column);
         if (text != null && action != null && action.getHref() != null && action.getHref().trim().length() > 0 && MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
             String href = action.getHref();
             String target = action.getTarget();

@@ -239,10 +239,14 @@ public class DataList {
         if (getBinder() != null) {
             String key = getBinder().getPrimaryKeyColumnName();
             String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+            String queryString = WorkflowUtil.getHttpServletRequest().getQueryString();
+            if (queryString == null) {
+                queryString = "";
+            }
             for (int i = 0; i <  rowActions.length; i++) {
                 DataListAction r = rowActions[i];
                 if (r.getHref() == null || (r.getHref() != null && r.getHref().isEmpty())) {
-                    r.setProperty("href", "?" + getActionParamName() + "=" + r.getPropertyString("id"));
+                    r.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + r.getPropertyString("id")));
                     if (r.getTarget() == null || (r.getTarget() != null && r.getTarget().isEmpty())) {
                         r.setProperty("target", "_self");
                     }
@@ -258,6 +262,31 @@ public class DataList {
         }
         
         return rowActions;
+    }
+    
+    public DataListAction getColumnAction(DataListColumn column) {
+        DataListAction action = column.getAction();
+        if (getBinder() != null && action != null) {
+            String key = getBinder().getPrimaryKeyColumnName();
+            String keyParam = getDataListEncodedParamName(CHECKBOX_PREFIX + key);
+            if (action.getHref() == null || (action.getHref() != null && action.getHref().isEmpty())) {
+                String queryString = WorkflowUtil.getHttpServletRequest().getQueryString();
+                if (queryString == null) {
+                    queryString = "";
+                }
+                action.setProperty("href", "?" + StringUtil.mergeRequestQueryString(queryString, getActionParamName() + "=" + "ca_" + column.getPropertyString("id")));
+                if (action.getTarget() == null || (action.getTarget() != null && action.getTarget().isEmpty())) {
+                    action.setProperty("target", "_self");
+                }
+                if (action.getHrefParam() == null || (action.getHrefParam() != null && action.getHrefParam().isEmpty())) {
+                    action.setProperty("hrefParam", keyParam);
+                }
+                if (action.getHrefColumn() == null || (action.getHrefColumn() != null && action.getHrefColumn().isEmpty())) {
+                    action.setProperty("hrefColumn", key);
+                }
+            }
+        }
+        return action;
     }
 
     public void setRowActions(DataListAction[] rowActions) {
@@ -474,22 +503,38 @@ public class DataList {
         if (actionParamValue != null) {
             String[] selectedKeys = getSelectedKeys();
             // find action
-            for (DataListAction action : getActions()) {
-                String actionId = action.getPropertyString("id");
-                if (actionParamValue.equals(actionId)) {
-                    // invoke action
-                    actionResult = action.executeAction(this, selectedKeys);
-                    break;
+            if (actionParamValue.startsWith("action_")) {
+                for (DataListAction action : getActions()) {
+                    String actionId = action.getPropertyString("id");
+                    if (actionParamValue.equals(actionId)) {
+                        // invoke action
+                        actionResult = action.executeAction(this, selectedKeys);
+                        break;
+                    }
                 }
             }
             
             //look from row action as well
-            for (DataListAction action : getRowActions()) {
-                String actionId = action.getPropertyString("id");
-                if (actionParamValue.equals(actionId)) {
-                    // invoke action
-                    actionResult = action.executeAction(this, selectedKeys);
-                    break;
+            if (actionParamValue.startsWith("rowAction_")) {
+                for (DataListAction action : getRowActions()) {
+                    String actionId = action.getPropertyString("id");
+                    if (actionParamValue.equals(actionId)) {
+                        // invoke action
+                        actionResult = action.executeAction(this, selectedKeys);
+                        break;
+                    }
+                }
+            }
+            
+            //look from column action as well
+            if (actionParamValue.startsWith("ca_column_")) {
+                for (DataListColumn column : columns) {
+                    DataListAction action = column.getAction();
+                    if (action != null && actionParamValue.equals("ca_"+column.getPropertyString("id"))) {
+                        // invoke action
+                        actionResult = action.executeAction(this, selectedKeys);
+                        break;
+                    }
                 }
             }
             
