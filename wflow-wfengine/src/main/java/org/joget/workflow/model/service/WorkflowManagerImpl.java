@@ -2427,7 +2427,19 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             if (wfActivityList.length > 0) {
                 WfActivity wfActivity = wfActivityList[0];
-                wfActivity.set_result(variables);
+                
+                Map varMap = wfActivity.container().process_context();
+                if (varMap != null && !varMap.isEmpty()) {
+                    Map<String, String> temp = new HashMap<String, String>();
+                    for (Object k : varMap.keySet()) {
+                        String name = k.toString();
+                        if (variables.containsKey(name)) {
+                            temp.put(name, variables.get(name));
+                        }
+                    }
+                    
+                    wfActivity.set_result(temp);
+                }
             }
         } catch (Exception ex) {
             LogUtil.warn(getClass().getName(), ex.getMessage());
