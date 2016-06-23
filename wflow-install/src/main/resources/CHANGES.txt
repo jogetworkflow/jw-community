@@ -17,8 +17,6 @@ CHANGES in 4.0.32
 2723	Modified: wflow-consoleweb - Correction on r2721. @4.0-SNAPSHOT
 2722	Modified: wflow-consoleweb - Support -Dresources.expires (Seconds) in JAVA_OPTS to set Expires header of web resources. #4169 @4.0-SNAPSHOT
 2721	Modified: wflow-commons - LogUtil - Added guard condition for log calls. #4170 @4.0-SNAPSHOT
-2718	Fixed: wflow-consoleweb - Form Builder - Copy & paste feature - jQuery converted the first escaped html tag with closing slash in element properties to unwanted result. @5.0-SNAPSHOT
-2713	Modified: wflow-consoleweb - Duplicate feature - from always duplicate the latest version changed to duplicate the published version if a published version is exist . #4151 @5.0-SNAPSHOT
 2686	Modified: wflow-consoleweb - Popup Dialog - Display it as Modal. #4069 @4.0-SNAPSHOT
 2683	Fixed: wflow-core - Link Menu - Page Not Found exception in mobile view when target is self. #4045 @4.0-SNAPSHOT
 2678	Modified: All - Updated scm path from trunk to branch @4.0-SNAPSHOT
