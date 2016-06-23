@@ -5,7 +5,6 @@
     </#list>
     
 <#if visibilityControlParam?? && includeMetaData == false>
-<script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.model.Section/js/section.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
         new VisibilityMonitor($('.section_${element.properties.elementUniqueKey!}'), "${visibilityControlParam!}", "${element.properties.visibilityValue!}", "${element.properties.regex!}").init();

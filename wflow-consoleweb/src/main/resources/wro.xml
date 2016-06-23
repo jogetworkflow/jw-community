@@ -1,0 +1,34 @@
+<groups xmlns="http://www.isdc.ro/wro">
+    <group name="common">
+        <css>/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css</css>
+        <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
+        <css>/js/guiders/guiders-1.1.1.css</css>
+        <css>/js/jquery/jquerycluetip/css/jquery.cluetip.css</css>
+        <js>/js/jquery/jquery-1.9.1.min.js</js>
+        <js>/js/jquery/jquery-migrate-1.2.1.min.js</js>
+        <js>/js/jquery/ui/jquery-ui-1.10.3.min.js</js>
+        <js>/js/jquery/flexigrid/flexigrid.js</js>
+        <js>/js/json/ui.js</js>
+        <js>/js/json/ui_ext.js</js>
+        <js>/js/json/util.js</js>
+        <js>/js/jquery/md5/jquery.md5.js</js>
+        <js>/js/jquery/jquery.cookie.js</js>
+        <js>/js/guiders/guiders-1.1.1.js</js>
+        <js>/js/jquery/jquerycluetip/jquery.hoverIntent.js</js>
+        <js>/js/jquery/jquerycluetip/jquery.cluetip.js</js>
+    </group>
+    <group name="form_common">
+        <css>/js/boxy/stylesheets/boxy.css</css>
+        <css>/css/form.css</css>
+        <js>/js/boxy/javascripts/jquery.boxy.js</js>
+        <js>/js/json/formUtil.js</js>
+        <js>classpath:resources/js/section.js</js>
+    </group>
+    <group name="userview">
+        <css>/css/userview.css</css>
+    </group>
+    <group name="bootstrap_theme_commons">
+        <css>/js/bootstrap/css/bootstrap.min.css</css>
+        <css>/js/font-awesome/css/font-awesome.min.css</css>
+    </group>
+</groups> 
