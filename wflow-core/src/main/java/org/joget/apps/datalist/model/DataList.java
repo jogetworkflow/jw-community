@@ -503,26 +503,21 @@ public class DataList {
         if (actionParamValue != null) {
             String[] selectedKeys = getSelectedKeys();
             // find action
-            if (actionParamValue.startsWith("action_")) {
-                for (DataListAction action : getActions()) {
-                    String actionId = action.getPropertyString("id");
-                    if (actionParamValue.equals(actionId)) {
-                        // invoke action
-                        actionResult = action.executeAction(this, selectedKeys);
-                        break;
-                    }
+            for (DataListAction action : getActions()) {
+                String actionId = action.getPropertyString("id");
+                if (actionParamValue.equals(actionId)) {
+                    // invoke action
+                    actionResult = action.executeAction(this, selectedKeys);
+                    break;
                 }
             }
             
-            //look from row action as well
-            if (actionParamValue.startsWith("rowAction_")) {
-                for (DataListAction action : getRowActions()) {
-                    String actionId = action.getPropertyString("id");
-                    if (actionParamValue.equals(actionId)) {
-                        // invoke action
-                        actionResult = action.executeAction(this, selectedKeys);
-                        break;
-                    }
+            for (DataListAction action : getRowActions()) {
+                String actionId = action.getPropertyString("id");
+                if (actionParamValue.equals(actionId)) {
+                    // invoke action
+                    actionResult = action.executeAction(this, selectedKeys);
+                    break;
                 }
             }
             
