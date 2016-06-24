@@ -102,6 +102,8 @@ var Mobile = {
             // disable ajax form submission
             var parentForm =  uploadFields.parents("form");
             parentForm.attr("data-ajax", "false");
+            parentForm.attr("action", parentForm.attr("action") + "&" + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue);
+            parentForm.prepend('<input name="'+ConnectionManager.tokenName+'" value="'+ConnectionManager.tokenValue+'" type="hidden"/>');
         }
         // disable ajax for file upload links
         $(".form-fileupload-value a").attr("data-ajax", "false");
@@ -224,7 +226,7 @@ $(document).bind("mobileinit", function(){
     $.mobile.autoInitializePage = false;
     $.mobile.touchOverflowEnabled = false;
 });
-$("#userview").on("pageshow", function() {
+$(document).on("pageshow", "div[data-role=page]", function() {
     Mobile.initPage();
     Mobile.checkNetworkStatus();
 });
