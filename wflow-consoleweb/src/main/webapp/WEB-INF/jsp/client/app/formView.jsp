@@ -22,11 +22,9 @@
 
         <c:set var="mobileView" value="<%= MobileUtil.isMobileView() %>"/>
         <c:if test="${!mobileView}">
-            <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
-            <script type="text/javascript" src="${pageContext.request.contextPath}/js/tablesaw/tablesaw.stackonly.js"></script>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/js/tablesaw/tablesaw.stackonly.css" media="screen"/>
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form.css?build=<fmt:message key="build.number"/>" />
-
+            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/form_common.css?build=<fmt:message key="build.number"/>" />
+            <script type="text/javascript" src="${pageContext.request.contextPath}/wro/form_common.js?build=<fmt:message key="build.number"/>"/>
+            
             <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
             </c:if>

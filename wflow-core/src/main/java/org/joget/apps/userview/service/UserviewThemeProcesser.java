@@ -304,24 +304,9 @@ public class UserviewThemeProcesser {
     protected String getJogetHeader() {
         String cp = request.getContextPath();
         String bn = ResourceBundleUtil.getMessage("build.number");
-        String html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\">\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/js/jquery/flexigrid/css/flexigrid/flexigrid.css\">\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/js/guiders/guiders-1.1.1.css\"/>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquery-1.9.1.min.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquery-migrate-1.2.1.min.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/ui/jquery-ui-1.10.3.min.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/flexigrid/flexigrid.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/json/ui.js?build=" + bn + "\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/json/ui_ext.js?build=" + bn + "\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/json/util.js?build=" + bn + "\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/md5/jquery.md5.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquery.cookie.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/guiders/guiders-1.1.1.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquery.blockUI.js\"></script>\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/js/jquery/jquerycluetip/css/jquery.cluetip.css\">\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/css/userview_v5.css\">\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquerycluetip/jquery.hoverIntent.js\"></script>\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/js/jquery/jquerycluetip/jquery.cluetip.js\"></script>\n"
+        String html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/common.css?build=" + bn + "\" />\n"
+                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/userview_v5.min.css?build=" + bn + "\" />\n"
+                + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\"/>\n"
                 + "<script type=\"text/javascript\">\n";
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
@@ -349,7 +334,7 @@ public class UserviewThemeProcesser {
 
         //userview print feature
         html += "function userviewPrint(){\n"
-                + "            $('head').append('<link id=\"userview_print_css\" rel=\"stylesheet\" href=\"" + cp + "/css/userview_print.css\" type=\"text/css\" media=\"print\"/>');\n"
+                + "            $('head').append('<link id=\"userview_print_css\" rel=\"stylesheet\" href=\"" + cp + "/wro/userview_print.min.css\" type=\"text/css\" media=\"print\"/>');\n"
                 + "            setTimeout(\"do_print()\", 1000); \n"
                 + "        }\n"
                 + "        function do_print(){\n"

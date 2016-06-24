@@ -276,22 +276,9 @@ public class MobileUserviewWebController {
                 + "CACHE:\n"
                 + contextPath + "/home/logo.png\n"
                 + contextPath + "/home/style.css\n"
-                + contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.css\n"
-                + contextPath + "/mobile/mobile.css\n"
-                + contextPath + "/js/jquery/jquery-1.9.1.min.js\n"
-                + contextPath + "/js/jquery/jquery-migrate-1.2.1.min.js\n"
-                + contextPath + "/js/jquery/ui/jquery-ui-1.10.3.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.cookie.js\n"
-                + contextPath + "/mobile/mobile.js\n"
-                + contextPath + "/mobile/mobile_util.js\n"
-                + contextPath + "/js/json/ui.js\n"
-                + contextPath + "/js/json/ui_ext.js\n"
-                + contextPath + "/js/json/util.js\n"
-                + contextPath + "/mobile/jqm/images/ajax-loader.gif\n"
-                + contextPath + "/css/form.css\n"
-                + contextPath + "/plugin/org.joget.apps.form.model.Section/js/section.js\n";
+                + contextPath + "/wro/mobile_common.css\n"
+                + contextPath + "/wro/mobile_common.js\n"
+                + contextPath + "/mobile/jqm/images/ajax-loader.gif\n";
 
         UserviewSetting setting = userview.getSetting();
         String backgroundUrl = setting.getPropertyString("mobileViewBackgroundUrl");
@@ -351,23 +338,9 @@ public class MobileUserviewWebController {
             manifest += contextPath + "/web/mobile/apps\n";
         }
         
-        manifest += contextPath + "/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.css\n"
-                + contextPath + "/mobile/mobile.css\n"
-                + contextPath + "/js/jquery/jquery-1.9.1.min.js\n"
-                + contextPath + "/js/jquery/jquery-migrate-1.2.1.min.js\n"
-                + contextPath + "/js/jquery/ui/jquery-ui-1.10.3.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.mobile-1.4.5.min.js\n"
-                + contextPath + "/mobile/jqm/jquery.cookie.js\n"
-                + contextPath + "/mobile/mobile.js\n"
-                + contextPath + "/mobile/mobile_util.js\n"
-                + contextPath + "/js/json/ui.js\n"
-                + contextPath + "/js/json/ui_ext.js\n"
-                + contextPath + "/js/json/util.js\n"
-                + contextPath + "/mobile/jqm/images/ajax-loader.gif\n"
-                + contextPath + "/css/form.css\n"
-                + contextPath + "/plugin/org.joget.apps.form.model.Section/js/section.js\n"
-                + "\n";
+        manifest += contextPath + "/wro/mobile_common.css\n"
+                + contextPath + "/wro/mobile_common.js\n"
+                + contextPath + "/mobile/jqm/images/ajax-loader.gif\n";
         /*
          // cache landing page for each app
          Collection<AppDefinition> resultAppDefinitionList = appService.getPublishedApps(null, true, false);

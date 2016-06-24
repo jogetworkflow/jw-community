@@ -6,25 +6,8 @@
     
     <c:set var="userSecurity" scope="request" value='<%= DirectoryUtil.getUserSecurity() %>'/>
 
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/flexigrid/css/flexigrid/flexigrid.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/guiders/guiders-1.1.1.css"/>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/flexigrid/flexigrid.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui.js?build=<fmt:message key="build.number"/>"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/ui_ext.js?build=<fmt:message key="build.number"/>"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js?build=<fmt:message key="build.number"/>"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/md5/jquery.md5.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.cookie.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/guiders/guiders-1.1.1.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.blockUI.js"></script>
-
-    <!-- jquery clue tip -->
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/jquerycluetip/css/jquery.cluetip.css">
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquerycluetip/jquery.hoverIntent.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquerycluetip/jquery.cluetip.js"></script>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key="build.number"/>" />
+    <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"/>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     

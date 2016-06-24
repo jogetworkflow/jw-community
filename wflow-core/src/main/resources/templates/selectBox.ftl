@@ -25,7 +25,6 @@
     </#if>
 
     <#if (element.properties.controlField?? && element.properties.controlField! != "" && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true')) >
-        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.SelectBox/js/jquery.dynamicoptions.js"></script>
         <script type="text/javascript">
             $(document).ready(function(){
                 $("#${elementParamName!}${element.properties.elementUniqueKey!}").dynamicOptions({

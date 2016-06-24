@@ -197,7 +197,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
         
         <script type="text/javascript">
             function userviewPrint(){
-                $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/css/userview_print.css" type="text/css" media="print"/>');
+                $('head').append('<link id="userview_print_css" rel="stylesheet" href="${pageContext.request.contextPath}/wro/userview_print.min.css" type="text/css" media="print"/>');
                 $('body').addClass("userview_print");
                 setTimeout("do_print()", 1000); 
             }
@@ -214,7 +214,7 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             UI.userview_id = '${userview.properties.id}';
         </script>
 
-        <link href="${pageContext.request.contextPath}/css/userview.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/wro/userview.min.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon_uv.ico"/>
         <style type="text/css">
             ${userview.setting.theme.css}
