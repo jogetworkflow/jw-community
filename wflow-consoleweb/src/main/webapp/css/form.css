@@ -119,6 +119,7 @@
     border: 5px solid #dfdfdf; 
     padding: 3px;
     margin-top:15px;
+    position:relative;
 }
 .subform-container.no-frame{
     border: 0; 
@@ -137,7 +138,7 @@
 .subform-title{
     background: #efefef;
     position:absolute;
-    top:-6px;
+    top:-11px;
 }
 .subform-container.no-frame .subform-title{
     background: transparent;
