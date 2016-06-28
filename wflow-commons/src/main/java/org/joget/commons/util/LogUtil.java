@@ -51,6 +51,26 @@ public class LogUtil {
         }
     }
     
+    public static boolean isInfoEnabled(String className) {
+        Log log = getLog(className);
+        return log.isInfoEnabled();
+    }
+    
+    public static boolean isDebugEnabled(String className) {
+        Log log = getLog(className);
+        return log.isDebugEnabled();
+    }
+    
+    public static boolean isWarnEnabled(String className) {
+        Log log = getLog(className);
+        return log.isWarnEnabled();
+    }
+    
+    public static boolean isErrorEnabled(String className) {
+        Log log = getLog(className);
+        return log.isErrorEnabled();
+    }
+    
     public static Boolean isDeployInTomcat() {
         if (System.getProperty("catalina.base") != null) {
             return true;
