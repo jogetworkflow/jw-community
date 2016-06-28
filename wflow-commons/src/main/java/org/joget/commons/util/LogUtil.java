@@ -76,6 +76,46 @@ public class LogUtil {
     }
     
     /**
+     * Check is the info log is enabled
+     * @param className
+     * @return 
+     */
+    public static boolean isInfoEnabled(String className) {
+        Log log = getLog(className);
+        return log.isInfoEnabled();
+    }
+    
+    /**
+     * Check is the debug log is enabled
+     * @param className
+     * @return 
+     */
+    public static boolean isDebugEnabled(String className) {
+        Log log = getLog(className);
+        return log.isDebugEnabled();
+    }
+    
+    /**
+     * Check is the warn log is enabled
+     * @param className
+     * @return 
+     */
+    public static boolean isWarnEnabled(String className) {
+        Log log = getLog(className);
+        return log.isWarnEnabled();
+    }
+    
+    /**
+     * Check is the error log is enabled
+     * @param className
+     * @return 
+     */
+    public static boolean isErrorEnabled(String className) {
+        Log log = getLog(className);
+        return log.isErrorEnabled();
+    }
+    
+    /**
      * Check is the current installation is deploy in Tomcat server
      * @return 
      */
