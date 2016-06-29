@@ -2,6 +2,40 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.5
+================
+2754	Modified: wflow-commons - LogUtil - Added Guard Condition methods. #4170 @5.0-SNAPSHOT
+2753	Fixed: wflow-consoleweb - Sub Form - Position of Subform Title is incorrect. @5.0-SNAPSHOT
+2752	Fixed: wflow-consoleweb - Property Editor - Non-editable input fields in IE due to r2734 @5.0-SNAPSHOT
+2751	Fixed: wflow-consoleweb - Mobile - Not able to upload file. @5.0-SNAPSHOT
+2750	Modified: wflow-consoleweb - Correction for r2749. @5.0-SNAPSHOT
+2749	Modified: wflow-core/wflow-consoleweb - Userview - Merged and minified some web resources. #4169 @5.0-SNAPSHOT
+2747	Fixed: wflow-consoleweb- Chosen - Not able to show suggestions for Chinese charters in IOS. #4196 @5.0-SNAPSHOT
+2742	Fixed: wflow-core - Datalist - correction for r2736. @5.0-SNAPSHOT
+2739	Fixed: wflow-wfengine - Workflow Manager - Batch update workflow variable fail if one of the updating variable is not exist. #4197 @5.0-SNAPSHOT
+2736	Fixed: wflow-core - Datalist - Column action not working for action plugin that post back to the page itself. @5.0-SNAPSHOT
+        Fixed: wflow-core - Datalist - Column action and row action not working well with query string and embed mode. @5.0-SNAPSHOT
+2735	Fixed: wflow-core - Dynamic Options Field - Options is not updated when it is in a hidden section. #4192 @5.0-SNAPSHOT
+2734	Fixed: wflow-consoleweb - Property Editor - Prevent browser autofill causing miss configuration. #4194 @5.0-SNAPSHOT
+2731	Fixed: wflow-plugin-base - Property Util - JSON processing for sensor sensitive data are not handle correctly. @5.0-SNAPSHOT
+2730	Fixed: wflow-consoleweb - SSO API - JSONP call does not handle correctly. #4191 @5.0-SNAPSHOT
+2729	Fixed: wflow-consoleweb - ConnectionManager - Does not have error handling for jsonp call. #4191 @5.0-SNAPSHOT
+2728	Fixed: wflow-consoleweb - Datalist Builder - Change on r2676 caused hash variable and password not working in binder configuration. @5.0-SNAPSHOT
+2727	Modified: wflow-common - Datasource - Support configure DBCP settings in datasource properties file. #4162 @5.0-SNAPSHOT
+2725	Modified: wflow-enterpriseweb - Support -Dresources.expires (Seconds) in JAVA_OPTS to set Expires header of web resources. #4169 @5.0-SNAPSHOT
+2724	Modified: wflow-commons - LogUtil - Added guard condition for log calls. #4170 @5.0-SNAPSHOT
+2720	Fixed: wflow-consoleweb - Form Builder - Section label is missing in a subform when the parent section is configured to shown no label. #4178 @5.0-SNAPSHOT
+2719	Fixed: wflow-core - Form Builder - unwanted warn message is logged on MissingPlugin class. #4174 @5.0-SNAPSHOT
+2718	Fixed: wflow-consoleweb - Form Builder - Copy & paste feature - jQuery converted the first escaped html tag with closing slash in element properties to unwanted result. @5.0-SNAPSHOT
+2717	Fixed: wflow-wfengine - Process Name - Does not support hash variable. #4172 @5.0-SNAPSHOT
+2716	Fixed: wflow-consoleweb - Run Process - "Link To Run Process" hit Security Violation error. #4163 @5.0-SNAPSHOT
+2715	Fixed: wflow-consoleweb - Update message bundle for no process found message. #4155 @5.0-SNAPSHOT
+2714	Fixed: wflow-consoleweb - Datalist Builder - Javascript error when there is a field id called "length" . #4151 @5.0-SNAPSHOT
+2713	Modified: wflow-consoleweb - Duplicate feature - from always duplicate the latest version changed to duplicate the published version if a published version is exist . #4151 @5.0-SNAPSHOT
+2712	Fixed: wflow-consoleweb - Inconsistent response from JSON API . #4150 @5.0-SNAPSHOT
+2711	Modified: wflow-consoleweb - Update message bundle plugin_zh_CN & plugin_zh_TW. @5.0-SNAPSHOT
+2710	Fixed: wflow-consoleweb/wflow-wfengine - Deadline - Timezone is not retrieve correctly. @5.0-SNAPSHOT
+
 CHANGES IN 5.0.4
 ================
 2705    Modified: wflow-consoleweb - Popup - Make the popup dialog modal not fix position in mobile device. #4086 @5.0-SNAPSHOT
