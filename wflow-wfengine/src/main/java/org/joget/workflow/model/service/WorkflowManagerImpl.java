@@ -1170,6 +1170,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowProcess.setStartedTime(trackWflowProcess.getStartedTime());
                 workflowProcess.setDue(trackWflowProcess.getDue());
 
+                // check for hash variable
+                if (WorkflowUtil.containsHashVariable(workflowProcess.getName())) {
+                    WorkflowAssignment ass = new WorkflowAssignment();
+                    ass.setProcessId(workflowProcess.getInstanceId());
+                    ass.setProcessDefId(workflowProcess.getId());
+                    ass.setProcessName(workflowProcess.getName());
+                    ass.setProcessVersion(workflowProcess.getVersion());
+                    ass.setProcessRequesterId(workflowProcess.getRequesterId());
+                    
+                    workflowProcess.setName(WorkflowUtil.processVariable(workflowProcess.getName(), null, ass));
+                }
+                
                 runningProcessList.add(workflowProcess);
             }
 
@@ -1423,6 +1435,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowProcess.setPackageId(MiscUtilities.getProcessMgrPkgId(manager.name()));
                 workflowProcess.setVersion(manager.version());
                 workflowProcess.setRequesterId(getUserByProcessIdAndActivityDefId(workflowProcess.getId(), workflowProcess.getInstanceId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
+                
+                // check for hash variable
+                if (WorkflowUtil.containsHashVariable(workflowProcess.getName())) {
+                    WorkflowAssignment ass = new WorkflowAssignment();
+                    ass.setProcessId(workflowProcess.getInstanceId());
+                    ass.setProcessDefId(workflowProcess.getId());
+                    ass.setProcessName(workflowProcess.getName());
+                    ass.setProcessVersion(workflowProcess.getVersion());
+                    ass.setProcessRequesterId(workflowProcess.getRequesterId());
+                    
+                    workflowProcess.setName(WorkflowUtil.processVariable(workflowProcess.getName(), null, ass));
+                }
             }
 
 
