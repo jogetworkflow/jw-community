@@ -1,5 +1,7 @@
 package org.joget.apps.datalist.lib;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +26,8 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
+import org.joget.commons.util.DynamicDataSource;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 
 public class FormRowDataListBinder extends DataListBinderDefault {
@@ -116,6 +120,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
     @Override
     public DataListCollection getData(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects, String sort, Boolean desc, Integer start, Integer rows) {
+        alterOracleSession();
         DataListCollection resultList = new DataListCollection();
 
         String formDefId = getPropertyString("formDefId");
@@ -134,6 +139,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
 
     @Override
     public int getDataTotalRowCount(DataList dataList, Map properties, DataListFilterQueryObject[] filterQueryObjects) {
+        alterOracleSession();
         int count = 0;
         
         String formDefId = getPropertyString("formDefId");
@@ -146,6 +152,37 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             count = rowCount.intValue();
         }
         return count;
+    }
+    
+    protected void alterOracleSession() {
+        try {
+            DynamicDataSource ds = (DynamicDataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
+            String driver = ds.getDriverClassName();
+            
+            if (driver.equals("oracle.jdbc.driver.OracleDriver")) {
+                Connection con = null;
+                PreparedStatement pstmt = null;
+                try {
+                    con = ds.getConnection();
+                    pstmt = con.prepareStatement("ALTER SESSION SET NLS_TIMESTAMP_FORMAT = 'YYYY-MM-DD HH:MI:SS.FF'");
+                    pstmt.executeUpdate();
+                } catch (Exception e) {
+                } finally {
+                    try {
+                        if (pstmt != null) {
+                            pstmt.close();
+                        }
+                    } catch(Exception e){}
+                    try {
+                        if (con != null) {
+                            con.close();
+                        }
+                    } catch(Exception e){}
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(FormRowDataListBinder.class.getName(), e, "");
+        }
     }
 
     protected Form getSelectedForm() {
