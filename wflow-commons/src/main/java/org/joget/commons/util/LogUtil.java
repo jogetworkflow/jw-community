@@ -14,40 +14,32 @@ public class LogUtil {
     public static void info(String className, String message) {
         Log log = getLog(className);
         
-        if (log.isInfoEnabled()) {
-            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-            log.info(getHost() + clean);
-        }
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        log.info(getHost() + clean);
     }
 
     public static void debug(String className, String message) {
         Log log = getLog(className);
         
-        if (log.isDebugEnabled()) {
-            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-            LogFactory.getLog(className).debug(getHost() + clean);
-        }
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        log.debug(getHost() + clean);
     }
-
+    
     public static void warn(String className, String message) {
         Log log = getLog(className);
         
-        if (log.isWarnEnabled()) {
-            String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
-            log.warn(getHost() + clean);
-        }
+        String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
+        log.warn(getHost() + clean);
     }
 
     public static void error(String className, Throwable e, String message) {
         Log log = getLog(className);
         
-        if (log.isErrorEnabled()) {
-            if (message != null && message.trim().length() > 0) {
-                String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
-                log.error(getHost() + clean, e);
-            } else {
-                log.error(getHost() + e.toString(), e);
-            }
+        if (message != null && message.trim().length() > 0) {
+            String clean = message.replace( '\n', '_' ).replace( '\r', '_' );
+            log.error(getHost() + clean, e);
+        } else {
+            log.error(getHost() + e.toString(), e);
         }
     }
     
