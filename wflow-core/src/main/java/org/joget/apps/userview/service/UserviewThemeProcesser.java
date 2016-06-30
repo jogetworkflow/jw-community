@@ -306,7 +306,7 @@ public class UserviewThemeProcesser {
         String bn = ResourceBundleUtil.getMessage("build.number");
         String html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/common.css?build=" + bn + "\" />\n"
                 + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/userview_v5.min.css?build=" + bn + "\" />\n"
-                + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\"/>\n"
+                + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\"></script>\n"
                 + "<script type=\"text/javascript\">\n";
 
         UserSecurity us = DirectoryUtil.getUserSecurity();

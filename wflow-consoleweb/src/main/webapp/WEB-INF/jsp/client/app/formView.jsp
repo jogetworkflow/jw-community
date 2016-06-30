@@ -23,7 +23,7 @@
         <c:set var="mobileView" value="<%= MobileUtil.isMobileView() %>"/>
         <c:if test="${!mobileView}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/form_common.css?build=<fmt:message key="build.number"/>" />
-            <script type="text/javascript" src="${pageContext.request.contextPath}/wro/form_common.js?build=<fmt:message key="build.number"/>"/>
+            <script type="text/javascript" src="${pageContext.request.contextPath}/wro/form_common.js?build=<fmt:message key="build.number"/>"></script>
             
             <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
