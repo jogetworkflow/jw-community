@@ -741,6 +741,13 @@ ProcessBuilder.Model.Transition.prototype = {
 
 /* Utility Functions */
 ProcessBuilder.Util = {
+    preventUndefined : function (string) {
+        if (string === undefined) {
+            return '';
+        } else {
+            return string;
+        }
+    },
     escapeXPDL: function(string) {
         var str = string;
         str = str.replace(/\&/g, "&amp;");
@@ -3640,7 +3647,7 @@ ProcessBuilder.Designer = {
         for (var id in participants) {
             var participant = participants[id];
             xml += '<xpdl:Participant Id="' + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
-                    <xpdl:ParticipantType Type="' + participant.type + '"/>\
+                    <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
                     </xpdl:Participant>';
         }
         xml += '</xpdl:Participants>';
@@ -3657,7 +3664,7 @@ ProcessBuilder.Designer = {
             var process = processes[id];
             // add process header
             xml += '<xpdl:WorkflowProcess Id="' + process.id + '" Name="' + ProcessBuilder.Util.encodeXML(process.name) + '">\
-                    <xpdl:ProcessHeader DurationUnit="' + process.durationUnit + '">';
+                    <xpdl:ProcessHeader DurationUnit="' + ProcessBuilder.Util.preventUndefined(process.durationUnit) + '">';
             if (process.limit) {
                 xml += '<xpdl:Limit>' + process.limit + '</xpdl:Limit>';
             }
@@ -3667,7 +3674,7 @@ ProcessBuilder.Designer = {
             xml += '<xpdl:FormalParameters>';
             for (var df=0; df<process.formalParameters.length; df++) {
                 var formalParameter = process.formalParameters[df];
-                xml += '<xpdl:FormalParameter Id="' + formalParameter.parameterId + '" Mode="' + formalParameter.mode + '">\
+                xml += '<xpdl:FormalParameter Id="' + formalParameter.parameterId + '" Mode="' + ProcessBuilder.Util.preventUndefined(formalParameter.mode) + '">\
                             <xpdl:DataType>\
                                 <xpdl:BasicType Type="STRING"/>\
                             </xpdl:DataType>\
@@ -3732,7 +3739,7 @@ ProcessBuilder.Designer = {
                     xml += '<xpdl:Route/>';
                 } else if (activity.type === 'subflow') {
                     var execution = (activity.execution) ? activity.execution : "SYNCHR";
-                    xml += '<xpdl:Implementation><xpdl:SubFlow Execution="' + execution + '" Id="' + activity.subflowId + '">';
+                    xml += '<xpdl:Implementation><xpdl:SubFlow Execution="' + ProcessBuilder.Util.preventUndefined(execution) + '" Id="' + activity.subflowId + '">';
                     xml += '<xpdl:ActualParameters>';
                     for (var p=0; p<activity.actualParameters.length; p++) {
                         var actualParameter = activity.actualParameters[p];
@@ -3749,7 +3756,7 @@ ProcessBuilder.Designer = {
                 if (activity.join || activity.split) {
                     xml += '<xpdl:TransitionRestrictions><xpdl:TransitionRestriction>';
                     if (activity.join) {
-                        xml += '<xpdl:Join Type="' + activity.join + '">';
+                        xml += '<xpdl:Join Type="' + ProcessBuilder.Util.preventUndefined(activity.join) + '">';
                         if (activity.joinTransitions.length > 0) {
                             xml += '<xpdl:TransitionRefs>';
                             for (var j=0; j<activity.joinTransitions.length; j++) {
@@ -3761,7 +3768,7 @@ ProcessBuilder.Designer = {
                         xml += '</xpdl:Join>';
                     }
                     if (activity.split) {
-                        xml += '<xpdl:Split Type="' + activity.split + '">';
+                        xml += '<xpdl:Split Type="' + ProcessBuilder.Util.preventUndefined(activity.split) + '">';
                         if (activity.splitTransitions.length > 0) {
                             xml += '<xpdl:TransitionRefs>';
                             for (var j=0; j<activity.splitTransitions.length; j++) {
