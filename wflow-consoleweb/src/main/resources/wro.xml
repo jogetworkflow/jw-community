@@ -63,6 +63,7 @@
     </group>
     <group name="bootstrap_theme_commons">
         <css>/js/bootstrap/css/bootstrap.min.css</css>
+        <css>/js/bootstrap/css/bootstrap-responsive.min.css</css>
         <css>/js/font-awesome/css/font-awesome.min.css</css>
     </group>
     <group name="bootstrap_responsive_commons">
