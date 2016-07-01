@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.apache.commons.beanutils.BeanUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -25,7 +27,6 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
-import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.LogUtil;
 
 public class FormRowDataListBinder extends DataListBinderDefault {
@@ -150,8 +151,8 @@ public class FormRowDataListBinder extends DataListBinderDefault {
     
     protected void alterOracleSession() {
         try {
-            DynamicDataSource ds = (DynamicDataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
-            String driver = ds.getDriverClassName();
+            DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
+            String driver = BeanUtils.getProperty(ds, "driverClassName");
             
             if (driver.equals("oracle.jdbc.driver.OracleDriver")) {
                 Connection con = null;
