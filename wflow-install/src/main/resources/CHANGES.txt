@@ -4,6 +4,7 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 5.0.6
 ================
+2786	Fixed: wflow-consoleweb - Form Builder - Date picker and dynamic options throwing JavaScript errors #4222 @5.0-SNAPSHOT
 2773	Fixed: wflow-core - FormRowDatalistBinder - Date filter not working in Oracle. #4213 @5.0-SNAPSHOT
 2772	Fixed: wflow-consoleweb/wflow-core - Correction on r2749. #4217 @5.0-SNAPSHOT
 2771	Fixed: wflow-consoleweb - Process Builder - Not able to deploy processes created by Workflow Designer due to undefined values. #4214 @5.0-SNAPSHOT
