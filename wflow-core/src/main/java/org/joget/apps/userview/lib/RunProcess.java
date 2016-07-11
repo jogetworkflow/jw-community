@@ -264,6 +264,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 Form startForm = startFormDef.getForm();
+                
+                changeButtonLabel(startForm, formData);
 
                 // generate form HTML
                 String formHtml = formService.retrieveFormHtml(startForm, formData);
@@ -335,6 +337,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 startForm = startFormDef.getForm();
                 if (result == null) {
+                    changeButtonLabel(startForm, formData);
+                    
                     // generate form HTML
                     String formHtml = formService.retrieveFormErrorHtml(startForm, formData);
                     AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
@@ -590,5 +594,13 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     @Override
     public String getCategory() {
         return UserviewBuilderPalette.CATEGORY_GENERAL;
+    }
+    
+    protected void changeButtonLabel(Form startForm, FormData formData){
+        String label = getPropertyString("runProcessSubmitLabel");
+        if (label != null && !label.isEmpty()) {
+            Element button = FormUtil.findButton(AssignmentCompleteButton.DEFAULT_ID, startForm, formData);
+            button.setProperty(FormUtil.PROPERTY_LABEL, label);
+        }
     }
 }
