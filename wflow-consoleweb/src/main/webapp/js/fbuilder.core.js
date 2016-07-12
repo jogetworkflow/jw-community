@@ -8,6 +8,9 @@ FormBuilder = {
     formPreviewUrl: "/web/fbuilder/form/preview/",
     tinymceUrl: "/js/tiny_mce/tiny_mce.js",
     originalJson: "",
+    appId: "",
+    appVersion: "",
+    formId: "",
     
     //undo & redo feature
     tempJson : '',
@@ -33,13 +36,15 @@ FormBuilder = {
         FormBuilder.initPalette();
 
         // initialize canvas
+        FormBuilder.formId = id;
         FormBuilder.initCanvas(id);
         
         FormBuilder.initUndoRedo();
 
-        var formJson = FormBuilder.generateJSON();
+        var formJson = FormBuilder.generateJSON(true);
         
         FormBuilder.originalJson = formJson;
+        $("#form-json-original").val(FormBuilder.originalJson);
     },
 
     initPalette: function() {
@@ -82,7 +87,7 @@ FormBuilder = {
             connectWith: ".form-container",
             items: ".form-section",
             stop: function() {
-                FormBuilder.generateJSON();
+                FormBuilder.generateJSON(true);
             },
             tolerance: "pointer",
             revertDuration: 100,
@@ -203,7 +208,7 @@ FormBuilder = {
                 FormBuilder.initSectionsAndColumns();
                     
                 FormBuilder.addToUndo(FormBuilder.tempJson);
-                FormBuilder.generateJSON();
+                FormBuilder.generateJSON(true);
                 
                 $(".form-section").append("<div class='form-clear bottom'></div>");
             },
@@ -221,7 +226,7 @@ FormBuilder = {
             },
             stop: function() {
                 FormBuilder.addToUndo(FormBuilder.tempJson);
-                FormBuilder.generateJSON();
+                FormBuilder.generateJSON(true);
             },
             tolerance: "pointer",
             revertDuration: 100,
@@ -292,7 +297,7 @@ FormBuilder = {
             FormBuilder.decorateElementOptions(obj);
         });
 
-        FormBuilder.generateJSON();
+        FormBuilder.generateJSON(true);
     },
 
     initColumnSizes: function() {
@@ -645,7 +650,7 @@ FormBuilder = {
             dom.properties = properties;
         }
 
-        FormBuilder.generateJSON();
+        FormBuilder.generateJSON(true);
     },
 
     refreshElementTemplate: function(element) {
@@ -669,7 +674,7 @@ FormBuilder = {
         FormBuilder.decorateElementOptions(element);
     },
 
-    retrieveElementHTML: function(element, dom, elementClass, elementProperty) {
+    retrieveElementHTML: function(element, dom, elementClass, elementProperty, callback) {
 
         // temp hard-coded to handle sections
         if (elementClass == 'org.joget.apps.form.model.Section') {
@@ -720,6 +725,10 @@ FormBuilder = {
                     if ($(element).is("form")) {
                         FormBuilder.initCanvas($(element).attr("id"));
                         $("#loading").remove();
+                    }
+                    
+                    if (callback !== undefined && $.type(callback) === "function") {
+                        callback();
                     }
                 }
             });
@@ -804,7 +813,7 @@ FormBuilder = {
         return false;
     },
 
-    generateJSON: function() {
+    generateJSON: function(triggerChange) {
         var form = new Object();
         form.className = "org.joget.apps.form.model.Form";
 
@@ -855,9 +864,13 @@ FormBuilder = {
         var json = JSON.encode(form);
 
         // set output
-        $("#form-json").text("");
-        $("#form-json").text(json);
+        $("#form-json").val("");
+        $("#form-json").val(json);
         
+        if (triggerChange) {
+            $("#form-json").trigger("change");
+        }
+
         return json;
     },
 
@@ -1118,7 +1131,9 @@ FormBuilder = {
     
     loadJson : function(json){
         $(".form-container-div").html("<form></form>");
-        FormBuilder.retrieveElementHTML($(".form-container-div form"), json);
+        FormBuilder.retrieveElementHTML($(".form-container-div form"), json, null, null, function() {
+           FormBuilder.generateJSON(true); 
+        });
     },
     
     showMessage: function(message) {
@@ -1128,5 +1143,91 @@ FormBuilder = {
         } else {
             $("#builder-message").fadeOut();
         }
-    }
+    },
+    
+    updateForm: function() {
+        var json = $('#form-json').val();
+        if (FormBuilder.generateJSON() !== json) {
+            FormBuilder.addToUndo();
+        }
+        FormBuilder.loadJson(JSON.decode(json));
+        
+        return false;
+    },
+    
+    saveForm: function (data) {
+        var json = (data) ? data : FormBuilder.generateJSON();
+        var saveUrl = FormBuilder.contextPath + "/web/console/app/" + FormBuilder.appId + "/" + FormBuilder.appVersion + "/form/" + FormBuilder.formId + "/update";
+        $.ajax({
+            type: "POST",
+            data: {"json": json},
+            url: saveUrl,
+            dataType: "text",
+            beforeSend: function (request) {
+                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+            },
+            success: function (response) {
+                FormBuilder.showMessage(get_fbuilder_msg('fbuilder.saved'));
+                setTimeout(function () {
+                    FormBuilder.originalJson = FormBuilder.generateJSON(true);
+                    $('#form-json-original').val(json);
+                    FormBuilder.showMessage("");
+                }, 2000);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(get_fbuilder_msg('fbuilder.errorSaving') + " (" + textStatus + "): " + errorThrown);
+            }
+        });
+    },
+    
+    showDiff : function (callback, output) {
+        var jsonUrl = FormBuilder.contextPath + '/web/json/console/app/' + FormBuilder.appId + '/' + FormBuilder.appVersion + '/form/' + FormBuilder.formId + '/json';
+        var thisObject = this;
+        var merged;
+        var currentSaved;
+        $.ajax({
+            type: "GET",
+            url: jsonUrl,
+            dataType: 'json',
+            success: function (data) {
+                var current = data;
+                var currentString = JSON.stringify(data);
+                currentSaved = currentString;
+                $('#form-json-current').val(currentString);
+                var original = JSON.decode($('#form-json-original').val());
+                var latest = JSON.decode($('#form-json').val());
+                merged = DiffMerge.merge(original, current, latest, output);
+            },
+            complete: function() {
+                if (callback) {
+                    callback.call(thisObject, currentSaved, merged);
+                }
+            }
+        });
+    },
+            
+    merge: function (callback) {
+        // get current remote definition
+        FormBuilder.showMessage(get_fbuilder_msg('fbuilder.merging'));
+        var thisObject = this;
+        
+        FormBuilder.showDiff(function (currentSaved, merged) {
+            if (currentSaved !== undefined && currentSaved !== "") {
+                $('#form-json-original').val(currentSaved);
+            }
+            if (merged !== undefined && merged !== "") {
+                $('#form-json').val(merged);
+            }
+            FormBuilder.updateForm();
+            FormBuilder.showMessage("");
+            
+            if (callback) {
+                callback.call(thisObject, merged);
+            }
+        });
+    },
+    
+    mergeAndSave: function() {
+        FormBuilder.merge(FormBuilder.saveForm);
+    }    
 }

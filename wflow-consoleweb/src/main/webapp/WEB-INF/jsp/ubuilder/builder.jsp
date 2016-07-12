@@ -21,6 +21,10 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>  
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/diff_match_patch_uncompressed.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
@@ -36,6 +40,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link href="${pageContext.request.contextPath}/css/ubuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatchhtml.css" />
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
@@ -51,6 +56,7 @@
                 UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builderPreview/';
                 UserviewBuilder.contextPath = '${pageContext.request.contextPath}';
                 UserviewBuilder.appId = '${appId}';
+                UserviewBuilder.appVersion = '${appVersion}';
                 UserviewBuilder.userviewUrl = '${pageContext.request.contextPath}/web/userview/${appId}/${userviewId}/';
 
                 UserviewBuilder.initSettingPropertyOptions(${setting.propertyOptions});
@@ -71,15 +77,6 @@
                 UserviewBuilder.loadUserview('${userviewId}', ${json});
                 UserviewBuilder.initBuilder();
 
-                // add toggle json link
-                $("#userview-json-link").click(function() {
-                    if ($("#userview-info").css("display") != "block") {
-                        $("#userview-info").css("display", "block");
-                    } else {
-                        $("#userview-info").css("display", "none");
-                    }
-                });
-                
                 <c:if test="${!empty param.menuId}">
                     UserviewBuilder.editMenu('${param.menuId}');
                 </c:if>
@@ -106,7 +103,7 @@
                         <li id="step-design" class="first-active active"><a href="#step-design-container"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.designUserview"/></span><span class="subtitle"><fmt:message key="ubuilder.designUserview.description"/></span></span></a></li>
                         <li id="step-setting"><a href="#step-setting-container"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.setting"/></span><span class="subtitle"><fmt:message key="ubuilder.setting.description"/></span></span></a></li>
                         <li id="step-preview"><a onclick="UserviewBuilder.preview();" title="<fmt:message key="ubuilder.preview.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.preview"/></span><span class="subtitle"><fmt:message key="ubuilder.preview.description"/></span></span></a></li>
-                        <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.save();" title="<fmt:message key="ubuilder.save.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
+                        <li id="step-save" class="last-inactive save-disabled"><a onclick="UserviewBuilder.mergeAndSave();" title="<fmt:message key="ubuilder.save.tip"/>"><span class="steps-bg"><span class="title"><fmt:message key="ubuilder.save"/></span><span class="subtitle"><fmt:message key="ubuilder.save.description"/></span></span></a></li>
                     </ul>
                     <div id="builder-bg"></div>
                 </div>
@@ -172,10 +169,11 @@
                         <div id="propertyEditor" class="menu-wizard-container" style="display:none;"></div>
                     
                         <div id="userview-advanced">
-                            <a href="#" id="userview-json-link" style="font-size: smaller" onclick="return false"><fmt:message key="console.builder.advanced"/></a>
                             <div id="userview-info" style="display: none">
                                 <form id="userview-preview" action="?" target="_blank" method="post">
                                     <textarea id="userview-json" name="json" cols="80" rows="10" style="font-size: smaller"><c:out value="${json}"/></textarea>
+                                    <textarea id="userview-json-original" name="json-original" cols="80" rows="10" style="display:none;"><c:out value="${json}"/></textarea>
+                                    <textarea id="userview-json-current" name="json-current" cols="80" rows="10" style="display:none;"><c:out value="${json}"/></textarea>
                                 </form>
                                 <button onclick="UserviewBuilder.updateFromJson()"><fmt:message key="console.builder.update"/></button>
                             </div>
@@ -199,6 +197,13 @@
             HelpGuide.show();
         </script>
             
+        <jsp:include page="/WEB-INF/jsp/console/apps/builder.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appDefinition.version}"/>
+            <jsp:param name="elementId" value="${userviewId}"/>
+            <jsp:param name="jsonForm" value="#userview-info"/>
+            <jsp:param name="builder" value="userview"/>
+        </jsp:include>    
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
             <jsp:param name="appVersion" value="${appVersion}"/>

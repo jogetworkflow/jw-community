@@ -2752,6 +2752,42 @@ public class ConsoleWebController {
         }
     }
     
+    @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
+    public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
+        try {
+            AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+            JSONArray array = new JSONArray(data);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = (JSONObject) array.get(i);
+                String id = obj.getString("id");
+                String key = obj.getString("key");
+                String value = obj.getString("value");
+
+                // check exist
+                Message m = messageDao.loadById(id, appDef);
+                if (m != null) {
+                    if (value == null || (value != null && value.isEmpty())) {
+                        messageDao.delete(id, appDef);
+                    } else {
+                        m.setMessage(value);
+                        messageDao.update(m);
+                    }
+                } else if (value != null && !value.isEmpty()) {
+                    m = new Message();
+                    m.setAppDefinition(appDef);
+                    m.setId(id);
+                    m.setLocale(locale);
+                    m.setMessageKey(key);
+                    m.setMessage(value);
+                    messageDao.add(m);
+                }
+            }
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());
+        }
+    }
+    
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/message/list")
     public void consoleMessageListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "locale", required = false) String locale, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -4627,4 +4663,59 @@ public class ConsoleWebController {
         return "desktop/marketplaceApp";
     }
     
+    @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/json"})
+    public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
+        if (userview == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String userviewJson = userview.getJson();
+        writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
+    }
+
+    @RequestMapping({"/json/console/app/(*:appId)/(~:version)/form/(*:formId)/json"})
+    public void getFormJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+        if (formDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String formJson = formDef.getJson();
+        writer.write(PropertyUtil.propertiesJsonLoadProcessing(formJson));
+    }
+
+    @RequestMapping({"/json/console/app/(*:appId)/(~:version)/datalist/(*:datalistId)/json"})
+    public void getDatalistJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "datalistId") String datalistId) throws IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        DatalistDefinition datalistDef = datalistDefinitionDao.loadById(datalistId, appDef);
+        if (datalistDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        String datalistJson = datalistDef.getJson();
+        writer.write(PropertyUtil.propertiesJsonLoadProcessing(datalistJson));
+    }
+
+    @RequestMapping("/json/console/locales")
+    public void consoleJsonLocaleList(Writer writer) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("data", getSortedLocalList());
+
+        jsonObject.write(writer);
+    }
 }

@@ -1,0 +1,28 @@
+.dt-loading {color:#777; display: inline-block; margin-left: 5px;}
+#dependencyTreeViewer {background: #fff; overflow:visible !important; height: auto !important; max-height: auto !important;}
+.dt-buttons {text-align: right;}
+.dt-buttons a {display: inline-block;}
+.jstree-anchor > label > span > i {color: gray;font-size: 10px;}
+.jstree-icon {color: darkseagreen;}
+.indicators {display:inline-block; margin-left: 10px;}
+.indicator{display: inline;position: relative;color:green;}
+.indicator:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    top: 20px;
+    color: #fff;
+    content: attr(title);
+    left: 20%;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    min-width: 50px;
+    max-width: 500px;
+    width: auto;
+    word-wrap: break-word;
+}
+.indicator-red {color: red;}
+.indicator-lightgreen {color: darkseagreen;}
+span.gray {color:gray;}
+#dependencyTreeExport .fa-stack-1x:before { margin-left: 5px; }

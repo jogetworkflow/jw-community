@@ -5,6 +5,7 @@ UserviewBuilder = {
     previewUrl : '',
     contextPath : '/jw',
     appId: '',
+    appVersion: '',
     userviewUrl: '',
     
     //undo & redo feature
@@ -93,7 +94,7 @@ UserviewBuilder = {
             }
             if ($(".property-editor-container:visible").length === 0) {
                 if(e.which == 83 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+S - save
-                    UserviewBuilder.save();
+                    UserviewBuilder.mergeAndSave();
                     return false;
                 }
                 if(e.which == 90 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+Z - undo
@@ -502,11 +503,15 @@ UserviewBuilder = {
     save : function(){
         UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saving'));
         var self = this;
-        $.post(this.saveUrl + this.data.properties.id, {json : this.getJson()} , function(data) {
+        var json = this.getJson();
+        $.post(this.saveUrl + this.data.properties.id, {json : json} , function(data) {
             var d = JSON.decode(data);
             if(d.success == true){
                 UserviewBuilder.updateSaveStatus("0");
-                UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot");
+                UserviewBuilder.screenCapture(self.appId, self.data.properties.id, self.data.properties.name, self.userviewUrl, "#builder-screenshot", 300, function() {
+                    $('#userview-json-original').val(json);
+                    UserviewBuilder.showMessage("");
+                });
             }else{
                 alert(get_ubuilder_msg('ubuilder.saveFailed'));
             }
@@ -523,10 +528,12 @@ UserviewBuilder = {
     },
 
     updateFromJson: function() {
-        var form = $('#userview-preview');
-        form.attr("action", "?");
-        form.attr("target", "");
-        $('#userview-preview').submit();
+        var json = $('#userview-json').val();
+        if (UserviewBuilder.getJson() !== json) {
+            UserviewBuilder.addToUndo();
+        }
+        UserviewBuilder.loadUserview(UserviewBuilder.data.properties.id, UserviewBuilder.getData(json));
+        
         return false;
     },
 
@@ -851,7 +858,7 @@ UserviewBuilder = {
 
     adjustJson: function() {
         // update JSON
-        $('#userview-json').val(this.getJson());
+        $('#userview-json').val(this.getJson()).trigger("change");
     },
 
     //track the save status
@@ -891,12 +898,13 @@ UserviewBuilder = {
         }
     },
             
-    screenCapture: function(appId, userviewId, title, path, container, width) {
+    screenCapture: function(appId, userviewId, title, path, container, width, callback) {
         container = container || document.body;
         width = width || 300;
         UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.generatingScreenshot'));
         var appcontainer = $("<div><i class='fa fa-spinner fa-spin fa-2x'></i><div style='opacity:0'></div></div>");
         $(container).append(appcontainer);
+        var thisObject = this;
         $.ajax({
             url: path + "?_isScreenCapture=true",
             success: function(data) {
@@ -948,6 +956,9 @@ UserviewBuilder = {
                 setTimeout(function(){ 
                     UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.saved'));
                     setTimeout(function(){ UserviewBuilder.showMessage(""); }, 2000);
+                    if (callback) {
+                        callback.apply(thisObject);
+                    }
                 }, 500);
             }
         })
@@ -1010,5 +1021,56 @@ UserviewBuilder = {
                 $(".element-paste.paste-category").removeClass("disabled");
             }
         }
-    }    
+    },
+    
+    showDiff : function (callback, output) {
+        var jsonUrl = UserviewBuilder.contextPath + '/web/json/console/app/' + UserviewBuilder.appId + '/' + UserviewBuilder.appVersion + '/userview/' + this.data.properties.id + '/json';
+        var thisObject = this;
+        var merged;
+        var currentSaved;
+        $.ajax({
+            type: "GET",
+            url: jsonUrl,
+            dataType: 'json',
+            success: function (data) {
+                var current = data;
+                var currentString = JSON.stringify(data);
+                currentSaved = currentString;
+                $('#userview-json-current').val(currentString);
+                var original = JSON.decode($('#userview-json-original').val());
+                var latest = JSON.decode($('#userview-json').val());
+                merged = DiffMerge.merge(original, current, latest, output);
+            },
+            complete: function() {
+                if (callback) {
+                    callback.call(thisObject, currentSaved, merged);
+                }    
+            }
+        });
+    },
+            
+    merge: function (callback) {
+        // get current remote definition
+        UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.merging'));
+        var thisObject = this;
+        
+        UserviewBuilder.showDiff(function (currentSaved, merged) {
+            if (currentSaved !== undefined && currentSaved !== "") {
+                $('#userview-json-original').val(currentSaved);
+            }
+            if (merged !== undefined && merged !== "") {
+                $('#userview-json').val(merged);
+            }
+            UserviewBuilder.updateFromJson();
+            UserviewBuilder.showMessage("");
+            
+            if (callback) {
+                callback.call(thisObject, merged);
+            }
+        });
+    },
+    
+    mergeAndSave: function() {
+        UserviewBuilder.merge(UserviewBuilder.save);
+    }  
 }

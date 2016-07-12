@@ -19,6 +19,10 @@
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>  
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/diff_match_patch_uncompressed.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
@@ -32,6 +36,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/fbuilder.css?build=<fmt:message key="build.number"/>" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatchhtml.css" />
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
@@ -45,45 +50,14 @@
                 // get form row id
                 var primaryKey = $("#form-row-id").attr("value");
                 if (!primaryKey || primaryKey.length == 0) {
-                    primaryKey = "${primaryKey}";
+                    primaryKey = "<c:out value="${primaryKey}"/>";
                 }
 
                 var form = $('#form-preview');
-                form.attr("action", "${pageContext.request.contextPath}/web/fbuilder/form/view/${formId}/" + primaryKey);
+                form.attr("action", "${pageContext.request.contextPath}/web/fbuilder/form/view/<c:out value="${formId}"/>/" + primaryKey);
                 $('#form-preview').submit();
                 return false;
             };
-
-            var updateForm = function() {
-                var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
-                var form = $('#form-preview');
-                form.attr("action", "?" + securityToken);
-                form.attr("target", "");
-                $('#form-preview').submit();
-                return false;
-            };
-
-            var saveForm = function() {
-                var json = FormBuilder.generateJSON();
-                var saveUrl = "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/${formId}/update";
-                $.ajax({
-                    type: "POST",
-                    data: {"json": json },
-                    url: saveUrl,
-                    dataType : "text",
-                    beforeSend: function (request) {
-                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                    },
-                    success: function(response) {
-                        FormBuilder.originalJson = FormBuilder.generateJSON();
-                        FormBuilder.showMessage("<fmt:message key="fbuilder.saved"/>");
-                        setTimeout(function(){ FormBuilder.showMessage(""); }, 2000);
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert("<fmt:message key="fbuilder.errorSaving"/> (" + textStatus + "): " + errorThrown);
-                    }
-                });
-            }
 
             window.onbeforeunload = function() {
                 if(!FormBuilder.isSaved()){
@@ -92,19 +66,12 @@
             };
 
             $(document).ready(function() {
-                // add toggle json link
-                $("#form-json-link").click(function() {
-                    if ($("#form-info").css("display") != "block") {
-                        $("#form-info").css("display", "block");
-                    } else {
-                        $("#form-info").css("display", "none");
-                    }
-                });
-
                 // initialize the form
+                FormBuilder.appId = '<c:out value="${appId}"/>';
+                FormBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
                 FormBuilder.contextPath = '${pageContext.request.contextPath}';
-                FormBuilder.formPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/preview/';
-                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/element/preview';
+                FormBuilder.formPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/<c:out value="${appDefinition.version}"/>/form/<c:out value="${formId}"/>/preview/';
+                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/<c:out value="${appDefinition.version}"/>/form/<c:out value="${formId}"/>/element/preview';
                 FormBuilder.init("${formId}");
 
                 <c:if test="${empty elementHtml}">
@@ -145,7 +112,7 @@
                         <li id="builder-step-design" class="first-active active" onclick="FormBuilder.showBuilder()"><a href="#"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.designForm"/> </span><span class="subtitle"><fmt:message key="fbuilder.designForm.description"/></span></span></a></li>
                         <li id="builder-step-properties"><a href="#" onclick="FormBuilder.showFormProperties()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.properties"/> </span><span class="subtitle"><fmt:message key="fbuilder.properties.description"/></span></span></a></li>
                         <li id="builder-step-properties"><a href="#" onclick="FormBuilder.previewForm()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.preview"/> </span><span class="subtitle"><fmt:message key="fbuilder.preview.description"/></span></span></a></li>
-                        <li class="last-inactive"><a href="#" onclick="saveForm()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.save"/> </span><span class="subtitle"><fmt:message key="fbuilder.save.description"/></span></span></a></li>
+                        <li class="last-inactive"><a href="#" onclick="FormBuilder.mergeAndSave()"><span class="steps-bg"><span class="title"><fmt:message key="fbuilder.save"/> </span><span class="subtitle"><fmt:message key="fbuilder.save.description"/></span></span></a></li>
                         <jsp:include page="extend.jsp" flush="true" />
                     </ul>
                     <div id="builder-bg"></div>
@@ -191,12 +158,13 @@
                                     </div>
 
                                     <p>&nbsp;</p>
-                                    <a href="#" id="form-json-link" style="font-size: smaller" onclick="return false"><fmt:message key="console.builder.advanced"/></a>
                                     <div id="form-info" style="display: none">
                                         <form id="form-preview" target="_blank" action="" method="post">
                                             <textarea id="form-json" name="json" cols="80" rows="10" style="font-size: smaller"></textarea>
+                                            <textarea id="form-json-original" name="json-original" cols="80" rows="10" style="display:none;"></textarea>
+                                            <textarea id="form-json-current" name="json-current" cols="80" rows="10" style="display:none;"></textarea>
                                         </form>
-                                        <button onclick="updateForm()"><fmt:message key="console.builder.update"/></button>
+                                        <button onclick="FormBuilder.updateForm()"><fmt:message key="console.builder.update"/></button>    
                                     </div>
                                 </fieldset>
                             </td>
@@ -229,6 +197,13 @@
             HelpGuide.show();
         </script>
             
+        <jsp:include page="/WEB-INF/jsp/console/apps/builder.jsp" flush="true">
+            <jsp:param name="appId" value="${appId}"/>
+            <jsp:param name="appVersion" value="${appDefinition.version}"/>
+            <jsp:param name="elementId" value="${formId}"/>
+            <jsp:param name="jsonForm" value="#form-info"/>
+            <jsp:param name="builder" value="form"/>
+        </jsp:include>
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
             <jsp:param name="appVersion" value="${appDefinition.version}"/>

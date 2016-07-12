@@ -73,11 +73,11 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 LocaleContextHolder.setLocaleContext(localeContext, true);
             }
             
-            // clear current app in thread
-            AppUtil.resetAppDefinition();
-            
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
+            
+            // init request
+            AppUtil.initRequest();
             
             requiresAuthentication = requiresAuthentication(request, response);
 
@@ -101,6 +101,9 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             if (us != null) {
                 us.requestPostProcessing();
             }
+            
+            // clear request
+            AppUtil.clearRequest();
             
             // clear current user
             workflowUserManager.clearCurrentThreadUser();

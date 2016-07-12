@@ -1,0 +1,123 @@
+var Usages = {
+    dialog: undefined,
+    getUsages : function (id, type, options, callback) {
+        $.ajax({
+            url: options.contextPath + '/web/json/dependency/app/'+options.appId+'/'+options.appVersion+'/check',
+            data: {
+                keyword : id,
+                type: type
+            },
+            dataType : "json",
+            success: callback
+        });
+    },
+    renderUsage : function(container, response, id, type, options) {
+        if (response.size > 0) {
+            var cat = "";
+            var catContainer;
+            for (var i in response.usages) {
+                var item = response.usages[i];
+                if (cat !== item.category) {
+                    cat = item.category;
+                    var c = $('<li class="usage_category"><h3>'+cat+'</h3><ul class="items"></ul></li>');
+                    container.append(c);
+
+                    catContainer = $(c).find(".items");
+                }
+
+                var el = $('<li class="item" data-where="'+item.where+'"></li>');
+                catContainer.append(el);
+                if (item.link !== undefined) {
+                    $(el).append('<a class="item_link" target="_blank" href="'+item.link+'">'+item.label+'</a>');
+                    if (item.type.indexOf("process") !== -1 || item.type.indexOf("plugin") !== -1) {
+                        $(el).find("a.item_link").addClass("overlay");
+                    }
+                } else {
+                    $(el).append('<a>'+item.label+'</a>');
+                }
+
+                if (item.found !== undefined && item.found.length > 0) {
+                    el.append('<a class="found_toggle"><i class="icon-angle-down fa fa-angle-down"></i></a>');
+                    var foundContainer = $('<ul class="usage_found" style="display:none"></ul>');
+                    el.append(foundContainer);
+
+                    for (var j in item.found) {
+                        foundContainer.append("<li><pre>"+UI.escapeHTML(item.found[j])+"</pre></li>");
+                    }
+                }
+            }
+
+            Usages.highlight(container, id);
+            $(container).find("a.overlay").on("click", function() {
+                AdminBar.showQuickOverlay($(this).attr("href"));
+                return false;
+            });
+            $(container).find(".found_toggle").on("click", function() {
+                var toggle = $(this);
+                var container = $(this).next(".usage_found");
+                if (container.is(":hidden")) {
+                    container.show();
+                    toggle.find("i").removeClass("icon-angle-down").removeClass("fa-angle-down").addClass("icon-angle-up").addClass("fa-angle-up");
+                } else {
+                    container.hide();
+                    toggle.find("i").removeClass("icon-angle-up").removeClass("fa-angle-up").addClass("icon-angle-down").addClass("fa-angle-down");
+                }
+            });
+        } else {
+            var c = $('<li class="no_usage"><h3>'+response.usages+'</h3></li>');
+            container.append(c);
+        }
+    },
+    delete: function (id, type, options, deleteCallback) {
+        Usages.getUsages(id, type, options, function(response) {
+            if (response.size > 0) {
+                if (Usages.dialog === undefined) {
+                    Usages.dialog = new Boxy('<div id="delete_usage_check"></div>', {
+                        title:"",
+                        closeable:true,
+                        draggable:false,
+                        show:false,
+                        fixed: true, 
+                        modal:true
+                    });
+                } else {
+                    $("#delete_usage_check").html("");
+                }
+                
+                $("#delete_usage_check").append('<h2>'+options.confirmMessage+' <a class="button confirm">'+options.confirmLabel+'</a><a class="button close">'+options.cancelLabel+'</a></h2><div id="usages"><ul class="item_usages_container"></ul></div></div>');
+                
+                $("#delete_usage_check a.confirm").on("click", function(){
+                    Usages.dialog.hide();
+                    deleteCallback();
+                });
+                $("#delete_usage_check a.close").on("click", function(){
+                    Usages.dialog.hide();
+                });
+                
+                Usages.renderUsage($("#delete_usage_check .item_usages_container"), response, id, type, options);
+                Usages.dialog.show();
+                UI.adjustPopUpDialog(Usages.dialog);
+                
+            } else {
+                deleteCallback();
+            }
+        });
+    },
+    render: function (element, id, type, options) {
+        $(element).append('<ul class="item_usages_container"></ul>');
+        var container = $(element).find(".item_usages_container");
+        
+        Usages.getUsages(id, type, options, function(response) {
+            Usages.renderUsage(container, response, id, type, options);
+        });
+    },
+    highlight : function (element, str) {
+        var regex = new RegExp(str, "gi");
+
+        $(element).find(".usage_found").each(function () {
+            this.innerHTML = this.innerHTML.replace(regex, function(matched) {
+                return "<span class=\"keyword_highlight\">" + matched + "</span>";
+            });
+        });
+    }
+};

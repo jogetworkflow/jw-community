@@ -63,6 +63,7 @@
                 <value>plugin</value>
                 <value>helpdef</value>
                 <value>help</value>
+                <value>advtool</value>
              </list>
         </property>
         <property name="resourceBundleMessageDao" ref="resourceBundleMessageDao"/>

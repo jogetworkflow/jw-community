@@ -44,6 +44,7 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Validator;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.ApplicationPlugin;
@@ -61,7 +62,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -222,6 +222,11 @@ public class FormUtil implements ApplicationContextAware {
                 }
                 childElements.add(element);
             }
+            
+            // label i18n
+            String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
+            label = AppUtil.replaceAppMessage(label);
+            element.setProperty(FormUtil.PROPERTY_LABEL, label);
             
             // recurse into child elements
             FormUtil.parseChildElementsFromJsonObject(obj, element);
@@ -1802,7 +1807,7 @@ public class FormUtil implements ApplicationContextAware {
         if (json.isEmpty()) {
             formName = StringEscapeUtils.escapeJavaScript(formName);
             description = StringEscapeUtils.escapeJavaScript(description);
-            json = "{className: 'org.joget.apps.form.model.Form',  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"" + formName + "\", \"tableName\":\"" + tableName + "\", \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"description\":\"" + description + "\" }}";
+             json = "{\"className\": \"org.joget.apps.form.model.Form\",  \"properties\":{ \"id\":\"" + formId + "\", \"name\":\"" + formName + "\", \"tableName\":\"" + tableName + "\", \"loadBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"storeBinder\":{ \"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\" }, \"description\":\"" + description + "\" },\"elements\":[{\"elements\":[{\"elements\":[],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"label\":\"" + ResourceBundleUtil.getMessage("fbuilder.section") + "\",\"id\":\"section1\"}}]}";
         }
 
         return json;

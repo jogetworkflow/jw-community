@@ -12,7 +12,7 @@ public class AbstractAppVersionedObject implements Serializable {
     public static final String ID_SEPARATOR = "_";
     private AppDefinition appDefinition;
     @Element(required = false)
-    @RegExp(value = "^[\\.0-9a-zA-Z_-]+$")
+    @RegExp(value = "^[ \\.0-9a-zA-Z_-]+$")
     private String id;
     @Element(required = false)
     private String appId;

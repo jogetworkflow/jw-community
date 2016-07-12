@@ -289,7 +289,7 @@ Link.prototype = {
                 if (!endsWith) {
                     link += "/";
                 }
-                link += escape(this.value);
+                link += this.value;
                 if (this.suffix) {
                     link += this.suffix;
                 }
@@ -299,7 +299,7 @@ Link.prototype = {
                 if (!hasQueryString) {
                     link += "?";
                 }
-                link += this.param + "=" + escape(this.value);
+                link += this.param + "=" + this.value;
             }
         }
 

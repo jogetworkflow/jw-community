@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
+import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
@@ -100,6 +101,11 @@ public class AppUtil implements ApplicationContextAware {
     public static void setCurrentAppDefinition(AppDefinition appDef) throws BeansException {
         currentAppDefinition.set(appDef);
         resetAppDefinition.set(null);
+        
+        // set app messages
+        if (!AppUtil.isAppMessagesSet()) {
+            AppUtil.initAppMessages(appDef);
+        }
     }
 
     /**
@@ -796,4 +802,78 @@ public class AppUtil implements ApplicationContextAware {
             writer.write(")");
         }
     }
+    
+    /**
+     * Method called at the start of a HTTP request
+     */
+    public static void initRequest() {
+        // clear current app in thread
+        AppUtil.resetAppDefinition();
+    }
+
+    /**
+     * Method called at the end of a HTTP request
+     */
+    public static void clearRequest() {
+        AppUtil.clearAppMessages();
+    }
+
+    /**
+     * Returns all the i18n messages for an app for the current locale in a Map
+     *
+     * @param appDef
+     * @return Map contains messageKey=message
+     */
+    public static Map<String, String> getAppMessages(AppDefinition appDef) {
+        Map<String, String> messageMap = new HashMap<String, String>();
+        if (appDef != null) {
+            Collection<Message> messageList = appDef.getMessageList();
+            String currentLocale = AppUtil.getAppLocale();
+            for (Message message : messageList) {
+                if (currentLocale != null && currentLocale.equals(message.getLocale())) {
+                    String key = message.getMessageKey();
+                    String label = message.getMessage();
+                    messageMap.put(key, label);
+                }
+            }
+        }
+        return messageMap;
+    }
+
+    /**
+     * Replace a label with an app-specific message
+     *
+     * @param label
+     * @return
+     */
+    public static String replaceAppMessage(String label) {
+        String result = label;
+        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
+        if (appMessages != null) {
+            String text = StringUtil.stripAllHtmlTag(label);
+            String messageKey = text; //text.replace(" ", "_");
+            if (appMessages.containsKey(messageKey)) {
+                String translated = appMessages.get(messageKey);
+                result = result.replace(text, translated);
+            }
+        }
+        return result;
+    }
+
+    private static final ThreadLocal threadLocalAppMessages = new ThreadLocal();
+
+    public static void initAppMessages(AppDefinition appDef) {
+        Map<String, String> appMessages = AppUtil.getAppMessages(appDef);
+        threadLocalAppMessages.set(appMessages);
+    }
+
+    public static boolean isAppMessagesSet() {
+        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
+        return (appMessages != null);
+    }
+
+    public static void clearAppMessages() {
+        threadLocalAppMessages.remove();
+    }
+    
 }

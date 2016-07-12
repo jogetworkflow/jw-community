@@ -14,6 +14,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -219,6 +220,11 @@ public class UserviewService {
                     UserviewCategory category = new UserviewCategory();
                     category.setProperties(PropertyUtil.getProperties(categoryObj.getJSONObject("properties")));
 
+                    // label i18n
+                    String catLabel = category.getPropertyString(FormUtil.PROPERTY_LABEL);
+                    catLabel = AppUtil.replaceAppMessage(catLabel);
+                    category.setProperty(FormUtil.PROPERTY_LABEL, catLabel);
+                    
                     boolean hasPermis = false;
                     if (preview) {
                         hasPermis = true;
@@ -296,6 +302,11 @@ public class UserviewService {
                                     userview.setProperty("homeMenuId", mId);
                                 }
 
+                                // label i18n
+                                String menuLabel = menu.getPropertyString(FormUtil.PROPERTY_LABEL);
+                                menuLabel = AppUtil.replaceAppMessage(menuLabel);
+                                menu.setProperty(FormUtil.PROPERTY_LABEL, menuLabel);
+                                
                                 menus.add(menu);
                             } catch (Exception e) {
                                 LogUtil.debug(getClass().getName(), "Userview Menu class file not found");

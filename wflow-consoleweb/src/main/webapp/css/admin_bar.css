@@ -106,7 +106,7 @@ body.embeded #adminBar {
 #adminBar .adminBarButton i {
     font-size: 13px;
 }
-#quickOverlay { 
+.quickOverlay { 
     height: 100%; 
     width: 100%; 
     position: fixed; 
@@ -115,7 +115,7 @@ body.embeded #adminBar {
     z-index: 2000; 
     opacity: 0.5 
 }
-#quickOverlayButton { 
+.quickOverlayButton { 
     position: fixed;
     top: 0px;
     right: 2%;
@@ -127,10 +127,10 @@ body.embeded #adminBar {
     font-size: 20px;
     border: solid 1px #333;
 }
-#quickOverlayButton a { 
+.quickOverlayButton a { 
     text-decoration: none;
 }
-#quickOverlayButton i { 
+.quickOverlayButton i { 
     font-size: 30px;
 }
 #quickOverlayFrame { 

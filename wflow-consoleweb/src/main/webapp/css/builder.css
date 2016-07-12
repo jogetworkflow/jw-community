@@ -307,3 +307,145 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
     z-index: 100000;
     padding: 10px;
 }
+#tab-diffChecker h3 {
+    color: green;
+    font-size: 16px;
+}
+li.jsondiffpatch-unchanged {
+    display: none;
+}
+#diff1, #diff2 {
+    border: solid 1px #ccc;
+    margin: 5px;
+    background: #fAfafA;
+    line-height: 18px;
+}
+#advancedToolsFrame { 
+    position: fixed; 
+    height: 100%; 
+    width: 90%; 
+    top: 5px; 
+    left: 5%; 
+    z-index: 3000; 
+    border: none; 
+    box-shadow: 0px 0px 2px 2px; 
+    min-height: 500px; 
+    min-width: 780px; 
+    background:white; 
+}
+#advancedToolsFrame > h1{
+    font-size: 20px;
+    padding: 20px 20px 0;
+    color:#70B237;
+}
+.builder_tool_tabs {
+  width: 90%;
+  display: block;
+  float: none;
+  list-style: none;
+  position: relative;
+  margin: 20px 0 0 0px;
+  padding: 0 20px 20px;
+  text-align: left;
+}
+.builder_tool_tabs > li {
+  float: left;
+  display: block;
+}
+.builder_tool_tabs > li > input[type="radio"] {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+.builder_tool_tabs > li > label {
+  display: block;
+  min-width: 150px;
+  padding: 14px 21px;
+  border-radius: 2px 2px 0 0;
+  font-size: 20px;
+  font-weight: normal;
+  text-align: center;
+  text-transform: uppercase;
+  background: #f0f0f0;
+  color: #757575;
+  cursor: pointer;
+  position: relative;
+  top: 4px;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+.builder_tool_tabs > li > label i{
+    margin: 0 0.4em 0 0;
+}
+.builder_tool_tabs .tab-content {
+  z-index: 2;
+  display: none;
+  overflow: hidden;
+  width: 100%;
+  overflow: scroll;
+  line-height: 25px;
+  padding: 0 25px;
+  position: absolute;
+  top: 78px;
+  left: 20px;
+  background: #fff;
+}
+.builder_tool_tabs .tab-content h2 {
+    font-size: 18px;
+    text-transform: uppercase;
+    color: #70B237;
+}
+.builder_tool_tabs [type="radio"]:checked + label {
+  top: 0;
+  padding-top: 17px;
+  background: #fff;
+  box-shadow: inset 0 3px #8CC954;
+}
+.builder_tool_tabs [type="radio"]:checked + label .fa {
+    color: #8CC954;
+}
+.builder_tool_tabs [type="radio"]:checked ~ .tab-content {
+  display: block;
+}
+.builder_tool_tabs .tab-content .button {
+  background: #35AC5B;
+  background-image: -webkit-linear-gradient(top, #35AC5B, green);
+  background-image: -moz-linear-gradient(top, #35AC5B, green);
+  background-image: -ms-linear-gradient(top, #35AC5B, green);
+  background-image: -o-linear-gradient(top, #35AC5B, green);
+  background-image: linear-gradient(to bottom, #35AC5B, green);
+  -webkit-border-radius: 15;
+  -moz-border-radius: 15;
+  border-radius: 15px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 15px;
+  padding: 8px 15px;
+  margin-left: 5px;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 15px;
+  border: none;
+}
+.builder_tool_tabs .tab-content .button:hover {
+  background: #35AC5B;
+  text-decoration: none;
+}
+.sticky-buttons {
+    position: fixed;
+    top: 160px;
+    right: 8%;
+}
+.table_column_items {
+    list-style: none;
+    padding: 0;
+}
+.table_column_items li {
+    padding: 8px 5px;
+    min-width: 23%;
+    background: #f3f3f3;
+    margin: 0.5% 0.5% 0 0;
+    display: inline-block;
+}

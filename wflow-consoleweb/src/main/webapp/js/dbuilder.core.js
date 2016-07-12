@@ -3,6 +3,8 @@ DatalistBuilder = {
     UPDATE : 'Update',
 
     //Configuration
+    appId: '',
+    appVersion: '',
     tinymceUrl : '',
     saveUrl : '',
     previewUrl : '',
@@ -156,8 +158,8 @@ DatalistBuilder = {
         });
     },
 
-    initBinderList : function(){
-        var propertiesDefinition = [
+    getBinderPropertiesDefinition : function() {
+        return [
             {title: get_dbuilder_msg('dbuilder.selectBinder'),
                 properties : [{
                     name : 'binder',
@@ -168,6 +170,10 @@ DatalistBuilder = {
                 }]
             }
         ];
+    },
+
+    initBinderList : function(){
+        var propertiesDefinition = DatalistBuilder.getBinderPropertiesDefinition();
 
         var propertyValues = new Array();
         propertyValues['binder'] = DatalistBuilder.binderProperties;
@@ -850,8 +856,8 @@ DatalistBuilder = {
         });
     },
 
-    showColumnProperties : function(columnId){
-        var propertiesDefinition = [{
+    getColumnPropertiesDefinition : function() {
+        return [{
             title : get_dbuilder_msg('dbuilder.general'),
             properties :[
             {
@@ -970,6 +976,10 @@ DatalistBuilder = {
                 url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         }];
+    },
+
+    showColumnProperties : function(columnId){
+        var propertiesDefinition = DatalistBuilder.getColumnPropertiesDefinition();
 
         var propertyValues = DatalistBuilder.chosenColumns[columnId];
 
@@ -1009,8 +1019,8 @@ DatalistBuilder = {
         DatalistBuilder.renderColumn(columnId);
     },
     
-    showFilterProperties : function(columnId){
-        var propertiesDefinition = [{
+    getFilterPropertiesDefinition : function () {
+        return [{
             title : get_dbuilder_msg('dbuilder.general'),
             properties :[
             {
@@ -1044,6 +1054,10 @@ DatalistBuilder = {
                 url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         }];
+    },
+
+    showFilterProperties : function(columnId){
+        var propertiesDefinition = DatalistBuilder.getFilterPropertiesDefinition();
 
         var propertyValues = DatalistBuilder.chosenFilters[columnId];
         propertyValues['filterParamName'] = DatalistBuilder.filterParam + propertyValues['name'];
@@ -1118,8 +1132,8 @@ DatalistBuilder = {
         DatalistBuilder.adjustCanvas();
     },
 
-    showDatalistProperties : function(){
-        var propertiesDefinition = [
+    getDatalistPropertiesDefinition : function() {
+        return [
             {title: get_dbuilder_msg('dbuilder.basicProperties'),
               properties : [
                 {label : get_dbuilder_msg('dbuilder.datalistId'),
@@ -1165,6 +1179,10 @@ DatalistBuilder = {
               ]
             }
         ];
+    },
+        
+    showDatalistProperties : function(){
+        var propertiesDefinition = DatalistBuilder.getDatalistPropertiesDefinition();
         
         var propertyValues = DatalistBuilder.datalistProperties;
 
@@ -1193,15 +1211,24 @@ DatalistBuilder = {
         $("#builder-steps-designer").trigger("click");
     },
 
-    showActionProperties : function(columnId, actions) {
+    getActionPropertiesDefinition : function(className) {
         var propertiesDefinition;
-        var action = actions[columnId];
-        var availableAction = DatalistBuilder.availableActions[action.className];
+        var availableAction = DatalistBuilder.availableActions[className];
+        
         if (availableAction && availableAction.propertyOptions) {
             propertiesDefinition = eval("(" + availableAction.propertyOptions + ")");
         } else {
-            return;
+            return [];
         }
+        
+        return propertiesDefinition;
+    },
+
+    showActionProperties : function(columnId, actions) {
+        
+        var action = actions[columnId];
+        var propertiesDefinition = DatalistBuilder.getActionPropertiesDefinition(action.className);
+        
         var propertyValues = action.properties;
 
         var options = {
@@ -1229,14 +1256,14 @@ DatalistBuilder = {
         DatalistBuilder.propertyDialog.center('y');
     },
     
-    showRowActionProperties : function(columnId, actions) {
+    getRowActionPropertiesDefinition : function(className) {
         var propertiesDefinition;
-        var action = actions[columnId];
-        var availableAction = DatalistBuilder.availableActions[action.className];
+        var availableAction = DatalistBuilder.availableActions[className];
+        
         if (availableAction && availableAction.propertyOptions) {
             propertiesDefinition = eval("(" + availableAction.propertyOptions + ")");
         } else {
-            return;
+            return [];
         }
         
         propertiesDefinition.push({
@@ -1327,6 +1354,13 @@ DatalistBuilder = {
                 }]
             }]
         });
+        
+        return propertiesDefinition;
+    },
+    
+    showRowActionProperties : function(columnId, actions) {
+        var action = actions[columnId];
+        var propertiesDefinition = DatalistBuilder.getRowActionPropertiesDefinition(action.className);
         
         var propertyValues = action.properties;
 
@@ -1458,6 +1492,8 @@ DatalistBuilder = {
             DatalistBuilder.renderFilter(obj.filters[e].id);
         }
         
+        DatalistBuilder.adjustCanvas();
+        
         $("#loading").remove();
     },
 
@@ -1468,12 +1504,16 @@ DatalistBuilder = {
     },
 
     save : function(){
-        $.post(DatalistBuilder.saveUrl + DatalistBuilder.datalistProperties.id, { json : DatalistBuilder.getJson() } , function(data) {
+        var json = DatalistBuilder.getJson();
+        $.post(DatalistBuilder.saveUrl + DatalistBuilder.datalistProperties.id, { json :  json} , function(data) {
             var d = JSON.decode(data);
             if(d.success == true){
-                DatalistBuilder.originalJson = DatalistBuilder.getJson();
+                DatalistBuilder.originalJson = json;
+                $('#list-json-original').val(json);
                 DatalistBuilder.showMessage(get_dbuilder_msg('dbuilder.saved'));
-                setTimeout(function(){ DatalistBuilder.showMessage(""); }, 2000);
+                setTimeout(function(){ 
+                    DatalistBuilder.showMessage(""); 
+                }, 2000);
             }else{
                 alert(get_dbuilder_msg('dbuilder.errorSaving'));
             }
@@ -1540,7 +1580,7 @@ DatalistBuilder = {
         
         // update JSON definition
         var jsonString = DatalistBuilder.getJson();
-        $('#list-json').val(jsonString);
+        $('#list-json').val(jsonString).trigger("change");
     },
     
     isSaved : function(){
@@ -1722,5 +1762,66 @@ DatalistBuilder = {
         } else {
             $("#builder-message").fadeOut();
         }
-    }
+    },
+    
+    updateList: function () {
+        var json = $('#list-json').val();
+        if (DatalistBuilder.getJson() !== json) {
+            DatalistBuilder.addToUndo();
+        }
+        DatalistBuilder.loadJson(JSON.decode(json));
+
+        return false;
+    },
+
+    showDiff : function (callback, output) {
+        var jsonUrl = DatalistBuilder.contextPath + '/web/json/console/app/' + DatalistBuilder.appId + '/' + DatalistBuilder.appVersion + '/datalist/' + DatalistBuilder.datalistProperties.id + '/json';
+        var thisObject = this;
+        var merged;
+        var currentSaved;
+        $.ajax({
+            type: "GET",
+            url: jsonUrl,
+            dataType: 'json',
+            success: function (data) {
+                var current = data;
+                var currentString = JSON.stringify(data);
+                currentSaved = currentString;
+                $('#list-json-current').val(currentString);
+                var original = JSON.decode($('#list-json-original').val());
+                var latest = JSON.decode($('#list-json').val());
+                merged = DiffMerge.merge(original, current, latest, output);
+            },
+            complete: function() {
+                if (callback) {
+                    callback.call(thisObject, currentSaved, merged);
+                }
+            }
+        });
+    },
+            
+    merge: function (callback) {
+        // get current remote definition
+        DatalistBuilder.showMessage(get_dbuilder_msg('dbuilder.merging'));
+        var thisObject = this;
+        
+        DatalistBuilder.showDiff(function (currentSaved, merged) {
+            if (currentSaved !== undefined && currentSaved !== "") {
+                $('#list-json-original').val(currentSaved);
+            }
+            if (merged !== undefined && merged !== "") {
+                $('#list-json').val(merged);
+            }
+            DatalistBuilder.updateList();
+            DatalistBuilder.showMessage("");
+            
+            if (callback) {
+                callback.call(thisObject, merged);
+            }
+        });
+    },
+    
+    mergeAndSave: function() {
+        DatalistBuilder.merge(DatalistBuilder.save);
+    }    
 }
