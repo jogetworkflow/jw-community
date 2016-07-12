@@ -3,6 +3,12 @@
 <c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
 <commons:header title="${title}" />
 
+<link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+<link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
+<link href="${pageContext.request.contextPath}/js/at/usages.css" rel="stylesheet" type="text/css" />
+<script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
+<script type='text/javascript' src="${pageContext.request.contextPath}/js/at/usages.js"></script>
+
 <div id="nav">
     <div id="nav-title">
         <jsp:include page="appTitle.jsp" flush="true" />
