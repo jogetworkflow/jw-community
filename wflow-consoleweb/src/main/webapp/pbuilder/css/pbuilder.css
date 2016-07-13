@@ -144,6 +144,8 @@ body {
     cursor: pointer;
     position: relative;
     line-height: 16px;
+    min-width: 55px;
+    text-align: center;
 }
 .subheader_selected {
     font-weight: bold;
@@ -563,8 +565,8 @@ x.route x.node_route {
 }
 .header_process:hover .node_buttons{
     display: block;
-    top: 10px;
-    left: 25%;
+    top: 0px;
+    left: 25px;
 }
 .header_process .node_buttons .node_edit, .header_process .node_buttons .node_copy{
     position: static;
