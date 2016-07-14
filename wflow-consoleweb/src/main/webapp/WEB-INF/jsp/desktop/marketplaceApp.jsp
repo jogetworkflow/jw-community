@@ -55,6 +55,7 @@
                                 alert("<fmt:message key="appCenter.label.appInstalled"/>");
                                 PopupDialog.closeDialog();                                
                                 parent.loadPublishedApps();
+                                parent.AdminBar.hideQuickOverlay();
                             } else {
                                 alert("<fmt:message key="appCenter.label.appNotInstalled"/>");
                             }

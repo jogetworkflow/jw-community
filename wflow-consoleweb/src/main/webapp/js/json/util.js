@@ -181,7 +181,7 @@ UrlUtil = {
         var qs2 = param + "=" + paramValue;
         if (url.indexOf("?") !== -1) {
             qs1 = url.substring(url.indexOf("?") + 1);
-            url = url.substring(0, url.indexOf("?") - 1);
+            url = url.substring(0, url.indexOf("?"));
         }
         return url + "?" + UrlUtil.mergeRequestQueryString(qs1, qs2);
     },

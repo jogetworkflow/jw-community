@@ -321,17 +321,17 @@ li.jsondiffpatch-unchanged {
     line-height: 18px;
 }
 #advancedToolsFrame { 
-    position: fixed; 
-    height: 100%; 
-    width: 90%; 
-    top: 5px; 
-    left: 5%; 
-    z-index: 3000; 
-    border: none; 
-    box-shadow: 0px 0px 2px 2px; 
-    min-height: 500px; 
-    min-width: 780px; 
-    background:white; 
+    position: fixed;
+    height: 100%;
+    width: 91%;
+    top: 0px;
+    left: 1%;
+    z-index: 3000;
+    border: none;
+    box-shadow: #555 0px 0px 2px 2px;
+    min-height: 500px;
+    min-width: 780px;
+    background: white;
 }
 #advancedToolsFrame > h1{
     font-size: 20px;
@@ -436,7 +436,7 @@ li.jsondiffpatch-unchanged {
 .sticky-buttons {
     position: fixed;
     top: 160px;
-    right: 8%;
+    right: 12%;
 }
 .table_column_items {
     list-style: none;

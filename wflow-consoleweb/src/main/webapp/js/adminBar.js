@@ -80,6 +80,7 @@ var AdminBar = {
         var quickEditModeActive = AdminBar.isQuickEditMode();
         if (quickEditModeActive) {
             AdminBar.showQuickEdit();
+            AdminBar.showAdminBar();
         } else {
             AdminBar.hideQuickEdit();
         }
@@ -95,8 +96,6 @@ var AdminBar = {
             return true;
         });
         $("#adminBar #quickEditModeOption label").show();
-        $("#adminBar").on("mouseover", AdminBar.showAdminBar);
-        $("#adminBar").on("mouseout", AdminBar.hideAdminBar);
         if (!AdminBar.webConsole || AdminBar.builderMode) {
             AdminBar.hideAdminBar();
         }
@@ -122,8 +121,11 @@ var AdminBar = {
             if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+0
                 if ($("#quickEditModeOffLabel").hasClass("ui-state-active")) {
                     $("#quickEditModeOn").trigger('click');
+                    AdminBar.showAdminBar();
                 } else {
                     $("#quickEditModeOff").trigger('click');
+                    AdminBar.hideAdminBar();
+                    AdminBar.hideQuickOverlay();
                 }
                 return false;
             }  
@@ -148,23 +150,38 @@ var AdminBar = {
 		return false;
             }
         });        
+        $("#adminControl").on('click', function() {
+            if (AdminBar.isAdminBarOpen()) {
+                AdminBar.disableQuickEditMode();
+                AdminBar.hideAdminBar();
+            } else {
+                AdminBar.enableQuickEditMode();
+                AdminBar.showAdminBar();
+            }
+        });
+        if (window === parent) {
+            $("#adminControl").fadeIn();
+        }
     },
     showAdminBar: function() {
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
+        $("#adminControl").addClass("active");
+        $("#adminControl").find("i").attr("class", "icon-double-angle-right");
+        AdminBar.showQuickEdit();
     },
     hideAdminBar: function() {
-        if (!AdminBar.webConsole || AdminBar.builderMode) {
-            $("#adminBar").removeClass("adminBarActive");
-            $("#adminBar").addClass("adminBarInactive");
-        }
+        $("#adminBar").removeClass("adminBarActive");
+        $("#adminBar").addClass("adminBarInactive");
+        $("#adminControl").removeClass("active");
+        $("#adminControl").find("i").attr("class", "icon-pencil");
     },
     isAdminBarOpen: function() {
         return ($("#adminBar").hasClass("adminBarActive"));
     }
 };
 $(function () {
-    AdminBar.initQuickEditMode();
     AdminBar.initAdminBar();
+    AdminBar.initQuickEditMode();
 });
 

@@ -10,7 +10,7 @@
         <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar_custom.css" />
-        <div id="adminBar">
+        <div id="adminBar" class="adminBarInactive">
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<fmt:message key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"></a>
             <div id="quickEditModeOption">
                 <input type="radio" id="quickEditModeOn" name="radio" /><label id="quickEditModeOnLabel" for="quickEditModeOn"><fmt:message key='adminBar.label.on'/></label>
@@ -40,6 +40,10 @@
             </c:if>
             </div>
         </div>
+            
+        <div id="adminControl">
+            <i class="icon-edit"></i>
+        </div>    
             
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.cookie.js"></script>
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
