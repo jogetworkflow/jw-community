@@ -48,20 +48,33 @@
                     var processDefId = "<c:out value="${wfProcess.id}"/>";
                     var saveUrl = ProcessBuilder.ApiClient.designerBaseUrl + "/web/console/app/<c:out value="${appId}"/>/process/builder/screenshot/submit?processDefId=" + encodeURIComponent(processDefId);
                     var screenshotCallback = function(imgData) {
+                        var image = new Blob([imgData], {type : 'text/plain'});
+                        var params = new FormData();
+                        params.append("xpdlimage", image);
                         $.ajax({ 
                             type: "POST", 
                             url: saveUrl,
-                            dataType: 'text',
-                            data: {
-                                base64data : imgData
-                            },
+                            data: params,
+                            cache: false,
+                            processData: false,
+                            contentType: false,
                             beforeSend: function (request) {
                                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
                             },
                             success: function() {
+                                <c:if test="${!empty callback}">
+                                    if (parent && parent.${callback}) {
+                                        parent.${callback}();
+                                    }
+                                </c:if>
 //                                    alert("Saved " + processDefId);
                             },
                             error: function(e) {
+                                <c:if test="${!empty callback}">
+                                    if (parent && parent.${callback}) {
+                                        parent.${callback}();
+                                    }
+                                </c:if>
 //                                alert("Error saving " + processDefId);
                             },
                             complete: function() {

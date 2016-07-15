@@ -1051,13 +1051,16 @@ ProcessBuilder.ApiClient = {
                         var processDefId = packageId + "#" + processVersion + "#" + processId;
                         var saveUrl = ProcessBuilder.ApiClient.designerBaseUrl + "/web/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/builder/screenshot/submit?processDefId=" + encodeURIComponent(processDefId);
                         var screenshotCallback = function(imgData) {
+                            var image = new Blob([imgData], {type : 'text/plain'});
+                            var params = new FormData();
+                            params.append("xpdlimage", image);
                             $.ajax({
                                 type: "POST",
                                 url: saveUrl,
-                                dataType: 'text',
-                                data: {
-                                    base64data : imgData
-                                },
+                                data: params,
+                                cache: false,
+                                processData: false,
+                                contentType: false,
                                 beforeSend: function (request) {
                                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
                                 },
