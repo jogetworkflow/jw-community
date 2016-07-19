@@ -1781,9 +1781,34 @@ public class ConsoleWebController {
         map.addAttribute("participantList", participantList);
         map.addAttribute("participantMap", participantMap);
         map.addAttribute("isExtDirectoryManager", DirectoryUtil.isExtDirectoryManager());
-        map.addAttribute("usersMap", DirectoryUtil.getUsersMap());
-        map.addAttribute("groupsMap", DirectoryUtil.getGroupsMap());
-        map.addAttribute("departmentsMap", DirectoryUtil.getDepartmentsMap());
+        
+        boolean hasUserMapping = false;
+        boolean hasGroupMapping = false;
+        boolean hasDepartmentMapping = false;
+        
+        for (PackageParticipant p : participantMap.values()) {
+            if ("user".equals(p.getType())) {
+                hasUserMapping = true;
+            } else if ("group".equals(p.getType())) {
+                hasGroupMapping = true;
+            } else if ("hod".equals(p.getType()) || "department".equals(p.getType())) {
+                hasDepartmentMapping = true;
+            }
+            
+            if (hasUserMapping && hasGroupMapping && hasDepartmentMapping) {
+                break;
+            }
+        }
+        
+        if (hasUserMapping) {
+            map.addAttribute("usersMap", DirectoryUtil.getUsersMap());
+        }
+        if (hasGroupMapping) {
+            map.addAttribute("groupsMap", DirectoryUtil.getGroupsMap());
+        }
+        if (hasDepartmentMapping) {
+            map.addAttribute("departmentsMap", DirectoryUtil.getDepartmentsMap());
+        }
 
         return "console/apps/processView";
     }
