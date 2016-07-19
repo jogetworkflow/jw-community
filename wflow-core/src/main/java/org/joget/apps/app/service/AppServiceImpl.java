@@ -327,11 +327,6 @@ public class AppServiceImpl implements AppService {
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
 
-        // accept assignment if necessary
-        if (!assignment.isAccepted()) {
-            workflowManager.assignmentAccept(activityId);
-        }
-
         // get and submit mapped form
         if (form != null) {
             formData = submitForm(form, formData, false);
@@ -339,6 +334,11 @@ public class AppServiceImpl implements AppService {
 
         Map<String, String> errors = formData.getFormErrors();
         if (!formData.getStay() && (errors == null || errors.isEmpty())) {
+            // accept assignment if necessary
+            if (!assignment.isAccepted()) {
+                workflowManager.assignmentAccept(activityId);
+            }
+        
             // complete assignment
             workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
@@ -366,11 +366,6 @@ public class AppServiceImpl implements AppService {
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
 
-        // accept assignment if necessary
-        if (!assignment.isAccepted()) {
-            workflowManager.assignmentAccept(activityId);
-        }
-
         // get and submit mapped form
         PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
         if (paf != null) {
@@ -388,6 +383,11 @@ public class AppServiceImpl implements AppService {
 
         Map<String, String> errors = formData.getFormErrors();
         if (!formData.getStay() && (errors == null || errors.isEmpty())) {
+            // accept assignment if necessary
+            if (!assignment.isAccepted()) {
+                workflowManager.assignmentAccept(activityId);
+            }
+        
             // complete assignment
             workflowManager.assignmentComplete(activityId, workflowVariableMap);
         }
