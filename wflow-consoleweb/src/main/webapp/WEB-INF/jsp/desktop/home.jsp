@@ -90,7 +90,7 @@
     var loadApps = function(container, customUrl) {
         container = container || "#published-apps";
         var isMarketplace = (container === '#marketplace-apps');
-        var jsonUrl = (customUrl) ? customUrl : "${pageContext.request.contextPath}/web/json/apps/published/userviews";
+        var jsonUrl = (customUrl) ? customUrl : "${pageContext.request.contextPath}/web/json/apps/published/userviews?appCenter=true";
 
         // show loading icon
         $(container).empty();

@@ -1052,7 +1052,7 @@ public class WorkflowJsonController {
     }
     
     @RequestMapping("/json/apps/published/userviews")
-    public void publishedApps(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId) throws JSONException, IOException {
+    public void publishedApps(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appCenter", required = false) Boolean isAppCenter) throws JSONException, IOException {
         Collection<AppDefinition> appDefinitionList = appService.getPublishedApps(appId);
         JSONObject root = new JSONObject();
         JSONArray apps = new JSONArray();
@@ -1063,6 +1063,10 @@ public class WorkflowJsonController {
             app.accumulate("version", appDef.getVersion());
             JSONArray userviews = new JSONArray();
             for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
+                if (isAppCenter != null && isAppCenter && userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\":\"true\"")) {
+                    continue;
+                }
+                
                 JSONObject userview = new JSONObject();
                 userview.accumulate("id", userviewDef.getId());
                 userview.accumulate("name", StringUtil.stripAllHtmlTag(AppUtil.processHashVariable(userviewDef.getName(), null, null, null, appDef)));
