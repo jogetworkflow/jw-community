@@ -194,13 +194,12 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
 
                     //get assignment users
                     try {
-                        Thread.sleep(2000);
-                        int maxAttempt = 5;
+                        int maxAttempt = 6;
                         int numOfAttempt = 0;
                         while ((userList == null || userList.isEmpty()) && numOfAttempt < maxAttempt) {
                             LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
                             userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                             numOfAttempt++;
                         }
 
