@@ -38,6 +38,9 @@
     padding-bottom: 0px;
     background: #f0ffcc;
 }
+.form-section.form-section-highlight {
+    min-height: 100px;
+}
 .form-container .ui-sortable-placeholder {
     border: 1px dotted #111111;
     visibility: visible !important;

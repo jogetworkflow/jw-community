@@ -181,7 +181,7 @@ FormBuilder = {
         $(".form-section").each(function(index, section) {
             var columnCount = $(section).children(".form-column").length;
             if (columnCount == 0) {
-                FormBuilder.addColumn(section);
+                FormBuilder.addColumn(section, false);
             }
         });
 
@@ -247,7 +247,7 @@ FormBuilder = {
                 }
                 $(".form-section").append("<div class='form-clear bottom'></div>");
             },
-            activeClass: "form-cell-highlight",
+            activeClass: "form-section-highlight",
             accept: ".form-palette-column, .form-column",
             greedy: true,
             tolerance: "touch"
@@ -355,7 +355,7 @@ FormBuilder = {
         if ($(obj).hasClass("form-palette-section")) {
             $(obj).removeClass("form-palette-section").addClass("form-section");
         }
-
+        
         if ($(obj).find(".form-section-title").length == 0) {
             $(obj).prepend("<div class='form-section-title'><span>"+get_fbuilder_msg("fbuilder.section")+"</span><div>");
         }
@@ -772,12 +772,15 @@ FormBuilder = {
         return section;
     },
 
-    addColumn: function(section) {
+    addColumn: function(section, initSectionsAndColumns) {
         // add a new column
         var column = $("<div class='form-column' element-class='org.joget.apps.form.model.Column'></div>");
         $(section).find(".form-clear.bottom").before(column);
         FormBuilder.decorateColumn(column);
-        FormBuilder.initSectionsAndColumns();
+        
+        if (initSectionsAndColumns === undefined || initSectionsAndColumns) {
+            FormBuilder.initSectionsAndColumns();
+        }
         return column;
     },
 
