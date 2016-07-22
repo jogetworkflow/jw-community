@@ -6,6 +6,14 @@ UPGRADING FROM v3
 =================
 For details on upgrading to v4, please refer to http://dev.joget.org/community/display/KBv4/Joget+Workflow+v4+Upgrade+Guide
 
+CHANGES in 4.0.34
+=================
+2804	Fixed: wflow-consoleweb - Form builder - Missing js library causing some script not running. #4227 @4.0-SNAPSHOT
+2802	Fixed: wflow-core - Process Data Collector - Very long delay on data collection. #4244 @4.0-SNAPSHOT
+2800	Modified: wflow-core - App Service - The assignment is locked to an user when one complete an assignment and hit form error. #4203 @4.0-SNAPSHOT
+2797	Fixed: wflow-core - Run Process Menu - Not able to start process if no custom id is set to the menu and no form is mapped to Run Process activity. @4.0-SNAPSHOT
+2780	Fixed: wflow-core - Correction on r2764. @4.0-SNAPSHOT
+
 CHANGES in 4.0.33
 =================
 2766	Fixed: wflow-consoleweb - Correction on r2737 @4.0-SNAPSHOT
