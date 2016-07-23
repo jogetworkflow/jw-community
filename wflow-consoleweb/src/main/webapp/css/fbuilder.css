@@ -77,6 +77,9 @@
     right: 0px;
     text-align: center;
 }
+.form-section.no_label {
+    padding-top: 20px;
+}
 .form-column .form-palette-options {
     top: 0px;
     right: 5px;
