@@ -212,8 +212,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("view", "featureDisabled");
                 } else {
                     viewProcess(null);
-                    String csrfToken = "";
+                    
                     HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null && request.getQueryString() != null && !request.getQueryString().isEmpty()) {
+                        String url = StringUtil.addParamsToUrl(getPropertyString("startUrl"), StringUtil.getUrlParams(request.getQueryString()));
+                        setProperty("startUrl", url);
+                    }
+                    
+                    String csrfToken = "";
                     if (request != null) {
                         csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
                     }
