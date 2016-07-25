@@ -243,6 +243,57 @@ PropertyEditor.Util = {
         }
         
         return false;
+    },
+    supportHashField: function(field) {
+        if (field.properties.supportHash !== undefined && field.properties.supportHash.toLowerCase() === "true") {
+            var propertyInput = $("#"+field.id + "_input");
+            propertyInput.append('<div class="hashField"><input type="text" id="'+ field.id + '_hash" name="'+ field.id + '_hash" size="50" value="'+ PropertyEditor.Util.escapeHtmlTag(field.value) +'"/></div>');
+            propertyInput.append("<a class=\"hashFieldAction\"><i class=\"icon-chevron-left\"></i><span>#</span><i class=\"icon-chevron-right\"></i></a>");
+
+            if ($(propertyInput).find(".default").length > 0) {
+                propertyInput.append($(propertyInput).find(".default"));
+            }
+
+            var toogleHashField = function() {
+                if ($(propertyInput).hasClass("hash")) {
+                    $(propertyInput).removeClass("hash");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"icon-chevron-left\"></i><span>#</span><i class=\"icon-chevron-right\"></i>");
+                } else {
+                    $(propertyInput).addClass("hash");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"icon-share-alt\"></i>");
+                }
+            };
+
+            if (field.options.propertyValues !== undefined && field.options.propertyValues !== null) {
+                var hashFields = field.options.propertyValues['PROPERTIES_EDITOR_METAS_HASH_FIELD'];
+                if (hashFields !== undefined && hashFields !== "") {
+                    var hfs = hashFields.split(";");
+                    for (var i in hfs) {
+                        if (field.properties.name === hfs[i]) {
+                            toogleHashField();
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            $(propertyInput).find(".hashFieldAction").on("click", toogleHashField);
+        }
+    },
+    retrieveHashFieldValue: function(field, data) {
+        if (field.properties.supportHash !== undefined && field.properties.supportHash.toLowerCase() === "true") {
+            var propertyInput = $("#"+field.id + "_input");
+            if ($(propertyInput).hasClass("hash")) {
+                var value = $('[name="'+field.id+'_hash"]:not(.hidden)').val();
+                if (value === undefined || value === null || value === "") {
+                    value = "";
+                }
+                value = value.trim();
+                data[field.properties.name] = value;
+                data['HASH_FIELD'] = field.properties.name;
+            }
+        }
     }
 };
         
@@ -500,6 +551,17 @@ PropertyEditor.Model.Page.prototype = {
                 
                 if (!type.isHidden()) {
                     var data = type.getData(useDefault);
+                    
+                    //handle Hash Field
+                    if (data !== null && data['HASH_FIELD'] !== null && data['HASH_FIELD'] !== undefined) {
+                        if (properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] === undefined) {
+                            properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] = data['HASH_FIELD'];
+                        } else {
+                            properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] += ";" + data['HASH_FIELD'];
+                        }
+                        delete data['HASH_FIELD'];
+                    }
+                    
                     if (data !== null) {
                         properties = $.extend(properties, data);
                     }
@@ -1101,6 +1163,7 @@ PropertyEditor.Model.Type.prototype = {
         }
         value = value.trim();
         data[this.properties.name] = value;
+        PropertyEditor.Util.retrieveHashFieldValue(this, data);
         return data;
     },
     render: function() {
@@ -1373,6 +1436,7 @@ PropertyEditor.Type.CheckBox.prototype = {
             value = this.defaultValue;
         }
         data[this.properties.name] = value;
+        PropertyEditor.Util.retrieveHashFieldValue(this, data);
         return data;
     },
     renderField: function() {
@@ -1422,6 +1486,9 @@ PropertyEditor.Type.CheckBox.prototype = {
         }
         
         return defaultValueText;
+    },
+    initScripting: function () {
+        PropertyEditor.Util.supportHashField(this);
     }
 };
 PropertyEditor.Type.CheckBox = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.CheckBox.prototype);
@@ -1441,6 +1508,7 @@ PropertyEditor.Type.Radio.prototype = {
             }
         }
         data[this.properties.name] = value;
+        PropertyEditor.Util.retrieveHashFieldValue(this, data);
         return data;
     },
     renderField: function() {
@@ -1463,6 +1531,9 @@ PropertyEditor.Type.Radio.prototype = {
             });
         }
         return html;
+    },
+    initScripting: function () {
+        PropertyEditor.Util.supportHashField(this);
     },
     renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault
 };
@@ -1513,6 +1584,7 @@ PropertyEditor.Type.SelectBox.prototype = {
     },
     initScripting: function () {
         $("#"+this.id).chosen({width: "54%", placeholder_text : " "});
+        PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function () {
         $("#"+this.id).trigger("chosen:updated");

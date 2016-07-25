@@ -82,6 +82,7 @@
 .property-input{
     width:70%;
     float:right;
+    position: relative;
 }
 
 .property-input .multiple_option{
@@ -142,6 +143,34 @@
 
 .property-input select{
     background:#fff;
+}
+
+.property-input > .hashFieldAction {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    color: darkgreen;
+    width:25px;
+    text-align: center;
+}
+
+.property-input > .hashField {
+    display: none;
+}
+
+.property-input > .hashField input {
+    border: darkgreen 1px solid;
+}
+
+.property-input.hash > * {
+    display: none !important;
+}
+
+.property-input.hash > .default, .property-input.hash > .hashField, .property-input.hash > .hashFieldAction, .property-input.hash > .property-input-error {
+    display: block !important;
 }
 
 .property-gridinputelement{

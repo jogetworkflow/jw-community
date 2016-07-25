@@ -23,6 +23,7 @@ public class PropertyUtil {
     public final static String PASSWORD_PROTECTED_VALUE = "****SECURE_VALUE****-";
     public final static String TYPE_PASSWORD = "password";
     public final static String TYPE_ELEMENT_SELECT = "elementselect";
+    public final static String PROPERTIES_EDITOR_METAS = "PROPERTIES_EDITOR_METAS";
 
     /**
      * Parses default properties string (JSON format) from Plugin Properties 
@@ -89,7 +90,9 @@ public class PropertyUtil {
                 Iterator keys = obj.keys();
                 while (keys.hasNext()) {
                     String key = (String) keys.next();
-                    if (!obj.isNull(key)) {
+                    if (key.startsWith(PROPERTIES_EDITOR_METAS)) {
+                        //ignore
+                    } else if (!obj.isNull(key)) {
                         Object value = obj.get(key);
                         if (value instanceof JSONArray) {
                             properties.put(key, getProperties((JSONArray) value));

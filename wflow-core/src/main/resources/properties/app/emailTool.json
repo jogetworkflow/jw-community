@@ -27,7 +27,8 @@
         {
             value : 'SSL',
             label : '@@app.emailtool.security.ssl@@'
-        }]
+        }],
+        supportHash : 'true'
     },
     {
         name : 'username',
