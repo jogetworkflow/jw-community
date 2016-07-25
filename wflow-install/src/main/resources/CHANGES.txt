@@ -4,6 +4,7 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 5.0.7
 ================
+2811	Fixed: wflow-core - Run Process Menu - Record Id & workflow variables URL parameters are ignored when there is no form mapped to "Run Process" activity. @5.0-SNAPSHOT
 2809    Fixed: wflow-consoleweb - Form builder - Correction on r2786 - Section without label are not editable. @5.0-SNAPSHOT
 2803    Fixed: wflow-consoleweb - Userview Builder - Save button tooltip is wrong. @5.0-SNAPSHOT
         Fixed: wflow-consoleweb - Form builder - Drag column not working correctly. @5.0-SNAPSHOT
