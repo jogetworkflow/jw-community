@@ -87,7 +87,7 @@ I18nEditor = {
         });
         
         $(header).on("click", "a.button", function(){
-            I18nEditor.saveLocale(container, $(selector).val(), id, options);
+            I18nEditor.saveLocale(container, this, $(selector).val(), id, options);
         });
     },
     loadLocale : function (container, locale, id, options) {
@@ -115,7 +115,9 @@ I18nEditor = {
             });
         }
     },
-    saveLocale : function(container, locale, id, options) {
+    saveLocale : function(container, button, locale, id, options) {
+        $(button).hide();
+        $(button).after('<i class="fa-spinner fa-spin" aria-hidden="true"></i>');
         var data = [];
         $(container).find('td.'+id+' textarea').each(function(){
             var id = $(this).attr("rel");
@@ -135,6 +137,17 @@ I18nEditor = {
                 data : JSON.encode(data)
             },
             dataType : "json"
+        }).done(function() {
+            $(button).next().remove();
+            $(button).after('<span> '+get_advtool_msg('i18n.editor.saved')+'</span>');
+        }).fail(function() {
+            $(button).next().remove();
+            $(button).after('<span> '+get_advtool_msg('i18n.editor.error')+'</span>');
+        }).always(function() {
+            setTimeout(function(){
+                $(button).next().remove();
+                $(button).show();
+            }, 5000);
         });
     }
 };
