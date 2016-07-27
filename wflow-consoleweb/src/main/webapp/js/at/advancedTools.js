@@ -12,7 +12,7 @@ var AdvancedTools = {
         var overlayContainer = 
             '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div>\
             <div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="icon-remove"></i></a></div>\
-            <div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><ul class="builder_tool_tabs"></ul></div></div>';
+            <div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
         $(document.body).append(overlayContainer);
         
         AdvancedTools.initDefinitionTab();
@@ -24,6 +24,8 @@ var AdvancedTools = {
         }
         AdvancedTools.initI18n();
         
+        $(".builder_tool_tabs_container").tabs();
+        
         $("#builder-bar .controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fa fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
         $("#advanced_tool").click(function(){
             $(".builder_tool_tabs li:first-child input").attr("checked", "checked");
@@ -32,12 +34,11 @@ var AdvancedTools = {
         
     },
     initDefinitionTab: function () {
-        var tab = '<li><input type="radio" name="tabs" id="definition" />\
-            <label for="definition"><i class="fa fa-code"></i><span>'+get_advtool_msg('adv.tool.JSON.Definition')+'</span></label>\
-            <div id="tab-definition" class="tab-content"></div>\
-            </li>';
+        var tab = '<li><a href="#tab-definition" id="definition"><i class="fa fa-code"></i><span>'+get_advtool_msg('adv.tool.JSON.Definition')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-definition" class="tab-content"></div>');
+        
         $("#tab-definition").append($(AdvancedTools.jsonForm));
         $(AdvancedTools.jsonForm).show();
         $(AdvancedTools.jsonForm).prepend('<pre id="json_definition"></pre>');
@@ -77,29 +78,25 @@ var AdvancedTools = {
         
     },
     initTreeViewer: function () {
-        var tab = '<li><input type="radio" name="tabs" id="treeViewer" />\
-            <label for="treeViewer"><i class="fa fa-sitemap"></i><span>'+get_advtool_msg('adv.tool.Tree.Viewer')+'</span></label>\
-            <div id="tab-treeViewer" class="tab-content"></div>\
-            </li>';
+        var tab = '<li><a href="#tab-treeViewer" id="treeViewer"><i class="fa fa-sitemap"></i><span>'+get_advtool_msg('adv.tool.Tree.Viewer')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-treeViewer" class="tab-content"></div>');
         
         AdvancedTools.treeViewer = new DependencyTree.Viewer($("#tab-treeViewer"), $(AdvancedTools.jsonForm).find('textarea[name="json"]'), AdvancedTools.options);
         AdvancedTools.treeViewer.init();
         
-        $("label[for=treeViewer]").on("click", function() {
+        $("a#treeViewer").on("click", function() {
             AdvancedTools.treeViewer.render();
         });
     },
     initDiffChecker: function () {
-        var tab = '<li><input type="radio" name="tabs" id="diffChecker" />\
-            <label for="diffChecker"><i class="fa fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></label>\
-            <div id="tab-diffChecker" class="tab-content"></div>\
-            </li>';
+        var tab = '<li><a href="#tab-diffChecker" id="diffChecker"><i class="fa fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-diffChecker" class="tab-content"></div>');
         
-        $("label[for=diffChecker]").on("click", function() {
+        $("a#diffChecker").on("click", function() {
             $("#tab-diffChecker").html("");
             
             var builder;
@@ -115,7 +112,7 @@ var AdvancedTools = {
                 if ($("#tab-diffChecker").find("#diff1").length > 0) {
                     $("#tab-diffChecker").find("#diff1").before('<h3>'+get_advtool_msg('diff.checker.newChanges')+'</h3>');
                     $("#tab-diffChecker").find("#diff2").before('<h3>'+get_advtool_msg('diff.checker.mergedChanges')+'</h3>');
-                    $("#tab-diffChecker").append('<div class="sticky-buttons"><a class="update button">'+get_advtool_msg('diff.checker.merge.update')+'</a></div>')
+                    $("#tab-diffChecker").append('<div class="sticky-buttons"><a class="update button">'+get_advtool_msg('diff.checker.merge.update')+'</span></a></div>')
                 } else if ($("#tab-diffChecker").find("#diff2").length > 0) {
                     $("#tab-diffChecker").find("#diff2").before('<h3>'+get_advtool_msg('diff.checker.changes')+'</h3>');
                 } else {
@@ -130,14 +127,12 @@ var AdvancedTools = {
         });
     },
     initUsage: function () {
-        var tab = '<li><input type="radio" name="tabs" id="checkUsage" />\
-            <label for="checkUsage"><i class="fa fa-binoculars"></i><span>'+get_advtool_msg('adv.tool.Usages')+'</span></label>\
-            <div id="tab-checkUsage" class="tab-content"></div>\
-            </li>';
+        var tab = '<li><a href="#tab-checkUsage" id="checkUsage"><i class="fa fa-binoculars"></i><span>'+get_advtool_msg('adv.tool.Usages')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-checkUsage" class="tab-content"></div>');
         
-        $("label[for=checkUsage]").on("click", function() {
+        $("a#checkUsage").on("click", function() {
             if ($("#tab-checkUsage .item_usages_container").length === 0) {
                 $("#tab-checkUsage").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
                 Usages.render($("#tab-checkUsage"), AdvancedTools.options.id, AdvancedTools.options.builder, AdvancedTools.options);
@@ -146,14 +141,12 @@ var AdvancedTools = {
         });
     },
     initTable: function () {
-        var tab = '<li><input type="radio" name="tabs" id="formDataTable" />\
-            <label for="formDataTable"><i class="fa fa-table"></i><span>'+get_advtool_msg('adv.tool.Table')+'</span></label>\
-            <div id="tab-formDataTable" class="tab-content"><div class="table_usage"><h2>'+get_advtool_msg('adv.tool.Table.Usage')+'</h2></div><div class="table_columns"><h2>'+get_advtool_msg('adv.tool.Table.Columns')+'</h2></div></div>\
-            </li>';
+        var tab = '<li><a href="#tab-formDataTable" id="formDataTable"><i class="fa fa-table"></i><span>'+get_advtool_msg('adv.tool.Table')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-formDataTable" class="tab-content"><div class="table_usage"><h2>'+get_advtool_msg('adv.tool.Table.Usage')+'</h2></div><div class="table_columns"><h2>'+get_advtool_msg('adv.tool.Table.Columns')+'</h2></div></div>');
         
-        $("label[for=formDataTable]").on("click", function() {
+        $("a#formDataTable").on("click", function() {
             if ($("#tab-formDataTable .table_usage .item_usages_container").length === 0) {
                 $("#tab-formDataTable .table_usage").append('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
                 var jsonObj = JSON.decode($(AdvancedTools.jsonForm).find('textarea[name="json"]').val());
@@ -197,12 +190,6 @@ var AdvancedTools = {
                     }
                 });
             }
-//            
-//            if ($("#tab-formDataTable .table_columns .new_column").length === 0) {
-//                $("#tab-formDataTable .table_columns").append('<div class="new_column"><i class="dt-loading fa fa-5x fa-spinner fa-spin"></i></div>');
-//                
-//                $("#tab-formDataTable .table_columns .new_column .dt-loading").remove();
-//            }
         });
         
         $(AdvancedTools.jsonForm).find('textarea[name="json"]').on("change", function() {
@@ -215,14 +202,12 @@ var AdvancedTools = {
         });
     },
     initI18n: function () {
-        var tab = '<li><input type="radio" name="tabs" id="i18n" />\
-            <label for="i18n"><i class="fa fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></label>\
-            <div id="tab-i18n" class="tab-content"></div>\
-            </li>';
+        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fa fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
         
-        $("label[for=i18n]").on("click", function() {
+        $("a#i18n").on("click", function() {
             if ($("#tab-i18n .i18n_table").length === 0) {
                 $("#tab-i18n").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.init($("#tab-i18n"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
@@ -239,10 +224,13 @@ var AdvancedTools = {
         $("#advancedToolsOverlayContainer").show();
         $(document.body).addClass("stop-scrolling");
         
-        var height = $(window).height() - 200;
-        $(".builder_tool_tabs .tab-content").height(height);
-        
         $(".quickOverlayButton, #advancedToolsFrame").fadeIn();
+        $( ".builder_tool_tabs_container" ).tabs( "option", "active", 0 );
+        
+        var height = $(window).height() - $(".builder_tool_tabs").offset().top - $(".builder_tool_tabs").height() - 50;
+        $(".tab-content").height(height);
+        $(".sticky-buttons").css("top", $(".builder_tool_tabs").offset().top + $(".builder_tool_tabs").height() + 25);
+        
         AdvancedTools.json = $(AdvancedTools.jsonForm).find('textarea[name="json"]').val();
         AdvancedTools.isChange = false;
         AdvancedTools.editor.resize(true);
