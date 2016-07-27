@@ -161,10 +161,18 @@ public class SchemaUpdate {
             }
 
             if (propFile != null) {
-                Properties props = new Properties();
-                props.putAll(cfg.getProperties());
-                props.load(new FileInputStream(propFile));
-                cfg.setProperties(props);
+                FileInputStream in = null;
+                try {
+                    Properties props = new Properties();
+                    props.putAll(cfg.getProperties());
+                    in = new FileInputStream(propFile);
+                    props.load(in);
+                    cfg.setProperties(props);
+                } finally {
+                    if (in != null) {
+                        in.close();
+                    }
+                }
             }
 
             StandardServiceRegistryImpl serviceRegistry = createServiceRegistry(cfg.getProperties());
@@ -236,7 +244,7 @@ public class SchemaUpdate {
                     if (target.doScript()) {
                         System.out.println(formatted);
                     }
-                    if (outputFile != null) {
+                    if (outputFileWriter != null) {
                         outputFileWriter.write(formatted + "\n");
                     }
                     if (target.doExport()) {

@@ -48,10 +48,10 @@
         if (confirm('<fmt:message key="console.app.version.label.newVersion.confirm"/>')) {
             var callback = {
                 success : function() {
-                    parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}//forms';
+                    parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>//forms';
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/version/new', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new', callback, '');
         }
     }
 
@@ -62,7 +62,7 @@
                     document.location = document.location;
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/delete', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');
         }
     }
 
@@ -74,7 +74,7 @@
                     parent.location.reload(false);
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/publish', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
         }
     }
 
@@ -86,13 +86,13 @@
                     parent.location.reload(false);
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/unpublish', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
         }
     }
 
     function viewVersion(version){
         if (version != '') {
-            parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/forms';
+            parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/forms';
         }
     }
 </script>

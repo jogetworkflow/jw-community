@@ -146,10 +146,19 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected void init() {
         Properties config = new Properties();
+        InputStream in = null;
         try {
-            config.load(getClass().getClassLoader().getResourceAsStream("config.properties"));
+            in = getClass().getClassLoader().getResourceAsStream("config.properties");
+            config.load(in);
         } catch (IOException ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch(IOException e) {                
+            }
         }
 
         // workaround for log4j classloading issues
@@ -460,6 +469,13 @@ public class PluginManager implements ApplicationContextAware {
         try {
             // check filename
             if (filename == null || filename.trim().length() == 0) {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
+                }
                 throw new PluginException("Invalid plugin name");
             }
             if (!filename.endsWith(".jar")) {
@@ -725,6 +741,10 @@ public class PluginManager implements ApplicationContextAware {
                         stream.flush();
                         stream.close();
                     }
+                } catch (Exception e) {
+                    LogUtil.error(PluginManager.class.getName(), e, "Error closing IO");
+                }
+                try {
                     if (input != null) {
                         input.close();
                     }

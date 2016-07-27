@@ -61,7 +61,7 @@
         <script type="text/javascript">
             ${userview.setting.theme.javascript}
             UI.base = "${pageContext.request.contextPath}";    
-            UI.userview_app_id = '${appId}';
+            UI.userview_app_id = '<c:out value="${appId}"/>';
             UI.userview_id = '${userview.properties.id}';
         </script>
 
@@ -87,7 +87,7 @@
                     <c:otherwise>
                         <div id="header-info">
                             <div id="header-name">
-                                <a href="${pageContext.request.contextPath}/web/userview/${appId}/${userview.properties.id}" id="header-link"><span id="name">${userview.properties.name}</span></a>
+                                <a href="${pageContext.request.contextPath}/web/userview/<c:out value="${appId}"/>/${userview.properties.id}" id="header-link"><span id="name">${userview.properties.name}</span></a>
                             </div>
                             <div id="header-description">
                                 <span id="description">${userview.properties.description}</span>

@@ -1118,10 +1118,11 @@ public class WorkflowJsonController {
         // get URL InputStream
         HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
         CloseableHttpClient client = builder.build();
+        InputStream in = null;
         try {
             HttpGet get = new HttpGet(url);
             HttpResponse httpResponse = client.execute(get);
-            InputStream in = httpResponse.getEntity().getContent();
+            in = httpResponse.getEntity().getContent();
 
             if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
                 // read InputStream
@@ -1143,7 +1144,14 @@ public class WorkflowJsonController {
                 }
             }
         } finally {
-            client.close();
+            try {
+                in.close();
+            } catch(IOException e) {
+            }
+            try {
+                client.close();
+            } catch(IOException e) {
+            }
         }
         
         AppUtil.writeJson(writer, jsonObject, callback);

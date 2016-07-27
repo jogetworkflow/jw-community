@@ -25,7 +25,7 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $("#generate").click(function(){
-                document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/generatepo/download?locale='+$("#locale").val();
+                document.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/generatepo/download?locale='+$("#locale").val();
             });
         });
     </script>

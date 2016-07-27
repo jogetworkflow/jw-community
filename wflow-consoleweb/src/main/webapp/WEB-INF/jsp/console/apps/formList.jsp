@@ -37,7 +37,7 @@
                     $("#nv-refresh").append(loading);
                 }
                 $.ajax({
-                    url: "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/navigator?hidden=true&_=" + jQuery.now(),
+                    url: "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/navigator?hidden=true&_=" + jQuery.now(),
                     success: function(data) {
                         $("#nv-container").html(data);
                     },

@@ -122,7 +122,11 @@ public class JsonResponseFilter implements Filter {
                 wrappedResponse.setContentType("application/json; charset=utf-8");
                 
                 if (httpRequest.getHeader("Origin") != null) {
-                    wrappedResponse.setHeader("Access-Control-Allow-Origin", httpRequest.getHeader("Origin"));
+                    String origin = httpRequest.getHeader("Origin");
+                    if (origin != null) {
+                        origin = origin.replace("\n", "").replace("\r", "");
+                    }
+                    wrappedResponse.setHeader("Access-Control-Allow-Origin", origin);
                     wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
                 }
             }

@@ -127,7 +127,7 @@
                                 <div class="form-row">
                                     <label for="dbPassword"><%= ResourceBundleUtil.getMessage("setup.datasource.label.dbPassword")%></label>
                                     <span class="form-input">
-                                        <input type="password" size="40" id="dbPassword" name="dbPassword" value=""/>
+                                        <input type="password" size="40" id="dbPassword" name="dbPassword" value="" autocomplete="off"/>
                                     </span>
                                 </div>
                             </div>
@@ -154,7 +154,7 @@
                                 <div class="form-row">
                                     <label for="jdbcPassword"><%= ResourceBundleUtil.getMessage("setup.datasource.label.jdbcPassword")%></label>
                                     <span class="form-input">
-                                        <input type="password" size="40" id="jdbcPassword" name="jdbcPassword" value=""/>
+                                        <input type="password" size="40" id="jdbcPassword" name="jdbcPassword" value="" autocomplete="off"/>
                                     </span>
                                 </div>
                             </div>

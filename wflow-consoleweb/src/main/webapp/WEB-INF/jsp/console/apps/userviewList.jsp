@@ -65,10 +65,10 @@
         if (confirm('<fmt:message key="console.userview.delete.label.confirmation"/>')) {
             var callback = {
                 success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userviews';
+                    document.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userviews';
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/delete', callback, 'ids='+selectedList);
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/delete', callback, 'ids='+selectedList);
         }
     }
     Template.init("#menu-apps", "#nav-app-userviews");

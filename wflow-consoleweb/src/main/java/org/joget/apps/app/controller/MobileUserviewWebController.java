@@ -362,7 +362,11 @@ public class MobileUserviewWebController {
     
     @RequestMapping({"/mapp/(*:appId)/(*:userviewId)/(~:key)", "/mapp/(*:appId)/(*:userviewId)", "/mapp/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String embedMobileView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key) throws Exception {
-        response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            origin = origin.replace("\n", "").replace("\r", "");
+        }
+        response.setHeader("Access-Control-Allow-Origin", origin);
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Content-type", "application/xml");
         
@@ -378,9 +382,9 @@ public class MobileUserviewWebController {
         }
         
         // validate input
-        SecurityUtil.validateStringInput(appId);
-        SecurityUtil.validateStringInput(menuId);        
-        SecurityUtil.validateStringInput(key);
+        appId = SecurityUtil.validateStringInput(appId);
+        menuId = SecurityUtil.validateStringInput(menuId);        
+        key = SecurityUtil.validateStringInput(key);
         Long appVersion = appService.getPublishedVersion(appId);
         if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

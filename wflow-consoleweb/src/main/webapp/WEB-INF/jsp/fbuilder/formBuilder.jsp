@@ -49,7 +49,7 @@
                 }
 
                 var form = $('#form-preview');
-                form.attr("action", "${pageContext.request.contextPath}/web/fbuilder/form/view/${formId}/" + primaryKey);
+                form.attr("action", "${pageContext.request.contextPath}/web/fbuilder/form/view/<c:out value="${formId}"/>/" + primaryKey);
                 $('#form-preview').submit();
                 return false;
             };
@@ -65,7 +65,7 @@
 
             var saveForm = function() {
                 var json = FormBuilder.generateJSON();
-                var saveUrl = "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/${formId}/update";
+                var saveUrl = "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/update";
                 $.ajax({
                     type: "POST",
                     data: {"json": json },
@@ -103,9 +103,9 @@
 
                 // initialize the form
                 FormBuilder.contextPath = '${pageContext.request.contextPath}';
-                FormBuilder.formPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/preview/';
-                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/element/preview';
-                FormBuilder.init("${formId}");
+                FormBuilder.formPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/preview/';
+                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/element/preview';
+                FormBuilder.init("<c:out value="${formId}"/>");
 
                 <c:if test="${empty elementHtml}">
                 // clear the form

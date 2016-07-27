@@ -4,7 +4,7 @@
     <c:choose>
         <c:when test="${param.builderMode eq 'true'}">
             <script type="text/javascript">
-                parent.location.href = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userviewDefinition.id}";
+                parent.location.href = "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>";
             </script>
         </c:when>
         <c:otherwise>
@@ -31,7 +31,7 @@
                 }
 
                 function launchUserviewBuilder() {
-                    var userviewBuilder = window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userviewDefinition.id}");
+                    var userviewBuilder = window.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userview/builder/<c:out value="${userviewDefinition.id}"/>");
                     if (userviewBuilder) {
                         closeDialog();
                     }

@@ -97,8 +97,8 @@ public class ProcessBuilderWebController {
     public void processBuilderScreenshotSubmit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "processDefId") String processDefId) throws IOException {
 
         // validate input
-        SecurityUtil.validateStringInput(appId);        
-        SecurityUtil.validateStringInput(processDefId);        
+        appId = SecurityUtil.validateStringInput(appId);        
+        processDefId = SecurityUtil.validateStringInput(processDefId);        
         
         // get base64 encoded image in POST body
         MultipartFile xpdlimage = null;

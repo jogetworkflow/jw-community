@@ -999,21 +999,23 @@ public class AppServiceImpl implements AppService {
             appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
             
             newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData));
+
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            byte[] xpdl = null;
+
+            if (packageDef != null) {
+                xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+            }
+
+            Long newAppVersion = newAppDef.getVersion() + 1;
+            newAppDef = importAppDefinition(newAppDef, newAppVersion, xpdl);
+            return newAppDef;
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
+            return null;
         } finally {
             TimeZone.setDefault(current);
         }
-
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        byte[] xpdl = null;
-        
-        if (packageDef != null) {
-            xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-        }
-        
-        Long newAppVersion = newAppDef.getVersion() + 1;
-        return importAppDefinition(newAppDef, newAppVersion, xpdl);
     }
 
     /**
@@ -2222,12 +2224,13 @@ public class AppServiceImpl implements AppService {
      */
     @Transactional
     public void importPO(String appId, String version, String locale, MultipartFile multipartFile) throws IOException {
-        InputStream inputStream = multipartFile.getInputStream();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-        AppDefinition appDef = getAppDefinition(appId, version);
+        InputStream inputStream = null;
         
         String line = null, key = null, translated = null;
         try {
+            inputStream = multipartFile.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+            AppDefinition appDef = getAppDefinition(appId, version);
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.startsWith("\"Language: ") && line.endsWith("\\n\"")) {
                     locale = line.substring(11, line.length() - 3);
@@ -2256,8 +2259,8 @@ public class AppServiceImpl implements AppService {
                 }
             }
         } catch(Exception e){
+            LogUtil.error(AppServiceImpl.class.getName(), e, "Error importing PO file " + e.getMessage());
         } finally {
-            bufferedReader.close();
             inputStream.close();
         }
     }

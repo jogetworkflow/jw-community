@@ -53,6 +53,7 @@ public class HostManager implements ApplicationContextAware {
      * @param profile 
      */
     public static void setCurrentProfile(String profile) {
+        profile = SecurityUtil.validateStringInput(profile);
         if (profile == null) {
             previousProfile.set(null);
         } else {

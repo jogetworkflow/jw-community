@@ -4,7 +4,7 @@
     <c:choose>
         <c:when test="${param.builderMode eq 'true'}">
             <script type="text/javascript">
-                parent.location.href = "${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/builder/${formId}";
+                parent.location.href = "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>";
             </script>
         </c:when>
         <c:otherwise>
@@ -21,16 +21,16 @@
             </div>
             <script type="text/javascript">
                 function closeDialog() {
-                    if("${activityDefId}" != ""){
+                    if("<c:out value="${activityDefId}"/>" != ""){
                         var parentUrlQueryString = parent.location.search;
                         if(parentUrlQueryString == '')
-                            parent.location.href = parent.location.href + "?tab=activityList&activityDefId=${activityDefId}";
+                            parent.location.href = parent.location.href + "?tab=activityList&activityDefId=<c:out value="${activityDefId}"/>";
                         else{
                             if(parentUrlQueryString.indexOf('tab') == -1)
-                                parent.location.href = parent.location.href + "&tab=activityList&activityDefId=${activityDefId}";
+                                parent.location.href = parent.location.href + "&tab=activityList&activityDefId=<c:out value="${activityDefId}"/>";
                             else{
 
-                                parent.location.href = parent.location.href.replace(parentUrlQueryString, '') + "?tab=activityList&activityDefId=${activityDefId}";
+                                parent.location.href = parent.location.href.replace(parentUrlQueryString, '') + "?tab=activityList&activityDefId=<c:out value="${activityDefId}"/>";
                             }
                         }
                     }else{
@@ -45,7 +45,7 @@
                 }
 
                 function launchFormBuilder() {
-                    var formBuilder = window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appDefinition.version}/form/builder/${formId}");
+                    var formBuilder = window.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>");
                     if (formBuilder) {
                         closeDialog();
                     }

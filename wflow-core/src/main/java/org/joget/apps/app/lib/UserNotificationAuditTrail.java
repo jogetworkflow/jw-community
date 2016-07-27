@@ -73,12 +73,12 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                 activityInstanceId = (String) args[2];
             }
             
-            if (activityInstanceId != null && !activityInstanceId.isEmpty()) {
+            if (activityInstanceId != null && !activityInstanceId.isEmpty() && users != null) {
                 WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
                 WorkflowActivity wfActivity = workflowManager.getActivityById(activityInstanceId);
                 LogUtil.info(UserNotificationAuditTrail.class.getName(), "Users to notify: " + users);
                 
-                if (wfActivity != null && !excluded((String) props.get("exclusion"), wfActivity) && users != null && !users.isEmpty()) {
+                if (wfActivity != null && !excluded((String) props.get("exclusion"), wfActivity) && !users.isEmpty()) {
                     sendEmail(props, auditTrail, workflowManager, users, wfActivity);
                 }
             }
