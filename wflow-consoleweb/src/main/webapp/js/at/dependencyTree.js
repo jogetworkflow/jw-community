@@ -59,8 +59,8 @@ DependencyTree.Util = {
         return url;
     },
     hideAndCall: function (viewer, callback) {
-        AdvancedTools.hideQuickOverlay();
         callback(viewer);
+        $(".boxy-wrapper").css("z-index", "9999999");
     },
     createEditIndicator: function (viewer, node, callback) {
         var ind = new DependencyTree.Indicator();

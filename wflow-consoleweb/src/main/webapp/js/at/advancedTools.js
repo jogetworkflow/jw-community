@@ -89,6 +89,18 @@ var AdvancedTools = {
         $("a#treeViewer").on("click", function() {
             AdvancedTools.treeViewer.render();
         });
+        
+        //if tree viewer is active and the JSON is changed, close the Advanced Tool Dialog
+        var textarea = $(AdvancedTools.jsonForm).find('textarea[name="json"]').hide();
+        $(textarea).on("change", function() {
+            if (!AdvancedTools.silentChange) {
+                var activeTab = $('.builder_tool_tabs li.ui-tabs-active a').attr("id");
+                if (activeTab === "treeViewer") {
+                    $(".boxy-wrapper").css("z-index", "2000");
+                    AdvancedTools.hideQuickOverlay();
+                }
+            }
+        });
     },
     initDiffChecker: function () {
         var tab = '<li><a href="#tab-diffChecker" id="diffChecker"><i class="fa fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></a></li>';
@@ -240,7 +252,9 @@ var AdvancedTools = {
         if ($("#advancedToolsOverlayContainer").is(":visible")) {
             //reset the json textarea if does not submit to update
             if (!AdvancedTools.isChange) {
+                AdvancedTools.silentChange = true;
                 $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(AdvancedTools.json).trigger("change");
+                AdvancedTools.silentChange = false;
             }
 
             //calling tree viewer hide to clean extra elements created during generate image
