@@ -32,6 +32,9 @@
             <c:if test="${!empty param.__a_}">
                 UI.userview_app_id = '<c:out value="${param.__a_}"/>';
                 UI.userview_id = '<c:out value="${param.__u_}"/>';
+                $(document).ready(function() {
+                    UI.initThemeParams();
+                });
             </c:if>
         </script>
     </head>
