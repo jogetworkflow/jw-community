@@ -2,6 +2,8 @@ package org.joget.apps.datalist.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
@@ -9,6 +11,7 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,5 +115,23 @@ public class DataListService {
         }
         DataListColumnFormat[] result = (DataListColumnFormat[]) list.toArray(new DataListColumnFormat[0]);
         return result;
+    }
+    
+    public static Object evaluateColumnValueFromRow(Object row, String propertyName) {
+        if (propertyName != null && !propertyName.isEmpty()) {
+            try {
+                Object value = LookupUtil.getBeanProperty(row, propertyName);
+
+                //handle for lowercase propertyName
+                if (value == null) {
+                    value = evaluateColumnValueFromRow(row, propertyName.toLowerCase());
+                }
+                if (value != null && value instanceof Date) {
+                    value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
+                }
+                return value;
+            } catch (Exception e) {}
+        }
+        return null;
     }
 }
