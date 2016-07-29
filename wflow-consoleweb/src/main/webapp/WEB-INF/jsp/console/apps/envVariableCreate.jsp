@@ -2,6 +2,8 @@
 
 <commons:popupHeader />
 
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
+    
     <div id="main-body-header">
         <fmt:message key="console.app.envVariable.create.label.title"/>
     </div>
@@ -23,12 +25,13 @@
                     <span class="form-input"><form:input path="id" cssErrorClass="form-input-error" /> *</span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.app.envVariable.common.label.value"/></label>
-                    <span class="form-input"><form:textarea path="value" cssErrorClass="form-input-error" rows="10" cols="60" /></span>
-                </div>
-                <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.envVariable.common.label.remarks"/></label>
                     <span class="form-input"><form:textarea path="remarks" cssErrorClass="form-input-error" cols="60" /></span>
+                </div>
+                <div class="form-row">
+                    <label for="field1"><fmt:message key="console.app.envVariable.common.label.value"/></label><br/>
+                    <form:textarea path="value" cssErrorClass="form-input-error" rows="10" cols="60" style="display:none" />
+                    <pre id="value_editor" name="value_editor" class="ace_editor"></pre>
                 </div>
             </fieldset>
             <div class="form-buttons">
@@ -39,6 +42,21 @@
     </div>
 
     <script type="text/javascript">
+        $(document).ready(function() {
+            var editor = ace.edit("value_editor");
+            var textarea = $('textarea[name="value"]');
+            editor.getSession().setValue(textarea.val());
+            editor.getSession().setTabSize(4);
+            editor.setTheme("ace/theme/textmate");
+            editor.getSession().setMode("ace/mode/text");
+            editor.setAutoScrollEditorIntoView(true);
+            editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
+            editor.setOption("minLines", 10);
+            editor.resize();
+            editor.getSession().on('change', function(){
+                textarea.val(editor.getSession().getValue());
+            });
+        });
         function validateField(){
             var idMatch = /^[0-9a-zA-Z_-]+$/.test($("#id").attr("value"));
             if(!idMatch){
