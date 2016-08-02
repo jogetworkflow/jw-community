@@ -123,6 +123,8 @@ public class PropertyUtil {
                         array.add(getProperties((JSONArray) value));
                     } else if (value instanceof JSONObject) {
                         array.add(getProperties((JSONObject) value));
+                    } else if (value instanceof String) {
+                        array.add(value);
                     }
                 }
             }
