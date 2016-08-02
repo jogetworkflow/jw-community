@@ -1683,7 +1683,7 @@ label4:
                 do
                 {
                     Activity act;
-                    int ji;
+                    int ji = 0;
 label5:
                     do
                     {
@@ -1707,7 +1707,9 @@ label7:
                                 } while(fullCheck);
                                 break label6;
                             }
-                            ji = gc.getJoinIndex(splitIndex);
+                            if (gc != null) {
+                                ji = gc.getJoinIndex(splitIndex);
+                            }
                             if(ji >= 0)
                                 continue label5;
                             isGraphConformant = false;

@@ -4,6 +4,8 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowVariable;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,12 +60,15 @@ public class JSPClientUtilities {
       
       if (!ipc) {
          ipc = true;
+         InputStream in = null;
+         InputStream in2 = null;
          try {
             realPath = replaceAll(realPath, "\\", "/");
             if (!realPath.endsWith("/")) {
                realPath = realPath + "/";
             }
-            p.load(JSPClientUtilities.class.getResourceAsStream(realPath + "conf/Shark.conf"));
+            in = JSPClientUtilities.class.getResourceAsStream(realPath + "conf/Shark.conf");
+            p.load(in);
             for (Iterator it = p.keySet().iterator(); it.hasNext();) {
                String key = (String) it.next();
                String value = p.getProperty(key);
@@ -79,9 +84,23 @@ public class JSPClientUtilities {
                   }
                }
             }
-            p.load(JSPClientUtilities.class.getResourceAsStream(realPath + "conf/SharkJSPClient.conf"));
+            in2 = JSPClientUtilities.class.getResourceAsStream(realPath + "conf/SharkJSPClient.conf");
+            p.load(in2);
          } catch (Exception e) {
             LogUtil.error(JSPClientUtilities.class.getName(), e, "");
+         } finally {
+             try {
+                if (in != null) {
+                    in.close();
+                }
+             } catch(IOException e) {                 
+             }
+             try {
+                if (in2 != null) {
+                    in2.close();
+                }
+             } catch(IOException e) {                 
+             }
          }
          p.setProperty("enginename", engineName);
       }      

@@ -207,6 +207,10 @@ public class XpdlImageUtil {
                 if (fos != null) {
                     fos.close();
                 }
+            } catch (Exception ex) {
+                LogUtil.error(XpdlImageUtil.class.getName(), ex, "");
+            }
+            try {
                 if (httpClient != null) {
                     httpClient.close();
                 }

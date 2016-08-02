@@ -257,8 +257,9 @@ public class HttpUtil {
             // If the response does not enclose an entity, there is no need
             // to worry about connection release
             if (entity != null) {
-                InputStream instream = entity.getContent();
+                InputStream instream = null;
                 try {
+                    instream = entity.getContent();
                     contents = "";
                     BufferedReader reader = new BufferedReader(new InputStreamReader(instream, "UTF-8"));
                     String line = reader.readLine();

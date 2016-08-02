@@ -194,11 +194,17 @@ public class JaWEManager {
                 fis = new FileInputStream(configFile);
                 Properties props = new Properties();
                 props.load(fis);
-                fis.close();
                 Utils.adjustProperties(properties, props);
             } catch (Exception ex) {
                 throw new Error("Something went wrong while reading of configuration from the file!!!",
                         ex);
+            } finally {
+                if (fis != null) {
+                    try {
+                        fis.close();
+                    } catch(IOException e) {
+                    }
+                }
             }
         } else {
             throw new Error(jaweManager.getName() + " needs to be configured properly - configuration file " + configFile + " does not exist!!!");
@@ -1139,9 +1145,17 @@ public class JaWEManager {
     protected static void prependBasicConfiguration() throws FileNotFoundException, IOException {
         String filename = JaWEConstants.JAWE_USER_HOME + "/" + JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME;
         if (new File(filename).isFile()) {
-            Properties props = new Properties(properties);
-            props.load(new FileInputStream(filename));
-            properties = props;
+            InputStream in = null; 
+            try {
+                in = new FileInputStream(filename);
+                Properties props = new Properties(properties);
+                props.load(in);
+                properties = props;
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
         }
     }
 
@@ -1149,10 +1163,18 @@ public class JaWEManager {
         String filename = JaWEConstants.JAWE_USER_HOME + "/" + JaWEConstants.JAWE_AUTOSAVE_PROPERTYFILE_NAME;
         Properties props = new Properties(properties);
         if (new File(filename).isFile()) {
-            props.load(new FileInputStream(filename));
-            properties = props;
-            properties.setProperty("test", "value");
-            hasAutosave = true;
+            InputStream in = null; 
+            try {
+                in = new FileInputStream(filename);
+                props.load(new FileInputStream(filename));
+                properties = props;
+                properties.setProperty("test", "value");
+                hasAutosave = true;
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
         }
     }
 
@@ -1173,6 +1195,7 @@ public class JaWEManager {
         if (!hasAutosave) {
             return;
         }
+        FileOutputStream out = null;
         try {
             // creating USER_HOME/.JaWE directory if it doesn't exist
             File ujdir = new File(JaWEConstants.JAWE_USER_HOME);
@@ -1184,10 +1207,18 @@ public class JaWEManager {
             }
             String cfn = JaWEConstants.JAWE_USER_HOME + "/" + JaWEConstants.JAWE_AUTOSAVE_PROPERTYFILE_NAME;
 
-            properties.store(new FileOutputStream(cfn), "Autosaved configuration, take precedence over " + JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME + " for conflict");
+            out = new FileOutputStream(cfn);
+            properties.store(out, "Autosaved configuration, take precedence over " + JaWEConstants.JAWE_BASIC_PROPERTYFILE_NAME + " for conflict");
 
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException ex) {
+                }
+            }
         }
     }
 }

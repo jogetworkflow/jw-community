@@ -1424,11 +1424,17 @@ public class JaWEController extends Observable implements
                     } catch (NullPointerException npe) {
                         throw new Exception();
                     } finally {
-                        if (flck != null) {
-                            flck.release();
+                        try {
+                            if (flck != null) {
+                                flck.release();
+                            }
+                        } catch (Exception ex) {
                         }
-                        if (r != null) {
-                            r.close(); // Harald Meister
+                        try {
+                            if (r != null) {
+                                r.close(); // Harald Meister
+                            }
+                        } catch (Exception ex) {
                         }
                     }
                     // if we are at this point, this means either the locking
