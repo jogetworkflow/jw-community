@@ -79,23 +79,14 @@ var Mobile = {
             }
         });
         // change list link URLs
-        $("a").each(function(index, el) {
+        $("a[target]").each(function(index, el) {
             var target = $(el).attr("target");
             if (target === "_self") {
                 $(el).removeAttr("target");
             }
         });
         var thisWindow = window;
-        $("a:not('[rel=popup]')").on("click", function() {
-            var previousUrl = thisWindow.location.href;
-            $.mobile.loading('show');
-            setTimeout(function() {
-                var currentUrl = thisWindow.location.href;
-                if (currentUrl == previousUrl) {
-                    $.mobile.loading('hide');
-                }
-            }, 2000);
-        });
+        
         // disable ajax for forms with file uploads
         var uploadFields = $("input[type='file']");
         if (uploadFields.length > 0) {
