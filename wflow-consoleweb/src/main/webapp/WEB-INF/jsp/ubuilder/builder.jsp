@@ -68,7 +68,7 @@
                     </c:forEach>
                 </c:forEach>
 
-                UserviewBuilder.loadUserview('${userviewId}', ${json});
+                UserviewBuilder.loadUserview('<c:out value="${userviewId}"/>', ${json});
                 UserviewBuilder.initBuilder();
 
                 // add toggle json link

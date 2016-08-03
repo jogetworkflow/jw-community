@@ -1343,7 +1343,7 @@ public class ConsoleWebController {
         
             return "console/apps/appCreate";
         } else {
-            String appId = appDefinition.getId();
+            String appId = StringEscapeUtils.escapeHtml(appDefinition.getId());
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/console/app/" + appId + "/forms";
             model.addAttribute("url", url);
@@ -2065,7 +2065,7 @@ public class ConsoleWebController {
 
             map.addAttribute("plugin", plugin);
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/activity/" + activityDefId + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid();
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/activity/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid();
             map.addAttribute("actionUrl", url);
         }
 
@@ -2326,7 +2326,7 @@ public class ConsoleWebController {
                 map.addAttribute("propertyEditable", (PropertyEditable) plugin);
             }
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + URLEncoder.encode(processDefId, "UTF-8") + "/participant/" + participantId + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
 
             map.addAttribute("plugin", plugin);
             map.addAttribute("actionUrl", url);
@@ -3718,7 +3718,7 @@ public class ConsoleWebController {
 
             map.addAttribute("plugin", plugin);
 
-            String url = request.getContextPath() + "/web/console/setting/directoryManagerImpl/config/submit?id=" + directoryManagerImpl;
+            String url = request.getContextPath() + "/web/console/setting/directoryManagerImpl/config/submit?id=" + StringEscapeUtils.escapeHtml(directoryManagerImpl);
             map.addAttribute("actionUrl", url);
             
             return "console/plugin/pluginConfig";
@@ -3820,8 +3820,10 @@ public class ConsoleWebController {
             return "console/setting/pluginUpload";
         }
 
+        InputStream in = null;
         try {
-            pluginManager.upload(pluginFile.getOriginalFilename(), pluginFile.getInputStream());
+            in = pluginFile.getInputStream();
+            pluginManager.upload(pluginFile.getOriginalFilename(), in);
         } catch (Exception e) {
             if (e.getCause().getMessage() != null && e.getCause().getMessage().contains("Invalid jar file")) {
                 map.addAttribute("errorMessage", "Invalid jar file");
@@ -3829,6 +3831,10 @@ public class ConsoleWebController {
                 map.addAttribute("errorMessage", "Error uploading plugin");
             }
             return "console/setting/pluginUpload";
+        } finally {
+            if (in != null) {
+                in.close();
+            }
         }
         String url = request.getContextPath() + "/web/console/setting/plugin";
         map.addAttribute("url", url);

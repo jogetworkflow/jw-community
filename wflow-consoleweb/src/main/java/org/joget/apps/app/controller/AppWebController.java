@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -87,13 +88,13 @@ public class AppWebController {
         formData = formService.retrieveFormDataFromRequest(formData, request);
         formData.setPrimaryKeyValue(recordId);
         
-        String formUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
+        String formUrl = "/web/client/app/" + appDef.getId() + "/" + appDef.getVersion() + "/process/" + StringEscapeUtils.escapeHtml(processDefId) + "/start";
         if (recordId != null) {
-            formUrl += "?recordId=" + recordId;
+            formUrl += "?recordId=" + StringEscapeUtils.escapeHtml(recordId);
         }
         String formUrlWithContextPath = AppUtil.getRequestContextPath() + formUrl;
         
-        PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
+        PackageActivityForm startFormDef = appService.viewStartProcessForm(appDef.getId(), appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
 

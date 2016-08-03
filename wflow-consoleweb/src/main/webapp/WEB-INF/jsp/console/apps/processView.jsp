@@ -49,7 +49,7 @@
                     <dt><fmt:message key="console.app.process.common.label.description"/></dt>
                     <dd><c:out value="${process.description}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.process.config.label.linkToRunProcess"/></dt>
-                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}?start=true</dd>
+                    <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/process/<c:out value="${processIdWithoutVersion}"/>?start=true</dd>
                 </dl>
             </div>
             <div class="form-buttons">
@@ -271,7 +271,7 @@
                                                         <c:if test="${activityForm.disableSaveAsDraft}">
                                                             <c:set var="disableSaveAsDraft" value="checked"/>
                                                         </c:if>
-                                                        <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('${processIdWithoutVersion}','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>
+                                                        <dd><input type="checkbox" name="disableSaveAsDraft" ${disableSaveAsDraft} onchange="toggleDisableSaveAsDraft('<c:out value="${processIdWithoutVersion}"/>','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.disableSaveAsDraft"/></dd>
                                                     </dl>
                                                 </c:if>
                                             </c:if>
@@ -291,7 +291,7 @@
                                                 <c:if test="${!empty activityForm && activityForm.autoContinue}">
                                                     <c:set var="showNext" value="checked"/>
                                                 </c:if>
-                                                <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('${processIdWithoutVersion}','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
+                                                <dd><input type="checkbox" name="showNextAssigment" ${showNext} onchange="toggleContinueNextAssignment('<c:out value="${processIdWithoutVersion}"/>','<ui:escape value="${activity.id}" format="html;javascript"/>', this)"> <fmt:message key="console.process.config.label.mapActivities.showContinueAssignment"/></dd>
                                             </dl>
                                         </div>
                                     </div>
@@ -533,7 +533,7 @@
                 }
 
                 function runProcess() {
-                    var url = "${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/${processIdWithoutVersion}";
+                    var url = "${pageContext.request.contextPath}/web/client/app/${appId}/${appVersion}/process/<c:out value="${processIdWithoutVersion}"/>";
                     popupDialog.src = url;
                     popupDialog.init();
                     //                window.open(url, "_blank", "");
@@ -578,7 +578,7 @@
                     var removeItem = {
                         success : function(response) {
                             if (participantId === 'processStartWhiteList') {
-                                document.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processIdWithoutVersion}?tab=participantList&participantId=processStartWhiteList';
+                                document.location.href = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/<c:out value="${processIdWithoutVersion}"/>?tab=participantList&participantId=processStartWhiteList';
                             } else {
                                 $('#participant_'+participantId).html('');
                             }

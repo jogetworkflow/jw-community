@@ -14,7 +14,7 @@
     </div>
     
     <div id="main-body-content">
-        <iframe id="marketplaceAppFrame" src='<c:url value="${appUrl}"/>' width="99%" height="98%"></iframe>
+        <iframe id="marketplaceAppFrame" src='<c:out value="${appUrl}"/>' width="99%" height="98%"></iframe>
     </div>    
 
     <style>

@@ -209,10 +209,12 @@ public class GeneratorUtil {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             domFactory.setNamespaceAware(true);
+            domFactory.setExpandEntityReferences(false);
             DocumentBuilder builder = domFactory.newDocumentBuilder();
             Document xpdlDoc = builder.parse(new InputSource(new ByteArrayInputStream(xpdl.getBytes("UTF-8"))));
             
             DocumentBuilderFactory domFactory2 = DocumentBuilderFactory.newInstance();
+            domFactory2.setExpandEntityReferences(false);
             DocumentBuilder builder2 = domFactory2.newDocumentBuilder();
             Document processDoc = builder2.parse(new InputSource(new ByteArrayInputStream(processXml.getBytes("UTF-8"))));
         
@@ -225,6 +227,7 @@ public class GeneratorUtil {
             
             if (participantsXml != null && !participantsXml.isEmpty()) {
                 DocumentBuilderFactory domFactory3 = DocumentBuilderFactory.newInstance();
+                domFactory3.setExpandEntityReferences(false);
                 DocumentBuilder builder3 = domFactory3.newDocumentBuilder();
                 Document participantsDoc = builder3.parse(new InputSource(new ByteArrayInputStream(participantsXml.getBytes("UTF-8"))));
             

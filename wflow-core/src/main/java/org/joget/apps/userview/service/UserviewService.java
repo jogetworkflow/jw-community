@@ -285,7 +285,7 @@ public class UserviewService {
                                         prefix = "/web/embed/userview/";
                                     }
 
-                                    menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? URLEncoder.encode(key, "UTF-8") : Userview.USERVIEW_KEY_EMPTY_VALUE) + "/" + mId);
+                                    menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? StringEscapeUtils.escapeHtml(key) : Userview.USERVIEW_KEY_EMPTY_VALUE) + "/" + mId);
                                 }
 
                                 //set Current, if current menu id is empty, search the 1st valid menu

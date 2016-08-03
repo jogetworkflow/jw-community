@@ -193,7 +193,7 @@
 
     function deleteProfile(){
         if(confirm("<fmt:message key="console.setting.datasource.label.deleteProfileConfirm"/>")) {
-            var currentProfile = '${currentProfile}';
+            var currentProfile = '<c:out value="${currentProfile}"/>';
             if($('#profileList').val() == currentProfile)
                 alert("<fmt:message key="console.setting.datasource.label.deleteProfileInvalid"/>")
             else{

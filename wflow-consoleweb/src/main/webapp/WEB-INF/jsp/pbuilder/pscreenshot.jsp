@@ -63,16 +63,16 @@
                             },
                             success: function() {
                                 <c:if test="${!empty callback}">
-                                    if (parent && parent.${callback}) {
-                                        parent.${callback}();
+                                    if (parent && parent.<c:out value="${callback}"/>) {
+                                        parent.<c:out value="${callback}"/>();
                                     }
                                 </c:if>
 //                                    alert("Saved " + processDefId);
                             },
                             error: function(e) {
                                 <c:if test="${!empty callback}">
-                                    if (parent && parent.${callback}) {
-                                        parent.${callback}();
+                                    if (parent && parent.<c:out value="${callback}"/>) {
+                                        parent.<c:out value="${callback}"/>();
                                     }
                                 </c:if>
 //                                alert("Error saving " + processDefId);

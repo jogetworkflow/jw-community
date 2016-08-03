@@ -972,7 +972,7 @@ public class PluginManager implements ApplicationContextAware {
 
         } catch (Exception ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");
-            result = ex.toString();
+            result = ResourceBundleUtil.getMessage("general.error.error500");
         }
         return result;
     }

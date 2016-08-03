@@ -180,9 +180,9 @@ public class MobileUserviewWebController {
             Cookie cookie = cookiesMap.get("cordova");
             if ("true".equals(value)) {
                 if (cookie == null) {
-                    cookie = new Cookie("cordova", value);
+                    cookie = new Cookie("cordova", "true");
                 } else {
-                    cookie.setValue(value);
+                    cookie.setValue("true");
                 }
                 cookie.setPath(request.getContextPath());
                 response.addCookie(cookie);
