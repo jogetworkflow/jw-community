@@ -59,7 +59,7 @@
         if (version != '' && confirm('<fmt:message key="console.app.delete.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location.reload();
+                    document.location.reload(true);
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');
@@ -70,8 +70,8 @@
         if (version != '' && confirm('<fmt:message key="console.app.publish.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location.reload();
-                    parent.location.reload(false);
+                    document.location.reload(true);
+                    parent.location.reload(true);
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
@@ -82,8 +82,8 @@
         if (version != '' && confirm('<fmt:message key="console.app.unpublish.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location.reload();
-                    parent.location.reload(false);
+                    document.location.reload(true);
+                    parent.location.reload(true);
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
