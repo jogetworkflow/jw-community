@@ -285,8 +285,10 @@ public class HttpUtil {
                 } finally {
 
                     // Closing the input stream will trigger connection release
-                    instream.close();
-
+                    if (instream != null) {
+                        instream.close();
+                    }
+                    
                 }
             }    
         } finally {

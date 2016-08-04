@@ -1166,7 +1166,7 @@ public class JaWEManager {
             InputStream in = null; 
             try {
                 in = new FileInputStream(filename);
-                props.load(new FileInputStream(filename));
+                props.load(in);
                 properties = props;
                 properties.setProperty("test", "value");
                 hasAutosave = true;

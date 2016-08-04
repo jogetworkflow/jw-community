@@ -113,7 +113,7 @@
             var callback = {
                 success : function() {
                     alert("<fmt:message key='console.monitoring.running.label.reevaluate.success'/>");
-                    document.location = document.location;
+                    document.location.reload(true);
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/running/process/reevaluate/${wfProcess.instanceId}', callback, '');
