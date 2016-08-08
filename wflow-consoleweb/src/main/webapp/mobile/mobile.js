@@ -206,7 +206,13 @@ var Mobile = {
                 }
             });
         } else {
-            window.location.href = Mobile.contextPath + "/j_spring_security_logout";
+            $.ajax({
+                type: 'POST',
+                url: Mobile.contextPath + "/j_spring_security_logout",
+                success: function(data) {
+                    window.location.href = Mobile.contextPath + "/web/mlogin";
+                }
+            });
         }
     }
 };

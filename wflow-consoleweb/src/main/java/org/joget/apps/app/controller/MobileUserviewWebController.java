@@ -87,6 +87,8 @@ public class MobileUserviewWebController {
         }
         if (cookiesMap.get("all-apps") != null && "true".equals(cookiesMap.get("all-apps").getValue())) {
             map.addAttribute("showAllAppsButton", "true");
+        } else {
+            map.addAttribute("showAllAppsButton", "false");
         }
 
         map.addAttribute("appId", appDef.getId());
@@ -179,52 +181,28 @@ public class MobileUserviewWebController {
             
             Cookie cookie = cookiesMap.get("cordova");
             if ("true".equals(value)) {
-                if (cookie == null) {
-                    cookie = new Cookie("cordova", "true");
-                } else {
-                    cookie.setValue("true");
-                }
-                cookie.setPath(request.getContextPath());
-                response.addCookie(cookie);
-                
+                model.addAttribute("cordova", "true");
                 model.addAttribute("showDesktopButton", "false");
             } else if (!"true".equals(value) && cookie != null) {
-                cookie.setValue("");
-                cookie.setPath(request.getContextPath());
-                cookie.setMaxAge(0);
-                response.addCookie(cookie);
+                model.addAttribute("cordova", "false");
             }
         } else if (cookiesMap.get("cordova") != null && "true".equals(cookiesMap.get("cordova").getValue())) {
             model.addAttribute("showDesktopButton", "false");
         }
         
         //redirect directly to app when only has one userview
-        if (resultAppDefinitionList.size() == 1 && !WorkflowUtil.isCurrentUserAnonymous()) {
+        if (resultAppDefinitionList.size() == 1) {
             AppDefinition appDef = resultAppDefinitionList.iterator().next();
             if (appDef.getUserviewDefinitionList() != null && appDef.getUserviewDefinitionList().size() == 1) {
                 UserviewDefinition uv = appDef.getUserviewDefinitionList().iterator().next();
                 
-                Cookie cookie = cookiesMap.get("all-apps");
-                if (cookie != null) {
-                    cookie.setValue("");
-                    cookie.setPath(request.getContextPath());
-                    cookie.setMaxAge(0);
-                    response.addCookie(cookie);
-                }
+                model.addAttribute("allApps", "false");
             
                 return "redirect:/web/mobile/"+appDef.getAppId()+"/"+uv.getId()+"/"+Userview.USERVIEW_KEY_EMPTY_VALUE+"/landing";
             }
-        } else {
-            Cookie cookie = cookiesMap.get("all-apps");
-            if (cookie == null) {
-                cookie = new Cookie("all-apps", "true");
-            } else {
-                cookie.setValue("true");
-            }
-            cookie.setPath(request.getContextPath());
-            response.addCookie(cookie);
         }
         
+        model.addAttribute("allApps", "true");
         model.addAttribute("appDefinitionList", resultAppDefinitionList);
         LogUtil.debug(getClass().getName(), "Request: /web/mobile/apps");
         return "mobile/mApps";
