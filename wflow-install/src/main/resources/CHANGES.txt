@@ -2,6 +2,18 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.8
+================
+2824	Modified: wflow-consoleweb - Modified cookie handling for mobile view @5.0-SNAPSHOT
+2823	Fixed: wflow-consoleweb - Correction for r2822. appVersion.jsp - Make the page reload from server. @5.0-SNAPSHOT
+2822	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2821	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2820	Fixed: wflow-core/wflow-consoleweb - Select Box - multi select not working in mobile view. #4268 @5.0-SNAPSHOT
+2819	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2818	Fixed: wflow-plugin-base - Array of String in JSON is not parse correctly. #4272 @5.0-SNAPSHOT
+2817	Fixed: wflow-consoleweb - Popup Dialog - The dialog did not follow userview theme style in subsequent action. #4264 @5.0-SNAPSHOT
+2816	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+
 CHANGES IN 5.0.7
 ================
 2811	Fixed: wflow-core - Run Process Menu - Record Id & workflow variables URL parameters are ignored when there is no form mapped to "Run Process" activity. @5.0-SNAPSHOT
