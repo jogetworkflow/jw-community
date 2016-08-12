@@ -26,10 +26,10 @@ JPopup = {
     show : function (id, url, params, title, width, height, action) {
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
             JPopup.create(id, title, width, height);
-        } else {
-            width = UI.getPopUpWidth(width);
-            height = UI.getPopUpHeight(height);
         }
+        
+        width = UI.getPopUpWidth(width);
+        height = UI.getPopUpHeight(height);
         
         $("#"+id).remove();
         JPopup.dialogboxes[id].setContent('<iframe id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/clear.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
