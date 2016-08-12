@@ -2,6 +2,8 @@ package org.joget.apps.app.controller;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -34,9 +37,14 @@ public class PropertyJsonController {
     PluginDefaultPropertiesDao pluginDefaultPropertiesDao;
 
     @RequestMapping("/property/json/getElements")
-    public void getElements(Writer writer, @RequestParam("classname") String className) throws Exception {
+    public void getElements(Writer writer, @RequestParam("classname") String className, @RequestParam(value = "exclude", required = false) String exclude) throws Exception {
         JSONArray jsonArray = new JSONArray();
-
+        
+        Collection<String> excludeList = new ArrayList<String>();
+        if (exclude != null && !exclude.isEmpty()) {
+            excludeList.addAll(Arrays.asList(exclude.split(";")));
+        }
+        
         try {
             // get available elements from the plugin manager
             Collection<Plugin> elementList = pluginManager.list(Class.forName(className));
@@ -46,10 +54,10 @@ public class PropertyJsonController {
             jsonArray.put(empty);
 
             for (Plugin p : elementList) {
-                if (!(p instanceof HiddenPlugin)) {
-                    PropertyEditable element = (PropertyEditable) p;
+                String pClassName = ClassUtils.getUserClass(p).getName();
+                if (!(p instanceof HiddenPlugin || excludeList.contains(pClassName))) {
                     Map<String, String> option = new HashMap<String, String>();
-                    option.put("value", element.getClassName());
+                    option.put("value", pClassName);
                     option.put("label", p.getI18nLabel());
                     jsonArray.put(option);
                 }
