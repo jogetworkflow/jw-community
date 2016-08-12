@@ -20,7 +20,7 @@
                 <legend><fmt:message key="console.directory.group.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.group.common.label.id"/></label>
-                    <span class="form-input">${group.id}<input id="id" type="hidden" value="${group.id}" name="id"/></span>
+                    <span class="form-input"><c:out value="${group.id}"/><input id="id" type="hidden" value="<c:out value="${group.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.group.common.label.name"/></label>

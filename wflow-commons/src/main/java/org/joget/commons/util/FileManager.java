@@ -56,8 +56,8 @@ public class FileManager {
                     } catch (Exception ex) {
                     }
                 }
-                return filename;
             }
+            return filename;
         }
         return null;
     }

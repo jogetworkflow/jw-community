@@ -13,10 +13,14 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.commons.util.FileLimitException;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.plugin.base.PluginManager;
@@ -29,6 +33,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class ProcessBuilderWebController {
@@ -63,7 +68,7 @@ public class ProcessBuilderWebController {
     }
 
     @RequestMapping(value="/console/app/(*:appId)/(~:version)/process/screenshot/(*:processDefId)")
-    public String processBuilderScreenshot(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "processDefId") String processDefId) throws IOException {
+    public String processBuilderScreenshot(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "processDefId") String processDefId, @RequestParam(value = "callback", required = false) String callback) throws IOException {
         // get process info
         WorkflowProcess wfProcess = workflowManager.getProcess(processDefId);
 
@@ -81,6 +86,7 @@ public class ProcessBuilderWebController {
             map.addAttribute("appId", appId);
             map.addAttribute("wfProcess", wfProcess);
             map.addAttribute("xpdl", xpdl);
+            map.addAttribute("callback", callback);
         }
 
         String viewer = "pbuilder/pscreenshot";
@@ -91,28 +97,45 @@ public class ProcessBuilderWebController {
     public void processBuilderScreenshotSubmit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "processDefId") String processDefId) throws IOException {
 
         // validate input
-        SecurityUtil.validateStringInput(appId);        
-        SecurityUtil.validateStringInput(processDefId);        
+        appId = SecurityUtil.validateStringInput(appId);        
+        processDefId = SecurityUtil.validateStringInput(processDefId);        
         
         // get base64 encoded image in POST body
-        String imageBase64 = request.getParameter("base64data");
-        imageBase64 = imageBase64.substring("data:image/png;base64,".length());
-        
-        // convert into bytes
-        byte[] decodedBytes = Base64.decodeBase64(imageBase64.getBytes());        
-        
-        // save into image file
-        String filename = processDefId + XpdlImageUtil.IMAGE_EXTENSION;
-        String path = SetupManager.getBaseDirectory() + File.separator + "app_xpdlImages" + File.separator + appId;
-        new File(path).mkdirs();
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
-        File f = new File(path + File.separator + filename);
-        ImageIO.write(image, "png", f);
-        
-        // create thumbnail
-        createThumbnail(image, path, processDefId);
-        
-        LogUtil.debug(getClass().getName(), "Created screenshot for process " + appId);
+        MultipartFile xpdlimage = null;
+        try {
+            xpdlimage = FileStore.getFile("xpdlimage");
+        } catch (FileLimitException e) {
+            LogUtil.warn(ProcessBuilderWebController.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            return;
+        }
+        if (xpdlimage != null) {
+            ByteArrayInputStream stream = null;
+            try {
+                stream =new ByteArrayInputStream(xpdlimage.getBytes());
+                String imageBase64 = IOUtils.toString(stream, "UTF-8");
+                imageBase64 = imageBase64.substring("data:image/png;base64,".length());
+
+                // convert into bytes
+                byte[] decodedBytes = Base64.decodeBase64(imageBase64.getBytes());        
+
+                // save into image file
+                String filename = processDefId + XpdlImageUtil.IMAGE_EXTENSION;
+                String path = SetupManager.getBaseDirectory() + File.separator + "app_xpdlImages" + File.separator + appId;
+                new File(path).mkdirs();
+                BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
+                File f = new File(path + File.separator + filename);
+                ImageIO.write(image, "png", f);
+
+                // create thumbnail
+                createThumbnail(image, path, processDefId);
+
+                LogUtil.debug(getClass().getName(), "Created screenshot for process " + appId);
+            } finally {
+                if (stream != null) {
+                    stream.close();
+                }
+            }
+        }
     }
     
     protected void createThumbnail(Image image, String path, String processDefId) {

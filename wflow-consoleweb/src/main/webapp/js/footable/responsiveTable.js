@@ -1,7 +1,9 @@
 $(document).ready(function() {
-    $(".dataList table").each(function(){
-        responsiveTable($(this));
-    });
+    if ((typeof _enableResponsiveTable) !== "undefined" && _enableResponsiveTable) {
+        $(".dataList table").each(function(){
+            responsiveTable($(this));
+        });
+    }
 });
 /* ---------- Responsive Table -------------- */
 function responsiveTable(table) {

@@ -42,7 +42,7 @@ public class DynamicDataSourceManager {
             return false;
         } finally {
             try {
-                if (conn != null && !conn.isClosed()) {
+                if (conn != null) {
                     conn.close();
                 }
             } catch (Exception e) {
@@ -200,6 +200,7 @@ public class DynamicDataSourceManager {
         FileOutputStream fos = null;
         String defaultDataSourceFilename = determineDefaultDataSourceFilename();
         try {
+            profileName = SecurityUtil.validateStringInput(profileName);
             File datasourceFile = new File(defaultDataSourceFilename);
             if (!datasourceFile.exists()) {
                 new File(FILE_PATH).mkdirs();
@@ -219,6 +220,10 @@ public class DynamicDataSourceManager {
                 if (fis != null) {
                     fis.close();
                 }
+            } catch (Exception e) {
+                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+            }
+            try {
                 if (fos != null) {
                     fos.close();
                 }
@@ -230,6 +235,7 @@ public class DynamicDataSourceManager {
 
     public static boolean createProfile(String profileName) {
         try {
+            profileName = SecurityUtil.validateStringInput(profileName);
             File file = new File(determineFilePath(profileName));
             if (file.exists()) {
                 return false;
@@ -245,6 +251,7 @@ public class DynamicDataSourceManager {
 
     public static boolean deleteProfile(String profileName) {
         try {
+            profileName = SecurityUtil.validateStringInput(profileName);
             File file = new File(determineFilePath(profileName));
             file.delete();
         } catch (Exception e) {
@@ -272,6 +279,10 @@ public class DynamicDataSourceManager {
                 if (fis != null) {
                     fis.close();
                 }
+            } catch (Exception e) {
+                LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
+            }
+            try {
                 if (fos != null) {
                     fos.close();
                 }

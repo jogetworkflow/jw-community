@@ -32,7 +32,7 @@
     <div id="main-body">
         <dl>
             <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
-            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
+            <dd><a href="${pageContext.request.contextPath}/web/console/monitor/<c:out value="${processStatus}"/>/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.id"/></dt>
             <dd><c:out value="${activity.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.activity.common.label.definitionId"/></dt>
@@ -72,7 +72,7 @@
             <c:choose>
                 <c:when test="${trackWflowActivity.type == 'subflow'}">
                     <dt><fmt:message key="console.app.activity.common.label.subflowId"/></dt>
-                    <dd><a href="${pageContext.request.contextPath}/web/console/monitor/${processStatus}/process/view/${trackWflowActivity.nameOfAcceptedUser}"><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/></a>&nbsp;</dd>
+                    <dd><a href="${pageContext.request.contextPath}/web/console/monitor/<c:out value="${processStatus}"/>/process/view/${trackWflowActivity.nameOfAcceptedUser}"><c:out value="${trackWflowActivity.nameOfAcceptedUser}"/></a>&nbsp;</dd>
                 </c:when>
                 <c:when test="${trackWflowActivity.status != 'Pending'}">
                     <dt><fmt:message key="console.app.activity.common.label.acceptedUser"/></dt>
@@ -210,7 +210,7 @@
         ConnectionManager.post(url, callback, "username=" + escape(value));
     }
 
-    Template.init("#menu-monitor", "#nav-monitor-${processStatus}");
+    Template.init("#menu-monitor", "#nav-monitor-<c:out value="${processStatus}"/>");
 </script>
 
 <commons:footer />

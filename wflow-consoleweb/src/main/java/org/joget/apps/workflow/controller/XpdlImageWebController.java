@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.workflow.util.XpdlImageUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ public class XpdlImageWebController {
 
     @RequestMapping("/console/images/xpdl/thumbnail/(*:processDefId)")
     public void getXpdlThumbnail(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        processDefId = SecurityUtil.validateStringInput(processDefId);
         processDefId = processDefId.replaceAll(":", "#");
 
         File file = null;
@@ -48,6 +50,7 @@ public class XpdlImageWebController {
 
     @RequestMapping("/console/images/xpdl/(*:processDefId)")
     public void getXpdlImage(OutputStream out, @RequestParam("processDefId") String processDefId, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        processDefId = SecurityUtil.validateStringInput(processDefId);
         processDefId = processDefId.replaceAll(":", "#");
         
         File file = null;

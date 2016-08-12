@@ -271,31 +271,36 @@ public class SecurityUtil implements ApplicationContextAware {
     /**
      * Validates a boolean String
      * @param input
+     * @return
      * @throws IllegalArgumentException if the input is invalid
      */
-    public static void validateBooleanInput(Boolean input) throws IllegalArgumentException {
+    public static Boolean validateBooleanInput(Boolean input) throws IllegalArgumentException {
+        return input;
     }
 
     /**
      * Validates an input String
      * @param input
+     * @return
      * @throws IllegalArgumentException if the input is invalid
      */
-    public static void validateStringInput(String input) throws IllegalArgumentException {
-        validateInput(input, "^[0-9a-zA-Z_\\-\\.\\#\\:]+$");
+    public static String validateStringInput(String input) throws IllegalArgumentException {
+        return validateInput(input, "^[0-9a-zA-Z_\\-\\.\\#\\:]+$");
     }
 
     /**
      * Validates input
      * @param input
      * @param patternStr
+     * @return
      * @throws IllegalArgumentException if the input is invalid
      */
-    public static void validateInput(String input, String patternStr) throws IllegalArgumentException {
+    public static String validateInput(String input, String patternStr) throws IllegalArgumentException {
         Pattern pattern = Pattern.compile(patternStr);
         if (input != null && !input.isEmpty() && !pattern.matcher(input).matches()) {
             throw new IllegalArgumentException("Invalid input: " + input);
         }
+        return input;
     }
 
 }

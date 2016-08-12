@@ -118,7 +118,9 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                 }
 
                 // set value into Properties and FormRowSet object
-                result.setProperty(name, delimitedValue);
+                if (result != null) {
+                    result.setProperty(name, delimitedValue);
+                }
             }
         }
         return rowSet;

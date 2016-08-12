@@ -20,7 +20,7 @@
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <c:if test="${!empty param.appId}">
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key='adminBar.label.designApp'/>" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms')"><i class="icon-edit"></i><br><fmt:message key='adminBar.label.app'/></a>
+                        <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key='adminBar.label.designApp'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms')"><i class="icon-edit"></i><br><fmt:message key='adminBar.label.app'/></a>
                     </div>
                 </c:if>
                 <c:if test="${!empty param.appControls}">

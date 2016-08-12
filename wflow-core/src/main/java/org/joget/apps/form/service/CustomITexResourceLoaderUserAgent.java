@@ -124,9 +124,17 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
                             if (bos != null) {
                                 bos.close();
                             }
+                        } catch (Exception ex) {
+                            LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
+                        }
+                        try {
                             if (is != null) {
                                 is.close();
                             }
+                        } catch (Exception ex) {
+                            LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
+                        }
+                        try {
                             if (httpClient != null) {
                                 httpClient.close();
                             }

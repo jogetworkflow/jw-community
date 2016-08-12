@@ -35,7 +35,7 @@
             <c:choose>
                 <c:when test="${actionResult.type == 'REDIRECT' && actionResult.url == 'REFERER'}">
                     <script>
-                        location.href = "${header['Referer']}";
+                        location.href = "<c:out value="${header['Referer']}"/>";
                     </script>
                 </c:when>
                 <c:when test="${actionResult.type == 'REDIRECT'  && !empty actionResult.url}">

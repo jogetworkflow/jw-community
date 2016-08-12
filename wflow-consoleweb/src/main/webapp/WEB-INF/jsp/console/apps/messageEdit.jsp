@@ -20,11 +20,11 @@
                 <legend><fmt:message key="console.app.message.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.message.common.label.messageKey"/></label>
-                    <span class="form-input">${message.messageKey}<input id="id" type="hidden" value="${message.id}" name="id"/></span>
+                    <span class="form-input"><c:out value="${message.messageKey}"/><input id="id" type="hidden" value="<c:out value="${message.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.message.common.label.locale"/></label>
-                    <span class="form-input">${message.locale}</span>
+                    <span class="form-input"><c:out value="${message.locale}"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.app.message.common.label.message"/></label>

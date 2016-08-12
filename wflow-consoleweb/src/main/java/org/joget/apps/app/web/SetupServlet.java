@@ -30,6 +30,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -85,6 +86,11 @@ public class SetupServlet extends HttpServlet {
                 dbName = null;
             }
 
+            // validate dbName
+            if (dbName != null) {
+                dbName = SecurityUtil.validateStringInput(dbName);
+            }
+            
             // create datasource
             LogUtil.info(getClass().getName(), "===== Starting Database Setup =====");
             boolean success = false;
@@ -92,6 +98,7 @@ public class SetupServlet extends HttpServlet {
             Connection con = null;
             Statement stmt = null;
             ResultSet rs = null;
+            InputStream in = null;
             BasicDataSource ds = new BasicDataSource();
             ds.setDriverClassName(jdbcDriver);
             ds.setUrl(jdbcUrl);
@@ -140,7 +147,7 @@ public class SetupServlet extends HttpServlet {
                         throw new SQLException("Unrecognized database type, please setup the datasource manually");
                     }
 
-                    if (dbName != null) {
+                    if (dbName != null && stmt != null) {
                         // create database
                         try {
                             LogUtil.info(getClass().getName(), "Create database " + dbName);
@@ -157,14 +164,16 @@ public class SetupServlet extends HttpServlet {
                     // execute schema file
                     LogUtil.info(getClass().getName(), "Execute schema " + schemaFile);
                     ScriptRunner runner = new ScriptRunner(con, false, true);
-                    runner.runScript(new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(schemaFile))));
+                    in = getClass().getResourceAsStream(schemaFile);
+                    runner.runScript(new BufferedReader(new InputStreamReader(in)));
                 }
                 if ("true".equals(sampleUsers)) {
                     // create users
                     String schemaFile = "/setup/sql/jwdb-users.sql";
                     LogUtil.info(getClass().getName(), "Create users using schema " + schemaFile);
                     ScriptRunner runner = new ScriptRunner(con, false, true);
-                    runner.runScript(new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(schemaFile))));
+                    in = getClass().getResourceAsStream(schemaFile);
+                    runner.runScript(new BufferedReader(new InputStreamReader(in)));
                 }
                 
                 con.commit();
@@ -243,6 +252,13 @@ public class SetupServlet extends HttpServlet {
                 } catch (SQLException ex) {
                     // ignore
                 }
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                }
             }
 
             // send result
@@ -265,9 +281,10 @@ public class SetupServlet extends HttpServlet {
      */
     protected void importApp(ApplicationContext context, String path) {
         LogUtil.info(getClass().getName(), "Import app " + path);
+        InputStream in = null;
         try {
             final AppService appService = (AppService)context.getBean("appService");
-            InputStream in = getClass().getResourceAsStream(path);
+            in = getClass().getResourceAsStream(path);
             byte[] fileContent = readInputStream(in);
             final AppDefinition appDef = appService.importApp(fileContent);
             if (appDef != null) {
@@ -281,6 +298,13 @@ public class SetupServlet extends HttpServlet {
             }
         } catch(Exception ex) {
             LogUtil.error(getClass().getName(), ex, "Failed to import app " + path);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch(IOException e) {                
+            }
         }
     }    
 

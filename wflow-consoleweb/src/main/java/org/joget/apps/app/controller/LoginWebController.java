@@ -2,6 +2,7 @@ package org.joget.apps.app.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -128,10 +129,16 @@ public class LoginWebController {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return null;
             }
-            map.addAttribute("appId", appId);
+            map.addAttribute("appId", appDef.getId());
             map.addAttribute("appDefinition", appDef);
             map.addAttribute("appVersion", appDef.getVersion());
+            if (key != null) {
+                key = StringEscapeUtils.escapeHtml(key);
+            }
             map.addAttribute("key", key);
+            if (menuId != null) {
+                menuId = StringEscapeUtils.escapeHtml(menuId);
+            }
             map.addAttribute("menuId", menuId);
             map.addAttribute("embed", embed);
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
@@ -199,10 +206,16 @@ public class LoginWebController {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return null;
             }
-            map.addAttribute("appId", appId);
+            map.addAttribute("appId", appDef.getId());
             map.addAttribute("appDefinition", appDef);
             map.addAttribute("appVersion", appDef.getVersion());
+            if (key != null) {
+                key = StringEscapeUtils.escapeHtml(key);
+            }
             map.addAttribute("key", key);
+            if (menuId != null) {
+                menuId = StringEscapeUtils.escapeHtml(menuId);
+            }
             map.addAttribute("menuId", menuId);
             map.addAttribute("embed", embed);
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);

@@ -89,20 +89,22 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             label = StringUtil.stripHtmlRelaxed(label);
         }
         
+        String escapedId = getPropertyString("id").replaceAll("[\\s-]", "_");
+        
         if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
-            String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_showDialog();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
+            String menu = "<a onclick=\"menu_" + escapedId + "_showDialog();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
             menu += "<script>\n";
 
             if ("Yes".equals(getPropertyString("showInPopupDialog"))) {
                 String url = getUrl() + "?embed=true";
 
-                menu += "var menu_" + getPropertyString("id") + "Dialog = new PopupDialog(\"" + url + "\",\"\");\n";
+                menu += "var menu_" + escapedId + "Dialog = new PopupDialog(\"" + url + "\",\"\");\n";
             }
-            menu += "function menu_" + getPropertyString("id") + "_showDialog(){\n";
+            menu += "function menu_" + escapedId + "_showDialog(){\n";
             if ("true".equals(getRequestParameter("isPreview"))) {
                 menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.showInPopupPreviewWarning") + "\");\n";
             } else {
-                menu += "menu_" + getPropertyString("id") + "Dialog.init();\n";
+                menu += "menu_" + escapedId + "Dialog.init();\n";
             }
             menu += "}\n</script>";
             return menu;
@@ -117,14 +119,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     url = url.replace("/web/userview", "/web/mobile");
                 }
                 
-                String menu = "<a onclick=\"menu_" + getPropertyString("id") + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
-                menu += "<form id=\"menu_" + getPropertyString("id") + "_form\" method=\"POST\" action=\"" + url + "?_action=run" + "\" style=\"display:none\"></form>\n";
+                String menu = "<a onclick=\"menu_" + escapedId + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
+                menu += "<form id=\"menu_" + escapedId + "_form\" method=\"POST\" action=\"" + url + "?_action=run" + "\" style=\"display:none\"></form>\n";
                 menu += "<script>"
-                        + "function menu_" + getPropertyString("id") + "_postForm() {";
+                        + "function menu_" + escapedId + "_postForm() {";
                 if ("true".equals(getRequestParameter("isPreview"))) {
                     menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.runProcessPreviewWarning") + "\");\n";
                 } else {
-                    menu += "$('#menu_" + getPropertyString("id") + "_form').submit()\n";
+                    menu += "$('#menu_" + escapedId + "_form').submit();\n";
                 }
                 menu += "}";
                 menu += "</script>\n";
@@ -210,8 +212,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     setProperty("view", "featureDisabled");
                 } else {
                     viewProcess(null);
-                    String csrfToken = "";
+                    
                     HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null && request.getQueryString() != null && !request.getQueryString().isEmpty()) {
+                        String url = StringUtil.addParamsToUrl(getPropertyString("startUrl"), StringUtil.getUrlParams(request.getQueryString()));
+                        setProperty("startUrl", url);
+                    }
+                    
+                    String csrfToken = "";
                     if (request != null) {
                         csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
                     }
@@ -264,6 +272,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 Form startForm = startFormDef.getForm();
+                
+                changeButtonLabel(startForm, formData);
 
                 // generate form HTML
                 String formHtml = formService.retrieveFormHtml(startForm, formData);
@@ -335,6 +345,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 startForm = startFormDef.getForm();
                 if (result == null) {
+                    changeButtonLabel(startForm, formData);
+                    
                     // generate form HTML
                     String formHtml = formService.retrieveFormErrorHtml(startForm, formData);
                     AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
@@ -590,5 +602,13 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
     @Override
     public String getCategory() {
         return UserviewBuilderPalette.CATEGORY_GENERAL;
+    }
+    
+    protected void changeButtonLabel(Form startForm, FormData formData){
+        String label = getPropertyString("runProcessSubmitLabel");
+        if (label != null && !label.isEmpty()) {
+            Element button = FormUtil.findButton(AssignmentCompleteButton.DEFAULT_ID, startForm, formData);
+            button.setProperty(FormUtil.PROPERTY_LABEL, label);
+        }
     }
 }

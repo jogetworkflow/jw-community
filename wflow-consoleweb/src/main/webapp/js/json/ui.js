@@ -18,6 +18,30 @@ UI = {
       }
       return params;
    },
+   initThemeParams: function () {
+        $("form").each(function(){
+            $(this).attr("action", UI.addThemeParamsToUrl($(this).attr("action")));
+        });
+        $("a").each(function(){
+            if ($(this).attr("href") === undefined || $(this).attr("href") === null) {
+                $(this).attr("href", UI.addThemeParamsToUrl($(this).attr("href")));
+            }
+        });
+   },
+   addThemeParamsToUrl: function (url) {
+        if (url === undefined || url === null) {
+            url = "";
+        }
+        if (url.indexOf("__a_") !== -1 && url.indexOf("__u_") !== -1) {
+            return url;
+        }
+        if (url.indexOf("?") < 0) {
+            url += "?";
+        } else {
+            url += "&";
+        }
+        return url += "__a_=" + UI.userview_app_id + "&__u_=" + UI.userview_id;
+   },
    getPopUpHeight: function(height) {
        if (height === undefined || height === "") {
            height = "90%";
@@ -926,5 +950,5 @@ HelpGuide = {
             }
         }
     }
-    
+
 }

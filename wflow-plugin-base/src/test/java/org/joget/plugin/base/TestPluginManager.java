@@ -109,8 +109,15 @@ public class TestPluginManager {
     public void testLoadClassPluginResource() throws IOException {
         LogUtil.info(getClass().getName(), " ===testLoadClassPluginResource=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
-        InputStream input = pluginManager.getPluginResource(pluginName, "/resources/SampleApplicationPlugin.txt");
-        Assert.isTrue(input != null);
+        InputStream input = null;
+        try {
+            input = pluginManager.getPluginResource(pluginName, "/resources/SampleApplicationPlugin.txt");
+            Assert.isTrue(input != null);
+        } finally {
+            if (input != null) {
+                input.close();
+            }
+        }
     }
 
     @Test

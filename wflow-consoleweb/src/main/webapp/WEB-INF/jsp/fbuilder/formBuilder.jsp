@@ -59,6 +59,37 @@
                 return false;
             };
 
+            var updateForm = function() {
+                var securityToken = ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue;
+                var form = $('#form-preview');
+                form.attr("action", "?" + securityToken);
+                form.attr("target", "");
+                $('#form-preview').submit();
+                return false;
+            };
+
+            var saveForm = function() {
+                var json = FormBuilder.generateJSON();
+                var saveUrl = "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/update";
+                $.ajax({
+                    type: "POST",
+                    data: {"json": json },
+                    url: saveUrl,
+                    dataType : "text",
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success: function(response) {
+                        FormBuilder.originalJson = FormBuilder.generateJSON();
+                        FormBuilder.showMessage("<fmt:message key="fbuilder.saved"/>");
+                        setTimeout(function(){ FormBuilder.showMessage(""); }, 2000);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("<fmt:message key="fbuilder.errorSaving"/> (" + textStatus + "): " + errorThrown);
+                    }
+                });
+            }
+
             window.onbeforeunload = function() {
                 if(!FormBuilder.isSaved()){
                     return "<fmt:message key="fbuilder.saveBeforeClose"/>";
@@ -70,9 +101,9 @@
                 FormBuilder.appId = '<c:out value="${appId}"/>';
                 FormBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
                 FormBuilder.contextPath = '${pageContext.request.contextPath}';
-                FormBuilder.formPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/<c:out value="${appDefinition.version}"/>/form/<c:out value="${formId}"/>/preview/';
-                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/<c:out value="${appDefinition.version}"/>/form/<c:out value="${formId}"/>/element/preview';
-                FormBuilder.init("${formId}");
+                FormBuilder.formPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/preview/';
+                FormBuilder.elementPreviewUrl = '/web/fbuilder/app/<c:out value="${appId}"/>/${appDefinition.version}/form/<c:out value="${formId}"/>/element/preview';
+                FormBuilder.init("<c:out value="${formId}"/>");
 
                 <c:if test="${empty elementHtml}">
                 // clear the form

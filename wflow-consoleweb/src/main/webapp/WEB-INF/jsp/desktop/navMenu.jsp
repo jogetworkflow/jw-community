@@ -78,7 +78,7 @@
                     </h3>
                     <ul>
                         <c:if test="${!empty param.appId}">
-                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/${param.appId}/${param.appVersion}/forms', '${useOverlay}')"><i class="icon-edit"></i> <fmt:message key="adminBar.label.designApp"/></a></li>
+                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms', '${useOverlay}')"><i class="icon-edit"></i> <fmt:message key="adminBar.label.designApp"/></a></li>
                         </c:if>
                         <c:if test="${empty param.appId}">
                             <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps', '${useOverlay}')"><i class="icon-edit"></i> <fmt:message key="console.header.menu.label.apps"/></a></li>

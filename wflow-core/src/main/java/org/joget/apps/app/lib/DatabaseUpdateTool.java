@@ -92,11 +92,17 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
             boolean result = stmt.execute(sql);
             return result;
         } finally {
-            if (stmt != null) {
-                stmt.close();
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch(Exception e) {
             }
-            if (con != null) {
-                con.close();
+            try {
+                if (con != null) {
+                    con.close();
+                }
+            } catch(Exception e) {
             }
         }
     }

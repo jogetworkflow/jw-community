@@ -562,7 +562,7 @@ public class StandardPanelValidator implements PanelValidator {
         boolean isValid = XMLUtil.isIdValid(newId);
 
         //check for period (.)
-        if(isValid && newId.contains(".")){
+        if(isValid && newId != null && newId.contains(".")){
             isValid = false;
         }
 

@@ -191,7 +191,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 if (this.transactionManager != null) {
                     // set Spring tx manager, hardcoded to Shark's JNDI binding
                     TransactionManager tm = this.transactionManager.getTransactionManager();
-                    if (tm != null) {
+                    if (tm != null && ic != null) {
                         ic.rebind("javax.transaction.TransactionManager", tm);
                     }
                 }
@@ -1894,7 +1894,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     procAttributeList = procAttributeIterator.getArray();
                 }
 
-                if (procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
+                if (procAttributeList != null && procAttributeList[0].getValue() != null && !procAttributeList[0].getValue().equals("")) {
                     try {
                         limit = Double.parseDouble((String) procAttributeList[0].getValue());
                     } catch (Exception e) {}
@@ -2815,8 +2815,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "");
             }
-            return aborted;
         }
+        return aborted;
     }
 
     /**
@@ -4192,10 +4192,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     break;
                 }
             }
-            LogUtil.debug(getClass().getName(), "Get required activity definition to start for " + activityDefId + ": " + activityDef);
             if (activityDef == null) {
                 return false;
             }
+            LogUtil.debug(getClass().getName(), "Get required activity definition to start for " + activityDefId + ": " + activityDef);
 
             if (abortRunningActivities) {
                 LogUtil.debug(getClass().getName(), "aborting running activities for " + processId);
@@ -4274,11 +4274,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 res = sc.getResource(username);
             }
 
-            if (wfa.get_accepted_status()) {
+            if (wfa != null && wfa.get_accepted_status()) {
                 wfa.set_accepted_status(false);
             }
 
-            if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
+            if (wfa != null && (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key())))) {
                 wfa.set_assignee(res);
             }
             

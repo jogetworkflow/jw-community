@@ -870,16 +870,6 @@ UserviewBuilder = {
         }else if(mode == "0"){
             this.saveChecker = 0;
         }
-
-        if(this.saveChecker == 0){
-            $('#step-save a').addClass('save-disabled');
-            $('#step-save a').attr('title', get_ubuilder_msg('ubuilder.save.disabled.tip'));
-            $('#step-save a').removeClass('save-enabled');
-        }else if(this.saveChecker == 1 || this.saveChecker == -1){
-            $('#step-save a').removeClass('save-disabled');
-            $('#step-save a').attr('title', get_ubuilder_msg('ubuilder.save.tip'));
-            $('#step-save a').addClass('save-enabled');
-        }
     },
 
     uuid : function(){

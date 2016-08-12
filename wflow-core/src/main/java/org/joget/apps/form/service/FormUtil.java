@@ -34,6 +34,7 @@ import org.joget.apps.form.model.FormAction;
 import org.joget.apps.form.model.FormAjaxOptionsBinder;
 import org.joget.apps.form.model.FormAjaxOptionsElement;
 import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
@@ -712,6 +713,37 @@ public class FormUtil implements ApplicationContextAware {
             if (children != null) {
                 for (Element child : children) {
                     result = FormUtil.findElement(id, child, formData, includeSubForm);
+                    if (result != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Utility method to recursively find a button by ID.
+     * @param id
+     * @param rootElement
+     * @param formData
+     * @return
+     */
+    public static Element findButton(String id, Element rootElement, FormData formData) {
+        if (rootElement == null) {
+            return null;
+        }
+        Element result = null;
+        String elementId = rootElement.getPropertyString(FormUtil.PROPERTY_ID);
+        if (elementId != null && elementId.equals(id) && rootElement instanceof FormButton) {
+            result = rootElement;
+            return result;
+        } else if (!(rootElement instanceof AbstractSubForm)) {
+            ArrayList<Element> children = (ArrayList) rootElement.getChildren(formData);
+            if (children != null) {
+                for (int i = children.size() - 1; i >= 0; i--) {
+                    Element child = children.get(i);
+                    result = FormUtil.findButton(id, child, formData);
                     if (result != null) {
                         break;
                     }

@@ -45,6 +45,11 @@
             value : 'Yes',
             label : ''
         }]
+    },
+    {
+        name : 'runProcessSubmitLabel',
+        label : '@@userview.formmenu.submitButtonLabel@@',
+        type : 'textfield'
     }]
 },
 {

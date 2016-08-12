@@ -37,7 +37,7 @@
                 </ul>
                 <div>
                     <div id="appDesc">
-                        <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/note/submit">
+                        <form method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/note/submit">
                             <textarea id="description" name="description"><c:out value="${appDefinition.description}" escapeXml="true"/></textarea>
                             <br />
                             <input type="submit" value="<fmt:message key="general.method.label.submit"/>" class="form-button"/>
@@ -190,7 +190,7 @@
                     filter(JsonMessageDataTable, '', '');
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/delete', callback, 'ids='+selectedList);
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/delete', callback, 'ids='+selectedList);
         }
     }
     
@@ -209,7 +209,7 @@
                     filter(JsonVariableDataTable, '&filter=', $('#JsonVariableDataTable_searchCondition').val());
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/envVariable/delete', callback, 'ids='+selectedList);
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/envVariable/delete', callback, 'ids='+selectedList);
         }
     }
 
@@ -220,12 +220,12 @@
                     filter(JsonPluginDefaultDataTable, '&filter=', $('#JsonPluginDefaultDataTable_searchCondition').val());
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
         }
     }
 
     function exportApp(){
-        document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/export';
+        document.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/export';
     }
 
     var org_filter = window.filter;
