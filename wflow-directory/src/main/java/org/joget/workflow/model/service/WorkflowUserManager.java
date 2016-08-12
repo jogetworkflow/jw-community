@@ -1,7 +1,9 @@
 package org.joget.workflow.model.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -19,6 +21,7 @@ public class WorkflowUserManager {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     private ThreadLocal currentThreadUser = new ThreadLocal();
+    private ThreadLocal currentThreadUserData = new ThreadLocal();
     private ThreadLocal systemThreadUser = new ThreadLocal();
     
     /**
@@ -55,6 +58,7 @@ public class WorkflowUserManager {
     public void clearCurrentThreadUser() {
         currentThreadUser.remove();
         systemThreadUser.remove();
+        currentThreadUserData.remove();
     }
 
     /**
@@ -64,6 +68,33 @@ public class WorkflowUserManager {
     public String getCurrentThreadUser() {
         String username = (String)currentThreadUser.get();
         return username;
+    }
+    
+    /**
+     * To set current logged in user temporary data
+     * @param key
+     * @param value
+     */
+    public void setCurrentUserTempData(String key, Object value) {
+        Map<String, Object> data = (Map<String, Object>)currentThreadUserData.get();
+        if (data == null) {
+            data = new HashMap<String, Object>();
+            currentThreadUserData.set(data);
+        }
+        data.put(key, value);
+    }
+    
+    /**
+     * To get current user temporary data by key
+     * @return 
+     */
+    public Object getCurrentUserTempData(String key) {
+        Map<String, Object> data = (Map<String, Object>)currentThreadUserData.get();
+        if (data != null) {
+            return data.get(key);
+        }
+        
+        return null;
     }
 
     /**
