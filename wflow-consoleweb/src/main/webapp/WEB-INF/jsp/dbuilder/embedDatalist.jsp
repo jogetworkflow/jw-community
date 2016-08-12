@@ -30,16 +30,33 @@
                     }
                 }
 
-                // get selected rows
-                // formulate result
-                var setting = <ui:stripTag html="${setting}" relaxed="true"/>;
-                for (var i = 0; i < data.length; i++) {
-                    setting['id'] = data[i]['id'];
-                    setting['result'] = data[i]['result'];
-                    if (window.parent && window.parent.<ui:stripTag html="${callback}"/>) {
-                        window.parent.<ui:stripTag html="${callback}"/>(setting);        
-                    }
-                }
+                <c:choose>
+                    <c:when test="${!empty submitUrl}">
+                        var values = new Array();
+                        for (var i = 0; i < data.length; i++) {
+                            values.push(data[i]['id']);
+                        }
+                        $.post('${submitUrl}', {values : values}, function(data){
+                            if (data.parent === "true" && window.parent !== undefined) {
+                                window.parent.location.reload(true);
+                            } else {
+                                document.location.reload(true);
+                            }
+                        }, "json");
+                    </c:when>    
+                    <c:otherwise>
+                        // get selected rows
+                        // formulate result
+                        var setting = <ui:stripTag html="${setting}" relaxed="true"/>;
+                        for (var i = 0; i < data.length; i++) {
+                            setting['id'] = data[i]['id'];
+                            setting['result'] = data[i]['result'];
+                            if (window.parent && window.parent.<ui:stripTag html="${callback}"/>) {
+                                window.parent.<ui:stripTag html="${callback}"/>(setting);        
+                            }
+                        }
+                    </c:otherwise>
+                </c:choose>
             });
             
             //to support presist selection for checkbox
