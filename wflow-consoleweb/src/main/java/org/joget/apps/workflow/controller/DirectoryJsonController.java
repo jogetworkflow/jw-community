@@ -102,7 +102,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalOrganizationsByFilter(name));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -139,7 +139,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalDepartmentnsByOrganizationId(name, orgId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -169,7 +169,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalDepartmentsByParentId(name, deptId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -199,7 +199,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalGradesByOrganizationId(name, orgId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -234,7 +234,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalGroupsByOrganizationId(name, orgId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -272,7 +272,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalGroupsByUserId(name, userId, orgId, inGroup));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -329,7 +329,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalUsers(name, orgId, deptId, gradeId, groupId, roleId, active));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -368,7 +368,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getUserDao().getTotalUsersNotInGroup(name, groupId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -465,7 +465,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", getDirectoryManager().getTotalEmployments(name, orgId, deptId, gradeId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -501,7 +501,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNoHaveOrganization(name));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -540,7 +540,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNotInDepartment(name, orgId, deptId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {
@@ -579,7 +579,7 @@ public class DirectoryJsonController {
 
         jsonObject.accumulate("total", employmentDao.getTotalEmploymentsNotInGrade(name, orgId, gradeId));
         jsonObject.accumulate("start", start);
-        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("sort", StringEscapeUtils.escapeJavaScript(sort));
         jsonObject.accumulate("desc", desc);
 
         if (callback != null && callback.trim().length() != 0) {

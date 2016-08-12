@@ -4,7 +4,7 @@
     <c:choose>
         <c:when test="${param.builderMode eq 'true'}">
                 <script type="text/javascript">
-                    parent.location.href = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${datalistDefinition.id}";
+                    parent.location.href = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/<c:out value="${datalistDefinition.id}"/>";
                 </script>
         </c:when>
         <c:otherwise>
@@ -31,7 +31,7 @@
                 }
 
                 function launchUserviewBuilder() {
-                    var datalistBuilder = window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${datalistDefinition.id}");
+                    var datalistBuilder = window.open("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/<c:out value="${datalistDefinition.id}"/>");
                     if (datalistBuilder) {
                         closeDialog();
                     }

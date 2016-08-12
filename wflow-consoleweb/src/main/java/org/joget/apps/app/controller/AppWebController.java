@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -62,9 +63,9 @@ public class AppWebController {
     public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
 
         // clean process def
-        SecurityUtil.validateStringInput(appId);        
-        SecurityUtil.validateStringInput(processDefId);        
-        SecurityUtil.validateStringInput(recordId);        
+        appId = SecurityUtil.validateStringInput(appId);        
+        processDefId = SecurityUtil.validateStringInput(processDefId);        
+        recordId = SecurityUtil.validateStringInput(recordId);        
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -87,13 +88,13 @@ public class AppWebController {
         formData = formService.retrieveFormDataFromRequest(formData, request);
         formData.setPrimaryKeyValue(recordId);
         
-        String formUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/process/" + processDefId + "/start";
+        String formUrl = "/web/client/app/" + appDef.getId() + "/" + appDef.getVersion() + "/process/" + StringEscapeUtils.escapeHtml(processDefId) + "/start";
         if (recordId != null) {
-            formUrl += "?recordId=" + recordId;
+            formUrl += "?recordId=" + StringEscapeUtils.escapeHtml(recordId);
         }
         String formUrlWithContextPath = AppUtil.getRequestContextPath() + formUrl;
         
-        PackageActivityForm startFormDef = appService.viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
+        PackageActivityForm startFormDef = appService.viewStartProcessForm(appDef.getId(), appDef.getVersion().toString(), processDefId, formData, formUrlWithContextPath);
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
 
@@ -141,9 +142,8 @@ public class AppWebController {
     public String clientProcessStart(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String recordId, @RequestParam String processDefId) {
 
         // clean process def
-        SecurityUtil.validateStringInput(appId);        
-        SecurityUtil.validateStringInput(recordId);        
-        SecurityUtil.validateStringInput(processDefId);        
+        appId = SecurityUtil.validateStringInput(appId);        
+        recordId = SecurityUtil.validateStringInput(recordId);        
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
 
         // set app and process details
@@ -205,7 +205,7 @@ public class AppWebController {
             Collection<WorkflowActivity> activities = result.getActivities();
             if (activities != null && !activities.isEmpty()) {
                 WorkflowActivity nextActivity = activities.iterator().next();
-                String assignmentUrl = "/web/client/app/" + appId + "/" + appDef.getVersion() + "/assignment/" + nextActivity.getId() + "?" + request.getQueryString();
+                String assignmentUrl = "/web/client/app/" + appDef.getId() + "/" + appDef.getVersion() + "/assignment/" + nextActivity.getId() + "?" + request.getQueryString();
                 return "redirect:" + assignmentUrl;
             }
         }
@@ -216,8 +216,8 @@ public class AppWebController {
     @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)")
     public String clientAssignmentView(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
         // check assignment
-        SecurityUtil.validateStringInput(appId);
-        SecurityUtil.validateStringInput(activityId);
+        appId = SecurityUtil.validateStringInput(appId);
+        activityId = SecurityUtil.validateStringInput(activityId);
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             return "client/app/assignmentUnavailable";
@@ -243,8 +243,8 @@ public class AppWebController {
 
             // get form
             String appVersion = (appDef != null) ? appDef.getVersion().toString() : "";
-            String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
-            PackageActivityForm activityForm = appService.viewAssignmentForm(appId, appVersion.toString(), activityId, formData, formUrl);
+            String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appDef.getId() + "/" + appVersion + "/assignment/" + activityId + "/submit";
+            PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appVersion.toString(), activityId, formData, formUrl);
             Form form = activityForm.getForm();
 
             // generate form HTML
@@ -279,6 +279,9 @@ public class AppWebController {
         } else {
             appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
         }
+        if (appDef == null) {
+            return "client/app/assignmentUnavailable";
+        }
 
         // extract form values from request
         FormData formData = new FormData();
@@ -288,8 +291,8 @@ public class AppWebController {
         String processId = assignment.getProcessId();
 
         // load form
-        Long appVersion = (appDef != null) ? appDef.getVersion() : null;
-        String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + activityId + "/submit";
+        Long appVersion = appDef.getVersion();
+        String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appDef.getId() + "/" + appVersion + "/assignment/" + activityId + "/submit";
         PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl);
         Form form = activityForm.getForm();
 
@@ -311,7 +314,7 @@ public class AppWebController {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
-                    String assignmentUrl = "/web/client/app/" + appId + "/" + appVersion + "/assignment/" + nextActivity.getActivityId();
+                    String assignmentUrl = "/web/client/app/" + appDef.getId() + "/" + appVersion + "/assignment/" + nextActivity.getActivityId();
                     return "redirect:" + assignmentUrl;
                 }
             }

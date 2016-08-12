@@ -20,7 +20,7 @@
                 <legend><fmt:message key="console.directory.grade.common.label.details"/></legend>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.grade.common.label.id"/></label>
-                    <span class="form-input">${grade.id}<input id="id" type="hidden" value="${grade.id}" name="id"/></span>
+                    <span class="form-input"><c:out value="${grade.id}"/><input id="id" type="hidden" value="<c:out value="${grade.id}"/>" name="id"/></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.grade.common.label.name"/></label>

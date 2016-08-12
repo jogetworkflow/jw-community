@@ -207,9 +207,9 @@
                             }
                         }
 
-                        if($('#employeeOrganization').val() == "${employeeOrganization}"){
-                            $('#employeeDepartment option[value=${employeeDepartment}]').attr("selected", "selected");
-                            $('#employeeGrade option[value=${employeeGrade}]').attr("selected", "selected");
+                        if($('#employeeOrganization').val() == "<c:out value="${employeeOrganization}"/>"){
+                            $('#employeeDepartment option[value=<c:out value="${employeeDepartment}"/>]').attr("selected", "selected");
+                            $('#employeeGrade option[value=<c:out value="${employeeGrade}"/>]').attr("selected", "selected");
                         }
                         
                         showHideHod();

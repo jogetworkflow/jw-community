@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Form;
@@ -337,6 +338,7 @@ public class FormServiceImpl implements FormService {
         Enumeration<String> e = request.getParameterNames();
         while (e.hasMoreElements()) {
             String paramName = e.nextElement();
+            paramName = StringEscapeUtils.escapeHtml(paramName);
             String[] values = request.getParameterValues(paramName);
             formData.addRequestParameterValues(paramName, values);
         }

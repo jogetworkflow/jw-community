@@ -65,7 +65,7 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
-            $("#copyAppId").val("${appId}");
+            $("#copyAppId").val("<c:out value="${appId}"/>");
             $("#copyAppId").change(function(){
                 var populate = {
                     success : function(resp) {

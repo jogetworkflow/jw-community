@@ -102,12 +102,12 @@
         popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload";
         popupDialog.init();
     }
-
+    
     Thumbnail = {
-        count: 0,
-        load: function(el) {
+        retry: 0,
+        load: function(el, callback) {
             var image = new Image();
-            image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/thumbnail/" + el.id + "?rnd=" + new Date().valueOf().toString();
+            image.src = "${pageContext.request.contextPath}/web/console/images/xpdl/thumbnail/" + el.attr("id") + "?rnd=" + new Date().valueOf().toString();
             $(image).load(function(){
                 $(el).children("a").append(image);
                 $(image).each(function() {
@@ -135,31 +135,42 @@
                     }
                 });
                 $(el).find(" #thumbnail").hide();
+                $(el).addClass("loaded");
+                Thumbnail.retry = 0;
+                callback();
             });
             $(image).error(function(){
-                var processDefId = el.id;
-                setTimeout(function() { 
-                    Thumbnail.render(processDefId);
-                    setTimeout(function() { Thumbnail.load(el);}, 5000);
-                }, Thumbnail.count * 5000);
-                Thumbnail.count++;
+                var processDefId = el.attr("id");
+                Thumbnail.render(processDefId);
+                if (Thumbnail.retry <= 3) {
+                    setTimeout(function() { Thumbnail.load(el, callback);}, 5000);
+                } 
             });
+        },
+        remove_generator : function() {
+            $("#xpdl_images_generator").remove();
         },
         render: function(processDefId) {
-            // create invisible iframe for canvas
-            var iframe = document.createElement('iframe');
-            var iwidth = 1024;
-            var iheight = 0;
-            $(iframe).attr("src", "${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/process/screenshot/" + processDefId);
-            $(iframe).css({
-                'visibility':'hidden'
-            }).width(iwidth).height(iheight);
-            $(document.body).append(iframe);
+            if ($("#xpdl_images_generator").length === 0) {
+                Thumbnail.retry++;
+                // create invisible iframe for canvas
+                var iframe = document.createElement('iframe');
+                var iwidth = 1024;
+                var iheight = 0;
+                $(iframe).attr("id", "xpdl_images_generator");
+                $(iframe).attr("src", "${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/process/screenshot/" + processDefId + "?callback=Thumbnail.remove_generator");
+                $(iframe).css({
+                    'visibility':'hidden'
+                }).width(iwidth).height(iheight);
+                $(document.body).append(iframe);
+            }
         },
         init: function() {
-            $(".list-thumbnail").each(function() {
-                Thumbnail.load(this);
-            });
+            if ($(".list-thumbnail:not(.loaded)").length > 0) {
+                Thumbnail.load($(".list-thumbnail:not(.loaded):eq(0)"), function() {
+                    Thumbnail.init();
+                });
+            }
         }
     }
     Thumbnail.init();

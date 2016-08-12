@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.BeansException;
@@ -69,14 +70,14 @@ public class WorkflowUtil implements ApplicationContextAware {
             resultList = workflowMapper.getAssignmentUsers(packageId, procDefId, procId, version, actId, requesterUsername, participantId);
         } catch (Exception ex) {
             LogUtil.error(WorkflowUtil.class.getName(), ex, "");
-        } finally {
-            // remove duplicates
-            if (resultList != null) {
-                HashSet<String> resultSet = new HashSet<String>(resultList);
-                resultList = new ArrayList<String>(resultSet);
-            }
-            return resultList;
         }
+
+        // remove duplicates
+        if (resultList != null) {
+            HashSet<String> resultSet = new HashSet<String>(resultList);
+            resultList = new ArrayList<String>(resultSet);
+        }
+        return resultList;
     }
 
     /**
@@ -271,6 +272,7 @@ public class WorkflowUtil implements ApplicationContextAware {
     public static String getProcessDefIdWithoutVersion(String processDefId) {
         String result = processDefId;
         if (processDefId != null) {
+            processDefId = SecurityUtil.validateStringInput(processDefId);
             StringTokenizer st = new StringTokenizer(processDefId, "#");
             if (st.countTokens() > 2) {
                 st.nextToken(); // packageId

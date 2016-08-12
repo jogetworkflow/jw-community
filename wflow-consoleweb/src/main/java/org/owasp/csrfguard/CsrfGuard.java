@@ -76,21 +76,15 @@ public final class CsrfGuard {
 
         ConfigurationProvider configurationProvider = configurationProviderExpirableCache.get(Boolean.TRUE);
 
-        if (configurationProvider == null) {
-
-            synchronized (CsrfGuard.class) {
-
-                if (configurationProvider == null) {
-
-                    configurationProvider = retrieveNewConfig();
-                }
-
+        synchronized (CsrfGuard.class) {
+            if (configurationProvider == null) {
+                configurationProvider = retrieveNewConfig();
+            } else if (!configurationProvider.isCacheable()) {
+                //dont synchronize if not cacheable
+                configurationProvider = retrieveNewConfig();
             }
-        } else if (!configurationProvider.isCacheable()) {
-            //dont synchronize if not cacheable
-            configurationProvider = retrieveNewConfig();
         }
-
+        
         return configurationProvider;
     }
 

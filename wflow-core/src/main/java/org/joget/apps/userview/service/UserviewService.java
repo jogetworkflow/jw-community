@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.MobileElement;
@@ -136,6 +137,9 @@ public class UserviewService {
         if (key != null && key.trim().length() == 0) {
             key = null;
         }
+        if (key != null) {
+            key = StringEscapeUtils.escapeHtml(key);
+        }
 
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
@@ -243,7 +247,7 @@ public class UserviewService {
                             LogUtil.debug(getClass().getName(), "set category permission error.");
                         }
 
-                        if (permission != null) {
+                        if (permission != null && permissionObj != null) {
                             permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
                             permission.setRequestParameters(requestParameters);
                             permission.setCurrentUser(currentUser);
@@ -287,7 +291,7 @@ public class UserviewService {
                                         prefix = "/web/embed/userview/";
                                     }
 
-                                    menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? URLEncoder.encode(key, "UTF-8") : Userview.USERVIEW_KEY_EMPTY_VALUE) + "/" + mId);
+                                    menu.setUrl(contextPath + prefix + appId + "/" + userview.getPropertyString("id") + "/" + ((key != null) ? StringEscapeUtils.escapeHtml(key) : Userview.USERVIEW_KEY_EMPTY_VALUE) + "/" + mId);
                                 }
 
                                 //set Current, if current menu id is empty, search the 1st valid menu
@@ -428,6 +432,7 @@ public class UserviewService {
     private Map convertRequestParamMap(Map params) {
         Map result = new HashMap();
         for (String key : (Set<String>) params.keySet()) {
+            key = StringEscapeUtils.escapeHtml(key);
             String[] paramValue = (String[]) params.get(key);
             if (paramValue.length == 1) {
                 result.put(key, paramValue[0]);

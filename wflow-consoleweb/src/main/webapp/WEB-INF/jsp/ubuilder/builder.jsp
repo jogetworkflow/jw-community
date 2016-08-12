@@ -52,12 +52,12 @@
         <script type="text/javascript">
             $(document).ready(function () {
                 UserviewBuilder.tinymceUrl = '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js';
-                UserviewBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builderSave/';
-                UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builderPreview/';
+                UserviewBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderSave/';
+                UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderPreview/';
                 UserviewBuilder.contextPath = '${pageContext.request.contextPath}';
-                UserviewBuilder.appId = '${appId}';
-                UserviewBuilder.appVersion = '${appVersion}';
-                UserviewBuilder.userviewUrl = '${pageContext.request.contextPath}/web/userview/${appId}/${userviewId}/';
+                UserviewBuilder.appId = '<c:out value="${appId}"/>';
+                UserviewBuilder.appVersion = '<c:out value="${appVersion}"/>';
+                UserviewBuilder.userviewUrl = '${pageContext.request.contextPath}/web/userview/<c:out value="${appId}"/>/<c:out value="${userviewId}"/>/';
 
                 UserviewBuilder.initSettingPropertyOptions(${setting.propertyOptions});
                 UserviewBuilder.initCategoryPropertyOptions(${category.propertyOptions});
@@ -74,11 +74,11 @@
                     </c:forEach>
                 </c:forEach>
 
-                UserviewBuilder.loadUserview('${userviewId}', ${json});
+                UserviewBuilder.loadUserview('<c:out value="${userviewId}"/>', ${json});
                 UserviewBuilder.initBuilder();
 
                 <c:if test="${!empty param.menuId}">
-                    UserviewBuilder.editMenu('${param.menuId}');
+                    UserviewBuilder.editMenu('<c:out value="${param.menuId}"/>');
                 </c:if>
             });
 
@@ -94,7 +94,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="ubuilder.title"/> <i> - <c:out value="${userview.name}"/> (v${appVersion})</i></div>
+                <div id="builder-title"><fmt:message key="ubuilder.title"/> <i> - <c:out value="${userview.name}"/> (v<c:out value="${appVersion}"/>)</i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />--%>
             </div>
             <div id="builder-body">

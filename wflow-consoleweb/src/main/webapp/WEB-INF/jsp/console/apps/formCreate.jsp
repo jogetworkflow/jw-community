@@ -73,7 +73,7 @@
     <script type="text/javascript">
         var preventRecursiveClick = 0;
         $(document).ready(function(){
-            $("#copyAppId").val("${appId}");
+            $("#copyAppId").val("<c:out value="${appId}"/>");
             $("#copyAppId").change(function(){
                 var populateForm = {
                     success : function(resp) {

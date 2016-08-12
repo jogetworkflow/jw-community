@@ -2,6 +2,34 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.8
+================
+2824	Modified: wflow-consoleweb - Modified cookie handling for mobile view @5.0-SNAPSHOT
+2823	Fixed: wflow-consoleweb - Correction for r2822. appVersion.jsp - Make the page reload from server. @5.0-SNAPSHOT
+2822	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2821	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2820	Fixed: wflow-core/wflow-consoleweb - Select Box - multi select not working in mobile view. #4268 @5.0-SNAPSHOT
+2819	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2818	Fixed: wflow-plugin-base - Array of String in JSON is not parse correctly. #4272 @5.0-SNAPSHOT
+2817	Fixed: wflow-consoleweb - Popup Dialog - The dialog did not follow userview theme style in subsequent action. #4264 @5.0-SNAPSHOT
+2816	Modified: All - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+
+CHANGES IN 5.0.7
+================
+2811	Fixed: wflow-core - Run Process Menu - Record Id & workflow variables URL parameters are ignored when there is no form mapped to "Run Process" activity. @5.0-SNAPSHOT
+2809    Fixed: wflow-consoleweb - Form builder - Correction on r2786 - Section without label are not editable. @5.0-SNAPSHOT
+2803    Fixed: wflow-consoleweb - Userview Builder - Save button tooltip is wrong. @5.0-SNAPSHOT
+        Fixed: wflow-consoleweb - Form builder - Drag column not working correctly. @5.0-SNAPSHOT
+2801    Fixed: wflow-consoleweb - Process - Not able to view process page in all Apps due to LDAP connection not available. #4245 @5.0-SNAPSHOT
+2799    Modified: wflow-core - App Service - The assignment is locked to an user when one complete an assignment and hit form error. #4203 @5.0-SNAPSHOT
+2798    Fixed: wflow-core/wflow-consoleweb - Process - Not able to generate large XPDL image. @5.0-SNAPSHOT
+2796    Fixed: wflow-core - Run Process Menu - Not able to start process if no custom id is set to the menu and no form is mapped to Run Process activity. @5.0-SNAPSHOT
+2795    Fixed: wflow-consoleweb - Datalist - Should not enable responsive table for none responsive theme. Add <script>var _enableResponsiveTable = true;</script> to the theme js to enable it. @5.0-SNAPSHOT
+2794    Fixed: wflow-consoleweb - Process Builder - Not able to click to edit the process when there are 2 row of processes. @5.0-SNAPSHOT
+2793    Fixed: wflow-consoleweb - Grid - Responsive should disable in print. @5.0-SNAPSHOT
+2792    Fixed: wflow-core - Form PDF Util - Support special HTML character entities. @5.0-SNAPSHOT
+2791    Fixed: wflow-core - Run Process - Support custom label for Run Process Form. #4228 @5.0-SNAPSHOT
+
 CHANGES IN 5.0.6
 ================
 2786	Fixed: wflow-consoleweb - Form Builder - Date picker and dynamic options throwing JavaScript errors #4222 @5.0-SNAPSHOT

@@ -33,6 +33,18 @@
             $("#mobileHome").live("pageshow", function() {
                 Mobile.checkNetworkStatus();
             });
+            <c:if test="${cordova eq 'true'}">
+                $.cookie("cordova", "true", { path: '${pageContext.request.contextPath}' });
+            </c:if>
+            <c:if test="${cordova eq 'false'}">
+                $.removeCookie("cordova");
+            </c:if>
+            <c:if test="${allApps eq 'true'}">
+                $.cookie("all-apps", "true", { path: '${pageContext.request.contextPath}' });
+            </c:if>
+            <c:if test="${allApps eq 'false'}">
+                $.removeCookie("all-apps");
+            </c:if>
         </script>
     </head>
 

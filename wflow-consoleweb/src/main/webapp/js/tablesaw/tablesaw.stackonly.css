@@ -46,7 +46,7 @@ table.tablesaw {
 
 /* Mobile first styles: Begin with the stacked presentation at narrow widths */
 
-@media only all {
+@media screen {
   /* Show the table cells as a block level element */
 
   .tablesaw-stack td,
@@ -96,7 +96,7 @@ table.tablesaw {
   }
 }
 
-@media (max-width: 39.9375em) {
+@media screen and (max-width: 39.9375em) {
   .tablesaw-stack thead td,
   .tablesaw-stack thead th {
     display: none;
@@ -126,7 +126,7 @@ table.tablesaw {
 
 /* Media query to show as a standard table at 560px (35em x 16px) or wider */
 
-@media (min-width: 40em) {
+@media screen and (min-width: 40em) {
   .tablesaw-stack tr {
     display: table-row;
   }

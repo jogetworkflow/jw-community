@@ -179,12 +179,16 @@ public class ScriptRunner {
             }
         } catch (SQLException e) {
             e.fillInStackTrace();
-            printlnError("Error executing: " + command);
+            if (command != null) {
+                printlnError("Error executing: " + command);
+            }
             printlnError(e);
             throw e;
         } catch (IOException e) {
             e.fillInStackTrace();
-            printlnError("Error executing: " + command);
+            if (command != null) {
+                printlnError("Error executing: " + command);
+            }
             printlnError(e);
             throw e;
         } finally {

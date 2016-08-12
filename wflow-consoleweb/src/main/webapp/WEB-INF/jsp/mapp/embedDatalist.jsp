@@ -37,12 +37,12 @@
 
                 // get selected rows
                 // formulate result
-                var setting = ${setting};
+                var setting = <ui:stripTag html="${setting}" relaxed="true"/>;
                 for (var i = 0; i < data.length; i++) {
                     setting['id'] = data[i]['id'];
                     setting['result'] = data[i]['result'];
-                    if(${callback}){
-                        ${callback}(setting);
+                    if(<ui:stripTag html="${callback}"/>){
+                        <ui:stripTag html="${callback}"/>(setting);
                     }
                 }
             });

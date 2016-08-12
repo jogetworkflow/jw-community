@@ -163,14 +163,14 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
         } catch (Exception ex) {
             LogUtil.error(WorkflowUtil.class.getName(), ex, "");
-        } finally {
-            // remove duplicates
-            if (resultList != null) {
-                HashSet<String> resultSet = new HashSet<String>(resultList);
-                resultList = new ArrayList<String>(resultSet);
-            }
-            return resultList;
         }
+        
+        // remove duplicates
+        if (resultList != null) {
+            HashSet<String> resultSet = new HashSet<String>(resultList);
+            resultList = new ArrayList<String>(resultSet);
+        }
+        return resultList;
     }
 
     /**

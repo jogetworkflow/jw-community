@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class SampleApplicationPlugin extends DefaultApplicationPlugin implements PluginWebSupport{
 
@@ -32,7 +33,7 @@ public class SampleApplicationPlugin extends DefaultApplicationPlugin implements
         String arg1 = request.getParameter("arg1");
         String arg2 = request.getParameter("arg2");
 
-        response.getWriter().write("{arg1:\""+arg1+"\", arg2:\""+arg2+"\"}");
+        response.getWriter().write("{arg1:\""+StringEscapeUtils.escapeJavaScript(arg1)+"\", arg2:\""+StringEscapeUtils.escapeJavaScript(arg2)+"\"}");
     }
 
     public String getLabel() {

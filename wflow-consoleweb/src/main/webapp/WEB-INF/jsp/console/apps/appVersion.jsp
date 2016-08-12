@@ -48,10 +48,10 @@
         if (confirm('<fmt:message key="console.app.version.label.newVersion.confirm"/>')) {
             var callback = {
                 success : function() {
-                    parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}//forms';
+                    parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>//forms';
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/version/new', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new', callback, '');
         }
     }
 
@@ -59,10 +59,10 @@
         if (version != '' && confirm('<fmt:message key="console.app.delete.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location = document.location;
+                    document.location.reload(true);
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/delete', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');
         }
     }
 
@@ -70,11 +70,11 @@
         if (version != '' && confirm('<fmt:message key="console.app.publish.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location = document.location;
-                    parent.location.reload(false);
+                    document.location.reload(true);
+                    parent.location.reload(true);
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/publish', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
         }
     }
 
@@ -82,17 +82,17 @@
         if (version != '' && confirm('<fmt:message key="console.app.unpublish.label.confirm"/>')) {
             var callback = {
                 success : function() {
-                    document.location = document.location;
-                    parent.location.reload(false);
+                    document.location.reload(true);
+                    parent.location.reload(true);
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/unpublish', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
         }
     }
 
     function viewVersion(version){
         if (version != '') {
-            parent.location = '${pageContext.request.contextPath}/web/console/app/${appId}/'+ version +'/forms';
+            parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/forms';
         }
     }
 </script>

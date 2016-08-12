@@ -47,7 +47,7 @@
             <!--a href="#" id="form-json-link" style="font-size: smaller" onclick="return false">DEBUG: Show JSON</a>
             <div id="form-info" style="display: none">
                 <form id="form-preview" method="post">
-                    <textarea id="form-json" name="json" cols="80" rows="10" style="font-size: smaller"><c:out value="${elementJson}" escapeXml="false" /></textarea>
+                    <textarea id="form-json" name="json" cols="80" rows="10" style="font-size: smaller"><c:out value="${elementJson}" /></textarea>
                 </form>
                 <button onclick="reloadForm()">Reload</button>
             </div-->

@@ -29,7 +29,7 @@
     <c:set var="redirectUrl" scope="request" value="/web/mobile"/>
 </c:if>
 <!DOCTYPE html>
-<html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
+<html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/<c:out value="${appId}"/>/${userview.properties.id}">
     <head>
         <title>
             <c:set var="html">

@@ -326,7 +326,11 @@ public class FormBuilderWebController {
         model.addAttribute("formHtml", formHtml);
         
         if (request.getParameter("_mapp") != null) {
-            response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
+            String origin = request.getHeader("Origin");
+            if (origin != null) {
+                origin = origin.replace("\n", "").replace("\r", "");
+            }
+            response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Content-type", "application/xml");
         

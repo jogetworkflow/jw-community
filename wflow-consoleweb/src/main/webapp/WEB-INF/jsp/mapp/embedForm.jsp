@@ -15,10 +15,10 @@
         <c:when test="${!stay && submitted && errorCount == 0}">
             <script type="text/javascript">
                 $(document).ready(function(){
-                    var setting = ${setting};
+                    var setting = <ui:stripTag html="${setting}" relaxed="true"/>;
                     setting['result'] = '${jsonResult}';
-                    if(${callback}){
-                        ${callback}(setting);
+                    if(<ui:stripTag html="${callback}"/>){
+                        <ui:stripTag html="${callback}"/>(setting);
                     }
                 });
             </script>

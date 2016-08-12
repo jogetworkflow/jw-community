@@ -2,6 +2,7 @@ package org.joget.commons.util;
 
 import java.io.File;
 import java.net.URLDecoder;
+import java.text.Normalizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -138,6 +139,12 @@ public class LogUtil {
      * @return 
      */
     public static File getTomcatLogFile(String filename) {
+        // validate input
+        String normalizedFileName = Normalizer.normalize(filename, Normalizer.Form.NFKC);
+        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+            throw new SecurityException("Invalid filename " + normalizedFileName);
+        }
+        
         String path = System.getProperty("catalina.base");
         if (path != null) {
             try {

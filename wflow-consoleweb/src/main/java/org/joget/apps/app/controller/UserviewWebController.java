@@ -38,9 +38,9 @@ public class UserviewWebController {
     @RequestMapping({"/embed/userview/(*:appId)/(*:userviewId)/(~:key)","/embed/userview/(*:appId)/(*:userviewId)","/embed/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed, @RequestParam(value = "embed", required = false) Boolean embedParam) throws Exception {
         // validate input
-        SecurityUtil.validateStringInput(appId);        
-        SecurityUtil.validateStringInput(menuId);        
-        SecurityUtil.validateStringInput(key);
+        appId = SecurityUtil.validateStringInput(appId);        
+        menuId = SecurityUtil.validateStringInput(menuId);        
+        key = SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);
         SecurityUtil.validateBooleanInput(embedParam);
 
