@@ -8,9 +8,9 @@
     <name>wflow-designer</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-designer</connection>
-        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-designer</developerConnection>
-        <url>https://dev.joget.org/svn/jw-community/trunk/wflow-designer</url>
+        <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
+        <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
+        <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
     </scm>
     <build>
         <resources>
@@ -29,9 +29,20 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.9.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-4</version>
+                <version>1.4</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>

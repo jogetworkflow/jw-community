@@ -13,9 +13,9 @@
         <nsis.makensis.bin>makensis</nsis.makensis.bin>
     </properties>
     <scm>
-        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/trunk</connection>
-        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/trunk</developerConnection>
-        <url>https://dev.joget.org/svn/jw-community/trunk/trunk</url>
+        <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
+        <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
+        <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
     </scm>
     <modules>
         <module>../wflow-app</module>
@@ -32,9 +32,20 @@
         </resources>
         <plugins>
             <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-provider-gitexe</artifactId>
+                        <version>1.9.4</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
-                <version>1.0-beta-4</version>
+                <version>1.4</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -82,12 +93,6 @@
                                 
                                 <copy todir="target/data">
                                     <fileset dir="src/main/resources/data" />
-                                </copy>
-                                <copy todir="target/docs">
-                                    <fileset dir="src/main/resources/docs" />
-                                </copy>
-                                <copy todir="target/wflow/app_plugins">
-                                    <fileset dir="src/main/resources/plugins" />
                                 </copy>
                                 <copy file="src/main/resources/README.txt" todir="target" />
                                 <copy file="src/main/resources/CHANGES.txt" todir="target" />
