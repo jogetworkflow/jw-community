@@ -982,7 +982,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             return "";
         }
     }
-
+    
     /**
      * Deletes a specific package version together with its process instances.
      * @param packageId
@@ -997,7 +997,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             sc = connect();
 
             // delete process instances
-            LogUtil.info(getClass().getName(), "Deleting running processes for " + packageId + " version " + version);
+            LogUtil.debug(getClass().getName(), "Terminating and Deleting running processes for " + packageId + " version " + version);
             Shark shark = Shark.getInstance();
             ExecutionAdministration ea = shark.getExecutionAdministration();
             WAPI wapi = shark.getWAPIConnection();
@@ -1014,12 +1014,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 try {
                     if (procs[i].state().startsWith(SharkConstants.STATEPREFIX_OPEN)) {
                         wapi.terminateProcessInstance(sessionHandle, instanceId);
-                        LogUtil.info(getClass().getName(), " -- Terminated open process " + instanceId);
+                        LogUtil.debug(getClass().getName(), " -- Terminated open process " + instanceId);
                     }
                     ea.deleteProcesses(sessionHandle, new String[]{instanceId});
-                    LogUtil.info(getClass().getName(), " -- Deleted process " + instanceId);
+                    LogUtil.debug(getClass().getName(), " -- Deleted process " + instanceId);
                 } catch (Exception e) {
-                    LogUtil.info(getClass().getName(), " -- Could not delete process " + instanceId + ": " + e.toString());
+                    LogUtil.debug(getClass().getName(), " -- Could not delete process " + instanceId + ": " + e.toString());
                 }
             }
 

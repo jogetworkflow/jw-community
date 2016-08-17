@@ -123,6 +123,8 @@ public class AppServiceImpl implements AppService {
     @Autowired
     UserviewService userviewService;
     //----- Workflow use cases ------
+    
+    final protected Map<String, String> processMigration = new HashMap<String, String>();
 
     /**
      * Retrieves the workflow process definition for a specific app version.
@@ -1731,38 +1733,101 @@ public class AppServiceImpl implements AppService {
                 HostManager.setCurrentProfile(profile);
                 AppUtil.setCurrentAppDefinition(appDef);
                 
-                LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion);
+                processMigration.put(profile + "::" + packageId + "::" + fromVersion, toVersion.toString());
+                
+                LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
                 Collection<WorkflowProcess> runningProcessList = workflowManager.getRunningProcessList(packageId, null, null, fromVersion.toString(), null, null, 0, null);
 
-                Collection<WorkflowProcess> processes = workflowManager.getProcessList(packageId, toVersion.toString());
-                Collection<String> newProcessDefIds = new ArrayList<String>();
-                for (WorkflowProcess process : processes) {
-                    newProcessDefIds.add(process.getId());
-                }
+                migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
                 
-                for (WorkflowProcess process : runningProcessList) {
-                    String processId = null;
-                    try {
-                        processId = process.getInstanceId();
-                        String processDefId = process.getId();
-                        processDefId = processDefId.replace("#" + fromVersion.toString() + "#", "#" + toVersion.toString() + "#");
-                        
-                        if (newProcessDefIds.contains(processDefId)) {
-                            workflowManager.processCopyFromInstanceId(processId, processDefId, true);
-                        } else {
-                            workflowManager.processAbort(processId);
-                            LogUtil.info(getClass().getName(), "Process Def ID " + processDefId + " does not exist. Aborted process " + processId + ".");
-                        }
-                    } catch (Exception e) {
-                        LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
-                    }
-                }
-                LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion);
+                processMigration.remove(profile + "::" + packageId + "::" + fromVersion);
+                LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+                removeUnusedXpdl(profile, packageId);
             }
         });
         backgroundThread.setDaemon(false);
         backgroundThread.start();
     }
+    
+    protected void migrateProcessInstance(Collection<WorkflowProcess> runningProcesses, String profile, String packageId, String fromVersion, String toVersion) {
+        if (runningProcesses.isEmpty() || toVersion == null) {
+            return;
+        }
+        
+        String newVersion = toVersion;
+        
+        Collection<String> newProcessDefIds = null;
+        Collection<WorkflowProcess> processInstanceNeedReview = new ArrayList<WorkflowProcess>();
+        WorkflowProcess lastMigratedProcessInstance = null;
+        
+        for (WorkflowProcess process : runningProcesses) {
+            if (newProcessDefIds == null) {
+                newProcessDefIds = new ArrayList<String>();
+                Collection<WorkflowProcess> processes = workflowManager.getProcessList(packageId, newVersion);
+                for (WorkflowProcess processDef : processes) {
+                    newProcessDefIds.add(processDef.getId());
+                }
+            }
+            String processId = null;
+            try {
+                processId = process.getInstanceId();
+                String processDefId = process.getId();
+                processDefId = processDefId.replaceAll("#[0-9]+#", "#" + newVersion + "#");
+
+                if (newProcessDefIds.contains(processDefId)) {
+                    WorkflowProcessResult result = workflowManager.processCopyFromInstanceId(processId, processDefId, true);
+                    if (result != null && result.getProcess() != null) {
+                        lastMigratedProcessInstance = result.getProcess();
+                    }
+                } else {
+                    workflowManager.processAbort(processId);
+                    LogUtil.info(getClass().getName(), "Process Def ID " + processDefId + " does not exist. Aborted process " + processId + ".");
+                }
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error updating process " + processId);
+            }
+
+            if (processMigration.containsKey(profile + "::" + packageId + "::" + newVersion)) {
+                newProcessDefIds = null;
+                String tempVersion = processMigration.get(profile + "::" + packageId + "::" + newVersion);
+                if (fromVersion != null) {
+                    processMigration.put(profile + "::" + packageId + "::" + fromVersion, tempVersion);
+                }
+                LogUtil.info(getClass().getName(), "New update found when updating running processes for " + packageId + " from " + fromVersion + " to " + newVersion + ". Continue update remaining running processes to " + tempVersion);
+                newVersion = tempVersion;
+                processInstanceNeedReview.add(lastMigratedProcessInstance);
+            }
+        }
+        
+        migrateProcessInstance(processInstanceNeedReview, profile, packageId, null, newVersion);
+    }
+    
+    protected void removeUnusedXpdl(String profile, String packageId) {
+        Collection<WorkflowProcess> existingProcesses = workflowManager.getProcessList(packageId);
+        Set<String> versions = new HashSet<String>();
+        for (WorkflowProcess p : existingProcesses) {
+            versions.add(p.getVersion());
+        }
+        
+        Collection<AppDefinition> apps = appDefinitionDao.findVersions(packageId, null, null, null, null);
+        for (AppDefinition a : apps) {
+            PackageDefinition pd = a.getPackageDefinition();
+            if (pd != null) {
+                versions.remove(pd.getVersion().toString());
+            }
+        }
+        
+        for (String v : versions) {
+            if (!processMigration.containsKey(profile + "::" + packageId + "::" + v)) {
+                try {
+                    LogUtil.debug(getClass().getName(), "Trying to remove package " + packageId + " version " + v);
+                    workflowManager.processDeleteAndUnloadVersion(packageId, v);
+                } catch (Exception e) {
+                    LogUtil.debug(getClass().getName(), "Fail to remove package " + packageId + " version " + v);
+                }
+            }
+        }
+    } 
 
     /**
      * Import an app definition object and XPDL content into the system.
