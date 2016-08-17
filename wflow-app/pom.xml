@@ -7,9 +7,9 @@
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
     <scm>
-        <connection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-app</connection>
-        <developerConnection>scm:svn:https://dev.joget.org/svn/jw-community/trunk/wflow-app</developerConnection>
-        <url>https://dev.joget.org/svn/jw-community/trunk/wflow-app</url>
+        <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
+        <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
+        <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
     </scm>
     <modules>
         <module>../wflow-jdbc</module>
