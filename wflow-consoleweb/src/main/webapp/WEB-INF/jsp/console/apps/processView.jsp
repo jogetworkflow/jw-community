@@ -492,6 +492,7 @@
                 var reloadCallback = {
                     success: function(data){
                         if (data && data.length > 0) {
+                            data = data.trim();
                             $("#" + data).css("display", "none");
                             return;
                         }
