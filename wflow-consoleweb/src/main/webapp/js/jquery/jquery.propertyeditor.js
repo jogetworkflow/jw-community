@@ -850,8 +850,12 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         showHide += ' data-control_use_regex="false"';
                     }
                 }
+                
+                if (button.ajax_method === undefined) {
+                    button.ajax_method = "GET";
+                }
         
-                html += '<input id="'+page.id + '_' + button.name+'" type="button" class="page-button-custom" value="'+ button.label +'" data-ajax_url="'+button.ajax_url+'" data-action="'+button.name+'" '+showHide+' />';
+                html += '<input id="'+page.id + '_' + button.name+'" type="button" class="page-button-custom" value="'+ button.label +'" data-ajax_url="'+button.ajax_url+'" data-ajax_method="'+button.ajax_method+'" data-action="'+button.name+'" '+showHide+' />';
                 if (button.addition_fields !== undefined && button.addition_fields !== null) {
                     html += '<div id="'+ page.id +'_'+ button.name +'_form" class="button_form" style="display:none;">';
                     html += '<div id="main-body-header" style="margin-bottom:15px;">'+button.label+'</div>';
@@ -929,7 +933,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                             click: function () {
                                 page.validation(function(addition_data){
                                     data = $.extend(data, addition_data);
-                                    panel.executeButtonEvent(data, $(button).data("ajax_url"));
+                                    panel.executeButtonEvent(data, $(button).data("ajax_url"), $(button).data("ajax_method"));
                                     $(object).dialog("close");
                                 }, function(errors){}, true, buttonProperties.addition_fields);
                             }
@@ -939,13 +943,13 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         }
                     });
                 } else {        
-                    panel.executeButtonEvent(data, $(button).data("ajax_url"));
+                    panel.executeButtonEvent(data, $(button).data("ajax_url"), $(button).data("ajax_method"));
                 }
             }, function(errors){}, true, pageProperties);
             return false;
         });
     },
-    executeButtonEvent: function(data, url) {
+    executeButtonEvent: function(data, url, method) {
         
         $.each(data, function(i, d){
             if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%", d.substring(d.length - 4) === "%%%%") {
@@ -954,6 +958,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
         });
                     
         $.ajax({
+            method: method,
             url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),
             data : $.param( data ),
             dataType : "text",
