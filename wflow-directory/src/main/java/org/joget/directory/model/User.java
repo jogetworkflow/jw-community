@@ -31,7 +31,7 @@ public class User implements Serializable, Auditable {
     //additional field
     private String oldPassword;
     private String confirmPassword;
-    private Boolean readonly;
+    private Boolean readonly = false;
     public static final String LOGIN_HASH_DELIMINATOR = "::";
 
     public String getId() {
@@ -151,6 +151,9 @@ public class User implements Serializable, Auditable {
     }
 
     public Boolean getReadonly() {
+        if (!readonly && getPassword() == null) {
+            readonly = true;
+        }
         return readonly;
     }
 
