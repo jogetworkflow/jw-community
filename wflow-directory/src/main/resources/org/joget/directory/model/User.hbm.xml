@@ -11,6 +11,7 @@
         <property column="timeZone" name="timeZone" type="string"/>
         <property column="locale" name="locale" type="string"/>
         <property column="active" name="active" type="integer"/>
+        <property column="readonly" name="readonly" type="boolean"/>
         <!-- join tables -->
         <set name="roles" table="dir_user_role">
             <key column="userId"/>

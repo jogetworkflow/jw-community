@@ -104,7 +104,7 @@ public class DirectoryUtil implements ApplicationContextAware {
         if (username != null && !username.isEmpty() && !ROLE_ANONYMOUS.equals(username)) {
             DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
             User user = directoryManager.getUserByUsername(username);
-            if (user != null) {
+            if (user != null && user.getReadonly() != null) {
                 return user.getReadonly();
             }
         }
