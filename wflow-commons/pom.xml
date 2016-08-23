@@ -185,7 +185,7 @@
         <dependency>
             <groupId>com.atomikos</groupId>
             <artifactId>transactions-jta</artifactId>
-            <version>3.8.0</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>org.joget</groupId>
