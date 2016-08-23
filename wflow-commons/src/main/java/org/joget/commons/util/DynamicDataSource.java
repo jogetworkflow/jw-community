@@ -1,11 +1,13 @@
 package org.joget.commons.util;
 
+import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.dbcp.managed.BasicManagedDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
 
 public class DynamicDataSource extends BasicManagedDataSource {
 
@@ -34,20 +36,27 @@ public class DynamicDataSource extends BasicManagedDataSource {
             tempPassword = "";
         }
 
-        if (!this.url.equals(tempUrl)) {
+        if (!getUrl().equals(tempUrl)) {
             //close old datasource
             super.close();
-            super.closed = false;
+            // reset closed field
+            try {
+                Field closedField = BasicDataSource.class.getDeclaredField("closed");
+                closedField.setAccessible(true);
+                closedField.setBoolean(this, false);
+            } catch (NoSuchFieldException e) {
+                throw new SQLException(e);
+            } catch (IllegalAccessException e) {
+                throw new SQLException(e);
+            }
 
             // set new settings
-            this.driverClassName = tempDriver;
-            this.url = tempUrl;
-            this.username = tempUser;
-            this.password = tempPassword;
-            
+            setDriverClassName(tempDriver);
+            setUrl(tempUrl);
+            setUsername(tempUser);
+            setPassword(tempPassword);
             setProperties(properties);
-            
-            LogUtil.info(getClass().getName(), "datasourceName=" + getDatasourceName() + ", url=" + url + ", user=" + username);
+            LogUtil.info(getClass().getName(), "datasourceName=" + getDatasourceName() + ", url=" + getUrl() + ", user=" + getUsername());
         }
         return super.createDataSource();
     }
