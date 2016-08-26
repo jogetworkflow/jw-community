@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -37,6 +38,13 @@ public class CustomDelegatingFilterProxy extends DelegatingFilterProxy {
                 ((HttpServletResponse)response).sendRedirect(url);
             } else {
                 throw ise;
+            }
+        } catch(NoSuchBeanDefinitionException nbe) {
+            if (nbe.getMessage().startsWith("No bean named 'springSecurityFilterChain' is defined")) {
+                LogUtil.info(getClass().getName(), "No WebApplicationContext found, redirecting to error page");
+                ((HttpServletResponse)response).sendRedirect(url);
+            } else {
+                throw nbe;
             }
         } catch(ServletException e) {
             if (e.getMessage().startsWith("java.lang.IllegalStateException: getOutputStream() has already been called for this response")) {
