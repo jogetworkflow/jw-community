@@ -462,7 +462,12 @@ public class AppWorkflowHelper implements WorkflowHelper {
         try {
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             ParticipantPlugin plugin = (ParticipantPlugin) pluginManager.getPlugin(participant.getValue());
-            Map propertyMap = AppPluginUtil.getDefaultProperties((Plugin)plugin, properties, appDef);
+            
+            //create a mock assignemnt for Form Hash Variable
+            WorkflowAssignment ass = new WorkflowAssignment();
+            ass.setProcessId(processId);
+            
+            Map propertyMap = AppPluginUtil.getDefaultProperties((Plugin)plugin, properties, appDef, ass);
             propertyMap.put("pluginManager", pluginManager);
             WorkflowActivity activity = workflowManager.getActivityById(activityId);
             propertyMap.put("workflowActivity", activity);
