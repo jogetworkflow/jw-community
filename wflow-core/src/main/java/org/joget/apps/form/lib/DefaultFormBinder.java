@@ -59,8 +59,22 @@ public class DefaultFormBinder extends FormBinder implements FormLoadBinder, For
                 form = FormUtil.findRootForm(element);
             }
             if (form != null) {
-                results = appService.loadFormDataWithoutTransaction(form, primaryKey);
-
+                //Load from Form Data if found
+                String tableName = form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
+                if (!formData.getLoadBinderMap().isEmpty()) {
+                    for (FormRowSet set : formData.getLoadBinderMap().values()) {
+                        if (tableName.equals(set.getReferenceTable()) && primaryKey.equals(set.getReferenceKey())) {
+                            results = set;
+                            break;
+                        }
+                    }
+                }
+                
+                if (results == null) {
+                    results = appService.loadFormDataWithoutTransaction(form, primaryKey);
+                    results.setReferenceTable(tableName);
+                    results.setReferenceKey(primaryKey);
+                }
             }
         }
         return results;
