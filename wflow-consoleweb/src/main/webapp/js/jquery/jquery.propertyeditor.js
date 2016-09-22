@@ -304,7 +304,7 @@ PropertyEditor.Model.Editor = function(element, options) {
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
     
-    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div>');
+    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="property-editor-display" ><a class="compress" title="'+get_peditor_msg('peditor.compress')+'"><i class="fa fa-compress" aria-hidden="true"></i></a><a class="expand" title="'+get_peditor_msg('peditor.expand')+'"><i class="fa fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
     this.editor = $(this.element).find('div#'+this.editorId);    
 };
 PropertyEditor.Model.Editor.prototype = {
@@ -361,7 +361,8 @@ PropertyEditor.Model.Editor.prototype = {
                 html += p.render();
             });
         }
-        $(this.editor).append(html);
+        html += '<div class="property-editor-page-buffer"></div>';
+        $(this.editor).find(".property-editor-pages").append(html);
         
         this.initScripting();
     },
@@ -393,6 +394,9 @@ PropertyEditor.Model.Editor.prototype = {
         if ($(this.element).hasClass("boxy-content")) {
             $(this.editor).css("width", ($(window).width() * 0.8) + "px");
             tempHeight = tempHeight  * 0.85;
+        } else if ($(this.element).parent().attr('id') === "main-body-content") {
+            $(this.editor).css("width", "auto");
+            tempHeight = tempHeight - $(this.element).offset().top;
         } else {
             $(this.editor).css("width", "auto");
             tempHeight = tempHeight  * 0.9 - $(this.element).offset().top;
@@ -401,9 +405,58 @@ PropertyEditor.Model.Editor.prototype = {
         $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 130) + "px");
     },
     initPage: function() {
+        var $thisObject = this;
+        
+        var pageContainer = $(this.editor).find('.property-editor-pages');
+        $(pageContainer).scroll(function() {
+            if ($thisObject.isSinglePageDisplay()) {
+                var pageLine = $(pageContainer).offset().top + ($(pageContainer).height() * 0.4);
+                var currentOffset = $(pageContainer).find('.current').offset().top;
+                var nextOffset = currentOffset + $(pageContainer).find('.current').height();
+                if (nextOffset < pageLine) {
+                    $thisObject.nextPage(false);
+                } else if (currentOffset > pageLine) {
+                    $thisObject.prevPage(false);
+                }
+            }
+        });
+        
+        this.initDisplayMode();
+        
         this.changePage(null, $(this.editor).find('.property-page-show:first').attr("id"));
     },
-    nextPage: function() {
+    initDisplayMode: function() {
+        var $thisObject = this;
+        
+        //init display mode based on cookies value
+        var single = $.localStorage.getItem("propertyEditor.singlePageDisplay");
+        if (single === "true") {
+            this.toggleSinglePageDisplay(true);
+        }
+        
+        $(this.editor).find('.property-editor-display a').click(function(){
+            $thisObject.toggleSinglePageDisplay();
+        });
+    },
+    toggleSinglePageDisplay: function(single) {
+        if (single || !this.isSinglePageDisplay()) {
+            $(this.editor).addClass("single-page");
+            single = true;
+            if ($(this.editor).find('.property-page-show.current').length > 0) {
+                this.changePageCallback($(this.editor).find('.property-page-show.current').attr("id"), false);
+            }
+        } else {
+            $(this.editor).removeClass("single-page");
+            single = false;
+        }
+        
+        //store display mode to cookies
+        $.localStorage.setItem("propertyEditor.singlePageDisplay", single+"");
+    },
+    isSinglePageDisplay: function() {
+        return $(this.editor).hasClass("single-page");
+    }, 
+    nextPage: function(scroll) {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var next = $(current).next();
@@ -411,11 +464,11 @@ PropertyEditor.Model.Editor.prototype = {
                 next = $(next).next();
             }
             if ($(next).hasClass("property-editor-page")) {
-                this.changePage($(current).attr('id'), $(next).attr('id'));
+                this.changePage($(current).attr('id'), $(next).attr('id'), scroll);
             }
         }
     },
-    prevPage: function() {
+    prevPage: function(scroll) {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var prev = $(current).prev();
@@ -423,28 +476,28 @@ PropertyEditor.Model.Editor.prototype = {
                 prev = $(prev).next();
             }
             if ($(prev).hasClass("property-editor-page")) {
-                this.changePage($(current).attr('id'), $(prev).attr('id'));
+                this.changePage($(current).attr('id'), $(prev).attr('id'), scroll);
             }
         }
     },
-    changePage: function(currentPageId, pageId) {
+    changePage: function(currentPageId, pageId, scroll) {
         var thisObject = this;
         if (currentPageId !== null && currentPageId !== undefined) {
             this.pages[currentPageId].validation(function(data){
-                thisObject.changePageCallback(pageId);
+                thisObject.changePageCallback(pageId, scroll);
             }, thisObject.alertValidationErrors);
         } else {
-            this.changePageCallback(pageId);
+            this.changePageCallback(pageId, scroll);
         }
     },
-    changePageCallback: function (pageId) {
+    changePageCallback: function (pageId, scroll) {
         $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show').hide();
-        $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show').removeClass("current");
-        this.pages[pageId].show();
+        $(this.editor).find('.property-page-show').removeClass("current");
+        this.pages[pageId].show(scroll);
     },
     refresh: function() {
         $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show:not(.current)').hide();
-                    
+            
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var pageId = $(current).attr('id');
@@ -715,9 +768,17 @@ PropertyEditor.Model.Page.prototype = {
         this.attachDescriptionEvent();
         this.attachHashVariableAssistant();
     },
-    show: function() {
+    show: function(scroll) {
         var page = $(this.editor).find("#"+this.id);
         $(page).show();
+        if (this.editorObject.isSinglePageDisplay()) {
+            if (scroll === undefined || scroll) {
+                var pages = $(this.editor).find('.property-editor-pages');
+                var pos = $(page).offset().top - $(pages).offset().top - 50 - ($(pages).find(' > div:eq(0)').offset().top - $(pages).offset().top - 50);
+                $(this.editor).find('.property-editor-pages').scrollTo(pos, 200);
+            }
+        }
+        
         $(page).addClass("current");
         this.refreshStepsIndicator();
         this.buttonPanel.refresh();
@@ -746,7 +807,8 @@ PropertyEditor.Model.Page.prototype = {
         $(page).remove();
     },
     refreshStepsIndicator: function() {
-        if ($(this.editor).find('.property-page-show').length > 1) {
+        if ((this.editorObject.isSinglePageDisplay() && $(this.editor).find('.property-page-show').length > 0) 
+                || (!this.editorObject.isSinglePageDisplay() && $(this.editor).find('.property-page-show').length > 1)) {
             var thisObject = this;
             var editor = this.editor;
             var currentPage = $(editor).find(".property-page-show.current");
@@ -809,6 +871,11 @@ PropertyEditor.Model.Page.prototype = {
             $(this.editor).find('#'+this.id+' .property-editor-page-step-indicator .clickable').click(function(){
                 thisObject.editorObject.changePage($(currentPage).attr("id"), $(this).attr("rel"));
             });
+            
+            if (this.editorObject.isSinglePageDisplay()) {
+                $(this.editor).find('.property-editor-nav').html('');
+                $(this.editor).find('.property-editor-nav').append($(this.editor).find('#'+this.id+' .property-editor-page-step-indicator').clone(true));
+            }
         }
     },
     attachDescriptionEvent: function(){
@@ -979,6 +1046,11 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             $(this.editor).find('.property-page-show .property-editor-page-button-panel .page-button-navigation input[type=button]').removeAttr("disabled");
             $(this.editor).find('.property-page-show:first .property-editor-page-button-panel .page-button-navigation .page-button-prev').attr("disabled","disabled");
             $(this.editor).find('.property-page-show:last .property-editor-page-button-panel .page-button-navigation .page-button-next').attr("disabled","disabled");
+        }
+        
+        if (this.page.editorObject.isSinglePageDisplay()) {
+            $(this.editor).find('.property-editor-buttons').html('');
+            $(this.editor).find('.property-editor-buttons').append($(this.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true));
         }
     }
 };
