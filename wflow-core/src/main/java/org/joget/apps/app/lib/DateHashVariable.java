@@ -1,10 +1,13 @@
 package org.joget.apps.app.lib;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
@@ -13,6 +16,27 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
     public String processHashVariable(String variableKey) {
         try {
             Calendar cal = Calendar.getInstance();
+            
+            if (variableKey.contains("[") && variableKey.contains("]")) {
+                String date = variableKey.substring(variableKey.indexOf("[") + 1, variableKey.indexOf("]"));
+                variableKey = variableKey.substring(0, variableKey.indexOf("["));
+
+                if (!date.isEmpty()) {
+                    try {
+                        String format = "yyyy-MM-dd";
+                        if (date.contains("|")) {
+                            format = date.substring(date.indexOf("|") + 1);
+                            date = date.substring(0, date.indexOf("|"));
+                        }
+
+                        DateFormat df = new SimpleDateFormat(format);
+                        Date result =  df.parse(date);  
+                        cal.setTime(result);
+                    } catch (Exception e) {
+                        LogUtil.error(DateHashVariable.class.getName(), e, "");
+                    }
+                }
+            }
 
             int field = -1;
             if (variableKey.contains("YEAR")) {
