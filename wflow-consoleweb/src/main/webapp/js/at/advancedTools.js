@@ -156,7 +156,20 @@ var AdvancedTools = {
         var tab = '<li><a href="#tab-formDataTable" id="formDataTable"><i class="fa fa-table"></i><span>'+get_advtool_msg('adv.tool.Table')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
-        $(".builder_tool_tabs").after('<div id="tab-formDataTable" class="tab-content"><div class="table_usage"><h2>'+get_advtool_msg('adv.tool.Table.Usage')+'</h2></div><div class="table_columns"><h2>'+get_advtool_msg('adv.tool.Table.Columns')+'</h2></div></div>');
+        $(".builder_tool_tabs").after('<div id="tab-formDataTable" class="tab-content"><div class="table_usage"><h2>'+get_advtool_msg('adv.tool.Table.Usage')+'</h2></div><div class="table_usage_other"><h2 style="display:none">'+get_advtool_msg('adv.tool.Table.Usage.otherApp')+'</h2><a class="showTableUsageInOtherApp" href="#">'+get_advtool_msg('adv.tool.Table.Usage.otherApp.show')+'</a></div><div class="table_columns"><h2>'+get_advtool_msg('adv.tool.Table.Columns')+'</h2></div></div>');
+        
+        $("#tab-formDataTable .table_usage_other a.showTableUsageInOtherApp").on("click", function(){
+            $(this).hide();
+            $("#tab-formDataTable .table_usage_other h2").show();
+            $("#tab-formDataTable .table_usage_other").append('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+            var jsonObj = JSON.decode($(AdvancedTools.jsonForm).find('textarea[name="json"]').val());
+            var tableName = jsonObj['properties']['tableName'];
+            
+            $("#tab-formDataTable .table_usage_other").data("tableName", tableName);
+            Usages.renderOtherApp($("#tab-formDataTable .table_usage_other"), tableName, "table", AdvancedTools.options);
+            $("#tab-formDataTable .table_usage_other .dt-loading").remove();
+            return false;
+        });
         
         $("a#formDataTable").on("click", function() {
             if ($("#tab-formDataTable .table_usage .item_usages_container").length === 0) {
@@ -210,6 +223,12 @@ var AdvancedTools = {
             
             if ($("#tab-formDataTable .table_usage").data("tableName") !== tableName) {
                 $("#tab-formDataTable .table_usage .item_usages_container").remove();
+            }
+            
+            if ($("#tab-formDataTable .table_usage_other").data("tableName") !== tableName) {
+                $("#tab-formDataTable .table_usage_other h2").hide();
+                $("#tab-formDataTable .table_usage_other a.showTableUsageInOtherApp").show();
+                $("#tab-formDataTable .table_usage_other .item_usages_container").remove();
             }
         });
     },

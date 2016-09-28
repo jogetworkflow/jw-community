@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.bouncycastle.util.encoders.Base64;
+import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
@@ -35,6 +36,9 @@ public class DependencyController {
     
     @Autowired
     AppService appService;
+    
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
     
     @RequestMapping("/dependency/tree/image/(*:id)")
     public void getTreeImage(OutputStream out, @RequestParam("id") String id, @RequestParam("postfix") String postfix, @RequestParam("data") String data, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -75,6 +79,68 @@ public class DependencyController {
     
     @RequestMapping("/json/dependency/app/(*:appId)/(~:version)/check")
     public void checkDependency(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("keyword") String keyword, @RequestParam(value = "type", required = false) String type, @RequestParam(value = "callback", required = false) String callback, HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
+        
+        
+        JSONObject result = new JSONObject();
+        JSONArray usages = getDependencies(appId, version, type, keyword, request);
+        
+        if (usages.length() > 0) {
+            result.put("usages", usages);
+        } else {
+            result.put("usages", ResourceBundleUtil.getMessage("dependency.usage.noUsageFound"));
+        }
+        result.put("size", usages.length());
+        
+        AppUtil.writeJson(writer, result, callback);
+    }
+    
+    @RequestMapping("/json/dependency/app/(*:appId)/(~:version)/checkOther")
+    public void checkDependencyInOtherApp(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("keyword") String keyword, @RequestParam(value = "type", required = false) String type, @RequestParam(value = "callback", required = false) String callback, HttpServletRequest request, HttpServletResponse response) throws IOException, JSONException {
+        JSONObject result = new JSONObject();
+        JSONObject usages = new JSONObject();
+        
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
+        for (AppDefinition appDef : appDefinitionList) {
+            if (!appId.equals(appDef.getAppId())) {
+                JSONArray appUsages = getDependencies(appDef.getAppId(), appDef.getVersion().toString(), type, keyword, request);
+                if (appUsages.length() > 0) {
+                    usages.put(appDef.getName() + " (" + ResourceBundleUtil.getMessage("console.app.common.label.version") + " " + appDef.getVersion().toString() + ")", appUsages);
+                }
+            }
+        }
+        
+        if (usages.length() > 0) {
+            result.put("usages", usages);
+        } else {
+            result.put("usages", ResourceBundleUtil.getMessage("dependency.usage.noUsageFound"));
+        }
+        result.put("size", usages.length());
+        
+        AppUtil.writeJson(writer, result, callback);
+    }
+    
+    private void findKeywords(JSONArray keywords, String text, String keyword) {
+        int found = text.indexOf(keyword);
+                        
+        while (found > 0) {
+            int start = (found - 40 < 0) ? 0 : found - 40;
+            int end = ((found + keyword.length() + 40) >= text.length())? text.length() : (found + keyword.length() + 40);
+            
+            String words = text.substring(start, end);
+            if (start != 0) {
+                words = "..." + words;
+            }
+            if (end != text.length()) {
+                words = words + "...";
+            }
+            keywords.put(words);
+
+            text = text.substring(found + keyword.length());
+            found = text.indexOf(keyword);
+        }
+    }
+    
+    private JSONArray getDependencies(String appId, String version, String type, String keyword, HttpServletRequest request) {
         Long appVersion;
         if (version == null || version.isEmpty()) {
             appVersion = appService.getPublishedVersion(appId);
@@ -82,8 +148,6 @@ public class DependencyController {
             appVersion = Long.parseLong(version);
         }
         byte[] defXml = appService.getAppDefinitionXml(appId, appVersion);
-        
-        JSONObject result = new JSONObject();
         JSONArray usages = new JSONArray();
         
         try {
@@ -211,35 +275,6 @@ public class DependencyController {
         } catch (Exception e) {
             LogUtil.error(DependencyController.class.getName(), e, "");
         }
-        
-        if (usages.length() > 0) {
-            result.put("usages", usages);
-        } else {
-            result.put("usages", ResourceBundleUtil.getMessage("dependency.usage.noUsageFound"));
-        }
-        result.put("size", usages.length());
-        
-        AppUtil.writeJson(writer, result, callback);
-    }
-    
-    private void findKeywords(JSONArray keywords, String text, String keyword) {
-        int found = text.indexOf(keyword);
-                        
-        while (found > 0) {
-            int start = (found - 40 < 0) ? 0 : found - 40;
-            int end = ((found + keyword.length() + 40) >= text.length())? text.length() : (found + keyword.length() + 40);
-            
-            String words = text.substring(start, end);
-            if (start != 0) {
-                words = "..." + words;
-            }
-            if (end != text.length()) {
-                words = words + "...";
-            }
-            keywords.put(words);
-
-            text = text.substring(found + keyword.length());
-            found = text.indexOf(keyword);
-        }
+        return usages;
     }
 }

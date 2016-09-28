@@ -1,8 +1,12 @@
 var Usages = {
     dialog: undefined,
-    getUsages : function (id, type, options, callback) {
+    getUsages : function (id, type, options, callback, otherApp) {
+        var url = "";
+        if (otherApp) {
+            url = "Other";
+        }
         $.ajax({
-            url: options.contextPath + '/web/json/dependency/app/'+options.appId+'/'+options.appVersion+'/check',
+            url: options.contextPath + '/web/json/dependency/app/'+options.appId+'/'+options.appVersion+'/check'+url,
             data: {
                 keyword : id,
                 type: type
@@ -11,40 +15,17 @@ var Usages = {
             success: callback
         });
     },
-    renderUsage : function(container, response, id, type, options) {
+    renderUsage : function(container, response, id, type, options, otherApp) {
         if (response.size > 0) {
-            var cat = "";
-            var catContainer;
-            for (var i in response.usages) {
-                var item = response.usages[i];
-                if (cat !== item.category) {
-                    cat = item.category;
-                    var c = $('<li class="usage_category"><h3>'+cat+'</h3><ul class="items"></ul></li>');
-                    container.append(c);
-
-                    catContainer = $(c).find(".items");
+            if (otherApp) {
+                for (var i in response.usages) {
+                    var appUsages = response.usages[i];
+                    var ac = $('<li class="usage_app"><h3>'+i+'</h3><ul class="app_items"></ul></li>');
+                    container.append(ac);
+                    Usages.renderResult($(ac).find(".app_items"), appUsages);
                 }
-
-                var el = $('<li class="item" data-where="'+item.where+'"></li>');
-                catContainer.append(el);
-                if (item.link !== undefined) {
-                    $(el).append('<a class="item_link" target="_blank" href="'+item.link+'">'+item.label+'</a>');
-                    if (item.type.indexOf("process") !== -1 || item.type.indexOf("plugin") !== -1) {
-                        $(el).find("a.item_link").addClass("overlay");
-                    }
-                } else {
-                    $(el).append('<a>'+item.label+'</a>');
-                }
-
-                if (item.found !== undefined && item.found.length > 0) {
-                    el.append('<a class="found_toggle"><i class="icon-angle-down fa fa-angle-down"></i></a>');
-                    var foundContainer = $('<ul class="usage_found" style="display:none"></ul>');
-                    el.append(foundContainer);
-
-                    for (var j in item.found) {
-                        foundContainer.append("<li><pre>"+UI.escapeHTML(item.found[j])+"</pre></li>");
-                    }
-                }
+            } else {
+                Usages.renderResult(container, response.usages);
             }
 
             Usages.highlight(container, id);
@@ -66,6 +47,41 @@ var Usages = {
         } else {
             var c = $('<li class="no_usage"><h3>'+response.usages+'</h3></li>');
             container.append(c);
+        }
+    },
+    renderResult : function (container, usages) {
+        var cat = "";
+        var catContainer;
+        for (var i in usages) {
+            var item = usages[i];
+            if (cat !== item.category) {
+                cat = item.category;
+                var c = $('<li class="usage_category"><h3>'+cat+'</h3><ul class="items"></ul></li>');
+                container.append(c);
+
+                catContainer = $(c).find(".items");
+            }
+
+            var el = $('<li class="item" data-where="'+item.where+'"></li>');
+            catContainer.append(el);
+            if (item.link !== undefined) {
+                $(el).append('<a class="item_link" target="_blank" href="'+item.link+'">'+item.label+'</a>');
+                if (item.type.indexOf("process") !== -1 || item.type.indexOf("plugin") !== -1) {
+                    $(el).find("a.item_link").addClass("overlay");
+                }
+            } else {
+                $(el).append('<a>'+item.label+'</a>');
+            }
+
+            if (item.found !== undefined && item.found.length > 0) {
+                el.append('<a class="found_toggle"><i class="icon-angle-down fa fa-angle-down"></i></a>');
+                var foundContainer = $('<ul class="usage_found" style="display:none"></ul>');
+                el.append(foundContainer);
+
+                for (var j in item.found) {
+                    foundContainer.append("<li><pre>"+UI.escapeHTML(item.found[j])+"</pre></li>");
+                }
+            }
         }
     },
     delete: function (id, type, options, deleteCallback) {
@@ -110,6 +126,14 @@ var Usages = {
         Usages.getUsages(id, type, options, function(response) {
             Usages.renderUsage(container, response, id, type, options);
         });
+    },
+    renderOtherApp: function (element, id, type, options) {
+        $(element).append('<ul class="item_usages_container"></ul>');
+        var container = $(element).find(".item_usages_container");
+        
+        Usages.getUsages(id, type, options, function(response) {
+            Usages.renderUsage(container, response, id, type, options, true);
+        }, true);
     },
     highlight : function (element, str) {
         var regex = new RegExp(str, "gi");
