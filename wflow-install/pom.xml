@@ -58,6 +58,7 @@
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
                     <revisionOnScmFailure>0</revisionOnScmFailure>
+                    <shortRevisionLength>7</shortRevisionLength>
                 </configuration>
             </plugin>
             <plugin>
