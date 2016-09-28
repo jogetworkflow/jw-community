@@ -58,4 +58,9 @@ public class AbstractAppVersionedObject implements Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "id=" + id + ", appId=" + getAppId() + ", appVersion=" + getAppVersion() + '}';
+    }
 }

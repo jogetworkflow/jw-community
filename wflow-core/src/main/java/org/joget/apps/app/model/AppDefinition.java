@@ -166,4 +166,9 @@ public class AppDefinition extends AbstractVersionedObject {
     public void setMeta(String meta) {
         this.meta = meta;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "id=" + getId() + ", version=" + getVersion() + ", published=" + published + '}';
+    }
 }

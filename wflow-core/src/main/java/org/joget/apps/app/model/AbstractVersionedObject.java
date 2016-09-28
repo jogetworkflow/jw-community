@@ -116,4 +116,9 @@ public class AbstractVersionedObject implements Serializable {
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
     }
+
+    @Override
+    public String toString() {
+        return "{" + "id=" + id + ", version=" + version + '}';
+    }
 }

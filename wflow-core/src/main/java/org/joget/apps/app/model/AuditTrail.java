@@ -84,10 +84,13 @@ public class AuditTrail {
 
             if (!auditableObjExists) {
                 //get first argument (usually is ID)
-                Object obj = args[0];
-                if (obj != null) {
+                if ("delete".equals(getMethod()) && args.length > 1 && args[1] instanceof AppDefinition) {
+                    AppDefinition appDef = (AppDefinition) args[1];
+                    message = "{" + "id=" + args[0].toString() + ", appId=" + appDef.getAppId() + ", appVersion=" + appDef.getVersion() + '}';
+                }else if (args[0] != null) {
                     message = args[0].toString();
                 }
+                
             } else if (message.endsWith(";")) {
                 message = message.substring(0, message.length() - 1);
             }

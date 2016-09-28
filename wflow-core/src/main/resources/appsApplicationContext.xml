@@ -220,6 +220,7 @@
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.is*(..)) or execution(* org.joget..*.internal*(..)))" order="2" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)))" order="1" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.apps.form.dao.FormDataDao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.internal*(..)) or execution(* org.joget..*.loadByTable*(..)) or execution(* org.joget..*.clear*(..)))" order="1" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AuditTrailDao.*(..))) and (execution(* org.joget..*.save*(..)) or execution(* org.joget..*.delete*(..)) or execution(* org.joget..*.add*(..)) or execution(* org.joget..*.update*(..)))" order="1" />
     </aop:config>
 
 </beans>
