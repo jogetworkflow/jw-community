@@ -189,7 +189,7 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     pInstance.setReportWorkflowProcess(reportProcess);
                 }
 
-                pInstance.setRequester(wfTrackProcess.getRequesterId());
+                pInstance.setRequester(wfProcess.getRequesterId());
                 pInstance.setState(wfProcess.getState());
                 pInstance.setDue(wfTrackProcess.getDue());
                 pInstance.setStartedTime(wfTrackProcess.getStartedTime());
