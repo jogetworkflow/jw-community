@@ -307,6 +307,12 @@ public class FormBuilderWebController {
                     }
                 }
                 
+                Map<String, String[]> requestParams = formData.getRequestParams();
+                if (requestParams != null && !requestParams.isEmpty()) {
+                    requestParams.remove("_json");
+                    jsonResult.put(FormUtil.PROPERTY_TEMP_REQUEST_PARAMS, requestParams);
+                }
+                
                 model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
             } else {
                 // render error template
