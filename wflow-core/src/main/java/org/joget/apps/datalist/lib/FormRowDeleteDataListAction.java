@@ -1,7 +1,5 @@
 package org.joget.apps.datalist.lib;
 
-import java.util.Collection;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -13,46 +11,16 @@ import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.model.FormDataDeletableBinder;
-import org.joget.apps.form.model.FormLoadBinder;
-import org.joget.apps.form.model.FormLoadMultiRowElementBinder;
-import org.joget.apps.form.model.FormRow;
-import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
-import org.joget.workflow.model.WorkflowProcess;
-import org.joget.workflow.model.WorkflowProcessLink;
-import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
-import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Test implementation for an action
- */
 public class FormRowDeleteDataListAction extends DataListActionDefault {
     
-    protected WorkflowManager workflowManager;
-    protected WorkflowProcessLinkDao linkDao;
-
-    public WorkflowProcessLinkDao getLinkDao() {
-        if (linkDao == null) {
-           linkDao = (WorkflowProcessLinkDao) AppUtil.getApplicationContext().getBean("workflowProcessLinkDao");
-        }
-        return linkDao;
-    }
-
-    public WorkflowManager getWorkflowManager() {
-        if (workflowManager == null) {
-            workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
-        }
-        return workflowManager;
-    }
-
     public String getName() {
         return "Form Row Delete Action";
     }
@@ -185,57 +153,17 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     } 
     
     protected void deleteData(FormDataDao formDataDao, Form form, String primaryKey) {
-        FormData formData = new FormData();
-        formData.setPrimaryKeyValue(primaryKey);
-        formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, FormUtil.FORM_RESULT_LOAD_ALL_DATA);
-        formData = FormUtil.executeLoadBinders(form, formData);
-        
-        Map<FormLoadBinder, FormRowSet> binders = formData.getLoadBinderMap();
-        
-        for (FormLoadBinder binder : binders.keySet()) {
-            if (binder == form.getLoadBinder()) {
-                try {
-                    if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
-                        abortRunningProcesses(primaryKey);
-                    }
-                    formDataDao.delete(form.getPropertyString(FormUtil.PROPERTY_ID), form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME), new String[]{primaryKey});
-                } catch (HibernateObjectRetrievalFailureException e) {
-                    //ignore
-                }
-            } else if (binder instanceof FormDataDeletableBinder) {
-                FormDataDeletableBinder b = (FormDataDeletableBinder) binder;
-                if ((binder instanceof FormLoadMultiRowElementBinder 
-                        && "true".equalsIgnoreCase(getPropertyString("deleteGridData")))
-                        || (!(binder instanceof FormLoadMultiRowElementBinder)
-                        && "true".equalsIgnoreCase(getPropertyString("deleteSubformData")))) {
-                    if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
-                        abortRunningProcesses(binders.get(binder));
-                    }
-                    formDataDao.delete(b.getFormId(), b.getTableName(), binders.get(binder));
-                }
+        try {
+            if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
+                FormUtil.abortRunningProcessForRecord(primaryKey);
             }
+            formDataDao.delete(form.getPropertyString(FormUtil.PROPERTY_ID), form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME), new String[]{primaryKey});
+        } catch (HibernateObjectRetrievalFailureException e) {
+            //ignore
         }
-    }
-    
-    protected void abortRunningProcesses(String recordId) {
-        Collection<WorkflowProcessLink> processLinks = getLinkDao().getLinks(recordId);
-        if (processLinks != null && !processLinks.isEmpty()) {
-            for (WorkflowProcessLink l : processLinks) {
-                try {
-                    WorkflowProcess process = getWorkflowManager().getRunningProcessById(l.getProcessId());
-                    if (process != null && process.getState().startsWith("open")) {
-                        getWorkflowManager().processAbort(l.getProcessId());
-                    }
-                } catch (Exception e) {
-                    //ignore
-                }
-            }
-        }
-    }
-    
-    protected void abortRunningProcesses(FormRowSet rows) {
-        for (FormRow r : rows) {
-            abortRunningProcesses(r.getId());
+        
+        if ("true".equalsIgnoreCase(getPropertyString("deleteGridData")) || "true".equalsIgnoreCase(getPropertyString("deleteSubformData"))) {
+            FormUtil.recursiveDeleteChildFormData(form, primaryKey, "true".equalsIgnoreCase(getPropertyString("deleteGridData")), "true".equalsIgnoreCase(getPropertyString("deleteSubformData")), "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")));
         }
     }
 

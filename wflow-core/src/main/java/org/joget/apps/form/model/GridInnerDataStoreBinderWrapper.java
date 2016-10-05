@@ -1,13 +1,19 @@
 package org.joget.apps.form.model;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.UuidGenerator;
 
-public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormStoreBinder {
-    private final GridInnerDataRetriever dataRetriever;
-    private final FormStoreBinder storeBinder;
+public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormStoreBinder, FormDeleteBinder {
+    protected final GridInnerDataRetriever dataRetriever;
+    protected final FormStoreBinder storeBinder;
+    protected boolean deleteGridData = false;
+    protected boolean deleteSubformData = false;
+    protected boolean abortProcess = false;
     
     public String getName() {
         return "GridInnerDataStoreBinderWrapper";
@@ -32,6 +38,30 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     public String getPropertyOptions() {
         return "";
     }
+
+    public boolean isDeleteGridData() {
+        return deleteGridData;
+    }
+
+    public void setDeleteGridData(boolean deleteGridData) {
+        this.deleteGridData = deleteGridData;
+    }
+
+    public boolean isDeleteSubformData() {
+        return deleteSubformData;
+    }
+
+    public void setDeleteSubformData(boolean deleteSubformData) {
+        this.deleteSubformData = deleteSubformData;
+    }
+
+    public boolean isAbortProcess() {
+        return abortProcess;
+    }
+
+    public void setAbortProcess(boolean abortProcess) {
+        this.abortProcess = abortProcess;
+    }
     
     public GridInnerDataStoreBinderWrapper (GridInnerDataRetriever dataRetriever, FormStoreBinder storeBinder) {
         this.dataRetriever = dataRetriever;
@@ -39,16 +69,57 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     }
 
     public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
+        //handle deleted row inner form/grid data
+        handleDeletedRows(element, rows, formData, isDeleteGridData(), isDeleteSubformData(), isAbortProcess());
+        
         if (rows != null && !rows.isEmpty()) {
-            
             //store inner form/grid data
             storeInnerData(rows);
+        }    
 
-            storeBinder.store(element, rows, formData);
-        }
+        storeBinder.store(element, rows, formData);
         
         return rows;
     } 
+    
+    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+        handleDeletedRows(element, null, formData, deleteGrid, deleteSubform, abortProcess);
+        
+        if (storeBinder instanceof FormDeleteBinder) {
+            ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess);
+        } else if (element.getLoadBinder() != null && element.getLoadBinder() instanceof FormDataDeletableBinder) {
+            FormDataDeletableBinder binder = (FormDataDeletableBinder) element.getLoadBinder();
+            FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
+            formDataDao.delete(binder.getFormId(), binder.getTableName(), rows);
+        }
+    }
+    
+    public void handleDeletedRows(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+        //get load binder data of this element
+        FormRowSet loadedRows = formData.getLoadBinderData(element);
+        Set<String> ids = new HashSet<String>();
+        if (loadedRows != null && !loadedRows.isEmpty()) {
+            for (FormRow r : loadedRows) {
+                ids.add(r.getId());
+            }
+        }
+        
+        if (!ids.isEmpty() && rows != null && !rows.isEmpty()) {
+            for (FormRow r : rows) {
+                if (r.getId() != null && !r.getId().isEmpty() && ids.contains(r.getId())) {
+                    ids.remove(r.getId());
+                }
+            }
+        }
+        
+        if (!ids.isEmpty()) {
+            //remove inner data
+            Form innerForm = dataRetriever.getInnerForm();
+            for (String id : ids) {
+                FormUtil.recursiveDeleteChildFormData(innerForm, id, deleteGrid, deleteSubform, abortProcess);
+            }
+        }
+    }
     
     public void storeInnerData(FormRowSet rows) {
         Form innerForm = dataRetriever.getInnerForm();

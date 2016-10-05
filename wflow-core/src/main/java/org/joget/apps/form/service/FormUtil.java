@@ -27,6 +27,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.lib.FormOptionsBinder;
 import org.joget.apps.datalist.lib.FormRowDataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -36,7 +37,10 @@ import org.joget.apps.form.model.FormAjaxOptionsElement;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormButton;
 import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.model.FormDataDeletableBinder;
+import org.joget.apps.form.model.FormDeleteBinder;
 import org.joget.apps.form.model.FormLoadBinder;
+import org.joget.apps.form.model.FormLoadMultiRowElementBinder;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormReferenceDataRetriever;
 import org.joget.apps.form.model.FormRow;
@@ -54,6 +58,9 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowProcess;
+import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
@@ -1935,6 +1942,82 @@ public class FormUtil implements ApplicationContextAware {
             }
         } catch (Exception e) {
             LogUtil.error(AppService.class.getName(), e, "Error executing Post Form Submission Processor");
+        }
+    }
+    
+    public static void recursiveDeleteChildFormData(Form form, String primaryKey, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+        FormData formData = new FormData();
+        formData.setPrimaryKeyValue(primaryKey);
+        formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, FormUtil.FORM_RESULT_LOAD_ALL_DATA);
+        
+        if (FormUtil.isReadonly((Element )form, formData)) {
+            return;
+        }
+        
+        formData = FormUtil.executeLoadBinders(form, formData);
+        
+        //skip the form element and start with its child
+        for (Element e : form.getChildren()) {
+            recursiveExecuteFormDeleteBinders(e, formData, deleteGrid, deleteSubform, abortProcess);
+        }
+    }
+    
+    private static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+        if (FormUtil.isReadonly(element, formData)) {
+            return;
+        }
+        
+        FormLoadBinder loadBinder = element.getLoadBinder();
+        FormStoreBinder storeBinder = element.getStoreBinder();
+        
+        FormRowSet rows = formData.getLoadBinderData(element);
+        if (rows != null && !rows.isEmpty()) {
+            boolean isGrid = false;
+            if (((loadBinder != null && loadBinder instanceof FormLoadMultiRowElementBinder) 
+                    || (storeBinder != null && storeBinder instanceof FormLoadMultiRowElementBinder))) {
+                isGrid = true;
+            }
+
+
+            if ((isGrid && deleteGrid) || (!isGrid && deleteSubform)) {
+                boolean delete = false;
+                if (storeBinder instanceof FormDeleteBinder) {
+                    ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess);
+                    delete = true;
+                } else if (loadBinder instanceof FormDataDeletableBinder) {
+                    FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
+                    formDataDao.delete(((FormDataDeletableBinder)loadBinder).getFormId(), ((FormDataDeletableBinder)loadBinder).getTableName(), rows);
+                    delete = true;
+                }
+
+                if (delete && abortProcess) {
+                    for (FormRow r : rows) {
+                        abortRunningProcessForRecord(r.getId());
+                    }
+                }
+            }
+        }
+        
+        for (Element child : element.getChildren()) {
+            recursiveExecuteFormDeleteBinders(child, formData, deleteGrid, deleteSubform, abortProcess);
+        }
+    }
+    
+    public static void abortRunningProcessForRecord(String recordId) {
+        WorkflowProcessLinkDao linkDao = (WorkflowProcessLinkDao) AppUtil.getApplicationContext().getBean("workflowProcessLinkDao");
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+        Collection<WorkflowProcessLink> processLinks = linkDao.getLinks(recordId);
+        if (processLinks != null && !processLinks.isEmpty()) {
+            for (WorkflowProcessLink l : processLinks) {
+                try {
+                    WorkflowProcess process = workflowManager.getRunningProcessById(l.getProcessId());
+                    if (process != null && process.getState().startsWith("open")) {
+                        workflowManager.processAbort(l.getProcessId());
+                    }
+                } catch (Exception e) {
+                    //ignore
+                }
+            }
         }
     }
 }
