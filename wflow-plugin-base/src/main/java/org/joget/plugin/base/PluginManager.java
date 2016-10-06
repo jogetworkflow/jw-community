@@ -396,7 +396,9 @@ public class PluginManager implements ApplicationContextAware {
                     Plugin plugin = beanClass.newInstance();
                     pluginMap.put(plugin.getName(), plugin);
                 } catch (Exception ex) {
-                    LogUtil.warn(PluginManager.class.getName(), " Error loading plugin class  " + beanClassName);
+                    if (!beanClassName.startsWith("org.joget")) {
+                        LogUtil.warn(PluginManager.class.getName(), " Error loading plugin class  " + beanClassName);
+                    }
                 }
             }
         }
