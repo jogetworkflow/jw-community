@@ -421,3 +421,28 @@ td.error .chosen-container, td.error input {
 .ace_editor *{
    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
+
+.property-type-sortableselect .sorted_select_control{
+    display:inline-block;
+    vertical-align: top;
+    padding: 18px 5px;
+}
+
+.property-type-sortableselect .sorted_select_control.sort{
+    padding: 40px 5px;
+}
+
+.property-type-sortableselect select {
+    width: 38%;
+    height: 130px;
+}
+
+.property-type-sortableselect select.options option.selected {
+    display:none;
+}
+
+.property-type-sortableselect .sorted_select_control .btn {
+    display:block;
+    padding: 5px;
+    width: 30px;
+}
