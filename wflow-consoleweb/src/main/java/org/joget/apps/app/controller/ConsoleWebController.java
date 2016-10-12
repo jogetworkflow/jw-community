@@ -3325,6 +3325,80 @@ public class ConsoleWebController {
         }
         AppUtil.writeJson(writer, jsonArray, callback);
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/tableName/options")
+    public void consoleFormTableNameOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
+
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        for (String name : tableNameList) {
+            Map data = new HashMap();
+            data.put("value", name);
+            data.put("label", name);
+            jsonArray.put(data);
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/columns/options")
+    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tables", required = false) String tables) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            String tableName = appService.getFormTableName(appDef, formDefId);
+            populateColumns(jsonArray, tableName, false);
+            
+            if (tables != null && !tables.isEmpty()) {
+                for (String t : tables.split(";")) {
+                    populateColumns(jsonArray, t, true);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    protected void populateColumns(JSONArray jsonArray, String tableName, boolean prefix) {
+        String prefixString = "";
+        if (prefix) {
+            prefixString = tableName;
+            if (prefixString.startsWith("app_fd_")) {
+                prefixString = prefixString.substring("app_fd_".length());
+            }
+            prefixString += ".";
+        }
+        Collection<String> columnNames = formDataDao.getFormDefinitionColumnNames(tableName);
+        Map id = new HashMap();
+        id.put("value", prefixString + FormUtil.PROPERTY_ID);
+        id.put("label", prefixString + FormUtil.PROPERTY_ID);
+        jsonArray.put(id);
+        for (String columnName : columnNames) {
+            Map data = new HashMap();
+            data.put("value", prefixString + columnName);
+            data.put("label", prefixString + columnName);
+            jsonArray.put(data);
+        }
+        Map cd = new HashMap();
+        cd.put("value", prefixString + FormUtil.PROPERTY_DATE_CREATED);
+        cd.put("label", prefixString + FormUtil.PROPERTY_DATE_CREATED);
+        jsonArray.put(cd);
+        Map md = new HashMap();
+        md.put("value", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
+        md.put("label", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
+        jsonArray.put(md);
+    } 
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/create")
     public String consoleFormCreate(ModelMap model, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "activityDefId", required = false) String activityDefId, @RequestParam(value = "processDefId", required = false) String processDefId) {
