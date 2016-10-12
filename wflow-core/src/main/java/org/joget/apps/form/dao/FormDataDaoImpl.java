@@ -8,11 +8,13 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -72,6 +74,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     private FormService formService;
     private FormColumnCache formColumnCache;
     private Cache formSessionFactoryCache;
+    private Cache joinFormSessionFactoryCache;
     private Cache formPersistentClassCache;
     private Document formRowDocument;
     
@@ -105,6 +108,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setFormSessionFactoryCache(Cache formSessionFactoryCache) {
         this.formSessionFactoryCache = formSessionFactoryCache;
+    }
+
+    public Cache getJoinFormSessionFactoryCache() {
+        return joinFormSessionFactoryCache;
+    }
+
+    public void setJoinFormSessionFactoryCache(Cache joinFormSessionFactoryCache) {
+        this.joinFormSessionFactoryCache = joinFormSessionFactoryCache;
     }
 
     public Cache getFormPersistentClassCache() {
@@ -645,6 +656,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
      * Clears in-memory cache of generated hibernate templates
      */
     public void clearCache() {
+        joinFormSessionFactoryCache.removeAll();
         formSessionFactoryCache.removeAll();
         formPersistentClassCache.removeAll();
         formColumnCache.clear();
@@ -655,6 +667,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         String tableName = getFormTableName(form);
         formSessionFactoryCache.remove(getSessionFactoryCacheKey(entityName, tableName, null));
         formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
+        clearJoinCache(tableName);
         
         // strip table prefix for form column cache
         if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
@@ -664,12 +677,35 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         formColumnCache.remove(tableName);
     }
     
+    protected void clearJoinCache(String entity) {
+        if (!entity.startsWith(FORM_PREFIX_TABLE_NAME)) {
+            entity = FORM_PREFIX_TABLE_NAME + entity;
+        }
+        for (Object key : joinFormSessionFactoryCache.getKeys()) {
+            if (key.toString().contains("[" + entity + "]")) {
+                joinFormSessionFactoryCache.remove(key);
+            }
+        }
+    }
+    
     protected String getSessionFactoryCacheKey(String entityName, String tableName, FormRowSet rowSet) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         String cacheKey = profile + ";" + entityName + ";" + tableName + ";";
         if (rowSet != null) {
             for (FormRow row : rowSet) {
                 cacheKey += ";" + row.keySet();
+                break;
+            }
+        }
+        return cacheKey;
+    }
+    
+    protected String getJoinSessionFactoryCacheKey(String[] entities) {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        String cacheKey = profile;
+        if (entities != null && entities.length > 0) {
+            for (String e : entities) {
+                cacheKey += ";[" + e + "]";
                 break;
             }
         }
@@ -705,7 +741,40 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             session = sf.withOptions().autoJoinTransactions(true).openSession();
         }
         return session;
-    }    
+    }  
+    
+    protected Session getJoinHibernateSession(String entityName, String[] joinsTables) {
+        Session session;
+        
+        int size = 1;
+        
+        if (joinsTables != null) {
+            size += joinsTables.length;
+        }
+        
+        String[] entities = new String[size];
+        if (!entityName.startsWith(FORM_PREFIX_TABLE_NAME)) {
+            entityName = FORM_PREFIX_TABLE_NAME + entityName;
+        }
+        entities[0] = entityName;
+        
+        if (joinsTables != null) {
+            int i = 1;
+            for (String e : joinsTables) {
+                if (!e.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                    e = FORM_PREFIX_TABLE_NAME + e;
+                }
+                entities[i] = e;
+                i++;
+            }
+        }
+        
+        // find session factory and open session
+        SessionFactory sf = findJoinSessionFactory(entities);
+        session = sf.withOptions().autoJoinTransactions(true).openSession();
+        
+        return session;
+    }
 
     protected SessionFactory findSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
         SessionFactory sf = null;        
@@ -800,6 +869,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     
                     //remove persistentClassCache
                     formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
+                    clearJoinCache(entityName);
                 } else if (configuration != null && sf == null) {
                     //no change, use existing mapping file if session factory not exist
                     LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " get session factory");
@@ -811,6 +881,33 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (sf == null) {
             LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " create session factory");
             sf = createSessionFactory(entityName, tableName, rowSet, actionType);
+        }
+        return sf;
+    }
+    
+    protected SessionFactory findJoinSessionFactory(String[] entities) throws HibernateException {
+        SessionFactory sf = null;        
+        
+        if (entities.length == 1) {
+            sf = findSessionFactory(entities[0], entities[0], null, ACTION_TYPE_LOAD);
+        } else {
+            //check and refreash each mapping file for each entity
+            for (String e : entities) {
+                findSessionFactory(e, e, null, ACTION_TYPE_LOAD);
+            }
+
+            // lookup cache
+            String cacheKey = getJoinSessionFactoryCacheKey(entities);
+            net.sf.ehcache.Element cacheElement = joinFormSessionFactoryCache.get(cacheKey);
+            if (cacheElement != null) {
+                sf = (SessionFactory)cacheElement.getObjectValue();
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory found in cache");
+            }
+
+            if (sf == null) {
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] create join session factory");
+                sf = createJoinSessionFactory(entities);
+            }
         }
         return sf;
     }
@@ -920,6 +1017,26 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return sf;
     }
     
+    protected SessionFactory createJoinSessionFactory(String[] entities) throws HibernateException {
+        // create configuration
+        Configuration configuration = new Configuration();
+        configuration.setProperty("show_sql", "false");
+        configuration.setProperty("cglib.use_reflection_optimizer", "true");
+        
+        String path = getFormMappingPath();
+        for (String e : entities) {
+            String filename = e + ".hbm.xml";
+            File mappingFile = new File(path, filename);
+            
+            configuration.addFile(mappingFile);
+        }
+        
+        String cacheKey = getJoinSessionFactoryCacheKey(entities);
+        SessionFactory sf = getJoinSessionFactory(entities, cacheKey, configuration);
+        
+        return sf;
+    }
+    
     protected SessionFactory getSessionFactory(final String entityName, String cacheKey, int actionType, final Configuration configuration) {
         // set datasource
         DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
@@ -966,7 +1083,46 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         return sf;
     }
     
+    protected SessionFactory getJoinSessionFactory(final String[] entities, String cacheKey, final Configuration configuration) {
+        // set datasource
+        DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
+        configuration.getProperties().put(Environment.DATASOURCE, dataSource);
+        
+        // build session factory
+        final ServiceRegistry sr = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+        SessionFactory sf = configuration.buildSessionFactory(sr);
+        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory created");
 
+        // update schema
+        boolean requiresNewTransaction = false;
+        try {
+            Object dialect = org.apache.commons.beanutils.PropertyUtils.getProperty(sf, "dialect");
+            requiresNewTransaction = (dialect.getClass().getName().startsWith("org.hibernate.dialect.SQLServer") || dialect.getClass().getName().startsWith("org.hibernate.dialect.PostgreSQL"));
+        } catch (Exception ex) {
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Error retrieving hibernate dialect " + ex.toString());
+        }
+        if (requiresNewTransaction) {
+            TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
+            transactionTemplate.execute(new TransactionCallback<Object>() {
+                public Object doInTransaction(TransactionStatus ts) {
+                    internalUpdateSchema(sr, configuration);
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] schema updated in new transaction");
+                    return null;
+                }
+            });
+        } else {
+            internalUpdateSchema(sr, configuration);
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] schema updated");
+        }
+        
+        // save into cache
+        joinFormSessionFactoryCache.remove(cacheKey);
+        joinFormSessionFactoryCache.put(new net.sf.ehcache.Element(cacheKey, sf));
+        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] saved in cache");
+        
+        return sf;
+    }
+    
     /**
      * Trigger actual Hibernate schema update
      * @param sr
@@ -1156,4 +1312,243 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             session.close();
         }
     }    
+
+    public List<Map<String, Object>> findCustomQuery(Form form, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        final String entityName = getFormEntityName(form);
+        final String newTableName = getFormTableName(form);
+
+        return internalFindCustom(entityName, newTableName, fields, alias, joins, condition, params, groupBys, havingCondition, havingParams, sort, desc, start, rows);
+    }
+
+    public List<Map<String, Object>> findCustomQuery(String formDefId, String tableName, final String[] fields, final String[] alias, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalFindCustom(entityName, newTableName, fields, alias, joins, condition, params, groupBys, havingCondition, havingParams, sort, desc, start, rows);
+    }
+
+    public Long countCustomQuery(Form form, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        final String entityName = getFormEntityName(form);
+        final String newTableName = getFormTableName(form);
+
+        return internalCountCustom(entityName, newTableName, joins, condition, params, groupBys, havingCondition, havingParams);
+    }
+
+    public Long countCustomQuery(String formDefId, String tableName, final String[] joins, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        final String entityName = getFormEntityName(formDefId);
+        final String newTableName = getFormTableName(formDefId, tableName);
+
+        return internalCountCustom(entityName, newTableName, joins, condition, params, groupBys, havingCondition, havingParams);
+    }
+    
+    /**
+     * Query to find a list of matching form rows.
+     * @param entityName
+     * @param tableName
+     * @param fields
+     * @param alias
+     * @param joinTableNames
+     * @param condition
+     * @param params
+     * @param sort
+     * @param havingCondition
+     * @param groupBys
+     * @param havingParams
+     * @param desc
+     * @param start
+     * @param rows
+     * @return
+     */
+    protected List<Map<String, Object>> internalFindCustom(final String entityName, final String tableName, final String[] fields, final String[] alias, final String[] joinTableNames, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams, final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        // get hibernate template
+        Session session = getJoinHibernateSession(tableName, joinTableNames);
+
+        try {
+            
+            String fieldsQuery = "e";
+            if (fields != null && fields.length > 0) {
+                fieldsQuery = "";
+                for (String f : fields) {
+                    if (!fieldsQuery.isEmpty()) {
+                        fieldsQuery += ", ";
+                    }
+                    fieldsQuery += f;
+                }
+            }
+            
+            String conditionQuery = "";
+            if (condition != null && !condition.isEmpty()) {
+                conditionQuery = " " + condition;
+            }
+            String havingConditionQuery = "";
+            if (havingCondition != null && !havingCondition.isEmpty()) {
+                havingConditionQuery = " HAVING " + havingCondition;
+            }
+            
+            String joinQuery = "";
+            if (joinTableNames != null && joinTableNames.length > 0) {
+                for (String t : joinTableNames) {
+                    if (joinQuery.isEmpty()) {
+                        joinQuery += ", ";
+                    }
+                    if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                        t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                    }
+                    joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
+                }
+                joinQuery += " ";
+            }
+            
+            String query = "SELECT " + fieldsQuery + " FROM " + tableName + " e " + joinQuery + conditionQuery;
+            
+            if (groupBys != null && groupBys.length > 0) {
+                String groupByQuery = "";
+                for (String f : groupBys) {
+                    if (!groupByQuery.isEmpty()) {
+                        groupByQuery += ", ";
+                    }
+                    groupByQuery += f;
+                }
+                query += " GROUP BY " + groupByQuery + havingConditionQuery;
+            }
+
+            if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
+                String sortQuery = sort;
+                query += " ORDER BY " + sortQuery;
+
+                if (desc) {
+                    query += " DESC";
+                }
+            }
+            Query q = session.createQuery(query);
+
+            int s = (start == null) ? 0 : start;
+            q.setFirstResult(s);
+
+            if (rows != null && rows > 0) {
+                q.setMaxResults(rows);
+            }
+
+            int i = 0;
+            if (params != null) {
+                for (Object param : params) {
+                    q.setParameter(i, param);
+                    i++;
+                }
+            }
+            if (groupBys != null && groupBys.length > 0 && havingParams != null) {
+                for (BigDecimal param : havingParams) {
+                    q.setBigDecimal(i, param);
+                    i++;
+                }
+            }
+
+            Collection result = q.list();
+
+            List<Map<String, Object>> rowSet = new ArrayList<Map<String, Object>>();
+            for (Object o : result) {
+                Object[] arr = (Object[]) o;
+                Map<String, Object> r = new HashMap<String, Object>();
+                for (int j = 0; j < alias.length; j++) {
+                    if (alias[j].contains(".")) {
+                        String prefix = alias[j].substring(0, alias[j].indexOf("."));
+                        String name = alias[j].substring(alias[j].indexOf(".") + 1);
+                        
+                        Map<String, Object> sub = (Map<String, Object>) r.get(prefix);
+                        if (sub == null) {
+                            sub = new HashMap<String, Object>();
+                        }
+                        sub.put(name, arr[j].toString());
+                        r.put(prefix, sub);
+                    }
+                    r.put(alias[j], arr[j].toString());
+                }
+                rowSet.add(r);
+            }
+            return rowSet;
+        } finally {
+            closeSession(session);
+        }
+    }
+
+    /**
+     * Query total row count for a form.
+     * @param entityName
+     * @param tableName
+     * @param joinTableNames
+     * @param condition
+     * @param params
+     * @param havingCondition
+     * @param havingParams
+     * @param groupBys
+     * @return
+     */
+    protected Long internalCountCustom(final String entityName, final String tableName, final String[] joinTableNames, final String condition, final Object[] params, final String[] groupBys, final String havingCondition, final BigDecimal[] havingParams) {
+        // get hibernate template
+        Session session = getJoinHibernateSession(tableName, joinTableNames);
+        try {
+            String selectField = "*"; 
+            String groupByQuery = "";
+            
+            String conditionQuery = "";
+            if (condition != null && !condition.isEmpty()) {
+                conditionQuery = " " + condition;
+            }
+            String havingConditionQuery = "";
+            if (havingCondition != null && !havingCondition.isEmpty()) {
+                havingConditionQuery = " HAVING " + havingCondition;
+            }
+            
+            if (groupBys != null && groupBys.length > 0) {
+                selectField = groupBys[0];
+                for (String f : groupBys) {
+                    if (!groupByQuery.isEmpty()) {
+                        groupByQuery += ", ";
+                    }
+                    groupByQuery += f;
+                }
+                groupByQuery = " GROUP BY " + groupByQuery + havingConditionQuery;
+            }
+            
+            String joinQuery = "";
+            if (joinTableNames != null && joinTableNames.length > 0) {
+                for (String t : joinTableNames) {
+                    if (joinQuery.isEmpty()) {
+                        joinQuery += ", ";
+                    }
+                    if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
+                        t = t.substring(FORM_PREFIX_TABLE_NAME.length());
+                    }
+                    joinQuery += FORM_PREFIX_TABLE_NAME + t + " AS " + t;
+                }
+                joinQuery += " ";
+            }
+            
+            String query = "SELECT COUNT("+selectField+") FROM " + tableName + " e " + joinQuery + conditionQuery + groupByQuery;
+            
+            Query q = session.createQuery(query);
+
+            int i = 0;
+            if (params != null) {
+                for (Object param : params) {
+                    q.setParameter(i, param);
+                    i++;
+                }
+            }
+            if (groupBys != null && groupBys.length > 0 && havingParams != null) {
+                for (BigDecimal param : havingParams) {
+                    q.setBigDecimal(i, param);
+                    i++;
+                }
+            }
+
+            if (groupBys != null && groupBys.length > 0) {
+                return ((long) q.list().size());
+            } else {
+                return ((Long) q.iterate().next());
+            }
+        } finally {
+            closeSession(session);
+        }
+    }
 }

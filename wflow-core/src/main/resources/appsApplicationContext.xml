@@ -33,6 +33,11 @@
         <property name="cacheName" value="org.joget.cache.SF_CACHE"/>
     </bean>
     
+    <bean id="joinFormSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.SF_CACHE"/>
+    </bean>
+    
     <bean id="formPersistentClassCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
@@ -43,6 +48,7 @@
         <property name="formService" ref="formService" />
         <property name="formColumnCache" ref="formColumnCache" />
         <property name="formSessionFactoryCache" ref="formSessionFactoryCache" />
+        <property name="joinFormSessionFactoryCache" ref="joinFormSessionFactoryCache" />
         <property name="formPersistentClassCache" ref="formSessionFactoryCache" />
     </bean>
     

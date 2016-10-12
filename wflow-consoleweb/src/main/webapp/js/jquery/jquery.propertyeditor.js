@@ -122,9 +122,9 @@ PropertyEditor.Util = {
 
                 var field = page.editorObject.fields[control_field];
                 if (field !== null && field !== undefined) {
-                    var control = $(page.editor).find("[name="+field.id+"]");
+                    var control = $(field.editor).find("#" + field.id);
                     control.on("change", function() {
-                        var match  = PropertyEditor.Util.dynamicOptionsCheckValue(control, controlVal, isRegex);
+                        var match  = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
                         if (match) {
                             element.show();
                             element.find("input, select, textarea, table").removeClass("hidden");
@@ -134,7 +134,7 @@ PropertyEditor.Util = {
                             element.find("input, select, textarea, table").addClass("hidden");
                             element.addClass("hidden");
                         }
-                        element.find("input, select, textarea").trigger("change");
+                        element.find("input, select, textarea, table").trigger("change");
                         if (page.properties.properties !== undefined){
                             $.each(page.properties.properties, function(i, property){
                                 var type = property.propertyEditorObject;
@@ -149,38 +149,77 @@ PropertyEditor.Util = {
             });
         }
     },
-    handleOptionsField: function (field) {
-        if (field !== null && field !== undefined && field.properties.options_ajax !== undefined && field.properties.options_ajax !== null) {
-            if($(field.editor).find('#'+field.id+'_input').length !== 0 
-                    && $(field.editor).find('#'+field.id+'_input option').length === 0 
-                    && $(field.editor).find('#'+field.id+'_input label').length === 0){
-                PropertyEditor.Util.callLoadOptionsAjax(field);
-                if(field.properties.options_ajax_on_change !== undefined && field.properties.options_ajax_on_change !== null){
-                    PropertyEditor.Util.fieldOnChange(field);
-                }
+    handleOptionsField: function (field, reference, ajax_url, on_change) {
+        if (field !== null && field !== undefined && (ajax_url === undefined || ajax_url === null)) {
+            ajax_url = field.properties.options_ajax;
+        }
+        if (field !== null && field !== undefined && (on_change === undefined || on_change === null)) {
+            on_change = field.properties.options_ajax_on_change;
+        }
+        if (field !== null && field !== undefined && ajax_url !== undefined && ajax_url !== null) {
+            PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change);
+            if(on_change !== undefined && on_change !== null){
+                PropertyEditor.Util.fieldOnChange(field, reference, ajax_url, on_change);
             }
         }
     },
-    callLoadOptionsAjax: function (field) {
-        var ajaxUrl = PropertyEditor.Util.replaceContextPath(field.properties.options_ajax, field.options.contextPath);
-        if(field.properties.options_ajax_on_change !== undefined && field.properties.options_ajax_on_change !== null){
-            if(ajaxUrl.indexOf('?') !== -1){
-                ajaxUrl += "&";
-            }else{
-                ajaxUrl += "?";
-            }
-            var targetName = field.properties.options_ajax_on_change;
-            var targetValue = $(field.editor).find("[name=" + field.editorObject.fields[targetName].id + "]").filter(":not(.hidden)").val();
-            if(targetValue === null || targetValue === undefined){
-                if(field.options.propertyValues !== null && field.options.propertyValues !== undefined 
-                        && field.options.propertyValues[targetName] !== null && field.options.propertyValues[targetName] !== undefined
-                        && field.options.propertyValues[targetName] !== ""){
-                    targetValue = field.options.propertyValues[targetName];
-                } else {
-                    targetValue = "";
+    callLoadOptionsAjax: function (field, reference, ajax_url, on_change) {
+        var ajaxUrl = PropertyEditor.Util.replaceContextPath(ajax_url, field.options.contextPath);
+        if(on_change !== undefined && on_change !== null){
+            var onChanges = on_change.split(";");
+            for (var i in onChanges) {
+                var fieldId = onChanges[i];
+                var param = fieldId;
+                var childField = "";
+                if (fieldId.indexOf(":") !== -1) {
+                    param = fieldId.substring(0, fieldId.indexOf(":"));
+                    fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
                 }
+                if (fieldId.indexOf(".") !== -1) {
+                    childField = fieldId.substring(fieldId.indexOf(".") + 1);
+                    fieldId = fieldId.substring(0, fieldId.indexOf("."));
+                }
+                
+                if(ajaxUrl.indexOf('?') !== -1){
+                    ajaxUrl += "&";
+                }else{
+                    ajaxUrl += "?";
+                }
+                
+                var targetField = field.editorObject.fields[fieldId];
+                var data = targetField.getData(true);
+                var targetValue = data[fieldId];
+                
+                if (childField !== "" ) {
+                    if(targetValue === null || targetValue === undefined || targetValue === "" || (targetValue.length > 0 && (targetValue[0][childField] === null || targetValue[0][childField] === undefined))){
+                        if(targetField.options.propertyValues !== null && targetField.options.propertyValues !== undefined 
+                                && targetField.options.propertyValues[fieldId] !== null && targetField.options.propertyValues[fieldId] !== undefined
+                                && targetField.options.propertyValues[fieldId] !== ""){
+                            targetValue = targetField.options.propertyValues[fieldId];
+                        } else {
+                            targetValue = "";
+                        }
+                    }
+                    if (targetValue !== "") { //is grid
+                        var values = [];
+                        for (var j in targetValue) {
+                            values.push(targetValue[j][childField]);
+                        }
+                        targetValue = values.join(";");
+                    }
+                } else {
+                    if(targetValue === null || targetValue === undefined || targetValue === ""){
+                        if(targetField.options.propertyValues !== null && targetField.options.propertyValues !== undefined 
+                                && targetField.options.propertyValues[fieldId] !== null && targetField.options.propertyValues[fieldId] !== undefined
+                                && targetField.options.propertyValues[fieldId] !== ""){
+                            targetValue = targetField.options.propertyValues[fieldId];
+                        } else {
+                            targetValue = "";
+                        }
+                    }
+                }
+                ajaxUrl += param + "=" + escape(targetValue);
             }
-            ajaxUrl += targetName + "=" + escape(targetValue);
         }
         $.ajax({
             url: ajaxUrl,
@@ -188,37 +227,38 @@ PropertyEditor.Util = {
             success: function(data) {
                 if(data !== undefined && data !== null){
                     var options = $.parseJSON(data);
-                    field.handleAjaxOptions(options);
+                    field.handleAjaxOptions(options, reference);
                 }
             }
         });
     },
-    fieldOnChange: function (field) {
-        var targetEl = $(field.editor).find("[name=" + field.editorObject.fields[field.properties.options_ajax_on_change].id+"]");
-        targetEl.change(function() {
-            PropertyEditor.Util.callLoadOptionsAjax(field);
-        });
+    fieldOnChange: function (field, reference, ajax_url, on_change) {
+        var onChanges = on_change.split(";");
+        for (var i in onChanges) {
+            var fieldId = onChanges[i];
+            if (fieldId.indexOf(":") !== -1) {
+                fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
+            }
+            if (fieldId.indexOf(".") !== -1) {
+                fieldId = fieldId.substring(0, fieldId.indexOf("."));
+            }
+            var targetEl = $(field.editor).find("#" + field.editorObject.fields[fieldId].id);
+            targetEl.on("change", function() {
+                PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change);
+            });
+        }
     },
     dynamicOptionsCheckValue: function (control, controlVal, isRegex) {
         var values = new Array();
         
-        //filter hidden input field
-        control = $(control).filter(":not(.hidden)");
+        var data = control.getData(true);
+        var value = data[control.properties.name];
         
-        var isCheckboxRadio = false;
+        if (value !== undefined && value !== null) {
+            values = value.split(";");
+        }
         
-        if ($(control).is("select")) {
-            control = $(control).find("option:selected");
-        } else if ($(control).is("input[type=checkbox], input[type=radio]")) {
-            control = $(control).filter(":checked");
-            isCheckboxRadio = true;
-        } 
-        
-        $(control).each(function() {
-            values.push($(this).val());
-        });
-        
-        if (isCheckboxRadio && values.length === 0) {
+        if (values.length === 0) {
             values.push("");
         }
         
@@ -759,7 +799,7 @@ PropertyEditor.Model.Page.prototype = {
             $.each(this.properties.properties, function(i, property){
                 var type = property.propertyEditorObject;
                 type.initScripting();
-                type.initDefualtScripting();
+                type.initDefaultScripting();
             });
         }
         PropertyEditor.Util.handleDynamicOptionsField(this);
@@ -1311,11 +1351,11 @@ PropertyEditor.Model.Type.prototype = {
         }
         return html;
     },
-    initDefualtScripting: function () {
+    initDefaultScripting: function () {
         PropertyEditor.Util.handleOptionsField(this);
     },
     initScripting: function () {},
-    handleAjaxOptions: function(options) {
+    handleAjaxOptions: function(options, reference) {
         if (options !== null && options !== undefined) {
             this.properties.options = options;
             
@@ -1642,7 +1682,7 @@ PropertyEditor.Type.SelectBox.prototype = {
         return html;
     },
     renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault,
-    handleAjaxOptions: function(options) {
+    handleAjaxOptions: function(options, reference) {
         var thisObj = this;
         if (options !== null && options !== undefined) {
             this.properties.options = options;
@@ -1720,7 +1760,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
 
         return html;
     },
-    handleAjaxOptions: function(options) {
+    handleAjaxOptions: function(options, reference) {
         var thisObj = this;
         if (options !== null && options !== undefined) {
             this.properties.options = options;
@@ -1745,6 +1785,230 @@ PropertyEditor.Type.MultiSelect.prototype = {
 };
 PropertyEditor.Type.MultiSelect = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.MultiSelect.prototype);
 
+PropertyEditor.Type.SortableSelect = function(){};
+PropertyEditor.Type.SortableSelect.prototype = {
+    shortname : "sortableselect",
+    getData: function(useDefault) {
+        var data = new Object();
+        var value = '';
+        $('[name='+this.id+']:not(.hidden) option').each(function(){
+            value += $(this).attr("value") + ';';
+        });
+        if(value !== ''){
+            value = value.replace(/;$/i, '');
+        } else if (useDefault !== undefined && useDefault 
+                && this.defaultValue !== undefined && this.defaultValue !== null) {
+            value = this.defaultValue;
+        }
+        data[this.properties.name] = value;
+        return data;
+    },
+    renderField: function() {
+        var thisObj = this;
+        if(this.value === null){
+            this.value = "";
+        }
+
+        var size = ' size="8"';
+        
+        var values = thisObj.value.split(";");
+
+        PropertyEditor.Util.retrieveOptionsFromCallback(this.properties);
+        
+        var html = '<select id="'+ this.id +'_options" class="options" name="'+ this.id +'_options" multiple'+ size +'>';
+        if(this.properties.options !== undefined && this.properties.options !== null){
+            $.each(this.properties.options, function(i, option){
+                if (option.value !== "") {
+                    var selected = "";
+                    $.each(values, function(i, v){
+                        if(v === option.value){
+                            selected = " class=\"selected\"";
+                        }
+                    });
+                    html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'"'+selected+'>'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
+                }
+            });
+        }
+        html += '</select>';
+        html += '<div class="sorted_select_control"><button class="selectAll btn"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button><button class="select btn"><i class="fa fa-angle-right" aria-hidden="true"></i></button><button class="unselect btn"><i class="fa fa-angle-left" aria-hidden="true"></i></button><button class="unselectAll btn"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button></div>';
+        html += '<select id="'+ this.id +'" name="'+ this.id +'" multiple'+ size +'>';
+        if(this.properties.options !== undefined && this.properties.options !== null && values.length > 0){
+            $.each(values, function(i, v){
+                $.each(this.properties.options, function(i, option){
+                    if(v === option.value){
+                        html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'">'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
+                    }
+                });
+            });
+        }
+        html += '</select>';
+        html += '<div class="sorted_select_control sort"><button class="moveup btn"><i class="fa fa-angle-up" aria-hidden="true"></i></button><button class="movedown btn"><i class="fa fa-angle-down" aria-hidden="true"></i></button></div>';
+        
+        return html;
+    },
+    handleAjaxOptions: function(options, reference) {
+        var thisObj = this;
+        if (options !== null && options !== undefined) {
+            this.properties.options = options;
+            var html = "";
+            
+            var isInit = true;
+            var values = thisObj.value.split(";");
+            if ($("#"+thisObj.id+"_options option").length > 0) {
+                isInit = false;
+                values = [];
+                $("#"+thisObj.id + " option").each(function(){
+                    values.push($(this).attr("value"));
+                });
+            }
+            
+            $.each(this.properties.options, function(i, option){
+                if (option.value !== "") {
+                    var selected = "";
+                    $.each(values, function(i, v){
+                        if(v === option.value){
+                            selected = " class=\"selected\"";
+                        }
+                    });
+                    html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'"'+selected+'>'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
+                }
+            });
+            $("#"+thisObj.id+"_options").html(html);
+            
+            if (isInit) {
+                $.each(values, function(i, v){
+                    var selected = $("#"+thisObj.id+"_options").find("option[value='"+v+"']");
+                    if (selected.length > 0) {
+                        var option = $(selected).clone();
+                        $("#"+thisObj.id).append(option);
+                        $(selected).addClass("selected");
+                    }
+                });
+            } else {
+                $("#"+thisObj.id+ "option").each(function() {
+                    var value = $(this).attr("value");
+                    if ($("#"+thisObj.id+"_options").find("option[value='"+value+"']").length === 0) {
+                        $(this).remove();
+                    }
+                });
+                $("#"+thisObj.id+"_options option.selected").each(function(){
+                    var value = $(this).attr("value");
+                    if ($("#"+thisObj.id).find("option[value='"+value+"']").length === 0) {
+                        var option = $(this).clone();
+                        $("#"+thisObj.id).append(option);
+                    }
+                });
+            }
+            $("#"+thisObj.id).trigger("change");
+        }
+    },
+    renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault,
+    optionsSelectAll : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+"_options option").each(function(){
+            var value = $(this).attr("value");
+            if ($("#"+thisObj.id).find("option[value='"+value+"']").length === 0) {
+                var option = $(this).clone();
+                $("#"+thisObj.id).append(option);
+            }
+            $(this).addClass("selected");
+        });
+    },
+    optionsSelect : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+"_options option:selected").each(function(){
+            var value = $(this).attr("value");
+            if ($("#"+thisObj.id).find("option[value='"+value+"']").length === 0) {
+                var option = $(this).clone();
+                $("#"+thisObj.id).append(option);
+            }
+            $(this).addClass("selected");
+        });
+    },
+    optionsUnselect : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+" option:selected").each(function(){
+            var value = $(this).attr("value");
+            $("#"+thisObj.id+"_options").find("option[value='"+value+"']").removeClass("selected");
+            $(this).remove();
+        });
+    },
+    optionsUnselectAll : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+" option").remove();
+        $("#"+thisObj.id+"_options option").removeClass("selected");
+    },
+    optionsMoveUp : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+" option:selected").each(function(){
+            var prev = $(this).prev();
+            if (prev !== undefined) {
+                $(prev).before($(this));
+            }
+        });
+    },
+    optionsMoveDown : function() {
+        var thisObj = this;
+        $("#"+thisObj.id+" option:selected").each(function(){
+            var next = $(this).next();
+            if (next !== undefined) {
+                $(next).after($(this));
+            }
+        });
+    },
+    initScripting: function () {
+        var element = $("#"+this.id);
+        var container = $(element).parent();
+        var field = this;
+        
+        //selectAll
+        $(container).find('button.selectAll').click(function(){
+            field.optionsSelectAll();
+            element.trigger("change");
+            return false;
+        });
+
+        //select
+        $(container).find('button.select').click(function(){
+            field.optionsSelect();
+            element.trigger("change");
+            return false;
+        });
+
+        //unselect
+        $(container).find('button.unselect').click(function(){
+            field.optionsUnselect();
+            element.trigger("change");
+            return false;
+        });
+
+        //unslectAll
+        $(container).find('button.unselectAll').click(function(){
+            field.optionsUnselectAll();
+            element.trigger("change");
+            return false;
+        });
+        
+        //moveup
+        $(container).find('button.moveup').click(function(){
+            field.optionsMoveUp();
+            element.trigger("change");
+            return false;
+        });
+        
+        //movedown
+        $(container).find('button.movedown').click(function(){
+            field.optionsMoveDown();
+            element.trigger("change");
+            return false;
+        });
+    },
+    pageShown: function () {
+        //do nothing
+    }
+};
+PropertyEditor.Type.SortableSelect = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.SortableSelect.prototype);
+
 PropertyEditor.Type.Grid = function(){};
 PropertyEditor.Type.Grid.prototype = {
     shortname : "grid",
@@ -1752,25 +2016,27 @@ PropertyEditor.Type.Grid.prototype = {
         var field = this;
         var data = new Object();
         var gridValue = new Array();
-        $('#'+this.id + ' tr').each(function(tr){
-            var row = $(this);
-            if(!$(row).hasClass("grid_model") && !$(row).hasClass("grid_header")){
-                var obj = new Object();
+        if (!field.isHidden()) {
+            $('#'+this.id + ' tr').each(function(tr){
+                var row = $(this);
+                if(!$(row).hasClass("grid_model") && !$(row).hasClass("grid_header")){
+                    var obj = new Object();
 
-                $.each(field.properties.columns, function(i, column){
-                    obj[column.key] = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
-                    if (obj[column.key] !== null && obj[column.key] !== undefined) {
-                        obj[column.key] = obj[column.key].trim();
-                    }
-                });
-                gridValue.push(obj);
+                    $.each(field.properties.columns, function(i, column){
+                        obj[column.key] = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                        if (obj[column.key] !== null && obj[column.key] !== undefined) {
+                            obj[column.key] = obj[column.key].trim();
+                        }
+                    });
+                    gridValue.push(obj);
+                }
+            });
+            if (gridValue.length === 0 && useDefault !== undefined && useDefault 
+                    && this.defaultValue !== null && this.defaultValue !== undefined) {
+                gridValue = this.defaultValue;
             }
-        });
-        if (gridValue.length === 0 && useDefault !== undefined && useDefault 
-                && this.defaultValue !== null && this.defaultValue !== undefined) {
-            gridValue = this.defaultValue;
+            data[this.properties.name] = gridValue;
         }
-        data[this.properties.name] = gridValue;
         return data;
     },
     addOnValidation : function (data, errors, checkEncryption) {
@@ -1824,11 +2090,13 @@ PropertyEditor.Type.Grid.prototype = {
 
             PropertyEditor.Util.retrieveOptionsFromCallback(column);
 
-            if (column.options !== undefined) {
-                html += '<select name="' + column.key + '" value="">';
-                $.each(column.options, function(i, option) {
-                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                });
+            if (column.options !== undefined || column.options_ajax !== undefined) {
+                html += '<select name="' + column.key + '" data-value="">';
+                if (column.options !== undefined) {
+                    $.each(column.options, function(i, option) {
+                        html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                    });
+                }
                 html += '</select>';
             } else {
                 html += '<input name="' + column.key + '" size="10" value=""/>';
@@ -1852,15 +2120,17 @@ PropertyEditor.Type.Grid.prototype = {
                     }
 
                     html += '<td><span>';
-                    if (column.options !== undefined) {
-                        html += '<select name="' + column.key + '" value="" class="initFullWidthChosen">';
-                        $.each(column.options, function(i, option) {
-                            var selected = "";
-                            if (columnValue === option.value) {
-                                selected = " selected";
-                            }
-                            html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                        });
+                    if (column.options !== undefined || column.options_ajax !== undefined) {
+                        html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
+                        if (column.options !== undefined) {
+                            $.each(column.options, function(i, option) {
+                                var selected = "";
+                                if (columnValue === option.value) {
+                                    selected = " selected";
+                                }
+                                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                            });
+                        }
                         html += '</select>';
                     } else {
                         html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
@@ -1925,22 +2195,58 @@ PropertyEditor.Type.Grid.prototype = {
         //delete
         $(table).find('a.property-type-grid-action-delete').click(function(){
             grid.gridActionDelete(this);
+            table.trigger("change");
             return false;
         });
 
         //move up
         $(table).find('a.property-type-grid-action-moveup').click(function(){
             grid.gridActionMoveUp(this);
+            table.trigger("change");
             return false;
         });
 
         //move down
         $(table).find('a.property-type-grid-action-movedown').click(function(){
             grid.gridActionMoveDown(this);
+            table.trigger("change");
             return false;
         });
 
         grid.gridDisabledMoveAction(table);
+        
+        $.each(grid.properties.columns, function(i, column) {
+            if (column.options_ajax !== undefined && column.options_ajax !== null) {
+                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change);
+            }
+        });
+    },
+    handleAjaxOptions: function(options, reference) {
+        var grid = this;
+        if (options !== null && options !== undefined) {
+            var html = "";
+            $.each(options, function(i, option){
+                html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'">'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
+            });
+            var change = false;
+            $("#"+grid.id+ " [name='"+reference+"']").each(function() {
+                var val = $(this).val(); 
+                if ($(this).find("option").length === 0) {
+                    val = $(this).data("value");
+                }
+                $(this).html(html);
+                if ($(this).hasClass("initFullWidthChosen")) {
+                    $(this).val(val);
+                    $(this).trigger("chosen:updated");
+                }
+                if ($(this).val() !== val) {
+                    change = true;
+                }
+            });
+            if (change) {
+                $("#"+grid.id).trigger("change");
+            }
+        }
     },
     gridActionAdd: function(object) {
         var grid = this;
@@ -2013,37 +2319,39 @@ PropertyEditor.Type.GridCombine.prototype = {
     getData: function(useDefault) {
         var field = this;
         var data = new Object();
-        if ($('#'+this.id + ' tr').length > 2) {
-            $('#'+this.id + ' tr').each(function(tr){
-                var row = $(this);
-                if(!$(row).hasClass("grid_model") && !$(row).hasClass("grid_header")){
-                    $.each(field.properties.columns, function(i, column){
-                        var value = data[column.key];
+        if (!field.isHidden()) {
+            if ($('#'+this.id + ' tr').length > 2) {
+                $('#'+this.id + ' tr').each(function(tr){
+                    var row = $(this);
+                    if(!$(row).hasClass("grid_model") && !$(row).hasClass("grid_header")){
+                        $.each(field.properties.columns, function(i, column){
+                            var value = data[column.key];
 
-                        if (value === undefined) {
-                            value = "";
-                        }
-                        if (value !== "") {
-                            value += ';';
-                        }
-                        var fieldValue = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
-                        if (fieldValue === undefined || fieldValue === null) {
-                            fieldValue = "";
-                        }
+                            if (value === undefined) {
+                                value = "";
+                            }
+                            if (value !== "") {
+                                value += ';';
+                            }
+                            var fieldValue = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
+                            if (fieldValue === undefined || fieldValue === null) {
+                                fieldValue = "";
+                            }
 
-                        value += fieldValue.trim();
-                        data[column.key] = value;
-                    });
-                }
-            });
-        } else if (useDefault !== undefined && useDefault) {
-            if (field.options.defaultPropertyValues !== null && field.options.defaultPropertyValues !== undefined) {
-                $.each(field.properties.columns, function(i, column){
-                    var temp = field.options.defaultPropertyValues[column.key];
-                    if (temp !== undefined) {
-                        data[column.key] = temp;
+                            value += fieldValue.trim();
+                            data[column.key] = value;
+                        });
                     }
                 });
+            } else if (useDefault !== undefined && useDefault) {
+                if (field.options.defaultPropertyValues !== null && field.options.defaultPropertyValues !== undefined) {
+                    $.each(field.properties.columns, function(i, column){
+                        var temp = field.options.defaultPropertyValues[column.key];
+                        if (temp !== undefined) {
+                            data[column.key] = temp;
+                        }
+                    });
+                }
             }
         }
         return data;
@@ -2108,11 +2416,13 @@ PropertyEditor.Type.GridCombine.prototype = {
 
             PropertyEditor.Util.retrieveOptionsFromCallback(column);
 
-            if (column.options !== undefined) {
-                html += '<select name="' + column.key + '" value="">';
-                $.each(column.options, function(i, option) {
-                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                });
+            if (column.options !== undefined || column.options_ajax !== undefined) {
+                html += '<select name="' + column.key + '" data-value="">';
+                if (column.options !== undefined) {
+                    $.each(column.options, function(i, option) {
+                        html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                    });
+                }
                 html += '</select>';
             } else {
                 html += '<input name="' + column.key + '" size="10" value=""/>';
@@ -2153,15 +2463,17 @@ PropertyEditor.Type.GridCombine.prototype = {
                     }
 
                     html += '<td><span>';
-                    if (column.options !== undefined) {
-                        html += '<select name="' + column.key + '" value="" class="initFullWidthChosen">';
-                        $.each(column.options, function(i, option) {
-                            var selected = "";
-                            if (columnValue === option.value) {
-                                selected = " selected";
-                            }
-                            html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                        });
+                    if (column.options !== undefined || column.options_ajax !== undefined) {
+                        html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
+                        if (column.options !== undefined) {
+                            $.each(column.options, function(i, option) {
+                                var selected = "";
+                                if (columnValue === option.value) {
+                                    selected = " selected";
+                                }
+                                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                            });
+                        }
                         html += '</select>';
                     } else {
                         html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
@@ -2233,7 +2545,8 @@ PropertyEditor.Type.GridCombine.prototype = {
     gridActionMoveUp: PropertyEditor.Type.Grid.prototype.gridActionMoveUp,
     gridActionMoveDown: PropertyEditor.Type.Grid.prototype.gridActionMoveDown,
     gridDisabledMoveAction: PropertyEditor.Type.Grid.prototype.gridDisabledMoveAction,
-    pageShown: PropertyEditor.Type.Grid.prototype.pageShown
+    pageShown: PropertyEditor.Type.Grid.prototype.pageShown,
+    handleAjaxOptions: PropertyEditor.Type.Grid.prototype.handleAjaxOptions
 };
 PropertyEditor.Type.GridCombine = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.GridCombine.prototype);
 
@@ -2311,15 +2624,17 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                         }
 
                         html += '<td><span>';
-                        if (column.options !== undefined) {
-                            html += '<select name="' + column.key + '" value="" class="initFullWidthChosen">';
-                            $.each(column.options, function(i, option) {
-                                var selected = "";
-                                if (columnValue === option.value) {
-                                    selected = " selected";
-                                }
-                                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                            });
+                        if (column.options !== undefined || column.options_ajax !== undefined) {
+                            html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
+                            if (column.options !== undefined){
+                                $.each(column.options, function(i, option) {
+                                    var selected = "";
+                                    if (columnValue === option.value) {
+                                        selected = " selected";
+                                    }
+                                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                                });
+                            }
                             html += '</select>';
                         } else {
                             html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
@@ -2343,8 +2658,15 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         $(table).find("select.initFullWidthChosen").each(function(){
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
+        
+        $.each(grid.properties.columns, function(i, column) {
+            if (column.options_ajax !== undefined && column.options_ajax !== null) {
+                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change);
+            }
+        });
     },
-    pageShown: PropertyEditor.Type.Grid.prototype.pageShown
+    pageShown: PropertyEditor.Type.Grid.prototype.pageShown,
+    handleAjaxOptions: PropertyEditor.Type.Grid.prototype.handleAjaxOptions
 };
 PropertyEditor.Type.GridFixedRow = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.GridFixedRow.prototype);
 
@@ -2421,14 +2743,16 @@ PropertyEditor.Type.CodeEditor.prototype = {
     shortname : "codeeditor",
     getData: function(useDefault) {
         var data = new Object();
-        var value = this.codeeditor.getValue();
-        if (value === undefined || value === null || value === "") {
-            if (useDefault !== undefined && useDefault 
-                    && this.defaultValue !== undefined && this.defaultValue !== null) {
-                value = this.defaultValue;
+        if (!this.isHidden()) {
+            var value = this.codeeditor.getValue();
+            if (value === undefined || value === null || value === "") {
+                if (useDefault !== undefined && useDefault 
+                        && this.defaultValue !== undefined && this.defaultValue !== null) {
+                    value = this.defaultValue;
+                }
             }
+            data[this.properties.name] = value;
         }
-        data[this.properties.name] = value;
         return data;
     },
     renderField: function() {
@@ -2573,7 +2897,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         return defaultValueText;
     },
     pageShown : PropertyEditor.Type.SelectBox.prototype.pageShown,
-    handleAjaxOptions: function(options) {
+    handleAjaxOptions: function(options, reference) {
         var thisObj = this;
         if (options !== null && options !== undefined) {
             this.properties.options = options;
