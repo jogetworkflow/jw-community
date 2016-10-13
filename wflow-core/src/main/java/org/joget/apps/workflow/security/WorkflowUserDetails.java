@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class WorkflowUserDetails implements UserDetails {
 
     private User user;
+    private Collection<GrantedAuthority> authorities = null;
 
     public WorkflowUserDetails(User user) {
         super();
@@ -24,24 +25,27 @@ public class WorkflowUserDetails implements UserDetails {
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        try {
-            ApplicationContext appContext = WorkflowUtil.getApplicationContext();
-            DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-            Collection<Role> roles = directoryManager.getUserRoles(user.getUsername());
-            List<GrantedAuthority> gaList = new ArrayList<GrantedAuthority>();
+        if (authorities == null) {
+            try {
+                ApplicationContext appContext = WorkflowUtil.getApplicationContext();
+                DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
+                Collection<Role> roles = directoryManager.getUserRoles(user.getUsername());
+                List<GrantedAuthority> gaList = new ArrayList<GrantedAuthority>();
 
-            if (roles != null && !roles.isEmpty()) {
-                for (Role role : roles) {
-                    GrantedAuthority ga = new SimpleGrantedAuthority(role.getId());
-                    gaList.add(ga);
+                if (roles != null && !roles.isEmpty()) {
+                    for (Role role : roles) {
+                        GrantedAuthority ga = new SimpleGrantedAuthority(role.getId());
+                        gaList.add(ga);
+                    }
                 }
-            }
 
-            return gaList;
-        } catch (Exception ex) {
-            LogUtil.error(getClass().getName(), ex, "");
-            return new ArrayList<GrantedAuthority>();
+                authorities = gaList;
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "");
+                authorities = new ArrayList<GrantedAuthority>();
+            }
         }
+        return authorities;
     }
 
     public String getPassword() {
