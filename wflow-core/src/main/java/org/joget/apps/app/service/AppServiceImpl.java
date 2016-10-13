@@ -1476,6 +1476,21 @@ public class AppServiceImpl implements AppService {
     }
     
     /**
+     * Get published app
+     * @param appId
+     * @return
+     */
+    public AppDefinition getPublishedAppDefinition(String appId) {
+        try {
+            AppDefinition appDef = appDefinitionDao.getPublishedAppDefinition(appId);
+            AppUtil.setCurrentAppDefinition(appDef);
+            return appDef;
+        } catch (Exception e) {
+        }
+        return null;
+    }
+    
+    /**
      * Publish a specific app version
      * @param appId
      * @param version set null to publish the latest version
@@ -1514,11 +1529,9 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public AppDefinition unpublishApp(String appId) {
-        AppDefinition prevAppDef = null;
+        AppDefinition prevAppDef = getPublishedAppDefinition(appId);
         // unset previous published version
-        Long previousVersion = getPublishedVersion(appId);
-        if (previousVersion != null && previousVersion != 0) {
-            prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
+        if (prevAppDef != null) {
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -2146,12 +2159,9 @@ public class AppServiceImpl implements AppService {
         } else {
             // get specific app
             appDefinitionList = new ArrayList<AppDefinition>();
-            Long version = getPublishedVersion(appId);
-            if (version != null && version > 0) {
-                AppDefinition appDef = getAppDefinition(appId, version.toString());
-                if (appDef != null) {
-                    appDefinitionList.add(appDef);
-                }
+            AppDefinition appDef = getPublishedAppDefinition(appId);
+            if (appDef != null) {
+                appDefinitionList.add(appDef);
             }
         }
 
@@ -2203,12 +2213,9 @@ public class AppServiceImpl implements AppService {
         } else {
             // get specific app
             appDefinitionList = new ArrayList<AppDefinition>();
-            Long version = getPublishedVersion(appId);
-            if (version != null && version > 0) {
-                AppDefinition appDef = getAppDefinition(appId, version.toString());
-                if (appDef != null) {
-                    appDefinitionList.add(appDef);
-                }
+            AppDefinition appDef = getPublishedAppDefinition(appId);
+            if (appDef != null) {
+                appDefinitionList.add(appDef);
             }
         }
 

@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import net.sf.ehcache.Cache;
 import org.hibernate.Query;
 import org.joget.apps.app.model.AppDefinition;
@@ -73,6 +74,15 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
         Iterator it = q.iterate();
         return (it.hasNext()) ? ((Long)it.next()).longValue() : null;
+    }
+    
+    public AppDefinition getPublishedAppDefinition(final String appId) {
+        Collection list = super.find(getEntityName(), " WHERE e.published = true and e.id = ?", new String[]{appId}, null, null, null, 1);
+        
+        if (list != null && !list.isEmpty()) {
+            return (AppDefinition) list.iterator().next();
+        }
+        return null;
     }
 
     public Collection<AppDefinition> findPublishedApps(final String sort, final Boolean desc, final Integer start, final Integer rows) {

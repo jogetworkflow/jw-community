@@ -68,13 +68,9 @@ public class MobileUserviewWebController {
         SecurityUtil.validateStringInput(menuId);        
         SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
-            return "error404";
-        }
-
+        
         // retrieve app and userview
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -133,18 +129,13 @@ public class MobileUserviewWebController {
         if (key != null && key.equals(Userview.USERVIEW_KEY_EMPTY_VALUE)) {
             key = null;
         }
-
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
-            return "error404";
-        }
-
+        
         // retrieve app and userview
         SecurityUtil.validateStringInput(appId);
         SecurityUtil.validateStringInput(menuId);        
         SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);        
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -211,12 +202,7 @@ public class MobileUserviewWebController {
     @RequestMapping({"/mobilecache/(*:appId)/(*:userviewId)"})
     public void mobileAppCacheManifest(HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws Exception {
         // retrieve app and userview
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -363,14 +349,9 @@ public class MobileUserviewWebController {
         appId = SecurityUtil.validateStringInput(appId);
         menuId = SecurityUtil.validateStringInput(menuId);        
         key = SecurityUtil.validateStringInput(key);
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0 || MobileUtil.isMobileDisabled()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return null;
-        }
-
+        
         // retrieve app and userview
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;

@@ -450,6 +450,13 @@ public interface AppService {
      * @return
      */
     public Long getPublishedVersion(String appId);
+    
+    /**
+     * Get published app
+     * @param appId
+     * @return
+     */
+    public AppDefinition getPublishedAppDefinition(String appId);
 
     /**
      * Publish a specific app version
