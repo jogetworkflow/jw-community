@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.PackageDefinitionDao;
-import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
@@ -51,72 +50,102 @@ public class AppWorkflowHelper implements WorkflowHelper {
         ApplicationContext appContext = AppUtil.getApplicationContext();
         PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
         AppDefinition appDef = null;
+        AppDefinition originalAppDef = null;
+        PackageDefinition packageDef = null;
         
-        if (assignment != null) {
-            WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
-            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) appContext.getBean("packageDefinitionDao");
-            
-            String processDefId = assignment.getProcessDefId();
-            WorkflowProcess process = workflowManager.getProcess(processDefId);
-            if (process != null) {
-                String packageId = process.getPackageId();
-                Long packageVersion = Long.parseLong(process.getVersion());
-                PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-                if (packageDef != null) {
-                    appDef = packageDef.getAppDefinition();
-                }
-            }
-        }
+        try {
+            if (assignment != null) {
+                WorkflowManager workflowManager = (WorkflowManager) appContext.getBean("workflowManager");
+                PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) appContext.getBean("packageDefinitionDao");
 
-        if (appDef != null && appDef.getPackageDefinition() != null) {
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            String processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
-            PackageActivityPlugin activityPluginMeta = packageDef.getPackageActivityPlugin(processDefId, assignment.getActivityDefId());
+                String processDefId = assignment.getProcessDefId();
+                WorkflowProcess process = workflowManager.getProcess(processDefId);
+                if (process != null) {
+                    //check current appDef 
+                    appDef = AppUtil.getCurrentAppDefinition();
+                    packageDef = appDef.getPackageDefinition();
 
-            Plugin plugin = null;
-
-            if (activityPluginMeta != null) {
-                plugin = pluginManager.getPlugin(activityPluginMeta.getPluginName());
-            }
-
-            if (plugin != null) {
-                Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef, assignment);
-                propertiesMap.put("workflowAssignment", assignment);
-                propertiesMap.put("pluginManager", pluginManager);
-                propertiesMap.put("appDef", appDef);
-
-                // add HttpServletRequest into the property map
-                try {
-                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-                    if (request != null) {
-                        propertiesMap.put("request", request);
+                    if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
+                        packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
+                        if (packageDef != null) {
+                            originalAppDef = appDef;
+                            appDef = packageDef.getAppDefinition();
+                            AppUtil.setCurrentAppDefinition(appDef);
+                        } else {
+                            appDef = null;
+                        }
                     }
-                } catch (Throwable e) {
-                    // ignore if class is not found
                 }
-
-                ApplicationPlugin appPlugin = (ApplicationPlugin) plugin;
-                if (appPlugin instanceof PropertyEditable) {
-                    ((PropertyEditable) appPlugin).setProperties(propertiesMap);
-                }
-                appPlugin.execute(propertiesMap);
             }
-            return true;
-        }
 
-        return false;
+            if (appDef != null && packageDef != null) {
+                String processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
+                PackageActivityPlugin activityPluginMeta = packageDef.getPackageActivityPlugin(processDefId, assignment.getActivityDefId());
+
+                Plugin plugin = null;
+
+                if (activityPluginMeta != null) {
+                    plugin = pluginManager.getPlugin(activityPluginMeta.getPluginName());
+                }
+
+                if (plugin != null) {
+                    Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef, assignment);
+                    propertiesMap.put("workflowAssignment", assignment);
+                    propertiesMap.put("pluginManager", pluginManager);
+                    propertiesMap.put("appDef", appDef);
+
+                    // add HttpServletRequest into the property map
+                    try {
+                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                        if (request != null) {
+                            propertiesMap.put("request", request);
+                        }
+                    } catch (Throwable e) {
+                        // ignore if class is not found
+                    }
+
+                    ApplicationPlugin appPlugin = (ApplicationPlugin) plugin;
+                    if (appPlugin instanceof PropertyEditable) {
+                        ((PropertyEditable) appPlugin).setProperties(propertiesMap);
+                    }
+                    appPlugin.execute(propertiesMap);
+                }
+                return true;
+            }
+
+            return false;
+        } finally {
+            if (originalAppDef != null) {
+                AppUtil.setCurrentAppDefinition(originalAppDef);
+            }
+        }
     }
 
     @Override
     public List<String> getAssignmentUsers(String packageId, String procDefId, String procId, String version, String actId, String requesterUsername, String participantId) {
         List<String> resultList = null;
-
+        AppDefinition originalAppDef = null;
         try {
             ApplicationContext appContext = AppUtil.getApplicationContext();
-            AppService appService = (AppService) appContext.getBean("appService");
-            
-            AppDefinition appDef = appService.getAppDefinition(packageId, version);
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) appContext.getBean("packageDefinitionDao");
+
+            //check current app definition
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             PackageDefinition packageDef = appDef.getPackageDefinition();
+            
+            if (packageDef == null || !packageId.equals(packageDef.getId()) || !version.equals(packageDef.getVersion().toString())) {
+                Long packageVersion = Long.parseLong(version);
+                packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+                
+                if (packageDef != null) {
+                    //Set app definition    
+                    originalAppDef = appDef;
+                    appDef = packageDef.getAppDefinition();
+                    AppUtil.setCurrentAppDefinition(appDef);
+                } else {
+                    appDef = null;
+                }
+            }
             
             procDefId = WorkflowUtil.getProcessDefIdWithoutVersion(procDefId);
             
@@ -160,6 +189,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
         } catch (Exception ex) {
             LogUtil.error(WorkflowUtil.class.getName(), ex, "");
+        } finally {
+            if (originalAppDef != null) {
+                AppUtil.setCurrentAppDefinition(originalAppDef);
+            }
         }
         
         // remove duplicates
@@ -546,6 +579,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         Collection<Plugin> pluginList = pluginManager.list(DeadlinePlugin.class);
         for (Plugin plugin : pluginList) {
             DeadlinePlugin p = (DeadlinePlugin) plugin;
+            AppDefinition originalAppDef = null;
             try {
                 AppDefinition appDef = null;
 
@@ -553,15 +587,24 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 WorkflowProcess process = workflowManager.getRunningProcessById(processId);
 
                 if (process != null) {
-                    PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
-                    if (packageDef != null) {
-                        appDef = packageDef.getAppDefinition();
+                    //check current appDef 
+                    appDef = AppUtil.getCurrentAppDefinition();
+                    PackageDefinition packageDef = appDef.getPackageDefinition();
+                    
+                    if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
+                        packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
+                        if (packageDef != null) {
+                            originalAppDef = appDef;
+                            appDef = packageDef.getAppDefinition();
+                            AppUtil.setCurrentAppDefinition(appDef);
+                        } else {
+                            appDef = null;
+                        }
                     }
                 }
 
                 if (appDef != null) {
-                    PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) AppUtil.getApplicationContext().getBean("pluginDefaultPropertiesDao");
-                    PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(ClassUtils.getUserClass(plugin).getName(), appDef);
+                    PluginDefaultProperties pluginDefaultProperties = AppPluginUtil.getPluginDefaultProperties(ClassUtils.getUserClass(plugin).getName(), appDef);
 
                     if (pluginDefaultProperties != null) {
                         Map propertiesMap = new HashMap();
@@ -593,6 +636,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 }
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error executing Deadline plugin " + p.getClass().getName());
+            } finally {
+                if (originalAppDef != null) {
+                    AppUtil.setCurrentAppDefinition(originalAppDef);
+                }
             }
         }
         return deadline;

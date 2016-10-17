@@ -1,8 +1,8 @@
 package org.joget.apps.app.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
@@ -38,6 +38,20 @@ public class AppPluginUtil implements ApplicationContextAware {
 
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         appContext = context;
+    }
+    
+    public static PluginDefaultProperties getPluginDefaultProperties(String id, AppDefinition appDef) {
+        if (appDef != null) {
+            Collection<PluginDefaultProperties> list = appDef.getPluginDefaultPropertiesList();
+            if (!list.isEmpty()) {
+                for (PluginDefaultProperties p : list) {
+                    if (p.getId().equals(id)) {
+                        return p;
+                    }
+                }
+            }
+        }
+        return null;
     }
     
     /**
@@ -96,8 +110,7 @@ public class AppPluginUtil implements ApplicationContextAware {
         }
 
         try {
-            PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) appContext.getBean("pluginDefaultPropertiesDao");
-            PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(ClassUtils.getUserClass(plugin).getName(), appDef);
+            PluginDefaultProperties pluginDefaultProperties = getPluginDefaultProperties(ClassUtils.getUserClass(plugin).getName(), appDef);
 
             if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
                 Map defaultPropertyMap = new HashMap();
