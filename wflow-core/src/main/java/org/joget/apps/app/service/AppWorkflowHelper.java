@@ -113,18 +113,15 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
         try {
             ApplicationContext appContext = AppUtil.getApplicationContext();
-            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) appContext.getBean("packageDefinitionDao");
-
+            AppService appService = (AppService) appContext.getBean("appService");
+            
+            AppDefinition appDef = appService.getAppDefinition(packageId, version);
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            
             procDefId = WorkflowUtil.getProcessDefIdWithoutVersion(procDefId);
-            Long packageVersion = Long.parseLong(version);
-            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
             
             if (packageDef != null) {
                 PackageParticipant participant = packageDef.getPackageParticipant(procDefId, participantId);
-
-                //Set app definition    
-                AppDefinition appDef = packageDef.getAppDefinition();
-                AppUtil.setCurrentAppDefinition(appDef);
 
                 //if process start white list and app is not publish
                 if (WorkflowUtil.PROCESS_START_WHITE_LIST.equals(participantId) && !appDef.isPublished()) {
