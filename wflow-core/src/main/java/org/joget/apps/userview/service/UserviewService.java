@@ -67,7 +67,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
         
         Map<String, Object> requestParameters = new HashMap<String, Object>();
         requestParameters.put("appId", appDef.getAppId());
@@ -144,7 +144,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
 
         if (requestParameters == null) {
             requestParameters = new HashMap<String, Object>();
@@ -164,11 +164,10 @@ public class UserviewService {
         boolean userviewPermission = true;
         
         //if screenshot, set user to null (anonymous)
-        String currentThreadUser = null;
+        User currentThreadUser = currentUser;
         boolean isScreenCapture = workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"));
         if (isScreenCapture) {
             currentUser = null;
-            currentThreadUser = workflowUserManager.getCurrentThreadUser();
             workflowUserManager.setCurrentThreadUser(WorkflowUserManager.ROLE_ANONYMOUS);
         }
 

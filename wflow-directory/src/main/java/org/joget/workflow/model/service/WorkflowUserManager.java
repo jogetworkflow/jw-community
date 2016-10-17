@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import org.joget.directory.model.User;
+import org.joget.directory.model.service.DirectoryManager;
+import org.joget.directory.model.service.DirectoryUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -51,6 +53,14 @@ public class WorkflowUserManager {
     public void setCurrentThreadUser(String username) {
         currentThreadUser.set(username);
     }
+    
+    /**
+     * Method used by system to set current logged in user
+     * @param user 
+     */
+    public void setCurrentThreadUser(User user) {
+        currentThreadUser.set(user);
+    }
 
     /**
      * Method used by system to clear the user 
@@ -66,8 +76,13 @@ public class WorkflowUserManager {
      * @return 
      */
     public String getCurrentThreadUser() {
-        String username = (String)currentThreadUser.get();
-        return username;
+        Object user = currentThreadUser.get();
+        
+        if (user instanceof User) {
+            return ((User) user).getUsername();
+        } else {
+            return (String) user;
+        }
     }
     
     /**
@@ -96,35 +111,67 @@ public class WorkflowUserManager {
         
         return null;
     }
+    
+    public User getCurrentUser() {
+        // check for user in current thread
+        Object threadUser = currentThreadUser.get();
+        if (threadUser != null) {
+            if (threadUser instanceof User) {
+                return (User) threadUser;
+            } else if (threadUser instanceof String) {
+                String username = threadUser.toString();
+                
+                if (ROLE_ANONYMOUS.equals(username)) {
+                    return null;
+                } else {
+                    DirectoryManager directoryManager = (DirectoryManager) DirectoryUtil.getApplicationContext().getBean("directoryManager");
+                    User user = directoryManager.getUserByUsername(username);
+                
+                    setCurrentThreadUser(user);
+                    return user;
+                }
+            }
+        }
+        
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication auth = context.getAuthentication();
+
+        if (auth == null) {
+            setCurrentThreadUser(ROLE_ANONYMOUS);
+            return null;
+        }
+        
+        Object userObj = auth.getPrincipal();
+        if (userObj instanceof String) {
+            setCurrentThreadUser((String) userObj);
+            return getCurrentUser();
+        } else if (userObj instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) userObj;
+            User user = userDetails.getUser();
+            setCurrentThreadUser(user);
+            return user;
+        } else if (userObj instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) userObj;
+            String username = userDetails.getUsername();
+            setCurrentThreadUser(username);
+            return getCurrentUser();
+        } else {
+            User user = (User) userObj;
+            setCurrentThreadUser(user);
+            return user;
+        }
+    }
 
     /**
      * Gets current logged in user
      * @return 
      */
     public String getCurrentUsername() {
-
-        // check for user in current thread
-        String threadUser = getCurrentThreadUser();
-        if (threadUser != null && threadUser.trim().length() > 0) {
-            return threadUser;
-        }
-
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication auth = context.getAuthentication();
-
-        if (auth == null) {
-            return ROLE_ANONYMOUS;
-        }
-
-        Object userObj = auth.getPrincipal();
-        if (userObj instanceof String) {
-            return (String) userObj;
-        } else if (userObj instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) userObj;
-            return userDetails.getUsername();
-        }else {
-            User user = (User) userObj;
+        User user = getCurrentUser();
+        if (user != null) {
             return user.getUsername();
+        } else {
+            return ROLE_ANONYMOUS;
         }
     }
 
