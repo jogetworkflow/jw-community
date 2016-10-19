@@ -46,6 +46,18 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
                             return "";
                         }
                         
+                        if ("requestURI".equals(variableKey) || "requestURL".equals(variableKey)) {
+                            String forwardUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
+                            if (forwardUri != null) {
+                                if ("requestURI".equals(variableKey)) {
+                                    returnResult = forwardUri;
+                                } else {
+                                    String uri = request.getRequestURI();
+                                    returnResult = returnResult.toString().replace(uri, forwardUri);
+                                }
+                            }
+                        }
+                        
                         if (returnResult != null) {
                             return returnResult.toString();
                         }
