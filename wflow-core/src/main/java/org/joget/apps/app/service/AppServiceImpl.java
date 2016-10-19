@@ -487,7 +487,7 @@ public class AppServiceImpl implements AppService {
         }
         return startFormDef;
     }
-
+    
     /**
      * Start a process through a form submission
      * @param appId
@@ -501,6 +501,28 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public WorkflowProcessResult submitFormToStartProcess(String appId, String version, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId, String formUrl) {
+        if (formData == null) {
+            formData = new FormData();
+        }
+
+        // get form
+        PackageActivityForm startFormDef = viewStartProcessForm(appId, version, processDefId, formData, formUrl);
+        return submitFormToStartProcess(appId, version, startFormDef, processDefId, formData, workflowVariableMap, originProcessId);
+    }
+
+    /**
+     * Start a process through a form submission
+     * @param appId
+     * @param version
+     * @param startFormDef
+     * @param processDefId
+     * @param formData
+     * @param workflowVariableMap
+     * @param originProcessId
+     * @return
+     */
+    @Override
+    public WorkflowProcessResult submitFormToStartProcess(String appId, String version, PackageActivityForm startFormDef, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId) {
         WorkflowProcessResult result = null;
         if (formData == null) {
             formData = new FormData();
@@ -511,7 +533,6 @@ public class AppServiceImpl implements AppService {
         String processDefIdWithVersion = AppUtil.getProcessDefIdWithVersion(packageDef.getId(), packageDef.getVersion().toString(), processDefId);
 
         // get form
-        PackageActivityForm startFormDef = viewStartProcessForm(appId, appDef.getVersion().toString(), processDefId, formData, formUrl);
         if (startFormDef != null && startFormDef.getForm() != null) {
             Form startForm = startFormDef.getForm();
 

@@ -226,6 +226,19 @@ public interface AppService {
      * Start a process through a form submission
      * @param appId
      * @param version
+     * @param startFormDef
+     * @param processDefId
+     * @param formData
+     * @param workflowVariableMap
+     * @param originProcessId
+     * @return
+     */
+    WorkflowProcessResult submitFormToStartProcess(String appId, String version, PackageActivityForm startFormDef, String processDefId, FormData formData, Map<String, String> workflowVariableMap, String originProcessId);
+    
+    /**
+     * Start a process through a form submission
+     * @param appId
+     * @param version
      * @param processDefId
      * @param formData
      * @param workflowVariableMap
