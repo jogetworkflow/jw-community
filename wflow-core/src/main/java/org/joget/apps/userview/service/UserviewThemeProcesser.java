@@ -18,7 +18,6 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.directory.model.service.UserSecurity;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -152,13 +151,12 @@ public class UserviewThemeProcesser {
         data.put("sidebar_id", "sidebar");
         data.put("content_id", "content");
 
-        String username = WorkflowUtil.getCurrentUsername();
-        boolean isLoggedIn = username != null && !WorkflowUserManager.ROLE_ANONYMOUS.equals(username);
+        WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        User user = wum.getCurrentUser();
+        boolean isLoggedIn = user != null;
         data.put("is_logged_in", isLoggedIn);
         if (isLoggedIn) {
-            ExtDirectoryManager directoryManager = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
-            User user = directoryManager.getUserByUsername(username);
-            data.put("username", username);
+            data.put("username", wum.getCurrentUsername());
             data.put("user", user);
             data.put("logout_link", request.getContextPath() + "/j_spring_security_logout");
         } else {
