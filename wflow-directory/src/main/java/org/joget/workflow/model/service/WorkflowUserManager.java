@@ -145,11 +145,6 @@ public class WorkflowUserManager {
         if (userObj instanceof String) {
             setCurrentThreadUser((String) userObj);
             return getCurrentUser();
-        } else if (userObj instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) userObj;
-            User user = userDetails.getUser();
-            setCurrentThreadUser(user);
-            return user;
         } else if (userObj instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) userObj;
             String username = userDetails.getUsername();

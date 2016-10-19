@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.joget.workflow.model.service.CustomUserDetails;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class WorkflowUserDetails implements CustomUserDetails {
+public class WorkflowUserDetails implements UserDetails {
 
     private User user;
     private Collection<GrantedAuthority> authorities = null;
