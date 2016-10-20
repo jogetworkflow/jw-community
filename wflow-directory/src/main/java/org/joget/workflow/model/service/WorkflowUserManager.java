@@ -21,6 +21,7 @@ public class WorkflowUserManager {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
 
     private ThreadLocal currentThreadUser = new ThreadLocal();
+    private ThreadLocal currentThreadUserRoles = new ThreadLocal();
     private ThreadLocal currentThreadUserData = new ThreadLocal();
     private ThreadLocal systemThreadUser = new ThreadLocal();
     
@@ -50,6 +51,7 @@ public class WorkflowUserManager {
      */
     public void setCurrentThreadUser(String username) {
         currentThreadUser.set(username);
+        currentThreadUserRoles.remove();
     }
 
     /**
@@ -57,6 +59,7 @@ public class WorkflowUserManager {
      */
     public void clearCurrentThreadUser() {
         currentThreadUser.remove();
+        currentThreadUserRoles.remove();
         systemThreadUser.remove();
         currentThreadUserData.remove();
     }
@@ -133,18 +136,22 @@ public class WorkflowUserManager {
      * @return 
      */
     public Collection<String> getCurrentRoles() {
-        Collection<String> results = new HashSet<String>();
-        SecurityContext context = SecurityContextHolder.getContext();
-        Authentication auth = context.getAuthentication();
+        Collection<String> results = (Collection<String>)currentThreadUserRoles.get();
+        if (results == null) {
+            results = new HashSet<String>();
+            SecurityContext context = SecurityContextHolder.getContext();
+            Authentication auth = context.getAuthentication();
 
-        if (auth != null) {
-            Object userObj = auth.getPrincipal();
-            if (userObj instanceof UserDetails) {
-                Collection<? extends GrantedAuthority> authorities = ((UserDetails)userObj).getAuthorities();
-                for (GrantedAuthority ga: authorities) {
-                    results.add(ga.getAuthority());
+            if (auth != null) {
+                Object userObj = auth.getPrincipal();
+                if (userObj instanceof UserDetails) {
+                    Collection<? extends GrantedAuthority> authorities = ((UserDetails)userObj).getAuthorities();
+                    for (GrantedAuthority ga: authorities) {
+                        results.add(ga.getAuthority());
+                    }
                 }
             }
+            currentThreadUserRoles.set(results);
         }
         return results;
     }
