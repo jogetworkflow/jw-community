@@ -988,7 +988,6 @@ DatalistBuilder = {
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
-            closeAfterSaved : true,
             showCancelButton : true,
             cancelCallback: function() {
                 DatalistBuilder.propertyDialog.hide()
@@ -1067,7 +1066,6 @@ DatalistBuilder = {
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
-            closeAfterSaved : true,
             showCancelButton : true,
             cancelCallback: function() {
                 DatalistBuilder.propertyDialog.hide()
@@ -1198,6 +1196,76 @@ DatalistBuilder = {
         $('#properties').html("");
         $('#properties').propertyEditor(options);
     },
+    
+    showPopUpDatalistProperties : function(){
+        var propertiesDefinition = DatalistBuilder.getDatalistPropertiesDefinition();
+        
+        var propertyValues = DatalistBuilder.datalistProperties;
+
+        var options = {
+            tinyMceScript: DatalistBuilder.tinymceUrl,
+            contextPath: DatalistBuilder.contextPath,
+            propertiesDefinition : propertiesDefinition,
+            propertyValues : propertyValues,
+            showCancelButton : true,
+            cancelCallback: function() {
+                DatalistBuilder.propertyDialog.hide();
+                $("#form-property-editor").html("");
+            },
+            saveCallback: function(container, properties) {
+                // hide dialog
+                DatalistBuilder.propertyDialog.hide();
+                // update element properties
+                DatalistBuilder.updateDatalistProperties(container, properties);
+            }
+        }
+        
+        $("#form-property-editor").html("");
+        DatalistBuilder.propertyDialog.show();
+        $("#form-property-editor").propertyEditor(options);
+        DatalistBuilder.propertyDialog.center('x');
+        DatalistBuilder.propertyDialog.center('y');
+    },
+    
+    showPopUpDatalistBinderProperties : function(){
+        var propertiesDefinition = DatalistBuilder.getBinderPropertiesDefinition();
+
+        var propertyValues = new Array();
+        propertyValues['binder'] = DatalistBuilder.binderProperties;
+        
+        var options = {
+            tinyMceScript: DatalistBuilder.tinymceUrl,
+            contextPath: DatalistBuilder.contextPath,
+            propertiesDefinition : propertiesDefinition,
+            propertyValues : propertyValues,
+            showCancelButton: false,
+            cancelCallback: function() {
+                DatalistBuilder.propertyDialog.hide();
+                $("#form-property-editor").html("");
+            },
+            saveCallback: function(container, properties) {
+                var binderChanged = DatalistBuilder.binderProperties.className != properties.binder.className;
+                DatalistBuilder.binderProperties = properties.binder;
+                if (binderChanged) {
+                    DatalistBuilder.updateBinderProperties(DatalistBuilder.UPDATE);
+                } else {
+                    DatalistBuilder.updateBinderProperties();
+                }
+                
+                $('#source').html("");
+                $('#source').propertyEditor(options);
+                
+                // hide dialog
+                DatalistBuilder.propertyDialog.hide();
+            }
+        };
+        
+        $("#form-property-editor").html("");
+        DatalistBuilder.propertyDialog.show();
+        $("#form-property-editor").propertyEditor(options);
+        DatalistBuilder.propertyDialog.center('x');
+        DatalistBuilder.propertyDialog.center('y');
+    },
 
     updateDatalistProperties : function(container, properties){
         DatalistBuilder.addToUndo();
@@ -1236,7 +1304,6 @@ DatalistBuilder = {
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
-            closeAfterSaved : true,
             showCancelButton : true,
             cancelCallback: function() {
                 DatalistBuilder.propertyDialog.hide()
@@ -1369,7 +1436,6 @@ DatalistBuilder = {
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
-            closeAfterSaved : true,
             showCancelButton : true,
             cancelCallback: function() {
                 DatalistBuilder.propertyDialog.hide()
