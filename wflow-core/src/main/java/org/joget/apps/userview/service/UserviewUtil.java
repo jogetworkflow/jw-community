@@ -86,19 +86,20 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
      * @throws RuntimeException 
      */
     public static String getUserviewMenuHtml(UserviewMenu menu) throws RuntimeException {
-        String html = "";
-        
-        String jspPage = menu.getReadyJspPage();
-        if (jspPage != null && !jspPage.isEmpty()) {
-            Map<String, Object> modelMap = new HashMap<String, Object>();
-            modelMap.put("properties", menu.getProperties());
-            modelMap.put("requestParameters", menu.getRequestParameters());
-            html += UserviewUtil.renderJspAsString(jspPage, modelMap);
-        } else {
-            html += menu.getReadyRenderPage();
+        String content = UserviewCache.getCachedContent(menu, UserviewCache.CACHE_TYPE_PAGE);
+        if (content == null) {
+            String jspPage = menu.getReadyJspPage();
+            if (jspPage != null && !jspPage.isEmpty()) {
+                Map<String, Object> modelMap = new HashMap<String, Object>();
+                modelMap.put("properties", menu.getProperties());
+                modelMap.put("requestParameters", menu.getRequestParameters());
+                content = UserviewUtil.renderJspAsString(jspPage, modelMap);
+            } else {
+                content = menu.getReadyRenderPage();
+            }
+            UserviewCache.setCachedContent(menu, UserviewCache.CACHE_TYPE_PAGE, content);
         }
-        
-        return html;
+        return content;
     }
 
     /**
@@ -153,5 +154,5 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 }
             }
         }
-    }
+    }   
 }

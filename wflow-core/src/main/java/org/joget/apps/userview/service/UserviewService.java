@@ -16,6 +16,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
@@ -311,6 +312,7 @@ public class UserviewService {
                                 menuLabel = AppUtil.replaceAppMessage(menuLabel);
                                 menu.setProperty(FormUtil.PROPERTY_LABEL, menuLabel);
                                 
+                                menu = new CachedUserviewMenu(menu);
                                 menus.add(menu);
                             } catch (Exception e) {
                                 LogUtil.debug(getClass().getName(), "Userview Menu class file not found");

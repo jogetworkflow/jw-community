@@ -39,7 +39,7 @@ public class UserviewBuilderPalette {
         // add elements to palette
         for (Plugin element : elementList) {
             if (element instanceof UserviewMenu) {
-                UserviewMenu um = (UserviewMenu) element;
+                UserviewMenu um = new CachedUserviewMenu((UserviewMenu)element);
                 um.setRequestParameters(basicRequestParams);
                 addElement(categoryMap, um);
             }

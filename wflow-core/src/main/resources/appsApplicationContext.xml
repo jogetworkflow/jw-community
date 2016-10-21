@@ -20,6 +20,11 @@
         <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
     </bean>
 
+    <bean id="userviewMenuCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.USERVIEW_CACHE"/>
+    </bean>
+
     <bean id="formColumnCacheBean" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
