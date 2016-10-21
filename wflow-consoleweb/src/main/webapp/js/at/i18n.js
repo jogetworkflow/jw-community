@@ -108,7 +108,8 @@ I18nEditor = {
                     if (response.total > 0) {
                         for (var i in response.data) {
                             var message = response.data[i];
-                            $(container).find('td.'+id+' textarea[rel="'+message.id+'"]').val(message.message);
+                            var mid = message.id.replace(new RegExp('"', 'g'), "'");
+                            $(container).find('td.'+id+' textarea[rel="'+mid+'"]').val(message.message);
                         }
                     }
                 }
