@@ -197,7 +197,7 @@ DependencyTree.Matchers['formElement'] = {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['className'] === "org.joget.apps.form.model.Form") {
                     DependencyTree.Util.createEditIndicator(viewer, node, function(){
-                        FormBuilder.showFormProperties();
+                        FormBuilder.showPopUpFormProperties();
                     });
                 } else {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
@@ -315,7 +315,7 @@ DependencyTree.Matchers['userview'] = {
             DependencyTree.Util.pluginPropertiesWalker(viewer, pnode, node, jsonObj['setting'], getSetting, settingProperties);
             
             DependencyTree.Util.createEditIndicator(viewer, node, function(){
-                $("#step-setting").trigger("click");
+                UserviewBuilder.ShowPopupUserviewSetting();
             });
             
             //categories
@@ -414,7 +414,7 @@ DependencyTree.Matchers['datalist'] = {
             pnode.type = 'properties';
             node.addChild(pnode);
             DependencyTree.Util.createEditIndicator(viewer, node, function() {
-                $("#builder-steps-properties").trigger("click");
+                DatalistBuilder.showPopUpDatalistProperties();
             });
             
             var properties = DatalistBuilder.getDatalistPropertiesDefinition();
@@ -428,7 +428,7 @@ DependencyTree.Matchers['datalist'] = {
             DependencyTree.Util.runMatchers(viewer, deferreds, bnode, jsonObj['binder']);
             
             DependencyTree.Util.createEditIndicator(viewer, bnode, function() {
-                $("#builder-steps-source").trigger("click");
+                DatalistBuilder.showPopUpDatalistBinderProperties();
             });
             
             //Columns
@@ -841,12 +841,43 @@ DependencyTree.Matchers['string'] = {
                         var data = {};
                         
                         if (refObj['options_ajax_on_change'] !== undefined && refObj['options_ajax_on_change'] !== "") {
-                            var key = refObj['options_ajax_on_change'];
-                            var value = node.parent.data["properties"][key];
-                            if (value === undefined) {
-                                value = "";
+                            var onChanges = refObj['options_ajax_on_change'].split(";");
+                            
+                            for (var i in onChanges) {
+                                var fieldId = onChanges[i];
+                                var param = fieldId;
+                                var childField = "";
+                                if (fieldId.indexOf(":") !== -1) {
+                                    param = fieldId.substring(0, fieldId.indexOf(":"));
+                                    fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
+                                }
+                                if (fieldId.indexOf(".") !== -1) {
+                                    childField = fieldId.substring(fieldId.indexOf(".") + 1);
+                                    fieldId = fieldId.substring(0, fieldId.indexOf("."));
+                                }
+                                
+                                var parent = node.parent;
+                                var properties = parent.data["properties"];
+                                
+                                while (properties === undefined && parent.parent !== undefined) {
+                                    parent = parent.parent;
+                                    properties = parent.data["properties"];
+                                }
+                                
+                                var value = "";
+                                if (properties !== undefined && properties[fieldId] !== undefined) {
+                                    value = properties[fieldId];
+                                }
+                                
+                                if (childField !== "" && value !== "") { //is grid
+                                    var values = [];
+                                    for (var j in value) {
+                                        values.push(value[j][childField]);
+                                    }
+                                    value = values.join(";");
+                                }
+                                data[param] = value;
                             }
-                            data[key] = value;
                         }
                         
                         var o = $.Deferred();

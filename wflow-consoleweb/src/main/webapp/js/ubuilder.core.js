@@ -132,19 +132,21 @@ UserviewBuilder = {
             UserviewBuilder.data.setting['className'] = "org.joget.apps.userview.model.UserviewSetting";
             UserviewBuilder.data.setting['properties'] = new Array();
         }
-
-        $("#step-setting-container").html("");
-        var options = {
-            contextPath: UserviewBuilder.contextPath,
-            tinyMceScript: UserviewBuilder.tinymceUrl,
-            propertiesDefinition : UserviewBuilder.settingPropertyOptions,
-            propertyValues : UserviewBuilder.data.setting.properties,
-            showCancelButton:false,
-            closeAfterSaved : false,
-            saveCallback: UserviewBuilder.saveSettingProperties
-        }
-        $('#step-setting-container').propertyEditor(options);
-        $('#step-setting-container').hide();
+        
+        $("#step-setting").on("click", function(){
+            $("#step-setting-container").html("");
+            var options = {
+                contextPath: UserviewBuilder.contextPath,
+                tinyMceScript: UserviewBuilder.tinymceUrl,
+                propertiesDefinition : UserviewBuilder.settingPropertyOptions,
+                propertyValues : UserviewBuilder.data.setting.properties,
+                showCancelButton:false,
+                closeAfterSaved : false,
+                saveCallback: UserviewBuilder.saveSettingProperties
+            };
+            $('#step-setting-container').propertyEditor(options);
+            return true;
+        });
 
         // make palette sections draggable
         $(".builder-palette-element").draggable({
@@ -233,6 +235,30 @@ UserviewBuilder = {
             UserviewBuilder.redo();
             return false;
         });
+    },
+    
+    ShowPopupUserviewSetting : function () {
+        var options = {
+            contextPath: UserviewBuilder.contextPath,
+            tinyMceScript: UserviewBuilder.tinymceUrl,
+            propertiesDefinition : UserviewBuilder.settingPropertyOptions,
+            propertyValues : UserviewBuilder.data.setting.properties,
+            showCancelButton:true,
+            cancelCallback: function() {
+                UserviewBuilder.editorDialog.hide();
+                $('.menu-wizard-container').html("");
+            },
+            saveCallback: function(container, properties) {
+                UserviewBuilder.saveSettingProperties(container, properties);
+                UserviewBuilder.editorDialog.hide();
+            }
+        };
+        
+        $('.menu-wizard-container').html("");
+        UserviewBuilder.editorDialog.show();
+        $('.menu-wizard-container').propertyEditor(options);
+        UserviewBuilder.editorDialog.center('x');
+        UserviewBuilder.editorDialog.center('y');
     },
 
     //Generate userview builder element based on json

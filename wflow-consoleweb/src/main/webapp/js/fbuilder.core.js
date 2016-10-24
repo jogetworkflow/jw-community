@@ -947,6 +947,57 @@ FormBuilder = {
         return false;
     },
     
+    showPopUpFormProperties : function () {
+        // get form property options
+        var form = $(".form-container")[0];
+        
+        var formOptions = FormBuilder.elementPropertyDefinitions["org.joget.apps.form.model.Form"];
+        var formProperties = form.dom.properties;
+        
+        // show property dialog
+        var options = {
+            tinyMceScript: FormBuilder.contextPath + FormBuilder.tinymceUrl,
+            contextPath: FormBuilder.contextPath,
+            propertiesDefinition: formOptions,
+            propertyValues: formProperties,
+            showCancelButton:true,
+            cancelCallback: function() {
+                FormBuilder.propertyDialog.hide();
+                $("#form-property-editor").html("");
+            },
+            saveCallback: function(container, properties) {
+                FormBuilder.addToUndo();
+                
+                // hide dialog
+                FormBuilder.propertyDialog.hide();
+
+                // update element properties
+                FormBuilder.updateElementProperties(form, properties);
+                
+                // change to design tab
+                $("#builder-step-design").trigger("click");
+            }
+        };
+
+        // show popup dialog
+        if (FormBuilder.propertyDialog == null) {
+            FormBuilder.propertyDialog = new Boxy(
+                '<div id="form-property-editor"></div>',
+                {
+                    title: 'Property Editor',
+                    closeable: true,
+                    draggable: false,
+                    show: false,
+                    fixed: true
+                });
+        }
+        $("#form-property-editor").html("");
+        FormBuilder.propertyDialog.show();
+        $("#form-property-editor").propertyEditor(options);
+        FormBuilder.propertyDialog.center('x');
+        FormBuilder.propertyDialog.center('y');
+    },
+    
     isEmpty : function() {
         return ($(".form-container-div .form-cell").length === 0);
     },

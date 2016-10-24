@@ -2838,6 +2838,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
         if (messageList != null && messageList.size() > 0) {
             for (Message message : messageList) {
                 Map data = new HashMap();
@@ -2845,10 +2846,10 @@ public class ConsoleWebController {
                 data.put("messageKey", message.getMessageKey());
                 data.put("locale", message.getLocale());
                 data.put("message", message.getMessage());
-                jsonObject.accumulate("data", data);
+                jsonArray.put(data);
             }
         }
-
+        jsonObject.put("data", jsonArray);
         jsonObject.accumulate("total", count);
         jsonObject.accumulate("start", start);
         jsonObject.accumulate("sort", sort);
