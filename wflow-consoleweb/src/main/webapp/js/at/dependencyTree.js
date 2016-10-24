@@ -611,6 +611,17 @@ DependencyTree.Matchers['hasPermission'] = {
         return false;
     }
 };
+DependencyTree.Matchers['userviewCache'] = {
+    match : function (viewer, deferreds, node, jsonObj, refObj) {
+        if (jsonObj['properties'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== "") {
+            var ind = new DependencyTree.Indicator();
+            ind.icon = 'fa fa-flash';
+            ind.label = get_advtool_msg("dependency.tree.UserviewCache");
+            node.addIndicator(ind);
+        }
+        return false;
+    }
+};
 DependencyTree.Matchers['grid'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (refObj !== undefined && refObj['type'] !== undefined && (refObj['type'].toLowerCase() === "grid" || refObj['type'].toLowerCase() === "gridfixedrow")) {
