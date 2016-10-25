@@ -65,7 +65,7 @@
         <p>&nbsp;</p>
         <form id="processForm" name="processForm" method="POST" action="${properties.startUrl}">
             <div class="runProcess-body-message">
-                <c:out value="${properties.process.name}"/>
+                <c:out value="${properties.processName}"/>
                 <p class="runProcess-body-submessage"><c:out value="${properties.process.packageName}"/></p>
                 <button onclick="return startProcess()" class="form-button-large"><fmt:message key="client.app.run.process.label.start"/></button>
             </div>
