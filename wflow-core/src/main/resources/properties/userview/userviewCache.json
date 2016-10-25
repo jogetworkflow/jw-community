@@ -1,0 +1,29 @@
+{
+    title : '@@userview.cache.performance@@',
+    properties : [{
+        label : '@@userview.cache.cache@@',
+        type : 'header'
+    },{
+        name : 'userviewCacheScope',
+        label : '@@userview.cache.scope@@',
+        description : '@@userview.cache.scope.desc@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.cache.none@@'
+        },{
+            value : 'application',
+            label : '@@userview.cache.application@@'
+        },{
+            value : 'user',
+            label : '@@userview.cache.user@@'
+        }]
+    },
+    {
+        name : 'userviewCacheDuration',
+        label : '@@userview.cache.duration@@',
+        description : '@@userview.cache.duration.desc@@',
+        type : 'textfield',
+        value : '20'
+    }]
+}

@@ -1,3 +1,4 @@
+<%@page import="org.joget.apps.userview.service.UserviewUtil"%>
 <%@page import="org.joget.apps.userview.model.UserviewMenu"%>
 <%@page import="org.joget.apps.app.service.AppUtil"%>
 <%@page import="org.springframework.util.StopWatch"%>
@@ -105,17 +106,11 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                 <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/userview/builder/${userview.properties.id}?menuId=${userview.current.properties.id}" target="_blank"><i class="icon-edit"></i> <fmt:message key="adminBar.label.page"/>: <c:out value="${userview.current.properties.label}"/></a>
             </div>            
             </c:if>
-            <c:set var="properties" scope="request" value="${userview.current.properties}"/>
-            <c:set var="requestParameters" scope="request" value="${userview.current.requestParameters}"/>
-            <c:set var="readyJspPage" value="${userview.current.readyJspPage}"/>
-            <c:choose>
-                <c:when test="${!empty readyJspPage}">
-                    <jsp:include page="../${readyJspPage}" flush="true"/>
-                </c:when>
-                <c:otherwise>
-                    ${userview.current.readyRenderPage}
-                </c:otherwise>
-            </c:choose>
+            <c:set var="currentPage" value="${userview.current}"/>
+            <% 
+            UserviewMenu menu = (UserviewMenu)pageContext.findAttribute("currentPage");
+            out.print(UserviewUtil.getUserviewMenuHtml(menu));
+            %>
         </c:when>
         <c:otherwise>
             <h3><fmt:message key="ubuilder.pageNotFound"/></h3>
