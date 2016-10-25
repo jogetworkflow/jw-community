@@ -34,7 +34,9 @@ public class UserviewCache {
             for (Result result : results.all()) {
                 String key = (String) result.getKey();
                 cache.remove(key);
-                LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
+                    LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                }
             }
             results.discard();
         }
@@ -72,7 +74,9 @@ public class UserviewCache {
                 element.setTimeToLive(duration);
             }
             cache.put(element);
-            LogUtil.debug(UserviewCache.class.getName(), "setCachedContent: " + cacheKey + ", duration " + duration + "s");
+            if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
+                LogUtil.debug(UserviewCache.class.getName(), "setCachedContent: " + cacheKey + ", duration " + duration + "s");
+            }
         }
     }
 
@@ -92,7 +96,9 @@ public class UserviewCache {
             Element element = cache.get(cacheKey);
             if (element != null) {
                 content = (String) element.getObjectValue();
-                LogUtil.debug(UserviewCache.class.getName(), "getCachedContent: " + cacheKey);
+                if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
+                    LogUtil.debug(UserviewCache.class.getName(), "getCachedContent: " + cacheKey);
+                }
             }
         }
         return content;

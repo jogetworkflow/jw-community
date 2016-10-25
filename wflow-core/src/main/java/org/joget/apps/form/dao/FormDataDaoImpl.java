@@ -785,7 +785,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         net.sf.ehcache.Element cacheElement = formSessionFactoryCache.get(cacheKey);
         if (cacheElement != null) {
             sf = (SessionFactory)cacheElement.getObjectValue();
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory found in cache");
+            if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory found in cache");
+            }
         }
             
         if (actionType == ACTION_TYPE_LOAD) {
@@ -794,7 +796,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 net.sf.ehcache.Element pcElement = formPersistentClassCache.get(getPersistentClassCacheKey(entityName));
                 if (pcElement != null) {
                     pc = (PersistentClass)pcElement.getObjectValue();
-                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " PersistentClass found in cache");
+                    if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " PersistentClass found in cache");
+                    }
                 }
             }
 
@@ -810,7 +814,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     configuration.addFile(mappingFile);
                     configuration.buildMappings();
                     pc = configuration.getClassMapping(entityName);
-                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                    if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                    }
                     // save into cache
                     formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
                 }
@@ -856,12 +862,16 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 }
 
                 if (changes) {
-                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " changes detected");
+                    if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " changes detected");
+                    }
 
                     // properties changed, close session factory
                     if (sf != null) {
                         sf.close();
-                        LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " existing session factory closed");
+                        if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " existing session factory closed");
+                        }
                     }
 
                     // clear session factory to be recreated
@@ -879,7 +889,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         }
         
         if (sf == null) {
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " create session factory");
+            if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " create session factory");
+            }
             sf = createSessionFactory(entityName, tableName, rowSet, actionType);
         }
         return sf;
