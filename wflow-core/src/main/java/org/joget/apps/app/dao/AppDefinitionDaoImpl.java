@@ -12,6 +12,19 @@ import org.joget.apps.app.model.AppDefinition;
 public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefinition> implements AppDefinitionDao {
 
     public static final String ENTITY_NAME = "AppDefinition";
+    private Cache cache;
+
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    public void clearCache(AppDefinition obj) {
+        cache.removeAll();
+    }
 
     @Override
     public String getEntityName() {
@@ -45,7 +58,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
             super.saveOrUpdate(obj);
         }
-        clearCache();
+        clearCache(obj);
 
         // delete
         super.delete(obj);

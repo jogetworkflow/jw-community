@@ -1,13 +1,17 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.hibernate.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.form.model.FormColumnCache;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
 /**
@@ -18,6 +22,19 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public static final String ENTITY_NAME = "FormDefinition";
     
     private FormColumnCache formColumnCache;
+    private Cache cache;
+    
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    private String getCacheKey(String id, String appId, Long version){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appId+"_"+version+"_FORM_"+id;
+    }
     
     public FormColumnCache getFormColumnCache() {
         return formColumnCache;
@@ -82,6 +99,24 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     }
 
     @Override
+    public FormDefinition loadById(String id, AppDefinition appDefinition) {
+        String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
+        Element element = cache.get(cacheKey);
+
+        if (element == null) {
+            FormDefinition formDef = load(id, appDefinition);
+
+            if (formDef != null) {
+                element = new Element(cacheKey, (Serializable) formDef);
+                cache.put(element);
+            }
+            return formDef;
+        } else {
+            return (FormDefinition) element.getValue();
+        }
+    }
+    
+    @Override
     public boolean add(FormDefinition object) {
         formColumnCache.remove(object.getTableName());
         
@@ -94,6 +129,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     public boolean update(FormDefinition object) {
         // clear from cache
         formColumnCache.remove(object.getTableName());
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
         // update object
         object.setDateModified(new Date());
@@ -125,6 +161,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
                 
                 // clear from cache
                 formColumnCache.remove(obj.getTableName());
+                cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

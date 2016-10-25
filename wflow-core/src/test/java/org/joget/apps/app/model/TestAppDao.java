@@ -274,7 +274,6 @@ public class TestAppDao {
     }
 
     protected PackageDefinition loadPackageDefinition(String id) {
-        packageDefinitionDao.clearCache();
         PackageDefinition packageDef = packageDefinitionDao.loadById(id);
         return packageDef;
     }
