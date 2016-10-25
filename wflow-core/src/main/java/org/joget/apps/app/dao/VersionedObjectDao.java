@@ -128,4 +128,9 @@ public interface VersionedObjectDao<T extends AbstractVersionedObject> {
      * @param object
      */
     void saveOrUpdate(T object);
+    
+    /**
+     * Clears in-memory cache copy of objects
+     */
+    void clearCache();    
 }

@@ -101,6 +101,7 @@
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="appDefinitionDao" ref="appDefinitionDao"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl">
@@ -110,10 +111,12 @@
 
     <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
     </bean>
 
     <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">

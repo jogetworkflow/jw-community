@@ -1,15 +1,19 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
 /**
@@ -17,14 +21,41 @@ import org.joget.commons.util.LogUtil;
  */
 public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersionedObject> extends AbstractSpringDao implements AppVersionedObjectDao<T> {
 
+    private Cache cache;
+
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    public void clearCache() {
+        cache.removeAll();
+    }
+    
+    public String getCacheKey(String id, String appId, String version) {
+        return DynamicDataSourceManager.getCurrentProfile() + "_" + getEntityName() + ":" + appId + "_" + version + "_" + id;
+    }
+
     public T loadById(String id, AppDefinition appDefinition) {
         T result = null;
-        Collection<T> results = find("and id=?", new Object[]{id}, appDefinition, null, null, 0, 1);
-        if (results != null && !results.isEmpty()) {
-            result = results.iterator().next();
-        }
-        if (result != null) {
-            findSession().refresh(result);
+        String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion().toString());
+        Element element = cache.get(cacheKey);
+
+        if (element == null) {
+            Collection<T> results = find("and id=?", new Object[]{id}, appDefinition, null, null, 0, 1);
+            if (results != null && !results.isEmpty()) {
+                result = results.iterator().next();
+            }
+            if (result != null) {
+                findSession().refresh(result);
+            }
+            element = new Element(cacheKey, (Serializable) result);
+            cache.put(element);
+        } else {
+            return (T) element.getObjectValue();
         }
         return result;
     }
@@ -62,6 +93,7 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
     public boolean add(T object) {
         try {
             save(getEntityName(), object);
+            clearCache();
             return true;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -72,6 +104,7 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
     public boolean update(T object) {
         try {
             merge(getEntityName(), object);
+            clearCache();
             return true;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -84,6 +117,7 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
             T object = loadById(id, appDefinition);
             if (object != null) {
                 delete(getEntityName(), object);
+                clearCache();
             }
             return true;
         } catch (Exception e) {

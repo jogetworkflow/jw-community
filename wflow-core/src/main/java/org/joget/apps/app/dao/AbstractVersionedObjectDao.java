@@ -1,18 +1,40 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AbstractVersionedObject;
 import org.joget.commons.spring.model.AbstractSpringDao;
+import org.joget.commons.util.DynamicDataSourceManager;
 
 /**
  * DAO to load/store VersionedObjects objects
  */
 public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObject> extends AbstractSpringDao implements VersionedObjectDao<T> {
 
+    private Cache cache;
+
+    public Cache getCache() {
+        return cache;
+    }
+
+    public void setCache(Cache cache) {
+        this.cache = cache;
+    }
+    
+    public void clearCache() {
+        cache.removeAll();
+    }
+
+    private String getCacheKey(String id, Long version){
+        return DynamicDataSourceManager.getCurrentProfile() + "_" + getEntityName() + ":" + id + "_" + version;
+    }    
+    
     /**
      * Loads an object by unique ID (primary key)
      * @param uid
@@ -53,26 +75,35 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
     public T loadVersion(String id, Long version) {
         T result = null;
 
-        if (id != null && !id.trim().isEmpty()) {
-            // formulate query and parameters
-            ArrayList<Object> paramList = new ArrayList<Object>();
-            String query = " WHERE id=?";
-            paramList.add(id);
-            if (version != null) {
-                query += " AND version=?";
-                paramList.add(version);
-            }
-            query += " ORDER BY version DESC";
-            Object[] params = (Object[]) paramList.toArray();
+        String cacheKey = getCacheKey(id, version);
+        Element element = cache.get(cacheKey);
 
-            // execute query and return result
-            Collection<T> resultList = find(getEntityName(), query, params, null, null, 0, 1);
-            if (resultList != null && !resultList.isEmpty()) {
-                result = resultList.iterator().next();
+        if (element == null) {
+            if (id != null && !id.trim().isEmpty()) {
+                // formulate query and parameters
+                ArrayList<Object> paramList = new ArrayList<Object>();
+                String query = " WHERE id=?";
+                paramList.add(id);
+                if (version != null) {
+                    query += " AND version=?";
+                    paramList.add(version);
+                }
+                query += " ORDER BY version DESC";
+                Object[] params = (Object[]) paramList.toArray();
+
+                // execute query and return result
+                Collection<T> resultList = find(getEntityName(), query, params, null, null, 0, 1);
+                if (resultList != null && !resultList.isEmpty()) {
+                    result = resultList.iterator().next();
+                }
+                element = new Element(cacheKey, (Serializable) result);
+                cache.put(element);
             }
-        }
-        if (result != null) {
-            findSession().refresh(result);
+            if (result != null) {
+                findSession().refresh(result);
+            }
+        } else {
+            return (T)element.getObjectValue();
         }
         return result;
     }
@@ -301,6 +332,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         }
         object.setDateModified(new Date());
         saveOrUpdate(getEntityName(), object);
+        clearCache();
     }
 
     /**
@@ -311,6 +343,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         Session session = findSession();
         session.refresh(obj);
         delete(getEntityName(), obj);
+        clearCache();
     }
 
     /**
