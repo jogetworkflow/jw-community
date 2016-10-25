@@ -67,7 +67,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
         
         Map<String, Object> requestParameters = new HashMap<String, Object>();
         requestParameters.put("appId", appDef.getAppId());
@@ -144,7 +144,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
 
         if (requestParameters == null) {
             requestParameters = new HashMap<String, Object>();
@@ -164,11 +164,10 @@ public class UserviewService {
         boolean userviewPermission = true;
         
         //if screenshot, set user to null (anonymous)
-        String currentThreadUser = null;
+        User currentThreadUser = currentUser;
         boolean isScreenCapture = workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN) && "true".equalsIgnoreCase((String) requestParameters.get("_isScreenCapture"));
         if (isScreenCapture) {
             currentUser = null;
-            currentThreadUser = workflowUserManager.getCurrentThreadUser();
             workflowUserManager.setCurrentThreadUser(WorkflowUserManager.ROLE_ANONYMOUS);
         }
 
@@ -372,40 +371,37 @@ public class UserviewService {
     public UserviewTheme getUserviewTheme(String appId, String userviewId) {
         UserviewTheme theme = null;
         
-        Long appVersion = appService.getPublishedVersion(appId);
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (appVersion != null && request != null) {
-            AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
-            if (appDef != null) {
-                UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-                if (userviewDef != null) {
-                    String json = userviewDef.getJson();
-                    //process json with hash variable
-                    json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
-                    
-                    Map requestParameters = convertRequestParamMap(request.getParameterMap());
-                    requestParameters.put("contextPath", request.getContextPath());
-                    requestParameters.put("appId", appDef.getAppId());
-                    requestParameters.put("appVersion", appDef.getVersion().toString());
-                    
-                    try {
-                        Userview userview = new Userview();
-                        
-                        //set userview properties
-                        JSONObject userviewObj = new JSONObject(json);
-                        userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
-                        
-                        JSONObject settingObj = userviewObj.getJSONObject("setting");
-                        JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-                        
-                        theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
-                        theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
-                        theme.setRequestParameters(requestParameters);
-                        theme.setUserview(userview);
-                        
-                    } catch (Exception e) {
-                        LogUtil.debug(getClass().getName(), "get userview theme error.");
-                    }
+        if (appDef != null && request != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            if (userviewDef != null) {
+                String json = userviewDef.getJson();
+                //process json with hash variable
+                json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
+
+                Map requestParameters = convertRequestParamMap(request.getParameterMap());
+                requestParameters.put("contextPath", request.getContextPath());
+                requestParameters.put("appId", appDef.getAppId());
+                requestParameters.put("appVersion", appDef.getVersion().toString());
+
+                try {
+                    Userview userview = new Userview();
+
+                    //set userview properties
+                    JSONObject userviewObj = new JSONObject(json);
+                    userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
+
+                    JSONObject settingObj = userviewObj.getJSONObject("setting");
+                    JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+
+                    theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                    theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
+                    theme.setRequestParameters(requestParameters);
+                    theme.setUserview(userview);
+
+                } catch (Exception e) {
+                    LogUtil.debug(getClass().getName(), "get userview theme error.");
                 }
             }
         }

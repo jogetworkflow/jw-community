@@ -1670,7 +1670,7 @@ public class ConsoleWebController {
         map.addAttribute("appDefinition", appDef);
 
         //for launching workflow designer
-        User user = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User user = workflowUserManager.getCurrentUser();
         map.addAttribute("username", user.getUsername());
 
         WorkflowProcess process = null;

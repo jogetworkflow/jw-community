@@ -56,13 +56,8 @@ public class UserviewWebController {
             key = "";
         }
         
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0) {
-            return "error404";
-        }
-
         // retrieve app and userview
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
@@ -117,13 +112,8 @@ public class UserviewWebController {
         SecurityUtil.validateStringInput(key);
         SecurityUtil.validateBooleanInput(embed);
 
-        Long appVersion = appService.getPublishedVersion(appId);
-        if (appVersion == null || appVersion == 0) {
-            return "error404";
-        }
-
         // retrieve app and userview
-        AppDefinition appDef = appService.getAppDefinition(appId, appVersion.toString());
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;

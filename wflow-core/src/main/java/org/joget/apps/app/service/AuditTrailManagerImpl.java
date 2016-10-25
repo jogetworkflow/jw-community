@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joget.apps.app.dao.AuditTrailDao;
-import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PluginDefaultProperties;
@@ -136,8 +135,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             if (propertiesList == null) {
                 propertiesList = new ArrayList<Map>();
                 
-                PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) AppUtil.getApplicationContext().getBean("pluginDefaultPropertiesDao");
-                Collection<PluginDefaultProperties> pluginDefaultPropertiesList = pluginDefaultPropertiesDao.getList(appDef, null, null, null, null);
+                Collection<PluginDefaultProperties> pluginDefaultPropertiesList = appDef.getPluginDefaultPropertiesList();
                 
                 if (pluginDefaultPropertiesList != null && !pluginDefaultPropertiesList.isEmpty()) {
                     for (PluginDefaultProperties prop : pluginDefaultPropertiesList) {

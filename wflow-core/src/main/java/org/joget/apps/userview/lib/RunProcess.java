@@ -342,7 +342,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             
             // get workflow variables
             Map<String, String> variableMap = AppUtil.retrieveVariableDataFromMap(getRequestParameters());
-            WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), formData, variableMap, recordId, formUrl);
+            WorkflowProcessResult result = appService.submitFormToStartProcess(getRequestParameterString("appId"), getRequestParameterString("appVersion"), startFormDef, getPropertyString("processDefId"), formData, variableMap, recordId);
             Form startForm = null;
             if (startFormDef != null && (startFormDef.getForm() != null || PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(startFormDef.getType()))) {
                 startForm = startFormDef.getForm();
@@ -351,7 +351,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     
                     // generate form HTML
                     String formHtml = formService.retrieveFormErrorHtml(startForm, formData);
-                    AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
+                    AppDefinition appDef = AppUtil.getCurrentAppDefinition();
 
                     // show form
                     setProperty("headerTitle", AppUtil.processHashVariable(process.getName(), null, null, null, appDef));
