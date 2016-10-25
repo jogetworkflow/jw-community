@@ -43,7 +43,7 @@ public class AppPluginUtil implements ApplicationContextAware {
     public static PluginDefaultProperties getPluginDefaultProperties(String id, AppDefinition appDef) {
         if (appDef != null) {
             Collection<PluginDefaultProperties> list = appDef.getPluginDefaultPropertiesList();
-            if (!list.isEmpty()) {
+            if (list != null && !list.isEmpty()) {
                 for (PluginDefaultProperties p : list) {
                     if (p.getId().equals(id)) {
                         return p;
