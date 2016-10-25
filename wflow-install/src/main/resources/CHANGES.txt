@@ -2,6 +2,20 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.9
+================
+57333ab Fixed: wflow-core - Grid - Editable cell is not working correctly in Chrome. @5.0-SNAPSHOT
+2784c55 Fixed: wflow-consoleweb - Mobile - Datalist - Hidden column still display in the list. @5.0-SNAPSHOT
+ff7dae7 Fixed: wflow-consoleweb - Process Builder - Very hard to click on process name when the name is short. @5.0-SNAPSHOT
+debe3e5 Fixed: wflow-consoleweb/wflow-core - Run Process - Process name is not parsing i18n hash variable. @5.0-SNAPSHOT
+0771d18 Fixed: wflow-core - RequestHashVariable - Returned wrong uri/url in forwarded request. #4383 @5.0-SNAPSHOT
+e9306fd Modified: wflow-commons - Hibernate - Upgraded to Hibernate 4.3.11.Final @5.0-SNAPSHOT
+ee801b9 Fixed: wflow-core - Process Data Collector -  process instance requester is empty. @5.0-SNAPSHOT
+e5e791f Modified: All - Shortened build version to 7 characters @5.0-SNAPSHOT
+58eee19 Fixed: wflow-consoleweb - Datalist - CSV export can't display some characters correctly when the locale is set to zh_TW. @5.0-SNAPSHOT
+2a6d54c Fixed: wflow-consoleweb - Process - Page not refresh after removing activity or tool mapping.  @5.0-SNAPSHOT
+38d865e Modified: All - Changed repository from SVN to Git @5.0-SNAPSHOT
+
 CHANGES IN 5.0.8
 ================
 2824	Modified: wflow-consoleweb - Modified cookie handling for mobile view @5.0-SNAPSHOT
