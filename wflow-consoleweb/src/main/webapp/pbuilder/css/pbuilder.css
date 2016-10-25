@@ -144,7 +144,7 @@ body {
     cursor: pointer;
     position: relative;
     line-height: 16px;
-    min-width: 55px;
+    min-width: 70px;
     text-align: center;
 }
 .subheader_selected {
@@ -566,7 +566,7 @@ x.route x.node_route {
 .header_process:hover .node_buttons{
     display: block;
     top: 0px;
-    left: 25px;
+    right: 0px;
 }
 .header_process .node_buttons .node_edit, .header_process .node_buttons .node_copy{
     position: static;

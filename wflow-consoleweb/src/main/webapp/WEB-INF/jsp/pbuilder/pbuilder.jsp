@@ -30,7 +30,7 @@
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/chosen/chosen.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery-1.9.1.min.js"></script>
@@ -210,7 +210,6 @@
         <div id="builder-message"></div>
         <div id="builder-screenshot"></div>
         
-        <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
         
         <script>
