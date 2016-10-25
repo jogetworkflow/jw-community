@@ -252,6 +252,8 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
         setProperty("process", process);
         
         if (isUnauthorized(process.getId())) {
+            AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
+
             // check for start mapped form
             String formUrl = getUrl() + "?_action=start";
             FormData formData = new FormData();
@@ -277,10 +279,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
                 // generate form HTML
                 String formHtml = formService.retrieveFormHtml(startForm, formData);
-                AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
-
+                
                 // show form
-                setProperty("headerTitle", process.getName());
+                setProperty("headerTitle",  AppUtil.processHashVariable(process.getName(), null, null, null, appDef));
                 setProperty("view", "formView");
                 setProperty("formHtml", formHtml);
                 setProperty("activityForm", startFormDef);
@@ -303,6 +304,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 }
 
                 setProperty("startUrl", formUrl);
+                setProperty("processName", AppUtil.processHashVariable(process.getName(), null, null, null, appDef));
                 setProperty("view", "processDetail");
             }
         }
@@ -352,7 +354,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                     AppDefinition appDef = appService.getAppDefinition(getRequestParameterString("appId"), getRequestParameterString("appVersion"));
 
                     // show form
-                    setProperty("headerTitle", process.getName());
+                    setProperty("headerTitle", AppUtil.processHashVariable(process.getName(), null, null, null, appDef));
                     setProperty("view", "formView");
                     setProperty("formHtml", formHtml);
                     setProperty("stay", formData.getStay());

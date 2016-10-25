@@ -21,6 +21,13 @@
             background: #efefef;
             border: 1px solid #a1a1a1;
         }
+        .grid-cell {
+            display: block;
+            width: 100%;
+        }
+        .grid-cell form {
+            display: block;
+        }
     </style>
 </#if>
 <#if element.properties.readonly! != 'true'>

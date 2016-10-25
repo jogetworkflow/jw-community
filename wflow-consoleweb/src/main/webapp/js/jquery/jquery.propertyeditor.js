@@ -249,6 +249,10 @@ PropertyEditor.Util = {
         }
     },
     dynamicOptionsCheckValue: function (control, controlVal, isRegex) {
+        if (control.isHidden()) {
+            return false;
+        }
+        
         var values = new Array();
         
         var data = control.getData(true);
