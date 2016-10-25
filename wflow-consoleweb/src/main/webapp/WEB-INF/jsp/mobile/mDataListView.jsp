@@ -141,13 +141,15 @@
                             <p>
                             <c:forEach var="column" items="${columns}" varStatus="cStatus">
                                 <c:if test="${cStatus.index > 0}">
-                                    <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
-                                    <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
-                                    <c:if test="${!empty cellValue}">
-                                        <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
-                                        <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
-                                    </c:if>
-                                    <br>
+                                    <c:if test="${!columns[cStatus.index].hidden}">
+                                        <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
+                                        <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
+                                        <c:if test="${!empty cellValue}">
+                                            <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
+                                            <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
+                                        </c:if>
+                                        <br>
+                                    </c:if>    
                                 </c:if>
                             </c:forEach>
                             </p>
