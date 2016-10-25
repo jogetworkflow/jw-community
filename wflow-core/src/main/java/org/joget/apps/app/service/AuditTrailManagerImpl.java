@@ -131,7 +131,8 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             }
             
             //get available properties setting for audit trail plugin, implemented this way for future development to accept multiple same plugin with different setting.
-            List<Map> propertiesList = ((HashMap<String, List<Map>>) pluginPropertiesList.get()).get(appDef.getAppId());
+            String appId = appDef.getAppId();
+            List<Map> propertiesList = ((HashMap<String, List<Map>>) pluginPropertiesList.get()).get(appId);
             if (propertiesList == null) {
                 propertiesList = new ArrayList<Map>();
                 
@@ -160,7 +161,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                         }
                     }
                 }
-                ((HashMap<String, List<Map>>) pluginPropertiesList.get()).put(appDef.getAppId(), propertiesList);
+                ((HashMap<String, List<Map>>) pluginPropertiesList.get()).put(appId, propertiesList);
             }
             
             //execute plugins
