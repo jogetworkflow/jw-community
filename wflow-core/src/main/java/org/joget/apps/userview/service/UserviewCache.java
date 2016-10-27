@@ -116,6 +116,9 @@ public class UserviewCache {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             params = request.getQueryString();
+            if (params == null) {
+                params = (String)request.getAttribute("javax.servlet.forward.query_string");
+            }
         }
         return CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":" + userviewKey + ":" + type + ":" + params;
     }
