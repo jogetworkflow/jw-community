@@ -192,7 +192,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     // set Spring tx manager, hardcoded to Shark's JNDI binding
                     TransactionManager tm = this.transactionManager.getTransactionManager();
                     if (tm != null && ic != null) {
-                        ic.rebind("javax.transaction.TransactionManager", tm);
+                        ic.rebind("jwTransactionManager", tm);
                     }
                 }
 
