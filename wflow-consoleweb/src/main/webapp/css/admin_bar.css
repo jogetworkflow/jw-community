@@ -319,7 +319,7 @@ body.embeded #adminBar {
     background: #009688;
     color: white;
     padding: 20px;
-    box-shadow: #666 1px 1px 2px;
+    box-shadow: #666 1px 1px 2px 1px;
     border-radius: 40px;
     z-index: 100000;
     cursor: pointer;
