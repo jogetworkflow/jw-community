@@ -7,7 +7,7 @@ body, html {
     padding: 0;
 }
 body {
-    background-color: #DCDCDC;
+    background-color: #f9f9f9;
 }
 div, label, input, button, select, th, td, a, span {
     font-size: 13px;
@@ -53,7 +53,7 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
     width: 97%;
     height: 32px;
     padding: 5px 20px 0;
-    background: #555;
+    background: #009688;
     border: 1px solid #bfbfbf;
 }
 #builder-title {
@@ -140,16 +140,19 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
 
 #builder-bar span.title {
     font-size: 16px;
-    height:14px;
-    color: #f1ffbf;
-    text-shadow: 1px 1px 1px #222;
-    display:block;
-    padding: 3px 0 0 0
-}
-#builder-bar span.subtitle { 
-    font-size: 11px;
+    height: 14px;
     color: #fff;
-    text-shadow: 1px 1px 1px #333;
+    text-shadow: 0px 0px 2px black;
+    display: block;
+    padding: 10px 0 0 0;
+    text-align: center;
+    text-transform: uppercase;
+}
+#builder-bar span.subtitle {
+    display: none;
+    font-size: 11px;
+    color: #555;
+    text-shadow: 0px 0px 1.5px white;
     line-height: 10px;
     font-family: Verdana, Arial, Helvetica, sans-serif
 }
@@ -203,9 +206,9 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
     display: none;
 }
 #builder-palette h3 {
-    background: darkseagreen;
+    background: #37C8A9;
     color: white;
-    text-shadow: 0px;
+    text-shadow: 0px 0px 1px black;
     padding: 5px;
     margin: 5px 5px;
 }
