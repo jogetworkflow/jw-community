@@ -17,7 +17,6 @@
                 </c:if>
                 <c:if test="${!isAdmin}">
                     <li><a href="${pageContext.request.contextPath}/web/console/run/apps"><fmt:message key="console.header.submenu.label.publishedApps"/></a></li>
-                    <li><a href="${pageContext.request.contextPath}/web/console/run/processes"><fmt:message key="console.header.submenu.label.publishedProcesses"/></a></li>
                     <li><a href="${pageContext.request.contextPath}/web/console/run/inbox"><fmt:message key="console.header.submenu.label.inbox"/></a></li>
                 </c:if>
                 </ul>
