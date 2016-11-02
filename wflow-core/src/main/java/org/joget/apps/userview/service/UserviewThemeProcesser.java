@@ -196,7 +196,7 @@ public class UserviewThemeProcesser {
 
     protected String mobileViewRedirection() {
         boolean mobileAgent = (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request));
-        boolean disableMobileView = "true".equalsIgnoreCase(userview.getSetting().getPropertyString("mobileViewDisabled"));
+        boolean disableMobileView = userview.getSetting().getTheme().isMobileViewDisabled();
         boolean desktopCookie = false;
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {

@@ -8,15 +8,21 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
+import org.joget.apps.userview.lib.DefaultTheme;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewSetting;
+import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -138,4 +144,23 @@ public class UserviewBuilderWebController {
         map.addAttribute("json", json);
         return processer.getPreviewView();
     }
+    
+    @RequestMapping("/property/userview/json/getPropertyOptions")
+    public void getProperties(Writer writer, @RequestParam("value") String value) throws Exception {
+        String propertyOptions = "";
+        PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
+        if (element != null) {
+            propertyOptions = element.getPropertyOptions();
+            if (element instanceof UserviewTheme) {
+                String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", null, true, "message/userview/userviewLogin");
+                propertyOptions = UserviewUtil.appendPropertyOptions(propertyOptions, loginOptions);
+                if (!(element instanceof UserviewV5Theme)) {
+                    String mobileOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewMobile.json", null, true, "message/userview/userviewMobile");
+                    propertyOptions = UserviewUtil.appendPropertyOptions(propertyOptions, mobileOptions);
+                }
+            }
+        }
+        writer.write(propertyOptions);
+    }
+    
 }

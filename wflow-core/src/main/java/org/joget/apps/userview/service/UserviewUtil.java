@@ -154,5 +154,12 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 }
             }
         }
-    }   
+    }
+    
+    public static String appendPropertyOptions(String propertyOptions, String additionalProperties) {
+        if (propertyOptions != null && !propertyOptions.isEmpty() && additionalProperties != null && !additionalProperties.isEmpty() ) {
+            propertyOptions = propertyOptions.substring(0, propertyOptions.lastIndexOf("]")) + "," + additionalProperties + "]"; 
+        }
+        return propertyOptions;
+    }
 }

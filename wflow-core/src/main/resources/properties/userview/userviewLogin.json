@@ -1,0 +1,16 @@
+{
+    title: '@@userview.userviewsetting.loginPage@@',
+    properties: [{
+        name: 'loginPageTop',
+        label: '@@userview.userviewsetting.loginPageTop@@',
+        type: 'textarea',
+        rows: '10',
+        cols: '50'
+    }, {
+        name: 'loginPageBottom',
+        label: '@@userview.userviewsetting.loginPageBottom@@',
+        type: 'textarea',
+        rows: '10',
+        cols: '50'
+    }]
+}

@@ -1,0 +1,37 @@
+[{
+    title : '@@userview.userviewsetting.configLayout@@',
+    properties : [{
+        name: 'theme',
+        label: '@@userview.userviewsetting.theme@@',
+        control_field: 'userviewType',
+        control_value: '',
+        value: 'org.joget.apps.userview.lib.DefaultTheme',
+        type: 'elementselect',
+        options_ajax: '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewTheme',
+        url: '[CONTEXT_PATH]/web/property/userview/json/getPropertyOptions'
+    }, 
+    {
+        name: 'userviewDescription',
+        label: '@@ubuilder.description@@',
+        required: 'false',
+        type: 'textarea'
+    }]
+}, {
+    title: '@@userview.userviewsetting.configPermission@@',
+    properties: [{
+        name: 'hideThisUserviewInAppCenter',
+        label: '@@userview.userviewsetting.hideAppCenter@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }, {
+        name: 'permission',
+        label: '@@userview.userviewsetting.permission@@',
+        type: 'elementselect',
+        options_ajax: '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',
+        url: '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+    }]
+}]

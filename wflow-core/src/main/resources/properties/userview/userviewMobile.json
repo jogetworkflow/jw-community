@@ -1,0 +1,139 @@
+{
+    title : '@@mobile.setting.options@@',
+    properties : [
+    {
+        name: 'mobileViewDisabled',
+        label: '@@mobile.setting.viewDisabled@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }, 
+    {
+        name: 'mobileCacheEnabled',
+        label: '@@mobile.setting.cacheEnabled@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }, 
+    {
+        name: 'mobileLoginRequired',
+        label: '@@mobile.setting.loginRequired@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }, 
+    {
+        name: 'mobileViewBackgroundUrl',
+        label: '@@mobile.setting.viewBackgroundUrl@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textfield',
+        size: '50'
+    }, 
+    {
+        name: 'mobileViewBackgroundColor',
+        label: '@@mobile.setting.viewBackgroundColor@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textfield'
+    }, {
+        name: 'mobileViewBackgroundStyle',
+        label: '@@mobile.setting.viewBackgroundStyle@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'selectbox',
+        value: 'repeat',
+        options: [{
+            value: 'no - repeat',
+            label: 'no - repeat'
+        }, {
+            value: 'repeat',
+            label: 'repeat'
+        }, {
+            value: 'repeat - x',
+            label: 'repeat - x'
+        }, {
+            value: 'repeat - y',
+            label: 'repeat - y'
+        }, {
+            value: 'width',
+            label: '100% width'
+        }]
+    }, 
+    {
+        name: 'mobileViewTranslucent',
+        label: '@@mobile.setting.viewTranslucent@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'checkbox',
+        value: 'true',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }, 
+    {
+        name: 'mobileViewLogoUrl',
+        label: '@@mobile.setting.viewLogoUrl@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textfield',
+        size: '50'
+    }, 
+    {
+        name: 'mobileViewLogoWidth',
+        label: '@@mobile.setting.viewLogoWidth@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textfield'
+    }, 
+    {
+        name: 'mobileViewLogoHeight',
+        label: '@@mobile.setting.viewLogoHeight@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textfield'
+    }, 
+    {
+        name: 'mobileViewLogoAlign',
+        label: '@@mobile.setting.viewLogoAlign@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'selectbox',
+        value: 'left',
+        options: [{
+            value: 'left',
+            label: 'left'
+        }, {
+            value: 'center',
+            label: 'center'
+        }, {
+            value: 'right',
+            label: 'right'
+        }]
+    }, 
+    {
+        name: 'mobileViewCustomCss',
+        label: '@@mobile.setting.viewCustomCss@@',
+        control_field: 'userviewType',
+        control_value: '',
+        type: 'textarea',
+        rows: '10',
+        cols: '50'
+    }]
+}
