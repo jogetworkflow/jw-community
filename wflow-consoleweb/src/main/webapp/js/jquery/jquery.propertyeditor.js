@@ -2626,6 +2626,8 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                                 && thisObj.value[i][column.key] !== undefined) {
                             columnValue = thisObj.value[i][column.key];
                         }
+                        
+                        PropertyEditor.Util.retrieveOptionsFromCallback(column);
 
                         html += '<td><span>';
                         if (column.options !== undefined || column.options_ajax !== undefined) {
