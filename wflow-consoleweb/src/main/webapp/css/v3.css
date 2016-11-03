@@ -1239,6 +1239,10 @@ div.view .main-body-content-subheader{
     color:#555;
 }
 
+.form-row .form-input select {
+    max-width: 100%;
+}
+
 div.tick {
     background: url(../images/v3/console/icn_tick.png) no-repeat center;
     float: left;
