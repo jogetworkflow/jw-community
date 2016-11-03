@@ -24,6 +24,7 @@ import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
@@ -185,8 +186,16 @@ public class UserviewService {
             //set theme & permission
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+                JSONObject themeProperties = themeObj.getJSONObject("properties");
                 UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
-                theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
+                if (theme == null) {
+                    String defaultTheme = ResourceBundleUtil.getMessage("generator.userview.theme");
+                    theme = (UserviewTheme) pluginManager.getPlugin(defaultTheme);
+                    String defaultThemePropertiesKey = "generator.userview.theme." + defaultTheme + ".properties";
+                    String defaultThemeProperties = "{" + ResourceBundleUtil.getMessage(defaultThemePropertiesKey) + "}";
+                    themeProperties = new JSONObject(defaultThemeProperties);
+                }
+                theme.setProperties(PropertyUtil.getProperties(themeProperties));
                 theme.setRequestParameters(requestParameters);
                 theme.setUserview(userview);
                 setting.setTheme(theme);
@@ -398,9 +407,11 @@ public class UserviewService {
                     JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
 
                     theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
-                    theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
-                    theme.setRequestParameters(requestParameters);
-                    theme.setUserview(userview);
+                    if (theme != null) {
+                        theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
+                        theme.setRequestParameters(requestParameters);
+                        theme.setUserview(userview);
+                    }
 
                 } catch (Exception e) {
                     LogUtil.debug(getClass().getName(), "get userview theme error.");
