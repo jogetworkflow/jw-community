@@ -283,6 +283,16 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
                 }
             }
         }
+        
+        //remove scripting in builder move
+        if (dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty()) {
+            Pattern pattern = Pattern.compile("<script[^>]*>.*?</script>", Pattern.DOTALL);
+            Matcher matcher = pattern.matcher(customHTML);
+            while (matcher.find()) {
+                String selectString = matcher.group(0);
+                customHTML = customHTML.replaceFirst(StringUtil.escapeRegex(selectString), "");
+            }
+        }
 
         dataModel.put("value", customHTML);
 
