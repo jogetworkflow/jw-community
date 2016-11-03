@@ -113,6 +113,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.selectbox.workflowVariable@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]

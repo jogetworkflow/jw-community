@@ -91,7 +91,9 @@
     {
         name : 'fieldPassover',
         label : '@@userview.formmenu.fieldNamePassover@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_ajax_on_change : 'formDefId:formId',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
     },
     {
         name : 'fieldPassoverMethod',

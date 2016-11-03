@@ -1,6 +1,56 @@
 [{
     title : '@@app.emailtool.config@@',
     properties : [{
+        name : 'from',
+        label : '@@app.emailtool.from@@',
+        type : 'textfield',
+        required : 'True'
+    },
+    {
+        name : 'toSpecific',
+        label : '@@app.emailtool.toEmail@@',
+        type : 'textfield'
+    },
+    {
+        name : 'toParticipantId',
+        label : '@@app.emailtool.toPid@@',
+        type : 'textfield'
+    },
+    {
+        name : 'cc',
+        label : '@@app.emailtool.cc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'bcc',
+        label : '@@app.emailtool.bcc@@',
+        type : 'textfield'
+    },
+    {
+        name : 'subject',
+        label : '@@app.emailtool.subject@@',
+        type : 'textfield'
+    },
+    {
+        name : 'message',
+        label : '@@app.emailtool.message@@',
+        type : 'textarea',
+        cols : '60',
+        rows : '15'
+    },
+    {
+        name : 'isHtml',
+        label : '@@app.emailtool.isHtml@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    }]
+},
+{
+    title : '@@app.emailtool.smtpSetting@@',
+    properties : [{
         name : 'host',
         label : '@@app.emailtool.host@@',
         type : 'textfield',
@@ -62,56 +112,6 @@
     }]
 },
 {
-    title : '@@app.emailtool.email@@',
-    properties : [{
-        name : 'from',
-        label : '@@app.emailtool.from@@',
-        type : 'textfield',
-        required : 'True'
-    },
-    {
-        name : 'toSpecific',
-        label : '@@app.emailtool.toEmail@@',
-        type : 'textfield'
-    },
-    {
-        name : 'toParticipantId',
-        label : '@@app.emailtool.toPid@@',
-        type : 'textfield'
-    },
-    {
-        name : 'cc',
-        label : '@@app.emailtool.cc@@',
-        type : 'textfield'
-    },
-    {
-        name : 'bcc',
-        label : '@@app.emailtool.bcc@@',
-        type : 'textfield'
-    },
-    {
-        name : 'subject',
-        label : '@@app.emailtool.subject@@',
-        type : 'textfield'
-    },
-    {
-        name : 'message',
-        label : '@@app.emailtool.message@@',
-        type : 'textarea',
-        cols : '60',
-        rows : '15'
-    },
-    {
-        name : 'isHtml',
-        label : '@@app.emailtool.isHtml@@',
-        type : 'checkbox',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    }]
-},
-{
     title : '@@app.emailtool.attachments@@',
     properties : [{
         name:'formDefId',
@@ -125,7 +125,9 @@
         type:'grid',
         columns:[{
             key:'field',
-            label:'@@app.emailtool.fieldId@@'
+            label:'@@app.emailtool.fieldId@@',
+            options_ajax_on_change : 'formDefId',
+            options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
         }]
     },
     {

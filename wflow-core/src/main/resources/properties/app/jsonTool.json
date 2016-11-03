@@ -26,7 +26,9 @@
         type : 'grid',
         columns : [{
             key : 'field',
-            label : '@@app.jsontool.fieldName@@'
+            label : '@@app.jsontool.fieldName@@',
+            options_ajax_on_change : 'formDefId',
+            options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
         },
         {
             key : 'jsonObjectName',
@@ -42,7 +44,8 @@
         type : 'grid',
         columns : [{
             key : 'variable',
-            label : '@@app.jsontool.workflowVariable@@'
+            label : '@@app.jsontool.workflowVariable@@',
+            options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
         },
         {
             key : 'jsonObjectName',

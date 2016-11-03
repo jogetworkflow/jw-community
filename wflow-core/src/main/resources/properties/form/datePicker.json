@@ -57,12 +57,14 @@
     {
         name : 'startDateFieldId',
         label : '@@form.datepicker.startDateFieldId@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         name : 'endDateFieldId',
         label : '@@form.datepicker.endDateFieldId@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         name : 'currentDateAs',
@@ -125,6 +127,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.datepicker.workflowVariable@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]

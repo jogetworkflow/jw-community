@@ -74,12 +74,15 @@
             {
                 name:'parentSubFormId',
                 label:'@@form.subform.parentField@@',
-                type:'textfield'
+                type : 'selectbox',
+                options_callback : 'FormBuilder.getFieldOptions'
             },
             {
                 name:'subFormParentId',
                 label:'@@form.subform.subformField@@',
-                type:'textfield'
+                type : 'selectbox',
+                options_ajax_on_change : 'formDefId',
+                options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
             },
             {
                 label : '@@form.subform.binder@@',
