@@ -34,7 +34,8 @@
         },
         {
             key : 'hrefColumn',
-            label : '@@datalist.hyperlinkdatalistaction.columnName@@'
+            label : '@@datalist.hyperlinkdatalistaction.columnName@@',
+            options_callback : 'DatalistBuilder.getColumnOptions'
         }]
     },
     {

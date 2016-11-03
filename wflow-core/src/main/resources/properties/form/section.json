@@ -45,7 +45,8 @@
             {
                 name:'visibilityControl',
                 label:'@@form.section.fieldIdControl@@',
-                type:'textfield',
+                type : 'selectbox',
+                options_callback : 'FormBuilder.getFieldOptions',
                 required:'False'
             },
             {

@@ -62,12 +62,11 @@
                 name:'color',
                 label:'@@datalist.defaultformatter.fontColorCode@@',
                 type:'textfield'
-            }
-        ]
-    },
-    {
-        title:'@@datalist.defaultformatter.configureForeignKey@@',
-        properties:[
+            },
+            {
+                label : '@@datalist.defaultformatter.configureForeignKey@@',
+                type : 'header'
+            },
             {
                 name:'formDefId',
                 label:'@@datalist.defaultformatter.formId@@',
@@ -77,7 +76,9 @@
             {
                 name:'field',
                 label:'@@datalist.defaultformatter.field@@',
-                type:'textfield'
+                type:'selectbox',
+                options_ajax_on_change : 'formDefId',
+                options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/form/columns/options'
             }
         ]
     }

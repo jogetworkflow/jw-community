@@ -64,7 +64,8 @@
     {
         name : 'controlField',
         label : '@@form.radio.controlField@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         label : '@@form.radio.ui@@',
@@ -97,6 +98,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.radio.workflowVariable@@',
-        type : 'textfield'
+        type : 'selectbox',
+        options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]
