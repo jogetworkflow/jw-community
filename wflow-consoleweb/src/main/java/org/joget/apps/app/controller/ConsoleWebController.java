@@ -50,6 +50,8 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.model.DataListColumn;
+import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
@@ -162,6 +164,8 @@ public class ConsoleWebController {
     UserviewService userviewService;
     @Autowired
     FormService formService;
+    @Autowired
+    DataListService dataListService;
     @Autowired
     SetupManager setupManager;
     @Resource
@@ -3363,6 +3367,123 @@ public class ConsoleWebController {
             if (tables != null && !tables.isEmpty()) {
                 for (String t : tables.split(";")) {
                     populateColumns(jsonArray, t, true);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/datalist/columns/options")
+    public void consoleDatalistColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "listId", required = false) String datalistId) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            DatalistDefinition datalistDefinition = datalistDefinitionDao.loadById(datalistId, appDef);
+        
+            if (datalistDefinition != null) {
+                String json = datalistDefinition.getJson();
+                if (json != null) {
+                    // strip enclosing brackets
+                    json = json.trim();
+                    if (json.startsWith("(")) {
+                        json = json.substring(1);
+                    }
+                    if (json.endsWith(")")) {
+                        json = json.substring(0, json.length() - 1);
+                    }
+                    JSONObject obj = new JSONObject(json);
+                    JSONArray columns = obj.getJSONArray(JsonUtil.PROPERTY_COLUMNS);
+                    
+                    for (int i = 0; i < columns.length(); i++) {
+                        JSONObject column = columns.getJSONObject(i);
+                        String name = column.getString(JsonUtil.PROPERTY_NAME);
+                        
+                        Map op = new HashMap();
+                        op.put("value", name);
+                        op.put("label", name);
+                        jsonArray.put(op);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/workflowVariable/options")
+    public void consoleWorkflowVariableOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            Map<String, String> options = new HashMap<String, String>();
+            Collection<WorkflowProcess> processList = null;
+            PackageDefinition packageDefinition = appDef.getPackageDefinition();
+            if (packageDefinition != null) {
+                Long packageVersion = packageDefinition.getVersion();
+                processList = workflowManager.getProcessList(appId, packageVersion.toString());
+                for (WorkflowProcess wp : processList) {
+                    String processDefId = wp.getId();
+                    Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processDefId);
+                    
+                    for (WorkflowVariable v : variableList) {
+                        String processname = options.get(v.getId());
+                        if (processname != null) {
+                            processname += ", " + wp.getName();
+                        } else {
+                            processname = wp.getName();
+                        }
+                        options.put(v.getId(), processname);
+                    }
+                }
+            }
+            
+            if (!options.isEmpty()) {
+                for (String key : options.keySet()) {
+                    Map<String, String> op = new HashMap<String, String>();
+                    op.put("value", key);
+                    op.put("label", key + " (" + options.get(key) + ")");
+                    jsonArray.put(op);
+                }
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/envVariable/options")
+    public void consoleEnvVariableOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            Collection<EnvironmentVariable> envList = appDef.getEnvironmentVariableList();
+            if (envList != null) {
+                for (EnvironmentVariable e : envList) {
+                    Map op = new HashMap();
+                    op.put("value", e.getId());
+                    op.put("label", e.getId());
+                    jsonArray.put(op);
                 }
             }
         } catch (Exception e) {

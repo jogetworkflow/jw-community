@@ -1283,5 +1283,51 @@ FormBuilder = {
     
     mergeAndSave: function() {
         FormBuilder.merge(FormBuilder.saveForm);
-    }    
+    },
+    
+    getFieldIds : function(includeGridColumn) {
+        var ids = [];
+        $(".form-column .form-cell").each(function(){
+            var className = $(this).attr("element-class");
+            var propertyJson = $(this).attr("element-property");
+            var property = eval("(" + propertyJson + ")");
+            
+            if (includeGridColumn && className.toLowerCase().indexOf("grid") !== -1 && property['options'] !== undefined) {
+                var fieldId = property['id'];
+                for (var i in property['options']) {
+                    var c = property['options'][i]['value'];
+                    if (c !== undefined && c !== "") {
+                        ids.push(fieldId + "." + c);
+                    }
+                }
+            } else if(property['id'] !== undefined && property['id'] !== "") {
+                ids.push(property['id']);
+            }
+        })
+        return ids;
+    },
+    
+    getFieldOptions: function(properties) {
+        //populate list items
+        var tempArray = [{'label':'','value':''}];
+        var ids = FormBuilder.getFieldIds(false);
+        for(var i in ids){
+            var temp = {'label' : ids[i],
+                         'value' : ids[i]};
+            tempArray.push(temp);
+        }
+        return tempArray;
+    },
+    
+    getFieldAndGridColumnOptions: function(properties) {
+        //populate list items
+        var tempArray = [{'label':'','value':''}];
+        var ids = FormBuilder.getFieldIds(true);
+        for(var i in ids){
+            var temp = {'label' : ids[i],
+                         'value' : ids[i]};
+            tempArray.push(temp);
+        }
+        return tempArray;
+    }
 }
