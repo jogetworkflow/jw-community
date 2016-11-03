@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -114,7 +115,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
@@ -3708,6 +3712,14 @@ public class ConsoleWebController {
         UserSecurity us = DirectoryUtil.getUserSecurity();
         map.addAttribute("userSecurity", us);
         
+        // userviews to select app center
+        Collection<UserviewDefinition> userviewDefinitionList = new ArrayList<UserviewDefinition>();
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
+        for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
+            AppDefinition appDef = i.next();
+            userviewDefinitionList.addAll(appDef.getUserviewDefinitionList());
+            map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+        }        
         return "console/setting/general";
     }
 
@@ -4846,7 +4858,72 @@ public class ConsoleWebController {
     
     @RequestMapping({"/desktop","/desktop/home"})
     public String desktopHome() {
-        return "desktop/home";
+        // check for app center userview setting
+        String defaultUserviewProperty = "defaultUserview";
+        UserviewDefinition defaultUserview = null;
+        Setting defaultUserviewSetting = setupManager.getSettingByProperty(defaultUserviewProperty);
+        if (defaultUserviewSetting != null) {
+            // check app center userview is published
+            String appCenterValue = defaultUserviewSetting.getValue();
+            StringTokenizer st = new StringTokenizer(appCenterValue, "/");
+            String appId = (st.hasMoreTokens()) ? st.nextToken() : null;
+            String userviewId = (st.hasMoreTokens()) ? st.nextToken() : null;
+            if (appId != null && userviewId != null) {
+                AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+                if (appDef != null) {
+                    defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
+                }
+            }            
+        } else {
+            // import default app center app
+            String path = "/setup/apps/APP_appcenter-1.zip";
+            LogUtil.info(getClass().getName(), "Import default app center " + path);
+            InputStream in = null;
+            try {
+                in = getClass().getResourceAsStream(path);
+                byte[] fileContent = IOUtils.toByteArray(in);
+                final AppDefinition appDef = appService.importApp(fileContent);
+                if (appDef != null) {
+                    TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplate");
+                    transactionTemplate.execute(new TransactionCallback<Object>() {
+                        public Object doInTransaction(TransactionStatus ts) {
+                            appService.publishApp(appDef.getId(), null);
+                            return null;
+                        }
+                    });
+                    // get app center userview
+                    Collection<UserviewDefinition> userviewList = appDef.getUserviewDefinitionList();
+                    if (!userviewList.isEmpty()) {
+                        String userviewId = userviewList.iterator().next().getId();
+                        defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
+                        
+                        // save setting
+                        String value = defaultUserview.getAppId() + "/" + defaultUserview.getId();
+                        Setting newSetting = new Setting();
+                        newSetting.setProperty(defaultUserviewProperty);
+                        newSetting.setValue(value);
+                        setupManager.saveSetting(newSetting);                        
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "Failed to import default app center " + path);
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+        if (defaultUserview != null) {
+            // redirect to app center userview
+            String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" + defaultUserview.getId();
+            return path;
+        } else {
+//            throw new ResourceNotFoundException();
+            return "redirect:/web/console/home";
+        }
     }
     
     @RequestMapping("/desktop/apps")

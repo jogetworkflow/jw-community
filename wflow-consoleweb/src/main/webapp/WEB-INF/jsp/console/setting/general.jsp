@@ -60,6 +60,32 @@
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
+                        <label for="defaultUserview"><fmt:message key="console.setting.general.label.defaultUserview"/></label>
+                        <span class="form-input">
+                            <select id="defaultUserview" name="defaultUserview">
+                                <c:set var="prevAppName" value="" />
+                                <optgroup label="<ui:stripTag html="${prevAppName}"/>">
+                                <option value=""></option>
+                                <c:forEach var="userviewDef" items="${userviewDefinitionList}">
+                                    <c:set var="userviewPath" value="${userviewDef.appId}/${userviewDef.id}" />
+                                    <c:set var="appName" value="${userviewDef.appDefinition.name}" />
+                                    <c:if test="${appName != prevAppName}">
+                                        <c:set var="prevAppName" value="${appName}" />
+                                        </optgroup>
+                                        <optgroup label="<ui:stripTag html="${prevAppName}"/>">
+                                    </c:if>
+                                    <c:set var="selected"><c:if test="${userviewPath == settingMap['defaultUserview']}"> selected</c:if></c:set>
+                                    <option value="${userviewPath}" ${selected}><ui:stripTag html="${userviewDef.name}"/></option>
+                                </c:forEach>
+                                </optgroup>
+                            </select>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
                         <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
                         <span class="form-input">
                             <input id="defaultLandingPage" type="text" name="landingPage" value="<c:out value="${settingMap['landingPage']}"/>"/>
