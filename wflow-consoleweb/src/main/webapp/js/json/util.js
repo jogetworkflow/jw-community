@@ -257,57 +257,6 @@ UrlUtil = {
     }
 };
 
-ajaxCache = {
-    /**
-     * timeout for cache in millis
-     * @type {number}
-     */
-    timeout: 30000,
-    /** 
-     * @type {{_: number, data: {}}}
-     **/
-    data: {},
-    remove: function (url) {
-        delete ajaxCache.data[url];
-    },
-    exist: function (url) {
-        return !!ajaxCache.data[url] && ((new Date().getTime() - ajaxCache.data[url]._) < ajaxCache.timeout);
-    },
-    get: function (url) {
-        return ajaxCache.data[url].data;
-    },
-    set: function (url, cachedData, callback) {
-        ajaxCache.remove(url);
-        ajaxCache.data[url] = {
-            _: new Date().getTime(),
-            data: cachedData
-        };
-        if ($.isFunction(callback)) callback(cachedData);
-    }
-};
-
-$.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-    console.log(options.cache);
-    if (options.cache) {
-        var complete = originalOptions.complete || $.noop,
-            url = originalOptions.url;
-        //remove jQuery cache as we have our own localCache
-        options.cache = false;
-        options.beforeSend = function () {
-            if (ajaxCache.exist(url)) {
-                console.log(url);
-                complete(ajaxCache.get(url));
-                return false;
-            }
-            return true;
-        };
-        options.complete = function (data, textStatus) {
-            console.log("set " + url);
-            ajaxCache.set(url, data, complete);
-        };
-    }
-});
-
 function filter(jsonTable, url, value){
     var newUrl = url + value;
     jsonTable.load(jsonTable.url + newUrl);
