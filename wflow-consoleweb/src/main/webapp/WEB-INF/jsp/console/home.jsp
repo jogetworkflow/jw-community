@@ -14,6 +14,7 @@
                     <li><a href="${pageContext.request.contextPath}/web/desktop/apps"><fmt:message key="console.header.menu.label.apps"/></a></li>
                     <li><a href="${pageContext.request.contextPath}/web/console/run/apps"><fmt:message key="console.header.menu.label.run"/></a></li>
                     <li><a href="${pageContext.request.contextPath}/web/console/monitor/running"><fmt:message key="console.header.menu.label.monitor"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/web/console/setting/general"><fmt:message key="console.header.top.label.settings"/></a></li>
                 </c:if>
                 <c:if test="${!isAdmin}">
                     <li><a href="${pageContext.request.contextPath}/web/console/run/apps"><fmt:message key="console.header.submenu.label.publishedApps"/></a></li>
