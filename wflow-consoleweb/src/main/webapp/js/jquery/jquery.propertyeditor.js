@@ -224,6 +224,7 @@ PropertyEditor.Util = {
         $.ajax({
             url: ajaxUrl,
             dataType: "text",
+            cache: true,
             success: function(data) {
                 if(data !== undefined && data !== null){
                     var options = $.parseJSON(data);
