@@ -18,12 +18,12 @@
             </div>
             <div id="adminBarButtons">
             <c:if test="${!empty param.appId || !empty param.webConsole}">
-                <c:if test="${!empty param.appId}">
+                <c:if test="${!empty param.appId && !isDefaultUserview}">
                     <div>
                         <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key='adminBar.label.designApp'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms')"><i class="icon-edit"></i><br><fmt:message key='adminBar.label.app'/></a>
                     </div>
                 </c:if>
-                <c:if test="${!empty param.appControls}">
+                <c:if test="${!empty param.appControls || isDefaultUserview}">
                     <div>
                         <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="icon-wrench"></i><br><fmt:message key='adminBar.label.allApps'/></a>
                     </div>
@@ -54,6 +54,9 @@
             </c:if>
             <c:if test="${param.builderMode == 'true'}">
             AdminBar.builderMode = true;
+            </c:if>
+            <c:if test="${isDefaultUserview}">
+            AdminBar.isDefaultUserview = true;
             </c:if>
         </script>
         

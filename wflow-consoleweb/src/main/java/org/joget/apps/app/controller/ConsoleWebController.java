@@ -4858,74 +4858,16 @@ public class ConsoleWebController {
     
     @RequestMapping({"/desktop","/desktop/home"})
     public String desktopHome() {
-        // check for app center userview setting
-        String defaultUserviewProperty = "defaultUserview";
-        UserviewDefinition defaultUserview = null;
-        Setting defaultUserviewSetting = setupManager.getSettingByProperty(defaultUserviewProperty);
-        if (defaultUserviewSetting != null) {
-            // check app center userview is published
-            String appCenterValue = defaultUserviewSetting.getValue();
-            StringTokenizer st = new StringTokenizer(appCenterValue, "/");
-            String appId = (st.hasMoreTokens()) ? st.nextToken() : null;
-            String userviewId = (st.hasMoreTokens()) ? st.nextToken() : null;
-            if (appId != null && userviewId != null) {
-                AppDefinition appDef = appService.getPublishedAppDefinition(appId);
-                if (appDef != null) {
-                    defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
-                }
-            }            
-        } else {
-            // import default app center app
-            String path = "/setup/apps/APP_appcenter-1.zip";
-            LogUtil.info(getClass().getName(), "Import default app center " + path);
-            InputStream in = null;
-            try {
-                in = getClass().getResourceAsStream(path);
-                byte[] fileContent = IOUtils.toByteArray(in);
-                final AppDefinition appDef = appService.importApp(fileContent);
-                if (appDef != null) {
-                    TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplate");
-                    transactionTemplate.execute(new TransactionCallback<Object>() {
-                        public Object doInTransaction(TransactionStatus ts) {
-                            appService.publishApp(appDef.getId(), null);
-                            return null;
-                        }
-                    });
-                    // get app center userview
-                    Collection<UserviewDefinition> userviewList = appDef.getUserviewDefinitionList();
-                    if (!userviewList.isEmpty()) {
-                        String userviewId = userviewList.iterator().next().getId();
-                        defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
-                        
-                        // save setting
-                        String value = defaultUserview.getAppId() + "/" + defaultUserview.getId();
-                        Setting newSetting = new Setting();
-                        newSetting.setProperty(defaultUserviewProperty);
-                        newSetting.setValue(value);
-                        setupManager.saveSetting(newSetting);                        
-                    }
-                }
-            } catch (Exception ex) {
-                LogUtil.error(getClass().getName(), ex, "Failed to import default app center " + path);
-            } finally {
-                try {
-                    if (in != null) {
-                        in.close();
-                    }
-                } catch (IOException e) {
-                }
-            }
-        }
+        UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
         if (defaultUserview != null) {
             // redirect to app center userview
             String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" + defaultUserview.getId();
             return path;
         } else {
-//            throw new ResourceNotFoundException();
             return "redirect:/web/console/home";
         }
     }
-    
+
     @RequestMapping("/desktop/apps")
     public String desktopApps(ModelMap model) {
         // get published apps

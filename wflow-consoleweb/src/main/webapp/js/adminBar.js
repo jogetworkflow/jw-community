@@ -3,6 +3,7 @@ var AdminBar = {
     currentPageTitle: "",
     webConsole: false,
     builderMode: false,
+    isDefaultUserview: false,
     setCookiePath: function(path) {
         AdminBar.cookiePath = path;
     },
@@ -39,6 +40,9 @@ var AdminBar = {
         document.title = AdminBar.currentPageTitle;
     },
     enableQuickEditMode: function() {
+        if (AdminBar.isDefaultUserview) {
+            return;
+        }
         var path = AdminBar.cookiePath;
         $.cookie("quickEditModeActive", "true", {
             path: path
@@ -57,10 +61,15 @@ var AdminBar = {
         return quickEditModeActive === "true";
     },
     showQuickEdit: function() {
+        $(".adminBarButton").fadeIn();
+        $(".analyzer-page").css("display", "inline-block");
+        if (AdminBar.isDefaultUserview) {
+            return;
+        }
         $("#quickEditModeOn").attr("checked", "checked");
         $("#quickEditModeOff").removeAttr("checked");
-        $(".quickEdit, .adminBarButton").fadeIn();
-        $(".analyzer-label, .analyzer-page").css("display", "inline-block");
+        $(".quickEdit").fadeIn();
+        $(".analyzer-label").css("display", "inline-block");
         $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
         $("#page").addClass("quickEditModeActive");
         $("#quickEditModeOption").buttonset("refresh");

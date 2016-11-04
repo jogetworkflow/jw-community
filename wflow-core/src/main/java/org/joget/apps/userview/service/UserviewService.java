@@ -1,12 +1,15 @@
 package org.joget.apps.userview.service;
 
-import java.net.URLEncoder;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -23,8 +26,10 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
@@ -37,6 +42,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Service methods used to parse userview json definition to create Userview
@@ -53,6 +61,8 @@ public class UserviewService {
     private AppService appService;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    private SetupManager setupManager;
     @Autowired
     @Qualifier("main")
     ExtDirectoryManager directoryManager;
@@ -451,4 +461,79 @@ public class UserviewService {
         }
         return result;
     }
+    
+    public UserviewDefinition getDefaultUserview() {
+        // check for app center userview setting
+        String defaultUserviewProperty = "defaultUserview";
+        UserviewDefinition defaultUserview = null;
+        Setting defaultUserviewSetting = setupManager.getSettingByProperty(defaultUserviewProperty);
+        if (defaultUserviewSetting != null) {
+            // check app center userview is published
+            String defaultUserviewValue = defaultUserviewSetting.getValue();
+            StringTokenizer st = new StringTokenizer(defaultUserviewValue, "/");
+            String appId = (st.hasMoreTokens()) ? st.nextToken() : null;
+            String userviewId = (st.hasMoreTokens()) ? st.nextToken() : null;
+            if (appId != null && userviewId != null) {
+                AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+                if (appDef != null) {
+                    defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
+                }
+            }            
+        } else {
+            // import default app center app
+            String path = "/setup/apps/APP_appcenter-1.zip";
+            LogUtil.info(getClass().getName(), "Import default app center " + path);
+            InputStream in = null;
+            try {
+                in = getClass().getResourceAsStream(path);
+                byte[] fileContent = IOUtils.toByteArray(in);
+                final AppDefinition appDef = appService.importApp(fileContent);
+                if (appDef != null) {
+                    TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplate");
+                    transactionTemplate.execute(new TransactionCallback<Object>() {
+                        public Object doInTransaction(TransactionStatus ts) {
+                            appService.publishApp(appDef.getId(), null);
+                            return null;
+                        }
+                    });
+                    // get app center userview
+                    Collection<UserviewDefinition> userviewList = appDef.getUserviewDefinitionList();
+                    if (!userviewList.isEmpty()) {
+                        String userviewId = userviewList.iterator().next().getId();
+                        defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
+                        
+                        // save setting
+                        String value = defaultUserview.getAppId() + "/" + defaultUserview.getId();
+                        Setting newSetting = new Setting();
+                        newSetting.setProperty(defaultUserviewProperty);
+                        newSetting.setValue(value);
+                        setupManager.saveSetting(newSetting);                        
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "Failed to import default app center " + path);
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                }
+            }
+        }
+        return defaultUserview;
+    }
+
+    public boolean isDefaultUserview(String appId, String userviewId) {
+        boolean result = false;
+        String userviewPath = appId + "/" + userviewId;
+        Setting defaultUserviewSetting = setupManager.getSettingByProperty("defaultUserview");
+        if (defaultUserviewSetting != null) {
+            // check app center userview is published
+            String defaultUserviewValue = defaultUserviewSetting.getValue();
+            result = userviewPath.equals(defaultUserviewValue);
+        }
+        return result;
+    }
+    
 }

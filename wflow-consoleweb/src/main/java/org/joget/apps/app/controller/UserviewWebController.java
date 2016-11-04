@@ -69,6 +69,9 @@ public class UserviewWebController {
         map.addAttribute("menuId", menuId);
         map.addAttribute("embed", embed);
         map.addAttribute("queryString", request.getQueryString());
+        if (userviewService.isDefaultUserview(appDef.getId(), userviewId)) {
+            request.setAttribute("isDefaultUserview", Boolean.TRUE);
+        }
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         if (userview != null) {
             String json = userview.getJson();
