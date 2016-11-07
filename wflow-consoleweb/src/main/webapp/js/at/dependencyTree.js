@@ -72,6 +72,48 @@ DependencyTree.Util = {
         };
         
         node.addIndicator(ind);
+    },
+    getValueFromObject: function (obj, name) {
+        try {
+            var parts = name.split(".");
+            var value = null;
+            if (parts[0] !== undefined && parts[0] !== "") {
+                value = obj[parts[0]];
+            }
+            if (parts.length > 1) {
+                for (var i = 1; i < parts.length; i ++) {
+                    value = value[parts[i]];
+                }
+            }
+            
+            return value;
+        } catch (err) {};
+        return null;
+    },
+    getValue: function(response, refObj, jsonObj) {
+        if(response !== undefined && response !== null){
+            var options = $.parseJSON(response);
+            if (refObj['options_ajax_mapping'] !== undefined) {
+                var mapping = refObj['options_ajax_mapping'];
+                if (mapping.arrayObj !== undefined) {
+                    options = DependencyTree.Util.getValueFromObject(options, mapping.arrayObj);
+                }
+                                
+                for (var o in options) {
+                    var v = "";
+                    if (mapping.value !== undefined) {
+                        if (DependencyTree.Util.getValueFromObject(options[o], mapping.value) === jsonObj) {
+                            return DependencyTree.Util.getValueFromObject(options[o], mapping.label);
+                        }
+                    } else {
+                        if (options[o].value === jsonObj) {
+                            return options[o].label;
+                        }
+                    }
+                }
+            }
+        }
+        return jsonObj;
     }
 };
 
@@ -880,30 +922,42 @@ DependencyTree.Matchers['string'] = {
                                     value = properties[fieldId];
                                 }
                                 
-                                if (childField !== "" && value !== "") { //is grid
-                                    var values = [];
-                                    for (var j in value) {
-                                        values.push(value[j][childField]);
+                                if (childField !== "" && value !== "") {
+                                    if ($.isArray(value)) { //is grid
+                                        var values = [];
+                                        for (var j in value) {
+                                            values.push(value[j][childField]);
+                                        }
+                                        value = values.join(";");
+                                    } else if (value[childField] !== undefined) {
+                                        if (value[childField] === null) {
+                                            value = "";
+                                        } else if ($.type(value[childField]) === "string") {
+                                            value = value[childField];
+                                        } else {
+                                            value = JSON.encode(value[childField]);
+                                        }
                                     }
-                                    value = values.join(";");
                                 }
                                 data[param] = value;
                             }
                         }
                         
+                        var ajaxUrl = DependencyTree.Util.processUrl(viewer, refObj['options_ajax']);
+                        var method = "GET";
+                        if (refObj['options_ajax_method'] !== undefined) {
+                            method = refObj['options_ajax_method'].toUpperCase();
+                        }
+                            
                         var o = $.Deferred();
                         deferreds.push(o);
                         $.ajax({
-                            url: DependencyTree.Util.processUrl(viewer, refObj['options_ajax']),
+                            url: ajaxUrl,
                             dataType : "text",
+                            method : method,
                             data : data,
                             success: function(response) {
-                                var json = eval(response);
-                                for (var i in json) {
-                                    if (json[i].value === jsonObj) {
-                                        node.value = json[i].label;
-                                    }
-                                }
+                                node.value = DependencyTree.Util.getValue(response, refObj, jsonObj);
                                 o.resolve();
                             },
                             error: function() {
