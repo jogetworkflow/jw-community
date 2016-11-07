@@ -1,0 +1,96 @@
+/* app center */
+#search {
+    margin: 120px auto 20px;
+    width: 165px;
+}
+#search input.filterinput {
+    height: auto;
+}
+#apps li {
+    float: left;
+    width: 260px;
+    display: inline-block;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+#apps span.app-icon {
+    display: inline-block;
+    height: 70px;
+    overflow: hidden;
+    float: left;
+    width: 100px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border: none;
+    box-shadow: #555 0px 0px 1px 0px;
+}
+#apps img {
+    width: 100%;
+}
+div.app-name {
+    font-weight: 500;
+    color: #555;
+    word-wrap: break-word;
+}
+div.app-description {
+    display: inline;
+    font-size: 80%;
+    color: #999;
+}
+div.app-summary {
+    background-color: #eeeeee; 
+    display: none; 
+    position: absolute; 
+    width: 100px; 
+    height: 70px;
+    padding: 10px;
+    text-align: center;
+    overflow: hidden;
+}
+a.print-button {
+    display: none;
+}
+#section-actions {
+    display: none;
+}
+.app-design-button {
+    cursor: pointer;
+    background: #37C8A9;
+    padding: 4px;
+    color: white;
+    border-radius: 12px;
+    top: 8px;
+    position: relative;
+    display: none;
+    box-shadow: #666 1px 1px 2px 0px;
+}    
+
+/** banner positioning **/
+div#appcenter_banner {
+    position: absolute;
+    top: -95px;
+    left: -15%;
+    width: 130%;
+}
+
+/** mobile app icons **/
+/**
+@media (max-width:767px) {
+    #apps li {
+        float: none;
+        width: 45%;
+        display: inline-block;
+        margin-bottom: 50px;
+        margin-right: 10px;
+        text-align: center;
+        vertical-align: top;
+    }
+    div.app-name {
+        clear: both;
+    }
+    #apps span.app-icon {
+        float: none;
+        margin: auto;
+    }
+}
+**/
