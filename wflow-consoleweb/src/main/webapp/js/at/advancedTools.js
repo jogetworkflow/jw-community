@@ -74,6 +74,13 @@ var AdvancedTools = {
         $(AdvancedTools.jsonForm).find("button").addClass("button").wrap('<div class="sticky-buttons">');
         $(AdvancedTools.jsonForm).find("button").on("click", function() {
             AdvancedTools.isChange = true;
+            var text = $(this).text();
+            $(this).text(get_advtool_msg('adv.tool.updated'));
+            $(this).attr("disabled", true);
+            setTimeout(function(){
+                $(AdvancedTools.jsonForm).find("button").text(text);
+                $(AdvancedTools.jsonForm).find("button").removeAttr("disabled");
+            }, 1000);
         });
         
     },
