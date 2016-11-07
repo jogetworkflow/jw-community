@@ -17,7 +17,7 @@
     <div id="main-action">
     </div>
     <div id="main-body">
-
+        
         <div id="main-body-content">
             <ui:jsontable url="${pageContext.request.contextPath}/web/json/workflow/audittrail/list?${pageContext.request.queryString}"
                        var="JsonDataTable"
@@ -31,6 +31,7 @@
                        hrefParam="id"
                        hrefQuery="false"
                        hrefDialog="false"
+                       searchItems="search|Username"
                        fields="['username', 'clazz','method','message','timestamp']"
                        column1="{key: 'timestamp', label: 'console.monitoring.audittrail.label.timestamp', sortable: true}"
                        column2="{key: 'username', label: 'console.monitoring.audittrail.label.username', sortable: true}"
@@ -43,6 +44,9 @@
 </div>
 
 <script>
+    $(document).ready(function(){
+        $('#JsonDataTable_searchTerm').hide();
+    });
     Template.init("#menu-monitor", "#nav-monitor-audit");
 </script>
 
