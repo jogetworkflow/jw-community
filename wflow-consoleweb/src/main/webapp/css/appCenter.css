@@ -13,7 +13,7 @@
     margin-bottom: 20px;
     margin-right: 20px;
 }
-#apps span.app-icon {
+#apps span.userview-icon {
     display: inline-block;
     height: 70px;
     overflow: hidden;
@@ -27,18 +27,23 @@
 #apps img {
     width: 100%;
 }
-div.app-name {
+div.userview-name {
     font-weight: 500;
     font-size: 14px;
     color: #555;
     word-wrap: break-word;
 }
-div.app-description {
+div.app-name {
+    display: block;
+    font-size: 80%;
+    color: #999;
+}
+div.userview-description {
     display: none;
     font-size: 80%;
     color: #999;
 }
-div.app-summary {
+div.userview-summary {
     background-color: #eeeeee; 
     display: none; 
     position: absolute; 
@@ -85,10 +90,10 @@ div#appcenter_banner {
         text-align: center;
         vertical-align: top;
     }
-    div.app-name {
+    div.userview-name {
         clear: both;
     }
-    #apps span.app-icon {
+    #apps span.userview-icon {
         float: none;
         margin: auto;
     }
