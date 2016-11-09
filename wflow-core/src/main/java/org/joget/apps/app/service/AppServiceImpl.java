@@ -83,6 +83,7 @@ import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -122,6 +123,8 @@ public class AppServiceImpl implements AppService {
     FormDataDao formDataDao;
     @Autowired
     UserviewService userviewService;
+    @Autowired
+    WorkflowAssignmentDao workflowAssignmentDao;
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new HashMap<String, String>();
@@ -1843,12 +1846,17 @@ public class AppServiceImpl implements AppService {
             versions.add(p.getVersion());
         }
         
-        Collection<AppDefinition> apps = appDefinitionDao.findVersions(packageId, null, null, null, null);
-        for (AppDefinition a : apps) {
-            PackageDefinition pd = a.getPackageDefinition();
-            if (pd != null) {
-                versions.remove(pd.getVersion().toString());
-            }
+        //removed version of latest package used by each app version
+        Collection<Long> allPackageVersion = packageDefinitionDao.getPackageVersions(packageId);
+        for (Long l : allPackageVersion) {
+            versions.remove(l.toString());
+        }
+        
+        //removed version of package used by all existing assignment
+        Collection<String> allAssignmentPackageDefIds = workflowAssignmentDao.getPackageDefIds(packageId);
+        for (String id : allAssignmentPackageDefIds) {
+            String[] part = id.split("#");
+            versions.remove(part[1]);
         }
         
         for (String v : versions) {

@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
@@ -240,6 +242,16 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             return total.intValue();
         }
         return 0;
+    }
+    
+    public Collection<String> getPackageDefIds(String packageId) {
+        Session session = findSession();
+        String query = "SELECT distinct e.processDefId FROM SharkProcess e WHERE e.processDefId like ?";
+        Query q = session.createQuery(query);
+        
+        q.setParameter(0, packageId + "#%");
+
+        return q.list();
     }
     
     protected Collection<WorkflowAssignment> transformToWorkflowAssignment(Collection<SharkAssignment> shAss) {
