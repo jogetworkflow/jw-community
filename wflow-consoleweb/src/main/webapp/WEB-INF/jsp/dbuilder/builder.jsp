@@ -88,7 +88,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="dbuilder.title"/> <i> - <c:out value="${datalist.name}"/> (v${appVersion})</i></div>
+                <div id="builder-title"><fmt:message key="dbuilder.title"/> <i><c:out value="${appDefinition.name}" /> v${appDefinition.version}: <c:out value="${datalist.name}"/> <c:if test="${appDefinition.published}">(<fmt:message key="console.app.common.label.published"/>)</c:if></i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/d/${id}" flush="true" />--%>
             </div>
             <div id="builder-body">

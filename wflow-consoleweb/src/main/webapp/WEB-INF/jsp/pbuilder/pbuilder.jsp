@@ -126,7 +126,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <div id="builder-logo"></div>
-                <div id="builder-title"><fmt:message key="pbuilder.title"/> <i> - <c:out value="${appDefinition.name}"/> (v${appDefinition.version})</i></div>
+                <div id="builder-title"><fmt:message key="pbuilder.title"/> <i> - <c:out value="${appDefinition.name}"/> v${appDefinition.version}</i></div>
                 <div id="deploy-button" class="last-inactive"><a id="deploy" href="#" onclick="ProcessBuilder.ApiClient.deploy(); return false"><span class="steps-bg"><span class="title"> <i class="icon-cloud-upload"></i> <fmt:message key="pbuilder.label.deploy"/></span></span></a></div>
             </div>
             <div id="builder-body">
