@@ -4,12 +4,12 @@
     <c:when test="${!empty url}">
         if (parent && parent.AdminBar.showQuickOverlay) {
             parent.PopupDialog.closeDialog();
-            parent.AdminBar.showQuickOverlay('${url}');
+            parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
         } else {
             if (parent != self) {
-                parent.location.href="${url}";
+                parent.location.href="<c:out value="${url}"/>";
             } else {
-                location.href="${url}";
+                location.href="<c:out value="${url}"/>";
             }
         }
     </c:when>
