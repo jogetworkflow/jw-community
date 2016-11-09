@@ -11,8 +11,8 @@ var AppCenter = {
         $(input).change(function () { 
             var filter = $(this).val(); 
             if(filter) { 
-                $(list).find(".app-name:not(:Contains(" + filter + "))").closest("li").fadeOut(); 
-                $(list).find(".app-name:Contains(" + filter + ")").closest("li").show(); 
+                $(list).find(".userview-name:not(:Contains(" + filter + "))").closest("li").fadeOut(); 
+                $(list).find(".userview-name:Contains(" + filter + ")").closest("li").show(); 
             } else { 
                 $(list).find("li").show(); 
             } 
@@ -57,15 +57,16 @@ var AppCenter = {
                         var uv = userviews[j];
                         content += '<li>';
                         var userviewUrl = uv.url;
+                        var userviewDescription = (typeof uv.description !== "undefined") ? uv.description : "";
                         var imageUrl = uv.imageUrl;
                         if (!imageUrl) {
                             imageUrl = UI.base + '/web/userview/screenshot/' + app.id + '/' + uv.id;
                         }
                         content += '<a class="app-link" target="_blank" href="' + userviewUrl + '">\
-                                            <span class="app-icon"><img src="' + imageUrl + '" width="240" border="0"></span>\
-                                            <div class="app-name">' + uv.name + '</div>\
-                                            <div class="app-description">' + app.name + '</div>\
-                                            <div class="uv-description" style="display:none">' + uv.description + '</div>';
+                                            <span class="userview-icon"><img src="' + imageUrl + '" width="240" border="0"></span>\
+                                            <div class="userview-name">' + uv.name + '</div>\
+                                            <div class="app-name">' + app.name + '</div>\
+                                            <div class="userview-description">' + userviewDescription + '</div>';
                         if ($("#adminControl").length > 0) {
                             content += "<span class='app-design-button' onclick='AppCenter.designApp(event,\"" + app.id + "\",\"" + app.version + "\",\"" + uv.id + "\");return false'><i class='icon-pencil'></i></span>";
                         }
@@ -80,8 +81,8 @@ var AppCenter = {
                 // sort by userview name
                 var appsLi = $(".published-apps li");
                 appsLi.sort(function(a, b) {
-                    var aName = $(a).find(".app-name").text();
-                    var bName = $(b).find(".app-name").text();
+                    var aName = $(a).find(".userview-name").text();
+                    var bName = $(b).find(".userview-name").text();
                     if (aName.indexOf("<") === 0 || aName.indexOf("#") === 0 || aName.toUpperCase() >= bName.toUpperCase()) {
                         return 1;
                     } else {
@@ -90,14 +91,16 @@ var AppCenter = {
                 });
                 appsLi.detach().appendTo($(container));
 
-                $("span.app-icon").hover(
+                $("span.userview-icon").hover(
                     function() {
-                        var desc = $(this).siblings("div.app-description").text();
-                        $(this).prepend("<div class='app-summary'>" + desc + "</div>");
-                        $(this).find(".app-summary").show("fast");
+                        var summary = $(this).siblings("div.app-name").text();
+                        if (summary !== "") {
+                            $(this).prepend("<div class='userview-summary'>" + summary + "</div>");
+                            $(this).find(".userview-summary").show("fast");
+                        }
                     },
                     function() {
-                        $(this).find(".app-summary").hide("fast").remove();
+                        $(this).find(".userview-summary").hide("fast").remove();
                     }
                 );
                 $("#apps li").hover(
