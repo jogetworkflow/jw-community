@@ -86,6 +86,13 @@ body.embeded #adminBar {
     width: 100%;
     background: #37C8A9 url(/jw/images/v3/builder/logo.png) no-repeat 0px 3px;
 }
+#adminBar .seperator h5 {
+    margin: 0;
+    text-align: center;
+    background: #ccc;
+    padding: 8px 0;
+    text-transform: uppercase;
+}
 #adminBar #adminBarButtons {
     margin-top: 1px;
     padding-top: 0px;
@@ -94,7 +101,7 @@ body.embeded #adminBar {
     display: block;
     background: transparent;
     color: #888;
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 800;
     font-family: sans-serif;
     line-height: 16px;
@@ -103,7 +110,7 @@ body.embeded #adminBar {
     text-transform: uppercase;
     cursor: pointer;
     margin: 0px .3px;
-    padding: 15px 10px;
+    padding: 15px 5px;
     border-radius: 0px;
     border-top: none;
     border-bottom: solid 1px #CCC;

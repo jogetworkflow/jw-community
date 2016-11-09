@@ -158,6 +158,16 @@ var AdminBar = {
                 $("#adminBarButtons a.adminBarButton:eq(3)").trigger("click");
 		return false;
             }
+            if(e.which === 53 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+5
+                AdminBar.showAdminBar();
+                $("#adminBarButtons a.adminBarButton:eq(4)").trigger("click");
+		return false;
+            }
+            if(e.which === 54 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+6
+                AdminBar.showAdminBar();
+                $("#adminBarButtons a.adminBarButton:eq(5)").trigger("click");
+		return false;
+            }
         });        
         $("#adminControl").on('click', function() {
             if (AdminBar.isAdminBarOpen()) {
