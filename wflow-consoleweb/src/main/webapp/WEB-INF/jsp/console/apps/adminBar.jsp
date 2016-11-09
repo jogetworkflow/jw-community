@@ -21,19 +21,19 @@
                 <c:set var="key" value="1" />
                 <c:if test="${!empty param.appId && !isDefaultUserview}">
                     <c:set var="key" value="3" />
-                    <div class="seperator">
+                    <div class="separator">
                         <h5><fmt:message key='adminBar.label.app'/></h5>
                     </div>    
                     <div>
                         <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key="console.header.submenu.label.formsAndUi"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms')"><i class="icon-edit"></i><br><fmt:message key="console.header.submenu.label.formsAndUi"/></a>
                     </div>
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-2: <fmt:message key="console.app.process.common.label"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes')"><i class="icon-list"></i><br><fmt:message key="console.app.process.common.label"/></a>
+                        <a class="adminBarButton" style="display:none" title="CTRL-2: <fmt:message key="console.header.submenu.label.processes"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes')"><i class="icon-list"></i><br><fmt:message key="console.header.submenu.label.processes"/></a>
                     </div>
                     <div>
                         <a class="adminBarButton" style="display:none" title="CTRL-3: <fmt:message key='adminBar.label.app.properties'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties')"><i class="icon-cog"></i><br><fmt:message key='adminBar.label.app.properties'/></a>
                     </div>
-                    <div class="seperator">
+                    <div class="separator">
                         <h5><fmt:message key='adminBar.label.system'/></h5>
                     </div> 
                 </c:if>
