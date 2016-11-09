@@ -1,5 +1,6 @@
 package org.joget.apps.app.dao;
 
+import java.util.Collection;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
@@ -101,4 +102,11 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param participantId
      */
     void removeAppParticipant(String appId, Long appVersion, String processDefId, String participantId);
+    
+    /**
+     * Get all package versions in used
+     * @param packageId
+     * @return
+     */
+    Collection<Long> getPackageVersions(String packageId);
 }
