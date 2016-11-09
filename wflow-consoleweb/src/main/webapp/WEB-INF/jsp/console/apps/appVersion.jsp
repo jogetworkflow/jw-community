@@ -71,7 +71,7 @@
             var callback = {
                 success : function() {
                     document.location.reload(true);
-                    parent.location.reload(true);
+                    parent.location.href = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/forms';
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
