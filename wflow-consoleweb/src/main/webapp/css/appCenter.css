@@ -29,11 +29,12 @@
 }
 div.app-name {
     font-weight: 500;
+    font-size: 14px;
     color: #555;
     word-wrap: break-word;
 }
 div.app-description {
-    display: inline;
+    display: none;
     font-size: 80%;
     color: #999;
 }
@@ -74,7 +75,6 @@ div#appcenter_banner {
 }
 
 /** mobile app icons **/
-/**
 @media (max-width:767px) {
     #apps li {
         float: none;
@@ -93,4 +93,13 @@ div#appcenter_banner {
         margin: auto;
     }
 }
-**/
+/*
+@media (max-width:630px) {
+    #apps li {
+        margin-bottom: 0px;
+        width: 100%;
+        border-top: solid 1px #ddd;
+        padding-top: 10px;
+    }
+}
+*/

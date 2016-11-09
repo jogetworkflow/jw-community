@@ -67,7 +67,7 @@ var AppCenter = {
                                             <div class="app-description">' + app.name + '</div>\
                                             <div class="uv-description" style="display:none">' + uv.description + '</div>';
                         if ($("#adminControl").length > 0) {
-                            content += "<span class='app-design-button' onclick='designApp(event,\"" + app.id + "\",\"" + app.version + "\",\"" + uv.id + "\");return false'><i class='icon-pencil'></i></span>";
+                            content += "<span class='app-design-button' onclick='AppCenter.designApp(event,\"" + app.id + "\",\"" + app.version + "\",\"" + uv.id + "\");return false'><i class='icon-pencil'></i></span>";
                         }
                         content += '</a>\
                                     </li>';
