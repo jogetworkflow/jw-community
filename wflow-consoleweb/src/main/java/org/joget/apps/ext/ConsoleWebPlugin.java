@@ -2,6 +2,7 @@ package org.joget.apps.ext;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -12,6 +13,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
+import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.base.PluginWebSupport;
 import org.springframework.context.MessageSource;
@@ -65,6 +67,8 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
             content = getHome();
         } else if ("welcome".equals(spot)) {
             content = getWelcome();
+        } else if ("settings".equals(spot)) {
+            content = getSettings(request, response);
         } else {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
@@ -179,4 +183,18 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
             return "redirect:/web/console/home";
         }
     }
+    
+    /**
+     * System info in the System Settings
+     * @param request
+     * @param response
+     * @return 
+     */
+    public String getSettings(HttpServletRequest request, HttpServletResponse response) {
+        HashMap model = new HashMap();
+        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
+        String content = pluginManager.getPluginFreeMarkerTemplate(model, getClass().getName(), "/templates/settings.ftl", null);
+        return content;
+    }
+    
 }

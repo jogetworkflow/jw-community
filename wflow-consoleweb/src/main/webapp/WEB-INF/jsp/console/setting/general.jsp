@@ -42,21 +42,10 @@
     <div id="main-body">
         <div id="generalSetup">
             <form method="post" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
+            <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=settings" />
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.uiSetting"/></span>
             </div>
-            <div class="main-body-row">
-                <span class="row-content">
-                    <div class="form-row">
-                        <label for="disableAdminBar"><fmt:message key="console.setting.general.label.disableAdminBar"/></label>
-                        <c:set var="checked"></c:set>
-                        <c:if test="${settingMap['disableAdminBar'] == 'true'}">
-                            <c:set var="checked">checked</c:set>
-                        </c:if>
-                        <input type="checkbox" id="disableAdminBar" name="disableAdminBar" ${checked} />
-                    </div>
-                </span>
-            </div>            
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
