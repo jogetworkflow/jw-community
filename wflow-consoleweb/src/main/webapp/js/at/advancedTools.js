@@ -15,14 +15,14 @@ var AdvancedTools = {
             <div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
         $(document.body).append(overlayContainer);
         
-        AdvancedTools.initDefinitionTab();
         AdvancedTools.initTreeViewer();
-        AdvancedTools.initDiffChecker();
         AdvancedTools.initUsage();
         if (window['FormBuilder'] !== undefined) {
             AdvancedTools.initTable();
         }
         AdvancedTools.initI18n();
+        AdvancedTools.initDiffChecker();
+        AdvancedTools.initDefinitionTab();
         
         $(".builder_tool_tabs_container").tabs();
         
@@ -30,6 +30,7 @@ var AdvancedTools = {
         $("#advanced_tool").click(function(){
             $(".builder_tool_tabs li:first-child input").attr("checked", "checked");
             AdvancedTools.showQuickOverlay();
+            AdvancedTools.treeViewer.render();            
         });
         
     },
@@ -132,6 +133,7 @@ var AdvancedTools = {
                     $("#tab-diffChecker").find("#diff1").before('<h3>'+get_advtool_msg('diff.checker.newChanges')+'</h3>');
                     $("#tab-diffChecker").find("#diff2").before('<h3>'+get_advtool_msg('diff.checker.mergedChanges')+'</h3>');
                     $("#tab-diffChecker").append('<div class="sticky-buttons"><a class="update button">'+get_advtool_msg('diff.checker.merge.update')+'</span></a></div>')
+                    $("#tab-diffChecker .sticky-buttons").css("top", $(".builder_tool_tabs").offset().top + $(".builder_tool_tabs").height() + 25);
                 } else if ($("#tab-diffChecker").find("#diff2").length > 0) {
                     $("#tab-diffChecker").find("#diff2").before('<h3>'+get_advtool_msg('diff.checker.changes')+'</h3>');
                 } else {

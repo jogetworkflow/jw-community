@@ -1,9 +1,9 @@
 .item_usages_container, .item_usages_container .usage_found { padding: 0; list-style: none;}
-.item_usages_container .usage_category h3, .item_usages_container .no_usage h3 {color:green; font-size: 16px;}
+.item_usages_container .usage_category h3, .item_usages_container .no_usage h3 {color:green; font-size: 16px; text-transform: uppercase;}
 .item_usages_container ul.app_items { list-style: none; padding-left: 15px;}
 .item_usages_container .items {padding-left: 20px}
 .item_usages_container .item a {color:#000; text-decoration: none; font-weight: bold;}
-.item_usages_container .item a.found_toggle {display: inline-block; margin-left: 5px; color: gray;}
+.item_usages_container .item a.found_toggle {display: inline-block; margin-left: 5px; color: gray; cursor: pointer;}
 .item_usages_container pre { background: #efefef; border: 1px solid #ddd; padding: 3px; margin: 3px 0; width: 800px; display: block; font-family: monospace; white-space: pre;}
 .item_usages_container pre .keyword_highlight {background: yellow;}
 #delete_usage_check {height:500px; background: #fff;}

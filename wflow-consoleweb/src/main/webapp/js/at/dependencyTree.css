@@ -1,7 +1,7 @@
 .dt-loading {color:#777; display: inline-block; margin-left: 5px;}
 #dependencyTreeViewer {background: #fff; overflow:visible !important; height: auto !important; max-height: auto !important;}
 .dt-buttons {text-align: right;}
-.dt-buttons a {display: inline-block;}
+.dt-buttons a {display: inline;}
 .jstree-anchor > label > span > i {color: gray;font-size: 10px;}
 .jstree-icon {color: darkseagreen;}
 .indicators {display:inline-block; margin-left: 10px;}

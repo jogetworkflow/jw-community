@@ -1,4 +1,4 @@
-.sticky_header { position: relative; padding-top: 46px; background: #70B237; overflow:hidden;}
+.sticky_header { position: relative; padding-top: 46px; background: none; overflow:hidden;}
 .sticky_container {overflow-y: auto; background: #fff;}
 .i18n_table {width:100%; border-collapse: collapse;}
 .i18n_table td {width:33%; background: #F2F2F2; color: #5C5C5F; padding: 10px;}

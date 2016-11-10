@@ -41,7 +41,7 @@ I18nEditor = {
     },
     renderTable : function (container, labels, options) {
         if (labels.length > 0) {
-            $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div>'+get_advtool_msg('i18n.editor.key')+'</th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
+            $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th>&nbsp;</th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
             var $table = $(container).find(".i18n_table");
             
             for (var l in labels) {
