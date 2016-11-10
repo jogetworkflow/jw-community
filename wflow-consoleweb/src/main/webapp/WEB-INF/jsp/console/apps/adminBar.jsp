@@ -93,3 +93,4 @@
 </c:if>
 <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=adminBar" flush="true" />             
 <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />
+<jsp:include page="/WEB-INF/jsp/includes/css.jsp" />

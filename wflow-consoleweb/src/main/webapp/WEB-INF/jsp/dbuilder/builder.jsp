@@ -43,6 +43,7 @@
         </c:if>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
+        <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <script type="text/javascript">
             window.onbeforeunload = function() {
                 if(!DatalistBuilder.isSaved()){
