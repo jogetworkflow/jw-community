@@ -27,6 +27,9 @@
 #apps img {
     width: 100%;
 }
+a.app-link {
+    text-decoration: none;
+}
 div.userview-name {
     font-weight: 500;
     font-size: 14px;
@@ -52,6 +55,7 @@ div.userview-summary {
     padding: 10px;
     text-align: center;
     overflow: hidden;
+    box-sizing: border-box;
 }
 a.print-button {
     display: none;
