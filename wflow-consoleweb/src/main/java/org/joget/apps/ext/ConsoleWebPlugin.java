@@ -137,13 +137,13 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
      */
     protected String getWelcome() {
         String content = "<div id=\"getting-started\">"
-                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; overflow:hidden;\" src=\"http://www.joget.org/updates/welcome?src=v5\" frameborder=\"0\"></iframe>"
-                + "<a href=\"http://www.joget.org/help?src=wmc\" target=\"www.joget.org\" id=\"link\"></a>"
+                + "<iframe id=\"frame\" style=\"display:none; height:200px; width:100%; box-sizing: border-box; overflow:hidden;\" src=\"//www.joget.org/updates/welcome?src=v6\" frameborder=\"0\"></iframe>"
+                + "<a href=\"//www.joget.org/help?src=v6\" target=\"www.joget.org\" id=\"link\"></a>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
                 + "<script type=\"text/javascript\">"
                 + "var image = new Image();"
-                + "image.src = \"http://www.joget.org/images/welcome.png\";"
+                + "image.src = \"//www.joget.org/images/welcome.png\";"
                 + "$(image).load(function(){"
                 + "$('#link').hide();$('#frame').show();"
                 + "});"

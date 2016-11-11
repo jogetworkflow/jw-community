@@ -53,6 +53,9 @@
                 </div>
             </c:if>
             </div>
+            <div id="adminBarWelcome">
+            <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
+            </div>
         </div>
             
         <div id="adminControl">

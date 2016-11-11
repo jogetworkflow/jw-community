@@ -13,6 +13,7 @@
     opacity: 0.9;
     height: 100%;
     -webkit-font-smoothing: antialiased;
+    box-sizing: content-box;
 }
 body.embeded #adminBar {
     display: none;
@@ -344,4 +345,15 @@ div#category-container {
 }
 div#builder-body {
     min-width: 93%;
+}
+div#adminBarWelcome {
+    height: 35px;
+    width: 40px;
+    position: absolute;
+    right: 20px;
+    bottom: 0px;
+    overflow: hidden;
+    background: none;
+    opacity: 0.9;
+    margin: 0px auto 100px;    
 }
