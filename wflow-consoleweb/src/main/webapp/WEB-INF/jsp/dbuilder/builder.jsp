@@ -13,6 +13,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title><fmt:message key="adminBar.label.list"/>: <c:out value="${datalist.name}"/> - <fmt:message key="dbuilder.title"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
         <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>

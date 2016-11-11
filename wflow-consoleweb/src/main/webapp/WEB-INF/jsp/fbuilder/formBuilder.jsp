@@ -13,6 +13,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
         <title><fmt:message key="adminBar.label.form"/>: <c:out value="${formDef.name}"/> - <fmt:message key="fbuilder.title"/></title>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>

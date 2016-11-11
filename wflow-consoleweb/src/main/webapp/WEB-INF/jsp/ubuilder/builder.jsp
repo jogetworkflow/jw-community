@@ -16,6 +16,7 @@
         <title><fmt:message key="adminBar.label.userview"/>: <c:out value="${userview.name}"/> - <fmt:message key="ubuilder.title"/></title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
