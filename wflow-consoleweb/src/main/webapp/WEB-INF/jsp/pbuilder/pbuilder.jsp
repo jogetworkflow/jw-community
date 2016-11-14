@@ -18,25 +18,18 @@
         <title><fmt:message key="console.header.submenu.label.processes"/>: <c:out value="${appDefinition.name}"/></title>
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
+        <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
         
-        <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
-            <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor_rtl.css?build=<fmt:message key="build.number"/>">
             <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_rtl.css?build=<fmt:message key="build.number"/>">
         </c:if>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <link href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" type="text/css">
-        <link href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
-        <link href="${pageContext.request.contextPath}/js/chosen/chosen.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>" rel="stylesheet" type="text/css" />
-        <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
-        <script src="${pageContext.request.contextPath}/js/JSON.js"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.ui.touch-punch.js"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
-        <script src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
-        <script src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
         <script src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/html2canvas-0.4.1.js"></script>
@@ -44,10 +37,6 @@
         <script src="${pageContext.request.contextPath}/pbuilder/js/rgbcolor.js"></script> 
         <script src="${pageContext.request.contextPath}/pbuilder/js/StackBlur.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/canvg.js"></script> 
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/scrollTo/jquery.scrollTo.min.js"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/pbuilder?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/undomanager.js"></script> 

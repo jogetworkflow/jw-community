@@ -1553,6 +1553,30 @@ PropertyEditor.Type.TextField.prototype = {
 };
 PropertyEditor.Type.TextField = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.TextField.prototype);
 
+PropertyEditor.Type.Color = function(){};
+PropertyEditor.Type.Color.prototype = {
+    shortname : "color",
+    renderField: function() {
+        if(this.value === null){
+            this.value = "";
+        }
+        return '<input class="jscolor" type="text" id="'+ this.id + '" name="'+ this.id + '"'+ ' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
+    },
+    initScripting: function () {
+        $("#"+this.id).data('colorMode', 'HEX').colorPicker({
+            opacity: false, // disables opacity slider
+            renderCallback: function($elm, toggled) {
+                if ($elm.val() !== "" && $elm.val() !== undefined) {
+                    $elm.val('#' + this.color.colors.HEX);
+                }
+            }
+        }).trigger("focusin.tcp"); //to force rendering
+        setTimeout(function(){$(".cp-color-picker").hide();}, 200); //to hide it on load
+        PropertyEditor.Util.supportHashField(this);
+    }
+};
+PropertyEditor.Type.Color = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.Color.prototype);
+
 PropertyEditor.Type.Password = function(){};
 PropertyEditor.Type.Password.prototype = {
     shortname : "password",
