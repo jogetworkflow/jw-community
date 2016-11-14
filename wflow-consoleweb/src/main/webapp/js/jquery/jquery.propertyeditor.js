@@ -1570,8 +1570,7 @@ PropertyEditor.Type.Color.prototype = {
                     $elm.val('#' + this.color.colors.HEX);
                 }
             }
-        }).trigger("focusin.tcp"); //to force rendering
-        setTimeout(function(){$(".cp-color-picker").hide();}, 200); //to hide it on load
+        }); 
         PropertyEditor.Util.supportHashField(this);
     }
 };
