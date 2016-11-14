@@ -12,10 +12,6 @@ html {
     -ms-overflow-style: none
 }
 
-html:not(.ie9) body {
-    overflow-y: scroll
-}
-
 html.ismobile * {
     cursor: pointer
 }
@@ -310,7 +306,7 @@ body.embeded #content > main {
     position: fixed;
     height: calc(100% - 65px);
     top: 65px;
-    left:0;
+    left:-1px;
     -webkit-transition: all;
     -o-transition: all;
     transition: all;
@@ -333,7 +329,7 @@ ul#category-container {
     #sidebar {
         -webkit-transform: translate3d(-268px, 0, 0);
         transform: translate3d(-268px, 0, 0);
-        box-shadow: 0 0 30px #0E1215
+        box-shadow: 0 15px 30px #0E1215
     }
     #sidebar.toggled {
         -webkit-transform: translate3d(0, 0, 0);
@@ -396,6 +392,12 @@ ul#category-container {
         white-space: nowrap;
         overflow: hidden;
         display: block;
+    }
+    .sidebar-toggled #header-name .main-menu.nav-tabs > li.mm-profile > a {
+        padding: 30px 20px 20px 65px;
+    }
+    .sidebar-toggled #header-name .main-menu.nav-tabs>li>a {
+        padding: 14px 20px 14px 65px;
     }
     header.navbar .header-nav {
         max-width: 10%;
@@ -676,6 +678,7 @@ body#login #page > footer {
 
 @media (min-width:768px) {
     body.horizontal_menu #main {
+        margin-top: 0;
         padding-top: 25px;
     }
     body.horizontal_menu #main,
@@ -701,6 +704,9 @@ body#login #page > footer {
         display: inline-block;
         font-size:13px;
         box-shadow:none;
+    }
+    body.horizontal_menu.inline_menu #sidebar .mCSB_scrollTools_vertical {
+        visibility: hidden;
     }
     body.horizontal_menu header.navbar {
         box-shadow: none;
