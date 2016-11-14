@@ -105,7 +105,13 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
         syntax.add("date.MONTH-INTEGER.FORMAT");
         syntax.add("date.YEAR+INTEGER.FORMAT");
         syntax.add("date.YEAR-INTEGER.FORMAT");
-        
+        syntax.add("date.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.DAY+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.DAY-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.MONTH+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.MONTH-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.YEAR+INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
+        syntax.add("date.YEAR-INTEGER.FORMAT[DATE_VALUE|DATE_VALUE_FORMAT]");
         return syntax;
     }
 }
