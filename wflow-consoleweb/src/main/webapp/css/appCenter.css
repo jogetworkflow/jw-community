@@ -1,10 +1,15 @@
 /* app center */
 #search {
-    margin: 120px auto 20px;
+    position: relative;
+    margin: 0px auto 20px;
     width: 165px;
 }
 #search input.filterinput {
     height: auto;
+}
+#apps {
+    margin: auto;
+    width: 88vw;
 }
 #apps li {
     float: left;
