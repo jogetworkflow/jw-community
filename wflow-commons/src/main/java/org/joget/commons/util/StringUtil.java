@@ -37,6 +37,7 @@ public class StringUtil {
     public static final String TYPE_JAVA = "java";
     public static final String TYPE_SQL = "sql";
     public static final String TYPE_URL = "url";
+    public static final String TYPE_NL2BR = "nl2br";
 
     static final Whitelist whitelistRelaxed;
     static {
@@ -269,6 +270,8 @@ public class StringUtil {
                 try {
                     inStr = URLEncoder.encode(inStr, "UTF-8");
                 } catch (Exception e) {/* ignored */}
+            } else if (TYPE_NL2BR.equals(f)) {
+                inStr = inStr.replaceAll("(\r\n|\n)", "<br />");
             }
         }
         
