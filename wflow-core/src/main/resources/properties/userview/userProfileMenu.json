@@ -1,0 +1,148 @@
+[{
+    title : '@@userview.userprofilemenu.editUserProfileMenu@@',
+    properties : [{
+        name : 'id',
+        label : 'Id',
+        type : 'hidden'
+    },
+    {
+        name : 'customId',
+        label : '@@userview.userprofilemenu.customId@@',
+        type : 'textfield',
+        regex_validation : '^[a-zA-Z0-9_]+$',
+        validation_message : '@@userview.userprofilemenu.invalidId@@'
+    },
+    {
+        name : 'label',
+        label : '@@userview.userprofilemenu.label@@',
+        type : 'textfield',
+        required : 'True',
+        value : '@@userview.userprofilemenu.userProfile@@'
+    },
+    {
+        name : 'showInPopupDialog',
+        label : '@@userview.userprofilemenu.showInPopup@@',
+        type : 'checkbox',
+        value : 'Yes',
+        options : [{
+            value : 'Yes',
+            label : ''
+        }]
+    },
+    {
+        name : 'message',
+        label : '@@userview.userprofilemenu.messageAfterSaved@@',
+        type : 'textarea'
+    },
+    {
+        name : 'redirectURL',
+        label : '@@userview.userprofilemenu.redirectAfterSaved@@',
+        type : 'textfield'
+    }]
+},
+{
+    title : '@@userview.userprofilemenu.fields@@',
+    properties : [{
+        name : 'f_username',
+        label : '@@userview.userprofilemenu.field.username@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.readonly@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_firstName',
+        label : '@@userview.userprofilemenu.field.firstName@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'readonly',
+            label : '@@userview.userprofilemenu.field.readonly@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_lastName',
+        label : '@@userview.userprofilemenu.field.lastName@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'readonly',
+            label : '@@userview.userprofilemenu.field.readonly@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_email',
+        label : '@@userview.userprofilemenu.field.email@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'readonly',
+            label : '@@userview.userprofilemenu.field.readonly@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_password',
+        label : '@@userview.userprofilemenu.field.password@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_timeZone',
+        label : '@@userview.userprofilemenu.field.timeZone@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    },
+    {
+        name : 'f_locale',
+        label : '@@userview.userprofilemenu.field.locale@@',
+        type : 'selectbox',
+        options : [{
+            value : '',
+            label : '@@userview.userprofilemenu.field.show@@'
+        },
+        {
+            value : 'hide',
+            label : '@@userview.userprofilemenu.field.hide@@'
+        }]
+    }]
+}]

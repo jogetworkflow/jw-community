@@ -1,0 +1,197 @@
+_customFooTableArgs = {
+    breakpoints: { // The different screen resolution breakpoints
+        phone: 480,
+        tablet: 767
+    }
+};
+
+!function ($) {
+    var bsButton = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
+    $.fn.bsButton = bsButton;
+    
+    //override event to use new method name
+    $(document).off('click.button.data-api', '[data-toggle^=button]');
+    $(document).on('click.button.data-api', '[data-toggle^=button]', function (e) {
+        var $btn = $(e.target)
+        if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
+        $btn.bsButton('toggle')
+    })
+    
+    $(document).ready(function() {
+        $(".rowCount").each(function(){
+            var count = $(this).text().replace("(", "").replace(")", "");
+            $(this).text(count);
+            $(this).addClass("pull-right badge");
+        });
+        loadInbox();
+
+        var toogleMenu = function(menu) {
+            if ($(menu).parent().css("display") !== "inline-block") {
+                $(menu).next().slideToggle(200);
+                $(menu).parent().toggleClass("toggled");
+            }
+        };
+        var initMenu = function() {
+            $("#sidebar a.dropdown").each(function() {
+                $(this).parent().addClass("toggled");
+                if (!$(this).parent().hasClass("active")) {
+                    toogleMenu(this);
+                }
+            });
+
+            $("#sidebar a.dropdown").on("click", function(){
+                toogleMenu(this);
+            });
+        };
+        initMenu();
+        
+        $("#sidebar-trigger").on("click", function(){
+            var backdrop = '<div class="ma-backdrop" />';
+            $("body").addClass("sidebar-toggled");
+            $("header.navbar").append(backdrop);
+            $(this).addClass("toggled");
+            $("#sidebar").addClass("toggled");
+            
+            $(".ma-backdrop").on("click", function(){
+                $("body").removeClass("sidebar-toggled");
+                $(".ma-backdrop").remove();
+                $("#sidebar, #sidebar-trigger").removeClass("toggled");
+            });
+        });
+
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            $("html").addClass("ismobile");
+        }
+
+        $(window).load(function() {
+            Waves.init();
+            attachButtonEffect();
+            setTimeout(function() {
+                $(".page-loader").fadeOut();
+            }, 500);
+        });
+
+        var scrollBar = function(selector, theme, mousewheelaxis) {
+            $(selector).mCustomScrollbar({
+                theme: theme,
+                scrollInertia: 100,
+                axis: "mousewheelaxis",
+                mouseWheel: {
+                    enable: !0,
+                    axis: mousewheelaxis,
+                    preventDefault: !0
+                }
+            });
+        };
+        if ($("#sidebar").length > 0) {
+            scrollBar("#sidebar", "minimal-dark", "y");
+        }
+        if ($(".c-overflow").length > 0) {
+            scrollBar(".c-overflow", "minimal-dark", "y");
+        }
+
+        //add button effect to responsive table
+        $(".dataList table").on("footable_row_detail_updated", function (event) {
+            attachButtonEffect();
+        });
+        
+        //remove pagination if only 1 page
+        if($(".dataList .pagelinks a").length === 0) {
+            $(".dataList .pagelinks").hide();
+        }
+        
+        $(".filter-cell select").on("change", function(){
+            if($(this).val() === "") {
+                $(this).addClass("emptyValue");
+            } else {
+                $(this).removeClass("emptyValue");
+            }
+        });
+        $(".filter-cell select").each(function(){
+            if($(this).val() === "") {
+                $(this).addClass("emptyValue");
+            } else {
+                $(this).removeClass("emptyValue");
+            }
+        });
+        
+        initTextareaAutoHeight();
+    });
+    
+    function onFormChange() {
+        $(document).on("change", "form *", function(){
+            attachButtonEffect();
+            initTextareaAutoHeight();
+        });
+    }
+    
+    function initTextareaAutoHeight() {
+        $("textarea").each(function(){
+            textareaAutoHeight(this);
+        });
+        $(document).off("input keydown keyup", "textarea");
+        $(document).on("input keydown keyup", "textarea", function(){
+            textareaAutoHeight(this);
+        });
+    }
+    
+    function textareaAutoHeight(e) {
+        var scrollLeft = window.pageXOffset ||
+            (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+
+        var scrollTop  = window.pageYOffset ||
+            (document.documentElement || document.body.parentNode || document.body).scrollTop;
+
+        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'}).height(e.scrollHeight);
+        
+        window.scrollTo(scrollLeft, scrollTop);
+    }
+    
+    function attachButtonEffect() {
+        setTimeout(function() {
+            Waves.attach('.btn:not(.waves-button), .form-button:not(.waves-button), button:not(.waves-button), input[type=button]:not(.waves-button), input[type=reset]:not(.waves-button), input[type=submit]:not(.waves-button)', ['btn', 'waves-button', 'waves-float']);
+        }, 500);
+    }
+    
+    /* ---------- Inbox ------------------------- */
+    function loadInbox() {
+        if ($(".inbox-notification").length === 1) {
+            loadInboxData();
+            $(".inbox-notification .refresh").on("click", function(e){
+                e.preventDefault();
+                loadInboxData();
+                return false;
+            });
+        }
+    }
+    
+    function loadInboxData() {
+        $(".inbox-notification .loading").show();
+        var url = $(".inbox-notification").data("url");
+        $.getJSON(url, {}, 
+            function (data) {
+                var count = 0;
+                if (data.count !== undefined) {
+                    count = data.count;
+                }
+                $(".inbox-notification > a > .badge").text(count);
+                $(".inbox-notification .dropdown-menu-title .count").text(count);
+                
+                $(".inbox-notification > ul > li.task").remove();
+                if (data.data) {
+                    var footer = $(".inbox-notification > ul .dropdown-menu-sub-footer").parent();
+                    var link = $(".inbox-notification > ul .dropdown-menu-sub-footer").attr("href");
+                    $.each(data.data, function(i, d){
+                        var html = "<li class=\"task\"><a href=\""+link+"?_mode=assignment&activityId="+d.activityId+"\">";
+                        html += "<span class=\"header\">"+d.activityName+"</span>";
+                        html += "<span class=\"message\">"+d.processName+"</span><span class=\"time\">"+d.dateCreated+"</span>";
+                        html += "</a></li>";
+                        footer.before($(html));
+                    });
+                }
+                
+                $(".inbox-notification .loading").hide();
+            }
+        );
+    }
+}(window.jQuery);

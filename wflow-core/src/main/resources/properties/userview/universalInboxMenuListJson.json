@@ -1,0 +1,56 @@
+{
+    "id" : "inbox",
+    "name" : "Inbox",
+    "pageSize" : 0,
+    "order" : "1",
+    "orderBy" : "dateCreated",
+    "actions" : [],
+    "rowActions" : [],
+    "filters" : [],
+    "binder" : {
+        "className" : "",
+        "properties" : {}
+    },
+    "columns" : [{
+        "id" : "column_1",
+        "name" : "activityName",
+        "label" : "@@userview.inboxmenu.activityName@@",
+        "sortable" : "true",
+        "action" : {
+            "className" : "org.joget.apps.datalist.lib.HyperlinkDataListAction",
+            "properties" : {
+                "href" : "?_mode=assignment",
+                "target" : "_self",
+                "hrefParam" : "activityId",
+                "hrefColumn" : "activityId",
+                "label" : "",
+                "confirmation" : ""
+            }
+        }
+    },
+    {
+        "id" : "column_0",
+        "label" : "@@userview.inboxmenu.processName@@",
+        "name" : "processName",
+        "sortable" : "true"
+    },
+    {
+        "id" : "column_2",
+        "label" : "@@userview.inboxmenu.dateCreated@@",
+        "name" : "dateCreated",
+        "sortable" : "true"
+    },
+    {
+        "id" : "column_3",
+        "label" : "@@userview.inboxmenu.serviceLevelMonitor@@",
+        "name" : "serviceLevelMonitor",
+        "sortable" : "false",
+        "renderHtml" : "true"
+    },
+    {
+        "id" : "column_4",
+        "label" : "@@userview.inboxmenu.dueDate@@",
+        "name" : "dueDate",
+        "sortable" : "true"
+    }]
+}

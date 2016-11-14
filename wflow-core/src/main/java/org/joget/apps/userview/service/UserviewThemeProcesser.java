@@ -178,10 +178,10 @@ public class UserviewThemeProcesser {
         data.put("css", getCss(data));
         data.put("head", getHead(data));
         if (!"true".equalsIgnoreCase(userview.getParamString("embed"))) {
-            data.put("header", getHeader(data));
             if (isAuthorized) {
                 data.put("menus", getMenus(data));
             }
+            data.put("header", getHeader(data));
             data.put("footer", getFooter(data));
         }
         data.put("joget_footer", getJogetFooter());

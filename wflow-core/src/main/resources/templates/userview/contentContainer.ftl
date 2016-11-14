@@ -23,4 +23,4 @@ ${main_container_before!}
         ${main_container_inner_before!}
     </div>
 </div>
-${main_container_before!}
+${main_container_after!}
