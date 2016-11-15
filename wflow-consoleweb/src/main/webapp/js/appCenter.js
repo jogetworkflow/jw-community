@@ -24,7 +24,9 @@ var AppCenter = {
                 $this.change(); 
             }, 50);
         }); 
-        $(input).focus();
+        if(!UI.isMobileUserAgent()) {
+            $(input).focus();
+        }
     },
     designApp: function(event,appId, appVersion, userviewId) {
         AdminBar.showQuickOverlay(UI.base + "/web/console/app/" + appId + "/" + appVersion + "/forms");
