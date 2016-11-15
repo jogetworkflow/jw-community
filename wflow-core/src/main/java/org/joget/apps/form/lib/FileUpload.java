@@ -6,8 +6,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -161,9 +163,20 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
     @Override
     public FormRowSet formatData(FormData formData) {
         FormRowSet rowSet = null;
+        
+        String id = getPropertyString(FormUtil.PROPERTY_ID);
+        
+        Set<String> remove = null;
+        if ("true".equals(getPropertyString("removeFile"))) {
+            remove = new HashSet<String>();
+            Form form = FormUtil.findRootForm(this);
+            String originalValues = formData.getLoadBinderDataProperty(form, id);
+            if (originalValues != null) {
+                remove.addAll(Arrays.asList(originalValues.split(";")));
+            }
+        }
 
         // get value
-        String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String[] values = FormUtil.getElementPropertyValues(this, formData);
             if (values != null && values.length > 0) {
@@ -178,14 +191,20 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                     if (file != null) {
                         filePaths.add(value);
                         resultedValue.add(file.getName());
-
                     } else {
+                        if (remove != null && !value.isEmpty()) {
+                            remove.remove(value);
+                        }
                         resultedValue.add(value);
                     }
                 }
                 
                 if (!filePaths.isEmpty()) {
                     result.putTempFilePath(id, filePaths.toArray(new String[]{}));
+                }
+                
+                if (remove != null) {
+                    result.putDeleteFilePath(id, remove.toArray(new String[]{}));
                 }
                 
                 // formulate values

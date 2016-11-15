@@ -71,6 +71,12 @@ public class FileUtil implements ApplicationContextAware {
                     for (Iterator<String> j = tempFilePathMap.keySet().iterator(); j.hasNext();) {
                         String fieldId = j.next();
                         String[] paths = tempFilePathMap.get(fieldId);
+                        
+                        //if field id exist in deleteFilePath, do not need to update file name
+                        if (row.getDeleteFilePaths(fieldId) != null) {
+                            continue;
+                        }
+                        
                         List<String> newPaths = new ArrayList<String>();
                         
                         for (String path : paths) {
@@ -184,6 +190,32 @@ public class FileUtil implements ApplicationContextAware {
     public static void storeFileFromFormRowSet(FormRowSet results, String tableName, String primaryKeyValue) {
         for (FormRow row : results) {
             String id = row.getId();
+            
+            //delete files
+            Map<String, String[]> deleteFilePathMap = row.getDeleteFilePathMap();
+            if (deleteFilePathMap != null && !deleteFilePathMap.isEmpty()) {
+                for (String fieldId : deleteFilePathMap.keySet()) {
+                    String[] paths = deleteFilePathMap.get(fieldId);
+                    for (String path : paths) {
+                        if (!path.isEmpty()) {
+                            try {
+                                File file = FileUtil.getFile(path, tableName, primaryKeyValue);
+                                if (file != null) {
+                                    File thumb = FileUtil.getFile(path + FileManager.THUMBNAIL_EXT, tableName, primaryKeyValue);
+                                    if (thumb != null) {
+                                        thumb.delete();
+                                    }
+                                    
+                                    file.delete();
+                                }
+                            } catch (Exception e) {
+                                LogUtil.error(FileUtil.class.getName(), e, path);
+                            }
+                        }
+                    }
+                }
+            }
+            
             Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
             if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
                 for (String fieldId : tempFilePathMap.keySet()) {

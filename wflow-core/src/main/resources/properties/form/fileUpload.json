@@ -54,6 +54,16 @@
         value : '@@form.fileupload.fileType.msg.invalidFileType@@'
     },
     {
+        name : 'removeFile',
+        label : '@@form.fileupload.removeFile@@',
+        type : 'checkbox',
+        value : 'false',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         label : '@@form.section.permission@@',
         type : 'header'
     },

@@ -14,6 +14,7 @@ import org.joget.commons.util.TimeZoneUtil;
  */
 public class FormRow extends Properties {
     Map<String, String[]> tempFilePathMap;
+    Map<String, String[]> deleteFilePathMap;
 
     public FormRow() {
         super();
@@ -150,6 +151,45 @@ public class FormRow extends Properties {
         return null;
     }
     
+    public Map<String, String[]> getDeleteFilePathMap() {
+        return deleteFilePathMap;
+    }
+    
+    public void setDeleteFilePathMap(Map<String, String[]> deleteFilePathMap) {
+        this.deleteFilePathMap = deleteFilePathMap;
+    }
+    
+    public void putDeleteFilePath(String fieldId, String path) {
+        if (deleteFilePathMap == null) {
+            deleteFilePathMap = new HashMap<String, String[]>();
+        }
+        deleteFilePathMap.put(fieldId, new String[]{path});
+    }
+    
+    public void putDeleteFilePath(String fieldId, String[] path) {
+        if (deleteFilePathMap == null) {
+            deleteFilePathMap = new HashMap<String, String[]>();
+        }
+        deleteFilePathMap.put(fieldId, path);
+    }
+    
+    public String[] getDeleteFilePaths(String fieldId) {
+        if (deleteFilePathMap != null) {
+            return deleteFilePathMap.get(fieldId);
+        }
+        return null;
+    }
+    
+    public String getDeleteFilePath(String fieldId) {
+        if (deleteFilePathMap != null) {
+            String[] paths = deleteFilePathMap.get(fieldId);
+            if (paths != null && paths.length > 0) {
+                return paths[0];
+            }
+        }
+        return null;
+    }
+    
     public void putAll(FormRow row) {
         super.putAll(row);
         Map files = row.getTempFilePathMap();
@@ -158,6 +198,13 @@ public class FormRow extends Properties {
                 tempFilePathMap = new HashMap<String, String[]>();
             }
             tempFilePathMap.putAll(files);
+        }
+        Map deleteFiles = row.getDeleteFilePathMap();
+        if (deleteFiles != null && !deleteFiles.isEmpty()) {
+            if (deleteFilePathMap == null) {
+                deleteFilePathMap = new HashMap<String, String[]>();
+            }
+            deleteFilePathMap.putAll(deleteFiles);
         }
     }
     
