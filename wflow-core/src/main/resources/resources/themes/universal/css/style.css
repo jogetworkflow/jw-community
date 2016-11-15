@@ -36,7 +36,7 @@ header.navbar {
     width: 100%;
     left: 0;
     top: 0;
-    padding: 0 20px;
+    padding: 0 0px;
     -webkit-touch-callout: none;
     border-radius: 0;
 }
@@ -81,7 +81,7 @@ div#header-name img {
 .hi-trigger {
     position: relative;
     cursor: pointer;
-    margin-left: -5px;
+    margin-left: -20px;
     display: none;
     padding: 15px 0;
 }
@@ -376,7 +376,7 @@ ul#category-container {
 
 @media (max-width:767px) {
     header.navbar {
-        padding: 0 8px;
+        padding: 0 0 0 8px;
         max-height: 65px;
     }
     #header-info {
@@ -400,7 +400,7 @@ ul#category-container {
         padding: 14px 20px 14px 65px;
     }
     header.navbar .header-nav {
-        max-width: 10%;
+        max-width: 15%;
         overflow: hidden;
         height: 53px;
     }
