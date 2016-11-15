@@ -467,8 +467,6 @@ body#login #page #content {
 }
 
 body#login #page > footer {
-    position:absolute;
-    bottom: 0;
     width: 100%;
 }
 
