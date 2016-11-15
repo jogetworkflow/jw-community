@@ -36,7 +36,9 @@ _customFooTableArgs = {
                 if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
                     $(".ma-backdrop").trigger("click");
                 }
-            }
+            },
+            preventDefaultEvents: false,
+            fallbackToMouseEvents: false,
         });
 
         var toogleMenu = function(menu) {

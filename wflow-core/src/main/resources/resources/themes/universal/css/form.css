@@ -370,6 +370,12 @@ body .editor-cell select:not([class^="ui-"]) {
   -webkit-border-radius: 0px;
 }
 
+body select:not([class^="ui-"]) option,
+body .editor-cell select:not([class^="ui-"]) option {
+    color: #000;
+    background: #fff;
+}
+
 body .filter-cell select:not([class^="ui-"]){
   padding-right: 30px;
 }
