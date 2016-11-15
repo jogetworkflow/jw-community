@@ -275,10 +275,14 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
     opacity: 0.7;
 }
 #builder-bar .controls {
-    display:inline-block;
-    margin-left:20px;
+    display: inline-block;
+    margin-left: 20px;
     position: relative;
-    top:-18px;
+    top: -18px;
+    background: white;
+    opacity: 0.9;
+    padding: 2px;
+    border-radius: 4px;
 }
 
 #builder-bar .controls a{
