@@ -208,6 +208,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
 
         jsCssLink += "<script src=\"" + data.get("context_path") + "/js/bootstrap3/js/bootstrap.min.js\"></script>\n";
         jsCssLink += "<script src=\"" + path + "/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js\"></script>\n";
+        jsCssLink += "<script src=\"" + path + "/lib/touchSwipe/jquery.touchSwipe.min.js\"></script>\n";
         jsCssLink += "<script src=\"" + path + "/lib/waves/waves.min.js\"></script>\n";
         
         if (enableResponsiveSwitch()) {

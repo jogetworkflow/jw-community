@@ -24,6 +24,20 @@ _customFooTableArgs = {
             $(this).addClass("pull-right badge");
         });
         loadInbox();
+        
+        $("body").swipe( {
+            swipeRight:function(event, direction, distance, duration, fingerCount, fingerData) {
+                var posx = fingerData[0]['start']['x'];
+                if ($(".hi-trigger").is(":visible") && !$("body").hasClass("sidebar-toggled") && posx < 20) {
+                    $(".hi-trigger").trigger("click");
+                }
+            },
+            swipeLeft:function(event, direction, distance, duration, fingerCount) {
+                if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
+                    $(".ma-backdrop").trigger("click");
+                }
+            }
+        });
 
         var toogleMenu = function(menu) {
             if ($(menu).parent().css("display") !== "inline-block") {
