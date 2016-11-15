@@ -61,18 +61,43 @@ _customFooTableArgs = {
         };
         initMenu();
         
+        //open menu
+        var originalHash = '';
         $("#sidebar-trigger").on("click", function(){
+            originalHash = location.hash.replace('#','');
+            
+            //close menu on back
+            $(window).bind('hashchange.menu',function(event){
+                var hash = location.hash.replace('#','');
+                
+                if(hash !== 'menu' && $(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
+                    $(".ma-backdrop").trigger("click");
+                }
+            });
+            
+            //close menu on touch any place other than menu
+            $("body").on("click.sidebar-toggled", function(e) {
+                var container = $("#sidebar");
+                
+                if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") 
+                        && !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 
+                        && !container.is(e.target) && container.has(e.target).length === 0) {
+                    $("body").removeClass("sidebar-toggled");
+                    $(".ma-backdrop").remove();
+                    $("#sidebar, #sidebar-trigger").removeClass("toggled");
+                    $("body").off(".sidebar-toggled");
+                    $(window).unbind('hashchange.menu');
+                    location.hash = originalHash;
+                    return false;
+                }
+            });
+            
             var backdrop = '<div class="ma-backdrop" />';
             $("body").addClass("sidebar-toggled");
             $("header.navbar").append(backdrop);
             $(this).addClass("toggled");
             $("#sidebar").addClass("toggled");
-            
-            $(".ma-backdrop").on("click", function(){
-                $("body").removeClass("sidebar-toggled");
-                $(".ma-backdrop").remove();
-                $("#sidebar, #sidebar-trigger").removeClass("toggled");
-            });
+            location.hash = 'menu';
         });
 
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
