@@ -11,7 +11,10 @@
             </#if>
         <#else>
             <label>
-                <input grouping="${option.grouping!?html}" id="${elementParamName!}" name="${elementParamName!}" type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>  onclick="return false" </#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
+                <#if element.properties.readonly! == 'true' && values?? && values?seq_contains(option.value!)>
+                    <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!?html}" />
+                </#if>
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}" name="${elementParamName!}"</#if> type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
                 ${option.label!?html}
             </label>
         </#if>
