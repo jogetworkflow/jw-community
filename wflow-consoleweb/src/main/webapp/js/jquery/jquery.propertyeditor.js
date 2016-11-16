@@ -3193,6 +3193,61 @@ PropertyEditor.Type.ElementSelect.prototype = {
 };
 PropertyEditor.Type.ElementSelect = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.ElementSelect.prototype);
 
+PropertyEditor.Type.AutoComplete = function(){};
+PropertyEditor.Type.AutoComplete.prototype = {
+    shortname : "autocomplete",
+    source : [],
+    renderField: function() {
+        var size = '';
+        if(this.value === null){
+            this.value = "";
+        }
+        if(this.properties.size !== undefined && this.properties.size !== null){
+            size = ' size="'+ this.properties.size +'"';
+        } else {
+            size = ' size="50"';
+        }
+        var maxlength = '';
+        if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
+            maxlength = ' maxlength="'+ this.properties.maxlength +'"';
+        }
+        
+        PropertyEditor.Util.retrieveOptionsFromCallback(this.properties);
+        this.updateSource();
+        
+        return '<input type="text" class="autocomplete" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
+    },
+    handleAjaxOptions: function(options, reference) {
+        this.properties.options = options;
+        this.updateSource();
+    },
+    updateSource: function() {
+        var thisObj = this;
+        this.source = [];
+        if (this.properties.options !== undefined) {
+            $.each(this.properties.options, function(i, option){
+                if (option['value'] !== "" && $.inArray(option['value'], thisObj.source) === -1) {
+                    thisObj.source.push(option['value']);
+                }
+            });
+        }
+        this.source.sort();
+        $("#"+this.id).autocomplete("option", "source", this.source);
+    },
+    initScripting: function () {
+        var thisObj = this;
+        $("#"+this.id).autocomplete({
+            source : thisObj.source, 
+            minLength : 0,
+            open: function(){
+                $(this).autocomplete('widget').css('z-index', 99999);
+                return false;
+            }
+        });
+    }
+};
+PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.AutoComplete.prototype);
+
 (function($) {
     $.fn.extend({
         propertyEditor : function(options){
