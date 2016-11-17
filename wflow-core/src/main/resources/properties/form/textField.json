@@ -45,6 +45,11 @@
         type : 'header'
     },
     {
+        name : 'placeholder',
+        label : '@@form.textfield.placeholder@@',
+        type : 'textfield'
+    },
+    {
         name : 'size',
         label : '@@form.textfield.size@@',
         type : 'textfield'

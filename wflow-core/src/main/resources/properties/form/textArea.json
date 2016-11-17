@@ -39,6 +39,11 @@
         type : 'header'
     },
     {
+        name : 'placeholder',
+        label : '@@form.textfield.placeholder@@',
+        type : 'textfield'
+    },
+    {
         name : 'cols',
         label : '@@form.textarea.cols@@',
         type : 'textfield',

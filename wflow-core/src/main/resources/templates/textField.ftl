@@ -4,6 +4,6 @@
         <div class="form-cell-value"><span>${value!?html}</span></div>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>
-        <input id="${elementParamName!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" maxlength="${element.properties.maxlength!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+        <input id="${elementParamName!}" name="${elementParamName!}" type="text" placeholder="${element.properties.placeholder!}" size="${element.properties.size!}" value="${value!?html}" maxlength="${element.properties.maxlength!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
     </#if>
 </div>
