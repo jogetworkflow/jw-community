@@ -117,6 +117,17 @@ DatalistBuilder = {
             $(obj).mouseout(function() {
                 $(optionDiv).css("visibility", "hidden");
             });
+            $(obj).on("click", function() {
+                if ($(optionDiv).css("visibility") === "visible") {
+                    $(optionDiv).css("visibility", "hidden");
+                } else {
+                    if ($(obj).children().length > 0) {
+                        var $family = $(obj).find("*");
+                        $(".form-palette-options").not($family).css("visibility", "hidden");
+                    }
+                    $(optionDiv).css("visibility", "visible");
+                }
+            });
         });
     },
     
@@ -711,6 +722,17 @@ DatalistBuilder = {
         $(obj).mouseout(function() {
             $(optionDiv).css("visibility", "hidden");
         });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("visibility") === "visible") {
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".form-palette-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("visibility", "visible");
+            }
+        });
     },
 
     decorateAction : function(columnId){
@@ -760,6 +782,17 @@ DatalistBuilder = {
         });
         $(obj).mouseout(function() {
             $(optionDiv).css("visibility", "hidden");
+        });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("visibility") === "visible") {
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".form-palette-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("visibility", "visible");
+            }
         });
     },
 
@@ -811,6 +844,17 @@ DatalistBuilder = {
         $(obj).mouseout(function() {
             $(optionDiv).css("visibility", "hidden");
         });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("visibility") === "visible") {
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".form-palette-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("visibility", "visible");
+            }
+        });
     },
 
     decorateColumn : function(columnId){
@@ -853,6 +897,17 @@ DatalistBuilder = {
         });
         $(obj).mouseout(function() {
             $(optionDiv).css("visibility", "hidden");
+        });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("visibility") === "visible") {
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".form-palette-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("visibility", "visible");
+            }
         });
     },
 

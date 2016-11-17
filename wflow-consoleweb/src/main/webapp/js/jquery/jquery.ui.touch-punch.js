@@ -128,7 +128,7 @@
     simulateMouseEvent(event, 'mouseout');
 
     // If the touch interaction did not move (much), it should trigger a click
-    if (this._touchMoved<=5) {  // CUSTOM: improved click detection
+    if (!this._touchMoved || this._touchMoved<=5) {  // CUSTOM: improved click detection
 
       // Simulate the click event
       simulateMouseEvent(event, 'click');

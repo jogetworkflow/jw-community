@@ -797,6 +797,20 @@ UserviewBuilder = {
             $(optionDiv).css("display", "none");
             $(optionDiv).css("visibility", "hidden");
         });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("display") === "block") {
+                $(optionDiv).css("display", "none");
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".element-options").not($family).css("display", "none");
+                    $(".element-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("display", "block");
+                $(optionDiv).css("visibility", "visible");
+            }
+        });
     },
 
     //Undo the changes from stack

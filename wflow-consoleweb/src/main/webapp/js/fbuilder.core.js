@@ -528,6 +528,20 @@ FormBuilder = {
             $(optionDiv).css("display", "none");
             $(optionDiv).css("visibility", "hidden");
         });
+        $(obj).on("click", function() {
+            if ($(optionDiv).css("display") === "block") {
+                $(optionDiv).css("display", "none");
+                $(optionDiv).css("visibility", "hidden");
+            } else {
+                if ($(obj).children().length > 0) {
+                    var $family = $(obj).find("*");
+                    $(".form-palette-options").not($family).css("display", "none");
+                    $(".form-palette-options").not($family).css("visibility", "hidden");
+                }
+                $(optionDiv).css("display", "block");
+                $(optionDiv).css("visibility", "visible");
+            }
+        });
 
     },
 
