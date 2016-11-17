@@ -80,6 +80,8 @@
 .single-page .property-editor-page-title{
     padding:8px 10px;
     font-size: 16px;
+    display:block;
+    position: relative;
 }
 
 .single-page .property-editor-pages .property-editor-page-step-indicator,
@@ -142,6 +144,8 @@
     height:auto !important;
     border-bottom:0;
     overflow:visible;
+    display: block;
+    position: relative;
 }
 
 .property-editor-property-container .property-editor-page-buffer {
