@@ -3355,7 +3355,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/columns/options")
-    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tables", required = false) String tables) throws IOException, JSONException {
+    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tableName", required = false) String formTable, @RequestParam(value = "tables", required = false) String tables) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         JSONArray jsonArray = new JSONArray();
@@ -3365,8 +3365,13 @@ public class ConsoleWebController {
         jsonArray.put(blank);
         
         try {
-            String tableName = appService.getFormTableName(appDef, formDefId);
-            populateColumns(jsonArray, tableName, false);
+            if (formDefId != null) {
+                String tableName = appService.getFormTableName(appDef, formDefId);
+                populateColumns(jsonArray, tableName, false);
+            }
+            if (formTable != null) {
+                populateColumns(jsonArray, formTable, false);
+            }
             
             if (tables != null && !tables.isEmpty()) {
                 for (String t : tables.split(";")) {

@@ -17,10 +17,12 @@
             {
                 name:'tableName',
                 label:'@@form.form.tableName@@',
-                type:'textfield',
+                type:'autocomplete',
                 required:'True',
                 regex_validation : '^[a-zA-Z0-9_]{1,20}$',
-                validation_message : '@@form.form.invalidId@@'
+                validation_message : '@@form.form.invalidId@@',
+                options_ajax : '[CONTEXT_PATH]/web/json/console/app/testAPI/1/form/tableNameList',
+                options_ajax_mapping: {arrayObj: 'tableName', value: '', label: ''}
             },
             {
                 name:'description',

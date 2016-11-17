@@ -3,10 +3,11 @@
     properties : [{
         name : 'id',
         label : '@@form.textarea.id@@',
-        type : 'textfield',
+        type : 'autocomplete',
         required : 'True',
         regex_validation : '^[a-zA-Z0-9_]+$',
-        validation_message : '@@form.textarea.invalidId@@'
+        validation_message : '@@form.textarea.invalidId@@',
+        options_callback : 'FormBuilder.getAllFieldOptions'
     },
     {
         name : 'label',
@@ -76,7 +77,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.textarea.workflowVariable@@',
-        type : 'selectbox',
+        type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]

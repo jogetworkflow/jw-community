@@ -3,10 +3,11 @@
     properties : [{
         name : 'id',
         label : '@@form.hiddenfield.id@@',
-        type : 'textfield',
+        type : 'autocomplete',
         required : 'True',
         regex_validation : '^[a-zA-Z0-9_]+$',
-        validation_message : '@@form.hiddenfield.invalidId@@'
+        validation_message : '@@form.hiddenfield.invalidId@@',
+        options_callback : 'FormBuilder.getAllFieldOptions'
     },
     {
         name : 'value',
@@ -46,7 +47,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.hiddenfield.workflowVariable@@',
-        type : 'selectbox',
+        type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]

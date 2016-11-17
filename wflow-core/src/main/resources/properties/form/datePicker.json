@@ -3,10 +3,11 @@
     properties : [{
         name : 'id',
         label : '@@form.datepicker.id@@',
-        type : 'textfield',
+        type : 'autocomplete',
         required : 'True',
         regex_validation : '^[a-zA-Z0-9_]+$',
-        validation_message : '@@form.datepicker.invalidId@@'
+        validation_message : '@@form.datepicker.invalidId@@',
+        options_callback : 'FormBuilder.getAllFieldOptions'
     },
     {
         name : 'label',
@@ -127,7 +128,7 @@
     {
         name : 'workflowVariable',
         label : '@@form.datepicker.workflowVariable@@',
-        type : 'selectbox',
+        type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
     }]
 }]

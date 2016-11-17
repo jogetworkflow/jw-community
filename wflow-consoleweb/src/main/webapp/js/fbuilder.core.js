@@ -11,6 +11,7 @@ FormBuilder = {
     appId: "",
     appVersion: "",
     formId: "",
+    existingFields: [],
     
     //undo & redo feature
     tempJson : '',
@@ -174,6 +175,9 @@ FormBuilder = {
         if (id) {
             form.dom.properties.id = id;
         }
+        
+        //retrieve existing field ids
+        FormBuilder.retrieveExistingFieldIds();
     },
 
     initSectionsAndColumns: function() {
@@ -937,6 +941,9 @@ FormBuilder = {
                 FormBuilder.addToUndo();
                 // update form properties
                 FormBuilder.updateElementProperties(form, properties);
+                
+                //retrieve existing fields
+                FormBuilder.retrieveExistingFieldIds();
 
                 // change to design tab
                 $("#builder-step-design").trigger("click");
@@ -973,6 +980,9 @@ FormBuilder = {
 
                 // update element properties
                 FormBuilder.updateElementProperties(form, properties);
+                
+                //retrieve existing fields
+                FormBuilder.retrieveExistingFieldIds();
                 
                 // change to design tab
                 $("#builder-step-design").trigger("click");
@@ -1285,6 +1295,25 @@ FormBuilder = {
         FormBuilder.merge(FormBuilder.saveForm);
     },
     
+    retrieveExistingFieldIds : function() {
+        var form = $(".form-container")[0];
+        var tableName = form.dom.properties['tableName'];
+        
+        $.ajax({
+            url: FormBuilder.contextPath + '/web/json/console/app/'+FormBuilder.appId+'/'+FormBuilder.appVersion+'/form/columns/options?tableName='+tableName,
+            dataType: "text",
+            success: function(data) {
+                if(data !== undefined && data !== null){
+                    var options = $.parseJSON(data);
+                    FormBuilder.existingFields = [];
+                    for (var o in options) {
+                        FormBuilder.existingFields.push(options[o]['value']);
+                    }
+                }
+            }
+        });
+    },
+    
     getFieldIds : function(includeGridColumn) {
         var ids = [];
         $(".form-column .form-cell").each(function(){
@@ -1296,15 +1325,34 @@ FormBuilder = {
                 var fieldId = property['id'];
                 for (var i in property['options']) {
                     var c = property['options'][i]['value'];
-                    if (c !== undefined && c !== "") {
+                    if (c !== undefined && c !== "" && ids[fieldId + "." + c] === undefined) {
                         ids.push(fieldId + "." + c);
                     }
                 }
-            } else if(property['id'] !== undefined && property['id'] !== "") {
+            } else if(property['id'] !== undefined && property['id'] !== "" && $.inArray(property['id'], ids) === -1) {
                 ids.push(property['id']);
             }
-        })
+        });
         return ids;
+    },
+    
+    getAllFieldOptions: function(properties) {
+        //populate list items
+        var tempArray = [{'label':'','value':''}];
+        var ids = FormBuilder.getFieldIds(false);
+        
+        for (var i in FormBuilder.existingFields) {
+            if($.inArray(FormBuilder.existingFields[i], ids) === -1) {
+                ids.push(FormBuilder.existingFields[i]);
+            }
+        }
+        
+        for(var i in ids){
+            var temp = {'label' : ids[i],
+                         'value' : ids[i]};
+            tempArray.push(temp);
+        }
+        return tempArray;
     },
     
     getFieldOptions: function(properties) {
