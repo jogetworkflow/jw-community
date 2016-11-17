@@ -83,5 +83,67 @@
         label : '@@form.textfield.workflowVariable@@',
         type : 'autocomplete',
         options_ajax : '[CONTEXT_PATH]/web/json/console/app[APP_PATH]/workflowVariable/options'
+    },
+    {
+        label : '@@form.textfield.numberFormatting@@',
+        type : 'header'
+    },
+    {
+        name : 'style',
+        label : '@@form.textfield.style@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : '',
+            label : ''
+        },
+        {
+            value : 'us',
+            label : '@@form.textfield.format.us@@'
+        },
+        {
+            value : 'euro',
+            label : '@@form.textfield.format.euro@@'
+        }]
+    },
+    {
+        name : 'numOfDecimal',
+        label : '@@form.textfield.numOfDecimal@@',
+        type : 'textfield',
+        required : 'True',
+        value : '2',
+        regex_validation : '^[0-9]+$',
+        validation_message : '@@form.textfield.invalidNumOfDecimal@@',
+        control_field: 'style',
+        control_value: 'us|euro',
+        control_use_regex: 'true'
+    },
+    {
+        name : 'prefix',
+        label : '@@form.textfield.prefix@@',
+        type : 'textfield',
+        control_field: 'style',
+        control_value: 'us|euro',
+        control_use_regex: 'true'
+    },
+    {
+        name : 'postfix',
+        label : '@@form.textfield.postfix@@',
+        type : 'textfield',
+        control_field: 'style',
+        control_value: 'us|euro',
+        control_use_regex: 'true'
+    },
+    {
+        name : 'useThousandSeparator',
+        label : '@@form.textfield.useThousandSeparator@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }],
+        control_field: 'style',
+        control_value: 'us|euro',
+        control_use_regex: 'true'
     }]
 }]

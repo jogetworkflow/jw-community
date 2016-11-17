@@ -127,6 +127,76 @@ FormUtil = {
         }
         
         return queryString;
+    },
+    
+    numberFormat : function (value, options){
+        var numOfDecimal = parseInt(options.numOfDecimal);
+        var decimalSeperator = ".";
+        var thousandSeparator = ",";
+        if(options.format.toUpperCase() === "EURO"){
+            decimalSeperator = ",";
+            thousandSeparator = ".";
+        }
+        
+        var number = value.replace(/\s/g, "");
+        number = number.replace(new RegExp(thousandSeparator, 'g'), '');
+        if(options.prefix !== ""){
+            number = number.replace(options.prefix, "");
+        }
+        if(options.postfix !== ""){
+            number = number.replace(options.postfix, "");
+        }
+                
+        var exponent = "";
+        if (!isFinite(number)) {
+            number = 0;
+        } else {
+            var numberstr = value.toString();
+            var eindex = numberstr.indexOf("e");
+            if (eindex > -1){
+                exponent = numberstr.substring(eindex);
+                number = parseFloat(numberstr.substring(0, eindex));
+            }
+
+            if (numOfDecimal !== null){
+                var temp = Math.pow(10, numOfDecimal);
+                number = Math.round(number * temp) / temp;
+            }
+        }
+        
+        var sign = number < 0 ? "-" : "";
+        
+        var integer = (number > 0 ? Math.floor (number) : Math.abs (Math.ceil (number))).toString ();
+        var fractional = number.toString ().substring (integer.length + sign.length);
+        fractional = numOfDecimal !== null && numOfDecimal > 0 || fractional.length > 1 ? (decimalSeperator + fractional.substring (1)) : "";
+        if(numOfDecimal !== null && numOfDecimal > 0){
+            for (i = fractional.length - 1, z = numOfDecimal; i < z; ++i){
+                fractional += "0";
+            }
+        }
+        
+        if(options.useThousandSeparator.toUpperCase() === "TRUE"){
+            for (i = integer.length - 3; i > 0; i -= 3){
+                integer = integer.substring (0 , i) + thousandSeparator + integer.substring (i);
+            }
+        }
+        
+        var resultString = "";
+        if(sign !== ""){
+            resultString += sign;
+        }
+        if(options.prefix !== ""){
+            resultString += options.prefix + ' ';
+        }
+        resultString += integer + fractional;
+        if(exponent !== ""){
+            resultString += ' ' + exponent;
+        }
+        if(options.postfix !== ""){
+            resultString += ' ' + options.postfix;
+        }
+        
+        return  resultString;
     }
 }
 
