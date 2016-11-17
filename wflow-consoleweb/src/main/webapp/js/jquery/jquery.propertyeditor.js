@@ -318,6 +318,10 @@ PropertyEditor.Util = {
         }
     },
     getValueFromObject: function (obj, name) {
+        if ($.type(obj) === "string") {
+            return obj;
+        }
+        
         try {
             var parts = name.split(".");
             var value = null;
