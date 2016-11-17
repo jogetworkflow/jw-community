@@ -1201,7 +1201,7 @@ ProcessBuilder.Actions = {
         var propertyOptions = model.propertyOptions();
         if (propertyOptions) {
             if (!ProcessBuilder.Actions.propertyEditor) {
-                ProcessBuilder.Actions.propertyEditor = new Boxy('<div class="property-editor"></div>', {title:'&nbsp;', closeable:false, draggable:true, show:false, fixed:false});
+                ProcessBuilder.Actions.propertyEditor = new Boxy('<div class="property-editor"></div>', {title:'&nbsp;', closeable:true, draggable:true, show:false, fixed:false});
             }
             var saveCallback = function(container, properties) {
                 ProcessBuilder.Actions.execute(function() {
