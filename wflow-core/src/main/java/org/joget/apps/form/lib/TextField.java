@@ -10,6 +10,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 
 public class TextField extends Element implements FormBuilderPaletteElement {
 
@@ -43,6 +44,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
         return html;
     }
     
+    @Override
     public FormRowSet formatData(FormData formData) {
         FormRowSet rowSet = null;
 
@@ -51,6 +53,17 @@ public class TextField extends Element implements FormBuilderPaletteElement {
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (value != null) {
+                
+                if ("true".equalsIgnoreCase(getPropertyString("storeNumeric")) && !getPropertyString("style").isEmpty()) {
+                    value = value.replaceAll(" ", "");
+                    if ("EURO".equalsIgnoreCase(getPropertyString("style"))) {
+                        value = value.replaceAll(StringUtil.escapeRegex("."), "");
+                    } else {
+                        value = value.replaceAll(StringUtil.escapeRegex(","), "");
+                    }
+                    value = value.replaceAll(StringUtil.escapeRegex(getPropertyString("prefix")), "");
+                    value = value.replaceAll(StringUtil.escapeRegex(getPropertyString("postfix")), "");
+                }
                 
                 if ("true".equalsIgnoreCase(getPropertyString("encryption"))) {
                     value = SecurityUtil.encrypt(value);

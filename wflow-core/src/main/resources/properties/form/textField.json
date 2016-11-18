@@ -145,5 +145,15 @@
         control_field: 'style',
         control_value: 'us|euro',
         control_use_regex: 'true'
+    },
+    {
+        name : 'storeNumeric',
+        label : '@@form.textfield.storeNumeric@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]
