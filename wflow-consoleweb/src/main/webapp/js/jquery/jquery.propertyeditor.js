@@ -87,6 +87,14 @@ PropertyEditor.Util = {
                     }
                 }catch (e) {}
             }
+            if (properties.options_extra !== undefined && properties.options_extra !== null) {
+                var options = properties.options_extra;
+                if (properties.options !== undefined) {
+                    properties.options = options.concat(properties.options);
+                } else {
+                    properties.options = options;
+                }
+            }
         } catch (err) {};
     },
     replaceContextPath: function (string, contextPath){
@@ -150,7 +158,7 @@ PropertyEditor.Util = {
             });
         }
     },
-    handleOptionsField: function (field, reference, ajax_url, on_change, mapping, method) {
+    handleOptionsField: function (field, reference, ajax_url, on_change, mapping, method, extra) {
         if (field !== null && field !== undefined && (ajax_url === undefined || ajax_url === null)) {
             ajax_url = field.properties.options_ajax;
         }
@@ -163,14 +171,17 @@ PropertyEditor.Util = {
         if (field !== null && field !== undefined && (method === undefined || method === null)) {
             method = field.properties.options_ajax_method;
         }
+        if (field !== null && field !== undefined && (extra === undefined || extra === null)) {
+            extra = field.properties.options_extra;
+        }
         if (field !== null && field !== undefined && ajax_url !== undefined && ajax_url !== null) {
-            PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method);
+            PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
             if(on_change !== undefined && on_change !== null){
-                PropertyEditor.Util.fieldOnChange(field, reference, ajax_url, on_change, mapping, method);
+                PropertyEditor.Util.fieldOnChange(field, reference, ajax_url, on_change, mapping, method, extra);
             }
         }
     },
-    callLoadOptionsAjax: function (field, reference, ajax_url, on_change, mapping, method) {
+    callLoadOptionsAjax: function (field, reference, ajax_url, on_change, mapping, method, extra) {
         var ajaxUrl = PropertyEditor.Util.replaceContextPath(ajax_url, field.options.contextPath);
         if(on_change !== undefined && on_change !== null){
             var onChanges = on_change.split(";");
@@ -263,6 +274,7 @@ PropertyEditor.Util = {
                         var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
                         for (var i in calls) {
                             var tempOptions = options;
+                            
                             if (calls[i].mapping !== undefined) {
                                 if (calls[i].mapping.arrayObj !== undefined) {
                                     tempOptions = PropertyEditor.Util.getValueFromObject(tempOptions, calls[i].mapping.arrayObj);
@@ -285,6 +297,14 @@ PropertyEditor.Util = {
                                     }
                                 }
                                 tempOptions = newOptions;
+                            }
+                            
+                            if (extra !== undefined && extra !== null) {
+                                if (tempOptions !== undefined) {
+                                    tempOptions = extra.concat(tempOptions);
+                                } else {
+                                    tempOptions = extra;
+                                }
                             }
 
                             calls[i].field.handleAjaxOptions(tempOptions, calls[i].reference);
@@ -2340,7 +2360,7 @@ PropertyEditor.Type.Grid.prototype = {
         
         $.each(grid.properties.columns, function(i, column) {
             if (column.options_ajax !== undefined && column.options_ajax !== null) {
-                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method);
+                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method, column.options_extra);
             }
         });
     },
@@ -2786,7 +2806,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         
         $.each(grid.properties.columns, function(i, column) {
             if (column.options_ajax !== undefined && column.options_ajax !== null) {
-                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method);
+                PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method, column.options_extra);
             }
         });
     },
