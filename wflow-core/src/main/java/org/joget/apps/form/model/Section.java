@@ -1,12 +1,20 @@
 package org.joget.apps.form.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.LogUtil;
+import org.json.JSONObject;
+import org.mozilla.javascript.Scriptable;
 
 public class Section extends Element implements FormBuilderEditable, FormContainer {
     private Boolean continueValidation = null;
+    private Collection<Map<String, String>> rules = null;
+    private Map<String, Element> elements = new HashMap<String, Element>();
 
     @Override
     public String getName() {
@@ -28,18 +36,22 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             String template = "section.ftl";
 
-            // set visibility attributes - currently working for textfield, textarea and selectbox. TODO: ensure it works for checkbox and radio.
-            String visibilityControl = getPropertyString("visibilityControl");
-            if (visibilityControl != null && !visibilityControl.isEmpty()) {
-                Form rootForm = FormUtil.findRootForm(this);
-                Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
-                if (controlElement != null) {
-                    String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
-                    dataModel.put("visibilityControlParam", visibilityControlParam);
-                }
-            }
+            if (!(dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty())) {
+                if (!getRules(formData).isEmpty()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("rules", rules);
 
-            dataModel.put("visible", isMatch(formData));
+                        String json = jsonObject.toString();
+                        dataModel.put("rules", json);
+                    } catch (Exception e) {
+                        LogUtil.error(Section.class.getName(), e, "Not able to retrieve visibility control rules");
+                    }
+                }
+                dataModel.put("visible", isMatch(formData));
+            } else {
+                dataModel.put("visible", true);
+            }   
 
             String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
             return html;
@@ -92,42 +104,118 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         return null;
     }
     
-    protected Boolean isMatch(FormData formData) {
-        // get the control element (where value changes the target)
-        String visibilityControl = getPropertyString("visibilityControl");
-
-        // get the value in the control element which will trigger the change
-        String visibilityValue = getPropertyString("visibilityValue");
-        
-        String isRegex = getPropertyString("regex");
-        
-        if (visibilityControl != null && !visibilityControl.isEmpty() && visibilityValue != null && !visibilityValue.isEmpty()) {
-            // find the control element
-            Form rootForm = FormUtil.findRootForm(this);
-            Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
-            if (controlElement != null) {
-                // check for matching values
-                String[] paramValue = FormUtil.getElementPropertyValues(controlElement, formData);
+    protected Collection<Map<String, String>> getRules(FormData formData) {
+        if (rules == null) {
+            rules = new ArrayList<Map<String, String>>();
+            
+            String[] fields = getPropertyString("visibilityControl").split(";", -1);
+            String[] values = getPropertyString("visibilityValue").split(";", -1);
+            String[] regex = getPropertyString("regex").split(";", -1);
+            String[] joins = getPropertyString("join").split(";", -1);
+            String[] reverses = getPropertyString("reverse").split(";", -1);
+            
+            if (fields.length > 0) {
+                Form rootForm = FormUtil.findRootForm(this);
                 
-                if (paramValue != null) {
-                    for (String value : paramValue) {
-                        if (isRegex != null && "true".equals(isRegex)) {
-                            try {
-                                if (value.matches(StringEscapeUtils.unescapeJavaScript(visibilityValue))) {
-                                    return true;
-                                }
-                            } catch (Exception e){}
+                for (int i = 0; i < fields.length; i++) {
+                    if (fields[i].isEmpty()) {
+                        continue;
+                    }
+                    
+                    Map<String, String> rule = new HashMap<String, String>();
+                    rule.put("join", joins[i]);
+                    rule.put("reverse", reverses[i]);
+                    rule.put("value", values[i]);
+                    rule.put("regex", regex[i]);
+                    if (!fields[i].equals("(") && !fields[i].equals(")")) {
+                        Element controlElement = FormUtil.findElement(fields[i], rootForm, formData);
+                        if (controlElement != null) {
+                            String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
+                            rule.put("field", visibilityControlParam);
+                            elements.put(visibilityControlParam, controlElement);
+                        }
+                    } else {
+                        rule.put("field", fields[i]);
+                    }
+                    if (rule.get("field") != null) {
+                        rules.add(rule);
+                    }
+                }
+            }
+        }
+        return rules;
+    }
+    
+    protected Boolean isMatch(FormData formData) {
+        if (!getRules(formData).isEmpty()) {
+            boolean match = false;
+            
+            org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
+            Scriptable scope = cx.initStandardObjects(null);
+            try {
+                String rule = "";
+                for (Map<String, String> r : getRules(formData)) {
+                    String field = r.get("field");
+                    String join = r.get("join");
+                    String value = r.get("value");
+                    String regex = r.get("regex");
+                    String reverse = r.get("reverse");
+
+                    if (!rule.isEmpty() && !rule.endsWith("(") && !")".equals(field)) {
+                        if ("or".equals(join)) {
+                            rule += " || ";
                         } else {
-                            if (value.equals(visibilityValue)) {
+                            rule += " && ";
+                        }
+                    }
+                    if (!")".equals(field)) {
+                        rule += " ";
+                    }
+                    if (!reverse.isEmpty() && !")".equals(field)) {
+                        rule += "!";
+                    }
+                    if ("(".equals(field) || ")".equals(field) ) {
+                        rule += field;
+                    } else {
+                        rule += checkValue(formData, field, value, "true".equalsIgnoreCase(regex));
+                    }
+                }
+                
+                return (Boolean) cx.evaluateString(scope, rule, "", 1, null);
+            } catch (Exception e) {
+                LogUtil.error(Section.class.getName(), e, "rules are not valid");
+            } finally {
+                org.mozilla.javascript.Context.exit();
+            }
+            
+            return match;
+        } else {
+            return true;
+        }
+    }
+    
+    protected boolean checkValue(FormData formData, String field, String value, boolean isRegex) {
+        Element controlElement = elements.get(field);
+        if (controlElement != null) {
+            // check for matching values
+            String[] paramValue = FormUtil.getElementPropertyValues(controlElement, formData);
+
+            if (paramValue != null) {
+                for (String v : paramValue) {
+                    if (isRegex) {
+                        try {
+                            if (v.matches(StringEscapeUtils.unescapeJavaScript(value))) {
                                 return true;
                             }
+                        } catch (Exception e){}
+                    } else {
+                        if (v.equals(value)) {
+                            return true;
                         }
                     }
                 }
-                return false;
             }
         }
-        
-        return true;
+        return false;
     }
 }

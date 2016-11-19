@@ -4,10 +4,10 @@
         ${e.render(formData, includeMetaData!false)}
     </#list>
     
-<#if visibilityControlParam?? && includeMetaData == false>
+<#if rules?? && includeMetaData == false>
 <script type="text/javascript">
     $(document).ready(function() {
-        new VisibilityMonitor($('.section_${element.properties.elementUniqueKey!}'), "${visibilityControlParam!}", "${element.properties.visibilityValue!}", "${element.properties.regex!}").init();
+        new VisibilityMonitor($('.section_${element.properties.elementUniqueKey!}'), ${rules}).init();
     });
 </script>
 </#if>
