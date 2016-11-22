@@ -113,9 +113,25 @@ var AppCenter = {
                         $(this).find(".app-design-button").hide();
                     }
                 );
+                HelpGuide.reposition();                          
             }
         });
+    },
+    showHints: function() {
+        if ($("#main-action-help:visible").length > 0) {
+            if ($("#adminControl").length > 0) {
+                HelpGuide.key="help.web.adminBar";
+            } else {
+                HelpGuide.key="help.web.appcenter";
+            }
+            HelpGuide.insertButton();
+            HelpGuide.show();
+            HelpGuide.reposition();
+        }
     }
 }
+$(function() {
+    AppCenter.showHints();
+});
 //AppCenter.searchFilter($("#search"), $("#apps")); 
 //AppCenter.loadPublishedApps("#apps");

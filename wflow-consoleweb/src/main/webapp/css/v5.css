@@ -350,6 +350,9 @@ button:hover, input[type=button]:hover, #menu .dropdown-btn input:hover, .form-b
     top: 0px;    
     position: static;
     right: inherit;
+    font-size: 14px;
+    line-height: 14px;
+    text-align: center;
 }
 
 /*--- Footer ---*/
@@ -776,6 +779,8 @@ button#installApp {
     width: 42%;
     float: left;
     margin: 0px 20px 20px 0px;
+    max-height: 250px;
+    overflow-y: auto;
 }
 #webconsole .welcome-clear {
     clear: both;

@@ -34,6 +34,8 @@
     </div>
 </div>
 
+<commons:footer />
+
 <script>
     Template.init("#menu-home", "#nav-home-welcome");
 
@@ -48,5 +50,3 @@
         HelpGuide.key = "help.none";
     }    
 </script>
-
-<commons:footer />

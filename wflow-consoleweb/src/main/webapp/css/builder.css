@@ -445,3 +445,12 @@ li.jsondiffpatch-unchanged {
     margin: 0.5% 0.5% 0 0;
     display: inline-block;
 }
+#main-action-help {
+    display: block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 5px;
+    position: absolute;
+    left: 932px;
+}
