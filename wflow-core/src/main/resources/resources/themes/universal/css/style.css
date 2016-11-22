@@ -964,6 +964,7 @@ body:not(#login) #content > main > table{
 .waves-input-wrapper.btn .waves-button-input{
     line-height: 1.42857143;
     padding: 6px 12px;
+    color: inherit;
 }
 
 body .filter-cell {
