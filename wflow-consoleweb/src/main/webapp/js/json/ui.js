@@ -867,6 +867,10 @@ HelpGuide = {
                 HelpGuide.startGuide(helpDef);
             }
         });
+        
+        $(window).on("resize scroll", function() {
+            HelpGuide.reposition();
+        });
     },
     
     hide: function() {
@@ -893,7 +897,7 @@ HelpGuide = {
 
     insertButton: function(div) {
         // create button
-        var button = $('<span id="main-action-help"></span>');
+        var button = $('<span id="main-action-help"><i class="icon-info-sign"></i></span>');
         
         // insert button
         if ($("#main-action-help").length == 0) {
@@ -949,11 +953,23 @@ HelpGuide = {
     
     displayGuide: function(def) {
         if(window['guiders'] != undefined){
-            var guider = guiders.createGuider(def);
-            if (def.show) {
-                guider.show();
+            var guider = guiders._guiders[def.id]; 
+            if (!guider) {
+                guider = guiders.createGuider(def);
+                if (def.show) {
+                    guider.show();
+                }
+            } else if (def.show) {
+                guiders.show(def.id);
             }
         }
+    },
+    
+    reposition: function() {
+        var g;
+        for(g in guiders._guiders) {
+            guiders._attach(guiders._guiders[g]);
+        }        
     }
 
 }

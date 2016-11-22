@@ -103,7 +103,7 @@
                 <c:if test="${isAnonymous}">
                 <a href="${pageContext.request.contextPath}/web/login" id="header-login"><i class="icon-signin"></i> <fmt:message key="console.header.top.label.login"/></a>
                 </c:if>
-                <a id="main-action-help"><i class="icon-question-sign"></i></a>
+                <a id="main-action-help"><i class="icon-info-sign"></i></a>
             </div>
         </div>
         <div id="container">
