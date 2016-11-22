@@ -1473,7 +1473,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         sub.put(name, arr[j].toString());
                         r.put(prefix, sub);
                     }
-                    r.put(alias[j], arr[j].toString());
+                    r.put(alias[j], (arr[j] != null)?arr[j].toString():"");
                 }
                 rowSet.add(r);
             }
