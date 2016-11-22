@@ -32,26 +32,26 @@
 #apps img {
     width: 100%;
 }
-a.app-link {
+#apps a.app-link {
     text-decoration: none;
 }
-div.userview-name {
+#apps div.userview-name {
     font-weight: 500;
     font-size: 14px;
     color: #555;
     word-wrap: break-word;
 }
-div.app-name {
+#apps div.app-name {
     display: block;
     font-size: 80%;
     color: #999;
 }
-div.userview-description {
+#apps div.userview-description {
     display: none;
     font-size: 80%;
     color: #999;
 }
-div.userview-summary {
+#apps div.userview-summary {
     background-color: #eeeeee; 
     display: none; 
     position: absolute; 
