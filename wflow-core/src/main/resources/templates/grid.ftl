@@ -23,7 +23,6 @@
         }
         .grid-cell {
             display: block;
-            width: 100%;
         }
         .grid-cell form {
             display: block;
