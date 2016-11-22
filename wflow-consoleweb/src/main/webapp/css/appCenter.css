@@ -1,7 +1,7 @@
 /* app center */
 #search {
     position: relative;
-    margin: 0px auto 20px;
+    margin: 0px auto 30px;
     width: 165px;
 }
 #search input.filterinput {
@@ -117,3 +117,20 @@ div#appcenter_banner {
     }
 }
 */
+
+/* help hint icon */
+#main-action-help {
+    display: block;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0px;
+    position: absolute;
+    right: -8px;
+    top: -267px;
+    color: white;
+}
+#main-action-help i {
+    font-size: 20px;
+    line-height: 20px;
+}
