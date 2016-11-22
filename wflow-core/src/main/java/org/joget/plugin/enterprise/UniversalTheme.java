@@ -143,19 +143,10 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     
     @Override
     public String getJsCssLib(Map<String, Object> data) {
-        String path = data.get("context_path") + "/plugin/org.joget.plugin.enterprise.UniversalTheme/themes/universal";
+        String path = data.get("context_path") + "/universal";
 
         String jsCssLink = "";
-        jsCssLink += "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://fonts.googleapis.com/css?family=Roboto\">\n";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/js/bootstrap3/css/bootstrap.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/js/font-awesome/css/font-awesome.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/js/font-awesome4/css/font-awesome.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/js/font-awesome4/css/font-awesome.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + path + "/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + path + "/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + path + "/lib/waves/waves.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + path + "/css/form.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\"" + path + "/css/style.css" + "\" rel=\"stylesheet\" />\n";
+        jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/universal.min.css" + "\" rel=\"stylesheet\" />\n";
         jsCssLink += "<link href=\""+path+"/css/"+getPropertyString("themeScheme")+".less\" rel=\"stylesheet/less\" type=\"text/css\" />\n";
         
         String primary = "";
@@ -206,17 +197,11 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         
         jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", defaultFontColor : \""+font+"\", font: \"'Roboto'\"};</script>\n";
 
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/js/bootstrap3/js/bootstrap.min.js\"></script>\n";
-        jsCssLink += "<script src=\"" + path + "/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js\"></script>\n";
-        jsCssLink += "<script src=\"" + path + "/lib/touchSwipe/jquery.touchSwipe.min.js\"></script>\n";
-        jsCssLink += "<script src=\"" + path + "/lib/waves/waves.min.js\"></script>\n";
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\"></script>\n";
         
         if (enableResponsiveSwitch()) {
             jsCssLink += "<script src=\"" + path + "/lib/responsive-switch.min.js\"></script>\n";
-        }
-        
-        jsCssLink += "<script src=\"" + path + "/js/less.min.js\"></script>\n";
-        jsCssLink += "<script src=\"" + path + "/js/main.js\"></script>\n";
+        }        
         jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
         
         return jsCssLink;
