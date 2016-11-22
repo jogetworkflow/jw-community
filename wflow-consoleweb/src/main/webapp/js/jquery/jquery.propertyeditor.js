@@ -2472,8 +2472,7 @@ PropertyEditor.Type.GridCombine.prototype = {
 
                             if (value === undefined) {
                                 value = "";
-                            }
-                            if (value !== "") {
+                            } else {
                                 value += ';';
                             }
                             var fieldValue = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
@@ -2520,11 +2519,6 @@ PropertyEditor.Type.GridCombine.prototype = {
                                 hasError = true;
                             }
                         });
-                    } else {
-                        $(table).find("tr:not(.grid_model, .grid_header)").each(function(){
-                            $(this).find("td:eq("+j+")").addClass("error");
-                        });
-                        hasError = true;
                     }
                 }
             });
