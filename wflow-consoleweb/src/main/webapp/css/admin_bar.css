@@ -8,7 +8,7 @@
     background-image: none;
     background: #F4F4F4;
     border-radius: 0px;
-    z-index: 10000;
+    z-index: 100000010;
     box-shadow: #888 0px -1px 4px 1px;
     opacity: 0.9;
     height: 100%;
@@ -245,7 +245,7 @@ body.embeded #adminBar {
     display: none;
     padding: 2px; 
     position: absolute; 
-    z-index: 10000; 
+    z-index: 100; 
     border: solid 1px orange; 
     background: lightgoldenrodyellow; 
 }
@@ -329,7 +329,7 @@ body.embeded #adminBar {
     padding: 20px;
     box-shadow: #666 1px 1px 2px 1px;
     border-radius: 40px;
-    z-index: 100000;
+    z-index: 100000050;
     cursor: pointer;
     width: 20px;
     text-align: center;
