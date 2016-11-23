@@ -27,6 +27,27 @@ PropertyEditor.Util = {
         replaceString = '&quot;';
         return string.replace(regX, replaceString);
     },
+    deepEquals: function (o1, o2) {
+        var aProps = Object.getOwnPropertyNames(o1);
+        var bProps = Object.getOwnPropertyNames(o2);
+        
+        if (aProps.length !== bProps.length) {
+            return false;
+        }
+
+        for (var i = 0; i < aProps.length; i++) {
+            var propName = aProps[i];
+            if (typeof o1[propName] === "object") {
+                if (!PropertyEditor.Util.deepEquals(o1[propName], o2[propName])) {
+                    return false;
+                }
+            } else if (o1[propName] !== o2[propName]) {
+                return false;
+            }
+        }
+        
+        return true;
+    },
     inherit: function (base, methods) {  
         var sub = function() {
             base.apply(this, arguments); // Call base class constructor
@@ -532,6 +553,8 @@ PropertyEditor.Model.Editor.prototype = {
         return p.render();
     },
     initScripting: function() {
+        var thisObject = this;
+        
         if(this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null){
             $.each(this.options.propertiesDefinition, function(i, page){
                 var p = page.propertyEditorObject;
@@ -541,6 +564,20 @@ PropertyEditor.Model.Editor.prototype = {
         
         this.adjustSize();
         this.initPage();
+        
+        if (this.options.showCancelButton) {
+            $(this.editor).keydown(function(e){
+                if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
+                    if (thisObject.isChange()) {
+                        if (confirm(get_peditor_msg('peditor.confirmClose'))) {
+                            thisObject.cancel();
+                        }
+                    } else {
+                        thisObject.cancel();
+                    }
+                }
+            });
+        }
     },
     adjustSize: function() {
         //adjust height & width
@@ -674,6 +711,9 @@ PropertyEditor.Model.Editor.prototype = {
             errorMsg += errors[key].message + '\n';
         }
         alert(errorMsg);
+    },
+    isChange : function() {
+        return !PropertyEditor.Util.deepEquals(this.getData(), this.options.propertyValues);
     },
     save: function() {
         if (this.options.skipValidation || (this.options.propertiesDefinition === undefined || this.options.propertiesDefinition === null)) {
@@ -949,7 +989,7 @@ PropertyEditor.Model.Page.prototype = {
                 type.pageShown();
             });
         }
-        var fields = $(page).find('.property-editor-property-container .property-editor-property .property-input').find('input, select, textarea');
+        var fields = $(page).find('.property-editor-property-container .property-editor-property .property-input').find('input:not(:hidden), select, textarea');
         if (fields.length > 0) {
             fields[0].focus();
         }
