@@ -158,45 +158,7 @@ public class MobileUserviewWebController {
 
     @RequestMapping({"/mobile", "/mobile/", "/mobile/apps"})
     public String mobileRunApps(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
-        if (MobileUtil.isMobileDisabled()) {
-            return "error404";
-        }
-        
-        // get list of published apps.
-        Collection<AppDefinition> resultAppDefinitionList = appService.getPublishedApps(null, true, false);
-        
-        Map<String, Cookie> cookiesMap = getCookiesMap(request);
-        
-        if (request.getParameter("_cordova") != null) {
-            String value = request.getParameter("_cordova");
-            
-            Cookie cookie = cookiesMap.get("cordova");
-            if ("true".equals(value)) {
-                model.addAttribute("cordova", "true");
-                model.addAttribute("showDesktopButton", "false");
-            } else if (!"true".equals(value) && cookie != null) {
-                model.addAttribute("cordova", "false");
-            }
-        } else if (cookiesMap.get("cordova") != null && "true".equals(cookiesMap.get("cordova").getValue())) {
-            model.addAttribute("showDesktopButton", "false");
-        }
-        
-        //redirect directly to app when only has one userview
-        if (resultAppDefinitionList.size() == 1) {
-            AppDefinition appDef = resultAppDefinitionList.iterator().next();
-            if (appDef.getUserviewDefinitionList() != null && appDef.getUserviewDefinitionList().size() == 1) {
-                UserviewDefinition uv = appDef.getUserviewDefinitionList().iterator().next();
-                
-                model.addAttribute("allApps", "false");
-            
-                return "redirect:/web/mobile/"+appDef.getAppId()+"/"+uv.getId()+"/"+Userview.USERVIEW_KEY_EMPTY_VALUE+"/landing";
-            }
-        }
-        
-        model.addAttribute("allApps", "true");
-        model.addAttribute("appDefinitionList", resultAppDefinitionList);
-        LogUtil.debug(getClass().getName(), "Request: /web/mobile/apps");
-        return "mobile/mApps";
+        return "redirect:/";
     }
 
     @RequestMapping({"/mobilecache/(*:appId)/(*:userviewId)"})
