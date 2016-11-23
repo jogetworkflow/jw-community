@@ -3428,6 +3428,27 @@ public class ConsoleWebController {
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/menu/options")
+    public void consoleUserviewMenuOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "userviewId", required = false) String userviewId) throws IOException, JSONException {
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        try {
+            for (String id : userviewService.getAllMenuIds(appId, version, userviewId)) {
+                blank = new HashMap();
+                blank.put("value", id);
+                blank.put("label", id);
+                jsonArray.put(blank);
+            }
+        } catch (Exception e) {
+            //ignore
+        }
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/workflowVariable/options")
     public void consoleWorkflowVariableOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -448,6 +449,48 @@ public class UserviewService {
         return "";
     }
 
+    /**
+     * Gets the userview theme used by an userview
+     * @param appId
+     * @param version
+     * @param userviewId
+     * @return 
+     */
+    public Set<String> getAllMenuIds(String appId, String version, String userviewId) {
+        Set<String> ids = new HashSet<String>();
+        
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+        if (userviewDef != null) {
+            String json = userviewDef.getJson();
+
+            try {
+                //set userview properties
+                JSONObject userviewObj = new JSONObject(json);
+                JSONArray categoriesArray = userviewObj.getJSONArray("categories");
+                for (int i = 0; i < categoriesArray.length(); i++) {
+                    JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
+                    JSONArray menusArray = categoryObj.getJSONArray("menus");
+                    for (int j = 0; j < menusArray.length(); j++) {
+                        JSONObject menuObj = (JSONObject) menusArray.get(j);
+                        JSONObject props = menuObj.getJSONObject("properties");
+                        String id = props.getString("id");
+                        String customId = (props.has("customId"))?props.getString("customId"):null;
+                        if (customId != null && !customId.isEmpty()) {
+                            ids.add(customId);
+                        } else {
+                            ids.add(id);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.debug(getClass().getName(), "get userview menu ids error.");
+            }
+        }
+        
+        return ids;
+    }
+    
     private Map convertRequestParamMap(Map params) {
         Map result = new HashMap();
         for (String key : (Set<String>) params.keySet()) {
