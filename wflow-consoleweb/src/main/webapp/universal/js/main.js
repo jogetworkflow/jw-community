@@ -55,8 +55,10 @@ _customFooTableArgs = {
                 }
             });
 
-            $("#sidebar a.dropdown").on("click", function(){
+            $("#sidebar a.dropdown").on("click", function(e){
                 toogleMenu(this);
+                e.preventDefault();
+                e.stopPropagation();
             });
         };
         initMenu();
