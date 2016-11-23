@@ -49,6 +49,9 @@ var AppCenter = {
             dataType:'jsonp',
             success:function(data) {
                 var content = "";
+                var urlParams = UrlUtil.getUrlParams(location.href);
+                var isCordova = urlParams['_cordova'] && urlParams['_cordova'][0] === "true";
+                var target = (isCordova) ? '' : ' target="_blank"';
                 var apps = data.apps;
                 for( var i=0; i<apps.length; i++) {
                     // add app
@@ -64,7 +67,7 @@ var AppCenter = {
                         if (!imageUrl) {
                             imageUrl = UI.base + '/web/userview/screenshot/' + app.id + '/' + uv.id;
                         }
-                        content += '<a class="app-link" target="_blank" href="' + userviewUrl + '">\
+                        content += '<a class="app-link"' + target + ' href="' + userviewUrl + '">\
                                             <span class="userview-icon"><img src="' + imageUrl + '" width="240" border="0"></span>\
                                             <div class="userview-name">' + uv.name + '</div>\
                                             <div class="app-name">' + app.name + '</div>\
