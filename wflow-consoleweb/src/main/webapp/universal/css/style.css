@@ -853,7 +853,7 @@ body:not(#login) #content > main > table{
 .page-loader .preloader {
     width: 50px;
     position: absolute;
-    left: 50%;
+    left: 47%;
     margin-left: -25px;
     top: 50%;
     margin-top: -55px;
