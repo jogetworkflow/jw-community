@@ -4,7 +4,7 @@ body {
     background: rgb(247, 249, 249);
 }
 body#appcenter, body#webconsole, body#login {
-    background: rgb(236, 240, 241); //#CED7DC;
+    background: rgb(236, 240, 241);
 }
 a {
     color: #555;
@@ -285,7 +285,7 @@ button:hover, input[type=button]:hover, #menu .dropdown-btn input:hover, .form-b
 #main-header {
     display: none;
     min-height: 41px;    
-    background: #222; //#547980;
+    background: #222;
     border-bottom: solid 1px #ddd;
     position: fixed;
     top: 0px;
@@ -512,7 +512,7 @@ body#appcenter .published-apps{
     padding: 20px 30px;
     box-sizing: border-box;
     margin: 0px;
-    background: white; // #D1DDB0; //#D7D7D7;
+    background: white;
     border-bottom: none;
     box-shadow: none;
 }
@@ -546,7 +546,7 @@ body#appcenter .published-apps{
     box-sizing: border-box;
     min-height: 80px;
     color: #333;
-    background: transparent; //#eee;
+    background: transparent;
     margin-bottom: 10px;
     width: 188px;
     border-radius: 10px;
@@ -780,7 +780,7 @@ button#installApp {
     float: left;
     margin: 0px 20px 20px 0px;
     max-height: 250px;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 #webconsole .welcome-clear {
     clear: both;
