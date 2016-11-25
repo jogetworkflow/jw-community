@@ -283,17 +283,19 @@ public class DatalistBuilderWebController {
             // create binder
             binder = dataListService.getBinder(binderId);
             
-            if (binderJson.contains(SecurityUtil.ENVELOPE) || binderJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
-                DatalistDefinition datalistDef = datalistDefinitionDao.loadById(datalistId, appDef);
+            if (binder != null) {
+                if (binderJson.contains(SecurityUtil.ENVELOPE) || binderJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
+                    DatalistDefinition datalistDef = datalistDefinitionDao.loadById(datalistId, appDef);
 
-                if (datalistDef != null) {
-                    binderJson = PropertyUtil.propertiesJsonStoreProcessing(datalistDef.getJson(), binderJson);
+                    if (datalistDef != null) {
+                        binderJson = PropertyUtil.propertiesJsonStoreProcessing(datalistDef.getJson(), binderJson);
+                    }
                 }
-            }
 
-            if (binderJson != null && !binderJson.isEmpty()) {
-                binderJson = AppUtil.processHashVariable(binderJson, null, null, null);
-                binder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderJson));
+                if (binderJson != null && binderJson.length() > 2) {
+                    binderJson = AppUtil.processHashVariable(binderJson, null, null, null);
+                    binder.setProperties(PropertyUtil.getPropertiesValueFromJson(binderJson));
+                }
             }
         }
         return binder;
