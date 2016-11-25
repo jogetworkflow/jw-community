@@ -3437,7 +3437,8 @@ public class ConsoleWebController {
         jsonArray.put(blank);
         
         try {
-            for (String id : userviewService.getAllMenuIds(appId, version, userviewId)) {
+            for (Iterator<String> i = userviewService.getAllMenuIds(appId, version, userviewId).iterator(); i.hasNext();) {
+                String id = i.next();
                 blank = new HashMap();
                 blank.put("value", id);
                 blank.put("label", id);
