@@ -242,6 +242,9 @@ DatalistBuilder = {
             DatalistBuilder.rowActionIndexCounter = 0;
             DatalistBuilder.filterIndexCounter = 0;
             DatalistBuilder.actionIndexCounter = 0;
+            
+            DatalistBuilder.datalistProperties['orderBy'] = "";
+            DatalistBuilder.datalistProperties['order'] = "";
 
             $('.databuilderFilter').remove();
             $('.databuilderItem').remove();
