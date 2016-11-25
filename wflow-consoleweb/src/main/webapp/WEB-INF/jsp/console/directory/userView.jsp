@@ -140,7 +140,7 @@
                        var="JsonDataTable"
                        divToUpdate="groupList"
                        jsonData="data"
-                       rowsPerPage="10"
+                       rowsPerPage="15"
                        width="100%"
                        sort="name"
                        desc="false"

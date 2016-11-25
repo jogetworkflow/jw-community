@@ -23,7 +23,7 @@
                    var="JsonUserDataTable"
                    divToUpdate="userList"
                    jsonData="data"
-                   rowsPerPage="10"
+                   rowsPerPage="15"
                    width="100%"
                    sort="user.username"
                    desc="false"

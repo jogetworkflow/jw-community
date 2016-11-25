@@ -32,7 +32,7 @@
                           var="assignmentInbox"
                           divToUpdate="assignmentInbox"
                           jsonData="data"
-                          rowsPerPage="10"
+                          rowsPerPage="15"
                           sort="dateCreated"
                           desc="true"
                           width="100%"

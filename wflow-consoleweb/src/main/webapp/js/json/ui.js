@@ -572,6 +572,7 @@ JsonTable.prototype = {
             //title: '',
             useRp: thisObject.useRp,
             rp: thisObject.rowsPerPage,
+            rpOptions: [10, 15, 20, 25, 50, 100],
             showTableToggleBtn: true,
             width: thisObject.width,
             height: thisObject.height,

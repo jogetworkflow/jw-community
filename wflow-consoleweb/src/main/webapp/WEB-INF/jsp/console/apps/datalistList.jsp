@@ -26,7 +26,7 @@
                    var="JsonDataTable"
                    divToUpdate="datalistList"
                    jsonData="data"
-                   rowsPerPage="10"
+                   rowsPerPage="15"
                    width="100%"
                    sort="id"
                    desc="false"

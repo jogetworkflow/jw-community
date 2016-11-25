@@ -32,7 +32,7 @@
                       var="userDataTable"
                       divToUpdate="userList"
                       jsonData="data"
-                      rowsPerPage="10"
+                      rowsPerPage="15"
                       width="100%"
                       height="200"
                       sort="firstName"

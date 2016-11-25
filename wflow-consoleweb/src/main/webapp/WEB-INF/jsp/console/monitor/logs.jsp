@@ -27,7 +27,7 @@
                        var="JsonDataTable"
                        divToUpdate="logsList"
                        jsonData="data"
-                       rowsPerPage="20"
+                       rowsPerPage="15"
                        width="100%"
                        href="${pageContext.request.contextPath}/web/console/monitor/log/"
                        hrefDialogWindowName="_blank"

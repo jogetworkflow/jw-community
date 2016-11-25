@@ -34,7 +34,7 @@
                        var="JsonDataTable"
                        divToUpdate="processList"
                        jsonData="data"
-                       rowsPerPage="10"
+                       rowsPerPage="15"
                        width="100%"
                        sort="createdTime"
                        desc="true"
