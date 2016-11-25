@@ -142,8 +142,6 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     originalAppDef = appDef;
                     appDef = packageDef.getAppDefinition();
                     AppUtil.setCurrentAppDefinition(appDef);
-                } else {
-                    appDef = null;
                 }
             }
             
