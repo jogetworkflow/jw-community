@@ -688,7 +688,7 @@ body#login #page > footer {
     body.horizontal_menu .sidebar-toggled #main{
         height:auto;
     }
-    body.horizontal_menu:not(#login) #page > footer, body.horizontal_menu:not(#login) #content {
+    body.horizontal_menu:not(#login) #page > footer, body.horizontal_menu:not(#login) #content, body.embeded #content {
         padding-left: 20px;
         padding-right: 20px;
     }  
@@ -815,7 +815,7 @@ body#login #page > footer {
     }
 }
 
-#content {
+.datalist-body-content {
     overflow: auto;
 }
 
@@ -1166,6 +1166,10 @@ main .form-row .form-input textarea{
 @media screen and (max-width: 480px) {
     main .form-row .form-input {
         max-width: 100%;
+    }
+    div[class*="-body-content"] div[class*="-body-header"] {
+        font-size: 18px;
+        margin-bottom: 15px;
     }
 }
 main .grid-stack-item .grid-stack-item-header {
