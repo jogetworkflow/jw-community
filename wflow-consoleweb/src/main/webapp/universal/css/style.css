@@ -815,6 +815,10 @@ body#login #page > footer {
     }
 }
 
+#content {
+    overflow: auto;
+}
+
 #page > footer > div, 
 #content > main {
     padding: 0 15px;
