@@ -67,8 +67,11 @@ var AdvancedTools = {
         AdvancedTools.editor.getSession().on('change', function(){
             if (!AdvancedTools.silentChange) {
                 AdvancedTools.silentChange = true;
-                var jsonObj = JSON.decode(AdvancedTools.editor.getSession().getValue());
-                textarea.val(JSON.encode(jsonObj)).trigger("change");
+                var value = AdvancedTools.editor.getSession().getValue();
+                if (value.length > 0) {
+                    var jsonObj = JSON.decode(value);
+                    textarea.val(JSON.encode(jsonObj)).trigger("change");
+                }
                 AdvancedTools.silentChange = false;
             }
         });
