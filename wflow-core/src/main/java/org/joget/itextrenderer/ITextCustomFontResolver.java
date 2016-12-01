@@ -4,21 +4,29 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 import java.io.*;
 import java.util.*;
+import org.joget.commons.util.LogUtil;
+import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
+import org.xhtmlrenderer.css.sheet.FontFaceRule;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
+import org.xhtmlrenderer.css.style.FSDerivedValue;
 import org.xhtmlrenderer.css.value.FontSpecification;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextFSFont;
 import org.xhtmlrenderer.pdf.ITextFontResolver;
 import org.xhtmlrenderer.pdf.TrueTypeUtil;
 import org.xhtmlrenderer.render.FSFont;
+import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class ITextCustomFontResolver extends ITextFontResolver {
     protected Map _fontFamilies = createInitialFontMap();
     protected Map _fontCache = new HashMap();
+    protected SharedContext localSharedContext;
     
     public ITextCustomFontResolver(SharedContext sharedContext) {
         super(sharedContext);
+        localSharedContext = sharedContext;
     }
     
     @Override
@@ -46,6 +54,51 @@ public class ITextCustomFontResolver extends ITextFontResolver {
             }
             if (family.getFontDescriptions().size() == 0) {
                 i.remove();
+            }
+        }
+    }
+    
+    @Override
+    public void importFontFaces(List fontFaces) {
+        for (Iterator i = fontFaces.iterator(); i.hasNext(); ) {
+            FontFaceRule rule = (FontFaceRule)i.next();
+            CalculatedStyle style = rule.getCalculatedStyle();
+            
+            FSDerivedValue src = style.valueByName(CSSName.SRC);
+            if (src == IdentValue.NONE) {
+                continue;
+            }
+            
+            byte[] font1 = localSharedContext.getUac().getBinaryResource(src.asString());
+            if (font1 == null) {
+                XRLog.exception("Could not load font " + src.asString());
+                continue;
+            }
+            
+            byte[] font2 = null;
+            FSDerivedValue metricsSrc = style.valueByName(CSSName.FS_FONT_METRIC_SRC);
+            if (metricsSrc != IdentValue.NONE) {
+                font2 = localSharedContext.getUac().getBinaryResource(metricsSrc.asString());
+                if (font2 == null) {
+                    XRLog.exception("Could not load font metric data " + src.asString());
+                    continue;
+                }
+            }
+            
+            if (font2 != null) {
+                byte[] t = font1;
+                font1 = font2;
+                font2 = t;
+            }
+            
+            boolean embedded = style.isIdent(CSSName.FS_PDF_FONT_EMBED, IdentValue.EMBED);
+            
+            String encoding = style.getStringProperty(CSSName.FS_PDF_FONT_ENCODING);
+            
+            try {
+                addFontFaceFont(src.asString(), encoding, embedded, font1, font2);
+            } catch (Exception e) {
+                LogUtil.error(ITextCustomFontResolver.class.getName(), e, "Could not load font " + src.asString());
             }
         }
     }
