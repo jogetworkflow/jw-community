@@ -98,7 +98,6 @@
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
-        <js>/universal/lib/responsive-switch.min.js</js>
         <js>/universal/js/less.js</js>
         <js>/universal/js/main.js</js>
     </group>
