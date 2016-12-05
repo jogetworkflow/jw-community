@@ -2,6 +2,13 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.10
+=================
+218b2e1 Fixed: wflow-core - FormPdfUtil - Support add font face to support other language. @5.0-SNAPSHOT
+950ad55 Fixed: wflow-core - Grid - Reduced width to ensure padding between cell borders @5.0-SNAPSHOT
+66e0f74 Fixed: wflow-core - Checkbox - Triggered visibility control in readonly mode @ IE. @5.0-SNAPSHOT
+7411d87 Fixed: wflow-core - Text Area - Newline character is causing PDF generation failure.  #4401 @5.0-SNAPSHOT
+
 CHANGES IN 5.0.9
 ================
 57333ab Fixed: wflow-core - Grid - Editable cell is not working correctly in Chrome. @5.0-SNAPSHOT
