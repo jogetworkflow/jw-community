@@ -349,6 +349,9 @@ ul#category-container {
         padding-left: 283px;
         padding-right: 15px;
     }
+    body.embeded #page #content {
+        padding-left: 20px;
+    }  
     
     body:not(.horizontal_menu) .home_banner {
         padding-left: 268px;
@@ -424,6 +427,9 @@ ul#category-container {
     #main .systemAlert{    
         margin: 0 15px 20px 283px;
     }
+    body.embeded #main .systemAlert {
+        margin-left: 20px;
+    }  
 }
 
 #main .systemAlert a.systemAlertClose {
