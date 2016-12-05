@@ -40,11 +40,20 @@ public class DataListDecorator extends CheckboxTableDecorator {
     
     private int index = 0;
 
+    public DataListDecorator() {
+    }
+    
+    public DataListDecorator(DataList dataList) {
+        this.dataList = dataList;
+    }
+    
     @Override
     public void init(PageContext pageContext, Object decorated, TableModel tableModel) {
         super.init(pageContext, decorated, tableModel);
 
-        this.dataList = (DataList) pageContext.findAttribute("dataList");
+        if (this.dataList == null) {
+            this.dataList = (DataList) pageContext.findAttribute("dataList");
+        }
 
         // set values to fix DisplayTag bug later
         if (fieldName != null) {
@@ -275,7 +284,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         return link;
     }
 
-    protected String formatColumn(DataListColumn column, Object row, Object value) {
+    public String formatColumn(DataListColumn column, Object row, Object value) {
         Object result = value;
         
         // decrypt protected data 
