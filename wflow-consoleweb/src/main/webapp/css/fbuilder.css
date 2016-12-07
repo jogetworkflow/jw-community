@@ -94,7 +94,7 @@
     color: black;
     font-size: 13px;
     height: 20px;
-    min-width: 20px;
+    width: 20px;
     line-height: 15px;
     padding: 0px;
     margin-top: 2px;
@@ -112,7 +112,6 @@
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    overflow: hidden;
 }
 .form-palette-options button span{
     width:0px;
@@ -130,6 +129,7 @@
     width: auto;
     min-width: 30px;
     margin-left: -15px;
+    white-space: nowrap;
 }
 .form-palette-options button:hover {
     padding: 0 4px;
