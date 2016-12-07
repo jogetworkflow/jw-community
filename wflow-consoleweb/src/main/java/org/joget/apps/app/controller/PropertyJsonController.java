@@ -74,7 +74,7 @@ public class PropertyJsonController {
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
         if (element != null) {
-            json = element.getPropertyOptions();
+            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
         }
 
         writer.write(json);
@@ -89,7 +89,7 @@ public class PropertyJsonController {
         String json = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
         if (element != null) {
-            json = element.getPropertyOptions();
+            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
         }
 
         writer.write(json);        

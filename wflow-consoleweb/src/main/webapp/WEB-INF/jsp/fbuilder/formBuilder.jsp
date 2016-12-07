@@ -1,5 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
 <%
     String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
@@ -110,7 +111,7 @@
             <c:forEach items="${palette.editableElementList}" var="element">
                 <c:if test="${!empty element.propertyOptions}">
                 try {
-                    var elementProps = eval("(${element.propertyOptions})");
+                    var elementProps = eval("(${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)})");
                     var elementTemplate = "${element.formBuilderTemplate}";
                     FormBuilder.initElementDefinition("${element.className}", elementProps, elementTemplate);
                 } catch (e) {

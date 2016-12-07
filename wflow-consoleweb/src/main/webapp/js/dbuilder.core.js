@@ -172,6 +172,7 @@ DatalistBuilder = {
     getBinderPropertiesDefinition : function() {
         return [
             {title: get_dbuilder_msg('dbuilder.selectBinder'),
+                helplink: get_dbuilder_msg('dbuilder.selectBinder.helplink'),
                 properties : [{
                     name : 'binder',
                     label : get_dbuilder_msg('dbuilder.selectDataSource'),
@@ -917,6 +918,7 @@ DatalistBuilder = {
     getColumnPropertiesDefinition : function() {
         return [{
             title : get_dbuilder_msg('dbuilder.general'),
+            helplink : get_dbuilder_msg('dbuilder.column.helplink'),
             properties :[
             {
                 label : 'ID',
@@ -1079,6 +1081,7 @@ DatalistBuilder = {
     getFilterPropertiesDefinition : function () {
         return [{
             title : get_dbuilder_msg('dbuilder.general'),
+            helplink : get_dbuilder_msg('dbuilder.filter.helplink'),
             properties :[
             {
                 label : 'ID',
@@ -1191,6 +1194,7 @@ DatalistBuilder = {
     getDatalistPropertiesDefinition : function() {
         return [
             {title: get_dbuilder_msg('dbuilder.basicProperties'),
+              helplink: get_dbuilder_msg('dbuilder.basicProperties.helplink'),
               properties : [
                 {label : get_dbuilder_msg('dbuilder.datalistId'),
                   name  : 'id',

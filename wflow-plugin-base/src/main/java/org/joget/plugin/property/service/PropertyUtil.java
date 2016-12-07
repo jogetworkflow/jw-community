@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
@@ -234,5 +235,12 @@ public class PropertyUtil {
         }
         
         return newJson;
+    }
+    
+    public static String injectHelpLink(String helpLink, String json) {
+        if (helpLink != null && !helpLink.isEmpty()) {
+            json = json.replaceFirst("title", "helplink:'"+StringUtil.escapeString(helpLink, StringUtil.TYPE_JSON, null)+"', title");
+        }
+        return json;
     }
 }

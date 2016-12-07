@@ -4,6 +4,7 @@ import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewCache;
 import org.joget.plugin.base.PluginProperty;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.osgi.framework.BundleContext;
 
 public class CachedUserviewMenu extends UserviewMenu {
@@ -408,12 +409,12 @@ public class CachedUserviewMenu extends UserviewMenu {
      */
     @Override
     public String getPropertyOptions() {
-        String propertyOptions = delegate.getPropertyOptions();
+        String propertyOptions = PropertyUtil.injectHelpLink(delegate.getHelpLink(), delegate.getPropertyOptions());
         String cacheOptions = AppUtil.readPluginResource(getClass().getName(), "/properties/userview/userviewCache.json", null, true, "message/userview/userviewCache");
         if (cacheOptions != null && !cacheOptions.isEmpty()) {
             propertyOptions = propertyOptions.substring(0, propertyOptions.lastIndexOf("]")) + "," + cacheOptions + "]"; 
         }
         return propertyOptions;
     }
-
+    
 }

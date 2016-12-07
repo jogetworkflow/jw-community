@@ -12,6 +12,7 @@ ProcessBuilder.Model.Participant.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.participantProperties"),
+            helplink: get_pbuilder_msg("pbuilder.label.participantProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -52,6 +53,7 @@ ProcessBuilder.Model.Process.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.processProperties"),
+            helplink: get_pbuilder_msg("pbuilder.label.processProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -100,6 +102,7 @@ ProcessBuilder.Model.Process.prototype = {
             }]
         },{
             title: get_pbuilder_msg("pbuilder.label.slaOptions"),
+            helplink: get_pbuilder_msg("pbuilder.label.slaOptions.helplink"),
             properties: [{
                 name: 'durationUnit',
                 label: get_pbuilder_msg("pbuilder.label.durationUnit"),
@@ -155,6 +158,7 @@ ProcessBuilder.Model.Activity.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.activityProperties"),
+            helplink : get_pbuilder_msg("pbuilder.label.activityProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -171,6 +175,7 @@ ProcessBuilder.Model.Activity.prototype = {
             }]
         },{
             title: get_pbuilder_msg("pbuilder.label.deadlines"),
+            helplink : get_pbuilder_msg("pbuilder.label.deadlines.helplink"),
             properties: [{
                 name: 'deadlines',
                 label: get_pbuilder_msg("pbuilder.label.deadlines"),
@@ -217,6 +222,7 @@ ProcessBuilder.Model.Activity.prototype = {
             }]
         },{
             title: get_pbuilder_msg("pbuilder.label.slaOptions"),
+            helplink: get_pbuilder_msg("pbuilder.label.slaOptions.helplink"),
             properties: [{
                 name: 'limit',
                 label: get_pbuilder_msg("pbuilder.label.limit"),
@@ -282,6 +288,7 @@ ProcessBuilder.Model.Tool.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.toolProperties"),
+            helplink : get_pbuilder_msg("pbuilder.label.toolProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -354,6 +361,7 @@ ProcessBuilder.Model.Route.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.routeProperties"),
+            helplink : get_pbuilder_msg("pbuilder.label.routeProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -428,6 +436,7 @@ ProcessBuilder.Model.Subflow.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.subflowProperties"),
+            helplink : get_pbuilder_msg("pbuilder.label.subflowProperties.helplink"),
             properties: [{
                 name: 'id',
                 label: get_pbuilder_msg("pbuilder.label.id"),
@@ -469,6 +478,7 @@ ProcessBuilder.Model.Subflow.prototype = {
             }]
         },{
             title: get_pbuilder_msg("pbuilder.label.deadlines"),
+            helplink : get_pbuilder_msg("pbuilder.label.deadlines.helplink"),
             properties: [{
                 name: 'deadlines',
                 label: get_pbuilder_msg("pbuilder.label.deadlines"),
@@ -582,6 +592,7 @@ ProcessBuilder.Model.Transition.prototype = {
     propertyOptions: function() {
         var options = [{
             title: get_pbuilder_msg("pbuilder.label.transitionProperties"),
+            helplink : get_pbuilder_msg("pbuilder.label.transitionProperties.helplink"),
             properties: [{
                 name: 'name',
                 label: get_pbuilder_msg("pbuilder.label.name"),

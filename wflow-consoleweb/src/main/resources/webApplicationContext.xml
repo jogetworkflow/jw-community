@@ -61,6 +61,7 @@
                 <value>ubuilder</value>
                 <value>pbuilder</value>
                 <value>plugin</value>
+                <value>pluginhelp</value>
                 <value>helpdef</value>
                 <value>help</value>
                 <value>advtool</value>

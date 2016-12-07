@@ -73,4 +73,17 @@ public abstract class DefaultPlugin implements Plugin, BundleActivator {
         }
         return desc;
     }
+    
+    /**
+     * Return a plugin helplink for the plugin based on language setting. 
+     * 
+     * It will auto look for Resource Bundle Message Key "<i>plugin.className</i>.helplink". 
+     * OSGI plugin is required to override this method to provide an internationalization help link. 
+     * 
+     * @return 
+     */
+    public String getHelpLink() {
+        String helplink = ResourceBundleUtil.getMessage(getClass().getName() + ".helplink");
+        return helplink;
+    }
 }

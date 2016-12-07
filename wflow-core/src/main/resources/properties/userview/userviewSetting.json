@@ -1,5 +1,6 @@
 [{
     title : '@@userview.userviewsetting.configLayout@@',
+    helplink : '@@userview.userviewsetting.helplink@@',
     properties : [{
         name: 'theme',
         label: '@@userview.userviewsetting.theme@@',

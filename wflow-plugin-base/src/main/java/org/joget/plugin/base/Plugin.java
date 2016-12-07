@@ -43,6 +43,13 @@ public interface Plugin {
      * @return 
      */
     String getDescription();
+    
+    /**
+     * Return a plugin help link. 
+     * 
+     * @return 
+     */
+    String getHelpLink();
 
     /**
      * Return a set of plugin properties to configure by admin user

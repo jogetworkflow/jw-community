@@ -12,5 +12,5 @@ var <c:out value="${name}"/>_lang = {
 }
 
 function get_<c:out value="${name}"/>_msg(key){
-    return <c:out value="${name}"/>_lang[key] ? <c:out value="${name}"/>_lang[key] : '??'+key+'??';
+    return (<c:out value="${name}"/>_lang[key] !== undefined) ? <c:out value="${name}"/>_lang[key] : '??'+key+'??';
 }

@@ -21,6 +21,7 @@ import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -150,7 +151,7 @@ public class UserviewBuilderWebController {
         String propertyOptions = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
         if (element != null) {
-            propertyOptions = element.getPropertyOptions();
+            propertyOptions = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
             if (element instanceof UserviewTheme) {
                 String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", null, true, "message/userview/userviewLogin");
                 propertyOptions = UserviewUtil.appendPropertyOptions(propertyOptions, loginOptions);

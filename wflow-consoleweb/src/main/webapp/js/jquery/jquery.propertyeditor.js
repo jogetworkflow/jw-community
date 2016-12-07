@@ -930,8 +930,13 @@ PropertyEditor.Model.Page.prototype = {
             pageTitle = get_peditor_msg('peditor.noProperties');
         }
         
+        var helplink = "";
+        if (this.properties.helplink !== undefined && this.properties.helplink !== "") {
+            helplink = ' <a class="helplink" target="_blank" href="'+this.properties.helplink+'"><i class="fa fa-question-circle"></i></a>'
+        }
+        
         var html = '<div id="' + this.id + '" '+ this.elementData + 'class="property-editor-page' + hiddenClass + '" ' + showHide + '>';
-        html += '<div class="property-editor-page-title">'+pageTitle+'</div><div class="property-editor-page-step-indicator"></div><div class="property-editor-property-container">';
+        html += '<div class="property-editor-page-title"><span>'+pageTitle+'</span>'+helplink+'</div><div class="property-editor-page-step-indicator"></div><div class="property-editor-property-container">';
         
         html += this.renderProperties();
         
@@ -1069,7 +1074,7 @@ PropertyEditor.Model.Page.prototype = {
                     }else{
                         html += '<span class="step clickable'+childPageClass+'" rel="'+pageId+'" style="cursor:pointer">';
                     }
-                    html += $(this).find('.property-editor-page-title').html() + '</span>';
+                    html += $(this).find('.property-editor-page-title span').html() + '</span>';
 
                     if(i < $(editor).find('.property-page-show').length - 1){
                         html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';

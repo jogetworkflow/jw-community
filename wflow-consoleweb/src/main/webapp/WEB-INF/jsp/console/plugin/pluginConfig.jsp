@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
 <commons:popupHeader />
 
@@ -188,7 +188,7 @@
                     contextPath: '${pageContext.request.contextPath}',
                     tinyMceScript: '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js',
                     <c:if test="${!empty propertyEditable.propertyOptions}">
-                        propertiesDefinition : ${propertyEditable.propertyOptions},
+                        propertiesDefinition : ${PropertyUtil.injectHelpLink(plugin.helpLink, propertyEditable.propertyOptions)},
                     </c:if>
                     <c:choose>
                         <c:when test="${!empty properties && fn:substring(properties, 0, 1) eq '{'}">

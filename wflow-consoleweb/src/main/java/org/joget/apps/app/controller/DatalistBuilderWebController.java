@@ -183,7 +183,7 @@ public class DatalistBuilderWebController {
             if (action instanceof PropertyEditable) {
                 String propertyOptions = ((PropertyEditable) action).getPropertyOptions();
                 if (propertyOptions != null && !propertyOptions.isEmpty()) {
-                    hm.put("propertyOptions", propertyOptions);
+                    hm.put("propertyOptions", PropertyUtil.injectHelpLink(p.getHelpLink(), propertyOptions));
                 }
             }
             hm.put("type", "text");
