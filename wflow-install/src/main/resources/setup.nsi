@@ -160,13 +160,14 @@ Section "Joget Workflow" SecJoget
 
     DoUpgrade:
         ;MessageBox MB_OK "Upgrading"
-        RmDir /r "$SMPROGRAMS\Joget Workflow v3 Enterprise"
-        RmDir /r "$SMPROGRAMS\Joget Workflow v4 Enterprise"
+        RmDir /r "$SMPROGRAMS\Joget Workflow v3"
+        RmDir /r "$SMPROGRAMS\Joget Workflow v4"
+        RmDir /r "$SMPROGRAMS\Joget Workflow v5"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.0.20\webapps\jw.war
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner.war apache-tomcat-8.0.20\webapps\jwdesigner.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.8\webapps\jw.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner.war apache-tomcat-8.5.8\webapps\jwdesigner.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -181,9 +182,9 @@ Section "Joget Workflow" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-8.0.20\webapps"
-  File /oname=apache-tomcat-8.0.20\webapps\jw.war apache-tomcat-8.0.20\webapps\jw.war
-  File /oname=apache-tomcat-8.0.20\webapps\jwdesigner.war apache-tomcat-8.0.20\webapps\jwdesigner.war
+  CreateDirectory "$INSTDIR\apache-tomcat-8.5.8\webapps"
+  File /oname=apache-tomcat-8.5.8\webapps\jw.war apache-tomcat-8.5.8\webapps\jw.war
+  File /oname=apache-tomcat-8.5.8\webapps\jwdesigner.war apache-tomcat-8.5.8\webapps\jwdesigner.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -214,7 +215,7 @@ Section "Apache Tomcat 8" SecTomcat
 
 ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-8.0.20
+  File /r /x *.war apache-tomcat-8.5.8
   File tomcat8-run.bat
   File tomcat8-stop.bat
   File joget-start.bat
@@ -282,10 +283,13 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
-  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.0.20\webapps\jw.war
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.5.8\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
-    StrCpy $EXISTING_TOMCAT_VERSION "8.0.20"  
-  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.52\webapps\jw.war
+    StrCpy $EXISTING_TOMCAT_VERSION "8.5.8"  
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.0.20\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
+    StrCpy $EXISTING_TOMCAT_VERSION "7.0.52"
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.0.20\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
     StrCpy $EXISTING_TOMCAT_VERSION "7.0.52"
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.39\webapps\jw.war
@@ -332,10 +336,10 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.7.0_76"
-  RmDir /r "$INSTDIR\apache-tomcat-8.0.20\webapps\jw"
-  RmDir /r "$INSTDIR\apache-tomcat-8.0.20\webapps\jwdesigner"
-  Delete "$INSTDIR\apache-tomcat-8.0.20\webapps\jw.war"
-  Delete "$INSTDIR\apache-tomcat-8.0.20\webapps\jwdesigner.war"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.8\webapps\jw"
+  RmDir /r "$INSTDIR\apache-tomcat-8.5.8\webapps\jwdesigner"
+  Delete "$INSTDIR\apache-tomcat-8.5.8\webapps\jw.war"
+  Delete "$INSTDIR\apache-tomcat-8.5.8\webapps\jwdesigner.war"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"

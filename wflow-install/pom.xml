@@ -173,36 +173,11 @@
                                         <include name="NOTICE.txt" />
                                         <include name="README.txt" />
                                         <include name="CHANGES.txt" />
-                                        <include name="tomcat7-run.bat" />
-                                        <include name="tomcat7-stop.bat" />
+                                        <include name="tomcat8-run.bat" />
+                                        <include name="tomcat8-stop.bat" />
                                         <include name="VERSION.txt" />
                                     </fileset>
                                 </zip>
-
-                                <!--
-                                <zip destfile="builds/joget-demo-windows-${project.version}-${buildNumber}.zip">
-                                    <fileset dir="target">
-                                        <include name="apache-ant-${apache-ant.version}/**" />
-                                        <include name="apache-tomcat-${tomcat.version}/**" />
-                                        <include name="jre${jre.version}/**" />
-                                        <include name="mysql-${mysql.version}-win32/**" />
-                                        <include name="data/**" />
-                                        <include name="docs/**" />
-                                        <include name="wflow/**" />
-                                        <include name="build.xml" />
-                                        <include name="joget-start.bat" />
-                                        <include name="joget-stop.bat" />
-                                        <include name="LICENSE.txt" />
-                                        <include name="NOTICE.txt" />
-                                        <include name="mysql-start.bat" />
-                                        <include name="mysql-stop.bat" />
-                                        <include name="CHANGES.txt" />
-                                        <include name="tomcat7-run.bat" />
-                                        <include name="tomcat7-stop.bat" />
-                                        <include name="VERSION.txt" />
-                                    </fileset>
-                                </zip>
-                                -->
 
                                 <tar compression="gzip" destfile="builds/joget-linux-${project.version}-${buildNumber}.tar.gz">
                                     <tarfileset dir="target" prefix="joget-linux-${project.version}">
@@ -218,7 +193,7 @@
                                         <include name="README.txt" />
                                         <include name="CHANGES.txt" />
                                         <include name="setup.sh" />
-                                        <include name="tomcat7.sh" />
+                                        <include name="tomcat8.sh" />
                                         <include name="VERSION.txt" />
                                     </tarfileset>
                                     <tarfileset dir="target" filemode="755" prefix="joget-linux-${project.version}">
@@ -227,18 +202,6 @@
                                         <include name="*.sh" />
                                     </tarfileset>
                                 </tar>
-
-                                <!--
-                                <zip destfile="builds/joget-updates-${project.version}-${buildNumber}.zip">
-                                    <fileset dir="target">
-                                        <include name="apache-tomcat-${tomcat.version}/webapps/jw**" />
-                                        <include name="wflow/app_plugins/**" />
-                                        <include name="build.xml" />
-                                        <include name="VERSION.txt" />
-                                        <include name="CHANGES.txt" />
-                                    </fileset>
-                                </zip>
-                                -->
 
                             </tasks>
                         </configuration>
