@@ -797,7 +797,7 @@ body#login #page > footer {
     body.horizontal_menu #main .systemAlert {
         margin: 0;
         position: absolute;
-        top: 41px;
+        top: 0px;
         width: 100%;
         z-index: 10;
     }
@@ -817,7 +817,7 @@ body#login #page > footer {
         transform: scale(1)
     }
     #main .systemAlert {
-        top: -34px;
+        top: -26px;
     }
 }
 
