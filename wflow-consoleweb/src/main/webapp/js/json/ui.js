@@ -490,10 +490,12 @@ JsonTable.prototype = {
                     }
                     cell.push(row[prop]);
                 }
-                var newRow = new Object();
-                newRow.id = encodeURIComponent(row[key].replace(/\./g, '__dot__'));
-                newRow.cell = cell;
-                newRows.push(newRow);
+                if (row[key]) {
+                    var newRow = new Object();
+                    newRow.id = encodeURIComponent(row[key].replace(/\./g, '__dot__'));
+                    newRow.cell = cell;
+                    newRows.push(newRow);
+                }
             }
             var returnObject = new Object();
             returnObject.total = jsonObject.total;
