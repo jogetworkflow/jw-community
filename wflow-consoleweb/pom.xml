@@ -117,6 +117,8 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.ttf</exclude>
+                    <exclude>**/*.zip</exclude>
+                    <exclude>**/*.png</exclude>
                 </excludes>
             </resource>
             <resource>
@@ -124,6 +126,8 @@
                 <filtering>false</filtering>
                 <includes>
                     <include>**/*.ttf</include>
+                    <include>**/*.zip</include>
+                    <include>**/*.png</include>
                 </includes>
             </resource>
         </resources>
