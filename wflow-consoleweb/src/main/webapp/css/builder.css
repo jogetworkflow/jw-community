@@ -38,9 +38,13 @@ button:hover, input[type=button]:hover, #builder-body .element-options button:ho
     color: white;
     border-radius: 4px;
     margin-right: 2px;
+    padding: 10px;
 }
 .property-editor-page-button-panel input[type=button]:disabled {
     opacity: 0.5;
+}
+.property-editor-page-button-panel input.page-button-cancel {
+    background: #aaa;
 }
 #builder-container {
     min-width: 100%;

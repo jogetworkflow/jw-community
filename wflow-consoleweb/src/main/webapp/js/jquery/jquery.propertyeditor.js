@@ -599,7 +599,7 @@ PropertyEditor.Model.Editor.prototype = {
             tempHeight = tempHeight  * 0.9 - $(this.element).offset().top;
         }
         $(this.editor).css("height", (tempHeight  - 25) + "px");
-        $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 130) + "px");
+        $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 140) + "px");
     },
     initPage: function() {
         var $thisObject = this;
