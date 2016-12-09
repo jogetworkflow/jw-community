@@ -1332,6 +1332,8 @@ DatalistBuilder = {
     updateDatalistProperties : function(container, properties){
         DatalistBuilder.addToUndo();
         DatalistBuilder.datalistProperties = properties;
+        var json = DatalistBuilder.getJson();
+        $('#list-json').val(json);
 
         //refresh all columns
         for(e in DatalistBuilder.chosenColumns){
