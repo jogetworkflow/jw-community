@@ -57,10 +57,8 @@
                 {
                     key : 'reverse',
                     label : '@@form.section.reverse@@',
-                    options : [
-                        {value : '', label : '@@form.section.reverse.no@@'},
-                        {value : 'true', label : '@@form.section.reverse.yes@@'}
-                    ]
+                    type : 'truefalse',
+                    false_value: ''
                 },
                 {
                     key : 'visibilityControl',
@@ -80,10 +78,8 @@
                 {
                     key : 'regex',
                     label : '@@form.section.regex@@',
-                    options : [
-                        {value : '', label : '@@form.section.reverse.no@@'},
-                        {value : 'true', label : '@@form.section.reverse.yes@@'}
-                    ]
+                    type : 'truefalse',
+                    false_value: ''
                 }]
             },
             {
