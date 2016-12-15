@@ -232,9 +232,10 @@ public class FormBuilderWebController {
         if(callbackSetting == null || (callbackSetting != null && callbackSetting.isEmpty())){
             callbackSetting = "{}";
         }
+        String encodedCallbackSetting = URLEncoder.encode(StringEscapeUtils.escapeHtml(callbackSetting), "UTF-8");
 
         String csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
-        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+StringEscapeUtils.escapeHtml(callbackSetting)+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
+        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+encodedCallbackSetting+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
 
         if(form != null){
             //if id field not exist, automatically add an id hidden field
