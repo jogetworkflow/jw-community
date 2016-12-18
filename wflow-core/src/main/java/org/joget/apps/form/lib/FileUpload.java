@@ -1,15 +1,23 @@
 package org.joget.apps.form.lib;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -24,12 +32,18 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.FileManager;
+import org.joget.commons.util.FileStore;
+import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONObject;
+import org.springframework.web.multipart.MultipartFile;
 
-public class FileUpload extends Element implements FormBuilderPaletteElement, FileDownloadSecurity {
+public class FileUpload extends Element implements FormBuilderPaletteElement, FileDownloadSecurity, PluginWebSupport {
 
     @Override
     public String getName() {
@@ -118,43 +132,27 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
     @Override
     public FormData formatDataForValidation(FormData formData) {
-        // check for file removal
-        String postfix = "_remove";
         String filePathPostfix = "_path";
         String id = FormUtil.getElementParameterName(this);
         if (id != null) {
             String[] tempFilenames = formData.getRequestParameterValues(id);
             String[] tempExisting = formData.getRequestParameterValues(id + filePathPostfix);
             
-            if ((tempFilenames != null && tempFilenames.length > 0) || (tempExisting != null && tempExisting.length > 0)) {
-                List<String> filenames = new ArrayList<String>();
-                if (tempFilenames != null && tempFilenames.length > 0) {
-                    filenames.addAll(Arrays.asList(tempFilenames));
-                }
-                List<String> removalFlag = new ArrayList<String>();
-                String[] tempRemove = formData.getRequestParameterValues(id + postfix);
-                if (tempRemove != null && tempRemove.length > 0) {
-                    removalFlag.addAll(Arrays.asList(tempRemove));
-                }
-                
-                List<String> existingFilePath = new ArrayList<String>();
-                if (tempExisting != null && tempExisting.length > 0) {
-                    existingFilePath.addAll(Arrays.asList(tempExisting));
-                }
+            List<String> filenames = new ArrayList<String>();
+            if (tempFilenames != null && tempFilenames.length > 0) {
+                filenames.addAll(Arrays.asList(tempFilenames));
+            }
 
-                for (String filename : existingFilePath) {
-                    if (!removalFlag.contains(filename)) {
-                        filenames.add(filename);
-                    }
-                }
+            if (tempExisting != null && tempExisting.length > 0) {
+                filenames.addAll(Arrays.asList(tempExisting));
+            }
 
-                if (filenames.isEmpty()) {
-                    formData.addRequestParameterValues(id, new String[]{""});
-                } else if (!"true".equals(getPropertyString("multiple"))) {
-                    formData.addRequestParameterValues(id, new String[]{filenames.get(0)});
-                } else {
-                    formData.addRequestParameterValues(id, filenames.toArray(new String[]{}));
-                }
+            if (filenames.isEmpty()) {
+                formData.addRequestParameterValues(id, new String[]{""});
+            } else if (!"true".equals(getPropertyString("multiple"))) {
+                formData.addRequestParameterValues(id, new String[]{filenames.get(0)});
+            } else {
+                formData.addRequestParameterValues(id, filenames.toArray(new String[]{}));
             }
         }
         return formData;
@@ -328,6 +326,82 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
             return false;
         } else {
             return !WorkflowUtil.isCurrentUserAnonymous();
+        }
+    }
+    
+    public String getServiceUrl() {
+        String url = WorkflowUtil.getHttpServletRequest().getContextPath()+ "/web/json/plugin/org.joget.apps.form.lib.FileUpload/service";
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        
+        //create nonce
+        String paramName = FormUtil.getElementParameterName(this);
+        String nonce = SecurityUtil.generateNonce(new String[]{"FileUpload", appDef.getAppId(), appDef.getVersion().toString(), paramName}, 1);
+        try {
+            url = url + "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_paramName="+URLEncoder.encode(paramName, "UTF-8")+"&_appId="+URLEncoder.encode(appDef.getAppId(), "UTF-8")+"&_appVersion="+URLEncoder.encode(appDef.getVersion().toString(), "UTF-8");
+        } catch (Exception e) {}
+        return url;
+    }
+    
+    public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nonce = request.getParameter("_nonce");
+        String paramName = request.getParameter("_paramName");
+        String appId = request.getParameter("_appId");
+        String appVersion = request.getParameter("_appVersion");
+        String filePath = request.getParameter("_path");
+
+        if (SecurityUtil.verifyNonce(nonce, new String[]{"FileUpload", appId, appVersion, paramName})) {
+            if ("POST".equalsIgnoreCase(request.getMethod())) {
+                try {
+                    JSONObject obj = new JSONObject();
+                    try {
+                        // handle multipart files
+                        MultipartFile file = FileStore.getFile(paramName);
+                        if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
+                            String path = FileManager.storeFile(file);
+                            obj.put("path", path);
+                        }
+
+                        Collection<String> errorList = FileStore.getFileErrorList();
+                        if (errorList != null && !errorList.isEmpty() && errorList.contains(paramName)) {
+                            obj.put("error", ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+                        }
+                    } catch (Exception e) {
+                        obj.put("error", e.getLocalizedMessage());
+                    } finally {
+                        FileStore.clear();
+                    }
+                    obj.write(response.getWriter());
+                } catch (Exception ex) {}
+            } else if (filePath != null && !filePath.isEmpty()) {
+                File file = FileManager.getFileByPath(filePath);
+                if (file != null) {
+                    ServletOutputStream stream = response.getOutputStream();
+                    DataInputStream in = new DataInputStream(new FileInputStream(file));
+                    byte[] bbuf = new byte[65536];
+                        
+                    try {
+                        String contentType = request.getSession().getServletContext().getMimeType(file.getName());
+                        if (contentType != null) {
+                            response.setContentType(contentType);
+                        }
+
+                        // send output
+                        int length = 0;
+                        while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+                            stream.write(bbuf, 0, length);
+                        }
+                    } catch (Exception e) {
+                    
+                    } finally {
+                        in.close();
+                        stream.flush();
+                        stream.close();
+                    }    
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+            }
         }
     }
 }

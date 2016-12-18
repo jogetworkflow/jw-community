@@ -1,37 +1,73 @@
 <div class="form-cell" ${elementMetaData!}>
-    <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <div class="form-fileupload">
-    <#if element.properties.readonly! != 'true'>
-        <input id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
-    </#if>
-    <#if tempFilePaths?? || filePaths??>
+    <#if !(request.getAttribute("org.joget.apps.form.lib.FileUpload")?? || request.getAttribute("org.joget.plugin.enterprise.ImageUpload")??)  >
+        <link rel="stylesheet" href="${request.contextPath}/js/dropzone/dropzone.css" />
+        <script type="text/javascript" src="${request.contextPath}/js/dropzone/dropzone.js"></script>
+        <script src="${request.contextPath}/plugin/org.joget.apps.form.lib.FileUpload/js/jquery.fileupload.js"></script>
+        <script type="text/javascript">// Immediately after the js include
+            Dropzone.autoDiscover = false;
+        </script>
         <style>
-            ul.form-fileupload-value li{display:block;}
+            .form-fileupload {width:70%;}
+            ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
+            ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
+            ul.form-fileupload-value li a {display: inline-block;}
         </style>
+    </#if>
+
+    <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
+    <div id="form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}" class="form-fileupload <#if error??>form-error-cell</#if> <#if element.properties.readonly! == 'true'>readonly<#else>dropzone</#if>">
+    <#if element.properties.readonly! != 'true'>
+        <div class="dz-message needsclick">
+            @@form.fileupload.dropFile@@
+        </div>
+        <input style="display:none" id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
+    </#if>
         <ul class="form-fileupload-value">
+            <li class="template" style="display:none;">
+                <span class="name" data-dz-name></span> <a class="remove"style="display:none">@@form.fileupload.remove@@</a> 
+                <strong class="error text-danger" data-dz-errormessage></strong>
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                </div>
+                <input type="hidden" name="${elementParamName!}_path" value="" disabled/>
+            </li>
             <#if tempFilePaths??>
                 <#list tempFilePaths?keys as key>
                     <li>
-                        ${tempFilePaths[key]!?html}
+                        <span class="name">${tempFilePaths[key]!?html}</span>
+                            <#if element.properties.readonly! != 'true'>
+                                <a class="remove">@@form.fileupload.remove@@</a>
+                            </#if>
                         <input type="hidden" name="${elementParamName!}_path" value="${key!?html}"/>
-                        <#if element.properties.readonly! != 'true'>
-                            <input type="checkbox" name="${elementParamName!}_remove" value="${key!?html}" /> <span style="font-size:smaller">@@form.fileupload.remove@@</span>
-                        </#if>
                     </li>
                 </#list>
             </#if>
             <#if filePaths??>
                 <#list filePaths?keys as key>
                     <li>
-                        <a href="${request.contextPath}${key!?html}" target="_blank" >${filePaths[key]!?html}</a>
-                        <input type="hidden" name="${elementParamName!}_path" value="${filePaths[key]!?html}"/>
+                        <a href="${request.contextPath}${key!?html}" target="_blank" ><span class="name">${filePaths[key]!?html}</span></a>
                         <#if element.properties.readonly! != 'true'>
-                            <input type="checkbox" name="${elementParamName!}_remove" value="${filePaths[key]!?html}" /> <span style="font-size:smaller">@@form.fileupload.remove@@</span>
+                            <a class="remove">@@form.fileupload.remove@@</a>
                         </#if>
+                        <input type="hidden" name="${elementParamName!}_path" value="${filePaths[key]!?html}"/>
                     </li>
                 </#list>
             </#if>
         </ul>
-    </#if>
     </div>
+    <#if element.properties.readonly! != 'true'>
+        <script>
+            $(document).ready(function(){
+                $('#form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}').fileUploadField({
+                    url : "${element.serviceUrl!}",
+                    paramName : "${elementParamName!}",
+                    multiple : "${element.properties.multiple!}",
+                    maxSize : "${element.properties.maxSize!}",
+                    maxSizeMsg : "${element.properties.maxSizeMsg!}",
+                    fileType : "${element.properties.fileType!}",
+                    fileTypeMsg : "${element.properties.fileTypeMsg!}"
+                });
+            });
+        </script>
+    </#if>
 </div>
