@@ -31,17 +31,30 @@ PropertyEditor.Util = {
         var aProps = Object.getOwnPropertyNames(o1);
         var bProps = Object.getOwnPropertyNames(o2);
         
-        if (aProps.length !== bProps.length) {
-            return false;
-        }
-
+        var temp = [];
         for (var i = 0; i < aProps.length; i++) {
-            var propName = aProps[i];
-            if (typeof o1[propName] === "object") {
-                if (!PropertyEditor.Util.deepEquals(o1[propName], o2[propName])) {
+            if ($.inArray(aProps[i], temp ) === -1) {
+                temp.push(aProps[i]);
+            }
+        }
+        for (var i = 0; i < bProps.length; i++) {
+            if ($.inArray(bProps[i], temp ) === -1) {
+                temp.push(bProps[i]);
+            }
+        }
+        
+        for (var i = 0; i < temp.length; i++) {
+            var propName = temp[i];
+            if ((typeof o1[propName] === "object" || typeof o2[propName] === "object")) {
+                if (o1[propName] !== undefined && o2[propName] !== undefined && !PropertyEditor.Util.deepEquals(o1[propName], o2[propName])) {
+                    return false;
+                } else if ((o1[propName] === undefined && o2[propName]["className"] !== "") 
+                        || (o2[propName] === undefined && o1[propName]["className"] !== "")) {
                     return false;
                 }
-            } else if (o1[propName] !== o2[propName]) {
+            } else if ((o1[propName] !== undefined && o2[propName] !== undefined && o1[propName] !== o2[propName]) 
+                    || (o1[propName] === undefined && o2[propName] !== "")
+                    || (o2[propName] === undefined && o1[propName] !== "")) {
                 return false;
             }
         }
