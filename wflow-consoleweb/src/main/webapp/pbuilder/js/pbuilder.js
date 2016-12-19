@@ -815,6 +815,10 @@ ProcessBuilder.Util = {
 
         return null;
     },
+    adjustCanvasPosition : function() {
+        var top = $("#header").height() + 15;
+        $("#viewport").css("top", top + "px");
+    },
     jsPlumb: jsPlumb,
     undoManager: new UndoManager()
 };
@@ -2190,6 +2194,7 @@ ProcessBuilder.Designer = {
     currentProcessDefId: null,
     isCtrlKeyPressed: false,
     refresh: function(delay) {
+        ProcessBuilder.Util.adjustCanvasPosition();
         if (!delay) {
             delay = 100;
         } else if (delay < 0) {
