@@ -8,6 +8,7 @@
         </script>
         <style>
             .form-fileupload {width:70%;}
+            ul.form-fileupload-value {padding0; margin: 0;}
             ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
             ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
             ul.form-fileupload-value li a {display: inline-block;}
@@ -65,7 +66,8 @@
                     maxSize : "${element.properties.maxSize!}",
                     maxSizeMsg : "${element.properties.maxSizeMsg!}",
                     fileType : "${element.properties.fileType!}",
-                    fileTypeMsg : "${element.properties.fileTypeMsg!}"
+                    fileTypeMsg : "${element.properties.fileTypeMsg!}",
+                    padding : "${element.properties.padding!}"
                 });
             });
         </script>

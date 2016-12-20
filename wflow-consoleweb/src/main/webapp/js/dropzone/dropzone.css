@@ -24,7 +24,7 @@
   20% { -webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); } }
 .dropzone, .dropzone * { box-sizing: border-box; }
 
-.dropzone { min-height: 150px; border: 2px dotted #ccc; background: white; padding: 60px !important; }
+.dropzone {border: 2px dotted #ccc; background: white; padding: 10px 20px !important; }
 .dropzone.dz-clickable { cursor: pointer; }
 .dropzone.dz-clickable *:not(a) { cursor: default; }
 .dropzone.dz-clickable a * { cursor: pointer; }
@@ -32,7 +32,7 @@
 .dropzone.dz-started .dz-message { display: none; }
 .dropzone.dz-drag-hover { border-style: solid; }
 .dropzone.dz-drag-hover .dz-message { opacity: 0.5; }
-.dropzone .dz-message { text-align: center; margin: 2em 0; }
+.dropzone .dz-message { text-align: center; margin: 10px 0; }
 .dropzone .dz-preview { position: relative; display: inline-block; vertical-align: top; margin: 16px; min-height: 100px; }
 .dropzone .dz-preview:hover { z-index: 1000; }
 .dropzone .dz-preview:hover .dz-details { opacity: 1; }

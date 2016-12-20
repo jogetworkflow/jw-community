@@ -122,6 +122,11 @@
         }]
     },
     {
+        name : 'padding',
+        label : '@@form.fileupload.dropzonePadding@@',
+        type : 'textfield'
+    },
+    {
         name : 'attachment',
         label : '@@form.fileupload.download@@',
         type : 'checkbox',

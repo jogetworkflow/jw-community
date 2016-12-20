@@ -51,6 +51,7 @@
                     $(file.previewElement).find(".progress").remove();
                     $(file.previewElement).find(".remove").show();
                     $(file.previewElement).find("input").val(resp.path);
+                    $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + resp.path);
                 });
                 myDropzone.on("error", function(file, error) {
                     $(file.previewElement).find(".progress").remove();
@@ -62,6 +63,10 @@
                 $(target).on("click", ".remove", function(){
                     $(this).closest("li").remove();
                 });
+                
+                if ($(target).hasClass("dropzone") && o.padding !== "") {
+                    $(target).attr("style", "padding:" +o.padding+ " !important;");
+                }
             }
             return target;
         }
