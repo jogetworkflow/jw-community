@@ -1,6 +1,5 @@
 UserviewBuilder = {
     //Configuration
-    tinymceUrl : '',
     saveUrl : '',
     previewUrl : '',
     contextPath : '/jw',
@@ -137,7 +136,6 @@ UserviewBuilder = {
             $("#step-setting-container").html("");
             var options = {
                 contextPath: UserviewBuilder.contextPath,
-                tinyMceScript: UserviewBuilder.tinymceUrl,
                 propertiesDefinition : UserviewBuilder.settingPropertyOptions,
                 propertyValues : UserviewBuilder.data.setting.properties,
                 showCancelButton:false,
@@ -240,7 +238,6 @@ UserviewBuilder = {
     ShowPopupUserviewSetting : function () {
         var options = {
             contextPath: UserviewBuilder.contextPath,
-            tinyMceScript: UserviewBuilder.tinymceUrl,
             propertiesDefinition : UserviewBuilder.settingPropertyOptions,
             propertyValues : UserviewBuilder.data.setting.properties,
             showCancelButton:true,
@@ -430,7 +427,6 @@ UserviewBuilder = {
         var thisObject = this;
         var options = {
             contextPath: UserviewBuilder.contextPath,
-            tinyMceScript: thisObject.tinymceUrl,
             propertiesDefinition : thisObject.menuTypes[menu.className].propertyOptions,
             propertyValues : menu.properties,
             showCancelButton:true,
@@ -488,7 +484,6 @@ UserviewBuilder = {
         var thisObject = this;
         var options = {
             contextPath: UserviewBuilder.contextPath,
-            tinyMceScript: thisObject.tinymceUrl,
             propertiesDefinition : UserviewBuilder.categoryPropertyOptions,
             propertyValues : category.properties,
             showCancelButton:true,

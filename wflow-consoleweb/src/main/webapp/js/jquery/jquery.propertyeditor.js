@@ -3087,11 +3087,13 @@ PropertyEditor.Type.GridFixedRow = PropertyEditor.Util.inherit( PropertyEditor.M
 
 PropertyEditor.Type.HtmlEditor = function(){};
 PropertyEditor.Type.HtmlEditor.prototype = {
-    tinyMceInitialed : false,
     shortname : "htmleditor",
     getData: function(useDefault) {
         var data = new Object();
-        var value = $('[name='+this.id+']:not(.hidden)').html().trim();
+        var value = "";
+        if ($('[name='+this.id+']:not(.hidden)').length > 0) {
+            value = tinyMCE.editors[$('[name='+this.id+']:not(.hidden)').attr('id')].getContent();
+        }
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault 
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
@@ -3117,37 +3119,28 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         return '<textarea id="'+ this.id + '" name="'+ this.id + '" class="tinymce"'+rows +cols+'>'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'</textarea>';
     },
     initScripting: function() {
-        //if tinymce ald exist, using command to init it
-        if(PropertyEditor.Type.HtmlEditor.prototype.tinyMceInitialed && window['tinymce'] !== undefined){
-            window['tinymce'].execCommand('mceAddControl', false, this.id);
-        }else{
-            if (this.options.tinyMceScript !== '') {
-                $('#'+this.id).tinymce({
-                    // Location of TinyMCE script
-                    script_url : this.options.tinyMceScript,
-
-                    // General options
-                    convert_urls : false,
-                    theme : "advanced",
-                    plugins : "layer,table,save,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,contextmenu,paste,noneditable,xhtmlxtras,template,advlist",
-
-                    // Theme options
-                    theme_advanced_buttons1 : "cleanup,code,|,undo,redo,|,cut,copy,paste|,search,replace,|,bullist,numlist,|,outdent,indent",
-                    theme_advanced_buttons2 : "bold,italic,underline,strikethrough,|,forecolor,backcolor,|,justifyleft,justifycenter,justifyright,justifyfull,|,sub,sup,|,insertdate,inserttime,charmap,iespell",
-                    theme_advanced_buttons3 : "formatselect,fontselect,fontsizeselect,|,hr,removeformat,blockquote,|,link,unlink,image,media",
-                    theme_advanced_buttons4 : "tablecontrols,|,visualaid,insertlayer,moveforward,movebackward,absolute",
-                    theme_advanced_toolbar_location : "top",
-                    theme_advanced_toolbar_align : "left",
-                    theme_advanced_statusbar_location : "bottom",
-
-                    valid_elements : "+*[*]",
-
-                    height : "300px",
-                    width : "95%"
-                });
-                PropertyEditor.Type.HtmlEditor.prototype.tinyMceInitialed = true;
-            }
+        var height = 500;
+        if (!(this.properties.height === undefined || this.properties.height === "")) {
+            try {
+                height = parseInt(this.properties.height);
+            } catch (err) {}
         }
+        
+        tinymce.init({
+            selector: '#'+this.id,
+            height: height,
+            plugins: [
+                'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+                'searchreplace wordcount visualblocks visualchars code fullscreen',
+                'insertdatetime media nonbreaking table contextmenu directionality',
+                'emoticons paste textcolor colorpicker textpattern imagetools codesample toc'
+            ],
+            toolbar1: 'undo redo | insert | styleselect fontsizeselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample | forecolor backcolor emoticons | print preview',
+            menubar : 'edit insert view format table tools',
+            image_advtab: true,
+            relative_urls: false,
+            valid_elements : '*[*]'
+        });
     }
 };
 PropertyEditor.Type.HtmlEditor = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.HtmlEditor.prototype);
@@ -3553,7 +3546,6 @@ PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit( PropertyEditor.M
         propertyEditor : function(options){
             var defaults = {
                 contextPath : '',
-                tinyMceScript : '',
                 saveCallback : null,
                 cancelCallback : null,
                 validationFailedCallback : null,

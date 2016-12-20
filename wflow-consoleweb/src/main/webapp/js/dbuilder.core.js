@@ -5,7 +5,6 @@ DatalistBuilder = {
     //Configuration
     appId: '',
     appVersion: '',
-    tinymceUrl : '',
     saveUrl : '',
     previewUrl : '',
     contextPath : '',
@@ -191,7 +190,6 @@ DatalistBuilder = {
         propertyValues['binder'] = DatalistBuilder.binderProperties;
         
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1044,7 +1042,6 @@ DatalistBuilder = {
         var propertyValues = DatalistBuilder.chosenColumns[columnId];
 
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1123,7 +1120,6 @@ DatalistBuilder = {
         propertyValues['filterParamName'] = DatalistBuilder.filterParam + propertyValues['name'];
         
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1265,7 +1261,6 @@ DatalistBuilder = {
         var propertyValues = DatalistBuilder.datalistProperties;
 
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1296,7 +1291,6 @@ DatalistBuilder = {
         propertyValues['binder'] = DatalistBuilder.binderProperties;
         
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1364,7 +1358,6 @@ DatalistBuilder = {
         var propertyValues = action.properties;
 
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1496,7 +1489,6 @@ DatalistBuilder = {
         var propertyValues = action.properties;
 
         var options = {
-            tinyMceScript: DatalistBuilder.tinymceUrl,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,

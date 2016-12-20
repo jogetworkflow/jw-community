@@ -9,7 +9,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/storage/jquery.html5storage.min.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/jquery.tinymce.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/js/tinymce/tinymce.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/chosen/chosen.jquery.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/tinyColorPicker/jqColorPicker.min.js"></script>

@@ -1240,7 +1240,6 @@ ProcessBuilder.Actions = {
             };
             var options = {
                 contextPath: ProcessBuilder.Designer.contextPath,
-                tinyMceScript: ProcessBuilder.Designer.tinymceUrl,
                 propertiesDefinition: propertyOptions,
                 propertyValues: model,
                 showCancelButton: true,

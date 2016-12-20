@@ -42,7 +42,6 @@
             
         <script type="text/javascript">
             $(document).ready(function () {
-                UserviewBuilder.tinymceUrl = '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js';
                 UserviewBuilder.saveUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderSave/';
                 UserviewBuilder.previewUrl = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/userview/builderPreview/';
                 UserviewBuilder.contextPath = '${pageContext.request.contextPath}';

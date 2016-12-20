@@ -6,7 +6,6 @@ FormBuilder = {
     contextPath: "/jw",
     elementPreviewUrl: "/web/fbuilder/element/preview",
     formPreviewUrl: "/web/fbuilder/form/preview/",
-    tinymceUrl: "/js/tiny_mce/tiny_mce.js",
     originalJson: "",
     appId: "",
     appVersion: "",
@@ -617,7 +616,6 @@ FormBuilder = {
 
         // show property dialog
         var options = {
-            tinyMceScript: FormBuilder.contextPath + FormBuilder.tinymceUrl,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition : elementOptions,
             propertyValues : elementProperty,
@@ -945,7 +943,6 @@ FormBuilder = {
         $("#form-properties").html("");
         var formProperties = form.dom.properties;
         var options = {
-            tinyMceScript: FormBuilder.tinymceUrl,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition: formOptions,
             propertyValues: formProperties,
@@ -977,7 +974,6 @@ FormBuilder = {
         
         // show property dialog
         var options = {
-            tinyMceScript: FormBuilder.contextPath + FormBuilder.tinymceUrl,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition: formOptions,
             propertyValues: formProperties,

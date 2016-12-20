@@ -43,7 +43,6 @@
             $(document).ready(function() {
                 DatalistBuilder.appId = '<c:out value="${appId}"/>';
                 DatalistBuilder.appVersion = '<c:out value="${appVersion}"/>';
-                DatalistBuilder.tinymceUrl = '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js';
                 DatalistBuilder.saveUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderSave/"/>';
                 DatalistBuilder.previewUrl = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builderPreview/"/>';
                 DatalistBuilder.contextPath = '${pageContext.request.contextPath}';

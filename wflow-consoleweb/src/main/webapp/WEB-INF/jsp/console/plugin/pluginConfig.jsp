@@ -186,7 +186,6 @@
             $(document).ready(function(){
                 var options = {
                     contextPath: '${pageContext.request.contextPath}',
-                    tinyMceScript: '${pageContext.request.contextPath}/js/tiny_mce/tiny_mce.js',
                     <c:if test="${!empty propertyEditable.propertyOptions}">
                         propertiesDefinition : ${PropertyUtil.injectHelpLink(plugin.helpLink, propertyEditable.propertyOptions)},
                     </c:if>
