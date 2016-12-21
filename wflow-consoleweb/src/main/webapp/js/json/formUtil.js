@@ -132,14 +132,19 @@ FormUtil = {
     numberFormat : function (value, options){
         var numOfDecimal = parseInt(options.numOfDecimal);
         var decimalSeperator = ".";
+        var regexDecimalSeperator = "\\\.";
         var thousandSeparator = ",";
+        var regexThousandSeparator = ",";
         if(options.format.toUpperCase() === "EURO"){
             decimalSeperator = ",";
+            regexDecimalSeperator = ",";
             thousandSeparator = ".";
+            regexThousandSeparator = "\\\.";
         }
         
         var number = value.replace(/\s/g, "");
-        number = number.replace(new RegExp(thousandSeparator, 'g'), '');
+        number = number.replace(new RegExp(regexThousandSeparator, 'g'), '');
+        number = number.replace(new RegExp(regexDecimalSeperator, 'g'), '.');
         if(options.prefix !== ""){
             number = number.replace(options.prefix, "");
         }
@@ -151,7 +156,7 @@ FormUtil = {
         if (!isFinite(number)) {
             number = 0;
         } else {
-            var numberstr = value.toString();
+            var numberstr = number.toString();
             var eindex = numberstr.indexOf("e");
             if (eindex > -1){
                 exponent = numberstr.substring(eindex);

@@ -7,8 +7,8 @@
                     var formatted = FormUtil.numberFormat(value, o);
                     $(element).val(formatted);
                     
-                    if ($(element).parent().find(".form-cell-value").length > 0) {
-                        $(element).parent().find(".form-cell-value > span").text(formatted);
+                    if ($(element).parent().find(".form-cell-value, .subform-cell-value").length > 0) {
+                        $(element).parent().find(".form-cell-value > span, .subform-cell-value > span").text(formatted);
                     }
                 }
             };
