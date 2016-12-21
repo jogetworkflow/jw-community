@@ -2552,7 +2552,7 @@ PropertyEditor.Type.Grid.prototype = {
                 var change = false;
                 $("#"+grid.id+ " [name='"+reference+"']").each(function() {
                     var val = $(this).val(); 
-                    if (val === "") {
+                    if (val === "" || val === null) {
                         val = $(this).data("value");
                     }
                     $(this).html(html);
