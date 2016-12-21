@@ -2825,6 +2825,20 @@ PropertyEditor.Type.GridCombine.prototype = {
                 }
             });
         }
+        
+        //check for all empty columns if there is only one row
+        if (values.length === 1) {
+            var row = values[0];
+            var empty = true;
+            $.each(thisObj.properties.columns, function(i, column) {
+                if (row[column.key] !== undefined && row[column.key] !== "") {
+                    empty = false;
+                }
+            });
+            if (empty) {
+                values = [];
+            }
+        }
 
         //render value
         if (values.length > 0) {
