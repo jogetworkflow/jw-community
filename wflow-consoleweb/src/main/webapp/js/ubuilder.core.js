@@ -24,6 +24,7 @@ UserviewBuilder = {
 
     //Tracker
     isCtrlKeyPressed : false,
+    isAltKeyPressed : false,
     saveChecker : 0,
 
     //Popup dialog object for property editor
@@ -86,25 +87,29 @@ UserviewBuilder = {
         $(document).keyup(function (e) {
             if(e.which == 17){
                 UserviewBuilder.isCtrlKeyPressed=false;
+            } else if(e.which === 18){
+                UserviewBuilder.isAltKeyPressed = false;
             }
         }).keydown(function (e) {
             if(e.which == 17){
                 UserviewBuilder.isCtrlKeyPressed=true;
+            } else if(e.which === 18){
+                UserviewBuilder.isAltKeyPressed = true;
             }
             if ($(".property-editor-container:visible").length === 0) {
-                if(e.which == 83 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+S - save
+                if(e.which == 83 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+S - save
                     UserviewBuilder.save();
                     return false;
                 }
-                if(e.which == 90 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+Z - undo
+                if(e.which == 90 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+Z - undo
                     UserviewBuilder.undo();
                     return false;
                 }
-                if(e.which == 89 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+Y - redo
+                if(e.which == 89 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+Y - redo
                     UserviewBuilder.redo();
                     return false;
                 }
-                if(e.which == 80 && UserviewBuilder.isCtrlKeyPressed == true) { //CTRL+P - preview
+                if(e.which == 80 && UserviewBuilder.isCtrlKeyPressed == true && !UserviewBuilder.isAltKeyPressed) { //CTRL+P - preview
                     UserviewBuilder.preview();
                     return false;
                 }

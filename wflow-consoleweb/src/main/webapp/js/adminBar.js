@@ -104,18 +104,20 @@ var AdminBar = {
         $(document).keyup(function (e) {
             if(e.which === 16){
                 AdminBar.isShiftKeyPressed = false;
-            }
-            if(e.which === 17){
+            } else if(e.which === 17){
                 AdminBar.isCtrlKeyPressed = false;
+            } else if(e.which === 18){
+                AdminBar.isAltKeyPressed = false;
             }
         }).keydown(function (e) {
             if(e.which === 16){
                 AdminBar.isShiftKeyPressed = true;
-            }
-            if(e.which === 17){
+            } else if(e.which === 17){
                 AdminBar.isCtrlKeyPressed = true;
+            } else if(e.which === 18){
+                AdminBar.isAltKeyPressed = true;
             }
-            if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+0
+            if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+0
                 if ($("#quickEditModeOffLabel").hasClass("ui-state-active")) {
                     $("#quickEditModeOn").trigger('click');
                 } else {
@@ -123,22 +125,22 @@ var AdminBar = {
                 }
                 return false;
             }  
-            if(e.which === 49 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+1
+            if(e.which === 49 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+1
                 AdminBar.showAdminBar();
                 $("#adminBarButtons a.adminBarButton:eq(0)").trigger("click");
 		return false;
             }
-            if(e.which === 50 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+2
+            if(e.which === 50 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+2
                 AdminBar.showAdminBar();
                 $("#adminBarButtons a.adminBarButton:eq(1)").trigger("click");
 		return false;
             }
-            if(e.which === 51 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+3
+            if(e.which === 51 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+3
                 AdminBar.showAdminBar();
                 $("#adminBarButtons a.adminBarButton:eq(2)").trigger("click");
 		return false;
             }
-            if(e.which === 52 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+4
+            if(e.which === 52 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+4
                 AdminBar.showAdminBar();
                 $("#adminBarButtons a.adminBarButton:eq(3)").trigger("click");
 		return false;

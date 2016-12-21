@@ -2193,6 +2193,7 @@ ProcessBuilder.Designer = {
     model: null,
     currentProcessDefId: null,
     isCtrlKeyPressed: false,
+    isAltKeyPressed : false,
     refresh: function(delay) {
         ProcessBuilder.Util.adjustCanvasPosition();
         if (!delay) {
@@ -2862,17 +2863,21 @@ ProcessBuilder.Designer = {
         $(document).on("keyup", function (e) {
             if (e.which === 17) {
                 ProcessBuilder.Designer.isCtrlKeyPressed = false;
+            } else if(e.which === 18){
+                ProcessBuilder.Designer.isAltKeyPressed = false;
             }
         }).on("keydown", function (e) {
             if (e.which === 17) {
                 ProcessBuilder.Designer.isCtrlKeyPressed = true;
+            } else if(e.which === 18){
+                ProcessBuilder.Designer.isAltKeyPressed = true;
             }
             if ($(".property-editor-container:visible").length === 0) {
-                if (e.which === 90 && ProcessBuilder.Designer.isCtrlKeyPressed) { // CTRL+Z - undo
+                if (e.which === 90 && ProcessBuilder.Designer.isCtrlKeyPressed && !ProcessBuilder.Designer.isAltKeyPressed) { // CTRL+Z - undo
                     ProcessBuilder.Actions.undo();
                     return false;
                 }
-                if (e.which === 89 && ProcessBuilder.Designer.isCtrlKeyPressed) { // CTRL+Z - redo
+                if (e.which === 89 && ProcessBuilder.Designer.isCtrlKeyPressed && !ProcessBuilder.Designer.isAltKeyPressed) { // CTRL+Z - redo
                     ProcessBuilder.Actions.redo();
                     return false;
                 }
