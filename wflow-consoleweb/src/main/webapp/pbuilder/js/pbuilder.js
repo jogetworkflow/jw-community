@@ -2870,11 +2870,15 @@ ProcessBuilder.Designer = {
 
         // shortcut keys
         $(document).on("keyup", function (e) {
-            if (e.which === 17) {
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if (e.which === 17) {
                 ProcessBuilder.Designer.isCtrlKeyPressed = false;
             }
         }).on("keydown", function (e) {
-            if (e.which === 17) {
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if (e.which === 17) {
                 ProcessBuilder.Designer.isCtrlKeyPressed = true;
             }
             if ($(".property-editor-container:visible").length === 0) {

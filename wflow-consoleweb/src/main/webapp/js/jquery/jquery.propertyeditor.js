@@ -3669,11 +3669,13 @@ PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit( PropertyEditor.M
             
             var keys = {};
             $(container).keydown(function(e){
-                keys[e.which] = true;
-                if (keys[17] === true && keys[16] === true && (keys[51] === true || keys[219] === true)) {
-                    var element = $(container).find(":focus");
-                    showHashVariableAssit(element, doGetCaretPosition(element[0]), (keys[51] === true)?"#":"{");
-                    keys = {};
+                if (!(e.ctrlKey && e.altKey)) {
+                    keys[e.which] = true;
+                    if (keys[17] === true && keys[16] === true && (keys[51] === true || keys[219] === true)) {
+                        var element = $(container).find(":focus");
+                        showHashVariableAssit(element, doGetCaretPosition(element[0]), (keys[51] === true)?"#":"{");
+                        keys = {};
+                    }
                 }
             }).keyup(function(e){
                 delete keys[e.which];

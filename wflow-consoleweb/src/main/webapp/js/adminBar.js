@@ -114,17 +114,19 @@ var AdminBar = {
         }
         // shortcut keys
         $(document).keyup(function (e) {
-            if(e.which === 16){
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if(e.which === 16){
                 AdminBar.isShiftKeyPressed = false;
-            }
-            if(e.which === 17){
+            } else if(e.which === 17){
                 AdminBar.isCtrlKeyPressed = false;
             }
         }).keydown(function (e) {
-            if(e.which === 16){
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if(e.which === 16){
                 AdminBar.isShiftKeyPressed = true;
-            }
-            if(e.which === 17){
+            } else if(e.which === 17){
                 AdminBar.isCtrlKeyPressed = true;
             }
             if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed) { // CTRL+0

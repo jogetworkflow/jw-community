@@ -128,11 +128,15 @@ FormBuilder = {
     initUndoRedo : function() {
         //Shortcut key
         $(document).keyup(function (e) {
-            if(e.which == 17){
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if(e.which == 17){
                 FormBuilder.isCtrlKeyPressed=false;
             }
         }).keydown(function (e) {
-            if(e.which == 17){
+            if (e.ctrlKey && e.altKey) {
+                //alt - GR  - ignore it
+            } else if(e.which == 17){
                 FormBuilder.isCtrlKeyPressed=true;
             }
             if ($(".property-editor-container:visible").length === 0) {
