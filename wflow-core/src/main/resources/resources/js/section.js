@@ -105,7 +105,8 @@ VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
     if (isRegex !== undefined && "true" === isRegex) {
         try {
             var regex = new RegExp(controlValue);
-            return regex.exec(value) === value;
+            var result = regex.exec(value);
+            return result.length > 0 && result[0] === value;
         } catch (err) {
             return false;
         }
