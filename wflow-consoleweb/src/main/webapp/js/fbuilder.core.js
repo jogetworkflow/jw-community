@@ -15,6 +15,7 @@ FormBuilder = {
     //undo & redo feature
     tempJson : '',
     isCtrlKeyPressed : false,
+    isAltKeyPressed : false,
     undoStack : new Array(),
     redoStack : new Array(),
     undoRedoMax : 50,
@@ -128,23 +129,23 @@ FormBuilder = {
     initUndoRedo : function() {
         //Shortcut key
         $(document).keyup(function (e) {
-            if (e.ctrlKey && e.altKey) {
-                //alt - GR  - ignore it
-            } else if(e.which == 17){
+            if(e.which == 17){
                 FormBuilder.isCtrlKeyPressed=false;
+            } else if(e.which === 18){
+                FormBuilder.isAltKeyPressed = false;
             }
         }).keydown(function (e) {
-            if (e.ctrlKey && e.altKey) {
-                //alt - GR  - ignore it
-            } else if(e.which == 17){
+            if(e.which == 17){
                 FormBuilder.isCtrlKeyPressed=true;
+            } else if(e.which === 18){
+                FormBuilder.isAltKeyPressed = true;
             }
             if ($(".property-editor-container:visible").length === 0) {
-                if(e.which == 90 && FormBuilder.isCtrlKeyPressed == true) { //CTRL+Z - undo
+                if(e.which == 90 && FormBuilder.isCtrlKeyPressed == true && !FormBuilder.isAltKeyPressed) { //CTRL+Z - undo
                     FormBuilder.undo();
                     return false;
                 }
-                if(e.which == 89 && FormBuilder.isCtrlKeyPressed == true) { //CTRL+Y - redo
+                if(e.which == 89 && FormBuilder.isCtrlKeyPressed == true && !FormBuilder.isAltKeyPressed) { //CTRL+Y - redo
                     FormBuilder.redo();
                     return false;
                 }

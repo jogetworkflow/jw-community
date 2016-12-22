@@ -3685,7 +3685,7 @@ PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit( PropertyEditor.M
             $(container).keydown(function(e){
                 if (!(e.ctrlKey && e.altKey)) {
                     keys[e.which] = true;
-                    if (keys[17] === true && keys[16] === true && (keys[51] === true || keys[219] === true)) {
+                    if ((keys[17] === true && keys[16] === true && keys[18] !== true) && (keys[51] === true || keys[219] === true)) {
                         var element = $(container).find(":focus");
                         showHashVariableAssit(element, doGetCaretPosition(element[0]), (keys[51] === true)?"#":"{");
                         keys = {};

@@ -15,6 +15,7 @@ DatalistBuilder = {
     //undo & redo feature
     tempJson : '',
     isCtrlKeyPressed : false,
+    isAltKeyPressed : false,
     undoStack : new Array(),
     redoStack : new Array(),
     undoRedoMax : 50,
@@ -133,23 +134,23 @@ DatalistBuilder = {
     initUndoRedo : function() {
         //Shortcut key
         $(document).keyup(function (e) {
-            if (e.ctrlKey && e.altKey) {
-                //alt - GR  - ignore it
-            } else if(e.which == 17){
+            if(e.which == 17){
                 DatalistBuilder.isCtrlKeyPressed=false;
+            } else if(e.which === 18){
+                DatalistBuilder.isAltKeyPressed = false;
             }
         }).keydown(function (e) {
-            if (e.ctrlKey && e.altKey) {
-                //alt - GR  - ignore it
-            } else if(e.which == 17){
+            if(e.which == 17){
                 DatalistBuilder.isCtrlKeyPressed=true;
+            } else if(e.which === 18){
+                DatalistBuilder.isAltKeyPressed = true;
             }
             if ($(".property-editor-container:visible").length === 0) {
-                if(e.which == 90 && DatalistBuilder.isCtrlKeyPressed == true) { //CTRL+Z - undo
+                if(e.which == 90 && DatalistBuilder.isCtrlKeyPressed == true && !DatalistBuilder.isAltKeyPressed) { //CTRL+Z - undo
                     DatalistBuilder.undo();
                     return false;
                 }
-                if(e.which == 89 && DatalistBuilder.isCtrlKeyPressed == true) { //CTRL+Y - redo
+                if(e.which == 89 && DatalistBuilder.isCtrlKeyPressed == true && !DatalistBuilder.isAltKeyPressed) { //CTRL+Y - redo
                     DatalistBuilder.redo();
                     return false;
                 }
