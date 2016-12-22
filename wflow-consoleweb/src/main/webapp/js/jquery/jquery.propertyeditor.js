@@ -2545,6 +2545,13 @@ PropertyEditor.Type.Grid.prototype = {
             if (this.options_sources[reference] !== undefined) {
                 this.updateSource(reference, options);
             } else {
+                var filter = null;
+                $.each(grid.properties.columns, function(i, column) {
+                    if (column.key === reference && column.options_ajax_row_regex_filter !== undefined && column.options_ajax_row_regex_filter !== "") {
+                        filter = column.options_ajax_row_regex_filter;
+                    }
+                });
+                
                 var html = "";
                 $.each(options, function(i, option){
                     html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'">'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
@@ -2556,6 +2563,27 @@ PropertyEditor.Type.Grid.prototype = {
                         val = $(this).data("value");
                     }
                     $(this).html(html);
+                    
+                    if (filter !== null) {
+                        var tempFilter = filter;
+                        $(this).closest("tr").find("[name]").each(function(){
+                            var name = $(this).attr("name");
+                            var val = $(this).val();
+                            tempFilter = tempFilter.replace("${"+name+"}", val);
+                        });
+                        var regex = new RegExp(tempFilter);
+                        
+                        $(this).find("option").each(function(){
+                            var option_value = $(this).attr("value");
+                            if (option_value !== "") {
+                                var result = regex.exec(option_value);
+                                if (!(result !== null && result.length > 0 && result[0] === option_value)) {
+                                    $(this).remove();
+                                }
+                            }
+                        });
+                    }
+                    
                     if ($(this).hasClass("initFullWidthChosen")) {
                         $(this).val(val);
                         $(this).trigger("chosen:updated");
@@ -2654,8 +2682,42 @@ PropertyEditor.Type.Grid.prototype = {
         this.options_sources[key].sort();
         
         var table = $("#"+this.id);
+        
+        var filter = null;
+        $.each(thisObj.properties.columns, function(i, column) {
+            if (column.key === key && column.options_ajax_row_regex_filter !== undefined && column.options_ajax_row_regex_filter !== "") {
+                filter = column.options_ajax_row_regex_filter;
+            }
+        });
+        
         $(table).find("input[name='"+key+"'].ui-autocomplete-input").each(function(){
-            $(this).autocomplete("option", "source", thisObj.options_sources[key]);
+            var source = thisObj.options_sources[key];
+            
+            if (filter !== null) {
+                var tempFilter = filter;
+                $(this).closest("tr").find("[name]").each(function(){
+                    var name = $(this).attr("name");
+                    var val = $(this).val();
+                    tempFilter = tempFilter.replace("${"+name+"}", val);
+                });
+                var regex = new RegExp(tempFilter);
+
+                var tempSource = [];
+                for (var i in source) {
+                    var option_value = source[i];
+                    if (option_value !== "") {
+                        var result = regex.exec(option_value);
+                        if (result !== null && result.length > 0 && result[0] === option_value) {
+                            tempSource.push(option_value);
+                        }
+                    } else {
+                        tempSource.push(option_value);
+                    }
+                }
+                source = tempSource;
+            }
+            
+            $(this).autocomplete("option", "source", source);
         });
     },
     pageShown: function () {
