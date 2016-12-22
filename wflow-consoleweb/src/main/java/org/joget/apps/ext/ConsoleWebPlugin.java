@@ -137,7 +137,7 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
      */
     protected String getWelcome() {
         String content = "<div id=\"getting-started\">"
-                + "<iframe id=\"frame\" style=\"display:none; height:100vh; width:100%; box-sizing: border-box; overflow:hidden;\" src=\"//www.joget.org/updates/welcome?src=v6\" frameborder=\"0\"></iframe>"
+                + "<iframe id=\"frame\" style=\"display:none; height:100vh; width:100%; box-sizing: border-box; overflow:hidden;\" src=\"//www.joget.org/updates/welcome/?src=v6\" frameborder=\"0\"></iframe>"
                 + "<a href=\"//www.joget.org/help?src=v6\" target=\"www.joget.org\" id=\"link\"></a>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
