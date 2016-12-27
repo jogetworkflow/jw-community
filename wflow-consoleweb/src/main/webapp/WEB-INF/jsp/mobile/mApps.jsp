@@ -75,9 +75,9 @@
                                 <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}/${key}/landing" rel="external">
                                     <img src="${pageContext.request.contextPath}/web/userview/screenshot/${appDefinition.id}/${userviewDefinition.id}" width="150" border="0" />
                                     <p><b><c:out value="${appDefinition.name}"/></b></p>
-                                    <h4><c:out value="${userviewDefinition.name}"/></h4>
+                                    <h4><ui:stripTag html="${userviewDefinition.name}"/></h4>
                                     <p>
-                                        <c:out value="${userviewDefinition.description}"/>
+                                        <ui:stripTag html="${userviewDefinition.description}"/>
                                         <br>
                                         <fmt:message key="console.app.common.label.version"/> ${appDefinition.version}
                                     </p>
