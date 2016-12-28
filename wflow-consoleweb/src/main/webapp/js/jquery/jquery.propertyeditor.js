@@ -620,7 +620,7 @@ PropertyEditor.Model.Editor.prototype = {
         var pageContainer = $(this.editor).find('.property-editor-pages');
         $(pageContainer).scroll(function() {
             if ($thisObject.isSinglePageDisplay()) {
-                var pageLine = $(pageContainer).offset().top + ($(pageContainer).height() * 0.4);
+                var pageLine = $(pageContainer).offset().top + ($(pageContainer).height() * 0.3);
                 var currentOffset = $(pageContainer).find('.current').offset().top;
                 var nextOffset = currentOffset + $(pageContainer).find('.current').height();
                 if (nextOffset < pageLine) {
@@ -3495,6 +3495,12 @@ PropertyEditor.Type.ElementSelect.prototype = {
                         var p = page.propertyEditorObject;
                         p.initScripting();
                     });
+                    
+                    //add parent properties to plugin header
+                    var valueLabel = $("#"+thisObj.id).find('option[value="'+value+'"]').text();
+                    var parentTitle = '<h1>'+thisObj.properties.label + " (" + valueLabel + ')</h1>';
+                    var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementId='+thisObj.id+'].property-page-show:eq(0)');
+                    $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
                     
                     thisObj.editorObject.refresh();
                 }
