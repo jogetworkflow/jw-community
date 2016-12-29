@@ -4,6 +4,7 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 5.0.11
 =================
+c70b9b9 Fixed: wflow-consoleweb - Mobile - Userview name shown escaped html tag. #4475 @5.0-SNAPSHOT
 c8d21ed Fixed: wflow-consoleweb - Mobile - App Listing show escaped html tag. #4475 @5.0-SNAPSHOT
 e5d6e8f Fixed: wflow-consoleweb - Form Grid - Invalid character found in the request target error in Tomcat 8.5.8 @5.0-SNAPSHOT
 b4c1216 Fixed: wflow-consoleweb - Alt-GR+key keypress event triggered ctrl+key event. @5.0-SNAPSHOT
