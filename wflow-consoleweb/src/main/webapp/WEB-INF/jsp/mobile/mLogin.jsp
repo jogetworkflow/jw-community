@@ -57,7 +57,7 @@
                         <ui:stripTag html="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
-                        <c:out value="${userview.properties.name}"/>
+                        <ui:stripTag html="${userview.properties.name}"/>
                     </c:otherwise>
                 </c:choose>                    
                 </h1>
