@@ -20,7 +20,6 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
@@ -64,36 +63,28 @@ public class FormListDataJsonController {
      * @param appId
      * @param formId
      * @param primaryKeyValue
+     * @param includeSubformData true to recursively include subform data
+     * @param includeReferenceElements true to include data from reference elements e.g. selectbox, etc.
+     * @param flatten true to flatten data into a one level key-value map
      * @param callback
      * @throws IOException
      * @throws JSONException 
      */
     @RequestMapping("/json/data/form/load/(*:appId)/(*:formId)/(*:primaryKeyValue)")
-    public void formDataLoad(Writer writer, HttpServletResponse response, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "formId", required = true) String formId, @RequestParam(value="primaryKeyValue", required = true) String primaryKeyValue, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+    public void formDataLoad(Writer writer, HttpServletResponse response, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "formId", required = true) String formId, @RequestParam(value="primaryKeyValue", required = true) String primaryKeyValue, @RequestParam(value = "includeSubformData", required = false) String includeSubformData, @RequestParam(value = "includeReferenceElements", required = false) String includeReferenceElements, @RequestParam(value = "flatten", required = false) String flatten, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         formId = SecurityUtil.validateStringInput(formId);
-        primaryKeyValue = SecurityUtil.validateStringInput(primaryKeyValue);        
-        FormRowSet loadedRowSet = appService.loadFormData(appDef.getId(), appDef.getVersion().toString(), formId, primaryKeyValue);
-        if (loadedRowSet.isEmpty()) {
+        primaryKeyValue = SecurityUtil.validateStringInput(primaryKeyValue); 
+        Map<String, Object> result = FormUtil.loadFormData(appDef.getId(), appDef.getVersion().toString(), formId, primaryKeyValue, Boolean.valueOf(includeSubformData), Boolean.valueOf(includeReferenceElements), Boolean.valueOf(flatten), null);
+        if (result.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        FormRow loadedRow = loadedRowSet.get(0);
-        JSONObject jsonObject = new JSONObject();
-        if (loadedRow != null) {
-            jsonObject.put("id", loadedRow.getId());
-            jsonObject.put("dateCreated", loadedRow.getDateCreated());
-            jsonObject.put("dateModified", loadedRow.getDateModified());
-            for (Iterator i = loadedRow.keySet().iterator(); i.hasNext();) {
-                String propertyName = (String)i.next();
-                String propertyValue = loadedRow.getProperty(propertyName);
-                jsonObject.put(propertyName, propertyValue);
-            }
-        }
+        JSONObject jsonObject = new JSONObject(result);
         AppUtil.writeJson(writer, jsonObject, callback);        
     }    
 
