@@ -1501,7 +1501,7 @@
 --   DATA FOR TABLE DIR_USER_ROLE
 --   FILTER = none used
 ---------------------------------------------------
-Insert into DIR_USER_ROLE (ROLEID,USERID) values ('ROLE_ADMIN','001');
+Insert into DIR_USER_ROLE (ROLEID,USERID) values ('ROLE_ADMIN','admin');
 
 ---------------------------------------------------
 --   END DATA FOR TABLE DIR_USER_ROLE
@@ -2036,7 +2036,7 @@ Insert into OBJECTID (NEXTOID) values (1000200);
 --   DATA FOR TABLE DIR_USER
 --   FILTER = none used
 ---------------------------------------------------
-Insert into DIR_USER (ID,USERNAME,PASSWORD,FIRSTNAME,LASTNAME,EMAIL,TIMEZONE,ACTIVE) values ('001','admin','21232f297a57a5a743894a0e4a801fc3','Admin','admin','admin@email.domain','8',1);
+Insert into DIR_USER (ID,USERNAME,PASSWORD,FIRSTNAME,LASTNAME,EMAIL,TIMEZONE,ACTIVE) values ('admin','admin','21232f297a57a5a743894a0e4a801fc3','Admin','admin','admin@email.domain','',1);
 
 ---------------------------------------------------
 --   END DATA FOR TABLE DIR_USER
