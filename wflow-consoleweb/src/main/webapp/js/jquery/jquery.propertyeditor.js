@@ -2023,10 +2023,10 @@ PropertyEditor.Type.MultiSelect.prototype = {
             this.properties.options = options;
             
             var values = $("#"+this.id).val();
-            if (!$.isArray(values)) {
+            if (values !== null && !$.isArray(values)) {
                 values = [values];
             }
-            if (values.length === 0 || (values.length === 1 && values[0] === "")) {
+            if (values === null || values.length === 0 || (values.length === 1 && values[0] === "")) {
                 values = thisObj.value.split(";");
             }
             
