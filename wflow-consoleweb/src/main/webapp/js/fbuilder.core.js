@@ -1055,7 +1055,12 @@ FormBuilder = {
         var copy = $(element).clone().wrap('<p/>').parent();
         $(copy).find(".form-palette-options, .form-clear").remove();
         $.localStorage.setItem("formBuilder.copy", $(copy).html());
-        $.localStorage.setItem("formBuilder.copyProperty", $(element).attr("element-property"));
+        var dom = $(element)[0].dom;
+        var elementProperty = $(element).attr("element-property");
+        if (dom && dom.properties) {
+            elementProperty = JSON.encode(dom.properties);
+        }
+        $.localStorage.setItem("formBuilder.copyProperty", elementProperty);
         $.localStorage.setItem("formBuilder.copyTime", new Date());
         FormBuilder.updatePasteIcon();
         FormBuilder.showMessage(get_fbuilder_msg('fbuilder.copied'));
