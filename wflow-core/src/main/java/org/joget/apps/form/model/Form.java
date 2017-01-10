@@ -50,7 +50,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
         boolean formBuilderActive = FormUtil.isFormBuilderActive();
        
         // check for quick edit mode
-        boolean isQuickEditEnabled = (!formBuilderActive && AppUtil.isQuickEditEnabled()) || (formBuilderActive && getParent() != null);
+        boolean isQuickEditEnabled = (!"true".equals(getPropertyString("removeQuickEdit")) && !formBuilderActive && AppUtil.isQuickEditEnabled()) || (formBuilderActive && getParent() != null);
         dataModel.put("quickEditEnabled", isQuickEditEnabled);
         if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
             dataModel.put("isAuthorize", true);

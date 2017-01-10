@@ -207,6 +207,20 @@ public interface AppService {
     Form viewDataForm(String appId, String version, String formDefId, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
 
     /**
+     * Retrieve a data form
+     * @param form
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @return 
+     */
+    Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl);
+
+    /**
      * Returns a Collection of form data for a process based on criteria
      * 
      * @Deprecated API used in v2. Not implemented since v3.

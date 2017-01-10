@@ -779,6 +779,26 @@ public class AppServiceImpl implements AppService {
 
         // get form
         Form form = loadFormByFormDefId(appDef.getId(), appDef.getVersion().toString(), formDefId, formData, null);
+        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, null, formData, formUrl, cancelUrl);
+    }
+    
+    /**
+     * Retrieve a data form
+     * @param form
+     * @param saveButtonLabel
+     * @param submitButtonLabel
+     * @param cancelButtonLabel
+     * @param cancelButtonTarget
+     * @param formData
+     * @param formUrl
+     * @param cancelUrl
+     * @return 
+     */
+    @Override
+    public Form viewDataForm(Form form, String saveButtonLabel, String submitButtonLabel, String cancelButtonLabel, String cancelButtonTarget, FormData formData, String formUrl, String cancelUrl) {
+        if (formData == null) {
+            formData = new FormData();
+        }
 
         // set action URL
         form.setProperty("url", formUrl);

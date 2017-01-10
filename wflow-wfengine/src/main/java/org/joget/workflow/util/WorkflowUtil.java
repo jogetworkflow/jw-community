@@ -7,6 +7,7 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.commons.util.SetupManager;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -365,5 +366,20 @@ public class WorkflowUtil implements ApplicationContextAware {
         }else{
             return "-";
         }
+    }
+    
+    /**
+     * Method used to get replacement users replaced by an user
+     * @param username
+     * @return 
+     */
+    public static Map<String, Collection<String>> getReplacementUsers(String username) {
+        try {
+            WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+            return workflowMapper.getReplacementUsers(username);
+        } catch (Exception e) {
+            LogUtil.error(WorkflowUtil.class.getName(), e, "Error retrieve absence users replaced by" + username);
+        }
+        return null;
     }
 }

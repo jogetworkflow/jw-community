@@ -1,6 +1,7 @@
 package org.joget.apps.app.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,11 +11,13 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.PackageDefinitionDao;
+import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.app.model.UserReplacement;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
@@ -657,5 +660,29 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
         }
         return null;
+    }
+
+    public Map<String, Collection<String>> getReplacementUsers(String username) {
+        UserReplacementDao userReplacementDao = (UserReplacementDao) AppUtil.getApplicationContext().getBean("userReplacementDao");
+        Map<String, Collection<String>> replacements = new HashMap<String, Collection<String>>();
+        
+        Collection<UserReplacement> userReplacements = userReplacementDao.getTodayUserReplacements(username);
+        for (UserReplacement ur : userReplacements) {
+            Collection<String> processes = replacements.get(ur.getUsername());
+            if (processes == null) {
+                processes = new ArrayList<String>();
+            }
+            if (ur.getAppId() != null && !ur.getAppId().isEmpty()) {
+                if (ur.getProcessIds() != null && !ur.getProcessIds().isEmpty()) {
+                    processes.addAll(Arrays.asList(ur.getProcessIds().split(";")));
+                } else {
+                    processes.addAll(Arrays.asList(ur.getAppId().split(";")));
+                }
+            }
+            
+            replacements.put(ur.getUsername(), processes);
+        }
+        
+        return replacements;
     }
 }

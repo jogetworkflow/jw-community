@@ -3402,6 +3402,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return
      */
     public Collection<WorkflowAssignment> getAssignmentList(Boolean accepted, String processDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        
         SharkConnection sc = null;
         Collection<WorkflowAssignment> assignmentList = new ArrayList<WorkflowAssignment>();
 
@@ -3412,10 +3416,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Shark shark = Shark.getInstance();
             AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
+            
+            WMFilter filter = aieb.createEmptyFilter(sessionHandle);
+            
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
-
+            WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+            filter = aieb.and(sessionHandle, filter, userfilter);
+            
             // filter by acceptance
             if (accepted != null && accepted.booleanValue()) {
                 filter = aieb.and(sessionHandle, filter, aieb.addIsAccepted(sessionHandle));
@@ -3427,10 +3435,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             // filter by process id
             if (processDefId != null && processDefId.trim().length() > 0) {
+                String pkgId = MiscUtilities.getProcessMgrPkgId(processDefId);
                 String processKey = MiscUtilities.getProcessMgrProcDefId(processDefId);
-                String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
+                //String processVersion = MiscUtilities.getProcessMgrVersion(processDefId);
+                filter = aieb.and(sessionHandle, filter, aieb.addPackageIdEquals(sessionHandle, pkgId));
                 filter = aieb.and(sessionHandle, filter, aieb.addProcessDefIdEquals(sessionHandle, processKey));
-                filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
+                //filter = aieb.and(sessionHandle, filter, aieb.addPackageVersionEquals(sessionHandle, processVersion));
             }
 
             // set sort
@@ -3547,10 +3557,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Shark shark = Shark.getInstance();
             AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
+            
+            WMFilter filter = aieb.createEmptyFilter(sessionHandle);
+            
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
-
+            WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+            filter = aieb.and(sessionHandle, filter, userfilter);
+            
             // filter by package id
             if (packageId != null && packageId.trim().length() > 0) {
                 filter = aieb.and(sessionHandle, filter, aieb.addPackageIdEquals(sessionHandle, packageId));
@@ -3735,9 +3749,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Shark shark = Shark.getInstance();
             AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
+            
+            WMFilter filter = aieb.createEmptyFilter(sessionHandle);
+            
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
+            WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+            filter = aieb.and(sessionHandle, filter, userfilter);
 
             // filter by processDefIds
             if (processDefIds != null && processDefIds.length > 0) {
@@ -3856,9 +3874,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Shark shark = Shark.getInstance();
             AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
+            
+            WMFilter filter = aieb.createEmptyFilter(sessionHandle);
+            
             // filter by user
             String username = getWorkflowUserManager().getCurrentUsername();
-            WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
+            WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+            filter = aieb.and(sessionHandle, filter, userfilter);
 
             // filter by processDefIds
             if (processDefIds != null && processDefIds.length > 0) {
@@ -4073,6 +4095,20 @@ public class WorkflowManagerImpl implements WorkflowManager {
             sc = connect();
 
             WfAssignment wfa = getSharkAssignment(sc, activityId);
+            
+            String username = getWorkflowUserManager().getCurrentUsername();
+            WfResource assignee = wfa.assignee();
+            if (!username.equals(assignee.resource_key())) {
+                WfResource res = sc.getResource(username);
+                if (res == null) {
+                    WMSessionHandle sessionHandle = sc.getSessionHandle();
+                    CustomWfResourceImpl.createResource(sessionHandle, username);
+                    res = sc.getResource(username);
+                }
+                wfa.set_assignee(res);
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentReassignUser", activityId, new Class[]{activityId.getClass()}, new Object[]{activityId}, null);
+            }
+            
             wfa.activity().complete();
 
         } catch (Exception ex) {
@@ -4663,13 +4699,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
         Shark shark = Shark.getInstance();
         AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
         WMSessionHandle sessionHandle = sc.getSessionHandle();
+        
+        // filter by activity id
+        WMFilter filter = aieb.addActivityIdEquals(sessionHandle, activityId);
+        
         // filter by user
         String username = getWorkflowUserManager().getCurrentUsername();
-        WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
-
-        // filter by activity id
-        filter = aieb.and(sessionHandle, filter, aieb.addActivityIdEquals(sessionHandle, activityId));
-
+        WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+        filter = aieb.and(sessionHandle, filter, userfilter);
+        
         // execute
         WfAssignmentIterator ai = sc.get_iterator_assignment();
         ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
@@ -4693,12 +4731,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
         Shark shark = Shark.getInstance();
         AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();
         WMSessionHandle sessionHandle = sc.getSessionHandle();
+        
+        // filter by process id
+        WMFilter filter = aieb.addProcessIdEquals(sessionHandle, processId);
+        
         // filter by user
         String username = getWorkflowUserManager().getCurrentUsername();
-        WMFilter filter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
-
-        // filter by process id
-        filter = aieb.and(sessionHandle, filter, aieb.addProcessIdEquals(sessionHandle, processId));
+        WMFilter userfilter = getUserFilter(sessionHandle, aieb, username);
+        filter = aieb.and(sessionHandle, filter, userfilter);
 
         // execute
         WfAssignmentIterator ai = sc.get_iterator_assignment();
@@ -5204,5 +5244,41 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
             
         return limitInS;    
+    }
+    
+    protected WMFilter getUserFilter(WMSessionHandle sessionHandle, AssignmentFilterBuilder aieb, String username) throws Exception {
+        Map<String, Collection<String>> replacementUsers = WorkflowUtil.getReplacementUsers(username);
+
+        if (replacementUsers == null || replacementUsers.isEmpty()) {
+            return aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username));
+        } else {
+            Collection<WMFilter> filters = new ArrayList<WMFilter>();
+            filters.add(aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(username)));
+            
+            for (String u : replacementUsers.keySet()) {
+                Collection<String> processes = replacementUsers.get(u);
+                WMFilter tempFilter = aieb.addUsernameEquals(sessionHandle, StringEscapeUtils.escapeSql(u));
+                
+                if (processes != null && !processes.isEmpty()) {
+                    Collection<WMFilter> processesfilters = new ArrayList<WMFilter>();
+                    for (String p : processes) {
+                        String[] temp = p.split(":");
+                        if (temp.length > 0 && !temp[0].isEmpty()) {
+                            WMFilter pFilter = aieb.addPackageIdEquals(sessionHandle, temp[0]);
+                            if (temp.length > 1 && !temp[1].isEmpty()) {
+                                pFilter = aieb.and(sessionHandle, pFilter, aieb.addProcessDefIdEquals(sessionHandle, temp[1]));
+                            }
+                            processesfilters.add(pFilter);
+                        }
+                    }
+                    if (!processesfilters.isEmpty()) {
+                        tempFilter = aieb.and(sessionHandle, tempFilter, aieb.orForArray(sessionHandle, processesfilters.toArray(new WMFilter[0])));
+                    }
+                }
+                
+                filters.add(tempFilter);
+            }
+            return aieb.orForArray(sessionHandle, filters.toArray(new WMFilter[0]));
+        }
     }
 }

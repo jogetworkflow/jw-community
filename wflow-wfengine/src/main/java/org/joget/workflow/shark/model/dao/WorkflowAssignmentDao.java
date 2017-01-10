@@ -52,8 +52,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (username != null && !username.isEmpty()) {
-                condition += " and e.assigneeName = ?";
-                params.add(username);
+                condition += getUserFilter(params, username);
             }
             
             if (state != null && !state.isEmpty()) {
@@ -116,8 +115,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (username != null && !username.isEmpty()) {
-                condition += " and e.assigneeName = ?";
-                params.add(username);
+                condition += getUserFilter(params, username);
             }
             
             if (state != null && !state.isEmpty()) {
@@ -183,8 +181,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (username != null && !username.isEmpty()) {
-                condition += " and e.assigneeName = ?";
-                params.add(username);
+                condition += getUserFilter(params, username);
             }
             
             if (state != null && !state.isEmpty()) {
@@ -227,8 +224,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (username != null && !username.isEmpty()) {
-                condition += " and e.assigneeName = ?";
-                params.add(username);
+                condition += getUserFilter(params, username);
             }
             
             if (state != null && !state.isEmpty()) {
@@ -322,5 +318,52 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
 
     public void setWorkflowProcessLinkDao(WorkflowProcessLinkDao workflowProcessLinkDao) {
         this.workflowProcessLinkDao = workflowProcessLinkDao;
+    }
+    
+    protected String getUserFilter(Collection<String> params, String username) {
+        String condition = "";
+                
+        Map<String, Collection<String>> replacementUsers = WorkflowUtil.getReplacementUsers(username);
+
+        if (replacementUsers == null || replacementUsers.isEmpty()) {
+            condition += " and e.assigneeName = ?";
+            params.add(username);
+        } else {
+            condition += " and (e.assigneeName = ?";
+            params.add(username);
+            
+            for (String u : replacementUsers.keySet()) {
+                Collection<String> processes = replacementUsers.get(u);
+                condition += " or (e.assigneeName = ?";
+                params.add(u);
+                
+                if (processes != null && !processes.isEmpty()) {
+                    condition += " and (";
+                    String processCond = "";
+                    for (String p : processes) {
+                        String[] temp = p.split(":");
+                        if (temp.length > 0 && !temp[0].isEmpty()) {
+                            String processDefId = temp[0] + "#%";
+                            if (temp.length > 1 && !temp[1].isEmpty()) {
+                                processDefId += "#" + temp[1];
+                            }
+                            if (!processCond.isEmpty()) {
+                                processCond += " or ";
+                            }
+                            
+                            processCond += "p.processDefId like ?";
+                            params.add(processDefId);                            
+                        }
+                    }
+                    condition += processCond + ")";
+                }
+                
+                condition += ")";
+            }
+
+            condition += ")";
+        }
+        
+        return condition;  
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="UserReplacement" lazy="false" name="org.joget.apps.app.model.UserReplacement" table="dir_user_replacement">
+        <id name="id" type="string">
+            <generator class="uuid"/>
+        </id>
+        <property name="username" type="string"/>
+        <property name="replacementUser" type="string"/>
+        <property name="appId" type="string"/>
+        <property name="processIds" type="string"/>
+        <property name="startDate" type="date"/>
+        <property name="endDate" type="date"/>
+    </class>
+</hibernate-mapping>

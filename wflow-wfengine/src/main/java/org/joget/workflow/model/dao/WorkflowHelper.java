@@ -1,5 +1,6 @@
 package org.joget.workflow.model.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -81,4 +82,11 @@ public interface WorkflowHelper {
      * @return
      */
     String getPublishedPackageVersion(String packageId);
+    
+    /**
+     * Get replacement users replaced by an user
+     * @param username
+     * @return
+     */
+    Map<String, Collection<String>> getReplacementUsers(String username);
 }

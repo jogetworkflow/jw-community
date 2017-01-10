@@ -70,6 +70,7 @@ public class DataList {
     private String selectionType = SELECTION_TYPE_MULTIPLE;
     private Collection<DataListFilterQueryObject> dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
     private boolean filterQueryBuild = false;
+    private boolean disableQuickEdit = false;
 
     //Required when using session
     public void init() {
@@ -709,5 +710,13 @@ public class DataList {
 
         template += "</select>";
         return template;
+    }
+
+    public boolean isDisableQuickEdit() {
+        return disableQuickEdit;
+    }
+
+    public void setDisableQuickEdit(boolean disableQuickEdit) {
+        this.disableQuickEdit = disableQuickEdit;
     }
 }

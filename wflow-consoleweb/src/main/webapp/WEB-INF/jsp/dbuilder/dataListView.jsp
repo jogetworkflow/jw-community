@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/js/footable/footable.core.min.css?build=<fmt:message key="build.number"/>" />    
     
     <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
-    <c:if test="${isQuickEditEnabled}">
+    <c:if test="${isQuickEditEnabled && !dataList.disableQuickEdit}">
     <div class="quickEdit" style="display: none">
         <a href="<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}"/>" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
     </div>
