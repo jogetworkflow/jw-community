@@ -863,4 +863,21 @@ public interface WorkflowManager {
      * @return 
      */
     double getServiceLevelValue(Date startedDate, Date finishDate, Date dueDate);
+    
+    /**
+     * Gets previous activities already executed in the current process, up until and including the current active activity
+     * @param activityId
+     * @param includeTools Set to true to also include Tool elements in the results
+     * @return null if specific activity not found
+     */
+    Collection<WorkflowActivity> getPreviousActivities(String activityId, boolean includeTools);
+
+    /**
+     * Gets the next possible activities
+     * @param activityId
+     * @param includeTools Set to true to also include Tool elements in the results
+     * @return null if specified activity not found
+     */
+    public Collection<WorkflowActivity> getNextActivities(String activityId, boolean includeTools);
+
 }

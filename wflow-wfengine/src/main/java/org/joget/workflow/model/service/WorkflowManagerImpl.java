@@ -1645,6 +1645,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowActivity.setProcessVersion(manager.version());
                 workflowActivity.setPriority(String.valueOf(wfActivity.priority()));
                 workflowActivity.setProcessStatus(process.state());
+                workflowActivity.setType(entity.getType());
                 // check for hash variable
                 if (WorkflowUtil.containsHashVariable(workflowActivity.getName()) || WorkflowUtil.containsHashVariable(workflowActivity.getProcessName())) {
                     WorkflowAssignment ass = new WorkflowAssignment();
@@ -5281,4 +5282,102 @@ public class WorkflowManagerImpl implements WorkflowManager {
             return aieb.orForArray(sessionHandle, filters.toArray(new WMFilter[0]));
         }
     }
+
+    /**
+     * Gets previous activities already executed in the current process, up until and including the current active activity
+     * @param activityId
+     * @param includeTools Set to true to also include Tool elements in the results
+     * @return null if specified activity not found
+     */
+    public Collection<WorkflowActivity> getPreviousActivities(String activityId, boolean includeTools) {
+        Collection<WorkflowActivity> previousActivities = new ArrayList<WorkflowActivity>();
+        
+        if (activityId != null && !activityId.isEmpty()) {
+            // get activity
+            WorkflowActivity currentActivity = getActivityById(activityId);
+            if (currentActivity == null) {
+                return null;
+            }
+            SharkConnection sc = null;
+            try {
+                sc = connect();
+                Shark shark = Shark.getInstance();
+                AdminMisc admin = shark.getAdminMisc();
+                WMSessionHandle sessionHandle = sc.getSessionHandle();
+                XPDLBrowser xpdl = shark.getXPDLBrowser();
+                String processId = currentActivity.getProcessId();
+                // get and loop through linked processes
+                Collection<WorkflowProcessLink> processLinks = workflowProcessLinkDao.getLinks(processId);
+                for (WorkflowProcessLink l : processLinks) {
+                    // get and loop through completed activities
+                    List<WorkflowActivity> activityList = (List<WorkflowActivity>)getActivityList(l.getProcessId(), 0, Integer.MAX_VALUE, "dateCreated", false);
+                    if (activityList != null && !activityList.isEmpty()) {
+                        for (WorkflowActivity act : activityList) {
+                            // determine activity type
+                            WMEntity activityEntity = admin.getActivityDefinitionInfo(sessionHandle, l.getProcessId(), act.getId());
+                            WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, activityEntity, null, true);
+                            if (activityEntityIterator.hasNext()) {
+                                WMEntity entity = (WMEntity) activityEntityIterator.next();
+                                if (entity.getType().equalsIgnoreCase("tool") || entity.getType().equalsIgnoreCase("route") || entity.getType().equalsIgnoreCase("subflow")) {
+                                    if (includeTools && entity.getType().equalsIgnoreCase("tool")) {
+                                        act.setType(entity.getType());
+                                    } else {
+                                        continue;
+                                    }
+                                }
+                            }
+                            // add activity to result
+                            WorkflowActivity tact = getRunningActivityInfo(act.getId());
+                            act.setCreatedTime(tact.getCreatedTime());
+                            act.setFinishTime(tact.getFinishTime());
+                            act.setPerformer(tact.getPerformer());
+                            act.setAssignmentUsers(tact.getAssignmentUsers());
+                            act.setStatus(tact.getStatus());
+                            previousActivities.add(act);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "Error retrieving previous activities");
+            } finally {
+                try {
+                    disconnect(sc);
+                } catch (Exception e) {
+                    LogUtil.error(getClass().getName(), e, "Error closing Shark connection");
+                }
+            }
+        }
+        return previousActivities;
+    }
+    
+    /**
+     * Gets the next possible activities
+     * @param activityId
+     * @param includeTools Set to true to also include Tool elements in the results
+     * @return null if specified activity not found
+     */
+    public Collection<WorkflowActivity> getNextActivities(String activityId, boolean includeTools) {
+        return getNextActivities(activityId, includeTools, null);
+    }
+    
+    /**
+     * Gets the next possible activities
+     * @param activityId
+     * @param includeTools Set to true to also include Tool elements in the results
+     * @param activities
+     * @return null if specified activity not found
+     */
+    protected Collection<WorkflowActivity> getNextActivities(String activityId, boolean includeTools, Collection<WorkflowActivity> activities) {
+        Collection<WorkflowActivity> nextActivities = (activities != null) ? activities : new ArrayList<WorkflowActivity>();
+        if (activityId != null && !activityId.trim().isEmpty()) {
+            WorkflowActivity currentActivity = getActivityById(activityId);
+            if (currentActivity == null) {
+                return null;
+            }
+            String processDefId = currentActivity.getProcessDefId();
+            nextActivities = SharkUtil.getNextActivities(processDefId, currentActivity.getActivityDefId(), currentActivity.getProcessId(), activityId, includeTools, nextActivities);
+        }                
+        return nextActivities;
+    }
+    
 }

@@ -1206,5 +1206,79 @@ public class WorkflowJsonController {
             client.close();
         }
     }
+
+    @RequestMapping("/json/monitoring/activity/previous/(*:activityId)")
+    public void activityPrevious(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
+        JSONArray results = new JSONArray();
+        Collection<WorkflowActivity> activities = workflowManager.getPreviousActivities(activityId, Boolean.valueOf(includeTools));
+        for (Iterator<WorkflowActivity> i=activities.iterator(); i.hasNext();) {
+            WorkflowActivity activity = i.next();
+            String prevActivityId = activity.getId();
+            WorkflowActivity activityInfo = workflowManager.getRunningActivityInfo(prevActivityId);
+            double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(prevActivityId);
+            WorkflowActivity trackWflowActivity = workflowManager.getRunningActivityInfo(prevActivityId);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("activityId", activity.getId());
+            jsonObject.accumulate("activityDefId", activity.getActivityDefId());
+            jsonObject.accumulate("type", activity.getType());
+            jsonObject.accumulate("processId", activity.getProcessId());
+            jsonObject.accumulate("processDefId", activity.getProcessDefId());
+            jsonObject.accumulate("processVersion", activity.getProcessVersion());
+            jsonObject.accumulate("processName", activity.getProcessName());
+            jsonObject.accumulate("activityName", activity.getName());
+            jsonObject.accumulate("description", activity.getDescription());
+            jsonObject.accumulate("participant", activityInfo.getPerformer());
+            jsonObject.accumulate("acceptedUser", activityInfo.getNameOfAcceptedUser());
+
+            //new added attribute
+            jsonObject.accumulate("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
+            jsonObject.accumulate("state", activityInfo.getState());
+            jsonObject.accumulate("createdTime", trackWflowActivity.getCreatedTime());
+            jsonObject.accumulate("dateLimit", trackWflowActivity.getLimit());
+            jsonObject.accumulate("dueDate", TimeZoneUtil.convertToTimeZone(trackWflowActivity.getDue(), null, AppUtil.getAppDateFormat()));
+            jsonObject.accumulate("delay", trackWflowActivity.getDelay());
+            jsonObject.accumulate("finishTime", TimeZoneUtil.convertToTimeZone(trackWflowActivity.getFinishTime(), null, AppUtil.getAppDateFormat()));
+            jsonObject.accumulate("timeConsumingFromDateCreated", trackWflowActivity.getTimeConsumingFromDateCreated());
+
+            String[] assignmentUsers = activityInfo.getAssignmentUsers();
+            for (String user : assignmentUsers) {
+                jsonObject.accumulate("assignee", user);
+            }
+            results.put(jsonObject);
+        }
+
+        AppUtil.writeJson(writer, results, callback);
+    }
+
+    @RequestMapping("/json/monitoring/activity/next/(*:activityId)")
+    public void activityNext(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
+        JSONArray results = new JSONArray();
+        appService.getAppDefinitionForWorkflowActivity(activityId);
+        Collection<WorkflowActivity> activities = workflowManager.getNextActivities(activityId, Boolean.valueOf(includeTools));
+        for (Iterator<WorkflowActivity> i=activities.iterator(); i.hasNext();) {
+            WorkflowActivity activity = i.next();
+            // formulate JSON result
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("activityId", activity.getId());
+            jsonObject.accumulate("activityDefId", activity.getActivityDefId());
+            jsonObject.accumulate("type", activity.getType());
+            jsonObject.accumulate("processId", activity.getProcessId());
+            jsonObject.accumulate("processDefId", activity.getProcessDefId());
+            jsonObject.accumulate("processVersion", activity.getProcessVersion());
+            jsonObject.accumulate("processName", activity.getProcessName());
+            jsonObject.accumulate("activityName", activity.getName());
+            jsonObject.accumulate("description", activity.getDescription());
+            jsonObject.accumulate("participant", activity.getPerformer());
+            String[] assignmentUsers = activity.getAssignmentUsers();
+            if (assignmentUsers != null) {
+                for (String user: assignmentUsers) {
+                    jsonObject.accumulate("assignee", user);
+                }
+            }
+            results.put(jsonObject);
+        }
+        AppUtil.writeJson(writer, results, callback);
+    }
     
 }
