@@ -136,6 +136,10 @@ public class SharkUtil {
                     Activity subflowActivity = (Activity)j.next();
                     evaluateActivity(xmlInterface, processEntity, subflowActivity, processDefId, processId, activityId, includeTools, nextActivities);
                 }
+                if (!activity.isSubflowSynchronous()) {
+                    // asynchronous subflow, directly proceed to the next activity
+                    getNextActivities(processDefId, activity.getId(), processId, activityId, includeTools, nextActivities);
+                }
                 break;
             default:
                 // it's a normal activity, include in results
