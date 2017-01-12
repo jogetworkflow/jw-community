@@ -5295,7 +5295,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (activityId != null && !activityId.isEmpty()) {
             // get activity
             WorkflowActivity currentActivity = getActivityById(activityId);
-            if (currentActivity == null) {
+            if (currentActivity == null || currentActivity.getProcessId() == null) {
                 return null;
             }
             SharkConnection sc = null;
@@ -5371,7 +5371,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         Collection<WorkflowActivity> nextActivities = (activities != null) ? activities : new ArrayList<WorkflowActivity>();
         if (activityId != null && !activityId.trim().isEmpty()) {
             WorkflowActivity currentActivity = getActivityById(activityId);
-            if (currentActivity == null) {
+            if (currentActivity == null || currentActivity.getProcessId() == null) {
                 return null;
             }
             String processDefId = currentActivity.getProcessDefId();

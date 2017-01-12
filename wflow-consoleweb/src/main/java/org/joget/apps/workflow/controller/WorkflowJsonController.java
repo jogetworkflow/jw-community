@@ -1208,9 +1208,13 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping("/json/monitoring/activity/previous/(*:activityId)")
-    public void activityPrevious(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
+    public void activityPrevious(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
         JSONArray results = new JSONArray();
         Collection<WorkflowActivity> activities = workflowManager.getPreviousActivities(activityId, Boolean.valueOf(includeTools));
+        if (activities == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Activity not found.");
+            return;
+        }
         for (Iterator<WorkflowActivity> i=activities.iterator(); i.hasNext();) {
             WorkflowActivity activity = i.next();
             String prevActivityId = activity.getId();
@@ -1252,10 +1256,14 @@ public class WorkflowJsonController {
     }
 
     @RequestMapping("/json/monitoring/activity/next/(*:activityId)")
-    public void activityNext(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
+    public void activityNext(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
         JSONArray results = new JSONArray();
         appService.getAppDefinitionForWorkflowActivity(activityId);
         Collection<WorkflowActivity> activities = workflowManager.getNextActivities(activityId, Boolean.valueOf(includeTools));
+        if (activities == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Activity not found.");
+            return;
+        }
         for (Iterator<WorkflowActivity> i=activities.iterator(); i.hasNext();) {
             WorkflowActivity activity = i.next();
             // formulate JSON result
