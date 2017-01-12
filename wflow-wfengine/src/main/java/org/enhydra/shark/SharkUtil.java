@@ -19,6 +19,7 @@ import org.enhydra.shark.xpdl.elements.Transition;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
+import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -130,7 +131,6 @@ public class SharkUtil {
                 // it's a subflow, get the subflow process and proceed to the starting activities
                 activityType = "Subflow";
                 WorkflowProcess subflow = XMLUtil.getSubflowProcess(xmlInterface, activity);
-                org.enhydra.shark.xpdl.elements.Package pkg = (org.enhydra.shark.xpdl.elements.Package)subflow.getParent().getParent();
                 ArrayList subflowActivities = subflow.getStartingActivities();
                 for (Iterator j=subflowActivities.iterator(); j.hasNext();) {
                     Activity subflowActivity = (Activity)j.next();
@@ -161,9 +161,26 @@ public class SharkUtil {
         activity.setName(activityToAdd.getName());
         activity.setType(activityType);
         activity.setPerformer(activityToAdd.getPerformer());
+        activity.setProcessDefId(processDefId);
+        activity.setProcessVersion(processVersion);
+        activity.setProcessName(((WorkflowProcess)activityToAdd.getParent().getParent()).getName());
         List<String> assignmentUsers = WorkflowUtil.getAssignmentUsers(packageId, processDefId, processId, processVersion, activityId, "", activityToAdd.getPerformer());
         if (assignmentUsers != null) {
             activity.setAssignmentUsers(assignmentUsers.toArray(new String[0]));
+        }
+        // check for hash variable
+        if (WorkflowUtil.containsHashVariable(activity.getName()) || WorkflowUtil.containsHashVariable(activity.getProcessName())) {
+            WorkflowAssignment ass = new WorkflowAssignment();
+            ass.setProcessId(processId);
+            ass.setProcessDefId(processDefId);
+            ass.setProcessName(activity.getProcessName());
+            ass.setProcessVersion(processVersion);
+            ass.setActivityId(activityId);
+            ass.setActivityName(activity.getName());
+            ass.setActivityDefId(activity.getActivityDefId());
+            ass.setAssigneeId(activity.getPerformer());
+            activity.setName(WorkflowUtil.processVariable(activity.getName(), null, ass));
+            activity.setProcessName(WorkflowUtil.processVariable(activity.getProcessName(), null, ass));
         }
         activities.add(activity);
     }
