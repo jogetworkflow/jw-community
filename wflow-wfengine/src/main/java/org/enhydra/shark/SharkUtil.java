@@ -64,38 +64,7 @@ public class SharkUtil {
             for (Iterator i=transitions.iterator(); i.hasNext();) {
                 Transition transition = (Transition)i.next();
                 Activity nextActivity = transition.getToActivity();
-                String activityType;
-                switch(nextActivity.getActivityType()) {
-                    case XPDLConstants.ACTIVITY_TYPE_ROUTE: 
-                        // it's a route, ignore and proceed to the next activity
-                        activityType = "Route";
-                        getNextActivities(processDefId, nextActivity.getId(), processId, activityId, includeTools, nextActivities);
-                        break;
-                    case XPDLConstants.ACTIVITY_TYPE_TOOL: 
-                        // it's a tool, optionally include in results and proceed to the next activity
-                        activityType = "Tool";
-                        if (includeTools) {
-                            addActivity(nextActivity, activityType, processEntity.getPkgId(), processEntity.getId(), processEntity.getPkgVer(), processId, activityId, nextActivities);
-                        }
-                        getNextActivities(processDefId, nextActivity.getId(), processId, activityId, includeTools, nextActivities);
-                        break;
-                    case XPDLConstants.ACTIVITY_TYPE_SUBFLOW: 
-                        // it's a subflow, get the subflow process and proceed to the starting activities
-                        activityType = "Subflow";
-                        WorkflowProcess subflow = XMLUtil.getSubflowProcess(xmlInterface, nextActivity);
-                        org.enhydra.shark.xpdl.elements.Package pkg = (org.enhydra.shark.xpdl.elements.Package)subflow.getParent().getParent();
-                        String subflowProcessDefId = pkg.getId() + "#" + pkg.getInternalVersion() + "#" + subflow.getId();
-                        ArrayList subflowActivities = subflow.getStartingActivities();
-                        for (Iterator j=subflowActivities.iterator(); j.hasNext();) {
-                            Activity subflowActivity = (Activity)j.next();
-                            getNextActivities(subflowProcessDefId, subflowActivity.getId(), processId, activityId, includeTools, nextActivities);
-                        }
-                        break;
-                    default: 
-                        // it's a normal activity, include in results
-                        activityType = "Activity";
-                        addActivity(nextActivity, activityType, processEntity.getPkgId(), processEntity.getId(), processEntity.getPkgVer(), processId, activityId, nextActivities);
-                }
+                evaluateActivity(xmlInterface, processEntity, nextActivity, processDefId, processId, activityId, includeTools, nextActivities);
             }                         
         } catch (Exception ex) {
             LogUtil.error(SharkUtil.class.getName(), ex, "Error getting next activities");
@@ -108,6 +77,51 @@ public class SharkUtil {
         }
         return nextActivities;
     }    
+
+    /**
+     * Evaluates an activity to determine the cause of action
+     * @param xmlInterface 
+     * @param processEntity
+     * @param activity
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @param includeTools
+     * @param nextActivities
+     */
+    static void evaluateActivity(XMLInterface xmlInterface, WMEntity processEntity, Activity activity, String processDefId, String processId, String activityId, boolean includeTools, Collection<WorkflowActivity> nextActivities) {
+        String activityType;
+        switch(activity.getActivityType()) {
+            case XPDLConstants.ACTIVITY_TYPE_ROUTE:
+                // it's a route, ignore and proceed to the next activity
+                activityType = "Route";
+                getNextActivities(processDefId, activity.getId(), processId, activityId, includeTools, nextActivities);
+                break;
+            case XPDLConstants.ACTIVITY_TYPE_TOOL:
+                // it's a tool, optionally include in results and proceed to the next activity
+                activityType = "Tool";
+                if (includeTools) {
+                    addActivity(activity, activityType, processEntity.getPkgId(), processEntity.getId(), processEntity.getPkgVer(), processId, activityId, nextActivities);
+                }
+                getNextActivities(processDefId, activity.getId(), processId, activityId, includeTools, nextActivities);
+                break;
+            case XPDLConstants.ACTIVITY_TYPE_SUBFLOW:
+                // it's a subflow, get the subflow process and proceed to the starting activities
+                activityType = "Subflow";
+                WorkflowProcess subflow = XMLUtil.getSubflowProcess(xmlInterface, activity);
+                org.enhydra.shark.xpdl.elements.Package pkg = (org.enhydra.shark.xpdl.elements.Package)subflow.getParent().getParent();
+                ArrayList subflowActivities = subflow.getStartingActivities();
+                for (Iterator j=subflowActivities.iterator(); j.hasNext();) {
+                    Activity subflowActivity = (Activity)j.next();
+                    evaluateActivity(xmlInterface, processEntity, subflowActivity, processDefId, processId, activityId, includeTools, nextActivities);
+                }
+                break;
+            default:
+                // it's a normal activity, include in results
+                activityType = "Activity";
+                addActivity(activity, activityType, processEntity.getPkgId(), processEntity.getId(), processEntity.getPkgVer(), processId, activityId, nextActivities);
+        }
+    }
 
     /**
      * Converts an Activity into a WorkflowActivity and adds into the Collection of results.
