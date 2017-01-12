@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
+import org.enhydra.shark.api.client.wfmodel.WfProcess;
 import org.enhydra.shark.api.client.wfservice.AdminMisc;
 import org.enhydra.shark.api.client.wfservice.SharkConnection;
 import org.enhydra.shark.api.client.wfservice.WMEntity;
@@ -61,11 +62,31 @@ public class SharkUtil {
             Activity currentActivity = SharkUtilities.getActivityDefinition(sessionHandle, processEntity.getPkgId(), processEntity.getPkgVer(), processEntity.getId(), activityDefId);
             // get and loop through non-exception outgoing transitions
             List transitions = currentActivity.getNonExceptionalOutgoingTransitions();
-            for (Iterator i=transitions.iterator(); i.hasNext();) {
-                Transition transition = (Transition)i.next();
-                Activity nextActivity = transition.getToActivity();
-                evaluateActivity(xmlInterface, processEntity, nextActivity, processDefId, processId, activityId, includeTools, nextActivities);
-            }                         
+            if (!transitions.isEmpty()) {
+                // handle normal outgoing transitions
+                for (Iterator i=transitions.iterator(); i.hasNext();) {
+                    Transition transition = (Transition)i.next();
+                    Activity nextActivity = transition.getToActivity();
+                    evaluateActivity(xmlInterface, processEntity, nextActivity, processDefId, processId, activityId, includeTools, nextActivities);
+                }                         
+            } else {
+                // handle subflow exit
+                WfActivityWrapper wfActivity = null;
+                Object wfRequester = sc.getProcess(processId).requester();
+                if (wfRequester instanceof WfActivityWrapper) {
+                    wfActivity = (WfActivityWrapper)wfRequester;
+                }
+                if (wfActivity != null) {
+                    WfProcess requesterProcess = wfActivity.container();
+                    WMEntity activityEntity = admin.getActivityDefinitionInfo(sessionHandle, requesterProcess.key(), wfActivity.key());
+                    String requesterActivityDefId = activityEntity.getId();
+                    String requesterProcessId = requesterProcess.key();
+                    String requesterProcessDefId = requesterProcess.manager().name();
+                    String requesterProcessDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(requesterProcessDefId);
+                    Activity requesterActivity = SharkUtilities.getActivityDefinition(sessionHandle, processEntity.getPkgId(), processEntity.getPkgVer(), requesterProcessDefIdWithoutVersion, requesterActivityDefId);
+                    getNextActivities(requesterProcessDefId, requesterActivity.getId(), requesterProcessId, requesterActivityDefId, includeTools, nextActivities);
+                }
+            }
         } catch (Exception ex) {
             LogUtil.error(SharkUtil.class.getName(), ex, "Error getting next activities");
         } finally {
