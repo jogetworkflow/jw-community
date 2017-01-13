@@ -367,6 +367,8 @@ public class FormPdfUtil {
         style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
         style += ".quickEdit{display:none;}";
+        style += ".pdf_visible{display:block !important; height: auto !important; width: 100% !important;}";
+        style += ".pdf_hidden{display:none !important;}";
         
         if (repeatHeader != null && repeatHeader) {
             style += "div.header{display: block;position: running(header);}";
