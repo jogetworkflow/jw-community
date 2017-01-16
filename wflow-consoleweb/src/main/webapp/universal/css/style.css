@@ -2,11 +2,6 @@
     -webkit-font-smoothing: antialiased
 }
 
-*, :active, :focus, :hover {
-    outline: 0!important;
-    -webkit-tap-highlight-color: transparent!important
-}
-
 html {
     overflow-x: hidden;
     -ms-overflow-style: none
