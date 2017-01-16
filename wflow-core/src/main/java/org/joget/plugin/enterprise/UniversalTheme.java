@@ -195,7 +195,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             }
         }
         
-        jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", defaultFontColor : \""+font+"\", font: \"'Roboto'\"};</script>\n";
+        jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
 
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\"></script>\n";
         
