@@ -243,6 +243,7 @@ body.embeded #adminBar {
 }
 .analyzer-page { 
     display: none;
+    top: 0px;
     padding: 2px; 
     position: absolute; 
     z-index: 100; 
