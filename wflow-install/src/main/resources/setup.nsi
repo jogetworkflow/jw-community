@@ -227,7 +227,7 @@ ${EndIf}
 
 SectionEnd
 
-Section "Java 7" SecJava
+Section "Java 8" SecJava
 
   SectionIn RO
   SetOutPath "$INSTDIR"
@@ -312,7 +312,7 @@ FunctionEnd
   ;Language strings
   LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget Workflow Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
-  LangString DESC_SecJava ${LANG_ENGLISH} "Java 7 Standard Edition"
+  LangString DESC_SecJava ${LANG_ENGLISH} "Java 8 Standard Edition"
   LangString DESC_SecMySQL ${LANG_ENGLISH} "MySQL 5 Database Server"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start Menu Shortcuts"
 
