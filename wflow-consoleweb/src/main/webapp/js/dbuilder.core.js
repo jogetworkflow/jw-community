@@ -66,7 +66,7 @@ DatalistBuilder = {
                 {
                     title: 'Property Editor',
                     closeable: true,
-                    draggable: false,
+                    draggable: true,
                     show: false,
                     fixed: true
                 });

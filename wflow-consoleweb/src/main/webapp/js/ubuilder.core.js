@@ -81,7 +81,7 @@ UserviewBuilder = {
     //Initial Builder feature
     initBuilder : function(){
         //Popup dialog
-        this.editorDialog = new Boxy('<div class="menu-wizard-container"></div>', {title:'Property Editor',closeable:true,draggable:false,show:false,fixed:true});
+        this.editorDialog = new Boxy('<div class="menu-wizard-container"></div>', {title:'Property Editor',closeable:true,draggable:true,show:false,fixed:true});
 
         //Shortcut key
         $(document).keyup(function (e) {
