@@ -156,8 +156,8 @@ public class UserviewThemeProcesser {
         boolean isLoggedIn = username != null && !WorkflowUserManager.ROLE_ANONYMOUS.equals(username);
         data.put("is_logged_in", isLoggedIn);
         if (isLoggedIn) {
-            ExtDirectoryManager directoryManager = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
-            User user = directoryManager.getUserByUsername(username);
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            User user = workflowUserManager.getCurrentUser();
             data.put("username", username);
             data.put("user", user);
             data.put("logout_link", request.getContextPath() + "/j_spring_security_logout");
@@ -356,7 +356,8 @@ public class UserviewThemeProcesser {
 
         html += "UI.base = \"" + request.getContextPath() + "\";\n"
                 + "        UI.userview_app_id = '"+userview.getParamString("appId")+"';\n"
-                + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n";
+                + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n"
+                + "        UI.locale = '"+AppUtil.getAppLocale()+"';\n";
 
         if (alertMessage != null && !alertMessage.isEmpty()) {
             html += "alert(\"" + alertMessage + "\");\n";

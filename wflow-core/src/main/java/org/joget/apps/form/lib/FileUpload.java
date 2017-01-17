@@ -298,9 +298,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 UserviewPermission plugin = (UserviewPermission) pm.getPlugin(className);
                 if (plugin != null && plugin instanceof FormPermission) {
                     WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                    ExtDirectoryManager dm = (ExtDirectoryManager) AppUtil.getApplicationContext().getBean("directoryManager");
-                    String username = workflowUserManager.getCurrentUsername();
-                    User user = dm.getUserByUsername(username);
+                    User user = workflowUserManager.getCurrentUser();
 
                     plugin.setProperties(properties);
                     plugin.setCurrentUser(user);

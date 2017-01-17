@@ -105,7 +105,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
             try {
                 if (!getWorkflowUserManager().isCurrentUserAnonymous()) {
                     String userGmt = null;
-                    User user = getDirectoryManager().getUserByUsername(getWorkflowUserManager().getCurrentUsername());
+                    User user = getWorkflowUserManager().getCurrentUser();
                     if (user != null) {
                         userGmt =  user.getTimeZone();
                     }
@@ -189,7 +189,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 String enableUserLocale = getSetupManager().getSettingValue("enableUserLocale");
                 if (enableUserLocale != null && enableUserLocale.equalsIgnoreCase("true") && !getWorkflowUserManager().isCurrentUserAnonymous()) {
                     String userLocale = null;
-                    User user = getDirectoryManager().getUserByUsername(getWorkflowUserManager().getCurrentUsername());
+                    User user = getWorkflowUserManager().getCurrentUser();
                     if (user != null) {
                         userLocale =  user.getLocale();
                     }

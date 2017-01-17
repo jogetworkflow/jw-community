@@ -66,7 +66,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null, appDef);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
         
         Map<String, Object> requestParameters = new HashMap<String, Object>();
         requestParameters.put("appId", appDef.getAppId());
@@ -143,7 +143,7 @@ public class UserviewService {
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
 
-        User currentUser = directoryManager.getUserByUsername(workflowUserManager.getCurrentUsername());
+        User currentUser = workflowUserManager.getCurrentUser();
 
         if (requestParameters == null) {
             requestParameters = new HashMap<String, Object>();

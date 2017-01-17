@@ -193,13 +193,12 @@ public class WorkflowUtil implements ApplicationContextAware {
      * @return 
      */
     public static String getCurrentUserFullName() {
-        DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
-        String username = getCurrentUsername();
-        User user = directoryManager.getUserByUsername(username);
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) appContext.getBean("workflowUserManager");
+        User user = workflowUserManager.getCurrentUser();
         if (user != null && user.getFirstName() != null && user.getFirstName().trim().length() > 0) {
             return user.getFirstName() + " " + user.getLastName();
         } else {
-            return username;
+            return getCurrentUsername();
         }
     }
 
