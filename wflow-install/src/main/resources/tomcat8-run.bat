@@ -1,4 +1,4 @@
-set JAVA_HOME=.\jre1.7.0_76
+set JAVA_HOME=.\jre1.8.0_112
 set CATALINA_HOME=.\apache-tomcat-8.5.9
 
 set JAVA_OPTS=-XX:MaxPermSize=128m -Xmx512M -Dwflow.home=./wflow/
