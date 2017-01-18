@@ -114,7 +114,7 @@
             <form name="form_${dataListId}" action="?<c:out value="${queryString}" escapeXml="true"/>" method="POST">
                 <!-- Display Buttons -->
                 <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
-                    <div class="actions bottom ${buttonFloat}">
+                    <div class="actions top ${buttonFloat}">
                         <c:forEach items="${dataList.actions}" var="action">
                             <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                                 <c:set var="buttonConfirmation" value="" />
