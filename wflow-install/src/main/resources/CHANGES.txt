@@ -4,6 +4,7 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 5.0.12
 =================
+ed633b5 Fixed: wflow-consoleweb - Data List - Missing margin for buttons at the top @5.0-SNAPSHOT
 22132e4 Fixed: wflow-core - Datalist - Row action visibility control not considering empty value.  #4516 @5.0-SNAPSHOT
 918817f Fixed: wflow-core/wflow-consoleweb/wflow-directory - Reduce call to get current logged in user. @5.0-SNAPSHOT
 2fdc064 Fixed: wflow-consoleweb - Form Builder - Copy & paste an edited section & column does not have the updated properties. #4502 @5.0-SNAPSHOT
