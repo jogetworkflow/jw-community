@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -355,7 +356,8 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                     JSONObject obj = new JSONObject();
                     try {
                         // handle multipart files
-                        MultipartFile file = FileStore.getFile(paramName);
+                        String validatedParamName = SecurityUtil.validateStringInput(paramName);
+                        MultipartFile file = FileStore.getFile(validatedParamName);
                         if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
                             String path = FileManager.storeFile(file);
                             obj.put("path", path);
@@ -373,7 +375,11 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                     obj.write(response.getWriter());
                 } catch (Exception ex) {}
             } else if (filePath != null && !filePath.isEmpty()) {
-                File file = FileManager.getFileByPath(filePath);
+                String normalizedFilePath = Normalizer.normalize(filePath, Normalizer.Form.NFKC);
+                if (normalizedFilePath.contains("../") || normalizedFilePath.contains("..\\")) {
+                    throw new SecurityException("Invalid filePath " + normalizedFilePath);
+                }
+                File file = FileManager.getFileByPath(normalizedFilePath);
                 if (file != null) {
                     ServletOutputStream stream = response.getOutputStream();
                     DataInputStream in = new DataInputStream(new FileInputStream(file));
