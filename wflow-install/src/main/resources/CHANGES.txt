@@ -2,6 +2,14 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.12
+=================
+22132e4 Fixed: wflow-core - Datalist - Row action visibility control not considering empty value.  #4516 @5.0-SNAPSHOT
+918817f Fixed: wflow-core/wflow-consoleweb/wflow-directory - Reduce call to get current logged in user. @5.0-SNAPSHOT
+2fdc064 Fixed: wflow-consoleweb - Form Builder - Copy & paste an edited section & column does not have the updated properties. #4502 @5.0-SNAPSHOT
+b2b3321 Modified: wflow-consoleweb - Setup - Removed custom timezone from default user profiles @5.0-SNAPSHOT
+944ea4a Fixed: wflow-consoleweb - Oracle - Fixed wrong ID in the default DB schema for the admin user @5.0-SNAPSHOT
+
 CHANGES IN 5.0.11
 =================
 c70b9b9 Fixed: wflow-consoleweb - Mobile - Userview name shown escaped html tag. #4475 @5.0-SNAPSHOT
