@@ -354,7 +354,8 @@ public class UserviewThemeProcesser {
 
         html += "UI.base = \"" + request.getContextPath() + "\";\n"
                 + "        UI.userview_app_id = '"+userview.getParamString("appId")+"';\n"
-                + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n";
+                + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n"
+                + "        UI.locale = '"+AppUtil.getAppLocale()+"';\n";
 
         if (alertMessage != null && !alertMessage.isEmpty()) {
             html += "alert(\"" + alertMessage + "\");\n";

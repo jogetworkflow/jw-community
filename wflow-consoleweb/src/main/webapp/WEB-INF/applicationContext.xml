@@ -21,6 +21,8 @@
     <!-- Open paths -->        
     <security:http pattern="/web/login" security="none"/>
     <security:http pattern="/web/mlogin" security="none"/>
+    <security:http pattern="/web/userview/screenshot/**" security="none"/>
+    <security:http pattern="/web/help/guide" security="none"/>
 
     <!-- Protected paths -->
     <security:http pattern="/**" use-expressions="false" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">        
@@ -33,7 +35,6 @@
         <!-- Open paths which require user object for locale and timezone-->
         <security:intercept-url pattern="/web/index" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/unauthorized" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
-        <security:intercept-url pattern="/web/help/guide" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/home" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         
         <!-- Userview paths: permissions handled within the userview and forms -->

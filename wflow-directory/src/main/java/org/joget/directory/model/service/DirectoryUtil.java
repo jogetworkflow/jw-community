@@ -8,6 +8,7 @@ import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.User;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -102,8 +103,14 @@ public class DirectoryUtil implements ApplicationContextAware {
      */
     public static Boolean userIsReadonly(String username) {
         if (username != null && !username.isEmpty() && !ROLE_ANONYMOUS.equals(username)) {
-            DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
-            User user = directoryManager.getUserByUsername(username);
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager) appContext.getBean("workflowUserManager");
+            User user = null;
+            if (username.equals(workflowUserManager.getCurrentUsername())) {
+                user = workflowUserManager.getCurrentUser();
+            } else {
+                DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) appContext.getBean("directoryManager");
+                user = directoryManager.getUserByUsername(username);
+            }
             if (user != null && user.getReadonly() != null) {
                 return user.getReadonly();
             }

@@ -2,6 +2,7 @@ UI = {
    base: '',
    userview_app_id: '',
    userview_id: '',
+   locale: '',
    escapeHTML: function(c) {
       if (c == null || c == undefined) {
           return '';
@@ -820,7 +821,7 @@ BubbleDialog = {
 HelpGuide = {
     
     prefix: "help.",
-    url: "/web/help/guide",
+    url: "/web/help/guide?locale=" + UI.locale,
     attachTo: null,
     key: null,
     definition: null,

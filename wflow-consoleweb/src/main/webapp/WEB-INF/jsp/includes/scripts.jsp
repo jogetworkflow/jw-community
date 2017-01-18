@@ -42,5 +42,6 @@
         ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+        UI.locale = "<c:out value="${currentLocale}"/>";
     </script>
 </c:if>
