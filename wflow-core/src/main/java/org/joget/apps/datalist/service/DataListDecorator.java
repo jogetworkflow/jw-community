@@ -342,7 +342,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 String value = (tempValue != null)?tempValue.toString():"";
                 
                 boolean result = false;
-                if (value != null && !value.isEmpty()) {
+                if (value != null) {
                     if ("=".equals(operator) && compareValue.equals(value)) {
                         result = true;
                     } else if ("<>".equals(operator) && !compareValue.equals(value)) {
