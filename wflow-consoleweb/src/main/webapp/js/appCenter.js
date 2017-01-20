@@ -96,29 +96,41 @@ var AppCenter = {
                 });
                 appsLi.detach().appendTo($(container));
 
-                $("span.userview-icon").hover(
-                    function() {
-                        var summary = $(this).siblings("div.app-name").text();
-                        if (summary !== "") {
-                            $(this).prepend("<div class='userview-summary'>" + summary + "</div>");
-                            $(this).find(".userview-summary").show("fast");
+                HelpGuide.reposition();     
+                
+                // check if within IFRAME
+                if (window.self === window.top) {
+                    $("span.userview-icon").hover(
+                        function() {
+                            var summary = $(this).siblings("div.app-name").text();
+                            if (summary !== "") {
+                                $(this).prepend("<div class='userview-summary'>" + summary + "</div>");
+                                $(this).find(".userview-summary").show("fast");
+                            }
+                        },
+                        function() {
+                            $(this).find(".userview-summary").hide("fast").remove();
                         }
-                    },
-                    function() {
-                        $(this).find(".userview-summary").hide("fast").remove();
-                    }
-                );
-                $("#apps li").hover(
-                    function() {
-                        $(this).find(".app-design-button").show();
-                    },
-                    function() {
-                        $(this).find(".app-design-button").hide();
-                    }
-                );
-                HelpGuide.reposition();                          
+                    );
+                    $("#apps li").hover(
+                        function() {
+                            $(this).find(".app-design-button").show();
+                        },
+                        function() {
+                            $(this).find(".app-design-button").hide();
+                        }
+                    );
+                } else {
+                    // open link within IFRAME
+                    $("a.app-link").attr("target", "_self");
+                }
             }
         });
+        
+        // hide admin buttons if within IFRAME
+        if (window.self !== window.top) {
+            $("#appcenter_admin").hide();
+        }        
     },
     showHints: function() {
         if ($("#main-action-help:visible").length > 0) {
