@@ -64,41 +64,64 @@ FormUtil = {
     
     getGridCells : function(cellFieldId){
         var fieldId = cellFieldId.split(".")[0];
+        var cells = null;
         
         var field = FormUtil.getField(fieldId);
-        
-        cellFieldId = cellFieldId.replace(/\./g, '_');
-        var cells = $(field).find("[name=" + cellFieldId + "], [name$=_" + cellFieldId + "]");
-        //filter those in template 
-        cells = $(cells).filter(':parents(.grid-row-template)');
+        var gridDataObject = field.data("gridDataObject");
+        if (gridDataObject !== null && gridDataObject !== undefined) {
+            var cellId = cellFieldId.split(".")[1];
+            
+            //build dummy hidden fields for plugins using this method
+            cells = new Array();
+            for (var i in gridDataObject) {
+                var value = gridDataObject[i][cellId];
+                var temp = $("<input type='hidden'/>").val(value);
+                cells.push(temp);
+            }
+        } else {
+            cellFieldId = cellFieldId.replace(/\./g, '_');
+            cells = $(field).find("[name=" + cellFieldId + "], [name$=_" + cellFieldId + "]");
+            //filter those in template 
+            cells = $(cells).filter(':parents(.grid-row-template)');
+        }
         return cells;
     },
     
     getGridCellValues : function (cellFieldId) {
         var fieldId = cellFieldId.split(".")[0];
+        var values = new Array();
         
         var field = FormUtil.getField(fieldId);
         
-        var values = new Array();
-        field.find("tr.grid-row").each(function() {
-            if ($(this).find("textarea[id$=_jsonrow]").length > 0) {
-                var cellId = cellFieldId.split(".")[1];
-
-                //get json data from hidden textarea
-                var data = $(this).find("textarea[id$=_jsonrow]").val();
-                var dataObj = $.parseJSON(data);
-
-                if (dataObj[cellId] !== undefined) {
-                    values.push(dataObj[cellId]);
-                }
-            } else {
-                var cellId = cellFieldId.replace(/\./g, '_');
-                var cell = $(field).find("[name=" + cellId + "], [name$=_" + cellId + "]");
-                if (cell.length > 1) {
-                    values.push(cell.text());
-                }
+        var gridDataObject = field.data("gridDataObject");
+        if (gridDataObject !== null && gridDataObject !== undefined) {
+            var cellId = cellFieldId.split(".")[1];
+            
+            for (var i in gridDataObject) {
+                var value = gridDataObject[i][cellId];
+                values.push(value);
             }
-        });
+        } else {
+            field.find("tr.grid-row").each(function() {
+                if ($(this).find("textarea[id$=_jsonrow]").length > 0) {
+                    var cellId = cellFieldId.split(".")[1];
+
+                    //get json data from hidden textarea
+                    var data = $(this).find("textarea[id$=_jsonrow]").val();
+                    var dataObj = $.parseJSON(data);
+
+                    if (dataObj[cellId] !== undefined) {
+                        values.push(dataObj[cellId]);
+                    }
+                } else {
+                    var cellId = cellFieldId.replace(/\./g, '_');
+                    var cell = $(field).find("[name=" + cellId + "], [name$=_" + cellId + "]");
+                    if (cell.length > 1) {
+                        values.push(cell.text());
+                    }
+                }
+            });
+        }
         
         return values;
     },
