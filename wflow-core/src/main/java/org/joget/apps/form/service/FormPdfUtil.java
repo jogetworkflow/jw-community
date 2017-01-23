@@ -36,6 +36,7 @@ public class FormPdfUtil {
     private static ITextRenderer renderer;
     private static final int MIN_ESCAPE = 2;
     private static final int MAX_ESCAPE = 6;
+    public final static String PDF_GENERATION = "_FORM_PDF_GENERATION";
     
     /**
      * Gets the renderer
@@ -135,6 +136,7 @@ public class FormPdfUtil {
 
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
         FormData formData = new FormData();
+        formData.addFormResult(PDF_GENERATION, "");
         if (primaryKey != null && !primaryKey.isEmpty()) {
             formData.setPrimaryKeyValue(primaryKey);
         } else if (assignment != null) {
