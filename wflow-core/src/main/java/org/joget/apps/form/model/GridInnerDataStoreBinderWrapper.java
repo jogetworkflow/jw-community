@@ -115,14 +115,20 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         if (!ids.isEmpty()) {
             //remove inner data
             Form innerForm = dataRetriever.getInnerForm();
-            for (String id : ids) {
-                FormUtil.recursiveDeleteChildFormData(innerForm, id, deleteGrid, deleteSubform, abortProcess);
+            if (innerForm != null) {
+                for (String id : ids) {
+                    FormUtil.recursiveDeleteChildFormData(innerForm, id, deleteGrid, deleteSubform, abortProcess);
+                }
             }
         }
     }
     
     public void storeInnerData(FormRowSet rows) {
         Form innerForm = dataRetriever.getInnerForm();
+        if (innerForm == null) {
+            return;
+        }
+        
         FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
         
         for (FormRow r : rows) {
