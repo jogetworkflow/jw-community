@@ -65,7 +65,7 @@
     font-size: 7px;
     background: none;
     width: 100%;
-    z-index: 100;
+    z-index: 200;
 }
 .form-section .form-palette-options {
     top: 2px;
