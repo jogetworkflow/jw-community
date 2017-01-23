@@ -2020,4 +2020,59 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
     }
+    
+    public static String formRowSetToJson (FormRowSet rows) {
+        String json = "[]";
+        try {
+            JSONArray jsonArray = new JSONArray();
+            
+            for (FormRow r : rows) {
+                JSONObject obj = new JSONObject();
+                
+                for (Object p : r.getCustomProperties().keySet()) {
+                    obj.put(p.toString(), r.getProperty(p.toString()));
+                }
+                obj.put(FormUtil.PROPERTY_DATE_CREATED, r.getDateCreated());
+                obj.put(FormUtil.PROPERTY_DATE_MODIFIED, r.getDateModified());
+                
+                jsonArray.put(obj);
+            }
+            
+            json = jsonArray.toString();
+        } catch (Exception e) {
+            LogUtil.error(FormUtil.class.getName(), e, "formRowSetToJson error");
+        }
+        return json;
+    }
+    
+    public static FormRowSet jsonToFormRowSet (String json) {
+        FormRowSet rowSet = new FormRowSet();
+        rowSet.setMultiRow(true);
+
+        if (json != null && json.trim().length() > 0) {
+            try {
+                // loop thru each row in json array
+                JSONArray jsonArray = new JSONArray(json);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonRow = (JSONObject) jsonArray.get(i);
+
+                    // create row and populate fields
+                    FormRow row = new FormRow();
+                    JSONArray fields = jsonRow.names();
+                    if (fields != null && fields.length() > 0) {
+                        for (int k = 0; k < fields.length(); k++) {
+                            String fieldName = fields.getString(k);
+                            String value = jsonRow.getString(fieldName);
+                            row.setProperty(fieldName, value);
+                        }
+                    }
+                    row.setProperty("jsonrow", jsonRow.toString());
+                    rowSet.add(row);
+                }
+            } catch (Exception e) {
+                LogUtil.error(FormUtil.class.getName(), e, "jsonToFormRowSet error");
+            }
+        }
+        return rowSet;
+    }
 }
