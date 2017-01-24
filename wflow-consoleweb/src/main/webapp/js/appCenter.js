@@ -123,6 +123,9 @@ var AppCenter = {
                 } else {
                     // open link within IFRAME
                     $("a.app-link").attr("target", "_self");
+                    $("a.app-link").on("click", function() {
+                        $(".page-loader").fadeIn();
+                    });
                 }
             }
         });
