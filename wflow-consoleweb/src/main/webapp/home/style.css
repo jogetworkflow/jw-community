@@ -29,7 +29,7 @@ body {
 #content {
     margin-top: 5px;
     min-height: 300px;
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     color: #696969;
 }
 #content h3 { 
@@ -185,7 +185,7 @@ body#desktop {
 #desktop #categories a.category {
     color: #535353;
     text-decoration: none;
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     margin: 0px 5px;
     padding: 5px 10px;
     border-radius: 5px;
@@ -205,11 +205,11 @@ body#desktop {
     margin-top: 10px;
     min-height: 150px;
     padding-bottom: 10px;
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     color: #696969;
 }
 #desktop .appdiv h3, #desktop #content h3 {
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     color: #535353;
     margin: 10px 0px 5px 0px;
     font-weight: normal;
