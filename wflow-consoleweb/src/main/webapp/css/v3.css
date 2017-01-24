@@ -1454,7 +1454,7 @@ span.dot_yellow{
 #runApps #categories a.category {
     color: #535353;
     text-decoration: none;
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     margin: 0px 5px;
 }
 #runApps #categories a.category-selected {
@@ -1471,11 +1471,11 @@ span.dot_yellow{
     margin-top: 10px;
     min-height: 100px;
     padding-bottom: 10px;
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     color: #696969;
 }
 #runApps .appdiv h3, #content h3 {
-    font-family: "Lucida Sans",Arial,Verdana,sans-serif;
+    font-family: Arial,Verdana,sans-serif;
     color: #535353;
     margin: 10px 0px 0px 0px;
     font-weight: normal;        
