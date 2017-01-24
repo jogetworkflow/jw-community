@@ -269,7 +269,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
         }
         
-        data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"preloader pl-xl\"><svg class=\"pl-circular\" viewBox=\"25 25 50 50\"><circle class=\"plc-path\" cx=\"50\" cy=\"50\" r=\"20\" /></svg><p>"+ResourceBundleUtil.getMessage("theme.universal.pleaseWait")+"</p></div></div>");
+        data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"preloader pl-xl\"><svg class=\"pl-circular\" viewBox=\"25 25 50 50\"><circle class=\"plc-path\" cx=\"50\" cy=\"50\" r=\"20\" /></svg></div></div>");
         return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
     }
     
