@@ -28,7 +28,7 @@ header.navbar {
     -moz-user-select: none;
     -ms-user-select: none;
     position: fixed;
-    z-index: 11;
+    z-index: 200;
     width: 100%;
     left: 0;
     top: 0;

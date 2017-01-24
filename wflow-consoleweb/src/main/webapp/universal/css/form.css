@@ -257,7 +257,7 @@ body .filter-cell select:not([class^=ui]){
     body .form-container textarea, 
     body .form-container select:not([class^=ui]),
     body .form-container .form-cell-value,
-    body .form-container .subform-cell-value.
+    body .form-container .subform-cell-value,
     body .form-container .chosen-container{
         max-width: 100%;
     }
@@ -712,15 +712,15 @@ body #form-canvas .form-error-message {
 }
 
 body .form-cell .tablesaw thead tr:first-child th, body .subform-cell .tablesaw thead tr:first-child th,
-body .form-cell table td, body .form-cell table th, body .subform-cell table td, body .subform-cell table th {
+body .form-cell .grid td, body .form-cell .grid th, body .subform-cell .grid td, body .subform-cell .grid th {
     border:0;
     padding:8px;
 }
-body .form-cell table thead tr {
+body .form-cell .grid thead tr {
     background: #9E9E9E;
 }
 
-body .form-cell table tbody tr:nth-child(odd) {
+body .form-cell .grid tbody tr:nth-child(odd) {
     background-color: rgba(0,0,0,.1);
 }
 
