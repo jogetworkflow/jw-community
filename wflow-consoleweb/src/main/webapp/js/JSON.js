@@ -63,16 +63,15 @@ Example:
 	>alert(JSON.decode('[0,1,false,true,null,[2,3],{"some":"value"}]'))
 	>// 0,1,false,true,,2,3,[object Object]
 */
-var orgJson = null;
-if (typeof JSON.parse === 'function' && typeof JSON.decode === 'undefined') {
-    orgJson = JSON;
+if (typeof JSON.parse === 'function' && typeof JSON.decode === 'undefined' && window["orgJson"] === undefined) {
+    window["orgJson"] = JSON;
 }
 
 JSON = new function(){
         /* to support browser native JSON method */
         this.stringify = function(value, replacer, space) {
-            if (orgJson !== null) {
-                return orgJson.stringify(value, replacer, space);
+            if (window["orgJson"] !== undefined) {
+                return window["orgJson"].stringify(value, replacer, space);
             } else {
                 return this.encode(value);
             }
@@ -80,8 +79,8 @@ JSON = new function(){
         
         /* to support browser native JSON method */
         this.parse = function (text, reviver) {
-            if (orgJson !== null) {
-                return orgJson.parse(text, reviver);
+            if (window["orgJson"] !== undefined) {
+                return window["orgJson"].parse(text, reviver);
             } else {
                 return this.decode(text);
             }
