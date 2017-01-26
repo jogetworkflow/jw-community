@@ -43,6 +43,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.MissingElement;
+import org.joget.apps.form.model.Section;
 import org.joget.apps.form.model.Validator;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -62,7 +63,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -444,12 +444,27 @@ public class FormUtil implements ApplicationContextAware {
                     result = FormUtil.executeValidators(child, formData) && result;
                 }
             }
+        } else if (element instanceof Section) {
+            //remove error in hidden section
+            cleanPreviousErrors(element, formData);
         }
         //add empty error to fail the submission if the result is false and there are no error message exist.  
         if (!result && !element.hasError(formData) && element instanceof Form) {
             formData.addFormError(id, "");
         }
         return result;
+    }
+    
+    private static void cleanPreviousErrors(Element element, FormData formData) {
+        String id = FormUtil.getElementParameterName(element);
+        formData.getPreviousFormErrors().remove(id);
+                
+        Collection<Element> children = element.getChildren(formData);
+        if (children != null) {
+            for (Element child : children) {
+                FormUtil.cleanPreviousErrors(child, formData);
+            }
+        }
     }
 
     /**
@@ -682,6 +697,11 @@ public class FormUtil implements ApplicationContextAware {
      * @return
      */
     public static Element findElement(String id, Element rootElement, FormData formData, Boolean includeSubForm) {
+        if (id.contains(".") && rootElement != null) {
+            rootElement = FormUtil.getRootElement(id, rootElement, formData);
+            id = id.substring(id.lastIndexOf(".") + 1);
+        } 
+        
         if (rootElement == null) {
             return null;
         }
@@ -715,6 +735,20 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         return result;
+    }
+    
+    private static Element getRootElement(String id, Element rootElement, FormData formData) {
+        if (id.contains(".")) {
+            String tempId = id.substring(0, id.indexOf("."));
+            id = id.substring(id.indexOf(".") + 1);
+            rootElement = FormUtil.findElement(tempId, rootElement, formData);
+            if (rootElement != null && rootElement instanceof AbstractSubForm && !rootElement.getChildren(formData).isEmpty()) {
+                rootElement = rootElement.getChildren(formData).iterator().next();
+            }
+            return FormUtil.getRootElement(id, rootElement, formData);
+        } else {
+            return rootElement;
+        }
     }
     
     /**

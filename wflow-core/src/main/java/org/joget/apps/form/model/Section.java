@@ -32,7 +32,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             String visibilityControl = getPropertyString("visibilityControl");
             if (visibilityControl != null && !visibilityControl.isEmpty()) {
                 Form rootForm = FormUtil.findRootForm(this);
-                Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData, true);
+                Element controlElement = FormUtil.findElement(visibilityControl, rootForm, formData);
                 if (controlElement != null) {
                     String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
                     dataModel.put("visibilityControlParam", visibilityControlParam);
