@@ -68,6 +68,7 @@
                         {value : '(', label : '('},
                         {value : ')', label : ')'}
                     ],
+                    type : 'autocomplete',
                     options_callback : 'FormBuilder.getFieldOptions',
                     required: 'true'
                 },

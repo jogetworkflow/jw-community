@@ -128,7 +128,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                     rule.put("value", values[i]);
                     rule.put("regex", regex[i]);
                     if (!fields[i].equals("(") && !fields[i].equals(")")) {
-                        Element controlElement = FormUtil.findElement(fields[i], rootForm, formData);
+                        Element controlElement = FormUtil.findElement(fields[i], rootForm, formData, true);
                         if (controlElement != null) {
                             String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
                             rule.put("field", visibilityControlParam);
