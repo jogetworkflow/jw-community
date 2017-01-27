@@ -632,8 +632,8 @@ body#login #page > footer {
     -webkit-backface-visibility: hidden;
     -moz-backface-visibility: hidden;
     backface-visibility: hidden;
-    opacity: 0;
-    filter: alpha(opacity=0)
+    opacity: 0.5;
+    filter: alpha(opacity=50)
 }
 
 #sidebar li.active>a.dropdown:after,
