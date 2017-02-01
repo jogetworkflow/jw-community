@@ -237,4 +237,9 @@ _customFooTableArgs = {
             }
         );
     }
+    
+    // show page loader on leaving page
+    $(window).on('beforeunload', function() {
+        $(".page-loader").fadeIn();
+    });    
 }(window.jQuery);
