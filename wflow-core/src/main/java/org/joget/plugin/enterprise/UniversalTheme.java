@@ -573,6 +573,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String html = "";
         try {
             UserProfileMenu profile = new UserProfileMenu();
+            userview.setProperty("pageNotFoundMenu", profile);
             Map<String, Object> props = new HashMap<String, Object>();
             props.put("id", PROFILE);
             props.put("customId", PROFILE);
@@ -600,6 +601,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 menu = new UniversalInboxMenu();
             }
             if (menu != null) {
+                userview.setProperty("pageNotFoundMenu", menu);
                 Map<String, Object> props = new HashMap<String, Object>();
                 props.put("id", INBOX);
                 props.put("customId", INBOX);
