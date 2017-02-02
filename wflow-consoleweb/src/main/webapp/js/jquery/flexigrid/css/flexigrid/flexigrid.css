@@ -295,6 +295,7 @@
 			display: block;
 			position: absolute;
 			height: 24px;
+                        min-height: 24px !important;
 			width: 5px;
 			cursor: col-resize;
 			}

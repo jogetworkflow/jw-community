@@ -554,6 +554,8 @@ JsonTable.prototype = {
             newUrl += "?";
         }
         newUrl += "&_=" + new Date().valueOf().toString();
+        $("#" + thisObject.divToUpdate).addClass("jsontable");
+        $("#" + thisObject.divToUpdate).data("jsontable", this);
 
         // create flexigrid
         this.flexiGrid = $("#" + thisObject.divToUpdate).flexigrid({
@@ -755,7 +757,14 @@ TabView.prototype = {
     init : function(){
         //var thisObject = this;
 
-        this.tabView = $("#" + this.div).tabs();
+        this.tabView = $("#" + this.div).tabs({
+            activate: function( event, ui ) {
+                $(ui.newPanel).find(".jsontable").each(function(){
+                    var jsontable = $(this).data("jsontable");
+                    jsontable.refresh();
+                });
+            }
+        });
     },
 
     getTab : function(index){
