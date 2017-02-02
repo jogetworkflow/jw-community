@@ -92,6 +92,9 @@ body .ui-dialog .ui-dialog-content {
 body .ui-widget-overlay {
     height: 1000%;
 }
+body .ui-front {
+    z-index: 500;
+}
 .stop-scrolling {
     height: 100%;
     overflow: hidden;

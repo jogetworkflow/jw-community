@@ -853,7 +853,7 @@ body:not(#login) #content > main > table{
     height: 100%;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 10000;
     opacity: 0.8;
 }
 
