@@ -9,7 +9,7 @@
         <property name="replacementUser" type="string"/>
         <property name="appId" type="string"/>
         <property name="processIds" type="string"/>
-        <property name="startDate" type="date"/>
-        <property name="endDate" type="date"/>
+        <property name="startDate" type="timestamp"/>
+        <property name="endDate" type="timestamp"/>
     </class>
 </hibernate-mapping>
