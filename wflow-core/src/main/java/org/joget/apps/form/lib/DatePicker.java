@@ -261,7 +261,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     
     private String formatCompareValue(String value, String displayFormat) {
         String dataFormat = getPropertyString("dataFormat");
-        if (dataFormat != null && !dataFormat.isEmpty() && !displayFormat.equals(dataFormat)) {
+        String tempValue = value.replaceAll("[0-9]", "x");
+        String tempFormat = dataFormat.replaceAll("[a-zA-Z]", "x");
+            
+        if (dataFormat != null && !dataFormat.isEmpty() && !displayFormat.equals(dataFormat) && tempValue.equals(tempFormat)) {
             try {
                 SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                 SimpleDateFormat display = new SimpleDateFormat(displayFormat);
