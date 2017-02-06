@@ -588,35 +588,45 @@ public class UserviewThemeProcesser {
     }
 
     protected String handleMenuResponse() {
+        String menuAlertMessage = null;
+        String menuRedirectUrl = null;
+        String redirectParent = null;
         if (userview.getCurrent() != null) {
-            String menuAlertMessage = userview.getCurrent().getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY);
-            String menuRedirectUrl = userview.getCurrent().getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY);
-            String redirectParent = userview.getCurrent().getPropertyString(UserviewMenu.REDIRECT_PARENT_PROPERTY);
+            menuAlertMessage = userview.getCurrent().getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY);
+            menuRedirectUrl = userview.getCurrent().getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY);
+            redirectParent = userview.getCurrent().getPropertyString(UserviewMenu.REDIRECT_PARENT_PROPERTY);
+        } else if (userview.getProperty("pageNotFoundMenu") != null) {
+            try {
+                UserviewMenu menu = (UserviewMenu) userview.getProperty("pageNotFoundMenu");
+                menuAlertMessage = menu.getPropertyString(UserviewMenu.ALERT_MESSAGE_PROPERTY);
+                menuRedirectUrl = menu.getPropertyString(UserviewMenu.REDIRECT_URL_PROPERTY);
+                redirectParent = menu.getPropertyString(UserviewMenu.REDIRECT_PARENT_PROPERTY);
+            } catch (Exception e) {}
+        }
 
-            if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && "true".equalsIgnoreCase(redirectParent))) {
-                if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
-                    Map<String, String> data = new HashMap<String, String>();
-                    data.put("alertMessage", menuAlertMessage);
-                    data.put("redirectUrl", menuRedirectUrl);
-                    data.put("redirectParent", redirectParent);
-                    return UserviewUtil.getTemplate(getDefaultTheme(), data, "/templates/userview/redirect.ftl");
-                } else {
-                    alertMessage = menuAlertMessage;
+        if ((menuAlertMessage != null && !menuAlertMessage.isEmpty()) || (redirectParent != null && "true".equalsIgnoreCase(redirectParent))) {
+            if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
+                Map<String, String> data = new HashMap<String, String>();
+                data.put("alertMessage", menuAlertMessage);
+                data.put("redirectUrl", menuRedirectUrl);
+                data.put("redirectParent", redirectParent);
+                return UserviewUtil.getTemplate(getDefaultTheme(), data, "/templates/userview/redirect.ftl");
+            } else {
+                alertMessage = menuAlertMessage;
+            }
+        } else if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
+            if (!menuRedirectUrl.toLowerCase().startsWith("http") && !menuRedirectUrl.toLowerCase().startsWith("/") && !menuRedirectUrl.startsWith(request.getContextPath())) {
+                redirectUrl = "/web/";
+                if ("true".equalsIgnoreCase(userview.getParamString("embed"))) {
+                    redirectUrl += "embed/";
                 }
-            } else if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
-                if (!menuRedirectUrl.toLowerCase().startsWith("http") && !menuRedirectUrl.toLowerCase().startsWith("/") && !menuRedirectUrl.startsWith(request.getContextPath())) {
-                    redirectUrl = "/web/";
-                    if ("true".equalsIgnoreCase(userview.getParamString("embed"))) {
-                        redirectUrl += "embed/";
-                    }
-                    redirectUrl += "userview/" + userview.getParamString("appId") + "/";
-                    redirectUrl += userview.getPropertyString("id") + "/";
-                    redirectUrl += userview.getParamString("key") + "/" + menuRedirectUrl;
-                } else if (menuRedirectUrl.startsWith(request.getContextPath())) {
-                    redirectUrl = menuRedirectUrl.replaceFirst(request.getContextPath(), "");
-                } else {
-                    redirectUrl = menuRedirectUrl;
-                }
+                redirectUrl += "userview/" + userview.getParamString("appId") + "/";
+                redirectUrl += userview.getPropertyString("id") + "/";
+                redirectUrl += userview.getParamString("key") + "/" + menuRedirectUrl;
+            } else if (menuRedirectUrl.startsWith(request.getContextPath())) {
+                redirectUrl = menuRedirectUrl.replaceFirst(request.getContextPath(), "");
+            } else {
+                redirectUrl = menuRedirectUrl;
             }
         }
         return null;
