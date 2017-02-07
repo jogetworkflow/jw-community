@@ -1,9 +1,9 @@
 package org.joget.commons.spring.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.commons.util.DynamicDataSourceManager;
@@ -35,23 +35,22 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
     }
 
     public ResourceBundleMessage getMessage(String key, String locale) {
+        Map<String, ResourceBundleMessage> messageMap;
         String cacheKey = getCacheKey(key,locale);
         Element element = cache.get(cacheKey);
-
         if (element == null) {
-            Collection<ResourceBundleMessage> results = new ArrayList<ResourceBundleMessage>();
-
-            results = super.find(ENTITY_NAME, "WHERE e.key = ? AND e.locale = ?", new String[]{key, locale}, null, null, null, null);
-            ResourceBundleMessage result = null;
-            if (results != null && results.size() != 0) {
-                result = results.iterator().next();
+            messageMap = new HashMap<String, ResourceBundleMessage>();
+            Collection<ResourceBundleMessage> results = super.find(ENTITY_NAME, "WHERE e.locale = ?", new String[]{locale}, null, null, null, null);
+            for (ResourceBundleMessage message : results) {
+                messageMap.put(message.getKey(), message);
             }
-            element = new Element(cacheKey, (Serializable) result);
+            element = new Element(cacheKey, messageMap);
             cache.put(element);
-            return result;
-        }else{
-            return (ResourceBundleMessage) element.getValue();
+        } else {
+            messageMap = (HashMap<String, ResourceBundleMessage>) element.getObjectValue();
         }
+        ResourceBundleMessage result = messageMap.get(key);
+        return result;
     }
 
     public List<ResourceBundleMessage> getMessages(String condition, String[] param, String sort, Boolean desc, Integer start, Integer rows) {
@@ -75,6 +74,6 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
     }
 
     private String getCacheKey(String key, String locale){
-        return DynamicDataSourceManager.getCurrentProfile()+key+locale;
+        return DynamicDataSourceManager.getCurrentProfile()+locale;
     }
 }

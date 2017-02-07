@@ -123,8 +123,8 @@ _customFooTableArgs = {
             Waves.init();
             attachButtonEffect();
             setTimeout(function() {
-                $(".page-loader").fadeOut();
-            }, 500);
+                $(".page-loader").fadeOut(100);
+            }, 0);
         });
 
         var scrollBar = function(selector, theme, mousewheelaxis) {
@@ -253,6 +253,8 @@ _customFooTableArgs = {
     
     // show page loader on leaving page
     $(window).on('beforeunload', function() {
-        $(".page-loader").fadeIn();
+        if ($("html.ismobile").length > 0) {
+            $(".page-loader").fadeIn(100);
+        }
     });    
 }(window.jQuery);
