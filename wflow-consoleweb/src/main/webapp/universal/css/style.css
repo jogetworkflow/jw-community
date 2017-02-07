@@ -854,7 +854,7 @@ body:not(#login) #content > main > table{
     top: 0;
     left: 0;
     z-index: 10000;
-    opacity: 0.8;
+    opacity: 0.4;
 }
 
 .page-loader .preloader {
