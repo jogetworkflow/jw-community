@@ -27,14 +27,27 @@ _customFooTableArgs = {
         
         $("body").swipe( {
             swipeRight:function(event, direction, distance, duration, fingerCount, fingerData) {
-                var posx = fingerData[0]['start']['x'];
-                if ($(".hi-trigger").is(":visible") && !$("body").hasClass("sidebar-toggled") && posx < 20) {
-                    $(".hi-trigger").trigger("click");
+                if (!$("body").hasClass("rtl")) {
+                    var posx = fingerData[0]['start']['x'];
+                    if ($(".hi-trigger").is(":visible") && !$("body").hasClass("sidebar-toggled") && posx < 20) {
+                        $(".hi-trigger").trigger("click");
+                    }
+                } else {
+                    if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
+                        $(".ma-backdrop").trigger("click");
+                    }
                 }
             },
-            swipeLeft:function(event, direction, distance, duration, fingerCount) {
-                if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
-                    $(".ma-backdrop").trigger("click");
+            swipeLeft:function(event, direction, distance, duration, fingerCount, fingerData) {
+                if (!$("body").hasClass("rtl")) {
+                    if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
+                        $(".ma-backdrop").trigger("click");
+                    }
+                } else {
+                    var posx = fingerData[0]['start']['x'];
+                    if ($(".hi-trigger").is(":visible") && !$("body").hasClass("sidebar-toggled") && posx > $(window).width() - 20) {
+                        $(".hi-trigger").trigger("click");
+                    }
                 }
             },
             preventDefaultEvents: false,

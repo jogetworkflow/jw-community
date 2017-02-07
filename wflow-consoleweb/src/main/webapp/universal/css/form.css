@@ -369,6 +369,10 @@ body .editor-cell select:not([class^="ui-"]) {
   -webkit-appearance: none;
   -webkit-border-radius: 0px;
 }
+body.rtl select:not([class^="ui-"]),
+body.rtl .editor-cell select:not([class^="ui-"]) {
+  background-position: 0% 50%;
+}
 
 body select:not([class^="ui-"]) option,
 body .editor-cell select:not([class^="ui-"]) option {
@@ -378,6 +382,10 @@ body .editor-cell select:not([class^="ui-"]) option {
 
 body .filter-cell select:not([class^="ui-"]){
   padding-right: 30px;
+}
+body.rtl .filter-cell select:not([class^="ui-"]){
+  padding-left: 30px;
+  padding-right: 0;
 }
   
 body select:not([class^="ui-"]):disabled {
@@ -395,13 +403,26 @@ body .hasDatepicker + a, body .hasDatepicker + img {
     right: 0;
     display: inline-block;
 }
+body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + img {
+    left: 0;
+    right: auto;
+}
 
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;
     margin-left: -21px;
 }
+body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker + img {
+    left: auto;
+    margin-left: auto;
+    margin-right: -21px;
+}
 body .filter-cell input.hasDatepicker {
     padding-right: 25px;
+}
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 25px;
+    padding-right: auto;
 }
 
 body .form-container [class*=form-cell-value] > span,
@@ -410,6 +431,11 @@ body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-
     padding: 6px 10px 0 0;
     display: inline-block;
     font-weight: normal;
+}
+body.rtl .form-container [class*=form-cell-value] > span,
+body.rtl .form-container [class*=form-cell-value] > .readonly_label,
+body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 0px 0 10px;
 }
 
 body .form-container .pq-td-div [class*=form-cell-value] > span,
@@ -435,12 +461,17 @@ body .subform-cell-validator, body .form-cell-validator {
     top: 8px;
     right: 4px;
 }
+body.rtl .subform-cell-validator, body .form-cell-validator {
+    left: 4px;
+    right: auto;
+}
 
 @media screen and (max-width: 480px) {
     body .subform-cell-validator, body .form-cell-validator {
         position: relative;
         top: initial;
         right: initial;
+        left: initial;
     }
 }
 
@@ -478,6 +509,9 @@ body #form-canvas .label {
     padding: 8px 10px 0 0;
     white-space: normal;
     position: relative;
+}
+body.rtl #form-canvas .label {
+    padding: 8px 0px 0 10px;
 }
 
 legend,
@@ -548,6 +582,10 @@ body .chosen-container-single.chosen-with-drop .chosen-single {
     padding-left: 5px;
     color: #000;
 }
+body.rtl .chosen-container-single.chosen-with-drop .chosen-single {
+    padding-right: 5px;
+    padding-left:auto;
+}
 
 body .chosen-container-multi.chosen-container-active .chosen-choices,
 body .chosen-container-active .chosen-single {
@@ -584,6 +622,9 @@ body .form-container .selector_item {
     float: none;
     padding-left: 0;
 }
+body.rtl .form-container .selector_item {
+    padding-right: 0;
+}
 
 body .form-container .selector_item .selector_remove {
     border-radius: 50%;
@@ -594,6 +635,9 @@ body .form-container .selector_item .selector_remove {
     vertical-align: top;
     margin: 2px 5px 2px 0;
     position: relative;
+}
+body.rtl .form-container .selector_item .selector_remove {
+    margin: 2px 0px 2px 5px;
 }
 
 body .form-container .selector_item .selector_remove:hover {
@@ -610,6 +654,10 @@ body .form-container .selector_item .selector_remove:after {
     top: 2px;
     left: 3px;
     font-size: 11px;
+}
+body.rtl .form-container .selector_item .selector_remove:after {
+    right: 3px;
+    left:auto;
 }
 
 body .multiPagedForm.wizard .page-nav-panel,
@@ -659,6 +707,10 @@ body .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multi
     bottom: 0;
     background: #727272;
 }
+body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multiPagedForm.tab .page-nav-panel .nav_item.current:after {
+    right: 0;
+    left:auto;
+}
 
 @media (min-width: 768px){
     body .multiPagedForm.wizard .page-nav-panel .nav_item {
@@ -666,6 +718,12 @@ body .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multi
         position: relative;
         padding-right: 0;    
         margin-right: 7px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+        padding-right: auto;    
+        margin-right: auto;
+        padding-left: 0;    
+        margin-left: 7px;
     }
     body .multiPagedForm.wizard .page-nav-panel .nav_item:before {
         font: normal normal normal 14px/1 FontAwesome;
@@ -676,6 +734,10 @@ body .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multi
         top: 5px;
         left: -6px;
         font-size: 18px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item:before {
+        right: -6px;
+        left:auto;
     }
 }
 

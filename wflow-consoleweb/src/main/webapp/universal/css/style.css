@@ -81,6 +81,10 @@ div#header-name img {
     display: none;
     padding: 15px 0;
 }
+.rtl .hi-trigger {
+    margin-right: -20px;
+    margin-left: auto;
+}
 
 .hi-trigger:before {
     -webkit-transform: scale(0);
@@ -102,6 +106,12 @@ div#header-name img {
     margin-top: -22px;
     margin-left: -22px;
     content: "";
+}
+.rtl .hi-trigger:before {
+    right: 50%;
+    left: auto;
+    margin-right: -22px;
+    margin-left: auto;
 }
 
 .hi-trigger.toggled:before {
@@ -157,11 +167,19 @@ div#header-name img {
     transform: translateX(8px) translateY(1px) rotate(45deg);
     -webkit-transform: translateX(8px) translateY(1px) rotate(45deg)
 }
+.rtl .toggled .line-wrap .line.top {
+    transform: translateX(-8px) translateY(1px) rotate(-45deg);
+    -webkit-transform: translateX(-8px) translateY(1px) rotate(-45deg)
+}
 
 .toggled .line-wrap .line.bottom {
     width: 12px;
     transform: translateX(8px) translateY(-1px) rotate(-45deg);
     -webkit-transform: translateX(8px) translateY(-1px) rotate(-45deg)
+}
+.rtl .toggled .line-wrap .line.bottom {
+    transform: translateX(-8px) translateY(-1px) rotate(45deg);
+    -webkit-transform: translateX(-8px) translateY(-1px) rotate(45deg)
 }
 
 .ma-backdrop{
@@ -178,6 +196,12 @@ header.navbar .header-nav{
     display: inline-block;
     padding: 13px 0 10px;
     float: right;
+}
+.rtl header.navbar .header-nav {
+    float: left;
+}
+.rtl ul.nav {
+    padding-right:0;
 }
 
 header.navbar .header-nav .nav>li {
@@ -208,6 +232,10 @@ header.navbar .header-nav .nav>li>a .badge{
     font-size: 10px;
     line-height: 15px;
 }
+.rtl header.navbar .header-nav .nav>li>a .badge{
+    left: 7px;
+    right: auto;
+}
 
 header.navbar .header-nav .nav>li.user-link {
     display:none;
@@ -222,6 +250,11 @@ header.navbar .dropdown-menu a span,
 header.navbar .dropdown-menu a {
     display: block;
     position: relative;
+}
+
+.rtl header.navbar .dropdown-menu a span,
+.rtl header.navbar .dropdown-menu a {
+    text-align: right;
 }
 
 header.navbar .dropdown-menu a span.header, header.navbar .dropdown-menu a span.message {
@@ -242,6 +275,10 @@ header.navbar .dropdown-menu a span.time{
     text-align: right;
     font-size: 12px;
 }
+.rtl header.navbar .dropdown-menu a span.time{
+    left: 20px;
+    right: auto;
+}
 
 .home_banner {
     margin-top: 0px;
@@ -254,6 +291,10 @@ body.embeded .home_banner {
 .dropdown-menu {
     left:initial;
     right:0;
+}
+.rtl .dropdown-menu {
+    left:0;
+    right:auto;
 }
 
 li.dropdown-menu-title {
@@ -311,6 +352,10 @@ body.embeded #content > main {
     z-index: 10;
     overflow-y: auto;
 }
+.rtl #sidebar {
+    right: -1px;
+    left: auto;
+}
 
 ul#category-container {
     margin-bottom: 50px;
@@ -326,6 +371,10 @@ ul#category-container {
         -webkit-transform: translate3d(-268px, 0, 0);
         transform: translate3d(-268px, 0, 0);
         box-shadow: 0 0px 10px #0E1215
+    }
+    .rtl #sidebar {
+        -webkit-transform: translate3d(268px, 0, 0);
+        transform: translate3d(268px, 0, 0);
     }
     #sidebar.toggled {
         -webkit-transform: translate3d(0, 0, 0);
@@ -345,14 +394,29 @@ ul#category-container {
         padding-left: 283px;
         padding-right: 15px;
     }
+    body.rtl:not(#login) #page > footer, 
+    body.rtl:not(#login) #content {
+        padding-right: 283px;
+        padding-left: 15px;
+    }
+    
     body.embeded #page #content {
         padding-left: 20px;
-    }  
+    }
+    body.rtl.embeded #page #content {
+        padding-right: 20px;
+    }
     
     body:not(.horizontal_menu) .home_banner {
         padding-left: 268px;
         margin-top: 65px;
+    }   
+    body.rtl:not(.horizontal_menu) .home_banner {
+        padding-left: auto;
+        padding-right: 268px;
+        margin-top: 65px;
     }
+    
     body .home_banner {
         padding-top: 0;
         margin-top: 0;
@@ -378,6 +442,10 @@ ul#category-container {
         padding: 0 0 0 8px;
         max-height: 65px;
     }
+    .rtl header.navbar {
+        padding: 0 8px 0 0px;
+        max-height: 65px;
+    }
     #header-info {
         max-width: 70%;
     }
@@ -395,8 +463,14 @@ ul#category-container {
     .sidebar-toggled #header-name .main-menu.nav-tabs > li.mm-profile > a {
         padding: 30px 20px 20px 65px;
     }
+    .rtl.sidebar-toggled #header-name .main-menu.nav-tabs > li.mm-profile > a {
+        padding: 30px 65px 20px 20px;
+    }
     .sidebar-toggled #header-name .main-menu.nav-tabs>li>a {
         padding: 14px 20px 14px 65px;
+    }
+    .rtl.sidebar-toggled #header-name .main-menu.nav-tabs>li>a {
+        padding: 14px 65px 14px 20px;
     }
     header.navbar .header-nav {
         max-width: 15%;
@@ -423,9 +497,16 @@ ul#category-container {
     #main .systemAlert{    
         margin: 0 15px 20px 283px;
     }
+    .rtl #main .systemAlert{    
+        margin: 0 283px 20px 15px;
+    }
     body.embeded #main .systemAlert {
         margin-left: 20px;
-    }  
+    }
+    body.embeded.rtl #main .systemAlert {
+        margin-left: 15px;
+        margin-right: 20px;
+    }
 }
 
 #main .systemAlert a.systemAlertClose {
@@ -463,6 +544,9 @@ body#login #main > div {
     background: #2b343a;
     text-align: left;
 }
+body#login.rtl #main > div {
+    text-align: right;
+}
 
 body#login #page #content {
     padding: 10px 25px;
@@ -484,6 +568,11 @@ body#login #page > footer {
     margin-top: -85px;
     right: -25px;
     position: absolute;
+}
+
+.rtl #loginForm .form-button{
+    left: -25px;
+    right: auto;
 }
 
 #loginForm .form-button .waves-button-input{
@@ -509,6 +598,9 @@ body#login #page > footer {
     left: 18px;
     top: 16px;
 }
+.rtl #loginForm .form-button:after {
+    content: '\f2ea';
+}
 
 #loginForm .form-button:hover:after {
     -webkit-transform: rotate(360deg);
@@ -522,6 +614,9 @@ body#login #page > footer {
     margin-bottom: 10px; 
     background-color: transparent;
     text-align: right;
+}
+.rtl .breadcrumb {
+    text-align: left;
 }
 
 .breadcrumb i.icon-angle-right {
@@ -546,6 +641,9 @@ body#login #page > footer {
     margin-right: 0px;
     font-weight: bold;
 }
+.rtl .main-menu.nav-tabs>li>a {
+    padding: 14px 65px 14px 20px;
+}
 .main-menu.nav-tabs a {
     -webkit-transition: color;
     -o-transition: color;
@@ -569,9 +667,16 @@ body#login #page > footer {
     text-align: center;
     padding: 13px 0;
 }
+.rtl .main-menu.nav-tabs > li > a > span > i {
+    right: 25px;
+    left: auto;
+}
 
 .main-menu.nav-tabs > li.mm-profile a {
     padding: 30px 20px 20px 65px;
+}
+.rtl .main-menu.nav-tabs > li.mm-profile a {
+    padding: 30px 65px 20px 20px;
 }
 
 .main-menu.nav-tabs > li.mm-profile a img {
@@ -582,6 +687,10 @@ body#login #page > footer {
     width: 30px;
     height: 30px;
     border-radius: 50%;
+}
+.rtl .main-menu.nav-tabs > li.mm-profile a img {
+    right: 20px;
+    left: auto;
 }
 
 .main-menu.nav-tabs > li.mm-profile a small{
@@ -606,6 +715,9 @@ body#login #page > footer {
 #sidebar li ul>li>a {
     padding: 8px 20px 8px 65px;
     display: block;
+}
+.rtl #sidebar li ul>li>a {
+    padding: 8px 65px 8px 20px;
 }
 
 #sidebar li ul a {
@@ -634,6 +746,11 @@ body#login #page > footer {
     backface-visibility: hidden;
     opacity: 0.5;
     filter: alpha(opacity=50)
+}
+.rtl #sidebar li>a.dropdown:after,
+.rtl #sidebar li>a.dropdown:before {
+    left: 15px;
+    right: auto;
 }
 
 #sidebar li.active>a.dropdown:after,
@@ -979,6 +1096,10 @@ body .filter-cell {
     padding-left: 10px;
     font-size: 13px;
 }
+body.rtl .filter-cell {
+    padding-right: 10px;
+    padding-left: auto;
+}
 
 body .filter-cell input:not(.hasDatepicker):not([type=submit]){
     min-width:150px;
@@ -997,6 +1118,9 @@ body .dataList th, body .dataList td {
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     text-align: left;
+}
+body.rtl .dataList th, body.rtl .dataList td {
+    text-align: right;
 }
 
 body .dataList td.select_checkbox, body .dataList td.select_radio {
@@ -1045,6 +1169,9 @@ body .dataList span.pagelinks {
     text-align: left;
     font-size: 0;
     color:transparent;
+}
+body.rtl .dataList span.pagelinks {
+    text-align: right;
 }
 
 body .dataList span.pagelinks a, body .dataList span.pagelinks strong, body .dataList span.pagelinks > span {
@@ -1186,6 +1313,20 @@ main .grid-stack-item-header-action {
     right: 15px;
     top: 15px;
 }
+.rtl main .grid-stack-item-header-action {
+    left: 15px;
+    right: auto;
+}
 main .grid-stack-item-header-refresh {
     right: 35px;
+}
+.rtl main .grid-stack-item-header-refresh {
+    left: 35px;
+    right: auto;
+}
+.rtl a.print-button {
+    float: left;
+    padding-right: 20px;
+    padding-left: 0;
+    background-position: top right;
 }
