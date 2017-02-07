@@ -1,4 +1,5 @@
 UI = {
+   rtl: false, 
    base: '',
    userview_app_id: '',
    userview_id: '',

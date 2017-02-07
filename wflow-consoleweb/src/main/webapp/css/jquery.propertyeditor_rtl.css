@@ -47,3 +47,8 @@
     clear:both;
     float:right;
 }
+
+.property-editor-display {
+    left: 5px;
+    right: auto;
+}

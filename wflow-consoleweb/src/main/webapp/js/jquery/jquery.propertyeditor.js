@@ -1952,6 +1952,9 @@ PropertyEditor.Type.SelectBox.prototype = {
         }
     },
     initScripting: function () {
+        if (UI.rtl) {
+            $("#"+this.id).addClass("chosen-rtl");
+        }
         $("#"+this.id).chosen({width: "54%", placeholder_text : " "});
         PropertyEditor.Util.supportHashField(this);
     },
@@ -2489,6 +2492,9 @@ PropertyEditor.Type.Grid.prototype = {
         var grid = this;
         
         $(table).find("select.initFullWidthChosen").each(function(){
+            if (UI.rtl) {
+                $(this).addClass("chosen-rtl");
+            }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
         
@@ -2606,6 +2612,9 @@ PropertyEditor.Type.Grid.prototype = {
 
         $(row).find("select").each(function(){
             $(this).addClass("initFullWidthChosen");
+            if (UI.rtl) {
+                $(this).addClass("chosen-rtl");
+            }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
         
@@ -3134,6 +3143,9 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         var grid = this;
         
         $(table).find("select.initFullWidthChosen").each(function(){
+            if (UI.rtl) {
+                $(this).addClass("chosen-rtl");
+            }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
         
@@ -3414,6 +3426,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var thisObj = this;
         var field = $("#"+this.id);
         
+        if (UI.rtl) {
+            $(field).addClass("chosen-rtl");
+        }
         $(field).chosen({width: "54%", placeholder_text : " "});
         
         if(!$(field).hasClass("hidden") && $(field).val() !== undefined 
