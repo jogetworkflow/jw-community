@@ -46,10 +46,10 @@
         <fieldset id="form-canvas">
 
                 <c:if test="${submitted && errorCount > 0}">
-                    <div class="form-message"><fmt:message key="client.app.run.process.label.validationError" /></div>
+                    <div class="form-message form-errors"><fmt:message key="client.app.run.process.label.validationError" /></div>
                 </c:if>
                 <c:if test="${!stay && submitted && errorCount <= 0}">
-                    <div class="form-message"><fmt:message key="client.app.run.process.label.formSubmitted" /></div>
+                    <div class="form-message form-success"><fmt:message key="client.app.run.process.label.formSubmitted" /></div>
                     <c:if test="${!empty closeDialog && closeDialog}">
                     <script type="text/javascript">
                         if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
