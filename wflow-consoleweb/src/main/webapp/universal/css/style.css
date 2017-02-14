@@ -706,6 +706,7 @@ body#login #page > footer {
 #sidebar li ul {
     padding:0;
     list-style: none;
+    display: none;
 }
 
 #sidebar li ul>li:first-child>a {
@@ -770,7 +771,7 @@ body#login #page > footer {
 }
 
 #sidebar li>a.dropdown:before {
-    content: "\f278";
+    content: "\f276";
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
@@ -778,12 +779,12 @@ body#login #page > footer {
 }
 
 #sidebar li a.dropdown:after {
-    content: "\f273";
+    content: "\f271";
     transform: scale(0)
 }
 
 #sidebar li.toggled>a.dropdown:before {
-    content: "\f278";
+    content: "\f276";
     -webkit-transform: scale(0);
     -ms-transform: scale(0);
     -o-transform: scale(0);
@@ -791,7 +792,7 @@ body#login #page > footer {
 }
 
 #sidebar li.toggled>a.dropdown:after {
-    content: "\f273";
+    content: "\f271";
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);

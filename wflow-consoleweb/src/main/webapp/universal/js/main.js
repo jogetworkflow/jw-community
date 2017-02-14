@@ -55,15 +55,14 @@ _customFooTableArgs = {
         });
 
         var toogleMenu = function(menu) {
-            if ($(menu).parent().css("display") !== "inline-block") {
+            if ($(menu).parent().css("display") !== "none") {
                 $(menu).next().slideToggle(200);
                 $(menu).parent().toggleClass("toggled");
             }
         };
         var initMenu = function() {
             $("#sidebar a.dropdown").each(function() {
-                $(this).parent().addClass("toggled");
-                if (!$(this).parent().hasClass("active")) {
+                if ($(this).parent().hasClass("active")) {
                     toogleMenu(this);
                 }
             });
