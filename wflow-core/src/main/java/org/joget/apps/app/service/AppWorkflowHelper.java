@@ -70,16 +70,22 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 if (process != null) {
                     //check current appDef 
                     appDef = AppUtil.getCurrentAppDefinition();
-                    packageDef = appDef.getPackageDefinition();
+                    if (appDef == null) {
+                        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                        appDef = appService.getAppDefinitionWithProcessDefId(processDefId);
+                    }
+                    if (appDef != null) {
+                        packageDef = appDef.getPackageDefinition();
 
-                    if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
-                        packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
-                        if (packageDef != null) {
-                            originalAppDef = appDef;
-                            appDef = packageDef.getAppDefinition();
-                            AppUtil.setCurrentAppDefinition(appDef);
-                        } else {
-                            appDef = null;
+                        if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
+                            packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
+                            if (packageDef != null) {
+                                originalAppDef = appDef;
+                                appDef = packageDef.getAppDefinition();
+                                AppUtil.setCurrentAppDefinition(appDef);
+                            } else {
+                                appDef = null;
+                            }
                         }
                     }
                 }
@@ -138,17 +144,24 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
             //check current app definition
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            
-            if (packageDef == null || !packageId.equals(packageDef.getId()) || !version.equals(packageDef.getVersion().toString())) {
-                Long packageVersion = Long.parseLong(version);
-                packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-                
-                if (packageDef != null) {
-                    //Set app definition    
-                    originalAppDef = appDef;
-                    appDef = packageDef.getAppDefinition();
-                    AppUtil.setCurrentAppDefinition(appDef);
+            if (appDef == null) {
+                AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                appDef = appService.getAppDefinitionWithProcessDefId(procDefId);
+            }
+            PackageDefinition packageDef = null;
+            if (appDef != null) {
+                packageDef = appDef.getPackageDefinition();
+
+                if (packageDef == null || !packageId.equals(packageDef.getId()) || !version.equals(packageDef.getVersion().toString())) {
+                    Long packageVersion = Long.parseLong(version);
+                    packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
+
+                    if (packageDef != null) {
+                        //Set app definition    
+                        originalAppDef = appDef;
+                        appDef = packageDef.getAppDefinition();
+                        AppUtil.setCurrentAppDefinition(appDef);
+                    }
                 }
             }
             
@@ -594,16 +607,22 @@ public class AppWorkflowHelper implements WorkflowHelper {
                 if (process != null) {
                     //check current appDef 
                     appDef = AppUtil.getCurrentAppDefinition();
-                    PackageDefinition packageDef = appDef.getPackageDefinition();
-                    
-                    if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
-                        packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
-                        if (packageDef != null) {
-                            originalAppDef = appDef;
-                            appDef = packageDef.getAppDefinition();
-                            AppUtil.setCurrentAppDefinition(appDef);
-                        } else {
-                            appDef = null;
+                    if (appDef == null) {
+                        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                        appDef = appService.getAppDefinitionForWorkflowProcess(processId);
+                    }
+                    if (appDef != null) {
+                        PackageDefinition packageDef = appDef.getPackageDefinition();
+
+                        if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
+                            packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
+                            if (packageDef != null) {
+                                originalAppDef = appDef;
+                                appDef = packageDef.getAppDefinition();
+                                AppUtil.setCurrentAppDefinition(appDef);
+                            } else {
+                                appDef = null;
+                            }
                         }
                     }
                 }
