@@ -1254,7 +1254,7 @@ ProcessBuilder.Actions = {
             $('.property-editor').propertyEditor(options);
             $('.property-editor').find(".property-editor-container").css("width", "680px");
             $('.property-editor').find(".property-editor-container").css("max-height", "495px");
-            var newHeight = $('.property-editor').find(".property-editor-container").height() - 100;
+            var newHeight = $('.property-editor').find(".property-editor-container").height() - 115;
             $('.property-editor').find(".property-editor-property-container").css("height", newHeight + "px");
             ProcessBuilder.Actions.propertyEditor.center('x');
             ProcessBuilder.Actions.propertyEditor.center('y');
