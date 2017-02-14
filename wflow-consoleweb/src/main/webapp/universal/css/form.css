@@ -680,6 +680,12 @@ body .multiPagedForm.tab .page-nav-panel ul {
 body .multiPagedForm.wizard .page-nav-panel ul li.nav_item,
 body .multiPagedForm.tab .page-nav-panel ul li.nav_item {
     position: relative;
+    margin-right: 15px;
+}
+
+body .multiPagedForm.wizard .page-nav-panel ul li.nav_item.current,
+body .multiPagedForm.tab .page-nav-panel ul li.nav_item.current {
+    border-bottom: solid 2px;
 }
 
 body .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
