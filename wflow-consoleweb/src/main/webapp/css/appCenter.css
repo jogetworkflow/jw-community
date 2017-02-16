@@ -6,6 +6,7 @@
 }
 #search input.filterinput {
     height: auto;
+    width: 90%;
 }
 #apps {
     margin: auto;
