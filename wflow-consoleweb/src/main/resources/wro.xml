@@ -36,6 +36,7 @@
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
+        <js>/js/tablesaw/tablesaw.stackonly.js</js>
         <js>/js/json/formUtil.js</js>
         <js>classpath:resources/js/jquery.custom.datepicker.js</js>
         <js>classpath:resources/js/jquery.dynamicoptions.js</js>
