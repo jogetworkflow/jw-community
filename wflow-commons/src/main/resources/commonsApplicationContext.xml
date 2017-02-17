@@ -17,24 +17,25 @@
     </bean>
 
     <!-- DynamicDataSourceManager will have its property set via @Autowired -->
-    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" >
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="btmConfig">
     	<constructor-arg ref="profilePropertyManager"/>
     </bean>
     
     <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
     </bean>
 
-    <bean id="atomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close">
-        <property name="forceShutdown" value="true" />
-    </bean>
+     <bean id="btmConfig" factory-method="getConfiguration" class="bitronix.tm.TransactionManagerServices"> 
+         <property name="serverId" value="btm-joget" /> 
+         <property name="journal" value="null" /> 
+         <property name="DefaultTransactionTimeout" value="300" /> 
+     </bean> 
 
-    <bean id="atomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp">
-        <property name="transactionTimeout" value="300" />
-    </bean>
+     <bean id="bitronixTransactionManager" factory-method="getTransactionManager" 
+         class="bitronix.tm.TransactionManagerServices" depends-on="btmConfig" destroy-method="shutdown" /> 
 
     <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
-        <property name="transactionManager" ref="atomikosTransactionManager" />
-        <property name="userTransaction" ref="atomikosUserTransaction" />
+        <property name="transactionManager" ref="bitronixTransactionManager" />
+        <property name="userTransaction" ref="bitronixTransactionManager" />
         <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
 
@@ -63,7 +64,6 @@
     </aop:config>
 
     <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
-        <property name="transactionManager" ref="atomikosTransactionManager" />
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8" />
         <property name="username" value="root" />
@@ -72,19 +72,19 @@
         <property name="timeBetweenEvictionRunsMillis" value="10000" />
         <property name="numTestsPerEvictionRun" value="-1" />
         <property name="minIdle" value="1" />
-        <property name="maxTotal" value="-1" />
-        <property name="maxWaitMillis" value="10000" />
+        <property name="maxActive" value="500" />
+        <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
     </bean>
-<!--
+    <!--
     <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
         <property name="jndiName" value="jwdb"/>
         <property name="lookupOnStartup" value="false"/>
         <property name="cache" value="true" />
         <property name="proxyInterface"  value="javax.sql.DataSource" />
     </bean>
--->
-
+    -->
+    
     <!-- Hibernate SessionFactory -->
     <bean id="setupSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="dataSource" ref="setupDataSource"/>
@@ -98,7 +98,7 @@
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.transaction.jta.platform">org.joget.commons.util.AtomikosJtaPlatform</prop>
+                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
             </props>
         </property>

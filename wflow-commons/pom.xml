@@ -193,6 +193,16 @@
             <version>4.0.4</version>
         </dependency>
         <dependency>
+            <groupId>org.codehaus.btm</groupId>
+            <artifactId>btm</artifactId>
+            <version>2.1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-jdbc</artifactId>
+            <version>8.5.8</version>
+        </dependency>        
+        <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-jdbc</artifactId>
             <version>${project.version}</version>

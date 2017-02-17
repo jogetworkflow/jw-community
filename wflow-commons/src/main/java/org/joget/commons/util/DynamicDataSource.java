@@ -1,25 +1,22 @@
 package org.joget.commons.util;
 
-import java.lang.reflect.Field;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
-import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.managed.BasicManagedDataSource;
+import org.apache.tomcat.jdbc.pool.XADataSource;
 
-public class DynamicDataSource extends BasicManagedDataSource {
+public class DynamicDataSource extends XADataSource {
 
     public static final String URL = "Url";
     public static final String USER = "User";
     public static final String PASSWORD = "Password";
     public static final String DRIVER = "Driver";
     private String datasourceName;
-
+    
     @Override
-    protected synchronized DataSource createDataSource() throws SQLException {
-
+    public Connection getConnection() throws SQLException {
         Properties properties = DynamicDataSourceManager.getProperties();
         String tempDriver = properties.getProperty(getDatasourceName() + DRIVER);
         String tempUrl = properties.getProperty(getDatasourceName() + URL);
@@ -39,16 +36,6 @@ public class DynamicDataSource extends BasicManagedDataSource {
         if (!getUrl().equals(tempUrl)) {
             //close old datasource
             super.close();
-            // reset closed field
-            try {
-                Field closedField = BasicDataSource.class.getDeclaredField("closed");
-                closedField.setAccessible(true);
-                closedField.setBoolean(this, false);
-            } catch (NoSuchFieldException e) {
-                throw new SQLException(e);
-            } catch (IllegalAccessException e) {
-                throw new SQLException(e);
-            }
 
             // set new settings
             setDriverClassName(tempDriver);
@@ -58,7 +45,7 @@ public class DynamicDataSource extends BasicManagedDataSource {
             setProperties(properties);
             LogUtil.info(getClass().getName(), "datasourceName=" + getDatasourceName() + ", url=" + getUrl() + ", user=" + getUsername());
         }
-        return super.createDataSource();
+        return super.getConnection();
     }
     
     protected void setProperties(Properties properties) {

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:appsApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:testAppsApplicationContext.xml"})
 public class TestAppDao {
 
     protected final String TEST_APP_ID = "awf_testApp";
