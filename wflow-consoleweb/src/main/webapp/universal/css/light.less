@@ -17,6 +17,9 @@ main .grid-stack-item-header-action,
 a {
     color: @accent;
 }
+.dataList table a {
+    color: darken(@accent, 5%);
+}
 a:focus, a:hover {
     color: @lightAccent;
 }
@@ -263,10 +266,10 @@ main #form-canvas .form-section-title span, main #form-canvas .subform-section-t
     color:@defaultFontColor;
 }
 main .subform-container.has-frame .subform-title {
-    background: @primary;
+    background: #fff;
 }
 main .subform-container {
-    border: 2px solid fade(@defaultFontColor, 70%);
+    border: 2px solid fade(@primary, 70%);
 }
 main .chosen-container-multi .chosen-choices,
 main .chosen-container-single .chosen-single {

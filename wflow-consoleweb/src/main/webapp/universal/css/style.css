@@ -939,6 +939,10 @@ body#login #page > footer {
     overflow: auto;
 }
 
+.dataList table a {
+    font-weight: bold;
+}
+
 #page > footer > div, 
 #content > main {
     padding: 0 15px;

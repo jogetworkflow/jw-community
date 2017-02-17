@@ -475,6 +475,10 @@ body.rtl .subform-cell-validator, body .form-cell-validator {
     }
 }
 
+body #form-canvas {
+    margin: 0;
+}
+
 body #form-canvas .h1,
 body #form-canvas h1 {
     font-size: 33px
@@ -514,12 +518,20 @@ body.rtl #form-canvas .label {
     padding: 8px 0px 0 10px;
 }
 
+body #form-canvas .form-section, body #form-canvas .subform-section {
+    margin-top: 0;
+}
+
+body #form-canvas .form-section + .form-section, body #form-canvas .subform-section + .subform-section {
+    margin-top: 15px ;
+}
+
 legend,
 body #form-canvas .form-section-title span, body #form-canvas .subform-section-title span {
     text-shadow: none;
     margin-bottom: 10px;
-    -moz-border-radius: 10px 10px 10px 10px;
-    -webkit-border-radius: 10px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
     font-weight: bold;
     font-size: 16px;
     display: block;
@@ -540,9 +552,17 @@ body .subform-container, body .subform-section {
     background: transparent;
 }
 
+body .subform-container.has-frame {
+    margin-top: 0;
+}
+
+body .subform-cell + .subform-cell .subform-container.has-frame {
+    margin-top: 15px;
+}
+
 body .subform-container.has-frame .subform-title {
     position: absolute;
-    top: -9px;
+    top: -17px;
     padding: 0 10px;
 }
 
