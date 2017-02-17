@@ -36,6 +36,7 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
     private static final Pattern wildcardFreePattern = Pattern.compile("^[\\\\\\/]?([^\\(\\*\\?\\\\\\/]*[\\\\\\/])*([^\\(\\*\\?\\\\\\/]*$)?");
     private static final Pattern regexEscapePattern = Pattern.compile("[\\\\\\/\\[\\]\\^\\$\\.\\{\\}\\&\\?\\*\\+\\|\\<\\>\\!\\=]");
     private final Map<String, NamedPattern> patternCache = new HashMap<String, NamedPattern>();
+    private final Map<String, Map<String, String>> namedParametersCache = new HashMap<String, Map<String, String>>();
 
     @Override
     public boolean isPattern(String string) {
@@ -60,7 +61,13 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
      * @return A map with the specified parameter as key and the matched path segement as a value.
      */
     public Map<String, String> namedParameters(String pattern, String path) {
-        return getOrCreatePattern(pattern).namedGroups(path);
+        String key = pattern + "_" + path;
+        Map<String, String> namedParameters = namedParametersCache.get(key);
+        if (namedParameters == null) {
+            namedParameters = getOrCreatePattern(pattern).namedGroups(path);
+            namedParametersCache.put(key, namedParameters);
+        }
+        return namedParameters;
     }
 
     private synchronized NamedPattern getOrCreatePattern(String pattern) {
