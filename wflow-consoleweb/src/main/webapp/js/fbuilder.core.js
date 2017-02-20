@@ -1072,6 +1072,15 @@ FormBuilder = {
         if (copied !== undefined && copied !== null) {
             FormBuilder.addToUndo();
             var copiedElement = $(copied);
+            
+            if ($(copiedElement).hasClass("form-section")) {
+                $(copiedElement).find(".form-cell").each(function(index, obj) {
+                    $(obj).html("");
+                });
+            } else {
+                $(copiedElement).html("");
+            }
+            
             if (position === "before") {
                 $(element).before(copiedElement);
             } else if (position === "after") {
@@ -1079,6 +1088,7 @@ FormBuilder = {
             } else {
                 $(element).append(copiedElement);
             }
+            
             // decorate all elements
             if ($(copiedElement).hasClass("form-section")) {
                 FormBuilder.updateCopiedId(copiedElement);
@@ -1091,10 +1101,14 @@ FormBuilder = {
 
                 $(copiedElement).find(".form-cell").each(function(index, obj) {
                     FormBuilder.updateCopiedId(obj);
+                    FormBuilder.updateElementDOM(obj);
+                    FormBuilder.refreshElementTemplate(obj);
                     FormBuilder.decorateElement(obj);
                 });
             } else {
                 FormBuilder.updateCopiedId(copiedElement);
+                FormBuilder.updateElementDOM(copiedElement);
+                FormBuilder.refreshElementTemplate(copiedElement);
                 FormBuilder.decorateElement(copiedElement);
             }
             
@@ -1214,6 +1228,10 @@ FormBuilder = {
     },
     
     loadJson : function(json){
+        if (json !== null && json !== undefined && json.properties !== null && json.properties !== undefined) {
+            json.properties.id = FormBuilder.formId;
+        }
+        
         $(".form-container-div").html("<form></form>");
         FormBuilder.retrieveElementHTML($(".form-container-div form"), json, null, null, function() {
            FormBuilder.generateJSON(true); 

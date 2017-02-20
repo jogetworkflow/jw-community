@@ -11,6 +11,7 @@ DatalistBuilder = {
     appPath : '',
     originalJson : '',
     filterParam : '',
+    datalistId : '',
     
     //undo & redo feature
     tempJson : '',
@@ -1571,8 +1572,7 @@ DatalistBuilder = {
 
         // set id
         if (id) {
-            DatalistBuilder.datalistProperties.id = id;
-            obj.id = id;
+            DatalistBuilder.datalistId = id;
         }
         
         DatalistBuilder.loadJson(json);
@@ -1582,6 +1582,9 @@ DatalistBuilder = {
     
     loadJson : function (json) {
         var obj = json;
+        
+        DatalistBuilder.datalistProperties.id = DatalistBuilder.datalistId;
+        obj.id = DatalistBuilder.datalistId;
         
         DatalistBuilder.binderProperties = obj.binder;
         DatalistBuilder.updateBinderProperties(DatalistBuilder.UPDATE);
