@@ -68,6 +68,17 @@ public class DataListColumn {
      * Column Style
      */
     private String style;
+    
+    /**
+     * Column alignment
+     */
+    private String alignment;
+    
+    /**
+     * Column header alignment
+     */
+    private String headerAlignment;
+    
     /**
      * Optional action for this column
      */
@@ -139,6 +150,28 @@ public class DataListColumn {
 
     public void setWidth(String width) {
         this.width = width;
+    }
+    
+    public String getAlignment() {
+        if (alignment == null) {
+            alignment = "";
+        }
+        return alignment;
+    }
+
+    public void setAlignment(String alignment) {
+        this.alignment = alignment;
+    }
+    
+    public String getHeaderAlignment() {
+        if (headerAlignment == null) {
+            headerAlignment = "";
+        }
+        return headerAlignment;
+    }
+
+    public void setHeaderAlignment(String headerAlignment) {
+        this.headerAlignment = headerAlignment;
     }
 
     public String getStyle() {

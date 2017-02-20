@@ -229,3 +229,21 @@ body .ui-front {
 input[type="button"], input[type="submit"], input[type="reset"] {
   -webkit-appearance: button;
 }
+.rtl .dataList th.dataListAlignRight,
+.dataList th.dataListAlignLeft,
+.rtl .dataList td.dataListAlignRight,
+.dataList td.dataListAlignLeft {
+    text-align: left;
+}
+.rtl .dataList th.dataListAlignLeft,
+.dataList th.dataListAlignRight,
+.rtl .dataList td.dataListAlignLeft,
+.dataList td.dataListAlignRight {
+    text-align: right;
+}
+.rtl .dataList th.dataListAlignCenter,
+.dataList th.dataListAlignCenter,
+.rtl .dataList td.dataListAlignCenter,
+.dataList td.dataListAlignCenter {
+    text-align: center;
+}

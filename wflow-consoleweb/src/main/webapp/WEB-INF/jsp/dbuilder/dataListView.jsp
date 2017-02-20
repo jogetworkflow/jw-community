@@ -163,8 +163,8 @@
                             property="column(${column.name})"
                             title="${columnLabel}"
                             sortable="${column.sortable}"
-                            headerClass="column_${column.name} ${columnHiddenCss}"
-                            class="column_${column.name} ${columnHiddenCss}"
+                            headerClass="column_${column.name} ${columnHiddenCss} ${column.headerAlignment}"
+                            class="column_${column.name} ${columnHiddenCss} ${column.alignment}"
                             style="${column.style}"
                             media="${columnMedia}"
                             />

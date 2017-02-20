@@ -47,6 +47,8 @@ public class JsonUtil {
     public static final String PROPERTY_HIDDEN = "hidden";
     public static final String PROPERTY_WIDTH = "width";
     public static final String PROPERTY_STYLE = "style";
+    public static final String PROPERTY_ALIGNMENT = "alignment";
+    public static final String PROPERTY_HEADER_ALIGNMENT = "headerAlignment";
     public static final String PROPERTY_ROW_ACTIONS = "rowActions";
     public static final String PROPERTY_ACTION = "action";
     public static final String PROPERTY_ACTIONS = "actions";
@@ -396,6 +398,12 @@ public class JsonUtil {
                 }
                 if (column.has(PROPERTY_STYLE) && !column.isNull(PROPERTY_STYLE)) {
                     dataListColumn.setStyle(column.getString(PROPERTY_STYLE));
+                }
+                if (column.has(PROPERTY_ALIGNMENT) && !column.isNull(PROPERTY_ALIGNMENT)) {
+                    dataListColumn.setAlignment(column.getString(PROPERTY_ALIGNMENT));
+                }
+                if (column.has(PROPERTY_HEADER_ALIGNMENT) && !column.isNull(PROPERTY_HEADER_ALIGNMENT)) {
+                    dataListColumn.setHeaderAlignment(column.getString(PROPERTY_HEADER_ALIGNMENT));
                 }
                 if (column.has(PROPERTY_ACTION) && !column.isNull(PROPERTY_ACTION)) {
                     DataListAction action = parseActionFromJsonObject(column);
