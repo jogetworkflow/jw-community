@@ -1018,6 +1018,40 @@ DatalistBuilder = {
                 label : get_dbuilder_msg('dbuilder.style'),
                 name  : 'style',
                 type : 'textfield'
+            },
+            {
+                label : get_dbuilder_msg('dbuilder.alignment'),
+                name  : 'alignment',
+                type : 'selectbox',
+                value : '',
+                options : [{
+                    label : get_dbuilder_msg('dbuilder.align.center'),
+                    value : 'dataListAlignCenter'
+                },{
+                    label : get_dbuilder_msg('dbuilder.align.left'),
+                    value : ''
+                },
+                {
+                    label : get_dbuilder_msg('dbuilder.align.right'),
+                    value : 'dataListAlignRight'
+                }]
+            },
+            {
+                label : get_dbuilder_msg('dbuilder.headerAlignment'),
+                name  : 'headerAlignment',
+                type : 'selectbox',
+                value : '',
+                options : [{
+                    label : get_dbuilder_msg('dbuilder.align.center'),
+                    value : ''
+                },{
+                    label : get_dbuilder_msg('dbuilder.align.left'),
+                    value : 'dataListAlignLeft'
+                },
+                {
+                    label : get_dbuilder_msg('dbuilder.align.right'),
+                    value : 'dataListAlignRight'
+                }]
             }]
         },{
             title : get_dbuilder_msg('dbuilder.actionMapping'),
