@@ -70,7 +70,7 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
         return namedParameters;
     }
 
-    private synchronized NamedPattern getOrCreatePattern(String pattern) {
+    private NamedPattern getOrCreatePattern(String pattern) {
         NamedPattern compiledPattern = patternCache.get(pattern);
         if (compiledPattern == null) {
             compiledPattern = new NamedPattern(pattern);
