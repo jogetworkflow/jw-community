@@ -1214,6 +1214,10 @@ FormBuilder = {
     },
     
     loadJson : function(json){
+        if (json !== null && json !== undefined && json.properties !== null && json.properties !== undefined) {
+            json.properties.id = FormBuilder.formId;
+        }
+        
         $(".form-container-div").html("<form></form>");
         FormBuilder.retrieveElementHTML($(".form-container-div form"), json, null, null, function() {
            FormBuilder.generateJSON(true); 
