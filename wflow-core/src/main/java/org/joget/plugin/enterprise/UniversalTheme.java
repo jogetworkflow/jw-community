@@ -326,16 +326,26 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                     email = email.split(",")[0];
                 }
 
-                String url = new Gravatar()
-                .setSize(30)
-                .setHttps(true)
-                .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
-                .setStandardDefaultImage(DefaultImage.IDENTICON)
-                .getUrl(email);
+                String profileImageTag = "";
+                if (getPropertyString("userImage").isEmpty()) {
+                    String url = new Gravatar()
+                        .setSize(30)
+                        .setHttps(true)
+                        .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
+                        .setStandardDefaultImage(DefaultImage.IDENTICON)
+                        .getUrl(email);
+                    profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+                } else if ("hashVariable".equals(getPropertyString("userImage"))) {
+                    String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
+                    if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
+                        url = data.get("context_path") + "/universal/user.png";
+                    }
+                    profileImageTag = "<img src=\""+url+"\" /> ";
+                }
                 
                 html += "<li class=\"user-link dropdown\">\n"
                       + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
-                      + "	     <img src=\""+url+"\" > " + user.getFirstName() + " " + user.getLastName() + "\n"
+                      + "	     " + profileImageTag + user.getFirstName() + " " + user.getLastName() + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";
 
@@ -396,16 +406,26 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 email = email.split(",")[0];
             }
             
-            String url = new Gravatar()
-            .setSize(30)
-            .setHttps(true)
-            .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
-            .setStandardDefaultImage(DefaultImage.IDENTICON)
-            .getUrl(email);
+            String profileImageTag = "";
+            if (getPropertyString("userImage").isEmpty()) {
+                String url = new Gravatar()
+                    .setSize(30)
+                    .setHttps(true)
+                    .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
+                    .setStandardDefaultImage(DefaultImage.IDENTICON)
+                    .getUrl(email);
+                profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+            } else if ("hashVariable".equals(getPropertyString("userImage"))) {
+                String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
+                if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
+                    url = data.get("context_path") + "/universal/user.png";
+                }
+                profileImageTag = "<img src=\""+url+"\" /> ";
+            }
             
             html += "<li class=\"mm-profile user-link\">\n"
                   + "    <a class=\"dropdown\">\n"
-                  + "        <img src=\""+url+"\" >\n"  
+                  + "        "+profileImageTag+"\n"  
                   + "	     <span>" + user.getFirstName() + " " + user.getLastName() + "</span>\n"
                   + "	     <small>" + email + "</small>\n"
                   + "    </a>\n";
@@ -444,16 +464,15 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             html += "</ul>";
 
         } else {
-            String url = new Gravatar()
-            .setSize(30)
-            .setHttps(true)
-            .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
-            .setStandardDefaultImage(DefaultImage.MYSTERY_MAN)
-            .getUrl("dummy@joget.org");
+            String profileImageTag = "";
+            if (getPropertyString("userImage").isEmpty() || "hashVariable".equals(getPropertyString("userImage"))) {
+                String url = data.get("context_path") + "/universal/user.png";
+                profileImageTag = "<img src=\""+url+"\" /> ";
+            }
             
             html += "<li class=\"mm-profile user-link\">\n"
                   + "    <a href=\"" + data.get("login_link") + "\" >\n"
-                  + "        <img src=\""+url+"\" >\n" 
+                  + "        "+profileImageTag+"\n" 
                   + "	     <span>Visitor</span>\n"  
                   + "	     <small class=\"login_link\">" + ResourceBundleUtil.getMessage("ubuilder.login") + "</small>\n"
                   + "    </a>\n";

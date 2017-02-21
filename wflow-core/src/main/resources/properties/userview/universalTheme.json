@@ -821,7 +821,32 @@
             value : 'true',
             label : ''
         }]
-    },   
+    },
+    {
+        name : 'userImage',
+        label : '@@theme.universal.userImage@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : 'no',
+            label : '@@theme.universal.userImage.no@@'
+        },{
+            value : '',
+            label : '@@theme.universal.userImage.gravatar@@'
+        },{
+            value : 'hashVariable',
+            label : '@@theme.universal.userImage.hashVariable@@'
+        }]
+    },
+    {
+        name : 'userImageUrlHash',
+        label : '@@theme.universal.userImageUrlHash@@',
+        type : 'textfield',
+        control_field: 'userImage',
+        control_value: 'hashVariable',
+        control_use_regex: 'false',
+        required : 'true'
+    },
     {
         name : 'inbox',
         label : '@@theme.universal.inbox@@',
