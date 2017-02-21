@@ -246,7 +246,7 @@ body.embeded #adminBar {
     top: 0px;
     padding: 2px; 
     position: absolute; 
-    z-index: 100; 
+    z-index: 500; 
     border: solid 1px orange; 
     background: lightgoldenrodyellow; 
 }
