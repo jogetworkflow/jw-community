@@ -954,6 +954,12 @@ body:not(#login) #content > main > table{
     padding:20px;
 }
 
+body:not(#login).embeded #content > main > div:not(.quickEdit),
+body:not(#login).embeded  #content > main > table{
+    position: relative;
+    padding:5px;
+}
+
 #content > main .viewForm-body-content,
 #content > main #form-canvas {
     background: transparent;
