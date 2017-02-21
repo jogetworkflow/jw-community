@@ -155,6 +155,8 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String light = "lighten(@primary , 5%)";
         String accent = "";
         String lightAccent = "lighten(@accent , 10%)";
+        String button = "#D8DADA";
+        String buttonText = "#333";
         String font = "";
         
         if ("custom".equals(getPropertyString("primaryColor"))) {
@@ -187,6 +189,24 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             }
         }
         
+        if ("custom".equals(getPropertyString("buttonColor"))) {
+            button = getPropertyString("customButton");
+        } else if (!getPropertyString("buttonColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("buttonColor")); 
+            if (a != null) {
+                button = a.color;
+            }
+        }
+        
+        if ("custom".equals(getPropertyString("buttonTextColor"))) {
+            buttonText = getPropertyString("customButtonText");
+        } else if (!getPropertyString("buttonColor").isEmpty()) {
+            Color a = Color.valueOf(getPropertyString("buttonTextColor")); 
+            if (a != null) {
+                buttonText = a.color;
+            }
+        }
+        
         if ("custom".equals(getPropertyString("fontColor"))) {
             font = getPropertyString("customFontColor");
         } else {
@@ -196,7 +216,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             }
         }
         
-        jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
+        jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
 
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\"></script>\n";
         
