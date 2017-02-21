@@ -39,7 +39,7 @@
         name : 'primaryColor',
         label : '@@theme.universal.primaryColor@@',
         type : 'selectbox',
-        value: 'BLUE_GREY',
+        value: 'DARKROYALBLUE',
         options : [{
             value : 'RED',
             label : '@@theme.universal.colorScheme.red@@'
@@ -76,6 +76,9 @@
         },{
             value : 'LIGHT_BLUE',
             label : '@@theme.universal.colorScheme.lightBlue@@'
+        },{
+            value : 'DARKROYALBLUE',
+            label : '@@theme.universal.colorScheme.darkRoyalBlue@@'
         },{
             value : 'ROYALBLUE',
             label : '@@theme.universal.colorScheme.royalBlue@@'
@@ -238,6 +241,9 @@
             value : 'LIGHT_BLUE',
             label : '@@theme.universal.colorScheme.lightBlue@@'
         },{
+            value : 'DARKROYALBLUE',
+            label : '@@theme.universal.colorScheme.darkRoyalBlue@@'
+        },{
             value : 'ROYALBLUE',
             label : '@@theme.universal.colorScheme.royalBlue@@'
         },{
@@ -390,6 +396,9 @@
         },{
             value : 'LIGHT_BLUE',
             label : '@@theme.universal.colorScheme.lightBlue@@'
+        },{
+            value : 'DARKROYALBLUE',
+            label : '@@theme.universal.colorScheme.darkRoyalBlue@@'
         },{
             value : 'ROYALBLUE',
             label : '@@theme.universal.colorScheme.royalBlue@@'

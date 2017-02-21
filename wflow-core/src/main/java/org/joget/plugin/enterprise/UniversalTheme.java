@@ -60,6 +60,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         PLUM("#DDA0DD", "", ""),
         LAVENDER("#E6E6FA", "", ""),
         GHOSTWHITE("#F8F8FF", "", ""),
+        DARKROYALBLUE("#3b5998", "#0e1f56", "#6d84b4"),
         ROYALBLUE("#4169E1", "", ""),
         CORNFLOWERBLUE("#6495ED", "", ""),
         ALICEBLUE("#F0F8FF", "", ""),
