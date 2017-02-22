@@ -652,6 +652,158 @@
         required : 'true'
     },
     {
+        name : 'menuFontColor',
+        label : '@@theme.universal.menuFontColor@@',
+        type : 'selectbox',
+        value: 'BLACK',
+        options : [{
+            value : 'RED',
+            label : '@@theme.universal.colorScheme.red@@'
+        },{
+            value : 'PINK',
+            label : '@@theme.universal.colorScheme.pink@@'
+        },{
+            value : 'LAVENDERBLUSH',
+            label : '@@theme.universal.colorScheme.lavenderBlush@@'
+        },{
+            value : 'THISTLE',
+            label : '@@theme.universal.colorScheme.thistle@@'
+        },{
+            value : 'PLUM',
+            label : '@@theme.universal.colorScheme.plum@@'
+        },{
+            value : 'PURPLE',
+            label : '@@theme.universal.colorScheme.purple@@'
+        },{
+            value : 'DEEP_PURPLE',
+            label : '@@theme.universal.colorScheme.deepPurple@@'
+        },{
+            value : 'INDIGO',
+            label : '@@theme.universal.colorScheme.indigo@@'
+        },{
+            value : 'LAVENDER',
+            label : '@@theme.universal.colorScheme.lavender@@'
+        },{
+            value : 'GHOSTWHITE',
+            label : '@@theme.universal.colorScheme.ghostWhite@@'
+        },{
+            value : 'BLUE',
+            label : '@@theme.universal.colorScheme.blue@@'
+        },{
+            value : 'LIGHT_BLUE',
+            label : '@@theme.universal.colorScheme.lightBlue@@'
+        },{
+            value : 'DARKROYALBLUE',
+            label : '@@theme.universal.colorScheme.darkRoyalBlue@@'
+        },{
+            value : 'ROYALBLUE',
+            label : '@@theme.universal.colorScheme.royalBlue@@'
+        },{
+            value : 'CORNFLOWERBLUE',
+            label : '@@theme.universal.colorScheme.cornflowerBlue@@'
+        },{
+            value : 'ALICEBLUE',
+            label : '@@theme.universal.colorScheme.aliceBlue@@'
+        },{
+            value : 'LIGHTSTEELBLUE',
+            label : '@@theme.universal.colorScheme.lightSteelBlue@@'
+        },{
+            value : 'STEELBLUE',
+            label : '@@theme.universal.colorScheme.steelBlue@@'
+        },{
+            value : 'LIGHTSKYBLUE',
+            label : '@@theme.universal.colorScheme.lightSkyBlue@@'
+        },{
+            value : 'SKYBLUE',
+            label : '@@theme.universal.colorScheme.skyBlue@@'
+        },{
+            value : 'DEEPSKYBLUE',
+            label : '@@theme.universal.colorScheme.deepSkyBlue@@'
+        },{
+            value : 'AZURE',
+            label : '@@theme.universal.colorScheme.azure@@'
+        },{
+            value : 'LIGHTCYAN',
+            label : '@@theme.universal.colorScheme.lightCyan@@'
+        },{
+            value : 'CYAN',
+            label : '@@theme.universal.colorScheme.cyan@@'
+        },{
+            value : 'TEAL',
+            label : '@@theme.universal.colorScheme.teal@@'
+        },{
+            value : 'GREEN',
+            label : '@@theme.universal.colorScheme.green@@'
+        },{
+            value : 'LIGHT_GREEN',
+            label : '@@theme.universal.colorScheme.lightGreen@@'
+        },{
+            value : 'LIME',
+            label : '@@theme.universal.colorScheme.lime@@'
+        },{
+            value : 'IVORY',
+            label : '@@theme.universal.colorScheme.ivory@@'
+        },{
+            value : 'LEMONCHIFFON',
+            label : '@@theme.universal.colorScheme.lemonChiffon@@'
+        },{
+            value : 'WHEAT',
+            label : '@@theme.universal.colorScheme.wheat@@'
+        },{
+            value : 'YELLOW',
+            label : '@@theme.universal.colorScheme.yellow@@'
+        },{
+            value : 'AMBER',
+            label : '@@theme.universal.colorScheme.amber@@'
+        },{
+            value : 'ORANGE',
+            label : '@@theme.universal.colorScheme.orange@@'
+        },{
+            value : 'DEEP_ORANGE',
+            label : '@@theme.universal.colorScheme.deepOrange@@'
+        },{
+            value : 'BROWN',
+            label : '@@theme.universal.colorScheme.brown@@'
+        },{
+            value : 'LIGHTGREY',
+            label : '@@theme.universal.colorScheme.lightGrey@@'
+        },{
+            value : 'GREY',
+            label : '@@theme.universal.colorScheme.grey@@'
+        },{
+            value : 'BLUE_GREY',
+            label : '@@theme.universal.colorScheme.blueGrey@@'
+        },{
+            value : 'DEEP_GREY',
+            label : '@@theme.universal.colorScheme.deepGrey@@'
+        },{
+            value : 'SILVER',
+            label : '@@theme.universal.colorScheme.silver@@'
+        },{
+            value : 'BLACK',
+            label : '@@theme.universal.colorScheme.black@@'
+        },{
+            value : 'WHITE',
+            label : '@@theme.universal.colorScheme.white@@'
+        },{
+            value : 'custom',
+            label : '@@theme.universal.colorScheme.custom@@'
+        }],
+        control_field: 'themeScheme',
+        control_value: 'light',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
+        name : 'customMenuFontColor',
+        label : '@@theme.universal.customMenuFontColor@@',
+        type : 'color',
+        control_field: 'menuFontColor',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
         name : 'fontColor',
         label : '@@theme.universal.fontColor@@',
         type : 'selectbox',

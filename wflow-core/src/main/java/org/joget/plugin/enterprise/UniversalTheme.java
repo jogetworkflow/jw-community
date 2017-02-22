@@ -60,7 +60,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         PLUM("#DDA0DD", "", ""),
         LAVENDER("#E6E6FA", "", ""),
         GHOSTWHITE("#F8F8FF", "", ""),
-        DARKROYALBLUE("#3b5998", "#0e1f56", "#6d84b4"),
+        DARKROYALBLUE("#3b5998", "", ""),
         ROYALBLUE("#4169E1", "", ""),
         CORNFLOWERBLUE("#6495ED", "", ""),
         ALICEBLUE("#F0F8FF", "", ""),
@@ -165,14 +165,18 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 dark = getPropertyString("customPrimaryDark");
             }
             if (!getPropertyString("customPrimaryLight").isEmpty()) {
-                dark = getPropertyString("customPrimaryLight");
+                light = getPropertyString("customPrimaryLight");
             }
         } else {
             Color p = Color.valueOf(getPropertyString("primaryColor")); 
             if (p != null) {
                 primary = p.color;
                 dark = (p.dark.isEmpty())?dark:p.dark;
-                light = (p.light.isEmpty())?light:p.light;
+                if ("light".equals(getPropertyString("themeScheme"))) {
+                    light = "screen(@primary, #eeeeee)";
+                } else {
+                    light = (p.light.isEmpty())?light:p.light;
+                }
             }
         }
         
@@ -216,8 +220,23 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             }
         }
         
-        jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
-
+        if ("light".equals(getPropertyString("themeScheme"))) {
+            String menuFont = "#000000";
+            if ("custom".equals(getPropertyString("menuFontColor"))) {
+                menuFont = getPropertyString("customMenuFontColor");
+            } else if (!getPropertyString("menuFontColor").isEmpty()) {
+                Color a = Color.valueOf(getPropertyString("menuFontColor")); 
+                if (a != null) {
+                    menuFont = a.color;
+                }
+            }
+            
+            jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", menuFont: \"" + menuFont + "\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
+        } else {
+            jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
+        }
+        
+        
         jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\"></script>\n";
         
         if (enableResponsiveSwitch()) {
