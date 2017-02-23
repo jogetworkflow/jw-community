@@ -48,7 +48,7 @@ function responsiveTable(table) {
             var html = $(this).html();
             actions.append(html);
         });
-        actions.find("a").addClass("btn btn-xs");
+        actions.find("a").addClass("form-button button btn btn-xs");
         event.detail.find(".footable-row-detail-cell").append(actions);
     });
     
