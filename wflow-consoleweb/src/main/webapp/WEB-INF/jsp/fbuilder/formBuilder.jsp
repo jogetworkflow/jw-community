@@ -111,7 +111,7 @@
             <c:forEach items="${palette.editableElementList}" var="element">
                 <c:if test="${!empty element.propertyOptions}">
                 try {
-                    var elementProps = eval("(${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)})");
+                    var elementProps = ${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)};
                     var elementTemplate = "${element.formBuilderTemplate}";
                     FormBuilder.initElementDefinition("${element.className}", elementProps, elementTemplate);
                 } catch (e) {
