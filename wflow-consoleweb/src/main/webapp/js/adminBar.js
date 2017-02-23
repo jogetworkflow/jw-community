@@ -8,7 +8,7 @@ var AdminBar = {
         AdminBar.cookiePath = path;
     },
     showQuickOverlay: function(url) {
-        if (AdminBar.builderMode) {
+        if (AdminBar.builderMode && typeof AdvancedTools !== "undefined") {
             AdvancedTools.hideQuickOverlay();
         }
         
