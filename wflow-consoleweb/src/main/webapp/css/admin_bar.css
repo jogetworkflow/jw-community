@@ -97,6 +97,8 @@ body.embeded #adminBar {
 #adminBar #adminBarButtons {
     margin-top: -4px;
     padding-top: 0px;
+    overflow-y: auto;
+    height: 75vh;
 }
 #adminBar .adminBarButton {
     display: block;
