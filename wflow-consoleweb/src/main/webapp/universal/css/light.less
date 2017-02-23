@@ -321,13 +321,13 @@ main .chosen-container-active .chosen-single {
 }
 main .multiPagedForm.wizard .page-nav-panel ul,
 main .multiPagedForm.tab .page-nav-panel ul {
-    box-shadow: inset 0 -2px 0 0 @lightPrimary;
+    box-shadow: inset 0 -2px 0 0 screen(@primary, #555555);
 }
 main .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
 main .multiPagedForm.wizard .page-nav-panel .nav_item button,
 main .multiPagedForm.tab .page-nav-panel .nav_item.current button,
 main .multiPagedForm.tab .page-nav-panel .nav_item button {
-    color: @lightPrimary;
+    color: screen(@primary, #555555);
 }
 main .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled, main .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled, main .multiPagedForm.wizard .page-nav-panel .nav_item.current button, main .multiPagedForm.tab .page-nav-panel .nav_item.current button {
     color: @darkPrimary;
@@ -338,7 +338,7 @@ main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multi
 @media (max-width: 767px){
     main .multiPagedForm.wizard .page-nav-panel .nav_item button, main .multiPagedForm.tab .page-nav-panel .nav_item button {
         background: none;
-        border: @lightPrimary solid 2px;
+        border: screen(@primary, #555555) solid 2px;
     }
     main .multiPagedForm.wizard .page-nav-panel .nav_item.current, main .multiPagedForm.tab .page-nav-panel .nav_item.current {
         border: 2px solid @darkPrimary;
