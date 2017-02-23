@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 import java.util.*;
 import java.net.URLDecoder;
 import java.io.UnsupportedEncodingException;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.util.AntPathMatcher;
 
 /*
@@ -36,7 +37,7 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
     private static final Pattern wildcardFreePattern = Pattern.compile("^[\\\\\\/]?([^\\(\\*\\?\\\\\\/]*[\\\\\\/])*([^\\(\\*\\?\\\\\\/]*$)?");
     private static final Pattern regexEscapePattern = Pattern.compile("[\\\\\\/\\[\\]\\^\\$\\.\\{\\}\\&\\?\\*\\+\\|\\<\\>\\!\\=]");
     private final Map<String, NamedPattern> patternCache = new HashMap<String, NamedPattern>();
-    private final Map<String, Map<String, String>> namedParametersCache = new HashMap<String, Map<String, String>>();
+    private final Map<String, Map<String, String>> namedParametersCache = new ConcurrentHashMap<String, Map<String, String>>();
 
     @Override
     public boolean isPattern(String string) {
@@ -65,7 +66,9 @@ public class ParameterizedPathMatcher extends AntPathMatcher {
         Map<String, String> namedParameters = namedParametersCache.get(key);
         if (namedParameters == null) {
             namedParameters = getOrCreatePattern(pattern).namedGroups(path);
-            namedParametersCache.put(key, namedParameters);
+            if (namedParameters != null) {
+                namedParametersCache.put(key, namedParameters);
+            }
         }
         return namedParameters;
     }
