@@ -104,7 +104,7 @@
                             </span>
                         </c:forEach>
                          <span class="filter-cell">
-                             <input type="submit" value="<fmt:message key="general.method.label.show"/>"/>
+                             <input type="submit" class="form-button btn button" value="<fmt:message key="general.method.label.show"/>"/>
                          </span>
                     </div>
                 </form>
@@ -121,7 +121,7 @@
                                 <c:if test="${!empty action.confirmation}">
                                     <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
                                 </c:if>
-                                <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                <button name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                             </c:if>
                         </c:forEach>
                     </div>
@@ -197,7 +197,7 @@
                                 <c:if test="${!empty action.confirmation}">
                                     <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
                                 </c:if>
-                                <button name="${dataList.actionParamName}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                <button name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                             </c:if>
                         </c:forEach>
                     </div>

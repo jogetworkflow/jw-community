@@ -88,7 +88,7 @@ public class UniversalInboxMenu extends InboxMenu implements PluginWebSupport {
             }
 
             // generate menu link
-            menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='rowCount'>(" + rowCount + ")</span></a>";
+            menuItem = "<a href=\"" + getUrl() + "\" class=\"menu-link default\"><span>" + label + "</span> <span class='pull-right badge rowCount'>(" + rowCount + ")</span></a>";
         }
         return menuItem;
     }

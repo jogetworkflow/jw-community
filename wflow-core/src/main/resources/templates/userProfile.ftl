@@ -189,7 +189,7 @@
             </fieldset>
             ${element.properties.userProfileFooter!} 
             <div class="form-buttons">
-                <input class="form-button" type="button" value="@@general.method.label.save@@"  onclick="validateField()"/>
+                <input class="form-button btn button" type="button" value="@@general.method.label.save@@"  onclick="validateField()"/>
             </div>
         </form>
         <script type="text/javascript">
