@@ -238,6 +238,9 @@ public class PropertyUtil {
     }
     
     public static String injectHelpLink(String helpLink, String json) {
+        if (json == null || json.isEmpty()) {
+            json = "[]";
+        }
         if (helpLink != null && !helpLink.isEmpty()) {
             json = json.replaceFirst("title", "helplink:'"+StringUtil.escapeString(helpLink, StringUtil.TYPE_JSON, null)+"', title");
         }
