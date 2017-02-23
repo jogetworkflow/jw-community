@@ -3151,6 +3151,15 @@ ProcessBuilder.Designer = {
             e.stopPropagation();
         });
 
+        // show on touch
+        $(".participant_handle").on("touchend", function(e) {
+            if (!$(this).hasClass("hovered")) {
+                $(".hovered").removeClass("hovered");
+                $(this).addClass("hovered");
+                e.preventDefault();
+            }
+        });
+
     },
     adjustParticipantSize: function(participant) {
         var $participant = $(participant);
@@ -3289,6 +3298,15 @@ ProcessBuilder.Designer = {
             }
             ProcessBuilder.Actions.editProperties(process);
             e.stopPropagation();
+        });
+        
+        // show on touch
+        $(".header_process, .node").on("touchend", function(e) {
+            if (!$(this).hasClass("hovered")) {
+                $(".hovered").removeClass("hovered");
+                $(this).addClass("hovered");
+                e.preventDefault();
+            }
         });
 
         // single click on any endpoint

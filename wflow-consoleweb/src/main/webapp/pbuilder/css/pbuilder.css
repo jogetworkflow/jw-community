@@ -416,7 +416,8 @@ x.route x.node_route {
     opacity: 0.7;
     display: none;
 }
-.editable .node:hover .endpoint, .editable .start:hover .endpoint, .editable .endpoint:hover {
+.editable .node:hover .endpoint, .editable .start:hover .endpoint, .editable .endpoint:hover,
+.editable .node.hovered .endpoint, .editable .start.hovered .endpoint, .editable .endpoint.hovered {
     display: block;
 }
 .endpoint:hover {
@@ -539,22 +540,23 @@ x.route x.node_route {
 .node_selected {
     background: yellow;
 }
-.node:hover .node_edit {
+.node:hover .node_edit, .node.hovered .node_edit {
     display: block;
 }
-.start:hover .node_edit {
+.start:hover .node_edit, .start.hovered .node_edit {
     display: none;
 }
 .participant_handle .node_delete {
     left: 0px;
 }
-.participant_handle:hover .node_edit {
+.participant_handle:hover .node_edit, .participant_handle.hovered .node_edit {
     display: block;
 }
-.editable .node:hover .node_delete, .editable .end:hover .node_delete, .editable .start:hover .node_delete, .participant_handle:hover .node_delete, .participant_handle:hover .participant_add {
+.editable .node:hover .node_delete, .editable .end:hover .node_delete, .editable .start:hover .node_delete, .participant_handle:hover .node_delete, .participant_handle:hover .participant_add,
+.editable .node.hovered .node_delete, .editable .end.hovered .node_delete, .editable .start.hovered .node_delete, .participant_handle.hovered .node_delete, .participant_handle.hovered .participant_add{
     display: block;
 }
-.header_process:hover .node_delete {
+.header_process:hover .node_delete, .header_process.hovered .node_delete {
     display: block;
     top: 0px;
     left: 5px;
@@ -563,7 +565,7 @@ x.route x.node_route {
     position: absolute;
     display: none;
 }
-.header_process:hover .node_buttons{
+.header_process:hover .node_buttons, .header_process.hovered .node_buttons {
     display: block;
     top: 0px;
     right: 0px;
