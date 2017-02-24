@@ -196,7 +196,7 @@ main .dataList th.sortable:hover {
     background-color: lighten(@darkPrimary , 1%);
 }
 main .dataList thead tr {
-    background-color: @primary;
+    background-color: fade(@primary, 80%);
 }
 main .dataList tr.odd, 
 main .dataList tr.odd + tr.footable-row-detail{
@@ -295,7 +295,7 @@ main #form-canvas .label {
 }
 legend,
 main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {
-    background: @primary;
+    background: fade(@primary, 80%);
     color:@defaultFontColor;
 }
 main .subform-container.has-frame .subform-title {
@@ -348,7 +348,7 @@ main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multi
     }
 }
 main .form-cell .grid thead tr {
-    background: @primary;
+    background: fade(@primary, 80%);
     color: @defaultFontColor;
 }
 
