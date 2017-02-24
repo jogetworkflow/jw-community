@@ -1240,22 +1240,43 @@ DatalistBuilder = {
                   name  : 'name',
                   required : 'true',
                   type : 'textfield'},
+                {label : get_dbuilder_msg('dbuilder.hidePageSizeSelector'),
+                  name  : 'hidePageSize',
+                  type : 'checkbox',
+                  options : [{label : '', value : 'true'}]},
+                {label : get_dbuilder_msg('dbuilder.pageSizeSelectorOptions'),
+                  name  : 'pageSizeSelectorOptions',
+                  required : 'true',
+                  value : '10,20,30,40,50,100',
+                  type : 'textfield',
+                  control_field: 'hidePageSize',
+                  control_value: '',
+                  control_use_regex: 'false'},
                 {label : get_dbuilder_msg('dbuilder.pageSize'),
                   name  : 'pageSize',
                   required : 'true',
                   type : 'selectbox',
                   value : '0',
-                  options : [{label : get_dbuilder_msg('dbuilder.pageSize.default'), value : '0'},
-                             {label : '10', value : '10'},
+                  options_callback : function(props, values) {
+                      var options = [{label : get_dbuilder_msg('dbuilder.pageSize.default'), value : '0'}];
+                      if (values['pageSizeSelectorOptions'] === null || values['pageSizeSelectorOptions'] === undefined || values['pageSizeSelectorOptions'] === "") {
+                          options.push({label : '10', value : '10'},
                              {label : '20', value : '20'},
                              {label : '30', value : '30'},
                              {label : '40', value : '40'},
                              {label : '50', value : '50'},
-                             {label : '100', value : '100'}]},
-                {label : get_dbuilder_msg('dbuilder.hidePageSizeSelector'),
-                  name  : 'hidePageSize',
-                  type : 'checkbox',
-                  options : [{label : '', value : 'true'}]},     
+                             {label : '100', value : '100'});
+                      } else {
+                          var op = values['pageSizeSelectorOptions'].split(",");
+                          for (var i in op) {
+                              if (!isNaN(op[i])) {
+                                  options.push({label : op[i]+"", value : op[i]+""});
+                              }
+                          }
+                      }
+                      return options;
+                  },
+                  options_callback_on_change : "pageSizeSelectorOptions"},
                 {label : get_dbuilder_msg('dbuilder.order'),
                   name  : 'order',
                   required : 'false',

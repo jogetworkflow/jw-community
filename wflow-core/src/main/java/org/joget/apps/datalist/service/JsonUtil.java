@@ -37,6 +37,7 @@ public class JsonUtil {
     public static final String PROPERTY_DESC = "description";
     public static final String PROPERTY_PAGE_SIZE = "pageSize";
     public static final String PROPERTY_HIDE_PAGE_SIZE = "hidePageSize";
+    public static final String PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS = "pageSizeSelectorOptions";
     public static final String PROPERTY_CLASS_NAME = "className";
     public static final String PROPERTY_PROPERTIES = "properties";
     public static final String PROPERTY_ORDER = "order";
@@ -127,6 +128,9 @@ public class JsonUtil {
             }
             if (obj.has(PROPERTY_HIDE_PAGE_SIZE) && !obj.isNull(PROPERTY_HIDE_PAGE_SIZE)) {
                 object.setShowPageSizeSelector(!obj.getString(PROPERTY_HIDE_PAGE_SIZE).equals("true"));
+            }
+            if (obj.has(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS) && !obj.isNull(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS)) {
+                object.setPageSizeList(obj.getString(PROPERTY_PAGE_SIZE_SELECTOR_OPTIONS));
             }
             if (obj.has(PROPERTY_ORDER)) {
                 object.setDefaultOrder(obj.getString(PROPERTY_ORDER));

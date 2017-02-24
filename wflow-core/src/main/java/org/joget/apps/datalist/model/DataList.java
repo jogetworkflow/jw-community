@@ -705,7 +705,15 @@ public class DataList {
             if (o.equals(value)) {
                 selected = " selected='selected'";
             }
-            template += "<option value='" + o + "'" + selected + ">" + o + "</option>";
+            boolean isInteger = true;
+            try {
+                Integer.parseInt(o); 
+            } catch (Exception e) {
+                isInteger = false;
+            }
+            if (isInteger) {
+                template += "<option value='" + o + "'" + selected + ">" + o + "</option>";
+            }
         }
 
         template += "</select>";
