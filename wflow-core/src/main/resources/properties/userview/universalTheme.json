@@ -39,6 +39,7 @@
         name : 'primaryColor',
         label : '@@theme.universal.primaryColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'DARKROYALBLUE',
         options : [{
             value : 'RED',
@@ -203,6 +204,7 @@
         name : 'accentColor',
         label : '@@theme.universal.accentColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'BLUE',
         options : [{
             value : 'RED',
@@ -359,6 +361,7 @@
         name : 'buttonColor',
         label : '@@theme.universal.buttonColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'GREY',
         options : [{
             value : 'RED',
@@ -507,6 +510,7 @@
         name : 'buttonTextColor',
         label : '@@theme.universal.buttonTextColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'WHITE',
         options : [{
             value : 'RED',
@@ -655,6 +659,7 @@
         name : 'menuFontColor',
         label : '@@theme.universal.menuFontColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'BLACK',
         options : [{
             value : 'RED',
@@ -807,6 +812,7 @@
         name : 'fontColor',
         label : '@@theme.universal.fontColor@@',
         type : 'selectbox',
+        options_label_processor : 'color',
         value: 'WHITE',
         options : [{
             value : 'RED',

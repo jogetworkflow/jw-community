@@ -2030,10 +2030,52 @@ PropertyEditor.Type.SelectBox.prototype = {
         }
     },
     initScripting: function () {
+        var field = this;
         if (UI.rtl) {
             $("#"+this.id).addClass("chosen-rtl");
         }
         $("#"+this.id).chosen({width: "54%", placeholder_text : " "});
+        
+        //support options_label_processor for selectobox & multiselect
+        if (this.properties.options_label_processor !== undefined && this.properties.options_label_processor !== null) {
+            var processors = this.properties.options_label_processor.split(";");
+            var updateLabel = function(chosen) {
+                $(chosen.container).find(".chosen-results li, .chosen-single > span, .search-choice > span").each(function(){
+                    var html = $(this).html();
+                    var regex = new RegExp("\\[(.*)<em>(.*)\\]", "g");
+                    html = html.replace(regex, "[$1$2]");
+                    regex = new RegExp("\\[(.*)</em>(.*)\\]", "g");
+                    html = html.replace(regex, "[$1$2]");
+                    for (var i in processors) {
+                        if ("color" === processors[i]) {
+                            var regex = new RegExp("\\[color\\](.+)\\[/color\\]", "g");
+                            html = html.replace(regex, "<span style=\"background:$1;width:10px;height:10px;display:inline-block;margin:0 2px;\"></span>");
+                        }
+                    }
+                    $(this).html(html);
+                });
+            }
+            $("#"+this.id).on("chosen:showing_dropdown", function (evt, chosen){
+                updateLabel(chosen.chosen);
+            });
+            $("#"+this.id).on("chosen:hiding_dropdown", function (evt, chosen){
+                updateLabel(chosen.chosen);
+            });
+            $("#"+this.id).on("chosen:ready", function (evt){
+                updateLabel($("#"+field.id).data("chosen"));
+            });
+            $("#"+this.id).on("chosen:updated", function(evt) {
+                updateLabel($("#"+field.id).data("chosen"));
+            });
+            $("#"+this.id).on("change"), function() {
+                updateLabel($("#"+field.id).data("chosen"));
+            };
+            $($("#"+field.id).data("chosen").container).find(".chosen-search input").on("keydown", function(){
+                setTimeout(function(){updateLabel($("#"+field.id).data("chosen"));}, 5) ;
+            });
+            updateLabel($("#"+field.id).data("chosen"));
+        }
+        
         PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function () {
