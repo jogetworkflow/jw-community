@@ -225,8 +225,7 @@ PropertyEditor.Util = {
 
         var field = page.editorObject.fields[control_field];
         if (field !== null && field !== undefined) {
-            var control = $(field.editor).find("#" + field.id);
-            control.on("change", function() {
+            $(field.editor).on("change", "[name=\"" + field.id + "\"]",function() {
                 var match  = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
                 if (match) {
                     element.show();
@@ -264,7 +263,7 @@ PropertyEditor.Util = {
                     }
                 }
             });  
-            control.trigger("change");
+            $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
         }
     },
     handleOptionsField: function (field, reference, ajax_url, on_change, mapping, method, extra) {
@@ -285,8 +284,7 @@ PropertyEditor.Util = {
                 }
             }
             for (var i in fieldIds) {
-                var targetEl = $(field.editor).find("#" + field.editorObject.fields[fieldIds[i]].id);
-                targetEl.on("change", function() {
+                $(field.editor).on("change", "[name=\""+field.editorObject.fields[fieldIds[i]].id+"\"]", function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
                     field.handleAjaxOptions(field.properties.options, reference);
                 });
@@ -449,8 +447,7 @@ PropertyEditor.Util = {
             }
         }
         for (var i in fieldIds) {
-            var targetEl = $(field.editor).find("#" + field.editorObject.fields[fieldIds[i]].id);
-            targetEl.on("change", function() {
+            $(field.editor).on("change", "[name=\""+field.editorObject.fields[fieldIds[i]].id+"\"]", function() {
                 PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method);
             });
         }
