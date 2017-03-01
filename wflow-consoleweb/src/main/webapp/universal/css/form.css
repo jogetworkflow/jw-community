@@ -240,6 +240,9 @@ body .filter-cell select:not([class^=ui]){
     body .form-container .chosen-container{
         max-width: 70%;
     }
+    body .form-container textarea[cols] {
+        width: 70%;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -261,6 +264,9 @@ body .filter-cell select:not([class^=ui]){
     body .form-container .subform-cell-value,
     body .form-container .chosen-container{
         max-width: 100%;
+    }
+    body .form-container textarea[cols] {
+        width: 100%;
     }
 }
 
@@ -453,6 +459,7 @@ body .form-column, body .subform-column {
 
 body .form-cell, body .subform-cell {
     color: inherit;
+    padding: 0;
 }
 
 body .subform-cell-validator, body .form-cell-validator {
