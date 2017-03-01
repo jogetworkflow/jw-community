@@ -13,6 +13,8 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 
 public class TextField extends Element implements FormBuilderPaletteElement {
+    protected String submittedValue = null;
+    protected String validationValue = null;
 
     @Override
     public String getName() {
@@ -35,13 +37,36 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-        
+
         value = SecurityUtil.decrypt(value);
         
         dataModel.put("value", value);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
+    }
+    
+    @Override
+    public FormData formatDataForValidation(FormData formData) {
+        String id = FormUtil.getElementParameterName(this);
+        if (id != null) {
+            submittedValue = FormUtil.getElementPropertyValue(this, formData);
+            validationValue = submittedValue;
+            
+            if (!getPropertyString("style").isEmpty()) {
+                validationValue = validationValue.replaceAll(" ", "");
+                if ("EURO".equalsIgnoreCase(getPropertyString("style"))) {
+                    validationValue = validationValue.replaceAll(StringUtil.escapeRegex("."), "");
+                } else {
+                    validationValue = validationValue.replaceAll(StringUtil.escapeRegex(","), "");
+                }
+                validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("prefix")), "");
+                validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("postfix")), "");
+            }
+
+            formData.addRequestParameterValues(id, new String[]{validationValue});
+        }
+        return formData;
     }
     
     @Override
@@ -54,15 +79,12 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (value != null) {
                 
-                if ("true".equalsIgnoreCase(getPropertyString("storeNumeric")) && !getPropertyString("style").isEmpty()) {
-                    value = value.replaceAll(" ", "");
-                    if ("EURO".equalsIgnoreCase(getPropertyString("style"))) {
-                        value = value.replaceAll(StringUtil.escapeRegex("."), "");
+                if (!getPropertyString("style").isEmpty()) {
+                    if ("true".equalsIgnoreCase(getPropertyString("storeNumeric"))) {
+                        value = validationValue;
                     } else {
-                        value = value.replaceAll(StringUtil.escapeRegex(","), "");
+                        value = submittedValue;
                     }
-                    value = value.replaceAll(StringUtil.escapeRegex(getPropertyString("prefix")), "");
-                    value = value.replaceAll(StringUtil.escapeRegex(getPropertyString("postfix")), "");
                 }
                 
                 if ("true".equalsIgnoreCase(getPropertyString("encryption"))) {
