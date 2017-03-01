@@ -1025,11 +1025,14 @@ DatalistBuilder = {
                 type : 'selectbox',
                 value : '',
                 options : [{
+                    label : get_dbuilder_msg('dbuilder.pageSize.default'),
+                    value : ''
+                },{
                     label : get_dbuilder_msg('dbuilder.align.center'),
                     value : 'dataListAlignCenter'
                 },{
                     label : get_dbuilder_msg('dbuilder.align.left'),
-                    value : ''
+                    value : 'dataListAlignLeft'
                 },
                 {
                     label : get_dbuilder_msg('dbuilder.align.right'),
@@ -1042,8 +1045,11 @@ DatalistBuilder = {
                 type : 'selectbox',
                 value : '',
                 options : [{
-                    label : get_dbuilder_msg('dbuilder.align.center'),
+                    label : get_dbuilder_msg('dbuilder.pageSize.default'),
                     value : ''
+                },{
+                    label : get_dbuilder_msg('dbuilder.align.center'),
+                    value : 'dataListAlignCenter'
                 },{
                     label : get_dbuilder_msg('dbuilder.align.left'),
                     value : 'dataListAlignLeft'
