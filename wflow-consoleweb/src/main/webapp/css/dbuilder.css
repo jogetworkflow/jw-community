@@ -36,12 +36,12 @@
     min-height: 30px;
     color: black;
     width: 120px;
-    height: 30px;
+    height: auto;
 }
 .builder-palette-column .label {
-    /*width: 30%;*/
+    width: 100%;
     display: block;
-    float: left;
+    word-break: break-all;
 }
 
 .builder-palette-column .label.key {
