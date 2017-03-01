@@ -140,6 +140,7 @@ body .editor-cell select:not([class^=ui]){
   border-radius: 0;
   outline: none;
   height: 3rem;
+  min-height: 3rem;
   width: 100%;
   max-width: 70%;
   margin: 0 0 15px 0;
