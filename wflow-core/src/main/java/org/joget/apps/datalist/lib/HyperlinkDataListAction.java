@@ -47,6 +47,9 @@ public class HyperlinkDataListAction extends DataListActionDefault {
     }
 
     public String getTarget() {
+        if ("iframe".equals(getPropertyString("target"))) {
+            return getPropertyString("iframename");
+        }
         return getPropertyString("target");
     }
 

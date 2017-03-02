@@ -20,9 +20,30 @@
             label : '@@datalist.hyperlinkdatalistaction.newWindow@@'
         },
         {
+            value : '_top',
+            label : '@@datalist.hyperlinkdatalistaction.top@@'
+        },
+        {
+            value : '_parent',
+            label : '@@datalist.hyperlinkdatalistaction.parent@@'
+        },
+        {
+            value : 'iframe',
+            label : '@@datalist.hyperlinkdatalistaction.iframe@@'
+        },
+        {
             value : 'popup',
             label : '@@datalist.hyperlinkdatalistaction.popup@@'
         }]
+    },
+    {
+        label : '@@datalist.hyperlinkdatalistaction.iframename@@',
+        name : 'iframename',
+        type : 'textfield',
+        control_field: 'target',
+        control_value: 'iframe',
+        control_use_regex: 'false',
+        required : 'true'
     },
     {
         name : 'parameters',
