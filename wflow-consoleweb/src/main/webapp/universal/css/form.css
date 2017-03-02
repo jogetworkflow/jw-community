@@ -153,6 +153,16 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
+body select[multiple]:not([class^=ui]),
+body .editor-cell select[multiple]:not([class^=ui]){
+  height: auto;
+}
+
+body select[multiple]:not([class^=ui]) option,
+body .editor-cell select[multiple]:not([class^=ui]) option{
+  padding: 5px 0;
+}
+
 body .editor-cell input:not([type]),
 body .editor-cell input[type=text],
 body .editor-cell input[type=password],
