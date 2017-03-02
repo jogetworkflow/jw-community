@@ -349,7 +349,7 @@ body.embeded #content > main {
     transition: all;
     -webkit-transition-duration: .3s;
     transition-duration: .3s;
-    z-index: 10;
+    z-index: 150;
     overflow-y: auto;
 }
 .rtl #sidebar {
