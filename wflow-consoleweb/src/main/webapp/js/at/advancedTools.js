@@ -98,14 +98,12 @@ var AdvancedTools = {
             AdvancedTools.treeViewer.render();
         });
         
-        //if tree viewer is active and the JSON is changed, close the Advanced Tool Dialog
         var textarea = $(AdvancedTools.jsonForm).find('textarea[name="json"]').hide();
         $(textarea).on("change", function() {
             if (!AdvancedTools.silentChange) {
                 var activeTab = $('.builder_tool_tabs li.ui-tabs-active a').attr("id");
                 if (activeTab === "treeViewer") {
-                    $(".boxy-wrapper").css("z-index", "2000");
-                    AdvancedTools.hideQuickOverlay();
+                    //TODO: refreash the tree value (keep the tree structure) if json is updated
                 }
             }
         });

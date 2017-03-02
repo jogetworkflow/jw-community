@@ -1225,7 +1225,10 @@ DependencyTree.Viewer.prototype = {
         }
         
         $(viewer.dataSelector).on("change", function() {
-            $("#dependencyTreeViewer").html("");
+            var activeTab = $('.builder_tool_tabs li.ui-tabs-active a').attr("id");
+            if (activeTab !== "treeViewer") {
+                $("#dependencyTreeViewer").html("");
+            }
         });
             
         $.when.apply($, deferreds).then(function(){
