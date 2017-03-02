@@ -493,6 +493,7 @@ DatalistBuilder = {
                         DatalistBuilder.chosenRowActions[columnId].properties = new Object();
                     }
                     DatalistBuilder.chosenRowActions[columnId].properties.id = columnId;
+                    DatalistBuilder.chosenRowActions[columnId].properties.label = UI.escapeHTML(DatalistBuilder.availableActions[id].label);
                     delete DatalistBuilder.chosenRowActions[columnId].propertyOptions;
 
                     //call decorator to render column in the designer's canvas
@@ -525,6 +526,7 @@ DatalistBuilder = {
                         DatalistBuilder.chosenActions[columnId].properties = new Object();
                     }
                     DatalistBuilder.chosenActions[columnId].properties.id = columnId;
+                    DatalistBuilder.chosenActions[columnId].properties.label = UI.escapeHTML(DatalistBuilder.availableActions[id].label);
                     delete DatalistBuilder.chosenActions[columnId].propertyOptions;
 
                     //call decorator to render column in the designer's canvas
