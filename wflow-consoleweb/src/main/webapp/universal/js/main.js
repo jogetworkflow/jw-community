@@ -256,4 +256,12 @@ _customFooTableArgs = {
             $(".page-loader").fadeIn(100);
         }
     });    
+    
+    $(function() {
+        // hide responsive switch if within IFRAME
+        if (window.self !== window.top) {
+            $("#responsiveSwitch").hide();
+        }
+    });
+    
 }(window.jQuery);
