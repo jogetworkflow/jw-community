@@ -921,6 +921,9 @@ body#login #page > footer {
     body.horizontal_menu #sidebar li>a.dropdown:after {
         opacity: 0 !important; 
     }
+    body.horizontal_menu #sidebar .category > a > .badge {
+        margin-left: 5px;
+    } 
     body.horizontal_menu header.navbar .header-nav .nav>li.user-link {
         display: inline-block;
     }
