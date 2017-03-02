@@ -84,7 +84,7 @@ var AppCenter = {
                 $(container).append($(content));
 
                 // sort by userview name
-                var appsLi = $(".published-apps li");
+                var appsLi = $(container).find("li");
                 appsLi.sort(function(a, b) {
                     var aName = $(a).find(".userview-name").text();
                     var bName = $(b).find(".userview-name").text();
