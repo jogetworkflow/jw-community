@@ -46,6 +46,8 @@
     display: block;
     font-size: 80%;
     color: #999;
+    max-height: 14px;
+    overflow: hidden;
 }
 #apps div.userview-description {
     display: none;
@@ -75,8 +77,8 @@ a.print-button {
     padding: 4px;
     color: white;
     border-radius: 12px;
-    top: 8px;
-    position: relative;
+    margin-top: 4px;
+    position: absolute;
     display: none;
     box-shadow: #666 1px 1px 2px 0px;
 }    
