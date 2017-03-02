@@ -3558,10 +3558,44 @@ PropertyEditor.Type.ElementSelect.prototype = {
             thisObj.renderPages();
         });
     },
+    renderLoadingPage: function(value, valueLabel, currentPage) {
+        var thisObj = this;
+        
+        if (valueLabel !== "") {
+            var parentId = thisObj.properties.name;
+            var elementdata = ' elementId="'+ thisObj.id+'" elementValue="'+ value +'"';
+
+            //check if the element has a parent element
+            if (currentPage.attr("elementId") !== undefined && currentPage.attr("elementId") !== "") {
+                parentId = currentPage.attr("elementId") + "_" + parentId;
+                if (currentPage.attr("parentElementId") !== undefined && currentPage.attr("parentElementId") !== "") {
+                    elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"'; 
+                } else {
+                    elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"'; 
+                }
+            }
+
+            var p = new PropertyEditor.Model.Page(thisObj.editorObject, 'loader_property', {title:'<h1 style="text-align:center"><i class="fa fa-spin fa-spinner fa-4x"></i></h1>', properties : [{name : 'loader', type : 'hidden'}]}, elementdata, parentId);
+            p.options = thisObj.options;
+            thisObj.editorObject.pages[p.id] = p;
+
+            this.options.loadingPage = p;
+
+            $(currentPage).after(p.render());
+            thisObj.editorObject.refresh();
+        }
+    },
+    removeLoadingPage: function() {
+        if (this.options.loadingPage !== null && this.options.loadingPage !== undefined ) {
+            this.options.loadingPage.remove();
+            this.options.loadingPage = null;
+        }
+    },
     renderPages: function() {
         var thisObj = this;
         var field = $("#"+this.id);
         var value = $(field).filter(":not(.hidden)").val();
+        var valueLabel = $(field).find("[value=\""+value+"\"]").text();
         var currentPage = $(this.editor).find("#"+this.page.id);
         
         var data = null;
@@ -3583,9 +3617,14 @@ PropertyEditor.Type.ElementSelect.prototype = {
         //if properties page not found, render it now
         if($(this.editor).find('.property-editor-page[elementId='+this.id+']').length === 0){
             var deferreds = [];
+            
+            thisObj.renderLoadingPage(value, valueLabel, currentPage);
+            
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function(){
+                thisObj.removeLoadingPage();
+                
                 if(thisObj.options.propertiesDefinition !== undefined && thisObj.options.propertiesDefinition !== null){
                     var parentId = thisObj.properties.name;
                     var elementdata = ' elementId="'+ thisObj.id+'" elementValue="'+ value +'"';
@@ -3612,16 +3651,6 @@ PropertyEditor.Type.ElementSelect.prototype = {
                         html += p.render();
                     });
                     $(currentPage).after(html);
-
-                    $.each(thisObj.options.propertiesDefinition, function(i, page){
-                        var p = page.propertyEditorObject;
-                        if (p === undefined) {        
-                            p = new PropertyEditor.Model.Page(thisObj.editorObject, i, page, elementdata, parentId);
-                            page.propertyEditorObject = p;
-                            thisObj.editorObject.pages[p.id] = p;
-                        }
-                        html += p.render();
-                    });
                 
                     $.each(thisObj.options.propertiesDefinition, function(i, page){
                         var p = page.propertyEditorObject;
