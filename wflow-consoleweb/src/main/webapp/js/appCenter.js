@@ -136,8 +136,8 @@ var AppCenter = {
         }        
     },
     showHints: function() {
-        if ($("#main-action-help:visible").length > 0) {
-            if ($("#adminControl").length > 0) {
+        if ($("#main-action-help").length > 0) {
+            if ($("#adminControl:visible").length > 0) {
                 HelpGuide.key="help.web.adminBar";
             } else {
                 HelpGuide.key="help.web.appcenter";
@@ -149,7 +149,12 @@ var AppCenter = {
     }
 }
 $(function() {
-    AppCenter.showHints();
+    if (window.self === window.top) {
+        // show hints if not within IFRAME
+        AppCenter.showHints();
+    } else {
+        $("#main-action-help").hide();
+    }
 });
 //AppCenter.searchFilter($("#search"), $("#apps")); 
 //AppCenter.loadPublishedApps("#apps");
