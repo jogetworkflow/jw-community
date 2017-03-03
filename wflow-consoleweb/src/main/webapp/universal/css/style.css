@@ -289,12 +289,15 @@ body.embeded .home_banner {
 }
 
 .dropdown-menu {
-    left:initial;
+    left:auto;
     right:0;
 }
 .rtl .dropdown-menu {
     left:0;
     right:auto;
+}
+.dropdown-menu.notifications {
+    min-width: 280px;
 }
 
 li.dropdown-menu-title {
