@@ -1013,9 +1013,10 @@ public class WorkflowJsonController {
     
     @RequestMapping(value = "/json/monitoring/activity/reassign", method = RequestMethod.POST)
     public void activityReassign(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId) throws IOException, JSONException {
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        WorkflowActivity assignment = workflowManager.getActivityById(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return;
         }
         
         workflowManager.assignmentReassign(null, null, activityId, username, replaceUser);
@@ -1028,9 +1029,10 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/running/activity/reassign", method = RequestMethod.POST)
     public void assignmentReassign(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("username") String username, @RequestParam("replaceUser") String replaceUser, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) throws IOException {
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        WorkflowActivity assignment = workflowManager.getActivityById(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return;
         }
         
         appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -1040,9 +1042,10 @@ public class WorkflowJsonController {
 
     @RequestMapping(value = "/json/monitoring/running/activity/complete", method = RequestMethod.POST)
     public void completeProcess(Writer writer, HttpServletResponse response, @RequestParam("processDefId") String processDefId, @RequestParam("activityId") String activityId, @RequestParam("processId") String processId) throws IOException {
-        WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+        WorkflowActivity assignment = workflowManager.getActivityById(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return;
         }
         
         String username = workflowUserManager.getCurrentUsername();
