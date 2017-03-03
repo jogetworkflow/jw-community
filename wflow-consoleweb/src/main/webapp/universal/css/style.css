@@ -4,7 +4,9 @@
 
 html {
     overflow-x: hidden;
-    -ms-overflow-style: none
+    -ms-overflow-style: none;
+    overflow-y: auto;
+    height: 100%;
 }
 
 html.ismobile * {
@@ -14,7 +16,12 @@ html.ismobile * {
 body {
     font-size: 13px;
     line-height: 1.42857143;
+}
+
+body:not(.embeded) {
     width: 100vw;
+    overflow-y: auto;
+    height: 100%;
 }
 
 .inline-block {
