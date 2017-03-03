@@ -118,7 +118,7 @@ _customFooTableArgs = {
             $("html").addClass("ismobile");
         }
 
-        $(window).load(function() {
+        $(document).ready(function() {
             Waves.init();
             attachButtonEffect();
             setTimeout(function() {
