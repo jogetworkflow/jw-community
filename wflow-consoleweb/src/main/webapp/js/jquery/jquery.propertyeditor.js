@@ -379,6 +379,7 @@ PropertyEditor.Util = {
                 method = "GET";
             }
             
+            PropertyEditor.Util.showAjaxLoading(field);
             $.ajax({
                 url: ajaxUrl,
                 dataType: "text",
@@ -426,6 +427,7 @@ PropertyEditor.Util = {
                             calls[i].field.isDataReady = true;
                         }
                         delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
+                        PropertyEditor.Util.removeAjaxLoading(calls[i].field);
                     }
                 }
             });
@@ -563,6 +565,14 @@ PropertyEditor.Util = {
                 data['HASH_FIELD'] = field.properties.name;
             }
         }
+    },
+    showAjaxLoading: function(field) {
+        $(field.editor).find(".ajaxLoader").show();
+    },
+    removeAjaxLoading: function(field) {
+        if (Object.keys(PropertyEditor.Util.ajaxCalls).length === 0) {
+            $(field.editor).find(".ajaxLoader").hide();
+        }
     }
 };
         
@@ -573,7 +583,7 @@ PropertyEditor.Model.Editor = function(element, options) {
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
     
-    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="property-editor-display" ><a class="compress" title="'+get_peditor_msg('peditor.compress')+'"><i class="fa fa-compress" aria-hidden="true"></i></a><a class="expand" title="'+get_peditor_msg('peditor.expand')+'"><i class="fa fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
+    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fa fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="'+get_peditor_msg('peditor.compress')+'"><i class="fa fa-compress" aria-hidden="true"></i></a><a class="expand" title="'+get_peditor_msg('peditor.expand')+'"><i class="fa fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
     this.editor = $(this.element).find('div#'+this.editorId);    
 };
 PropertyEditor.Model.Editor.prototype = {
@@ -3558,7 +3568,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             thisObj.renderPages();
         });
     },
-    renderLoadingPage: function(value, valueLabel, currentPage) {
+    renderLoadingPage: function(value, valueLabel, parentLabel, currentPage) {
         var thisObj = this;
         
         if (valueLabel !== "") {
@@ -3575,7 +3585,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 }
             }
 
-            var p = new PropertyEditor.Model.Page(thisObj.editorObject, 'loader_property', {title:'<h1 style="text-align:center"><i class="fa fa-spin fa-spinner fa-4x"></i></h1>', properties : [{name : 'loader', type : 'hidden'}]}, elementdata, parentId);
+            var p = new PropertyEditor.Model.Page(thisObj.editorObject, 'loader_property', {title: parentLabel+' ('+valueLabel+')', properties : [{name : 'loader', label : '<p class="loader" style="text-align:center"><i class="fa fa-spin fa-spinner fa-4x"></i></p>', type : 'header'}]}, elementdata, parentId);
             p.options = thisObj.options;
             thisObj.editorObject.pages[p.id] = p;
 
@@ -3596,6 +3606,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var field = $("#"+this.id);
         var value = $(field).filter(":not(.hidden)").val();
         var valueLabel = $(field).find("[value=\""+value+"\"]").text();
+        var parentLabel = $(field).closest('.property-editor-property').find(".property-label-container .property-label").clone().children().remove().end().text();
         var currentPage = $(this.editor).find("#"+this.page.id);
         
         var data = null;
@@ -3618,7 +3629,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if($(this.editor).find('.property-editor-page[elementId='+this.id+']').length === 0){
             var deferreds = [];
             
-            thisObj.renderLoadingPage(value, valueLabel, currentPage);
+            thisObj.renderLoadingPage(value, valueLabel, parentLabel, currentPage);
             
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));

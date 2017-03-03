@@ -4,6 +4,7 @@
     overflow:hidden;
     border:1px solid #bbbbbb;
     padding: 0px;
+    position: relative;
 }
 
 .property-editor-display {
@@ -464,3 +465,21 @@ td.error .chosen-container, td.error input {
     width: 30px;
 }
 .helplink {color: gray;}
+
+.property-editor-container .ajaxLoader {
+    display: block; 
+    position: absolute; 
+    z-index: 10000; 
+    top:0; 
+    left:0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0, 0, 0, 0.3);
+}
+.property-editor-container .loaderIcon {
+    text-align: center;
+    top: 50%;
+    position: absolute;
+    width: 100%;
+    margin-top: -26px;
+}
