@@ -49,7 +49,7 @@ UI = {
            height = "90%";
        }
        var windowHeight = $(window).height();
-       var minHeight = 200;
+       var windowWidth = $(window).width();
        var maxHeight = windowHeight - 100;
            
        if (isNaN(height) && height.indexOf("%") !== -1) {
@@ -57,13 +57,10 @@ UI = {
            height = windowHeight * tempHeight / 100;
        }
        
-       if (height > maxHeight) {
+       if (height > maxHeight || windowWidth < 668) {
            height = maxHeight;
        }
        
-       if (height < minHeight) {
-            height = minHeight;
-       }
        return height;
    }, 
    getPopUpWidth: function(width) {
@@ -71,7 +68,7 @@ UI = {
            width = "90%";
        }
        var windowWidth = $(window).width();
-       var minWidth = 200;
+       var minWidth = 668;
        var maxWidth = windowWidth - 100;
            
        if (isNaN(width) && width.indexOf("%") !== -1) {
@@ -84,8 +81,9 @@ UI = {
        }
        
        if (width < minWidth) {
-           width = minWidth;
+           width = windowWidth;
        }
+       
        return width;
    },
    adjustPopUpDialog: function(dialogbox) {

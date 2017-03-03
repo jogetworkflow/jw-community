@@ -465,6 +465,7 @@ body .form-column, body .subform-column {
     max-width: 99%;
     margin: 0.5%;
     color: inherit;
+    min-width: inherit;
 }
 
 body .form-cell, body .subform-cell {
