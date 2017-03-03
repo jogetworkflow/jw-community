@@ -247,3 +247,5 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 .dataList td.dataListAlignCenter {
     text-align: center;
 }
+.rowCount:before {content: "("; display: inline-block;}
+.rowCount:after {content: ")"; display: inline-block;}
