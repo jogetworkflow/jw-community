@@ -467,7 +467,7 @@ td.error .chosen-container, td.error input {
 .helplink {color: gray;}
 
 .property-editor-container .ajaxLoader {
-    display: block; 
+    display: none; 
     position: absolute; 
     z-index: 10000; 
     top:0; 
