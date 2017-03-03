@@ -841,3 +841,61 @@ body .adgrid .editor-cell .actions-buttons button {
 .popupBody form fieldset legend {
     padding: 10px;
 }
+body .grid.readonly a.grid-action-edit,
+body .grid-action-edit, body .grid-action-delete, body .grid-action-moveup, body .grid-action-moveup.disabled,
+body .grid-action-movedown, body .grid-action-movedown.disabled, body .grid-action-add{
+    background: none !important;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    margin: 2px;
+    padding: 0;
+}
+body .grid.readonly a.grid-action-edit:after,
+body .grid-action-edit:after, body .grid-action-delete:after, body .grid-action-moveup:after, body .grid-action-moveup.disabled:after,
+body .grid-action-movedown:after, body .grid-action-movedown.disabled:after, body .grid-action-add:after{
+    height: 25px;
+    width: 25px;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 20px;
+    color: #FFFFFF;
+    margin-right: 0px;
+    margin-top: 0px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 25px;
+    position: absolute;
+    top:0;
+    left: 0;
+}
+body .grid-action-edit:after{
+    content: '\f040';
+    color: #2e8bd3;
+}
+body .grid-action-delete:after{
+    content: '\f00d';
+    color: #F43530;
+}
+body .grid-action-moveup:after{
+    content: '\f077';
+    color: #ffbb0e;
+}
+body .grid-action-movedown:after{
+    content: '\f078';
+    color: #ffbb0e;
+}
+body .grid-action-add:after {
+    content: '\f055';
+    color: #4caf50;
+}
+body .grid-action-moveup.disabled:after, body .grid-action-movedown.disabled:after{
+    color: #999999;
+}
+body .grid.readonly a.grid-action-edit:after {
+    content: '\f0f6';
+    color: #2e8bd3;
+}
+body .grid-action-header, body td.grid-action-cell {
+    width: 135px;
+    text-align: center;
+}
