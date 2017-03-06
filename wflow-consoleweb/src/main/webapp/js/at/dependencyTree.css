@@ -24,5 +24,6 @@
 }
 .indicator-red {color: red;}
 .indicator-lightgreen {color: darkseagreen;}
-span.gray {color:gray;}
+a.gray, a.gray:hover {color:gray !important;}
+a.properties, a.properties:hover {font-style: italic; color:gray !important; }
 #dependencyTreeExport .fa-stack-1x:before { margin-left: 5px; }

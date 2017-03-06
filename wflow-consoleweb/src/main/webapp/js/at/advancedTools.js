@@ -102,8 +102,8 @@ var AdvancedTools = {
         $(textarea).on("change", function() {
             if (!AdvancedTools.silentChange) {
                 var activeTab = $('.builder_tool_tabs li.ui-tabs-active a').attr("id");
-                if (activeTab === "treeViewer") {
-                    //TODO: refreash the tree value (keep the tree structure) if json is updated
+                if ($("#advancedToolsOverlayContainer").is(":visible") && activeTab === "treeViewer") {
+                    AdvancedTools.treeViewer.redraw();
                 }
             }
         });

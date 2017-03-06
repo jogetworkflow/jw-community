@@ -1,7 +1,70 @@
+$.jstree.plugins.joget = function (options, parent) {
+    this.redraw_node = function(obj, deep, callback, force_draw) {
+        obj = parent.redraw_node.call(this, obj, deep, callback, force_draw);
+        
+        if (obj) {
+            var node = this.get_node(jQuery(obj).attr('id'));
+            if (node && node.data && ("value" in node.data) && (node.data["value"] !== "")) {
+                $(obj).find("> .jstree-anchor").append("<strong>"+node.data["value"]+"</strong>");
+            }
+            if (node && node.data && ("indicators" in node.data) && (node.data["indicators"].length > 0)) {
+                var inds = $('<span class="indicators"></span>');
+                
+                for (var i in node.data["indicators"]) {
+                    var ind = node.data["indicators"][i];
+                    var a = $('<a class="indicator">');
+        
+                    if (ind.callback !== undefined && ind.callback !== null && $.type(ind.callback) === "string") {
+                        $(a).attr("href", ind.callback);
+                        $(a).attr("target", "_blank");
+                    } else if (ind.callback !== undefined && ind.callback !== null  && $.type(ind.callback) === "number") {
+                        $(a).attr("data-callback", ind.callback);
+                    }
+                    if (ind.color !== undefined && ind.color !== "") {
+                        $(a).addClass("indicator-"+ind.color);
+                    }
+                    $(a).append('<span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="'+ind.icon+' fa-stack-1x fa-inverse"></i></span>');
+                    if (ind.label !== undefined && ind.label !== "") {
+                        $(a).attr("title", ind.label);
+                        $(a).attr('aria-label', ind.label);
+                    }
+                    $(inds).append(a);
+                }
+                
+                $(obj).find("> .jstree-anchor").after(inds);
+            }
+        }
+        return obj;
+    };
+};
+
+$.jstree.defaults.joget = {};
+
 DependencyTree = {};
 DependencyTree.Matchers = {};
 
+DependencyTree.Node = {
+    text : "",
+    type : "default",
+    children : [],
+    data : {
+        indicators : []
+    },
+    li_attr : {},
+    a_attr : {
+        class : ''
+    }
+};
+
 DependencyTree.Util = {
+    cleanData: function(node) {
+        node.data["parent"] = null;
+        node.data["properties"] = null;
+        node.data["propertiesDef"] = null;
+        for (var i in node.children) {
+            DependencyTree.Util.cleanData(node.children[i]);
+        }
+    },
     runMatchers : function (viewer, deferreds, node, jsonObj, refObj, matchers) {
         if (matchers === undefined) {
             matchers = DependencyTree.Matchers;
@@ -15,9 +78,9 @@ DependencyTree.Util = {
     },
     pluginPropertiesWalker : function (viewer, node, labelNode, jsonObj, deffer, properties) {
         if (jsonObj['properties']['label'] !== undefined && jsonObj['properties']['label'] !== "") {
-            labelNode.value += ' (' + jsonObj['properties']['label'] + ')';
+            labelNode.data['value'] += ' (' + jsonObj['properties']['label'] + ')';
         } else if (jsonObj['properties']['name'] !== undefined && jsonObj['properties']['name'] !== "") {
-            labelNode.value += ' (' + jsonObj['properties']['name'] + ')';
+            labelNode.data['value'] += ' (' + jsonObj['properties']['name'] + ')';
         }
         
         node.data['propertiesDef'] = properties;
@@ -34,8 +97,9 @@ DependencyTree.Util = {
                         cjsonObj = "";
                     }
                     if (name !== undefined) {
-                        var cnode = new DependencyTree.Node();
-                        node.addChild(cnode);
+                        var cnode = $.extend(true, {}, DependencyTree.Node);
+                        cnode.data['parent'] = node;
+                        node.children.push(cnode);
                         DependencyTree.Util.runMatchers(viewer, newDeferreds, cnode, cjsonObj, prop);
                     }
                 }
@@ -62,16 +126,31 @@ DependencyTree.Util = {
         callback(viewer);
         $(".boxy-wrapper").css("z-index", "9999999");
     },
-    createEditIndicator: function (viewer, node, callback) {
-        var ind = new DependencyTree.Indicator();
-        ind.icon = 'fa fa-pencil';
-        ind.color = "green";
-        ind.label = get_advtool_msg("dependency.tree.Edit.Properties");
-        ind.callback = function() {
-            DependencyTree.Util.hideAndCall(viewer, callback);
-        };
+    addIndicator: function (viewer, node, icon, label, color, callback) {
+        if (color === undefined) {
+            color = "";
+        }
+        if (callback === undefined) {
+            callback = null;
+        }
         
-        node.addIndicator(ind);
+        if ($.type(callback) === "function") {
+            var callbacks = viewer.callbacks;
+            callbacks.push(callback);
+            callback = callbacks.length - 1;
+        }
+            
+        node.data["indicators"].push({
+            icon : icon,
+            color : color,
+            label : label,
+            callback : callback
+        });
+    },
+    createEditIndicator: function (viewer, node, callback) {
+        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-pencil', get_advtool_msg("dependency.tree.Edit.Properties"), "green", function() {
+            DependencyTree.Util.hideAndCall(viewer, callback);
+        });
     },
     getValueFromObject: function (obj, name) {
         try {
@@ -121,7 +200,7 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['className'] !== undefined) {
             if (refObj !== undefined && refObj['label'] !== undefined && refObj['label'] !== "") {
-                node.label = refObj['label'] + ' :';
+                node.text = refObj['label'] + ' : ';
             }
             
             if (refObj === undefined || (refObj !== undefined && refObj['url'] !== undefined && refObj['url'].indexOf("getPropertyOptions") !== -1)) {
@@ -131,19 +210,19 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
 
                     node.data['className'] = pluginClassName;
                     if (viewer.pluginList[pluginClassName] !== undefined) {
-                        node.value = viewer.pluginList[pluginClassName];
+                        node.data['value'] = viewer.pluginList[pluginClassName];
                         return true;
                     } else {
-                        node.value = pluginClassName;
+                        node.data['value'] = pluginClassName;
 
-                        var plugin = new DependencyTree.Indicator();
-                        plugin.icon = 'fa fa-plug';
-                        plugin.color = "red";
-                        plugin.label = get_advtool_msg("dependency.tree.Missing.Plugin");
-                        node.addIndicator(plugin);
+                        if (node.data["indicators"] === undefined) {
+                            node.data["indicators"] = [];
+                        }
+                        
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
                     }
                 } else {
-                    node.label = "<span class=\"gray\">" + node.label + "</span>";
+                    node.a_attr['class'] += " gray";
                 }
             } else if (refObj !== undefined && refObj['url'] !== undefined && refObj['url'].indexOf("getPropertyOptions") === -1) {
                 node.data['isElementSelect'] = true;
@@ -152,8 +231,8 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
                 //process label by reusing option matchers
                 DependencyTree.Matchers['string']['matchers']['options'].match(viewer, deferreds, node, value, refObj);
                 
-                if (node.value === undefined || node.value === "") {
-                    node.label = "<span class=\"gray\">" + node.label + "</span>";
+                if (node.data['value'] === undefined || node.data['value'] === "") {
+                    node.a_attr['class'] += " gray";
                 }
                 
                 return true;
@@ -172,10 +251,12 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
                     if (node.data['className'] === "org.joget.apps.form.model.Form" 
                             || node.data['className'] === "org.joget.apps.form.model.Section" 
                             || node.data['className'] === "org.joget.apps.form.model.Column") {
-                        pnode = new DependencyTree.Node();
-                        pnode.label = '<i>' + get_advtool_msg("dependency.tree.Properties") + '</i>';
+                        pnode = $.extend(true, {}, DependencyTree.Node);
+                        pnode.text = get_advtool_msg("dependency.tree.Properties");
+                        pnode.a_attr['class'] += " properties";
                         pnode.type = 'properties';
-                        node.addChild(pnode);
+                        pnode.data['parent'] = node;
+                        node.children.push(pnode);
                     }
                     
                     pnode.data['properties'] = jsonObj['properties'];
@@ -199,10 +280,10 @@ DependencyTree.Matchers['formContainer'] = {
         if (jsonObj['elements'] !== undefined && jsonObj['elements'].length > 0) {
             node.data['isFormContainer'] = true;
             //clear indicators added previously
-            node.indicators = [];
+            node.data['indicators'] = [];
             
             var parentElement;
-            if (node.parent === undefined) {
+            if (node.data['parent'] === undefined) {
                 parentElement = $("form.form-container");
                 node.data["element"] = $("form.form-container");
             } else {
@@ -213,14 +294,15 @@ DependencyTree.Matchers['formContainer'] = {
             for (var j in jsonObj['elements']) {
                 open = true;
                 var c = jsonObj['elements'][j];
-                var cnode = new DependencyTree.Node();
+                var cnode = $.extend(true, {}, DependencyTree.Node);
                 cnode.data['isFormElement'] = true;
                 cnode.data["element"] = $(parentElement).find("> [element-class]:eq("+j+")");
-                node.addChild(cnode);
+                cnode.data['parent'] = node;
+                node.children.push(cnode);
                 DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
             }
             
-            node.opened = open;
+            node.state = {opened : open};
             
             return true;
         }
@@ -253,10 +335,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomLoadBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['loadBinder'] !== undefined && jsonObj['properties']['loadBinder']['className'] !== "" && jsonObj['properties']['loadBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-upload';
-                    ind.label = get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -264,10 +343,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomStoreBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['storeBinder'] !== undefined && jsonObj['properties']['storeBinder']['className'] !== "" && jsonObj['properties']['storeBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-download';
-                    ind.label = get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -275,10 +351,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasOptionsBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['optionsBinder'] !== undefined && jsonObj['properties']['optionsBinder']['className'] !== "") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-upload';
-                    ind.label = get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -286,10 +359,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasPostProcessor' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['postProcessor'] !== undefined && jsonObj['properties']['postProcessor']['className'] !== "" && jsonObj['properties']['postProcessor']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-share';
-                    ind.label = get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']] + ')');
                 }
                 return false;
             }
@@ -297,20 +367,14 @@ DependencyTree.Matchers['formElement'] = {
         'hasSectionVisibilityControl' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (node.data['isFormContainer'] && jsonObj['properties']['visibilityControl'] !== undefined && jsonObj['properties']['visibilityControl'] !== "") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-eye';
-                    ind.label = get_advtool_msg("dependency.tree.Visibility.Control") + ' (' + jsonObj['properties']['visibilityControl'] + ' : ' + jsonObj['properties']['visibilityValue'] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-eye', get_advtool_msg("dependency.tree.Visibility.Control") + ' (' + jsonObj['properties']['visibilityControl'] + ' : ' + jsonObj['properties']['visibilityValue'] + ')');
                 }
             }
         },
         'hasValidator' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['validator'] !== undefined && jsonObj['properties']['validator']['className'] !== "") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-asterisk';
-                    ind.label = get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']] + ')';
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']] + ')');
                 }
                 return false;
             }
@@ -320,19 +384,21 @@ DependencyTree.Matchers['formElement'] = {
 DependencyTree.Matchers['userview'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['className'] !== undefined && jsonObj['className'] === "org.joget.apps.userview.model.Userview") {
-            node.value = get_advtool_msg("dependency.tree.Userview");
-            node.indicators = [];
+            node.data['value'] = get_advtool_msg("dependency.tree.Userview");
+            node.data['indicators'] = [];
             
             //properties
             var getProperties = $.Deferred();
             deferreds.push(getProperties);
 
-            var pnode = new DependencyTree.Node();
-            pnode.label = '<i>' + get_advtool_msg("dependency.tree.Properties") + '</i>';
+            var pnode = $.extend(true, {}, DependencyTree.Node);
+            pnode.text = get_advtool_msg("dependency.tree.Properties");
             pnode.data['properties'] = jsonObj['properties'];
-            pnode.opened = false;
+            pnode.a_attr['class'] += " properties";
+            pnode.state = {opened : false};
             pnode.type = 'properties';
-            node.addChild(pnode);
+            pnode.data['parent'] = node;
+            node.children.push(pnode);
             
             var properties = [{
                 properties : [
@@ -365,12 +431,13 @@ DependencyTree.Matchers['userview'] = {
             for (var j in jsonObj['categories']) {
                 open = true;
                 var c = jsonObj['categories'][j];
-                var cnode = new DependencyTree.Node();
+                var cnode = $.extend(true, {}, DependencyTree.Node);
                 cnode.data['isUserviewCategory'] = true;
-                node.addChild(cnode);
+                cnode.data['parent'] = node;
+                node.children.push(cnode);
                 DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
             }
-            node.opened = open;
+            node.state = {opened : open};
             
             return true;
         }
@@ -380,19 +447,21 @@ DependencyTree.Matchers['userview'] = {
 DependencyTree.Matchers['userviewCategory'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['className'] !== undefined && jsonObj['className'] === "org.joget.apps.userview.model.UserviewCategory") {
-            node.value = get_advtool_msg("dependency.tree.Category");
-            node.indicators = [];
+            node.data['value'] = get_advtool_msg("dependency.tree.Category");
+            node.data['indicators'] = [];
             
             //properties
             var getProperties = $.Deferred();
             deferreds.push(getProperties);
 
-            var pnode = new DependencyTree.Node();
-            pnode.label = '<i>' + get_advtool_msg("dependency.tree.Properties") + '</i>';
+            var pnode = $.extend(true, {}, DependencyTree.Node);
+            pnode.text = get_advtool_msg("dependency.tree.Properties");
             pnode.data['properties'] = jsonObj['properties'];
-            pnode.opened = false;
+            pnode.a_attr['class'] += " properties";
+            pnode.state = {opened : false};
             pnode.type = 'properties';
-            node.addChild(pnode);
+            pnode.data['parent'] = node;
+            node.children.push(pnode);
             DependencyTree.Util.createEditIndicator(viewer, node, function(){
                 UserviewBuilder.setPermission(jsonObj['properties']['id']);
             });
@@ -411,14 +480,15 @@ DependencyTree.Matchers['userviewCategory'] = {
             for (var j in jsonObj['menus']) {
                 open = true;
                 var c = jsonObj['menus'][j];
-                var cnode = new DependencyTree.Node();
+                var cnode = $.extend(true, {}, DependencyTree.Node);
                 cnode.data['isUserviewMenu'] = true;
-                node.addChild(cnode);
+                cnode.data['parent'] = node;
+                node.children.push(cnode);
                 DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
                 
                 editMenu(viewer, cnode, c['properties']["id"]);
             }
-            node.opened = open;
+            node.state = {opened : open};
             
             return true;
         }
@@ -428,10 +498,7 @@ DependencyTree.Matchers['userviewCategory'] = {
         'hidden' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties'] !== undefined && jsonObj['properties']['hide'] === "yes") {
-                    var ind = new DependencyTree.Indicator();
-                    ind.icon = 'fa fa-eye-slash';
-                    ind.label = get_advtool_msg("dependency.tree.Hidden");
-                    node.addIndicator(ind);
+                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-eye-slash', get_advtool_msg("dependency.tree.Hidden"));
                 }
                 return false;
             }
@@ -441,20 +508,22 @@ DependencyTree.Matchers['userviewCategory'] = {
 DependencyTree.Matchers['datalist'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['columns'] !== undefined && jsonObj['binder'] !== undefined) {
-            node.value = get_advtool_msg("dependency.tree.Datalist");
-            node.indicators = [];
-            node.opened = true;
+            node.data['value'] = get_advtool_msg("dependency.tree.Datalist");
+            node.data['indicators'] = [];
+            node.state = {opened : true};
             
             //properties
             var getProperties = $.Deferred();
             deferreds.push(getProperties);
 
-            var pnode = new DependencyTree.Node();
-            pnode.label = '<i>' + get_advtool_msg("dependency.tree.Properties") + '</i>';
+            var pnode = $.extend(true, {}, DependencyTree.Node);
+            pnode.text = get_advtool_msg("dependency.tree.Properties");
             pnode.data['properties'] = jsonObj['properties'];
-            pnode.opened = false;
+            pnode.state = {opened : false};
             pnode.type = 'properties';
-            node.addChild(pnode);
+            pnode.a_attr['class'] += " properties";
+            pnode.data['parent'] = node;
+            node.children.push(pnode);
             DependencyTree.Util.createEditIndicator(viewer, node, function() {
                 DatalistBuilder.showPopUpDatalistProperties();
             });
@@ -464,9 +533,10 @@ DependencyTree.Matchers['datalist'] = {
             DependencyTree.Util.pluginPropertiesWalker(viewer, pnode, node, {"properties" : jsonObj}, getProperties, properties);
             
             //Binder
-            var bnode = new DependencyTree.Node();
-            bnode.label = get_advtool_msg("dependency.tree.Binder");
-            node.addChild(bnode);
+            var bnode = $.extend(true, {}, DependencyTree.Node);
+            bnode.text = get_advtool_msg("dependency.tree.Binder");
+            bnode.data['parent'] = node;
+            node.children.push(bnode);
             DependencyTree.Util.runMatchers(viewer, deferreds, bnode, jsonObj['binder']);
             
             DependencyTree.Util.createEditIndicator(viewer, bnode, function() {
@@ -475,11 +545,13 @@ DependencyTree.Matchers['datalist'] = {
             
             //Columns
             if (jsonObj['columns'] !== undefined && jsonObj['columns'].length > 0) {
-                var pnode = new DependencyTree.Node();
-                pnode.label = '<i>' + get_advtool_msg("dependency.tree.Columns") + '</i>';
-                pnode.opened = true;
+                var pnode = $.extend(true, {}, DependencyTree.Node);
+                pnode.text = get_advtool_msg("dependency.tree.Columns");
+                pnode.state = {opened : true};
                 pnode.type = 'childs';
-                node.addChild(pnode);
+                pnode.a_attr['class'] += " properties";
+                pnode.data['parent'] = node;
+                node.children.push(pnode);
                 
                 var showColumn = function(viewer, node, id) {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
@@ -489,24 +561,19 @@ DependencyTree.Matchers['datalist'] = {
 
                 for (var j in jsonObj['columns']) {
                     var c = jsonObj['columns'][j];
-                    var cnode = new DependencyTree.Node();
+                    var cnode = $.extend(true, {}, DependencyTree.Node);
                     cnode.data['isDatalistElement'] = true;
                     cnode.data['isDatalistColumn'] = true;
-                    cnode.value = get_advtool_msg("dependency.tree.Column");
-                    pnode.addChild(cnode);
+                    cnode.data['value'] = get_advtool_msg("dependency.tree.Column");
+                    cnode.data['parent'] = pnode;
+                    pnode.children.push(cnode);
                     
                     if (c["action"] !== undefined && c["action"]["className"] !== undefined && c["action"]["className"] !== "") {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-link';
-                        ind.label = get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]] + ')';
-                        cnode.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]] + ')');
                     }
                     
                     if (c["format"] !== undefined && c["format"]["className"] !== undefined && c["format"]["className"] !== "") {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-text-height';
-                        ind.label = get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]] + ')';
-                        cnode.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]] + ')');
                     }
 
                     //properties
@@ -524,11 +591,13 @@ DependencyTree.Matchers['datalist'] = {
             
             //Filters
             if (jsonObj['filters'] !== undefined && jsonObj['filters'].length > 0) {
-                var pnode = new DependencyTree.Node();
-                pnode.label = '<i>' + get_advtool_msg("dependency.tree.Filters") + '</i>';
-                pnode.opened = true;
+                var pnode = $.extend(true, {}, DependencyTree.Node);
+                pnode.text = get_advtool_msg("dependency.tree.Filters");
+                pnode.state = {opened : true};
                 pnode.type = 'childs';
-                node.addChild(pnode);
+                pnode.a_attr['class'] += " properties";
+                pnode.data['parent'] = node;
+                node.children.push(pnode);
                 
                 var showFilter = function(viewer, node, id) {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
@@ -538,11 +607,12 @@ DependencyTree.Matchers['datalist'] = {
 
                 for (var j in jsonObj['filters']) {
                     var c = jsonObj['filters'][j];
-                    var cnode = new DependencyTree.Node();
+                    var cnode = $.extend(true, {}, DependencyTree.Node);
                     cnode.data['isDatalistElement'] = true;
                     cnode.data['isDatalistFilter'] = true;
-                    cnode.value = get_advtool_msg("dependency.tree.Filter");
-                    pnode.addChild(cnode);
+                    cnode.data['value'] = get_advtool_msg("dependency.tree.Filter");
+                    cnode.data['parent'] = pnode;
+                    pnode.children.push(cnode);
 
                     //properties
                     var getProperties = $.Deferred();
@@ -559,11 +629,13 @@ DependencyTree.Matchers['datalist'] = {
             
             //Row Actions
             if (jsonObj['rowActions'] !== undefined && jsonObj['rowActions'].length > 0) {
-                var pnode = new DependencyTree.Node();
-                pnode.label = '<i>' + get_advtool_msg("dependency.tree.Row.Actions") + '</i>';
-                pnode.opened = true;
+                var pnode = $.extend(true, {}, DependencyTree.Node);
+                pnode.text = get_advtool_msg("dependency.tree.Row.Actions");
+                pnode.state = {opened : true};
                 pnode.type = 'childs';
-                node.addChild(pnode);
+                pnode.a_attr['class'] += " properties";
+                pnode.data['parent'] = node;
+                node.children.push(pnode);
                 
                 var showRowAction = function(viewer, node, id) {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
@@ -573,29 +645,22 @@ DependencyTree.Matchers['datalist'] = {
 
                 for (var j in jsonObj['rowActions']) {
                     var c = jsonObj['rowActions'][j];
-                    var cnode = new DependencyTree.Node();
+                    var cnode = $.extend(true, {}, DependencyTree.Node);
                     cnode.data['isDatalistElement'] = true;
                     cnode.data['isDatalistFilter'] = true;
-                    pnode.addChild(cnode);
+                    cnode.data['parent'] = pnode;
+                    pnode.children.push(cnode);
                     
                     var pluginClassName = c['className'];
                     if (viewer.pluginList[pluginClassName] !== undefined) {
-                        cnode.value = viewer.pluginList[pluginClassName];
+                        cnode.data['value'] = viewer.pluginList[pluginClassName];
                     } else {
-                        cnode.value = pluginClassName;
-
-                        var plugin = new DependencyTree.Indicator();
-                        plugin.icon = 'fa fa-plug';
-                        plugin.color = "red";
-                        plugin.label = get_advtool_msg("dependency.tree.Missing.Plugin");
-                        cnode.addIndicator(plugin);
+                        cnode.data['value'] = pluginClassName;
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
                     }
                     
                     if (c["properties"] !== undefined && c["properties"]["rules"] !== undefined && c["properties"]["rules"].length > 0) {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-eye';
-                        ind.label = get_advtool_msg("dependency.tree.Visibility.Control");
-                        cnode.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-eye', get_advtool_msg("dependency.tree.Visibility.Control"));
                     }
 
                     //properties
@@ -613,11 +678,13 @@ DependencyTree.Matchers['datalist'] = {
             
             //Actions
             if (jsonObj['actions'] !== undefined && jsonObj['actions'].length > 0) {
-                var pnode = new DependencyTree.Node();
-                pnode.label = '<i>' + get_advtool_msg("dependency.tree.Actions") + '</i>';
-                pnode.opened = true;
+                var pnode = $.extend(true, {}, DependencyTree.Node);
+                pnode.text = get_advtool_msg("dependency.tree.Actions");
+                pnode.state = {opened : true};
                 pnode.type = 'childs';
-                node.addChild(pnode);
+                pnode.a_attr['class'] += " properties";
+                pnode.data['parent'] = node;
+                node.children.push(pnode);
 
                 var showAction = function(viewer, node, id) {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
@@ -627,10 +694,11 @@ DependencyTree.Matchers['datalist'] = {
                 
                 for (var j in jsonObj['actions']) {
                     var c = jsonObj['actions'][j];
-                    var cnode = new DependencyTree.Node();
+                    var cnode = $.extend(true, {}, DependencyTree.Node);
                     cnode.data['isDatalistElement'] = true;
                     cnode.data['isDatalistAction'] = true;
-                    pnode.addChild(cnode);
+                    cnode.data['parent'] = pnode;
+                    pnode.children.push(cnode);
                     DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
                     
                     showAction(viewer, cnode, c["id"]);
@@ -645,10 +713,7 @@ DependencyTree.Matchers['datalist'] = {
 DependencyTree.Matchers['hasPermission'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['permission'] !== undefined && jsonObj['properties']['permission']['className'] !== "") {
-            var ind = new DependencyTree.Indicator();
-            ind.icon = 'fa fa-lock';
-            ind.label = get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']] + ')';
-            node.addIndicator(ind);
+            DependencyTree.Util.addIndicator(viewer, node, 'fa fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']] + ')');
         }
         return false;
     }
@@ -656,10 +721,7 @@ DependencyTree.Matchers['hasPermission'] = {
 DependencyTree.Matchers['userviewCache'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== "") {
-            var ind = new DependencyTree.Indicator();
-            ind.icon = 'fa fa-flash';
-            ind.label = get_advtool_msg("dependency.tree.UserviewCache");
-            node.addIndicator(ind);
+            DependencyTree.Util.addIndicator(viewer, node, 'fa fa-flash', get_advtool_msg("dependency.tree.UserviewCache"));
         }
         return false;
     }
@@ -670,15 +732,18 @@ DependencyTree.Matchers['grid'] = {
             var hasRow = false;
             for (var i in jsonObj) {
                 hasRow = true;
-                var rnode = new DependencyTree.Node();
-                rnode.label = '<i>' + get_advtool_msg("dependency.tree.Row") + ' ' + i + '</i>';
-                rnode.opened = false;
+                var rnode = $.extend(true, {}, DependencyTree.Node);
+                rnode.text = get_advtool_msg("dependency.tree.Row") + ' ' + i ;
+                rnode.state = {opened : false};
                 rnode.type = 'row';
-                node.addChild(rnode);
+                rnode.a_attr['class'] += " properties";
+                rnode.data['parent'] = node;
+                node.children.push(rnode);
                 
                 for (var j in jsonObj[i]) {
-                    var cnode = new DependencyTree.Node();
-                    rnode.addChild(cnode);
+                    var cnode = $.extend(true, {}, DependencyTree.Node);
+                    cnode.data['parent'] = rnode;
+                    rnode.children.push(cnode);
                     
                     var ref;
                     for (var k in refObj['columns']) {
@@ -693,9 +758,10 @@ DependencyTree.Matchers['grid'] = {
             
             if (refObj !== undefined && refObj['label'] !== undefined && refObj['label'] !== "") {
                 if (hasRow) {
-                    node.label = refObj['label'] + ":" + ' <i>'+get_advtool_msg("dependency.tree.Grid.Data")+'</i>';
+                    node.text = refObj['label'] + " : " + ' <i>'+get_advtool_msg("dependency.tree.Grid.Data")+'</i>';
                 } else {
-                    node.label = "<span class=\"gray\">" + refObj['label'] + ":" + "</span>";
+                    node.text = refObj['label'];
+                    node.a_attr['class'] += " gray";
                 }
             }
             
@@ -711,7 +777,7 @@ DependencyTree.Matchers['gribcombine'] = {
             var values = new Array();
             $.each(refObj['columns'], function(i, column) {
                 
-                var temp = node.parent.data["properties"][column.key];
+                var temp = node.data['parent'].data["properties"][column.key];
                 if (temp !== undefined) {
                     var temp_arr = temp.split(";");
 
@@ -727,15 +793,18 @@ DependencyTree.Matchers['gribcombine'] = {
             //render value
             if (values.length > 0) {
                 $.each(values, function(i, row) {
-                    var rnode = new DependencyTree.Node();
-                    rnode.label = '<i>' + get_advtool_msg("dependency.tree.Row") + ' ' + i + '</i>';
-                    rnode.opened = false;
+                    var rnode = $.extend(true, {}, DependencyTree.Node);
+                    rnode.text = get_advtool_msg("dependency.tree.Row") + ' ' + i;
+                    rnode.state = {opened : false};
                     rnode.type = 'row';
-                    node.addChild(rnode);
+                    rnode.a_attr['class'] += " properties";
+                    rnode.data['parent'] = node;
+                    node.children.push(rnode);
                 
                     $.each(refObj['columns'], function(i, column) {
-                        var cnode = new DependencyTree.Node();
-                        rnode.addChild(cnode);
+                        var cnode = $.extend(true, {}, DependencyTree.Node);
+                        cnode.data['parent'] = rnode;
+                        rnode.children.push(cnode);
                         
                         var columnValue = "";
                         if (row[column.key] !== undefined) {
@@ -752,11 +821,11 @@ DependencyTree.Matchers['gribcombine'] = {
 };
 DependencyTree.Matchers['string'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
-        if (node.value === undefined && $.type(jsonObj) === "string") {
+        if (node.data['value'] === undefined && $.type(jsonObj) === "string") {
             if (refObj !== undefined && refObj['label'] !== undefined && refObj['label'] !== "") {
-                node.label = refObj['label'] + ":";
+                node.text = refObj['label'] + " : ";
             }
-            node.value = jsonObj;
+            node.data['value'] = jsonObj;
             return true;
         }
         return false;
@@ -764,22 +833,22 @@ DependencyTree.Matchers['string'] = {
     matchers : {
         'longText' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
-                if (node.value.length > 50) {
-                    node.value = node.value.substring(0, 50) + "...";
+                if (node.data['value'].length > 50) {
+                    node.data['value'] = node.data['value'].substring(0, 50) + "...";
                 }
                 return false;
             }
         },
         'removeHtml' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
-                node.value = UI.escapeHTML(node.value);
+                node.data['value'] = UI.escapeHTML(node.data['value']);
                 return false;
             }
         },
         'secret' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (refObj !== undefined && refObj['type'] !== undefined && refObj['type'].toLowerCase() === "password") {
-                    node.value = "********";
+                    node.data['value'] = "********";
                 }
                 return false;
             }
@@ -788,10 +857,11 @@ DependencyTree.Matchers['string'] = {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (refObj !== undefined && refObj['type'] !== undefined && refObj['type'].toLowerCase() === "gridcombine") {
                     if (refObj !== undefined && refObj['label'] !== undefined && refObj['label'] !== "") {
-                        if (node.childs.length > 0) {
-                            node.label = refObj['label'] + ":" + ' <i>'+get_advtool_msg("dependency.tree.Grid.Data")+'</i>';
+                        if (node.children.length > 0) {
+                            node.text = refObj['label'] + ":" + ' <i>'+get_advtool_msg("dependency.tree.Grid.Data")+'</i>';
                         } else {
-                            node.label = "<span class=\"gray\">" + refObj['label'] + ":" + "</span>";
+                            node.text = refObj['label'] + ":";
+                            node.a_attr['class'] += " gray";
                         }
                     }
                 }
@@ -804,19 +874,10 @@ DependencyTree.Matchers['string'] = {
                         (refObj['options_ajax'] !== undefined && refObj['options_ajax'].toLowerCase().indexOf("/forms/options") !== -1 ))) {
                     
                     if (viewer.formList[jsonObj] !== undefined) {
-                        node.value = viewer.formList[jsonObj];
-                                
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-file-text-o';
-                        ind.label = get_advtool_msg("dependency.tree.Form") + ' (' + viewer.formList[jsonObj] + ')';
-                        ind.link = viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/form/builder/' + jsonObj;
-                        node.addIndicator(ind);
+                        node.data['value'] = viewer.formList[jsonObj];
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-file-text-o', get_advtool_msg("dependency.tree.Form") + ' (' + viewer.formList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/form/builder/' + jsonObj);
                     } else {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-file-text-o';
-                        ind.color = "red";
-                        ind.label = get_advtool_msg("dependency.tree.Missing.Form");
-                        node.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-file-text-o', get_advtool_msg("dependency.tree.Missing.Form"), "red");
                     }
                 }
                 return false;
@@ -829,19 +890,10 @@ DependencyTree.Matchers['string'] = {
                         (refObj['options_ajax'] !== undefined && refObj['options_ajax'].toLowerCase().indexOf("/datalist/options") !== -1 ))) {
                     
                     if (viewer.datalistList[jsonObj] !== undefined) {
-                        node.value = viewer.datalistList[jsonObj];
-                                
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-table';
-                        ind.label = get_advtool_msg("dependency.tree.Datalist") + ' (' + viewer.datalistList[jsonObj] + ')';
-                        ind.link = viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/datalist/builder/' + jsonObj;
-                        node.addIndicator(ind);
+                        node.data['value'] = viewer.datalistList[jsonObj];
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-table', get_advtool_msg("dependency.tree.Datalist") + ' (' + viewer.datalistList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/datalist/builder/' + jsonObj);
                     } else {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-table';
-                        ind.color = "red";
-                        ind.label = get_advtool_msg("dependency.tree.Missing.Datalist");
-                        node.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-table', get_advtool_msg("dependency.tree.Missing.Datalist"), "red");
                     }
                 }
                 return false;
@@ -854,19 +906,10 @@ DependencyTree.Matchers['string'] = {
                         (refObj['options_ajax'] !== undefined && refObj['options_ajax'].toLowerCase().indexOf("/userview/options") !== -1 ))) {
                     
                     if (viewer.userviewList[jsonObj] !== undefined) {
-                        node.value = viewer.userviewList[jsonObj];
-                                
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-tv';
-                        ind.label = get_advtool_msg("dependency.tree.Userview") + ' (' + viewer.userviewList[jsonObj] + ')';
-                        ind.link = viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/userview/builder/' + jsonObj;
-                        node.addIndicator(ind);
+                        node.data['value'] = viewer.userviewList[jsonObj];
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-tv', get_advtool_msg("dependency.tree.Userview") + ' (' + viewer.userviewList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/userview/builder/' + jsonObj);
                     } else {
-                        var ind = new DependencyTree.Indicator();
-                        ind.icon = 'fa fa-tv';
-                        ind.color = "red";
-                        ind.label = get_advtool_msg("dependency.tree.Missing.Userview");
-                        node.addIndicator(ind);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-tv', get_advtool_msg("dependency.tree.Missing.Userview"), "red");
                     }
                 }
                 return false;
@@ -877,16 +920,16 @@ DependencyTree.Matchers['string'] = {
                 if (refObj !== undefined 
                         && ((refObj['options_ajax'] !== undefined && refObj['options_ajax'] !== "") 
                         || (refObj['options'] !== undefined && $.type(refObj['options']) === "array"))
-                            && node.indicators.length === 0 
+                            && node.data['indicators'].length === 0 
                             && (refObj['url'] === undefined || refObj['url'].indexOf("getPropertyOptions") === -1)) {
                         
                     if (refObj['options'] !== undefined && $.type(refObj['options']) === "array") {  
                         for (var i in refObj['options']) {
                             if (refObj['options'][i].value === jsonObj) {
                                 if (refObj['options'].length === 1 && refObj['options'][i].label === "" && refObj['type'].toLowerCase() === "checkbox") {
-                                    node.value = get_advtool_msg("dependency.tree.True");
+                                    node.data['value'] = get_advtool_msg("dependency.tree.True");
                                 } else {
-                                    node.value = refObj['options'][i].label;
+                                    node.data['value'] = refObj['options'][i].label;
                                 }
                             }
                         }
@@ -909,11 +952,11 @@ DependencyTree.Matchers['string'] = {
                                     fieldId = fieldId.substring(0, fieldId.indexOf("."));
                                 }
                                 
-                                var parent = node.parent;
+                                var parent = node.data['parent'];
                                 var properties = parent.data["properties"];
                                 
-                                while (properties === undefined && parent.parent !== undefined) {
-                                    parent = parent.parent;
+                                while (properties === undefined && parent.data['parent'] !== undefined) {
+                                    parent = parent.data['parent'];
                                     properties = parent.data["properties"];
                                 }
                                 
@@ -957,7 +1000,7 @@ DependencyTree.Matchers['string'] = {
                             method : method,
                             data : data,
                             success: function(response) {
-                                node.value = DependencyTree.Util.getValue(response, refObj, jsonObj);
+                                node.data['value'] = DependencyTree.Util.getValue(response, refObj, jsonObj);
                                 o.resolve();
                             },
                             error: function() {
@@ -971,110 +1014,14 @@ DependencyTree.Matchers['string'] = {
         },
         'empty' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
-                if (node.value === undefined || node.value === "") {
-                    node.label = "<span class=\"gray\">" + node.label + "</span>";
+                if (node.data['value'] === undefined || node.data['value'] === "") {
+                    node.a_attr['class'] += " gray";
                 }
                 return false;
             }
-        },
+        }
     }
 };
-
-DependencyTree.Node = function() {
-    this.label;
-    this.value;
-    this.opened = false;
-    this.type = 'default';
-    this.indicators = [];
-    this.parent;
-    this.childs = [];
-    this.data = {};
-};
-DependencyTree.Node.prototype = {
-    render : function(viewer, container) {
-        var node = this;
-        var li = $('<li><label></label></li>');
-        if (node.label  !== undefined && node.label !== "") {
-            $(li).find("label").append("<span>"+node.label+" </span>");
-        }
-        if (node.value  !== undefined && node.value !== "") {
-            $(li).find("label").append("<span><strong>"+node.value+"</strong></span>");
-        }
-        
-        $(li).data("jstree", {
-           opened : node.opened,
-           type : node.type,
-           li_attr : {
-               'data-type' : node.type
-           }
-        });
-        $(container).append(li);
-        
-        if (node.indicators.length > 0) {
-            var indicators = $('<span class="indicators">');
-            $(li).find("label").after(indicators);
-            
-            for (var i in node.indicators) {
-                node.indicators[i].render(viewer, indicators);
-            }
-        }
-        
-        if (node.childs.length > 0) {
-            var childs = $('<ul>');
-            $(li).append(childs);
-            
-            for (var i in node.childs) {
-                node.childs[i].render(viewer, childs);
-            }
-        }
-    },
-    addChild : function (node) {
-        node.parent = this;
-        this.childs.push(node);
-    },
-    addIndicator : function (indicator) {
-        indicator.node = this;
-        this.indicators.push(indicator);
-    }
-};
-
-DependencyTree.Indicator = function() {
-    this.node;
-    this.icon;
-    this.color;
-    this.label;
-    this.link;
-    this.callback;
-};
-DependencyTree.Indicator.prototype = {
-    render : function(viewer, container) {
-        var a = $('<a class="indicator">');
-        
-        if (this.link !== undefined && this.link !== "") {
-            $(a).attr("href", this.link);
-            $(a).attr("target", "_blank");
-        }
-        
-        if (this.callback !== undefined && $.type(this.callback) === "function") {
-            var callbacks = viewer.callbacks;
-            callbacks.push(this.callback);
-            $(a).attr("data-callback", callbacks.length - 1);
-        }
-        
-        if (this.color !== undefined && this.color !== "") {
-            $(a).addClass("indicator-"+this.color);
-        }
-        
-        $(a).append('<span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="'+this.icon+' fa-stack-1x fa-inverse"></i></span>');
-        if (this.label !== undefined && this.label !== "") {
-            $(a).attr("title", this.label);
-            $(a).attr('aria-label', this.label);
-        }
-        
-        $(container).append(a);
-    }
-};
-
 DependencyTree.Viewer = function(element, dataSelector, options) {
     this.element = element;
     this.dataSelector = dataSelector;
@@ -1279,6 +1226,28 @@ DependencyTree.Viewer.prototype = {
             $(".dt-buttons #dt-save i").remove();
         }
     },
+    redraw: function() {
+        var viewer = this;
+        
+        if ($(viewer.element).find(".dt-loading").length === 0) {
+            $(viewer.element).prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+        }
+        viewer.callbacks = [];
+        
+        var data = $(viewer.dataSelector).val();
+        var jsonObj = JSON.parse(data);
+        
+        var deferreds = [];
+        var tree = $.extend(true, {}, DependencyTree.Node);
+        DependencyTree.Util.runMatchers(this, deferreds, tree, jsonObj);
+        $.when.apply($, deferreds).then(function(){
+            DependencyTree.Util.cleanData(tree);
+            $('#dependencyTreeViewer').jstree(true).settings.core.data = tree;
+            $('#dependencyTreeViewer').jstree(true).refresh();
+            
+            $(viewer.element).find(".dt-loading").remove();
+        });
+    },
     render: function() {
         var viewer = this;
         
@@ -1301,14 +1270,13 @@ DependencyTree.Viewer.prototype = {
         var jsonObj = JSON.parse(data);
         
         var deferreds = [];
-        var tree = new DependencyTree.Node();
+        var tree = $.extend(true, {}, DependencyTree.Node);
         DependencyTree.Util.runMatchers(this, deferreds, tree, jsonObj);
         
         $.when.apply($, deferreds).then(function(){
+            DependencyTree.Util.cleanData(tree);
             $("#dependencyTreeViewer").jstree('destroy');
             $("#dependencyTreeViewer").html("");
-            $("#dependencyTreeViewer").append('<ul>');
-            tree.render(viewer, $("#dependencyTreeViewer ul"));
             
             $('#dependencyTreeViewer').jstree({
                 "types" : {
@@ -1325,20 +1293,10 @@ DependencyTree.Viewer.prototype = {
                         "icon" : "fa fa-newspaper-o"
                     }
                 },
-                "plugins": ["types"]
-            });
-            
-            //move indicator outside of a
-            $("#dependencyTreeViewer .indicators").each(function(){
-                var parent = $(this).closest("a");
-                $(parent).after(this);
-            });
-            
-            $('#dependencyTreeViewer').on('after_open.jstree', function (e, data) {
-                $(".jstree-anchor > .indicators").each(function(){
-                    var parent = $(this).closest("a");
-                    $(parent).after(this);
-                });
+                "plugins": ["types", "joget"],
+                'core' : {
+                    'data' : tree
+                }
             });
             
             $("#dependencyTreeContainer").on("click", ".indicator", function(){
