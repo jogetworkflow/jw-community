@@ -226,6 +226,10 @@ public class Package extends XMLComplexElement {
         return equals;
     }
 
+    public int hashCode() {
+        return super.hashCode();
+    }
+    
     protected boolean isMainElement() {
         return true;
     }

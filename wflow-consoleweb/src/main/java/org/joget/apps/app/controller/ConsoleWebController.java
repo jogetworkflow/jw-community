@@ -1670,7 +1670,7 @@ public class ConsoleWebController {
                 throw new RuntimeException("Package XPDL is empty");
             }
             appService.deployWorkflowPackage(appId, version, packageXpdl.getBytes(), false);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             map.addAttribute("errorMessage", e.getMessage());
             return "console/apps/packageUpload";
         }

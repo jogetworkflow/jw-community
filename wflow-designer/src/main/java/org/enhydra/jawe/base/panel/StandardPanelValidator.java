@@ -482,7 +482,7 @@ public class StandardPanelValidator implements PanelValidator {
             }
             m = this.getClass().getMethod("validatePanel", new Class[]{cl, XMLPanel.class});
             return ((Boolean) m.invoke(this, new Object[]{el, panel})).booleanValue();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

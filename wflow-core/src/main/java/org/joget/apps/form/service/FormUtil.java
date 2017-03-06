@@ -1964,7 +1964,7 @@ public class FormUtil implements ApplicationContextAware {
                             if (request != null) {
                                 propertiesMap.put("request", request);
                             }
-                        } catch (Throwable e) {
+                        } catch (Exception e) {
                             // ignore if class is not found
                         }
                         

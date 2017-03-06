@@ -1043,8 +1043,9 @@ public class PluginManager implements ApplicationContextAware {
      * Method used by Felix Framework to shutdown the plugin manager
      */
     @Override
-    public void finalize() {
+    protected void finalize() throws Throwable {
         shutdown();
+        super.finalize();
     }
 
     /**

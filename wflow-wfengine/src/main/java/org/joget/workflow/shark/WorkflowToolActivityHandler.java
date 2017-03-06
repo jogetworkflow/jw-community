@@ -72,7 +72,7 @@ public class WorkflowToolActivityHandler extends StandardToolActivityHandler {
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "executeToolCompleted", workflowAssignment.getActivityId(), new Class[]{WorkflowAssignment.class}, new Object[]{workflowAssignment}, null);
             }
 
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             workflowMapper.addAuditTrail(this.getClass().getName(), "executeActivity", "Could not execute tool [processId=" + act.container(shandle).manager(shandle).name(shandle) + ", version=" + act.container(shandle).manager(shandle).version(shandle) + ", activityId=" + act.activity_definition_id(shandle) + "]", new Class[]{WorkflowAssignment.class}, new Object[]{workflowAssignment}, null);
             LogUtil.error(getClass().getName(), ex, "Could not execute tool [processId=" + act.container(shandle).manager(shandle).name(shandle) + ", version=" + act.container(shandle).manager(shandle).version(shandle) + ", activityId=" + act.activity_definition_id(shandle) + "]");
         }

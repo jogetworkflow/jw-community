@@ -349,7 +349,7 @@ public class BarFactory {
             settings
          });
          return (JMenu) (jc.getView());
-      } catch (Throwable thr) {
+      } catch (Exception thr) {
       }
       return null;
    }
