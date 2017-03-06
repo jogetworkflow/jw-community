@@ -19,7 +19,13 @@ VisibilityMonitor.prototype.init = function() {
         var field = thisObject.rules[i].field;
         if (field !== "(" && field !== ")") {
             var controlEl = $("[name=" + field + "]");
-            $(controlEl).addClass("control-field");
+            var parent = $(controlEl).closest(".subform-section");
+            if (parent.length === 0) {
+                parent = $(controlEl).closest(".form-section");
+            }
+            if (!$(parent).is(targetEl)) { // prevent it keep trigger itself
+                $(controlEl).addClass("control-field");
+            }
             $('body').off("change."+id+"_"+field);
             $('body').on("change."+id+"_"+field, "[name=" + field + "]", changeEvent);
         }
