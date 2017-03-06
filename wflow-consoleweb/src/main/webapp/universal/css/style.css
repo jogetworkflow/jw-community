@@ -1383,3 +1383,10 @@ main .grid-stack-item-header-refresh {
     padding-left: 0;
     background-position: top right;
 }
+#help-container #main-action-help {
+    margin: 0;
+    position: relative;
+    padding: 18px 20px;
+    font-size: 20px;
+    color: #fff;
+}
