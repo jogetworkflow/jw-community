@@ -278,15 +278,19 @@ PropertyEditor.Util = {
                 if (fieldId.indexOf(":") !== -1) {
                     fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
                 }
-                if (fieldId.indexOf(".") !== -1) {
-                    fieldId = fieldId.substring(0, fieldId.indexOf("."));
-                }
                 if ($.inArray(fieldId, fieldIds) === -1) {
                     fieldIds.push(fieldId);
                 }
             }
             for (var i in fieldIds) {
-                $(field.editor).on("change", "[name=\""+field.editorObject.fields[fieldIds[i]].id+"\"]", function() {
+                var selector = "";
+                var fieldId = fieldIds[i];
+                if (fieldId.indexOf(".") !== -1) {
+                    selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                } else {
+                    selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]"
+                }
+                $(field.editor).on("change", selector, function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
                     field.handleAjaxOptions(field.properties.options, reference);
                 });
@@ -443,15 +447,19 @@ PropertyEditor.Util = {
             if (fieldId.indexOf(":") !== -1) {
                 fieldId = fieldId.substring(fieldId.indexOf(":") + 1);
             }
-            if (fieldId.indexOf(".") !== -1) {
-                fieldId = fieldId.substring(0, fieldId.indexOf("."));
-            }
             if ($.inArray(fieldId, fieldIds) === -1) {
                 fieldIds.push(fieldId);
             }
         }
         for (var i in fieldIds) {
-            $(field.editor).on("change", "[name=\""+field.editorObject.fields[fieldIds[i]].id+"\"]", function() {
+            var selector = "";
+            var fieldId = fieldIds[i];
+            if (fieldId.indexOf(".") !== -1) {
+                selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+            } else {
+                selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]"
+            }
+            $(field.editor).on("change", selector, function() {
                 PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method);
             });
         }
