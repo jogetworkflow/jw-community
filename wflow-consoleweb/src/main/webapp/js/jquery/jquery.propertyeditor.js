@@ -148,7 +148,7 @@ PropertyEditor.Util = {
                                     }
                                     targetValue = values;
                                 } else {
-                                    if (targetValue === null || targetValue[childField] === null || targetValue[childField] === undefined) {
+                                    if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
                                         targetValue = "";
                                     } else {
                                         targetValue = targetValue[childField];
@@ -350,7 +350,7 @@ PropertyEditor.Util = {
                         }
                         targetValue = values.join(";");
                     } else {
-                        if (targetValue === null || targetValue[childField] === null || targetValue[childField] === undefined) {
+                        if (targetValue === null || targetValue === undefined || targetValue[childField] === null || targetValue[childField] === undefined) {
                             targetValue = "";
                         } else if ($.type(targetValue[childField]) === "string") {
                             targetValue = targetValue[childField];
