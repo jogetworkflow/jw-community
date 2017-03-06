@@ -6,6 +6,7 @@ PropertyEditor.Validator = {};
 /* Utility Functions */
 PropertyEditor.Util = {
     ajaxLoading: 0,
+    ajaxLoadingTimeoutConter: 0,
     ajaxCalls: {},
     types: {},
     validators: {},
@@ -567,13 +568,31 @@ PropertyEditor.Util = {
             }
         }
     },
+    setAjaxLoadingTimeout: function(editor) {
+        setTimeout(function() {
+            PropertyEditor.Util.ajaxLoadingTimeoutConter++;
+            if ($(editor).find(".ajaxLoader").is(":visible")) {
+                if (PropertyEditor.Util.ajaxLoadingTimeoutConter > 10 || PropertyEditor.Util.ajaxLoading === 0) {
+                    PropertyEditor.Util.ajaxLoading = 0;
+                    PropertyEditor.Util.ajaxLoadingTimeoutConter = 0;
+                    $(editor).find(".ajaxLoader").hide();
+                } else {
+                    PropertyEditor.Util.setAjaxLoadingTimeout(editor);
+                }
+            }
+        }, 500);
+    },
     showAjaxLoading: function(editor) {
+        if (PropertyEditor.Util.ajaxLoading === 0) {
+            PropertyEditor.Util.setAjaxLoadingTimeout(editor);
+        }
         PropertyEditor.Util.ajaxLoading++;
         $(editor).find(".ajaxLoader").show();
     },
     removeAjaxLoading: function(editor) {
         PropertyEditor.Util.ajaxLoading--;
         if (PropertyEditor.Util.ajaxLoading === 0) {
+            PropertyEditor.Util.ajaxLoadingTimeoutConter = 0;
             $(editor).find(".ajaxLoader").hide();
         }
     }
