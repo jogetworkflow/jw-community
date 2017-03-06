@@ -3635,7 +3635,6 @@ PropertyEditor.Type.ElementSelect.prototype = {
             deferreds.push(this.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function(){
                 thisObj.removeLoadingPage();
-                
                 if(thisObj.options.propertiesDefinition !== undefined && thisObj.options.propertiesDefinition !== null){
                     var parentId = thisObj.properties.name;
                     var elementdata = ' elementId="'+ thisObj.id+'" elementValue="'+ value +'"';
@@ -3673,6 +3672,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     var parentTitle = '<h1>'+thisObj.properties.label + " (" + valueLabel + ')</h1>';
                     var childFirstPage = $(thisObj.editor).find('.property-editor-page[elementId='+thisObj.id+'].property-page-show:eq(0)');
                     $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
+                    if ($(thisObj.editor).find(".current").length === 0) {
+                        $(childFirstPage).addClass("current");
+                    }
                     
                     thisObj.editorObject.refresh();
                 }
