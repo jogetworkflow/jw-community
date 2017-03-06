@@ -44,6 +44,7 @@ ${header_before!}
         <div class="clearfix"></div>
         ${header_message_inner_after!}
     </div>
+    <div id="help-container"></div>
     ${header_message_after!}
     ${header_inner_after!}
 </header>

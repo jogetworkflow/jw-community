@@ -123,3 +123,5 @@ a {
 .dataList td.dataListAlignCenter {
     text-align: center;
 }
+#help-container {display: inline-block; position: relative; float: right;}
+#help-container #main-action-help {position: relative; right:0px; width: 0; padding: 10px 0px;}

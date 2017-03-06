@@ -376,7 +376,7 @@ public class UserviewThemeProcesser {
     protected String getJogetFooter() {
         String html = "<script type=\"text/javascript\">\n"
                 + "            HelpGuide.base = \"" + request.getContextPath() + "\"\n"
-                + "            HelpGuide.attachTo = \"#header\";\n"
+                + "            HelpGuide.attachTo = \"#help-container\";\n"
                 + "            HelpGuide.key = \"help.web.userview."+userview.getParamString("appId")+"."+userview.getParamString("userviewId")+"."+getBodyId()+"\";\n"
                 + "            HelpGuide.show();\n"
                 + "        </script>\n";
