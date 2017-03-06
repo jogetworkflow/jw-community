@@ -126,6 +126,10 @@ _customFooTableArgs = {
             }, 0);
         });
 
+        setTimeout(function() {
+            $(".page-loader").fadeOut(100);
+        }, 5000);
+
         var scrollBar = function(selector, theme, mousewheelaxis) {
             $(selector).mCustomScrollbar({
                 theme: theme,
