@@ -152,7 +152,7 @@ public class JsonResponseFilter implements Filter {
 	    } catch (IllegalArgumentException e) {
                 throwable = e;
                 status = HttpServletResponse.SC_BAD_REQUEST;
-            } catch (Throwable e) {
+            } catch (Exception e) {
 		throwable = e;
 	    } 
             

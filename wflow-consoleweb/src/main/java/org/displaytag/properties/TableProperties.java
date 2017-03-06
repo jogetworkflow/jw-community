@@ -542,7 +542,7 @@ public final class TableProperties implements Cloneable
                     log.info(Messages.getString("TableProperties.classinitializedto", //$NON-NLS-1$
                         new Object[]{ClassUtils.getShortClassName(LocaleResolver.class), className}));
                 }
-                catch (Throwable e)
+                catch (Exception e)
                 {
                     log.warn(Messages.getString("TableProperties.errorloading", //$NON-NLS-1$
                         new Object[]{
@@ -1217,7 +1217,7 @@ public final class TableProperties implements Cloneable
                     log.info(Messages.getString("TableProperties.classinitializedto", //$NON-NLS-1$
                         new Object[]{ClassUtils.getShortClassName(I18nResourceProvider.class), className}));
                 }
-                catch (Throwable e)
+                catch (Exception e)
                 {
                     log.warn(Messages.getString("TableProperties.errorloading", //$NON-NLS-1$
                         new Object[]{
@@ -1373,7 +1373,7 @@ public final class TableProperties implements Cloneable
                     .classForName(className);
                 return classProperty.newInstance();
             }
-            catch (Throwable e)
+            catch (Exception e)
             {
                 log.warn(Messages.getString("TableProperties.errorloading", //$NON-NLS-1$
                     new Object[]{

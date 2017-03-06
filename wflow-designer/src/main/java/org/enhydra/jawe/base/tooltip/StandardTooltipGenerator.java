@@ -697,7 +697,7 @@ public class StandardTooltipGenerator implements TooltipGenerator {
          m = this.getClass().getMethod("getTooltip", new Class[] { cl });
          // System.err.println("calling "+m.toString());
          return (String) m.invoke(this, new Object[] { el });
-      } catch (Throwable e) {
+      } catch (Exception e) {
          e.printStackTrace();
       }
 

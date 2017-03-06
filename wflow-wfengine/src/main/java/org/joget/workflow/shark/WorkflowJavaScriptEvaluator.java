@@ -129,7 +129,7 @@ import org.springframework.context.ApplicationContext;
             // System.err.println("Evaluated to -- " + eval);
             return eval;
 
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             cus.error(shandle, LOG_CHANNEL, "JavaScriptEvaluator -> The result of expression "
                     + expr + " can't be evaluated - error message="
                     + ex.getMessage());

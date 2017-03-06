@@ -56,7 +56,7 @@ public class WorkflowDODSPersistentManager extends DODSPersistentManager {
             }
             DOs = query.getDOArray();
             return DOs;
-        } catch (Throwable t) {
+        } catch (Exception t) {
             throw new PersistenceException(t);
         }
     }

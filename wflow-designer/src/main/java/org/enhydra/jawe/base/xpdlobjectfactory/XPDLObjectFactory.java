@@ -826,7 +826,7 @@ public class XPDLObjectFactory {
             return (XMLElement) m.invoke(this, new Object[]{
                         col, type, new Boolean(addToCollection)
                     });
-        } catch (Throwable e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

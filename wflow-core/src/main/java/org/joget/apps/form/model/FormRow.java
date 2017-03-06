@@ -111,6 +111,11 @@ public class FormRow extends Properties {
         }
         return false;
     }
+
+    @Override
+    public synchronized int hashCode() {
+        return super.hashCode();
+    }
     
     public Map<String, String[]> getTempFilePathMap() {
         return tempFilePathMap;

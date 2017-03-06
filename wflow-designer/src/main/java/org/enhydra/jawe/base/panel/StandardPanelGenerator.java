@@ -1431,7 +1431,7 @@ public class StandardPanelGenerator implements PanelGenerator {
             return (XMLPanel) m.invoke(this, new Object[]{
                         el
                     });
-        } catch (Throwable e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

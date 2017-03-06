@@ -352,7 +352,7 @@ public class JaWEGraphUI extends BasicGraphUI {
         protected Point2D getInitialLocation(Object[] cells) {
             try {
                 return super.getInitialLocation(cells);
-            } catch (Throwable thr) {
+            } catch (Exception thr) {
                 return null;
             }
         }

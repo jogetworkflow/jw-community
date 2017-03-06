@@ -551,7 +551,7 @@ public class JaWEController extends Observable implements
                         this
                     });
             JaWEManager.getInstance().getLoggingManager().info("JaWEController -> Working with '" + className + "' as type resolver");
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             JaWEManager.getInstance().getLoggingManager().info("JaweManager -> Problems while instantiating type resolver! Using default!");
             jtypeResolver = new JaWETypeResolver(this);

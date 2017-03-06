@@ -301,5 +301,10 @@ public class DataTypes extends XMLComplexChoice {
         }
         return equals;
     }
+
+    public int hashCode() {
+        return super.hashCode();
+    }
+    
 }
 

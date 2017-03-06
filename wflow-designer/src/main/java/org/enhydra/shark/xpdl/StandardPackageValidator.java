@@ -210,7 +210,7 @@ public class StandardPackageValidator implements XMLValidator{
             });
             return;
         }
-        catch(Throwable e)
+        catch(Exception e)
         {
             e.printStackTrace();
         }
