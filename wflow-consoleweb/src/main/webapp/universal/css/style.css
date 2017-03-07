@@ -505,9 +505,10 @@ ul#category-container {
         padding: 14px 65px 14px 20px;
     }
     header.navbar .header-nav {
-        max-width: 15%;
-        overflow: hidden;
         height: 53px;
+        position: absolute;
+        right: 5px;
+        z-index: 1000;
     }
     header.navbar .header-nav > ul {
         width: 100%;
