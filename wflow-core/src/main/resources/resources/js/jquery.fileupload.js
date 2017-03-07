@@ -51,7 +51,7 @@
                     $(file.previewElement).find(".progress").remove();
                     $(file.previewElement).find(".remove").show();
                     $(file.previewElement).find("input").val(resp.path);
-                    $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + resp.path);
+                    $(file.previewElement).find("img").attr("src", $(file.previewElement).find("img").attr("src") + encodeURIComponent(resp.path));
                 });
                 myDropzone.on("error", function(file, error) {
                     $(file.previewElement).find(".progress").remove();
