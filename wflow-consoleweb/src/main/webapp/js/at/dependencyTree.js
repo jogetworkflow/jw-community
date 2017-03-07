@@ -78,9 +78,9 @@ DependencyTree.Util = {
     },
     pluginPropertiesWalker : function (viewer, node, labelNode, jsonObj, deffer, properties) {
         if (jsonObj['properties']['label'] !== undefined && jsonObj['properties']['label'] !== "") {
-            labelNode.data['value'] += ' (' + jsonObj['properties']['label'] + ')';
+            labelNode.data['value'] += ' (' + UI.escapeHTML(jsonObj['properties']['label']) + ')';
         } else if (jsonObj['properties']['name'] !== undefined && jsonObj['properties']['name'] !== "") {
-            labelNode.data['value'] += ' (' + jsonObj['properties']['name'] + ')';
+            labelNode.data['value'] += ' (' + UI.escapeHTML(jsonObj['properties']['name']) + ')';
         }
         
         node.data['propertiesDef'] = properties;
