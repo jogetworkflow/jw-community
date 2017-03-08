@@ -338,13 +338,16 @@ li.jsondiffpatch-unchanged {
     background: #fAfafA;
     line-height: 18px;
 }
+#advancedToolsOverlay.quickOverlay {
+    z-index: 1300;
+}
 #advancedToolsFrame { 
     position: fixed;
     height: 100%;
     width: 91%;
     top: 0px;
     left: 1%;
-    z-index: 3000;
+    z-index: 1301;
     border: none;
     box-shadow: #555 0px 0px 2px 2px;
     min-height: 500px;

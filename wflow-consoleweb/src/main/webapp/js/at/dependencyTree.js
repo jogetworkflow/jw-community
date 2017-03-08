@@ -124,7 +124,6 @@ DependencyTree.Util = {
     },
     hideAndCall: function (viewer, callback) {
         callback(viewer);
-        $(".boxy-wrapper").css("z-index", "9999999");
     },
     addIndicator: function (viewer, node, icon, label, color, callback) {
         if (color === undefined) {
