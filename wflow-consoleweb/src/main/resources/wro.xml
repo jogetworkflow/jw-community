@@ -102,4 +102,7 @@
         <js>/universal/js/less.js</js>
         <js>/universal/js/main.js</js>
     </group>
+    <group name="csrfguard.min">
+        <js>/js/csrfguard.js</js>
+    </group>
 </groups> 
