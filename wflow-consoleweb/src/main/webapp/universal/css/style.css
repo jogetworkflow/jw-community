@@ -1391,3 +1391,6 @@ main .grid-stack-item-header-refresh {
     font-size: 20px;
     color: #fff;
 }
+.ui-dialog.ui-front {
+    z-index: 600;
+}
