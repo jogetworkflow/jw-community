@@ -54,7 +54,7 @@
                             if (appId && appId !== "") {
                                 alert("<fmt:message key="appCenter.label.appInstalled"/>");
                                 PopupDialog.closeDialog();                                
-                                parent.loadPublishedApps();
+                                parent.AppCenter.loadPublishedApps();
                                 parent.AdminBar.hideQuickOverlay();
                             } else {
                                 alert("<fmt:message key="appCenter.label.appNotInstalled"/>");
