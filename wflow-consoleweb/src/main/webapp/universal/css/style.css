@@ -1394,3 +1394,9 @@ main .grid-stack-item-header-refresh {
 .ui-dialog.ui-front {
     z-index: 600;
 }
+
+@media print {
+    .label {
+        border: 0px;
+    }    
+}

@@ -11,7 +11,8 @@
         <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
         <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
-    </scm>
+      <tag>HEAD</tag>
+  </scm>
     <dependencies>
         <dependency>
             <groupId>org.joget</groupId>
