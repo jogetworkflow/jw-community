@@ -3383,6 +3383,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             menubar : 'edit insert view format table tools',
             image_advtab: true,
             relative_urls: false,
+            convert_urls : false,
             valid_elements : '*[*]'
         });
     }
