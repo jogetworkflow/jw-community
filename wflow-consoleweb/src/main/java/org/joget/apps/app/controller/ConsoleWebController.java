@@ -3363,6 +3363,7 @@ public class ConsoleWebController {
             data.put("label", name);
             jsonArray.put(data);
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
@@ -3437,6 +3438,7 @@ public class ConsoleWebController {
         } catch (Exception e) {
             //ignore
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
@@ -3459,6 +3461,7 @@ public class ConsoleWebController {
         } catch (Exception e) {
             //ignore
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
@@ -3506,6 +3509,7 @@ public class ConsoleWebController {
         } catch (Exception e) {
             //ignore
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
@@ -3532,10 +3536,12 @@ public class ConsoleWebController {
         } catch (Exception e) {
             //ignore
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
     protected void populateColumns(JSONArray jsonArray, String tableName, boolean prefix) {
+        JSONArray cjsonArray = new JSONArray();
         String prefixString = "";
         if (prefix) {
             prefixString = tableName;
@@ -3548,21 +3554,27 @@ public class ConsoleWebController {
         Map id = new HashMap();
         id.put("value", prefixString + FormUtil.PROPERTY_ID);
         id.put("label", prefixString + FormUtil.PROPERTY_ID);
-        jsonArray.put(id);
+        cjsonArray.put(id);
         for (String columnName : columnNames) {
             Map data = new HashMap();
             data.put("value", prefixString + columnName);
             data.put("label", prefixString + columnName);
-            jsonArray.put(data);
+            cjsonArray.put(data);
         }
         Map cd = new HashMap();
         cd.put("value", prefixString + FormUtil.PROPERTY_DATE_CREATED);
         cd.put("label", prefixString + FormUtil.PROPERTY_DATE_CREATED);
-        jsonArray.put(cd);
+        cjsonArray.put(cd);
         Map md = new HashMap();
         md.put("value", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
         md.put("label", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
-        jsonArray.put(md);
+        cjsonArray.put(md);
+        cjsonArray = sortJSONArray(cjsonArray, "label", false);
+        try {
+            for (int i = 0; i < cjsonArray.length(); i++) {
+                jsonArray.put(cjsonArray.get(i));
+            }
+        } catch (Exception e){}
     } 
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/create")
@@ -5030,5 +5042,41 @@ public class ConsoleWebController {
         jsonObject.accumulate("data", getSortedLocalList());
 
         jsonObject.write(writer);
+    }
+    
+    protected JSONArray sortJSONArray(JSONArray jsonArr, final String fieldName, final boolean desc) {
+        try {
+            JSONArray sortedJsonArray = new JSONArray();
+
+            List<JSONObject> jsonValues = new ArrayList<JSONObject>();
+            for (int i = 0; i < jsonArr.length(); i++) {
+                jsonValues.add(jsonArr.getJSONObject(i));
+            }
+            Collections.sort( jsonValues, new Comparator<JSONObject>() {
+                @Override
+                public int compare(JSONObject a, JSONObject b) {
+                    String valA = new String();
+                    String valB = new String();
+
+                    try {
+                        valA = (String) a.get(fieldName);
+                        valB = (String) b.get(fieldName);
+                    } catch (JSONException e) {}
+
+                    if (desc) {
+                        return -valA.compareTo(valB);
+                    } else {
+                        return valA.compareTo(valB);
+                    }
+                }
+            });
+
+            for (int i = 0; i < jsonArr.length(); i++) {
+                sortedJsonArray.put(jsonValues.get(i));
+            }
+            return sortedJsonArray;
+        } catch (Exception e) {
+        }
+        return jsonArr;
     }
 }
