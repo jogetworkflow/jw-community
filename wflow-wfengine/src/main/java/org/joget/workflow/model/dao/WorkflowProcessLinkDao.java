@@ -44,11 +44,26 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         Collection<String> existIds = new ArrayList<String>();
         
         if (ids.size() > 0) {
-            String conditions = "where e.processId in (";
+            String conditions = "where (";
+            
+            int i = 0;
             for (String id : ids) {
+                if (i % 1000 == 0) {
+                    if (i > 0) {
+                        conditions += " OR ";
+                    }
+                    conditions += "e.processId in (";
+                }
+                
                 conditions += "?,";
+                
+                if (i % 1000 == 999 || i == ids.size() -1) {
+                    conditions = conditions.substring(0, conditions.length() - 1) + ")";
+                }
+                i++;
             }
-            conditions = conditions.substring(0, conditions.length() - 1) + ")";
+            conditions += ")";
+            
             Collection<WorkflowProcessLink> links = super.find(ENTITY_NAME, conditions, ids.toArray(new String[0]), null, null, null, null);
             
             for (WorkflowProcessLink link : links) {
