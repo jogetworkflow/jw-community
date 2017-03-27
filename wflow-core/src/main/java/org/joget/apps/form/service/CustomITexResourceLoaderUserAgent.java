@@ -37,117 +37,111 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
     
     public ImageResource getImageResource(String uri) {
         ImageResource resource = null;
-        String cacheuri = resolveURI(uri);
-        resource = (ImageResource) _imageCache.get(cacheuri);
-        if (resource == null) {
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
 
-            if (uri != null && uri.startsWith("data:")) {
-                // cut off "data:"
+        if (uri != null && uri.startsWith("data:")) {
+            // cut off "data:"
+            try {
+                String raw = uri.substring(5);
+                String mime = raw.substring(0, raw.indexOf(';'));
+                // looking for MimeTyp image/...
+                if (mime != null && mime.startsWith("image/")) {
+                    String base64data = raw.substring(mime.length() + 1);
+                    if (base64data.startsWith("base64,")) {
+                        // cut off "base64,"
+                        String imgData = base64data.substring(7).trim();
+                        byte[] img = Base64.decode(imgData);
+                        Image image = Image.getInstance(img);
+                        scaleToOutputResolution(image);
+                        resource = new ImageResource(uri, new ITextFSImage(image));
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), e, "");
+            }
+        } else if (request != null && uri != null && uri.startsWith(request.getContextPath())) {
+            uri = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uri;
+
+            if (uri.contains("/web/client/app/") && uri.contains("/form/download/")) {
+                CloseableHttpClient httpClient = null;
+                ByteArrayOutputStream bos = null;
+                InputStream is = null;
                 try {
-                    String raw = uri.substring(5);
-                    String mime = raw.substring(0, raw.indexOf(';'));
-                    // looking for MimeTyp image/...
-                    if (mime != null && mime.startsWith("image/")) {
-                        String base64data = raw.substring(mime.length() + 1);
-                        if (base64data.startsWith("base64,")) {
-                            // cut off "base64,"
-                            String imgData = base64data.substring(7).trim();
-                            byte[] img = Base64.decode(imgData);
-                            Image image = Image.getInstance(img);
-                            scaleToOutputResolution(image);
-                            resource = new ImageResource(uri, new ITextFSImage(image));
-                            _imageCache.put(cacheuri, resource);
+                    HttpClientBuilder httpClientBuilder = HttpClients.custom();
+                    HttpGet get = new HttpGet(uri);
+
+                    CookieStore cookieStore = new BasicCookieStore(); 
+                    Cookie[] cookies = request.getCookies();
+                    for (Cookie c : cookies) {
+                        if (c.getName().equalsIgnoreCase("JSESSIONID")) {
+                            BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", c.getValue());
+                            cookie.setPath(request.getContextPath());
+                            cookie.setDomain(request.getServerName());
+                            cookieStore.addCookie(cookie); 
                         }
+                    }
+
+                    httpClientBuilder.setDefaultCookieStore(cookieStore);
+
+                    if ("https".equals(request.getScheme())) {
+                        SSLContextBuilder builder = new SSLContextBuilder();
+                        builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+                        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
+                        httpClientBuilder.setSSLSocketFactory(sslsf);
+                    }
+
+                    // execute request
+                    httpClient = httpClientBuilder.build();
+
+                    HttpResponse response = httpClient.execute(get);
+                    HttpEntity entity = response.getEntity();
+                    if (entity != null && entity.getContentType() != null) {
+                        is = entity.getContent();
+                        entity.getContentType();
+
+                        bos = new ByteArrayOutputStream();
+                        int next = is.read();
+                        while (next > -1) {
+                            bos.write(next);
+                            next = is.read();
+                        }
+                        bos.flush();
+                        byte[] result = bos.toByteArray();
+
+                        Image image = Image.getInstance(result);
+                        scaleToOutputResolution(image);
+                        resource = new ImageResource(uri, new ITextFSImage(image));
                     }
                 } catch (Exception e) {
                     LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), e, "");
-                }
-            } else if (request != null && uri != null && uri.startsWith(request.getContextPath())) {
-                uri = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + uri;
-
-                if (uri.contains("/web/client/app/") && uri.contains("/form/download/")) {
-                    CloseableHttpClient httpClient = null;
-                    ByteArrayOutputStream bos = null;
-                    InputStream is = null;
+                } finally {
                     try {
-                        HttpClientBuilder httpClientBuilder = HttpClients.custom();
-                        HttpGet get = new HttpGet(uri);
-                        
-                        CookieStore cookieStore = new BasicCookieStore(); 
-                        Cookie[] cookies = request.getCookies();
-                        for (Cookie c : cookies) {
-                            if (c.getName().equalsIgnoreCase("JSESSIONID")) {
-                                BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", c.getValue());
-                                cookie.setPath(request.getContextPath());
-                                cookie.setDomain(request.getServerName());
-                                cookieStore.addCookie(cookie); 
-                            }
+                        if (bos != null) {
+                            bos.close();
                         }
-                        
-                        httpClientBuilder.setDefaultCookieStore(cookieStore);
-                        
-                        if ("https".equals(request.getScheme())) {
-                            SSLContextBuilder builder = new SSLContextBuilder();
-                            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-                            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
-                            httpClientBuilder.setSSLSocketFactory(sslsf);
-                        }
-                        
-                        // execute request
-                        httpClient = httpClientBuilder.build();
-                        
-                        HttpResponse response = httpClient.execute(get);
-                        HttpEntity entity = response.getEntity();
-                        if (entity != null && entity.getContentType() != null) {
-                            is = entity.getContent();
-                            entity.getContentType();
-
-                            bos = new ByteArrayOutputStream();
-                            int next = is.read();
-                            while (next > -1) {
-                                bos.write(next);
-                                next = is.read();
-                            }
-                            bos.flush();
-                            byte[] result = bos.toByteArray();
-
-                            Image image = Image.getInstance(result);
-                            scaleToOutputResolution(image);
-                            resource = new ImageResource(uri, new ITextFSImage(image));
-                            _imageCache.put(cacheuri, resource);
-                        }
-                    } catch (Exception e) {
-                        LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), e, "");
-                    } finally {
-                        try {
-                            if (bos != null) {
-                                bos.close();
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
-                        }
-                        try {
-                            if (is != null) {
-                                is.close();
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
-                        }
-                        try {
-                            if (httpClient != null) {
-                                httpClient.close();
-                            }
-                        } catch (Exception ex) {
-                            LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
-                        }
+                    } catch (Exception ex) {
+                        LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
                     }
-                } else {
-                    resource = super.getImageResource(uri);
+                    try {
+                        if (is != null) {
+                            is.close();
+                        }
+                    } catch (Exception ex) {
+                        LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
+                    }
+                    try {
+                        if (httpClient != null) {
+                            httpClient.close();
+                        }
+                    } catch (Exception ex) {
+                        LogUtil.error(CustomITexResourceLoaderUserAgent.class.getName(), ex, "");
+                    }
                 }
             } else {
                 resource = super.getImageResource(uri);
             }
+        } else {
+            resource = super.getImageResource(uri);
         }
         if (resource == null) {
             resource = new ImageResource(uri, null);
