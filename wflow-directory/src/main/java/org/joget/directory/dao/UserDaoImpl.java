@@ -121,6 +121,9 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
                     employments.clear();
                 }
                 delete("User", user);
+                
+                UserMetaDataDao umdDao = (UserMetaDataDao) DirectoryUtil.getApplicationContext().getBean("userMetaDataDao");
+                umdDao.deleteUserMetaDatas(username);
             }
             return true;
         } catch (Exception e) {

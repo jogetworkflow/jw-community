@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class entity-name="UserMetaData" name="org.joget.directory.model.UserMetaData" table="dir_user_meta">
+        <composite-id>
+            <key-property column="username" name="username" type="string"/>
+            <key-property column="meta_key" name="key" type="string"/>
+        </composite-id>
+        <property column="meta_value" name="value" type="text"/>
+    </class>
+</hibernate-mapping>

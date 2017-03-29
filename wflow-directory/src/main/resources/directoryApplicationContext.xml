@@ -23,6 +23,7 @@
                 <value>org/joget/directory/model/Organization.hbm.xml</value>
                 <value>org/joget/directory/model/Role.hbm.xml</value>
                 <value>org/joget/directory/model/User.hbm.xml</value>
+                <value>org/joget/directory/model/UserMetaData.hbm.xml</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -85,6 +86,10 @@
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
 
+    <bean id="userMetaDataDao" class="org.joget.directory.dao.UserMetaDataDaoImpl">
+        <property name="sessionFactory" ref="directorySessionFactory" />
+    </bean>
+    
     <bean id="directoryManager" class="org.joget.directory.model.service.DirectoryManagerProxyImpl" primary="true">
         <qualifier value="main" />
         <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
