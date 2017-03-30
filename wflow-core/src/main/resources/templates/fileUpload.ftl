@@ -24,14 +24,16 @@
         <input style="display:none" id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
     </#if>
         <ul class="form-fileupload-value">
-            <li class="template" style="display:none;">
-                <span class="name" data-dz-name></span> <a class="remove"style="display:none">@@form.fileupload.remove@@</a> 
-                <strong class="error text-danger" data-dz-errormessage></strong>
-                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                    <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
-                </div>
-                <input type="hidden" name="${elementParamName!}_path" value="" disabled/>
-            </li>
+            <#if element.properties.readonly! != 'true'>
+                <li class="template" style="display:none;">
+                    <span class="name" data-dz-name></span> <a class="remove"style="display:none">@@form.fileupload.remove@@</a> 
+                    <strong class="error text-danger" data-dz-errormessage></strong>
+                    <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                    </div>
+                    <input type="hidden" name="${elementParamName!}_path" value="" disabled/>
+                </li>
+            </#if>
             <#if tempFilePaths??>
                 <#list tempFilePaths?keys as key>
                     <li>
