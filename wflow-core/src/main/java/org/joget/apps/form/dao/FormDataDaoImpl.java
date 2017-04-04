@@ -708,7 +708,6 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (entities != null && entities.length > 0) {
             for (String e : entities) {
                 cacheKey += ";[" + e + "]";
-                break;
             }
         }
         return cacheKey;
@@ -1396,9 +1395,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String joinQuery = "";
             if (joinTableNames != null && joinTableNames.length > 0) {
                 for (String t : joinTableNames) {
-                    if (joinQuery.isEmpty()) {
-                        joinQuery += ", ";
-                    }
+                    joinQuery += ", ";
                     if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
                         t = t.substring(FORM_PREFIX_TABLE_NAME.length());
                     }
@@ -1521,9 +1518,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String joinQuery = "";
             if (joinTableNames != null && joinTableNames.length > 0) {
                 for (String t : joinTableNames) {
-                    if (joinQuery.isEmpty()) {
-                        joinQuery += ", ";
-                    }
+                    joinQuery += ", ";
                     if (t.startsWith(FORM_PREFIX_TABLE_NAME)) {
                         t = t.substring(FORM_PREFIX_TABLE_NAME.length());
                     }
