@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.workflow.security.WorkflowUserDetails;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
@@ -124,12 +125,12 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
                     }
                 }
 
-                url += appId + "/" + userviewId + "/";
+                url += StringEscapeUtils.escapeHtml(appId) + "/" + StringEscapeUtils.escapeHtml(userviewId) + "/";
                 if (key != null) {
-                    url += key;
+                    url += StringEscapeUtils.escapeHtml(key);
                 }
                 if (menuId != null) {
-                    url += "/" + menuId;
+                    url += "/" + StringEscapeUtils.escapeHtml(menuId);
                 }
                 return url;
             }
