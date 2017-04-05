@@ -33,6 +33,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.security.web.util.TextEscapeUtils;
@@ -146,9 +147,11 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
                 session.invalidate();
                 session = request.getSession(true);
-                if (savedRequest != null) {
+                if (savedRequest != null) { 
                     new HttpSessionRequestCache().saveRequest(request, response);
                 }
+                workflowUserManager.setCurrentThreadUser(WorkflowUserManager.ROLE_ANONYMOUS);
+                new SecurityContextLogoutHandler().logout(request, response, null);
             }
         }
         return requiresAuth;
