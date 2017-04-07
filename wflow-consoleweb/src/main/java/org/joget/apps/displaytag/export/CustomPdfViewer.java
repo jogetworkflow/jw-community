@@ -107,6 +107,7 @@ public class CustomPdfViewer implements BinaryExportView {
         selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 10, Font.NORMAL, new Color(0, 0, 0)));
     }
 
     /**

@@ -445,6 +445,20 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         }
         droidsan.addFontDescription(descr);
         result.put(fontFamilyName, droidsan);
+
+        FontFamily thSarabun = new FontFamily();
+        String thPath = "fonts/THSarabun/THSarabun.ttf";
+        BaseFont thFont = BaseFont.createFont(thPath, BaseFont.IDENTITY_H, true);
+        String thFontFamilyName = TrueTypeUtil.getFamilyName(thFont);
+        thSarabun.setName(thFontFamilyName);
+        FontDescription thDescr = new FontDescription(thFont);
+        try {
+            TrueTypeUtil.populateDescription(thPath, thFont, thDescr);
+        } catch (Exception e) {
+            throw new XRRuntimeException(e.getMessage(), e);
+        }
+        thSarabun.addFontDescription(thDescr);
+        result.put(thFontFamilyName, thSarabun);
     }
     
     protected static class FontFamily {
