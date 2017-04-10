@@ -2,6 +2,24 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.13
+=================
+f1c88001 Modified: wflow-consoleweb - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
+2e027c84 Fixed: wflow-core, wflow-consoleweb - Added Thai font for PDF export #4718 @5.0-SNAPSHOT
+0dc4b8ed Fixed: wflow-consoleweb - Hard session timeout does not clear current session user @5.0-SNAPSHOT
+8d032f29 Fixed: wflow-wfengine- Workflow Process Link Dao - Fixed Oracle only allow 1000 expression in a list. #4657 @5.0-SNAPSHOT
+258788db Fixed: wflow-core - Form PDf Util - Images are cached. @5.0-SNAPSHOT
+76c754dd Fixed: wflow-consoleweb - Property Editor  - HTML Editor - Not able to insert link/image and edit html. @IE @5.0-SNAPSHOT
+0970cd2a Fixed: wflow-wfengine - Database shutdown command executed on exit @5.0-SNAPSHOT
+a32a9e88 Modified: wflow-core/wflow-consoleweb - Adding css classes to improve UI rendering.  @5.0-SNAPSHOT
+c1fa13e1 Modified: wflow-consoleweb/wflow-core - CSS - Remove unused font @5.0-SNAPSHOT
+562e9b79 Fixed: wflow-consoleweb - Grid - Cell label of responsive grid is not showing. @5.0-SNAPSHOT
+b8e58405 Fixed: wflow-core - Date Picker - Start/End Date validation not working correctly. @5.0-SNAPSHOT
+7d158d5b Fixed: wflow-core - Userview Theme Processer - Can't handle redirection set by Page Not Found handling in userview theme. @5.0-SNAPSHOT
+c78b1ef9 Fixed: wflow-core - Section - Correction on "Visibility Control does not support subform field". @5.0-SNAPSHOT Fixed: wflow-core - Section - Validation error of previous submission in hidden section is not clear correctly. @5.0-SNAPSHOT
+6c2b2bfa Fixed: wflow-core - Section - Visibility Control does not support subform field. @5.0-SNAPSHOT
+d8809509 Modified: wflow-consoleweb/wflow-core - CSS - Remove unused font @5.0-SNAPSHOT
+
 CHANGES IN 5.0.12
 =================
 ed633b5 Fixed: wflow-consoleweb - Data List - Missing margin for buttons at the top @5.0-SNAPSHOT
