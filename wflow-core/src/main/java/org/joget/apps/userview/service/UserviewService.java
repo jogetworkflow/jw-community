@@ -110,17 +110,19 @@ public class UserviewService {
                 LogUtil.debug(getClass().getName(), "set theme error.");
             }
             try {
-                JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                UserviewPermission permission = null;
-                String permissionClassName = permissionObj.getString("className");
-                if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                    permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
-                }
-                if (permission != null) {
-                    permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
-                    permission.setRequestParameters(requestParameters);
-                    permission.setCurrentUser(currentUser);
-                    setting.setPermission(permission);
+                if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
+                    JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                    UserviewPermission permission = null;
+                    String permissionClassName = permissionObj.getString("className");
+                    if (permissionClassName != null && !permissionClassName.isEmpty()) {
+                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                    }
+                    if (permission != null) {
+                        permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
+                        permission.setRequestParameters(requestParameters);
+                        permission.setCurrentUser(currentUser);
+                        setting.setPermission(permission);
+                    }
                 }
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
@@ -214,19 +216,21 @@ public class UserviewService {
                 LogUtil.debug(getClass().getName(), "set theme error.");
             }
             try {
-                JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                UserviewPermission permission = null;
-                String permissionClassName = permissionObj.getString("className");
-                if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                    permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
-                }
-                if (permission != null) {
-                    permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
-                    permission.setRequestParameters(requestParameters);
-                    permission.setCurrentUser(currentUser);
-                    setting.setPermission(permission);
-                    
-                    userviewPermission = permission.isAuthorize();
+                if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
+                    JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                    UserviewPermission permission = null;
+                    String permissionClassName = permissionObj.getString("className");
+                    if (permissionClassName != null && !permissionClassName.isEmpty()) {
+                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                    }
+                    if (permission != null) {
+                        permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
+                        permission.setRequestParameters(requestParameters);
+                        permission.setCurrentUser(currentUser);
+                        setting.setPermission(permission);
+
+                        userviewPermission = permission.isAuthorize();
+                    }
                 }
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
@@ -250,7 +254,7 @@ public class UserviewService {
                     category.setProperty(FormUtil.PROPERTY_LABEL, catLabel);
                     
                     boolean hasPermis = false;
-                    if (preview) {
+                    if (preview || "true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
                         hasPermis = true;
                     } else {
                         //check for permission

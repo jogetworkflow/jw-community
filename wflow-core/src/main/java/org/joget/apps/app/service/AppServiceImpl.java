@@ -1903,6 +1903,8 @@ public class AppServiceImpl implements AppService {
     public AppDefinition importAppDefinition(AppDefinition appDef, Long appVersion, byte[] xpdl) throws ImportAppException {
         Boolean overrideEnvVariable = false;
         Boolean overridePluginDefault = false;
+        Boolean doNotImportParticipant = false;
+        Boolean doNotImportTool = false;
         
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null && request.getParameterValues("overrideEnvVariable") != null) {
@@ -1910,6 +1912,12 @@ public class AppServiceImpl implements AppService {
         }
         if (request != null && request.getParameterValues("overridePluginDefault") != null) {
             overridePluginDefault = true;
+        }
+        if (request != null && request.getParameterValues("doNotImportParticipant") != null) {
+            doNotImportParticipant = true;
+        }
+        if (request != null && request.getParameterValues("doNotImportTool") != null) {
+            doNotImportTool = true;
         }
         
         //fix app id letter case issue during import
@@ -2021,6 +2029,10 @@ public class AppServiceImpl implements AppService {
 
         try {
             if (xpdl != null) {
+                PackageDefinition orgPackageDef = null;
+                if ((doNotImportParticipant || doNotImportTool) && orgAppDef != null) {
+                    orgPackageDef = orgAppDef.getPackageDefinition();
+                }
                 PackageDefinition oldPackageDef = appDef.getPackageDefinition();
 
                 //deploy package
@@ -2039,6 +2051,13 @@ public class AppServiceImpl implements AppService {
                         if (oldPackageDef.getPackageActivityPluginMap() != null) {
                             for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
                                 PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
+                                if (orgPackageDef != null && doNotImportTool) {
+                                    PackageActivityPlugin tempPlugin = orgPackageDef.getPackageActivityPlugin(plugin.getProcessDefId(), plugin.getActivityDefId());
+                                    if (tempPlugin != null) {
+                                        plugin.setPluginName(tempPlugin.getPluginName());
+                                        plugin.setPluginProperties(tempPlugin.getPluginProperties());
+                                    }
+                                }
                                 plugin.setPackageDefinition(packageDef);
                                 packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
                             }
@@ -2047,6 +2066,14 @@ public class AppServiceImpl implements AppService {
                         if (oldPackageDef.getPackageParticipantMap() != null) {
                             for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
                                 PackageParticipant participant = (PackageParticipant) e.getValue();
+                                if (orgPackageDef != null && doNotImportParticipant) {
+                                    PackageParticipant tempParticipant = orgPackageDef.getPackageParticipant(participant.getProcessDefId(), participant.getParticipantId());
+                                    if (tempParticipant != null) {
+                                        participant.setType(tempParticipant.getType());
+                                        participant.setValue(tempParticipant.getValue());
+                                        participant.setPluginProperties(tempParticipant.getPluginProperties());
+                                    }
+                                }
                                 participant.setPackageDefinition(packageDef);
                                 packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
                             }

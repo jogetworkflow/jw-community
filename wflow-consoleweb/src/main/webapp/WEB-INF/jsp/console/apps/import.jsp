@@ -49,6 +49,22 @@
                             </label>
                         </span>
                     </div>
+                    <div class="form-row">                
+                        <span class="form-input">
+                            <label for="doNotImportParticipant" class="upload">
+                                <input id="doNotImportParticipant" type="checkbox" name="doNotImportParticipant" value="true"/>
+                                <fmt:message key="console.app.import.label.doNotImportParticipant"/>
+                            </label>
+                        </span>
+                    </div>
+                    <div class="form-row">                
+                        <span class="form-input">
+                            <label for="doNotImportTool" class="upload">
+                                <input id="doNotImportTool" type="checkbox" name="doNotImportTool" value="true"/>
+                                <fmt:message key="console.app.import.label.doNotImportTool"/>
+                            </label>
+                        </span>
+                    </div>
                 </div>
                 <div class="form-buttons">
                     <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
