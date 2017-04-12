@@ -1983,6 +1983,12 @@ public class AppServiceImpl implements AppService {
         if (appDef.getUserviewDefinitionList() != null) {
             for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
                 o.setAppDefinition(newAppDef);
+                
+                //remove tempDisablePermissionChecking setting
+                if (o.getJson().contains("\"tempDisablePermissionChecking\"")) {
+                    o.setJson(o.getJson().replace("\"tempDisablePermissionChecking\"", "\"__\""));
+                }
+                
                 userviewDefinitionDao.add(o);
                 LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
             }

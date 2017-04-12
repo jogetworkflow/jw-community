@@ -398,6 +398,9 @@ public class UserviewThemeProcesser {
                     + "                <input type=\"hidden\" name=\"json\" value=\"" + StringEscapeUtils.escapeHtml(userview.getParamString("json")) + "\"/>\"/>\n"
                     + "            </form>\n"
                     + "        </div>\n";
+        } else if ("true".equals(userview.getSetting().getPropertyString("tempDisablePermissionChecking"))) {
+            html += "<!--[if IE]><div id=\"preview-label\" class=\"ie testing\"><a onclick=\"$('#preview-label').remove()\">x</a> "+ResourceBundleUtil.getMessage("ubuilder.permissionDisabled")+"</div><![endif]-->\n";
+            html += "<!--[if !IE]><!--><div id=\"preview-label\" class=\"testing\"><a onclick=\"$('#preview-label').remove()\">x</a> "+ResourceBundleUtil.getMessage("ubuilder.permissionDisabled")+"</div><!--<![endif]-->";
         }
 
         return html;

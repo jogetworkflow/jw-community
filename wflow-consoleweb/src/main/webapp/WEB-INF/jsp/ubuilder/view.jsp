@@ -361,6 +361,13 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
             HelpGuide.key = "help.web.userview.${appId}.${userview.properties.id}.${bodyId}";
             HelpGuide.show();
         </script>
+            
+        <c:if test="${!empty userview.setting.properties.tempDisablePermissionChecking}">
+            <c:if test="${userview.setting.properties.tempDisablePermissionChecking eq 'true'}">
+                <!--[if IE]><div id="preview-label" class="ie testing"><a onclick="$('#preview-label').remove()">x</a> <fmt:message key="ubuilder.permissionDisabled"/></div><![endif]-->
+                <!--[if !IE]><!--><div id="preview-label" class="testing"><a onclick="$('#preview-label').remove()">x</a> <fmt:message key="ubuilder.permissionDisabled"/></div><!--<![endif]-->               
+            </c:if>
+        </c:if>    
 
         <%= AppUtil.getSystemAlert() %>   
         
