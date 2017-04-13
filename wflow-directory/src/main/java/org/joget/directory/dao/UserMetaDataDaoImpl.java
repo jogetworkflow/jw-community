@@ -1,7 +1,6 @@
 package org.joget.directory.dao;
 
 import java.util.Collection;
-import java.util.List;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.UserMetaData;
@@ -10,13 +9,10 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
 
     public UserMetaData getUserMetaData(String username, String key) {
         try {
-            UserMetaData data = new UserMetaData();
-            data.setUsername(username);
-            data.setKey(key);
-            List datas = findByExample("UserMetaData", data);
+            Collection datas = find("UserMetaData", "where e.username = ? and e.key = ?", new Object[]{username, key}, null, null, null, null);
 
             if (datas.size() > 0) {
-                return (UserMetaData) datas.get(0);
+                return (UserMetaData) datas.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(UserDaoImpl.class.getName(), e, "Get User Meta Data Error!");
@@ -29,7 +25,7 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
         try {
             UserMetaData data = new UserMetaData();
             data.setUsername(username);
-            Collection<UserMetaData> datas = (Collection<UserMetaData>) findByExample("UserMetaData", data);
+            Collection<UserMetaData> datas = (Collection<UserMetaData>) find("UserMetaData", "where e.username = ?", new Object[]{username}, null, null, null, null);
 
             return datas;
         } catch (Exception e) {
