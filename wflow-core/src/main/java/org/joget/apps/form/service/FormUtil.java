@@ -2072,6 +2072,18 @@ public class FormUtil implements ApplicationContextAware {
                 obj.put(FormUtil.PROPERTY_DATE_CREATED, r.getDateCreated());
                 obj.put(FormUtil.PROPERTY_DATE_MODIFIED, r.getDateModified());
                 
+                if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
+                    JSONObject filePaths = new JSONObject();
+                    for (Object f : r.getTempFilePathMap().keySet()) {
+                        JSONArray arr = new JSONArray();
+                        for (String path : r.getTempFilePathMap().get(f.toString())) {
+                            arr.put(path);
+                        }
+                        obj.put(f.toString(), arr);
+                    }
+                    obj.put(FormUtil.PROPERTY_TEMP_FILE_PATH, filePaths);
+                }
+                
                 jsonArray.put(obj);
             }
             
@@ -2099,8 +2111,25 @@ public class FormUtil implements ApplicationContextAware {
                     if (fields != null && fields.length() > 0) {
                         for (int k = 0; k < fields.length(); k++) {
                             String fieldName = fields.getString(k);
-                            String value = jsonRow.getString(fieldName);
-                            row.setProperty(fieldName, value);
+                            
+                            if (fieldName.equals(FormUtil.PROPERTY_TEMP_FILE_PATH)) {
+                                JSONObject tempFilePaths = jsonRow.getJSONObject(fieldName);
+                                JSONArray files = tempFilePaths.names();
+                                if (files != null && files.length() > 0) {
+                                    for (int j = 0; j < files.length(); j++) {
+                                        String fileFieldName = files.getString(j);
+                                        JSONArray arr = tempFilePaths.getJSONArray(fileFieldName);
+                                        List<String> paths = new ArrayList<String>();
+                                        for(int p = 0; p < arr.length(); p++){
+                                            paths.add(arr.getString(p));
+                                        }
+                                        row.putTempFilePath(fileFieldName, paths.toArray(new String[]{}));
+                                    }
+                                }
+                            } else {
+                                String value = jsonRow.getString(fieldName);
+                                row.setProperty(fieldName, value);
+                            }
                         }
                     }
                     row.setProperty("jsonrow", jsonRow.toString());
