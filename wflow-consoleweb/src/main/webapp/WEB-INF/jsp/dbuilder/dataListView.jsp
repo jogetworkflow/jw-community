@@ -138,7 +138,7 @@
                                 <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                             </c:when>
                             <c:otherwise>
-                                <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                                <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
                             </c:otherwise>
                         </c:choose>
                     </c:if>
@@ -182,7 +182,7 @@
                                 <display:column headerClass="select_radio" class="select_radio" property="radio" media="html" title="" />
                             </c:when>
                             <c:otherwise>
-                                <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<input type='checkbox' onclick='toggleAll(this)' style='float:left;'/>" />
+                                <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' onclick='toggleAll(this)' style='float:left;'/></label>" />
                             </c:otherwise>
                         </c:choose>
                     </c:if>

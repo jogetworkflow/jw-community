@@ -314,34 +314,34 @@ body textarea {
 
 /* Radio Buttons
    ========================================================================== */
-body .select_radio > input[type="radio"]:not(:checked),
-body .select_radio > input[type="radio"]:checked,
+body .select_radio label, body .select_checkbox label {
+    margin-bottom: 0;
+}
+body .select_radio label > input[type="radio"]:not(:checked),
+body .select_radio label > input[type="radio"]:checked,
 body label > [type="radio"]:not(:checked),
 body label > [type="radio"]:checked {
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: 0;
-    vertical-align: sub;
+    display:none;
 }
 
-body .select_radio > input[type="radio"]:after,
-body label > input[type="radio"]:after {
+body .select_radio label > input[type="radio"] + i:after,
+body label > input[type="radio"] + i:after {
     font: normal normal normal 14px/1 FontAwesome;
     font-size: 25px;
     content: "\f10c";
-    display:block;
+    display:inline-block;
     width: 30px;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
-body .select_radio > input[type="radio"]:checked:after,
-body label > input[type="radio"]:checked:after {
+body .select_radio label > input[type="radio"]:checked + i:after,
+body label > input[type="radio"]:checked + i:after {
     content: "\f192";
 }
 
-body .select_radio > input[type="radio"]:disabled:after,
-body label > input[type="radio"]:disabled:after {
+body .select_radio label > input[type="radio"]:disabled + i:after,
+body label > input[type="radio"]:disabled + i:after {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -351,34 +351,31 @@ body label > input[type="radio"]:disabled:after {
 /* CUSTOM CSS CHECKBOXES */
 /* Remove default checkbox */
 
-body .select_checkbox > [type="checkbox"]:not(:checked),
-body .select_checkbox > [type="checkbox"]:checked,
+body .select_checkbox label > [type="checkbox"]:not(:checked),
+body .select_checkbox label > [type="checkbox"]:checked,
 body label > [type="checkbox"]:not(:checked),
 body label > [type="checkbox"]:checked {
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    outline: 0;
-    vertical-align: sub;
+    display:none;
 }
 
-body .select_checkbox > [type="checkbox"]:after,
-body label > input[type=checkbox]:after {
+body .select_checkbox label > [type="checkbox"] + i:after,
+body label > input[type=checkbox] + i:after {
     font: normal normal normal 14px/1 FontAwesome;
     font-size: 25px;
     content: "\f096";
-    display:block;
+    display:inline-block;
     width: 30px;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
-body .select_checkbox > [type="checkbox"]:checked:after,
-body label > input[type=checkbox]:checked:after {
+body .select_checkbox label > [type="checkbox"]:checked + i:after,
+body label > input[type=checkbox]:checked + i:after {
     content: "\f046";
 }
 
-body .select_checkbox > [type="checkbox"]:disabled:after,
-body label > input[type=checkbox]:disabled:after {
+body .select_checkbox label > [type="checkbox"]:disabled + i:after,
+body label > input[type=checkbox]:disabled + i:after {
     opacity: 0.5;
     cursor: not-allowed;
 }
