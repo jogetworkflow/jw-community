@@ -437,7 +437,7 @@ FormBuilder = {
             var dom = $(obj)[0].dom;
             var comment = dom.properties["comment"];
             if (comment !== undefined && comment !== null && comment !== "") {
-                $(obj).find(".form-section-title").before('<div class="section-comment">&lt;!-- <div class="editable">'+UI.escapeHTML(comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div> --&gt;</div>');
+                $(obj).find(".form-section-title").before('<div class="section-comment"><strong>'+get_fbuilder_msg("fbuilder.comment")+':</strong> <div class="editable">'+UI.escapeHTML(comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div></div>');
                 FormBuilder.initEditableComment(obj);
             }
         } else if ($(obj).hasClass("form-column")) {
@@ -537,7 +537,7 @@ FormBuilder = {
             var element = $(this).parent().parent();
             
             if ($(element).find(".section-comment").length === 0) {
-                $(obj).find(".form-section-title").before('<div class="section-comment">&lt;!-- <div class="editable"></div> --&gt;</div>');
+                $(obj).find(".form-section-title").before('<div class="section-comment"><strong>'+get_fbuilder_msg("fbuilder.comment")+':</strong> <div class="editable"></div></div>');
                 FormBuilder.initEditableComment(obj);
             }
             $(obj).find('.section-comment .editable').click();
