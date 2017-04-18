@@ -428,8 +428,18 @@ FormBuilder = {
             optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
             optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fa fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
             optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'><i class='fa fa-columns'></i><span>"+get_fbuilder_msg("fbuilder.addColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-comment' title='"+get_fbuilder_msg("fbuilder.comment")+"'><i class='fa fa-commenting-o '></i><span>"+get_fbuilder_msg("fbuilder.comment")+"</span></button>";
             optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.deleteSection")+"</span></button>";
             $(obj).append("<div class='form-clear bottom'></div>");
+            
+            //comment
+            $(obj).find(".section-comment").remove();
+            var dom = $(obj)[0].dom;
+            var comment = dom.properties["comment"];
+            if (comment !== undefined && comment !== null && comment !== "") {
+                $(obj).find(".form-section-title").before('<div class="section-comment">&lt;!-- <div class="editable">'+UI.escapeHTML(comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div> --&gt;</div>');
+                FormBuilder.initEditableComment(obj);
+            }
         } else if ($(obj).hasClass("form-column")) {
             // add buttons for column
             optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
@@ -521,6 +531,19 @@ FormBuilder = {
             FormBuilder.paste(element, position);
             return false;
         });
+        
+        // handle comment
+        $(optionDiv).children(".form-palette-comment").click(function() {
+            var element = $(this).parent().parent();
+            
+            if ($(element).find(".section-comment").length === 0) {
+                $(obj).find(".form-section-title").before('<div class="section-comment">&lt;!-- <div class="editable"></div> --&gt;</div>');
+                FormBuilder.initEditableComment(obj);
+            }
+            $(obj).find('.section-comment .editable').click();
+            
+            return false;
+        });
 
         // add option bar
         $(obj).prepend(optionDiv);
@@ -548,6 +571,41 @@ FormBuilder = {
         });
 
     },
+    
+    initEditableComment: function(obj) {
+        $(obj).find(".section-comment .editable").editable(function(value, settings){
+            FormBuilder.addToUndo();
+            
+            $(obj)[0].dom.properties["comment"] = value;
+            if(value === ""){
+                $(obj).find(".section-comment").remove();
+            } else {
+                value = UI.escapeHTML(value).replace(/(?:\r\n|\r|\n)/g, '<br />');
+            }
+            return value;
+        },{
+            type      : 'textarea',
+            tooltip   : '' ,
+            select    : true ,
+            style     : 'inherit',
+            cssclass  : 'LabelEditableField',
+            onblur    : 'submit',
+            rows      : 4,
+            width     : '90%',
+            minwidth  : 80,
+            submit  : get_fbuilder_msg("fbuilder.save"),
+            data: function(value, settings) {
+                if (value !== "") {
+                    return value.replace(/<br\s*[\/]?>/gi, "\n");
+                } else {
+                    return value;
+                }
+            }
+        });
+        $(obj).find(".section-comment").on("click", function(){
+            $(obj).find('.section-comment .editable').click();
+        });
+    }, 
 
     updateElementDOM: function(element) {
         // set class name

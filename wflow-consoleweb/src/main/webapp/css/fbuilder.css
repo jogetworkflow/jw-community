@@ -355,3 +355,16 @@
     left:0;
     right: auto;
 }
+.section-comment {
+    padding: 5px;
+    margin-right: 150px;
+    font-size: 10px !important;
+    font-style: italic;
+    color: #999;
+    max-width: 600px;
+    line-height: 11px;
+}
+.section-comment .editable {
+    margin-left: 15px;
+    font-size: 10px !important;
+}
