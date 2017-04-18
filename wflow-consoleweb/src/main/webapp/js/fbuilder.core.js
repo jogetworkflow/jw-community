@@ -582,6 +582,7 @@ FormBuilder = {
             } else {
                 value = UI.escapeHTML(value).replace(/(?:\r\n|\r|\n)/g, '<br />');
             }
+            FormBuilder.generateJSON(true);
             return value;
         },{
             type      : 'textarea',
@@ -603,7 +604,9 @@ FormBuilder = {
             }
         });
         $(obj).find(".section-comment").on("click", function(){
-            $(obj).find('.section-comment .editable').click();
+            if ($(obj).find('.section-comment .editable form').length === 0) {
+                $(obj).find('.section-comment .editable').click();
+            }
         });
     }, 
 

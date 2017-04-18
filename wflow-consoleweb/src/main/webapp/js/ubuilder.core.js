@@ -164,7 +164,7 @@ UserviewBuilder = {
         $('#userview-sidebar').sortable({
             opacity: 0.8,
             axis: 'y',
-            handle: '.category-label',
+            handle: '.category-label, .category-comment',
             tolerance: 'intersect',
             stop: function(event, ui){
                 UserviewBuilder.addToUndo();
@@ -513,6 +513,13 @@ UserviewBuilder = {
 
         category.properties = properties;
         thisObject.editorDialog.hide();
+        
+        $("#"+id).find('.category-label span').html(UI.escapeHTML(category.properties.label));
+        if (category.properties.comment !== undefined && category.properties.comment !== null && category.properties.comment !== "") {
+            $("#"+id).find(".category-comment").remove();
+            $("#"+id).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable">'+UI.escapeHTML(category.properties.comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div></div>');
+            UserviewBuilder.initEditableComment($("#"+id));
+        }
         UserviewBuilder.adjustJson();
     },
 
@@ -719,7 +726,16 @@ UserviewBuilder = {
             optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='fa fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
             optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
             optionHtml += "<button class='element-paste paste-menu disabled' title='"+get_ubuilder_msg('ubuilder.pasteMenu')+"'><i class='fa fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteMenu')+"</span></button>";
+            optionHtml += "<button class='element-comment' title='"+get_ubuilder_msg('ubuilder.comment')+"'><i class='fa fa-commenting-o'></i><span>"+get_ubuilder_msg('ubuilder.comment')+"</span></button>";
             optionHtml += "<button class='element-delete-category element-delete' title='"+get_ubuilder_msg('ubuilder.deleteCategory')+"'><i class='fa fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteCategory')+"</span></button>";
+        
+            //comment
+            $(obj).find(".section-comment").remove();
+            var comment = UserviewBuilder.data.categories[UserviewBuilder.categoriesPointer[$(obj).attr("id")]].properties.comment;
+            if (comment !== undefined && comment !== null && comment !== "") {
+                $(obj).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable">'+UI.escapeHTML(comment).replace(/(?:\r\n|\r|\n)/g, '<br />')+'</div></div>');
+                UserviewBuilder.initEditableComment(obj);
+            }
         }else if ($(obj).hasClass("menu")) {
             // add buttons for section
             optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='fa fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
@@ -786,6 +802,19 @@ UserviewBuilder = {
             var element = $(this).parent().parent();
             UserviewBuilder.paste(element);
         });
+        
+        // handle comment
+        $(optionDiv).children(".element-comment").click(function() {
+            var element = $(this).parent().parent();
+            
+            if ($(element).find(".category-comment").length === 0) {
+                $(element).find(".category-label").before('<div class="category-comment"><strong>'+get_ubuilder_msg("ubuilder.comment")+':</strong> <div class="editable"></div></div>');
+                UserviewBuilder.initEditableComment(obj);
+            }
+            $(element).find('.category-comment .editable').click();
+            
+            return false;
+        });
 
         // add option bar
         $(obj).prepend(optionDiv);
@@ -809,6 +838,47 @@ UserviewBuilder = {
                 }
                 $(optionDiv).css("display", "block");
                 $(optionDiv).css("visibility", "visible");
+            }
+        });
+    },
+    
+    initEditableComment: function(obj) {
+        var thisObject = this;
+        
+        $(obj).find(".category-comment .editable").editable(function(value, settings){
+            UserviewBuilder.addToUndo();
+            var id = $(obj).attr('id');
+            
+            thisObject.data.categories[thisObject.categoriesPointer[id]].properties.comment = value;
+            UserviewBuilder.adjustJson();
+            if(value === ""){
+                $(obj).find(".category-comment").remove();
+            } else {
+                value = UI.escapeHTML(value).replace(/(?:\r\n|\r|\n)/g, '<br />');
+            }
+            return value;
+        },{
+            type      : 'textarea',
+            tooltip   : '' ,
+            select    : true ,
+            style     : 'inherit',
+            cssclass  : 'LabelEditableField',
+            onblur    : 'submit',
+            rows      : 4,
+            width     : '100%',
+            minwidth  : 80,
+            submit  : get_ubuilder_msg("ubuilder.save"),
+            data: function(value, settings) {
+                if (value !== "") {
+                    return value.replace(/<br\s*[\/]?>/gi, "\n");
+                } else {
+                    return value;
+                }
+            }
+        });
+        $(obj).find(".category-comment").on("click", function(){
+            if ($(obj).find('.category-comment .editable form').length === 0) {
+                $(obj).find('.category-comment .editable').click();
             }
         });
     },

@@ -1,7 +1,8 @@
 package org.joget.apps.userview.model;
 
 import java.util.Collection;
-import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.lib.DefaultTheme;
 
 public class UserviewCategory extends Element {
 
@@ -33,7 +34,7 @@ public class UserviewCategory extends Element {
     }
 
     public String getPropertyOptions() {
-        return "[{title:'" + ResourceBundleUtil.getMessage("userview.userviewcategory.setPermission") + "', helplink:'"+ResourceBundleUtil.getMessage("userview.userviewcategory.setPermission.helplink")+"', properties:[{name:'id',label:'ID',type:'hidden'},{name:'label',label:'Label',type:'hidden'},{name:'hide',label:'" + ResourceBundleUtil.getMessage("userview.userviewcategory.hideFromMenu") + "', type:'checkbox', options:[{value:'yes', label:''}]},{name:'permission',label:'" + ResourceBundleUtil.getMessage("userview.userviewcategory.permission") + "',type:'elementselect',options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'}]}]";
+        return AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewCategory.json", null, true, null);
     }
 
     public String getDefaultPropertyValues() {

@@ -316,3 +316,15 @@
 #builder-screenshot {
     display: none;
 }
+
+.category-comment {
+    padding: 5px;
+    font-style: italic;
+    color: #999;
+    line-height: 11px;
+    font-size: 10px;
+    cursor: text
+}
+.category-comment .editable {
+    margin-left: 5px;
+}

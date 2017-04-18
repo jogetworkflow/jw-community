@@ -1,0 +1,48 @@
+[
+    {
+        title : '@@ubuilder.editCategory@@', 
+        helplink : '@@userview.userviewcategory.setPermission.helplink@@', 
+        properties : [
+            {
+                name : 'id',
+                label : 'ID',
+                type : 'hidden'
+            },
+            {
+                name : 'label' , 
+                label : '@@userview.htmlpage.label@@',
+                type : 'textfield',
+                required : 'True'
+            },
+            {
+                label : '@@userview.userviewcategory.setPermission@@',
+                type : 'header'
+            },
+            {
+                name : 'hide', 
+                label : '@@userview.userviewcategory.hideFromMenu@@', 
+                type : 'checkbox', 
+                options : [
+                    {value:'yes', label:''}
+                ]
+            },
+            { 
+                name : 'permission',
+                label : '@@userview.userviewcategory.permission@@',
+                type : 'elementselect',
+                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',
+                url : '[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+            },
+            {
+                label : '@@ubuilder.development@@',
+                type : 'header'
+            },
+            {
+                name : 'comment', 
+                label : '@@ubuilder.comment@@', 
+                type :'codeeditor', 
+                mode :'text'
+            }
+        ]
+    }
+]
