@@ -147,7 +147,6 @@ body:not(#login) #content > main > table{
     color: @buttonText !important;
     background-color: @button !important;
 }
-main .form-cell .grid table.tablesaw,
 main .dataList table {
     border-bottom: 2px solid @darkPrimary;
 }
@@ -317,9 +316,17 @@ main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multi
 main .form-cell .grid thead tr {
     background: @darkPrimary;
 }
-
+main .form-cell .grid thead tr {
+    background: screen(@darkPrimary, #333);
+}
 main .form-cell .grid tbody tr:nth-child(even) {
     background: fade(@defaultFontColor, 5%);
+}
+main .form-cell .grid tbody tr:nth-child(odd) {
+    background: transparent;
+}
+main .form-cell .grid table.tablesaw{
+    border-bottom: 2px solid screen(@darkPrimary, #333);
 }
 main .grid-stack-item .grid-stack-item-header {
     background: @darkPrimary;
