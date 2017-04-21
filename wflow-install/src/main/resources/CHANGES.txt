@@ -2,6 +2,10 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.14
+=================
+10913061 Fixed: wflow-install - Fixed missing hashpling in tomcat startup script @5.0-SNAPSHOT
+
 CHANGES IN 5.0.13
 =================
 f1c88001 Modified: wflow-consoleweb - Additional security hardening changes based on Fortify scan @5.0-SNAPSHOT
