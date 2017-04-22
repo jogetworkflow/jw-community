@@ -328,7 +328,7 @@ body .select_radio label > input[type="radio"] + i:after,
 body label > input[type="radio"] + i:after {
     font: normal normal normal 14px/1 FontAwesome;
     font-size: 25px;
-    content: "\f10c";
+    content: "\f1db";
     display:inline-block;
     width: 30px;
     cursor: pointer;
