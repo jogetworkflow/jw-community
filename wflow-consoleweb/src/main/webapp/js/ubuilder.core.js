@@ -372,8 +372,8 @@ UserviewBuilder = {
         }
         UserviewBuilder.attachCategoryLabelEditableEvent($(categoryObject).find('.category-label .category-label-editable'));
         UserviewBuilder.attachCategoryMenuSortableEvent($(categoryObject).find('.menu-container'));
-        UserviewBuilder.decorateElementOptions($(categoryObject));
         UserviewBuilder.updateCategoriesAndMenusPointer();
+        UserviewBuilder.decorateElementOptions($(categoryObject));
         UserviewBuilder.adjustJson();
     },
 
