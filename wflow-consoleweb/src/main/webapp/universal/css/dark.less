@@ -313,19 +313,19 @@ main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multi
         border: 2px solid fade(@defaultFontColor, 80%);
     }
 }
-main .form-cell .grid thead tr {
+main .form-cell .grid thead tr, main .subform-cell .grid thead tr {
     background: @darkPrimary;
 }
-main .form-cell .grid thead tr {
+main .form-cell .grid thead tr, main .subform-cell .grid thead tr {
     background: screen(@darkPrimary, #333);
 }
-main .form-cell .grid tbody tr:nth-child(even) {
+main .form-cell .grid tbody tr:nth-child(even), main .subform-cell .grid tbody tr:nth-child(even) {
     background: fade(@defaultFontColor, 5%);
 }
-main .form-cell .grid tbody tr:nth-child(odd) {
+main .form-cell .grid tbody tr:nth-child(odd), main .subform-cell .grid tbody tr:nth-child(odd) {
     background: transparent;
 }
-main .form-cell .grid table.tablesaw{
+main .form-cell .grid table.tablesaw, main .subform-cell .grid table.tablesaw{
     border-bottom: 2px solid screen(@darkPrimary, #333);
 }
 main .grid-stack-item .grid-stack-item-header {
