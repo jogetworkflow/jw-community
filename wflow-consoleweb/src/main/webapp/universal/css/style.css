@@ -1018,6 +1018,10 @@ body:not(#login).embeded  #content > main > table{
     font-style: normal;
 }
 
+.waves-input-wrapper [disabled] {
+    opacity: 0.5;
+}
+
 .page-loader {
     position: fixed;
     width: 100%;
