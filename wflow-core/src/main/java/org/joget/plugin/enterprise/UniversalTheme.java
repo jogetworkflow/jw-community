@@ -364,7 +364,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 
                 html += "<li class=\"user-link dropdown\">\n"
                       + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
-                      + "	     " + profileImageTag + user.getFirstName() + " " + user.getLastName() + "\n"
+                      + "	     " + profileImageTag + StringUtil.stripHtmlTag(user.getFirstName(), new String[]{}) + " " + StringUtil.stripHtmlTag(user.getLastName(), new String[]{}) + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";
 
@@ -445,7 +445,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             html += "<li class=\"mm-profile user-link\">\n"
                   + "    <a class=\"dropdown\">\n"
                   + "        "+profileImageTag+"\n"  
-                  + "	     <span>" + user.getFirstName() + " " + user.getLastName() + "</span>\n"
+                  + "	     <span>" + StringUtil.stripHtmlTag(user.getFirstName(), new String[]{}) + " " + StringUtil.stripHtmlTag(user.getLastName(), new String[]{}) + "</span>\n"
                   + "	     <small>" + email + "</small>\n"
                   + "    </a>\n";
             
