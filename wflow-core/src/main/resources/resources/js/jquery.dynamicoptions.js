@@ -59,6 +59,9 @@
             function(data){
                 if (o.type === "selectbox") {
                     var options = "";
+                    if ($(target).find("option.label").length > 0) {
+                        options = $("<select>").append($(target).find("option.label").clone()).html();
+                    }
                     for (var i=0, len=data.length; i < len; i++) {
                         var selected = "";
                         if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
@@ -96,13 +99,13 @@
         var values = getValues(o.paramName);
         
         if ($(target).is("select")) {
-            if ($(target).closest(".form-cell, .subform-cell").find('select.dynamic_option_container').length == 0) {
+            if ($(target).closest(".form-cell, .subform-cell, .filter-cell").find('select.dynamic_option_container').length == 0) {
                 $(target).after('<div class="ui-screen-hidden"><select class="dynamic_option_container" style="display:none;">'+$(target).html()+'</select></div>');
             }
             
-            $(target).html($(target).closest(".form-cell, .subform-cell").find('select.dynamic_option_container').html());
+            $(target).html($(target).closest(".form-cell, .subform-cell, .filter-cell").find('select.dynamic_option_container').html());
             
-            $(target).find("option").each(function(){
+            $(target).find("option:not(.label)").each(function(){
                 var option = $(this);
                 if ($(option).attr("grouping") != "" && $.inArray($(option).attr("grouping"), controlValues) == -1) {
                     $(option).remove();
