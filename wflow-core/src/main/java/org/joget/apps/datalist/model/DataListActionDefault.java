@@ -21,4 +21,16 @@ public abstract class DataListActionDefault extends ExtDefaultPlugin implements 
             return false;
         }
     }
+    
+    public Boolean supportColumn() {
+        return true;
+    }
+    
+    public Boolean supportRow() {
+        return true;
+    }
+    
+    public Boolean supportList() {
+        return true;
+    }
 }

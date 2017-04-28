@@ -34,7 +34,10 @@
         {
             value : 'popup',
             label : '@@datalist.hyperlinkdatalistaction.popup@@'
-        }]
+        }],
+        control_field: 'datalist_type',
+        control_value: 'column|row_action',
+        control_use_regex: 'true'
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.iframename@@',

@@ -49,4 +49,19 @@ public interface DataListAction extends PropertyEditable {
      * @return
      */
     DataListActionResult executeAction(DataList dataList, String[] rowKeys);
+    
+    /**
+     * Flag that decide this action object can use as column action
+     */
+    Boolean supportColumn();
+    
+    /**
+     * Flag that decide this action object can use as row action
+     */
+    Boolean supportRow();
+    
+    /**
+     * Flag that decide this action object can use as list action
+     */
+    Boolean supportList();
 }

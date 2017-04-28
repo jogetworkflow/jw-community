@@ -187,6 +187,9 @@ public class DatalistBuilderWebController {
                 }
             }
             hm.put("type", "text");
+            hm.put("supportColumn", action.supportColumn());
+            hm.put("supportRow", action.supportRow());
+            hm.put("supportList", action.supportList());
             collection.add(hm);
         }
         jsonObject.accumulate("actions", collection);

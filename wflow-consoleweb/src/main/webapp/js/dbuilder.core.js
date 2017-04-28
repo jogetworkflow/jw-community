@@ -483,24 +483,38 @@ DatalistBuilder = {
                 DatalistBuilder.adjustCanvas(event, ui);
             },
             stop: function(event, ui){
-                DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
                 if($(ui.item[0]).hasClass("builder-palette-action")){
                     var id = $(ui.item[0]).data('id');
-                    var columnId = DatalistBuilder.getId("rowAction");
-                    DatalistBuilder.chosenRowActions[columnId] = DatalistBuilder.cloneObject(DatalistBuilder.availableActions[id]);
-                    DatalistBuilder.chosenRowActions[columnId].id = columnId;
-                    if (typeof DatalistBuilder.chosenRowActions[columnId].properties == "undefined") {
-                        DatalistBuilder.chosenRowActions[columnId].properties = new Object();
-                    }
-                    DatalistBuilder.chosenRowActions[columnId].properties.id = columnId;
-                    DatalistBuilder.chosenRowActions[columnId].properties.label = UI.escapeHTML(DatalistBuilder.availableActions[id].label);
-                    delete DatalistBuilder.chosenRowActions[columnId].propertyOptions;
-
-                    //call decorator to render column in the designer's canvas
-                    $(ui.item[0]).attr("id", columnId);
-                    DatalistBuilder.renderRowAction(columnId);
-                }
+                    var action = DatalistBuilder.availableActions[id];
+                    
+                    if (action.supportRow) {    
+                        DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
                 
+                        var columnId = DatalistBuilder.getId("rowAction");
+                        DatalistBuilder.chosenRowActions[columnId] = DatalistBuilder.cloneObject(action);
+                        DatalistBuilder.chosenRowActions[columnId].id = columnId;
+                        if (typeof DatalistBuilder.chosenRowActions[columnId].properties == "undefined") {
+                            DatalistBuilder.chosenRowActions[columnId].properties = new Object();
+                        }
+                        DatalistBuilder.chosenRowActions[columnId].properties.id = columnId;
+                        DatalistBuilder.chosenRowActions[columnId].properties.label = UI.escapeHTML(action.label);
+                        delete DatalistBuilder.chosenRowActions[columnId].propertyOptions;
+                        delete DatalistBuilder.chosenRowActions[columnId].supportColumn;
+                        delete DatalistBuilder.chosenRowActions[columnId].supportRow;
+                        delete DatalistBuilder.chosenRowActions[columnId].supportList;
+
+                        //call decorator to render column in the designer's canvas
+                        $(ui.item[0]).attr("id", columnId);
+                        DatalistBuilder.renderRowAction(columnId);
+                        
+                        DatalistBuilder.adjustCanvas(event, ui);
+                    } else {
+                        $(ui.item[0]).remove();
+                        alert(get_dbuilder_msg("dbuilder.notSupportRow"));
+                    }
+                } else {
+                    DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
+                }
                 DatalistBuilder.adjustCanvas(event, ui);
             }
         });
@@ -516,22 +530,34 @@ DatalistBuilder = {
                 DatalistBuilder.adjustCanvas(event, ui);
             },
             stop: function(event, ui){
-                DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
                 if($(ui.item[0]).hasClass("builder-palette-action")){
                     var id = $(ui.item[0]).data('id');
-                    var columnId = DatalistBuilder.getId("action");
-                    DatalistBuilder.chosenActions[columnId] = DatalistBuilder.cloneObject(DatalistBuilder.availableActions[id]);
-                    DatalistBuilder.chosenActions[columnId].id = columnId;
-                    if (typeof DatalistBuilder.chosenActions[columnId].properties == "undefined") {
-                        DatalistBuilder.chosenActions[columnId].properties = new Object();
-                    }
-                    DatalistBuilder.chosenActions[columnId].properties.id = columnId;
-                    DatalistBuilder.chosenActions[columnId].properties.label = UI.escapeHTML(DatalistBuilder.availableActions[id].label);
-                    delete DatalistBuilder.chosenActions[columnId].propertyOptions;
+                    var action = DatalistBuilder.availableActions[id];
+                    
+                    if (action.supportList) {
+                        DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
+                        var columnId = DatalistBuilder.getId("action");
+                        DatalistBuilder.chosenActions[columnId] = DatalistBuilder.cloneObject(action);
+                        DatalistBuilder.chosenActions[columnId].id = columnId;
+                        if (typeof DatalistBuilder.chosenActions[columnId].properties == "undefined") {
+                            DatalistBuilder.chosenActions[columnId].properties = new Object();
+                        }
+                        DatalistBuilder.chosenActions[columnId].properties.id = columnId;
+                        DatalistBuilder.chosenActions[columnId].properties.label = UI.escapeHTML(action.label);
+                        delete DatalistBuilder.chosenActions[columnId].propertyOptions;
+                        delete DatalistBuilder.chosenActions[columnId].supportColumn;
+                        delete DatalistBuilder.chosenActions[columnId].supportRow;
+                        delete DatalistBuilder.chosenActions[columnId].supportList;
 
-                    //call decorator to render column in the designer's canvas
-                    $(ui.item[0]).attr("id", columnId);
-                    DatalistBuilder.renderAction(columnId);
+                        //call decorator to render column in the designer's canvas
+                        $(ui.item[0]).attr("id", columnId);
+                        DatalistBuilder.renderAction(columnId);
+                    } else {
+                        $(ui.item[0]).remove();
+                        alert(get_dbuilder_msg("dbuilder.notSupportList"));
+                    }
+                } else {
+                    DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
                 }
                 
                 DatalistBuilder.adjustCanvas(event, ui);
@@ -933,6 +959,12 @@ DatalistBuilder = {
                 type : 'hidden'
             },
             {
+                label : 'datalist_type',
+                name  : 'datalist_type',
+                type : 'hidden',
+                value : 'column'
+            },
+            {
                 label : get_dbuilder_msg('dbuilder.name'),
                 name  : 'name',
                 type : 'label'
@@ -1068,7 +1100,18 @@ DatalistBuilder = {
                 name : 'action',
                 label : get_dbuilder_msg('dbuilder.action'),
                 type : 'elementselect',
-                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListAction',
+                options_callback : function(props, values) {
+                    var options = [{label : '', value : ''}];
+                    var actions = DatalistBuilder.availableActions;
+                    for(var e in actions){
+                        var action = actions[e];
+                        if (action.supportColumn) {
+                            options.push({label : UI.escapeHTML(action.label), value : action.className});
+                        }
+                    }
+        
+                    return options;
+                },
                 url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
             }]
         },{
@@ -1133,6 +1176,12 @@ DatalistBuilder = {
                 name  : 'id',
                 required : 'true',
                 type : 'hidden'
+            },
+            {
+                label : 'datalist_type',
+                name  : 'datalist_type',
+                type : 'hidden',
+                value : 'filter'
             },
             {
                 label : get_dbuilder_msg('dbuilder.name'),
@@ -1412,6 +1461,15 @@ DatalistBuilder = {
         
         if (availableAction && availableAction.propertyOptions) {
             propertiesDefinition = eval("(" + availableAction.propertyOptions + ")");
+            
+            propertiesDefinition[0]['properties'].push(
+                {
+                    label : 'datalist_type',
+                    name  : 'datalist_type',
+                    type : 'hidden',
+                    value : 'action'
+                }
+            );    
         } else {
             return [];
         }
@@ -1461,7 +1519,14 @@ DatalistBuilder = {
         
         propertiesDefinition.push({
             title : get_dbuilder_msg('dbuilder.rowAction.visibility'),
-            properties : [{
+            properties : [
+                {
+                    label : 'datalist_type',
+                    name  : 'datalist_type',
+                    type : 'hidden',
+                    value : 'row_action'
+                },
+                {
                 name : 'rules',
                 label : get_dbuilder_msg('dbuilder.rowAction.rules'),
                 type : 'grid',
