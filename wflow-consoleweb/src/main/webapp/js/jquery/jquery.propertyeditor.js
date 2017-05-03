@@ -287,8 +287,11 @@ PropertyEditor.Util = {
                 var fieldId = fieldIds[i];
                 if (fieldId.indexOf(".") !== -1) {
                     selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                    if ($(field.editor).find(selector).length === 0) {
+                        selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                    }
                 } else {
-                    selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]"
+                    selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]";
                 }
                 $(field.editor).on("change", selector, function() {
                     PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties, reference);
@@ -456,8 +459,11 @@ PropertyEditor.Util = {
             var fieldId = fieldIds[i];
             if (fieldId.indexOf(".") !== -1) {
                 selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                if ($(field.editor).find(selector).length === 0) {
+                    selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                }
             } else {
-                selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]"
+                selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]";
             }
             $(field.editor).on("change", selector, function() {
                 PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method);
@@ -2052,7 +2058,6 @@ PropertyEditor.Type.SelectBox.prototype = {
             if (value === "" || value === null) {
                 value = thisObj.value;
             }
-            
             $.each(this.properties.options, function(i, option){
                 var selected = "";
                 if(value === option.value){
