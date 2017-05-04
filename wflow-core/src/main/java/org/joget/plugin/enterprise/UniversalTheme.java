@@ -257,7 +257,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         
         data.put("header_classes", "navbar");
         data.put("header_inner_before", "<div class=\"navbar-inner\"><div class=\"container-fluid\"><div class=\"hi-trigger ma-trigger\" id=\"sidebar-trigger\"><div class=\"line-wrap\"><div class=\"line top\"></div><div class=\"line center\"></div><div class=\"line bottom\"></div></div></div>");
-        data.put("header_inner_after", "</div></div>");
+        data.put("header_inner_after", "</div></div>" + getPropertyString("subheader"));
         data.put("header_link_classes", "brand");
         data.put("header_info_classes", "inline-block");
         data.put("header_name_classes", "inline-block");
@@ -511,7 +511,9 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     @Override
     public String getFooter(Map<String, Object> data) {
         if (enableResponsiveSwitch()) {
-            data.put("footer_inner_after", "<div id=\"responsiveSwitch\"><p><a href=\"#\" class=\"rs-link\" data-link-desktop=\""+ ResourceBundleUtil.getMessage("theme.universal.switchDesktop") +"\" data-link-responsive=\""+ ResourceBundleUtil.getMessage("theme.universal.switchMobile") +"\"></a></p></div>");
+            data.put("footer_inner_after", "<div id=\"responsiveSwitch\"><p><a href=\"#\" class=\"rs-link\" data-link-desktop=\""+ ResourceBundleUtil.getMessage("theme.universal.switchDesktop") +"\" data-link-responsive=\""+ ResourceBundleUtil.getMessage("theme.universal.switchMobile") +"\"></a></p></div>" + getPropertyString("subfooter"));
+        } else {
+            data.put("footer_inner_after", getPropertyString("subfooter"));
         }
         return super.getFooter(data);
     }

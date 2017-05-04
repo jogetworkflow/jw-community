@@ -1107,5 +1107,17 @@
         label : '@@theme.universal.customJavascript@@',
         type : 'codeeditor',
         mode : 'javascript'
+    },
+    {
+        name : 'subheader',
+        label : '@@theme.universal.subHeader@@',
+        type : 'codeeditor',
+        mode : 'html'
+    },
+    {
+        name : 'subfooter',
+        label : '@@theme.universal.subFooter@@',
+        type : 'codeeditor',
+        mode : 'html'
     }]
 }]
