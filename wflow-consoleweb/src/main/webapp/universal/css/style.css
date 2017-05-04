@@ -746,11 +746,11 @@ body#login #page > footer {
     padding-top: 14px;
 }
 
-#sidebar li ul>li>a {
+#sidebar li ul>li>a, #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 20px 8px 65px;
     display: block;
 }
-.rtl #sidebar li ul>li>a {
+.rtl #sidebar li ul>li>a, .rtl #sidebar li ul>li>.sidemenu_inner {
     padding: 8px 65px 8px 20px;
 }
 
@@ -893,7 +893,7 @@ body#login #page > footer {
     body.horizontal_menu #sidebar .nav>li:hover ul{
         display:block  !important;
     }
-    body.horizontal_menu #sidebar li ul>li>a {
+    body.horizontal_menu #sidebar li ul>li>a, body.horizontal_menu #sidebar li ul>li>.sidemenu_inner {
         padding: 8px 15px;
     }
     body.horizontal_menu #sidebar, body.horizontal_menu #sidebar .mCustomScrollBox, body.horizontal_menu #sidebar .mCSB_container {
