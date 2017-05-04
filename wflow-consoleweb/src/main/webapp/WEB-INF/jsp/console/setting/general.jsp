@@ -1,9 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.commons.util.SecurityUtil"%>
 <%@ page import="java.io.File,org.joget.commons.util.SetupManager"%>
 <%@ page import="org.joget.commons.util.HostManager"%>
 
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
+<c:set var="isNonceSupported" value="<%= SecurityUtil.getNonceGenerator() != null %>"/>
 
 <commons:header />
 <style>
@@ -351,6 +353,18 @@
                     </div>
                 </span>
             </div>
+            <c:if test="${isNonceSupported}">
+                <div class="main-body-row">
+                    <span class="row-content">
+                        <div class="form-row">
+                            <label for="extendNonceCacheTime"><fmt:message key="console.setting.general.label.extendNonceCacheTime"/></label>
+                            <span class="form-input">
+                                <input id="extendNonceCacheTime" type="number" min="0" max="12" name="extendNonceCacheTime" value="<c:out value="${settingMap['extendNonceCacheTime']}"/>"/>
+                            </span>
+                        </div>
+                    </span>
+                </div>
+            </c:if>    
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.submit"/>" />
             </div>

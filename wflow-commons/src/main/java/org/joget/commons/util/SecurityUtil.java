@@ -196,6 +196,14 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String generateNonce(String[] attributes, int lifepanHour) {
+        
+        SetupManager sm = (SetupManager) appContext.getBean("setupManager");
+        String extendNonceCacheTime = sm.getSettingValue("extendNonceCacheTime");
+        if (extendNonceCacheTime != null && !extendNonceCacheTime.isEmpty()) {
+            try {
+                lifepanHour += Integer.parseInt(extendNonceCacheTime);
+            } catch (Exception e) {}
+        }
 
         if (getNonceGenerator() != null) {
             try {
