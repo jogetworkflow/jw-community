@@ -1,12 +1,6 @@
 [{
     title : '@@app.emailtool.config@@',
     properties : [{
-        name : 'from',
-        label : '@@app.emailtool.from@@',
-        type : 'textfield',
-        required : 'True'
-    },
-    {
         name : 'toSpecific',
         label : '@@app.emailtool.toEmail@@',
         type : 'textfield'
@@ -51,16 +45,19 @@
 {
     title : '@@app.emailtool.smtpSetting@@',
     properties : [{
+        name : 'from',
+        label : '@@app.emailtool.from@@',
+        type : 'textfield'
+    },
+    {
         name : 'host',
         label : '@@app.emailtool.host@@',
-        type : 'textfield',
-        required : 'True'
+        type : 'textfield'
     },
     {
         name : 'port',
         label : '@@app.emailtool.port@@',
-        type : 'textfield',
-        required : 'True'
+        type : 'textfield'
     },
     {
         name : 'security',
@@ -90,18 +87,17 @@
         label : '@@app.emailtool.password@@',
         type : 'password'
     }],
+    validators : [{  
+        type : 'AJAX',
+        url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=validate',
+        default_error_message : '@@app.emailtool.error.smtp@@'
+    }],
     buttons : [{
         name : 'testmail',    
         label : '@@app.emailtool.sendTestMail@@',
         ajax_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=testmail',
-        fields : ['host', 'port', 'security', 'username', 'password'],
+        fields : ['from', 'host', 'port', 'security', 'username', 'password'],
         addition_fields : [
-            {
-                name : 'from',
-                label : '@@app.emailtool.from@@',
-                type : 'textfield',
-                required : 'True'
-            },
             {
                 name : 'toSpecific',
                 label : '@@app.emailtool.toEmail@@',

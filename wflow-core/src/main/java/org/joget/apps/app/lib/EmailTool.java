@@ -28,6 +28,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.PluginException;
@@ -36,6 +37,7 @@ import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupport {
@@ -91,31 +93,11 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             smtpUsername = AppUtil.processHashVariable(smtpUsername, wfAssignment, null, null);
             smtpPassword = AppUtil.processHashVariable(smtpPassword, wfAssignment, null, null);
             security = AppUtil.processHashVariable(security, wfAssignment, null, null);
-
+            final String fromStr = WorkflowUtil.processVariable(from, formDataTable, wfAssignment);
+            
             // create the email message
-            final HtmlEmail email = new HtmlEmail();
-            email.setHostName(smtpHost);
-            if (smtpPort != null && smtpPort.length() != 0) {
-                email.setSmtpPort(Integer.parseInt(smtpPort));
-            }
-            if (smtpUsername != null && !smtpUsername.isEmpty()) {
-                if (smtpPassword != null) {
-                    smtpPassword = SecurityUtil.decrypt(smtpPassword);
-                }
-                email.setAuthentication(smtpUsername, smtpPassword);
-            }
-            if(security!= null){
-                if(security.equalsIgnoreCase("SSL") ){
-                    email.setSSLOnConnect(true);
-                    email.setSSLCheckServerIdentity(true);
-                    if (smtpPort != null && smtpPort.length() != 0) {
-                        email.setSslSmtpPort(smtpPort);
-                    }
-                }else if(security.equalsIgnoreCase("TLS")){
-                    email.setStartTLSEnabled(true);
-                    email.setSSLCheckServerIdentity(true);
-                }
-            }
+            final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, fromStr);
+            
             if (cc != null && cc.length() != 0) {
                 Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);
                 for (String address : ccs) {
@@ -129,8 +111,6 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                 }
             }
 
-            final String fromStr = WorkflowUtil.processVariable(from, formDataTable, wfAssignment);
-            email.setFrom(StringUtil.encodeEmail(fromStr));
             email.setSubject(emailSubject);
             email.setCharset("UTF-8");
             
@@ -279,31 +259,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                 String from = AppUtil.processHashVariable(request.getParameter("from"), null, null, null, appDef);
                 String to = AppUtil.processHashVariable(request.getParameter("toSpecific"), null, null, null, appDef);
 
-                final HtmlEmail email = new HtmlEmail();
-                email.setHostName(smtpHost);
-                if (smtpPort != null && smtpPort.length() != 0) {
-                    email.setSmtpPort(Integer.parseInt(smtpPort));
-                }
-                if (smtpUsername != null && !smtpUsername.isEmpty()) {
-                    if (smtpPassword != null) {
-                        smtpPassword = SecurityUtil.decrypt(smtpPassword);
-                    }
-                    email.setAuthentication(smtpUsername, smtpPassword);
-                }
-                if(security!= null){
-                    if(security.equalsIgnoreCase("SSL") ){
-                        email.setSSLOnConnect(true);
-                        email.setSSLCheckServerIdentity(true);
-                        if (smtpPort != null && smtpPort.length() != 0) {
-                            email.setSslSmtpPort(smtpPort);
-                        }
-                    }else if(security.equalsIgnoreCase("TLS")){
-                        email.setStartTLSEnabled(true);
-                        email.setSSLCheckServerIdentity(true);
-                    }
-                }
-                
-                email.setFrom(from);
+                final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from);
                 email.setSubject(ResourceBundleUtil.getMessage("app.emailtool.testSubject"));
                 email.setCharset("UTF-8");
                 email.setHtmlMsg(ResourceBundleUtil.getMessage("app.emailtool.testMessage"));
@@ -324,6 +280,38 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.accumulate("message", message);
+                jsonObject.write(response.getWriter());
+            } catch (Exception e) {
+                //ignore
+            }
+        } if ("validate".equals(action)) {
+            boolean error = false;
+            
+            String smtpHost = request.getParameter("host");
+            String smtpPort = request.getParameter("port");
+            String from = request.getParameter("from");
+            
+            if (smtpHost == null || smtpHost.isEmpty() || smtpPort == null || smtpPort.isEmpty() || from == null || from.isEmpty()) {
+                SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+                String host = setupManager.getSettingValue("smtpHost");
+                String port = setupManager.getSettingValue("smtpPort");
+                String form = setupManager.getSettingValue("smtpEmail");
+                
+                if (host == null || host.isEmpty() || port == null || port.isEmpty() || form == null || from.isEmpty()) {
+                    error = true;
+                }
+            }
+            
+            try {
+                JSONObject jsonObject = new JSONObject();
+                
+                if (!error) {
+                    jsonObject.put("status", "success");
+                } else {
+                    jsonObject.put("status", "fail");
+                    jsonObject.put("message", new JSONArray());
+                }
+                
                 jsonObject.write(response.getWriter());
             } catch (Exception e) {
                 //ignore

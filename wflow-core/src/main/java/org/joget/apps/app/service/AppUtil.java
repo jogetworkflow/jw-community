@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
@@ -21,6 +23,7 @@ import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
@@ -876,4 +879,43 @@ public class AppUtil implements ApplicationContextAware {
         threadLocalAppMessages.remove();
     }
     
+    public static HtmlEmail createEmail(String host, String port, String security, String username, String password, String form) throws EmailException {
+        //use system setting if host is empty
+        if (host == null || host.isEmpty()) {
+            SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+            host = setupManager.getSettingValue("smtpHost");
+            port = setupManager.getSettingValue("smtpPort");
+            security = setupManager.getSettingValue("smtpSecurity");
+            username = setupManager.getSettingValue("smtpUsername");
+            password = setupManager.getSettingValue("smtpPassword");
+            form = setupManager.getSettingValue("smtpEmail");
+        }
+        
+        HtmlEmail email = new HtmlEmail();
+        email.setHostName(host);
+        if (port != null && port.length() != 0) {
+            email.setSmtpPort(Integer.parseInt(port));
+        }
+        if (username != null && !username.isEmpty()) {
+            if (password != null) {
+                password = SecurityUtil.decrypt(password);
+            }
+            email.setAuthentication(username, password);
+        }
+        if(security!= null){
+            if(security.equalsIgnoreCase("SSL") ){
+                email.setSSLOnConnect(true);
+                email.setSSLCheckServerIdentity(true);
+                if (port != null && port.length() != 0) {
+                    email.setSslSmtpPort(port);
+                }
+            }else if(security.equalsIgnoreCase("TLS")){
+                email.setStartTLSEnabled(true);
+                email.setSSLCheckServerIdentity(true);
+            }
+        }
+        email.setFrom(StringUtil.encodeEmail(form));
+        
+        return email;
+    }
 }

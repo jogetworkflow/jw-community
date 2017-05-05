@@ -151,26 +151,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                 
                                 if (wfAssignment != null) {
                                     // create the email message
-                                    HtmlEmail email = new HtmlEmail();
-                                    email.setHostName(smtpHost);
-                                    if (smtpPort != null && smtpPort.length() != 0) {
-                                        email.setSmtpPort(Integer.parseInt(smtpPort));
-                                    }
-                                    if (smtpUsername != null && !smtpUsername.isEmpty()) {
-                                        email.setAuthentication(smtpUsername, decryptedSmtpPassword);
-                                    }
-                                    if (security != null) {
-                                        if (security.equalsIgnoreCase("SSL")) {
-                                            email.setSSLOnConnect(true);
-                                            email.setSSLCheckServerIdentity(true);
-                                            if (smtpPort != null && smtpPort.length() != 0) {
-                                                email.setSslSmtpPort(smtpPort);
-                                            }
-                                        } else if (security.equalsIgnoreCase("TLS")) {
-                                            email.setStartTLSEnabled(true);
-                                            email.setSSLCheckServerIdentity(true);
-                                        }
-                                    }
+                                    HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from);
                                     if (cc != null && cc.length() != 0) {
                                         Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, auditTrail.getAppDef());
                                         for (String address : ccs) {
@@ -183,7 +164,6 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         email.addTo(StringUtil.encodeEmail(address));
                                         emailToOutput += address + ", ";
                                     }
-                                    email.setFrom(StringUtil.encodeEmail(from));
 
                                     if (subject != null && subject.length() != 0) {
                                         email.setSubject(WorkflowUtil.processVariable(subject, null, wfAssignment));

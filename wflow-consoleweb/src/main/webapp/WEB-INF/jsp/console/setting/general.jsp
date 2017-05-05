@@ -225,6 +225,18 @@
                     </div>
                 </span>
             </div>
+            <c:if test="${isNonceSupported}">
+                <div class="main-body-row">
+                    <span class="row-content">
+                        <div class="form-row">
+                            <label for="extendNonceCacheTime"><fmt:message key="console.setting.general.label.extendNonceCacheTime"/></label>
+                            <span class="form-input">
+                                <input id="extendNonceCacheTime" type="number" min="0" max="12" name="extendNonceCacheTime" value="<c:out value="${settingMap['extendNonceCacheTime']}"/>"/>
+                            </span>
+                        </div>
+                    </span>
+                </div>
+            </c:if>              
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.saSettings"/></span>
             </div>
@@ -353,18 +365,73 @@
                     </div>
                 </span>
             </div>
-            <c:if test="${isNonceSupported}">
-                <div class="main-body-row">
-                    <span class="row-content">
-                        <div class="form-row">
-                            <label for="extendNonceCacheTime"><fmt:message key="console.setting.general.label.extendNonceCacheTime"/></label>
-                            <span class="form-input">
-                                <input id="extendNonceCacheTime" type="number" min="0" max="12" name="extendNonceCacheTime" value="<c:out value="${settingMap['extendNonceCacheTime']}"/>"/>
-                            </span>
-                        </div>
-                    </span>
-                </div>
-            </c:if>    
+            <div class="main-body-content-subheader">
+                <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpHost"><fmt:message key="console.setting.general.label.smtpHost"/></label>
+                        <span class="form-input">
+                            <input id="smtpHost" type="text" name="smtpHost" value="<c:out value="${settingMap['smtpHost']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpPort"><fmt:message key="console.setting.general.label.smtpPort"/></label>
+                        <span class="form-input">
+                            <input id="smtpPort" type="text" name="smtpPort" value="<c:out value="${settingMap['smtpPort']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpSecurity"><fmt:message key="console.setting.general.label.smtpSecurity"/></label>
+                        <span class="form-input">
+                            <select id="smtpSecurity" name="smtpSecurity">
+                                <option value=""></option>
+                                <option value="TLS" <c:if test="${'TLS' == settingMap['smtpSecurity']}"> selected</c:if>><fmt:message key="console.setting.general.label.smtpSecurity.TLS"/></option>
+                                <option value="SSL" <c:if test="${'SSL' == settingMap['smtpSecurity']}"> selected</c:if>><fmt:message key="console.setting.general.label.smtpSecurity.SSL"/></option>
+                            </select>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpUsername"><fmt:message key="console.setting.general.label.smtpUsername"/></label>
+                        <span class="form-input">
+                            <input id="smtpUsername" type="text" name="smtpUsername" value="<c:out value="${settingMap['smtpUsername']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpPassword"><fmt:message key="console.setting.general.label.smtpPassword"/></label>
+                        <span class="form-input">
+                            <input id="smtpPassword" type="password" name="smtpPassword" value="<c:out value="${settingMap['smtpPassword']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="smtpEmail"><fmt:message key="console.setting.general.label.smtpEmail"/></label>
+                        <span class="form-input">
+                            <input id="smtpEmail" type="text" name="smtpEmail" value="<c:out value="${settingMap['smtpEmail']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.submit"/>" />
             </div>
