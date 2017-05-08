@@ -221,10 +221,10 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      */
     public String getLoginForm(Map<String, Object> data) {
         if (!data.containsKey("login_form_before")) {
-            data.put("login_form_before", this.userview.getSetting().getPropertyString("loginPageTop"));
+            data.put("login_form_before", getPropertyString("loginPageTop"));
         }
         if (!data.containsKey("login_form_after")) {
-            data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
+            data.put("login_form_after", getPropertyString("loginPageBottom"));
         }
         return UserviewUtil.getTemplate(this, data, "/templates/userview/login.ftl");
     }
