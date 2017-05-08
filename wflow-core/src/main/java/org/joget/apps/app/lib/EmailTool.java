@@ -289,15 +289,15 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             
             String smtpHost = request.getParameter("host");
             String smtpPort = request.getParameter("port");
-            String from = request.getParameter("from");
+            String smtpFrom = request.getParameter("from");
             
-            if (smtpHost == null || smtpHost.isEmpty() || smtpPort == null || smtpPort.isEmpty() || from == null || from.isEmpty()) {
+            if (smtpHost == null || smtpHost.isEmpty() || smtpPort == null || smtpPort.isEmpty() || smtpFrom == null || smtpFrom.isEmpty()) {
                 SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
                 String host = setupManager.getSettingValue("smtpHost");
                 String port = setupManager.getSettingValue("smtpPort");
-                String form = setupManager.getSettingValue("smtpEmail");
+                String from = setupManager.getSettingValue("smtpEmail");
                 
-                if (host == null || host.isEmpty() || port == null || port.isEmpty() || form == null || from.isEmpty()) {
+                if (host == null || host.isEmpty() || port == null || port.isEmpty() || from == null || from.isEmpty()) {
                     error = true;
                 }
             }
