@@ -209,8 +209,14 @@ ProcessBuilder.Model.Activity.prototype = {
                         value: 'd',
                         label: get_pbuilder_msg("pbuilder.label.dateFormat")
                     },{
+                        value: '1',
+                        label: get_pbuilder_msg("pbuilder.label.dateFormat2")
+                    },{
                         value: 't',
                         label: get_pbuilder_msg("pbuilder.label.dateTimeFormat")
+                    },{
+                        value: '2',
+                        label: get_pbuilder_msg("pbuilder.label.dateTimeFormat2")
                     }]
                 },{
                     key: 'deadlineLimit',
@@ -2428,6 +2434,18 @@ ProcessBuilder.Designer = {
                             if (matches.length > 1) {
                                 deadlineLimit = matches[1].substring(1, matches[1].length-2);
                             }
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd") >= 0) {
+                            durationUnit = "1";
+                            var matches = deadlineCondition.match("parse\(.+\)");
+                            if (matches.length > 1) {
+                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                            }
+                        } else if (deadlineCondition.indexOf("yyyy-MM-dd HH:mm") >= 0) {
+                            durationUnit = "2";
+                            var matches = deadlineCondition.match("parse\(.+\)");
+                            if (matches.length > 1) {
+                                deadlineLimit = matches[1].substring(1, matches[1].length-2);
+                            }
                         } else {
                             var limitMatch = deadlineCondition.match("\\+\\(.+\\*");
                             if (limitMatch && limitMatch.length > 0) {
@@ -3754,6 +3772,10 @@ ProcessBuilder.Designer = {
                             deadlineCondition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy'); d.parse(" + deadline.deadlineLimit + ");";
                         } else if (deadline.durationUnit ==='t') {
                             deadlineCondition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy HH:mm'); d.parse(" + deadline.deadlineLimit + ");";
+                        } else if (deadline.durationUnit === '1') {
+                            deadlineCondition = "var d = new java.text.SimpleDateFormat('yyyy-MM-dd'); d.parse(" + deadline.deadlineLimit + ");";
+                        } else if (deadline.durationUnit === '2') {
+                            deadlineCondition = "var d = new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm'); d.parse(" + deadline.deadlineLimit + ");";
                         } else {
                             var limit = (deadline.deadlineLimit) ? deadline.deadlineLimit : "";
                             var duration = "";
