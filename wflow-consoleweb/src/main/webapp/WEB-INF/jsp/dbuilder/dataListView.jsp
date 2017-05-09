@@ -119,9 +119,9 @@
                             <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                                 <c:set var="buttonConfirmation" value="" />
                                 <c:if test="${!empty action.confirmation}">
-                                    <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
+                                    <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
                                 </c:if>
-                                <button name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                             </c:if>
                         </c:forEach>
                     </div>
@@ -195,9 +195,9 @@
                             <c:if test="${!(empty dataListRows[0] || checkboxPosition eq 'no') || action.visibleOnNoRecord}">
                                 <c:set var="buttonConfirmation" value="" />
                                 <c:if test="${!empty action.confirmation}">
-                                    <c:set var="buttonConfirmation" value=" onclick=\"return showConfirm(this, '${fn:escapeXml(action.confirmation)}')\""/>
+                                    <c:set var="buttonConfirmation" value=" data-confirmation=\"${fn:escapeXml(action.confirmation)}\""/>
                                 </c:if>
-                                <button name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                <button data-target="${action.target}" name="${dataList.actionParamName}" class="form-button btn button" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                             </c:if>
                         </c:forEach>
                     </div>
@@ -236,6 +236,43 @@ t.printStackTrace(new java.io.PrintWriter(out));
             e.preventDefault();
             DataListUtil.submitForm(this);
         });
+        $("form[name='form_${dataListId}'] button").on("click", function(){
+            var target = $(this).data("target");
+            var confirmation = $(this).data("confirmation");
+            if (target === undefined || target === null || target === "" || target.toLowerCase() === "post") {
+                $("form[name='form_${dataListId}']").removeAttr("target");
+            } else if (target.toLowerCase() === "popup") {
+                var url = "${pageContext.request.contextPath}/images/v3/clear.gif";
+                if (popupActionDialog == null) {
+                    popupActionDialog = new PopupDialog(url);
+                } else {
+                    popupActionDialog.src = url;
+                }
+                $("form[name='form_${dataListId}']").attr("target", "jqueryDialogFrame");
+                var submitForm = true;
+                if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
+                    submitForm = showConfirm(this, confirmation);
+                }
+                if (submitForm) {
+                    popupActionDialog.init();
+                    var name = $(this).attr("name");
+                    var value = $(this).attr("value");
+                    setTimeout(function(){
+                        $("form[name='form_${dataListId}']").append('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
+                        $("form[name='form_${dataListId}']").submit();
+                        $("form[name='form_${dataListId}'] .temp_button_input").remove();
+                    }, 200);
+                }
+                return false;
+            } else {
+                $("form[name='form_${dataListId}']").attr("target", target);
+            }
+            if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
+                return showConfirm(this, confirmation);
+            } else {
+                return true;
+            }
+        });
     });
     function toggleAll(element) {
         var table = $(element).closest("table");
@@ -269,6 +306,7 @@ t.printStackTrace(new java.io.PrintWriter(out));
         }
         if (showPopup) {
             var  orgAction = $(element).closest("form").attr("action");
+            $(element).closest("form").removeAttr("target");
             $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
             $(element).closest("form").attr("action", $(element).attr("href"));
             $(element).closest("form").submit();

@@ -10,7 +10,6 @@
         label : '@@datalist.hyperlinkdatalistaction.hyperlinkTarget@@',
         name : 'target',
         type : 'selectbox',
-        description : '@@datalist.hyperlinkdatalistaction.hyperlinkTarget.desc@@',
         options : [{
             value : '_self',
             label : '@@datalist.hyperlinkdatalistaction.currentWindow@@'
@@ -34,10 +33,7 @@
         {
             value : 'popup',
             label : '@@datalist.hyperlinkdatalistaction.popup@@'
-        }],
-        control_field: 'datalist_type',
-        control_value: 'column|row_action',
-        control_use_regex: 'true'
+        }]
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.iframename@@',
@@ -80,6 +76,9 @@
         type : 'checkbox',
         options : [
             {'value' : 'true', 'label' : ''}
-        ]
+        ],
+        control_field: 'datalist_type',
+        control_value: 'action',
+        control_use_regex: 'false'
     }]
 }]
