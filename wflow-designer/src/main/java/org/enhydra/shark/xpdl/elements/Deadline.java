@@ -12,6 +12,8 @@ import org.enhydra.shark.xpdl.XPDLConstants;
 public class Deadline extends XMLComplexElement implements XMLElementChangeListener {
     public static String DURATION_UNIT_DATETIME = "t";
     public static String DURATION_UNIT_DATE = "d";
+    public static String DURATION_UNIT_DATE2 = "1";
+    public static String DURATION_UNIT_DATETIME2 = "2";
     
     private DeadlineLimit refDeadlineLimit;
     private XMLAttribute attrDurationUnit;
@@ -41,7 +43,9 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
                     XPDLConstants.DURATION_UNIT_m,
                     XPDLConstants.DURATION_UNIT_s,
                     DURATION_UNIT_DATETIME,
-                    DURATION_UNIT_DATE
+                    DURATION_UNIT_DATETIME2,
+                    DURATION_UNIT_DATE,
+                    DURATION_UNIT_DATE2
                 }, 0);
 
         add(attrExecution);
@@ -144,6 +148,12 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
                     } else if (durationUnitChar == 't') {
                         String condition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy HH:mm'); d.parse(" + changedDeadlineLimit + ");";
                         set("DeadlineCondition", condition);
+                    } else if (durationUnitChar == '1') {
+                        String condition = "var d = new java.text.SimpleDateFormat('yyyy-MM-dd'); d.parse(" + changedDeadlineLimit + ");";
+                        set("DeadlineCondition", condition);
+                    } else if (durationUnitChar == '2') {
+                        String condition = "var d = new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm'); d.parse(" + changedDeadlineLimit + ");";
+                        set("DeadlineCondition", condition);
                     }
                 }
             }
@@ -172,8 +182,12 @@ public class Deadline extends XMLComplexElement implements XMLElementChangeListe
             
             if (deadlineCondition.contains("dd/MM/yyyy HH:mm")) {
                 attrDurationUnit.setValue(DURATION_UNIT_DATETIME);
-            } else {
+            } else if (deadlineCondition.contains("dd/MM/yyyy")) {
                 attrDurationUnit.setValue(DURATION_UNIT_DATE);
+            } else if (deadlineCondition.contains("yyyy-MM-dd HH:mm")) {
+                attrDurationUnit.setValue(DURATION_UNIT_DATETIME2);
+            } else if (deadlineCondition.contains("yyyy-MM-dd")) {
+                attrDurationUnit.setValue(DURATION_UNIT_DATE2);
             }
         } else {
             String deadlineLimit = "";
