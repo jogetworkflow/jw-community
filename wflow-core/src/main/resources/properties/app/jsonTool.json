@@ -5,6 +5,96 @@
         label : '@@app.jsontool.jsonUrl@@',
         type : 'textfield',
         required : 'True'
+    },
+    {
+        name : 'requestType',
+        label : '@@app.jsontool.requestType@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : '',
+            label : '@@app.jsontool.requestType.get@@'
+        },
+        {
+            value : 'post',
+            label : '@@app.jsontool.requestType.post@@'
+        }]
+    },
+    {
+        name : 'postMethod',
+        label : '@@app.jsontool.postMethod@@',
+        type : 'selectbox',
+        value : '',
+        options : [{
+            value : '',
+            label : '@@app.jsontool.postMethod.parameters@@'
+        },
+        {
+            value : 'jsonPayload',
+            label : '@@app.jsontool.postMethod.jsonPayload@@'
+        },
+        {
+            value : 'custom',
+            label : '@@app.jsontool.postMethod.customJsonPayload@@'
+        }],
+        control_field: 'requestType',
+        control_value: 'post',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'params',
+        label : '@@app.jsontool.postMethod.parameters@@',
+        type : 'grid',
+        columns : [{
+            key : 'name',
+            label : '@@app.jsontool.name@@'
+        },{
+            key : 'value',
+            label : '@@app.jsontool.value@@'
+        }],
+        control_field: 'postMethod',
+        control_value: '^((?!custom).)*$',
+        control_use_regex: 'true'
+    },
+    {
+        name:'customPayload',
+        label:'@@app.jsontool.postMethod.customJsonPayload@@',
+        type : 'codeeditor',
+        mode : 'json',
+        control_field: 'postMethod',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        required:'true'
+    },
+    {
+        name : 'headers',
+        label : '@@app.jsontool.header@@',
+        type : 'grid',
+        columns : [{
+            key : 'name',
+            label : '@@app.jsontool.name@@'
+        },{
+            key : 'value',
+            label : '@@app.jsontool.value@@'
+        }]
+    },
+    {
+        name : 'noResponse',
+        label : '@@app.jsontool.noResponse@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'debugMode',
+        label : '@@app.jsontool.debugMode@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 },
 {
@@ -34,7 +124,10 @@
             key : 'jsonObjectName',
             label : '@@app.jsontool.jsonObjectName@@'
         }]
-    }]
+    }],
+    control_field: 'noResponse',
+    control_value: '',
+    control_use_regex: 'false'
 },
 {
     title : '@@app.jsontool.storeToWorkflowVariable@@',
@@ -51,5 +144,8 @@
             key : 'jsonObjectName',
             label : '@@app.jsontool.jsonObjectName@@'
         }]
-    }]
+    }],
+    control_field: 'noResponse',
+    control_value: '',
+    control_use_regex: 'false'
 }]

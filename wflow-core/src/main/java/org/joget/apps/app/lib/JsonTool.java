@@ -4,13 +4,21 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
@@ -26,6 +34,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 
 public class JsonTool extends DefaultApplicationPlugin {
@@ -64,7 +73,8 @@ public class JsonTool extends DefaultApplicationPlugin {
 
         String jsonUrl = (String) properties.get("jsonUrl");
         CloseableHttpClient client = null;
-        HttpGet get = null;
+        HttpRequestBase request = null;
+        
         try {
             client = HttpClients.createDefault();
 
@@ -72,21 +82,74 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             jsonUrl = StringUtil.encodeUrlParam(jsonUrl);
 
-            get = new HttpGet(jsonUrl);
-            HttpResponse response = client.execute(get);
-            String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
+            if ("post".equalsIgnoreCase(getPropertyString("requestType"))) {
+                request = new HttpPost(jsonUrl);
+                
+                if ("jsonPayload".equals(getPropertyString("postMethod"))) {
+                    JSONObject obj = new JSONObject();
+                    Object[] paramsValues = (Object[]) properties.get("params");
+                    for (Object o : paramsValues) {
+                        Map mapping = (HashMap) o;
+                        String name  = mapping.get("name").toString();
+                        String value = mapping.get("value").toString();
+                        obj.accumulate(name, WorkflowUtil.processVariable(value, "", wfAssignment));
+                    }
 
-            Map object = PropertyUtil.getPropertiesValueFromJson(jsonResponse);
+                    StringEntity requestEntity = new StringEntity(obj.toString(4));
+                    ((HttpPost) request).setEntity(requestEntity);
+                    request.setHeader("Content-type", "application/json");
+                } else if ("custom".equals(getPropertyString("postMethod"))) {
+                    StringEntity requestEntity = new StringEntity(getPropertyString("customPayload"));
+                    ((HttpPost) request).setEntity(requestEntity);
+                    request.setHeader("Content-type", "application/json");
+                } else {
+                    List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+                    Object[] paramsValues = (Object[]) properties.get("params");
+                    for (Object o : paramsValues) {
+                        Map mapping = (HashMap) o;
+                        String name  = mapping.get("name").toString();
+                        String value = mapping.get("value").toString();
+                        urlParameters.add(new BasicNameValuePair(name, WorkflowUtil.processVariable(value, "", wfAssignment)));
+                    }
+                    ((HttpPost) request).setEntity(new UrlEncodedFormEntity(urlParameters));
+                }
+            } else {
+                request = new HttpGet(jsonUrl);
+            }
+            
+            Object[] paramsValues = (Object[]) properties.get("headers");
+            for (Object o : paramsValues) {
+                Map mapping = (HashMap) o;
+                String name  = mapping.get("name").toString();
+                String value = mapping.get("value").toString();
+                if (name != null && !name.isEmpty() && value != null && !value.isEmpty()) {
+                    request.setHeader(name, value);
+                }
+            }
+            
+            HttpResponse response = client.execute(request);
+            
+            if (!"true".equalsIgnoreCase(getPropertyString("noResponse"))) {
+                String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
+                if (jsonResponse != null && !jsonResponse.isEmpty()) {
+                    if (jsonResponse.startsWith("[") && jsonResponse.endsWith("]")) {
+                        jsonResponse = "{ \"response\" : " + jsonResponse + " }";
+                    }
+                    if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                        LogUtil.info(JsonTool.class.getName(), jsonResponse);
+                    }
+                    Map object = PropertyUtil.getProperties(new JSONObject(jsonResponse));
 
-            storeToForm(wfAssignment, properties, object);
-            storeToWorkflowVariable(wfAssignment, properties, object);
-
+                    storeToForm(wfAssignment, properties, object);
+                    storeToWorkflowVariable(wfAssignment, properties, object);
+                }
+            }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
             try {
-                if (get != null) {
-                    get.releaseConnection();
+                if (request != null) {
+                    request.releaseConnection();
                 }
                 if (client != null) {
                     client.close();
