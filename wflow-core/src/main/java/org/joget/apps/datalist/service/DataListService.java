@@ -124,7 +124,7 @@ public class DataListService {
 
                 //handle for lowercase propertyName
                 if (value == null) {
-                    value = evaluateColumnValueFromRow(row, propertyName.toLowerCase());
+                    value = LookupUtil.getBeanProperty(row, propertyName.toLowerCase());
                 }
                 if (value != null && value instanceof Date) {
                     value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
