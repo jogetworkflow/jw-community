@@ -376,7 +376,7 @@ public class UserviewThemeProcesser {
     protected String getJogetFooter() {
         String html = "";
         
-        if ("true".equalsIgnoreCase(userview.getSetting().getPropertyString("enableHelpGuide"))) {
+        if (!"true".equalsIgnoreCase(theme.getPropertyString("disableHelpGuide"))) {
             html = "<script type=\"text/javascript\">\n"
                 + "            HelpGuide.base = \"" + request.getContextPath() + "\"\n"
                 + "            HelpGuide.attachTo = \"#help-container\";\n"

@@ -355,15 +355,13 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
 
             </div>
         </div>
-        <c:if test="${!empty userview.setting.properties.enableHelpGuide}">
-            <c:if test="${userview.setting.properties.enableHelpGuide eq 'true'}">
-                <script type="text/javascript">
-                    HelpGuide.base = "${pageContext.request.contextPath}"
-                    HelpGuide.attachTo = "#header";
-                    HelpGuide.key = "help.web.userview.${appId}.${userview.properties.id}.${bodyId}";
-                    HelpGuide.show();
-                </script>
-            </c:if> 
+        <c:if test="${empty userview.setting.theme.properties.disableHelpGuide || userview.setting.theme.properties.disableHelpGuide ne 'true'}">
+            <script type="text/javascript">
+                HelpGuide.base = "${pageContext.request.contextPath}"
+                HelpGuide.attachTo = "#header";
+                HelpGuide.key = "help.web.userview.${appId}.${userview.properties.id}.${bodyId}";
+                HelpGuide.show();
+            </script>
         </c:if>    
             
         <c:if test="${!empty userview.setting.properties.tempDisablePermissionChecking}">

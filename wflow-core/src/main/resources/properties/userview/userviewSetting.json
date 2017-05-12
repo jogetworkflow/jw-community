@@ -16,16 +16,6 @@
         label: '@@ubuilder.description@@',
         required: 'false',
         type: 'textarea'
-    },
-    {
-        name: 'enableHelpGuide',
-        label: '@@userview.userviewsetting.enableHelpGuide@@',
-        type: 'checkbox',
-        value: 'false',
-        options: [{
-            value: 'true',
-            label: ''
-        }]
     }]
 }, {
     title: '@@userview.userviewsetting.configPermission@@',

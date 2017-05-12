@@ -1119,5 +1119,15 @@
         label : '@@theme.universal.subFooter@@',
         type : 'codeeditor',
         mode : 'html'
+    },
+    {
+        name: 'disableHelpGuide',
+        label: '@@theme.universal.disableHelpGuide@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
     }]
 }]
