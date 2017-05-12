@@ -1544,7 +1544,15 @@ DatalistBuilder = {
                 },
                 {
                     key : 'field',
-                    label : get_dbuilder_msg('dbuilder.rowAction.field')
+                    label : get_dbuilder_msg('dbuilder.rowAction.field'),
+                    options_extra : [
+                        {value : '', label : ''},
+                        {value : '(', label : '('},
+                        {value : ')', label : ')'}
+                    ],
+                    type : 'autocomplete',
+                    options_callback : 'DatalistBuilder.getColumnOptions',
+                    required: 'true'
                 },
                 {
                     key : 'operator',
@@ -1604,6 +1612,14 @@ DatalistBuilder = {
                     {
                         value : 'IS NOT EMPTY',
                         label : get_dbuilder_msg('dbuilder.rowAction.operator.isNotEmpty')
+                    },
+                    {
+                        value : 'REGEX',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.regex')
+                    },
+                    {
+                        value : 'NOT REGEX',
+                        label : get_dbuilder_msg('dbuilder.rowAction.operator.notRegex')
                     }]
                 },
                 {

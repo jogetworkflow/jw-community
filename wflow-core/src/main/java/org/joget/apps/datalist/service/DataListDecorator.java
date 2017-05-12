@@ -25,6 +25,7 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
+import org.mozilla.javascript.Scriptable;
 
 /**
  * DisplayTag column decorator to modify columns e.g. format, add links, etc.
@@ -340,6 +341,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
         
         Object[] rules = (Object[]) rowAction.getProperty("rules");
         if (rules != null && rules.length > 0) {
+            String visibleRules = "";
+            
             for (Object o : rules) {
                 Map ruleMap = (HashMap) o;
                 
@@ -350,61 +353,89 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 Object tempValue = evaluate(fieldId);
                 String value = (tempValue != null)?tempValue.toString():"";
                 
-                boolean result = false;
-                if (value != null) {
-                    if ("=".equals(operator) && compareValue.equals(value)) {
-                        result = true;
-                    } else if ("<>".equals(operator) && !compareValue.equals(value)) {
-                        result = true;
-                    } else if (">".equals(operator) || "<".equals(operator) || ">=".equals(operator) || "<=".equals(operator)) {
-                        try {
-                            double valueNum = Double.parseDouble(value);
-                            double compareValueNum = Double.parseDouble(compareValue);
-                            
-                            if (">".equals(operator) && valueNum > compareValueNum) {
+                if (!visibleRules.isEmpty() && !visibleRules.endsWith("(") && !")".equals(fieldId)) {
+                    if ("OR".equals(join)) {
+                        visibleRules += " || ";
+                    } else {
+                        visibleRules += " && ";
+                    }
+                }
+                if (!")".equals(fieldId)) {
+                    visibleRules += " ";
+                }
+                if ("(".equals(fieldId) || ")".equals(fieldId) ) {
+                    visibleRules += fieldId;
+                } else {
+                    boolean result = false;
+                    if (value != null) {
+                        if ("=".equals(operator) && compareValue.equals(value)) {
+                            result = true;
+                        } else if ("<>".equals(operator) && !compareValue.equals(value)) {
+                            result = true;
+                        } else if (">".equals(operator) || "<".equals(operator) || ">=".equals(operator) || "<=".equals(operator)) {
+                            try {
+                                double valueNum = Double.parseDouble(value);
+                                double compareValueNum = Double.parseDouble(compareValue);
+
+                                if (">".equals(operator) && valueNum > compareValueNum) {
+                                    result = true;
+                                } else if ("<".equals(operator) && valueNum < compareValueNum) {
+                                    result = true;
+                                } else if (">=".equals(operator) && valueNum >= compareValueNum) {
+                                    result = true;
+                                } else if ("<=".equals(operator) && valueNum <= compareValueNum) {
+                                    result = true;
+                                }
+                            } catch (NumberFormatException e) {}
+                        } else if ("LIKE".equals(operator) && value.toLowerCase().contains(compareValue.toLowerCase())) {
+                            result = true;
+                        } else if ("NOT LIKE".equals(operator) && !value.toLowerCase().contains(compareValue.toLowerCase())) {
+                            result = true;
+                        } else if ("IN".equals(operator) || "NOT IN".equals(operator)) {
+                            String[] compareValues = compareValue.split(";");
+                            List<String> compareValuesList = new ArrayList<String>(Arrays.asList(compareValues));
+                            if ("IN".equals(operator) && compareValuesList.contains(value)) {
                                 result = true;
-                            } else if ("<".equals(operator) && valueNum < compareValueNum) {
-                                result = true;
-                            } else if (">=".equals(operator) && valueNum >= compareValueNum) {
-                                result = true;
-                            } else if ("<=".equals(operator) && valueNum <= compareValueNum) {
+                            } else if ("NOT IN".equals(operator) && !compareValuesList.contains(value)) {
                                 result = true;
                             }
-                        } catch (NumberFormatException e) {}
-                    } else if ("LIKE".equals(operator) && value.toLowerCase().contains(compareValue.toLowerCase())) {
-                        result = true;
-                    } else if ("NOT LIKE".equals(operator) && !value.toLowerCase().contains(compareValue.toLowerCase())) {
-                        result = true;
-                    } else if ("IN".equals(operator) || "NOT IN".equals(operator)) {
-                        String[] compareValues = compareValue.split(";");
-                        List<String> compareValuesList = new ArrayList<String>(Arrays.asList(compareValues));
-                        if ("IN".equals(operator) && compareValuesList.contains(value)) {
+                        } else if ("IS TRUE".equals(operator) || "IS FALSE".equals(operator)) {
+                            try {
+                                boolean valueBoolean = Boolean.parseBoolean(value);
+
+                                if ("IS TRUE".equals(operator) && valueBoolean) {
+                                    result = true;
+                                } else if ("IS FALSE".equals(operator) && !valueBoolean) {
+                                    result = true;
+                                }
+                            } catch(Exception e) {}
+                        } else if ("IS NOT EMPTY".equals(operator)) {
                             result = true;
-                        } else if ("NOT IN".equals(operator) && !compareValuesList.contains(value)) {
-                            result = true;
+                        } else if ("REGEX".equals(operator) || "NOT REGEX".equals(operator)) {
+                            if (value.matches(StringEscapeUtils.unescapeJavaScript(compareValue))) {
+                                if ("REGEX".equals(operator)) {
+                                    result = true;
+                                }
+                            } else {
+                                if ("NOT REGEX".equals(operator)) {
+                                    result = true;
+                                }
+                            }
                         }
-                    } else if ("IS TRUE".equals(operator) || "IS FALSE".equals(operator)) {
-                        try {
-                            boolean valueBoolean = Boolean.parseBoolean(value);
-                            
-                            if ("IS TRUE".equals(operator) && valueBoolean) {
-                                result = true;
-                            } else if ("IS FALSE".equals(operator) && !valueBoolean) {
-                                result = true;
-                            }
-                        } catch(Exception e) {}
-                    } else if ("IS NOT EMPTY".equals(operator)) {
+                    } else if ("IS EMPTY".equals(operator)) {
                         result = true;
                     }
-                } else if ("IS EMPTY".equals(operator)) {
-                    result = true;
+                    
+                    visibleRules += result;
                 }
-                
-                if ("AND".equals(join)) {
-                    visible = visible && result;
-                } else if ("OR".equals(join)){
-                    visible = visible || result; 
-                }
+            }
+            
+            org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
+            Scriptable scope = cx.initStandardObjects(null);
+            try {
+                visible = (Boolean) cx.evaluateString(scope, visibleRules, "", 1, null);
+            } finally {
+                org.mozilla.javascript.Context.exit();
             }
         }
         
