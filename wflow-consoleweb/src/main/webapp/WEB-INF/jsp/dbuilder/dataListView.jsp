@@ -96,6 +96,11 @@
 
             <!-- Display Filters -->        
             <c:if test="${fn:length(dataList.filterTemplates) gt 1}">
+                <c:if test="${dataList.returnNoDataWhenFilterNotSet}">
+                    <p class="msg setFilterToSeeData">
+                        <fmt:message key="dbuilder.pleaseSubmitFilter"/>
+                    </p>    
+                </c:if>    
                 <form name="filters_${dataListId}" id="filters_${dataListId}" action="?" method="POST">
                     <div class="filters">
                         <c:forEach items="${dataList.filterTemplates}" var="template">

@@ -1349,7 +1349,15 @@ DatalistBuilder = {
                 {label : get_dbuilder_msg('dbuilder.description'),
                   name  : 'description',
                   required : 'false',
-                  type : 'textarea'}
+                  type : 'textarea'},
+                {label : get_dbuilder_msg('dbuilder.useSession'),
+                  name  : 'useSession',
+                  type : 'checkbox',
+                  options : [{label : '', value : 'true'}]},
+                {label : get_dbuilder_msg('dbuilder.showDataWhenFilterSet'),
+                  name  : 'showDataWhenFilterSet',
+                  type : 'checkbox',
+                  options : [{label : '', value : 'true'}]}
               ]
             }
         ];

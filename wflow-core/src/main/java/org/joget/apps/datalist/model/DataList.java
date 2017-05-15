@@ -71,6 +71,7 @@ public class DataList {
     private Collection<DataListFilterQueryObject> dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
     private boolean filterQueryBuild = false;
     private boolean disableQuickEdit = false;
+    private boolean showDataWhenFilterSet = false;
 
     //Required when using session
     public void init() {
@@ -404,6 +405,10 @@ public class DataList {
     }
 
     public DataListCollection getRows() {
+        if (isReturnNoDataWhenFilterNotSet()) {
+            return null;
+        }
+        
         if (rows == null) {
             rows = getRows(null, null);
         }
@@ -426,6 +431,10 @@ public class DataList {
     }
 
     public int getSize() {
+        if (isReturnNoDataWhenFilterNotSet()) {
+            return 0;
+        }
+        
         if (size == null) {
             try {
                 if (getBinder() != null) {
@@ -726,5 +735,20 @@ public class DataList {
 
     public void setDisableQuickEdit(boolean disableQuickEdit) {
         this.disableQuickEdit = disableQuickEdit;
+    }
+
+    public boolean isShowDataWhenFilterSet() {
+        return showDataWhenFilterSet;
+    }
+
+    public void setShowDataWhenFilterSet(boolean showDataWhenFilterSet) {
+        this.showDataWhenFilterSet = showDataWhenFilterSet;
+    }
+    
+    public boolean isReturnNoDataWhenFilterNotSet() {
+        if (isShowDataWhenFilterSet() && (getFilterQueryObjects() == null || getFilterQueryObjects().length == 0)) {
+            return true;
+        }
+        return false;
     }
 }

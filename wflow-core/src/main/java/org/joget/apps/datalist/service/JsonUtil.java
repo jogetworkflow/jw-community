@@ -58,6 +58,8 @@ public class JsonUtil {
     public static final String PROPERTY_FILTER_TYPE = "type";
     public static final String PROPERTY_FORMAT = "format";
     public static final String PROPERTY_RENDER_HTML = "renderHtml";
+    public static final String PROPERTY_USE_SESSION = "useSession";
+    public static final String PROPERTY_SHOW_DATA_ONFILTER = "showDataWhenFilterSet";
 
     /**
      * Converts from JSON string into an object. Specifically to support data list model classes.
@@ -137,6 +139,12 @@ public class JsonUtil {
             }
             if (obj.has(PROPERTY_ORDER_BY)) {
                 object.setDefaultSortColumn(obj.getString(PROPERTY_ORDER_BY));
+            }
+            if (obj.has(PROPERTY_USE_SESSION) && !obj.isNull(PROPERTY_USE_SESSION)) {
+                object.setUseSession(obj.getString(PROPERTY_USE_SESSION).equals("true"));
+            }
+            if (obj.has(PROPERTY_SHOW_DATA_ONFILTER) && !obj.isNull(PROPERTY_SHOW_DATA_ONFILTER)) {
+                object.setShowDataWhenFilterSet(obj.getString(PROPERTY_SHOW_DATA_ONFILTER).equals("true"));
             }
 
             //set columns
