@@ -21,6 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.util.ReflectionUtils;
 import javax.mail.internet.MimeUtility;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Utility methods for String processing
@@ -37,6 +38,7 @@ public class StringUtil {
     public static final String TYPE_SQL = "sql";
     public static final String TYPE_URL = "url";
     public static final String TYPE_NL2BR = "nl2br";
+    public static final String TYPE_SEPARATOR = "separator";
 
     static final Whitelist whitelistRelaxed;
     static {
@@ -271,6 +273,10 @@ public class StringUtil {
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br />");
+            } else if (f != null && f.startsWith(TYPE_SEPARATOR) && inStr.contains(";")) {
+                String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
+                String [] temps = inStr.split(";");
+                inStr = StringUtils.join(temps, newSeparator);
             }
         }
         
