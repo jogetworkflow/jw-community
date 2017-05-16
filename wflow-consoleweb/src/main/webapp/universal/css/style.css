@@ -24,6 +24,10 @@ body:not(.embeded) {
     height: 100%;
 }
 
+body.popupBody:not(.embeded) {
+    overflow-y: hidden;
+}
+
 .inline-block {
     display: inline-block;
     vertical-align: top;
