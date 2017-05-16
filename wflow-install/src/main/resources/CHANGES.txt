@@ -2,6 +2,67 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0-BETA2
+====================
+7ebbc1d3 Fixed: wflow-core - Universal Theme - Checkbox is missing when using AJAX cascading options. @6.0-SNAPSHOT
+8dc68820 Fixed: wflow-consoleweb - Universal Theme - Popup dialogs occasionally displays 2 scrollbars @6.0-SNAPSHOT
+674b5120 Modified: wflow-common - Hash Variable - Support new escape type ?separator(SEPARATOR_CHARS) to change default separator ";" to new separator in the round brackets. @6.0-SNAPSHOT
+4abf49f0 Modified: wflow-core - Datalist builder - Added option to enable using session to store list state. @6.0-SNAPSHOT Modified: wflow-core - Datalist builder - Added option to show data only when filter is used. @6.0-SNAPSHOT
+3375628a Modified: wflow-core - Rollback (268157 : Userview - Remove help guide feature from userview and added option to enable it back) for backward compatible reason  . @6.0-SNAPSHOT Modified: wflow-core - Universal/Corporati Theme - Add option to disable help guide. @6.0-SNAPSHOT
+dd7e7685 Modified: wflow-core - Datlist row action visibility control - Support parenthesis in rules. @6.0-SNAPSHOT Modified: wflow-core - Datlist row action visibility control - Support Regex in rules. @6.0-SNAPSHOT
+4d408411 Fixed: wflow-core - DatalistService - Causing stack overflow error in DataListService.evaluateColumnValueFromRow when property is not exist. @6.0-SNAPSHOT
+8cc0196f Modified: wflow-core/wflow-consoleweb - JSON Tool - Support debug mode. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - JSON Tool - Support request headers. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - JSON Tool - Support post with parameters, JSON payload or custom JSON payload. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - JSON Tool - Support JSON array response. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - JSON Tool - Support web service with no response. @6.0-SNAPSHOT
+127d064b Modified: wflow-designer - Workflow Designer - Support 'yyyy-MM-dd' and 'yyyy-MM-dd HH:mm' format for deadline. @6.0-SNAPSHOT
+db958230 Modified: wflow-consoleweb/wflow-core - Process Builder - Support 'yyyy-MM-dd' and 'yyyy-MM-dd HH:mm' format for deadline. @6.0-SNAPSHOT
+268157c4 Modified: wflow-consoleweb/wflow-core - Userview - Remove help guide feature from userview and added option to enable it back. @6.0-SNAPSHOT
+9a5cfe7a Modified: wflow-consoleweb/wflow-core - Hyperlink Datalist Action - Support target for list action. @6.0-SNAPSHOT
+43a39f97 Modified: wflow-install - Upgraded to Apache Tomcat 8.5.14 @6.0-SNAPSHOT
+3e27463b Fixed: wflow-core - Email Tool - Typo in validation checking. @6.0-SNAPSHOT
+8bb512f2 Fixed: wflow-core - Userview v5 Theme - Custom HTML before and after login form are not render. @6.0-SNAPSHOT
+4c795e27 Modified: wflow-common/wflow-consoleweb - General Setting - Added settings to configure SMTP. @6.0-SNAPSHOT Modified: wflow-core - Email Tool/ User Notification - Pickup SMTP setting from system setup when SMTP is not configured. @6.0-SNAPSHOT
+e901227b Modified: wflow-common/wflow-consoleweb - General Setting - Added setting to extending the security nonce cache time. @6.0-SNAPSHOT
+f1ade599 Modified: wflow-core - Universal Theme - Support sub header and sub footer options for customization. @6.0-SNAPSHOT
+864a2e3e Modified: wflow-core - Universal Theme - Update css. @6.0-SNAPSHOT
+4ae0447c Fixed: wflow-consoleweb - Property Editor - Ajax options dependent on element select box value is broken. @6.0-SNAPSHOT
+8bff9277 Modified: wflow-core/wflow-consoleweb - Datalist Builder - Allow datalist action to disable to use as column, row, or list action. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - Datalist Builder - Allow to hide action plugin properties based on where the plugin is used. @6.0-SNAPSHOT Modified: wflow-core - Hyperlink Datalist Action - Hide "Hyperlink Target" when used as list action since it is not supported. @6.0-SNAPSHOT
+54139ff0 Fixed: wflow-consoleweb - Import App - Inconsistent letter case in the Advanced Options @6.0-SNAPSHOT
+b7c230b5 Modified: wflow-core - Modified jquery.dynamicoptions.js to support usage in datalist. @6.0-SNAPSHOT
+37cba2c2 Fixed: wflow-core - Universal Theme- XSS on user name. #4462 @6.0-SNAPSHOT
+26444ad1 Fixed: wflow-consoleweb - Universal Theme - Update label for zh_CN. @6.0-SNAPSHOT
+c209c0a9 Fixed: wflow-consoleweb - Universal Theme - Grid in subform is not styled. @6.0-SNAPSHOT
+6d66e3f0 Fixed: wflow-consoleweb - Universal Theme - Make radio button circle thinner when not selected. @6.0-SNAPSHOT
+48a518b3 Fixed: wflow-consoleweb - Userview Builder - Copy Paste category feature is broken after adding comment support. @6.0-SNAPSHOT
+ac120f40 Fixed: wflow-consoleweb - Universal Theme - Can’t differentiate disabled buttons from normal button. @6.0-SNAPSHOT
+1109efeb Fixed: wflow-consoleweb - Universal Theme - Grid in subform is not styled. @6.0-SNAPSHOT
+120bfc70 Modified: wflow-consoleweb - Universal Theme - Change grid header to gray color. @6.0-SNAPSHOT
+4d5851ce Added: wflow-core - Userview Builder - Added comment support for userview category. @6.0-SNAPSHOT Modified: wflow-core - Userview Builder - Advanced Tool - Category label is not able to change in the popup dialog. @6.0-SNAPSHOT
+60cd232b Modified: wflow-core - Form Builder - Changed comment presentation. @6.0-SNAPSHOT
+5789fb85 Added: wflow-core - Form Builder - Added comment support for section. #4734 @6.0-SNAPSHOT
+84fb747f Fixed: wflow-core/wflow-consoleweb - Universal Theme : checkbox and radio button not showing in IE 11 &7 FF. #4734 @6.0-SNAPSHOT
+86d8b82f Modified: wflow-core -FormUtil - Add support for filepath handling on method formRowSetToJson and jsonToFormRowSet. @6.0-SNAPSHOT
+bcb90d7b Fixed: wflow-Directory -UserMetaDataDao - Returned inaccurate result. @6.0-SNAPSHOT
+c106cebe Modified: wflow-core/wflow-consoleweb - Userview Builder - Added label in userview when permission checking is disabled. @6.0-SNAPSHOT
+af1e8864 Modified: wflow-core/wflow-consoleweb - Import App - Support import options to keep the existing mapping of participants and tools. @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - Userview Builder - Added option to temporary disable permission checking for testing usage. @6.0-SNAPSHOT
+222b0c8c Fixed: wflow-install - Fixed missing hashpling in tomcat startup script @6.0-SNAPSHOT
+d9d1a7d8 Fixed: wflow-core, wflow-consoleweb - Added Thai font for PDF export #4718 @6.0-SNAPSHOT
+5d1de8d4 Fixed: wflow-consoleweb - Userview screenshots not saving in the correct directory if wflow.home does not end with a slash @6.0-SNAPSHOT
+d1208ba6 Fixed: wflow-consoleweb - Hard session timeout does not clear current session user @6.0-SNAPSHOT
+a2f8adc4 Modified: wflow-core - Additional security hardening changes based on Fortify scan @6.0-SNAPSHOT
+3dc42d7b Modified: wflow-wfengine - Updated configuration to support PostgreSQL @6.0-SNAPSHOT
+750121b0 Fixed: wflow-core - FormDataDao not working for more than 2 table joins #4707 @6.0-SNAPSHOT
+dca557b3 Modified: wflow-core - File Upload - Remove template when in readonly mode. @6.0-SNAPSHOT
+caa061a0 Added: wflow-directory - Add user meta data implementation @6.0-SNAPSHOT Added: wflow-core - Add MfaAuthenticator plugin abstract class @6.0-SNAPSHOT
+4bf1fb2a Fixed: wflow-wfengine- Workflow Process Link Dao - Fixed Oracle only allow 1000 expression in a list. #4657 @6.0-SNAPSHOT
+428f55b7 Fixed: wflow-core - Form PDf Util - Images is cached. @6.0-SNAPSHOT
+8a46771a Fixed: wflow-consoleweb - ConsoleWebController - Sort JSON Options.  @6.0-SNAPSHOT
+613ce080 Fixed: wflow-consoleweb - Setup  - Fixed warning for MySQL script.  @6.0-SNAPSHOT
+04d5fb20 Fixed: wflow-wfengine - Database shutdown command executed on exit @6.0-SNAPSHOT
+43c44ee7 Fixed: wflow-consoleweb - Property Editor  - HTML Editor - remove auto convert URL to relative link. @6.0-SNAPSHOT
+cb3f4415 Fixed: wflow-consoleweb- Advanced Tool - Tree Viewer - Fixed js error due to circular data reference. @6.0-SNAPSHOT
+ad7bc5cd Fixed: wflow-consoleweb - Universal Theme - Print version of form has extra borders in labels @6.0-SNAPSHOT
+d6185ff3 Fixed: wflow-consoleweb - App Center - After installing app from marketplace, published apps do not reload due to JavaScript error @6.0-SNAPSHOT
+26954e76 Modified: wflow-consoleweb - Setup - Updated default CRM app @6.0-SNAPSHOT
+
 CHANGES IN 6.0-SNAPSHOT
 =======================
 - User Experience
