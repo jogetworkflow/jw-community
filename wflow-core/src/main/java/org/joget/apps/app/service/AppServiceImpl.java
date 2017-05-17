@@ -82,6 +82,7 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.WorkflowVariable;
+import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
@@ -125,6 +126,8 @@ public class AppServiceImpl implements AppService {
     UserviewService userviewService;
     @Autowired
     WorkflowAssignmentDao workflowAssignmentDao;
+    @Autowired
+    WorkflowProcessLinkDao workflowProcessLinkDao;
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new HashMap<String, String>();
@@ -569,6 +572,11 @@ public class AppServiceImpl implements AppService {
                     if (!formResult.getStay() && (errors == null || errors.isEmpty())) {
                         result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
 
+                        //if origin id is not equal to record id after submission, add linkage
+                        if (!originId.equals(startForm.getPrimaryKeyValue(formData))) {
+                            workflowProcessLinkDao.addWorkflowProcessLink(startForm.getPrimaryKeyValue(formData), originId);
+                        }
+                        
                         // set next activity if configured
                         boolean autoContinue = (startFormDef != null) && startFormDef.isAutoContinue();
                         if (!autoContinue) {
