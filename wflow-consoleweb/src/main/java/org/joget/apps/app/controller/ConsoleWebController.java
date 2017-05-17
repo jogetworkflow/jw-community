@@ -3820,17 +3820,14 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty(paramName);
-                setting.setValue(paramValue);
-            } else {
-                setting.setValue(paramValue);
             }
             
             if (SetupManager.MASTER_LOGIN_PASSWORD.equals(paramName) || SetupManager.SMTP_PASSWORD.equals(paramName)) {
-                if (SetupManager.SECURE_VALUE.equals(paramValue)) {
-                    setting.setValue(setupManager.getSettingValue(paramName));
-                } else {
+                if (!SetupManager.SECURE_VALUE.equals(paramValue)) {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
+            } else {
+                setting.setValue(paramValue);
             }
             
             if (HostManager.isVirtualHostEnabled() && ("dataFileBasePath".equals(paramName) || "designerwebBaseUrl".equals(paramName))) {
