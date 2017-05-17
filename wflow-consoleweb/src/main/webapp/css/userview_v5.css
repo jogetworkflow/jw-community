@@ -21,6 +21,7 @@ body #ui-datepicker-div {
     display:none;
 }
 #preview-label {
+    box-sizing: initial;
     position: fixed;
     top: 75px;
     right: -225px;
