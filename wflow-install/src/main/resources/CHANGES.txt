@@ -4,6 +4,12 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0-BETA2
 ====================
+e2ce124c Modified: wflow-core - JSON Tool - Log more information when debug mode is enable. @6.0-SNAPSHOT
+e150a9d6 Fixed: wflow-consoleweb - General Setting - Password value is wrong when setting page is save again. @6.0-SNAPSHOT
+a51e2b35 Fixed: wflow-consoleweb - JSON Tool - Inconsistent letter case @6.0-SNAPSHOT
+a65c38e5 Fixed: wflow-consoleweb - General Settings - Fixed grammar in security nonce setting @6.0-SNAPSHOT
+dd677bd0 Fixed: wflow-consoleweb - Userview - Permission disabled label is not display correctly in datalist page. @6.0-SNAPSHOT
+0bf69d40 Fixed: wflow-core - Email Tool - Typo in validation message. @6.0-SNAPSHOT
 7ebbc1d3 Fixed: wflow-core - Universal Theme - Checkbox is missing when using AJAX cascading options. @6.0-SNAPSHOT
 8dc68820 Fixed: wflow-consoleweb - Universal Theme - Popup dialogs occasionally displays 2 scrollbars @6.0-SNAPSHOT
 674b5120 Modified: wflow-common - Hash Variable - Support new escape type ?separator(SEPARATOR_CHARS) to change default separator ";" to new separator in the round brackets. @6.0-SNAPSHOT
