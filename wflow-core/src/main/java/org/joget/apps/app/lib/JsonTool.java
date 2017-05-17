@@ -82,6 +82,10 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             jsonUrl = StringUtil.encodeUrlParam(jsonUrl);
 
+            if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                LogUtil.info(JsonTool.class.getName(), ("post".equalsIgnoreCase(getPropertyString("requestType"))?"POST":"GET") + " : " + jsonUrl);
+            }
+            
             if ("post".equalsIgnoreCase(getPropertyString("requestType"))) {
                 request = new HttpPost(jsonUrl);
                 
@@ -98,10 +102,16 @@ public class JsonTool extends DefaultApplicationPlugin {
                     StringEntity requestEntity = new StringEntity(obj.toString(4));
                     ((HttpPost) request).setEntity(requestEntity);
                     request.setHeader("Content-type", "application/json");
+                    if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                        LogUtil.info(JsonTool.class.getName(), "JSON Payload : " + obj.toString(4));
+                    }
                 } else if ("custom".equals(getPropertyString("postMethod"))) {
                     StringEntity requestEntity = new StringEntity(getPropertyString("customPayload"));
                     ((HttpPost) request).setEntity(requestEntity);
                     request.setHeader("Content-type", "application/json");
+                    if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                        LogUtil.info(JsonTool.class.getName(), "Custom JSON Payload : " + getPropertyString("customPayload"));
+                    }
                 } else {
                     List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
                     Object[] paramsValues = (Object[]) properties.get("params");
@@ -110,6 +120,9 @@ public class JsonTool extends DefaultApplicationPlugin {
                         String name  = mapping.get("name").toString();
                         String value = mapping.get("value").toString();
                         urlParameters.add(new BasicNameValuePair(name, WorkflowUtil.processVariable(value, "", wfAssignment)));
+                        if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                            LogUtil.info(JsonTool.class.getName(), "Adding param " + name + " : " + value);
+                        }
                     }
                     ((HttpPost) request).setEntity(new UrlEncodedFormEntity(urlParameters));
                 }
@@ -124,10 +137,16 @@ public class JsonTool extends DefaultApplicationPlugin {
                 String value = mapping.get("value").toString();
                 if (name != null && !name.isEmpty() && value != null && !value.isEmpty()) {
                     request.setHeader(name, value);
+                    if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                        LogUtil.info(JsonTool.class.getName(), "Adding request header " + name + " : " + value);
+                    }
                 }
             }
             
             HttpResponse response = client.execute(request);
+            if ("true".equalsIgnoreCase(getPropertyString("debugMode"))) {
+                LogUtil.info(JsonTool.class.getName(), jsonUrl + " returned with status : " + response.getStatusLine().getStatusCode());
+            }
             
             if (!"true".equalsIgnoreCase(getPropertyString("noResponse"))) {
                 String jsonResponse = EntityUtils.toString(response.getEntity(), "UTF-8");
