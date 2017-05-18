@@ -32,6 +32,7 @@ import org.joget.directory.model.Organization;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
@@ -54,6 +55,8 @@ public class DirectoryJsonController {
     UserDao userDao;
     @Autowired
     EmploymentDao employmentDao;
+    @Autowired
+    WorkflowUserManager workflowUserManager;
 
     public EmploymentDao getEmploymentDao() {
         return employmentDao;
@@ -662,10 +665,13 @@ public class DirectoryJsonController {
 
                 // add success to audit trail
                 boolean authenticated = result.isAuthenticated();
+                if (authenticated) {
+                    workflowUserManager.clearCurrentThreadUser();
+                }
                 LogUtil.info(getClass().getName(), "Authentication for user " + username + ": " + authenticated);
                 WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": " + authenticated);                
-
+                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": " + authenticated);  
+                
             } catch (AuthenticationException e) {
                 // add failure to audit trail
                 if (username != null) {
