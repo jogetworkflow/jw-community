@@ -208,7 +208,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
 
                 public void run() {
                     try {
-                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + fromStr + ", to=" + to + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
+                        LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email from=" + email.getFromAddress().toString() + ", to=" + to + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
                         email.send();
                         LogUtil.info(EmailTool.class.getName(), "EmailTool: Sending email completed for subject=" + email.getSubject());
                     } catch (EmailException ex) {
