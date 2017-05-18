@@ -6,7 +6,7 @@
 <c:if test="${isQuickEditEnabled || param.webConsole =='true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:if test="${isAdmin}">
-
+        <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
         <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar_custom.css" />
