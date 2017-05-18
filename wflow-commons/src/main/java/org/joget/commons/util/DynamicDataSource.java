@@ -43,7 +43,7 @@ public class DynamicDataSource extends XADataSource {
             setUsername(tempUser);
             setPassword(tempPassword);
             setProperties(properties);
-            LogUtil.info(getClass().getName(), "datasourceName=" + getDatasourceName() + ", url=" + getUrl() + ", user=" + getUsername());
+            LogUtil.info(getClass().getName(), "profileName=" + HostManager.getCurrentProfile() + ", url=" + getUrl() + ", user=" + getUsername());
         }
         return super.getConnection();
     }
