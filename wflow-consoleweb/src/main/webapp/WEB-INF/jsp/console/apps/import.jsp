@@ -36,7 +36,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="overrideEnvVariable">
-                                <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/>
+                                <input id="overrideEnvVariable" type="checkbox" name="overrideEnvVariable" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.overrideEnvVariable"/>
                             </label>
                         </span>
@@ -44,7 +44,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="overridePluginDefault" class="upload">
-                                <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/>
+                                <input id="overridePluginDefault" type="checkbox" name="overridePluginDefault" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.overridePluginDefault"/>
                             </label>
                         </span>
@@ -52,7 +52,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="doNotImportParticipant" class="upload">
-                                <input id="doNotImportParticipant" type="checkbox" name="doNotImportParticipant" value="true"/>
+                                <input id="doNotImportParticipant" type="checkbox" name="doNotImportParticipant" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.doNotImportParticipant"/>
                             </label>
                         </span>
@@ -60,7 +60,7 @@
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="doNotImportTool" class="upload">
-                                <input id="doNotImportTool" type="checkbox" name="doNotImportTool" value="true"/>
+                                <input id="doNotImportTool" type="checkbox" name="doNotImportTool" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.doNotImportTool"/>
                             </label>
                         </span>
