@@ -190,7 +190,7 @@ body.embeded #adminBar {
     overflow: hidden;
 }
 .quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
-    color: black;
+    color: black !important;
     text-decoration: none;
     display: inline-block;
     font-size: 10px;
