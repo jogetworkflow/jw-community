@@ -21,7 +21,8 @@ body {
 body:not(.embeded) {
     width: 100vw;
     overflow-y: auto;
-    height: 100%;
+    height: calc(100% - 65px);
+    margin-top: 65px;
 }
 
 .inline-block {
@@ -325,7 +326,6 @@ header.navbar .dropdown-menu .dropdown-menu-title a.refresh {
 #main {
     padding-bottom: 50px;
     padding-top: 25px;
-    margin-top:65px;
     min-height: 50vh;
 }
 body.has_home_banner #main{
@@ -441,12 +441,10 @@ ul#category-container {
     
     body:not(.horizontal_menu) .home_banner {
         padding-left: 268px;
-        margin-top: 65px;
     }   
     body.rtl:not(.horizontal_menu) .home_banner {
         padding-left: auto;
         padding-right: 268px;
-        margin-top: 65px;
     }
     
     body .home_banner {
@@ -515,9 +513,6 @@ ul#category-container {
     }
     div#sidebar {
         box-shadow: 0 6px 10px #0E1215
-    }
-    .home_banner {
-        margin-top: 65px;
     }
 }
 
@@ -833,6 +828,10 @@ body#login #page > footer {
 }
 
 @media (min-width:768px) {
+    body.horizontal_menu {
+        height: auto;
+        margin-top: 0px;
+    }
     body.horizontal_menu #main {
         margin-top: 0;
         padding-top: 25px;
