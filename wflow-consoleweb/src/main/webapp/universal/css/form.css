@@ -840,7 +840,10 @@ body .adgrid .editor-cell .actions-buttons button {
 }
 
 .popupBody #main-body-header {
-    display: none;
+    background: transparent;
+    font-weight: bold;
+    text-transform: uppercase;
+    height: auto;
 }
 .popupBody form fieldset legend {
     padding: 10px;

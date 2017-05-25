@@ -24,10 +24,6 @@ body:not(.embeded) {
     height: 100%;
 }
 
-body.popupBody:not(.embeded) {
-    overflow-y: hidden;
-}
-
 .inline-block {
     display: inline-block;
     vertical-align: top;
@@ -1408,3 +1404,4 @@ main .grid-stack-item-header-refresh {
         border: 0px;
     }    
 }
+#jqueryDialogDiv {overflow: hidden;}
