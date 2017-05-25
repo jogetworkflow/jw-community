@@ -360,3 +360,19 @@ div#adminBarWelcome {
     opacity: 0.9;
     margin: 0px auto 100px;    
 }
+@media screen and (max-height:680px) {
+    #adminBar .adminBarButton {
+        padding:5px;
+        font-size:0px;
+        transition: all 0.2s ease-in-out;
+    }
+    #adminBar .adminBarButton br {
+        display:none;
+    }
+    #adminBar .adminBarButton:hover {
+        font-size:12px;
+    }
+    #adminBar .adminBarButton:hover br {
+        display:initial;
+    }
+}
