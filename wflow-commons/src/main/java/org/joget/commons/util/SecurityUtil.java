@@ -230,6 +230,8 @@ public class SecurityUtil implements ApplicationContextAware {
             } catch (Exception e) {
                 //Ignore
             }
+        } else if (getNonceGenerator() == null) { //when nonce is not in use
+            return true;
         }
         return false;
     }
