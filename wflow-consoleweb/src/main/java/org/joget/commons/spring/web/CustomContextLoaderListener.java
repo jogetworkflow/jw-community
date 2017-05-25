@@ -30,8 +30,12 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
             LogUtil.info(getClass().getName(), "===== Initializing WebApplicationContext =====");
             super.contextInitialized(event);
         } catch(Exception e) {
-            Exception exceptionToLog = (e instanceof BeanCreationException) ? null : e;
-            LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+            if (LogUtil.isDebugEnabled(getClass().getName())) { //if debug then log everything
+                LogUtil.error(getClass().getName(), e, "===== Error initializing WebApplicationContext =====");
+            } else {
+                Exception exceptionToLog = (e instanceof BeanCreationException) ? null : e;
+                LogUtil.error(getClass().getName(), exceptionToLog, "===== Error initializing WebApplicationContext =====");
+            }
             contextDestroyed(event);
         }
     }
