@@ -22,7 +22,9 @@
         label : '@@form.idgeneratorfield.envVariableName@@',
         type : 'textfield',
         required : 'True',
-        value : 'counter'
+        value : 'counter',
+        regex_validation : '^[\\.0-9a-zA-Z_-]+$',
+        validation_message : '@@form.idgeneratorfield.invalidId@@',
     },
     {
         name : 'format',
