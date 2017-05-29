@@ -13,10 +13,13 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
+import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
@@ -29,16 +32,21 @@ import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.lib.RunProcess;
+import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -58,6 +66,12 @@ public class AppWebController {
     private WorkflowManager workflowManager;
     @Autowired
     FormDefinitionDao formDefinitionDao;
+    @Autowired
+    AppResourceDao appResourceDao;
+    @Autowired
+    PluginManager pluginManager;
+    @Autowired
+    private WorkflowUserManager workflowUserManager;
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
     public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
@@ -448,5 +462,107 @@ public class AppWebController {
             stream.flush();
             stream.close();
         }
+    }
+    
+    /**
+     * Download app resource files.
+     * @param request
+     * @param response
+     * @param appId
+     * @param version
+     * @param fileName
+     * @param attachment
+     * @throws IOException
+     */
+    @RequestMapping("/app/(*:appId)/(~:version)/resources/(*:fileName)")
+    public void downloadAppResource(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("fileName") String fileName, @RequestParam(required = false) String attachment) throws IOException {
+        boolean isAuthorize = false;
+        
+        fileName = getFilename(fileName, request.getRequestURL().toString());
+        
+        AppDefinition appDef;
+        String decodedFileName = fileName;
+        try {
+            decodedFileName = URLDecoder.decode(fileName, "UTF8");
+        } catch (UnsupportedEncodingException e) {
+            // ignore
+        }
+        
+        try {
+            if (appId != null && !appId.isEmpty()) {
+                if (version == null) {
+                    Long appVersion = appService.getPublishedVersion(appId);
+                    if (appVersion != null) {
+                        version = appVersion.toString();
+                    }
+                }
+                
+                appDef = appService.getAppDefinition(appId, version);
+                version = appDef.getVersion().toString();
+                AppResource appResource = appResourceDao.loadById(decodedFileName, appDef);
+                
+                Map<String, Object> value = PropertyUtil.getPropertiesValueFromJson(appResource.getPermissionProperties());
+                if (value.containsKey("permission") && value.get("permission") instanceof Map && ((Map) value.get("permission")).containsKey("className")) {
+                    Map permission = (Map) value.get("permission");
+                    if (!permission.get("className").toString().isEmpty()) {
+                        Plugin plugin = pluginManager.getPlugin(permission.get("className").toString());
+                        if (plugin != null && plugin instanceof UserviewPermission) {
+                            UserviewPermission up = (UserviewPermission) plugin;
+                            up.setProperties((Map) value.get("properties"));
+                            up.setCurrentUser(workflowUserManager.getCurrentUser());
+                            up.setRequestParameters(request.getParameterMap());
+                            isAuthorize = up.isAuthorize();
+                        }
+                    } else {
+                        isAuthorize = true;
+                    }
+                }
+            }
+        } catch (Exception e){}
+        
+        if (!isAuthorize) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        
+        ServletOutputStream stream = response.getOutputStream();
+        File file = AppResourceUtil.getFile(appId, version, decodedFileName);
+        if (file.isDirectory() || !file.exists()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        DataInputStream in = new DataInputStream(new FileInputStream(file));
+        byte[] bbuf = new byte[65536];
+
+        try {
+            String contentType = request.getSession().getServletContext().getMimeType(decodedFileName);
+            if (contentType != null) {
+                response.setContentType(contentType);
+            }
+            
+            // set attachment filename
+            if (Boolean.valueOf(attachment).booleanValue()) {
+                String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
+                response.setHeader("Content-Disposition", "attachment; filename="+name+"; filename*=UTF-8''" + name);
+            }
+
+            // send output
+            int length = 0;
+            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+                stream.write(bbuf, 0, length);
+            }
+        } finally {
+            in.close();
+            stream.flush();
+            stream.close();
+        }
+    }
+    
+    protected String getFilename(String filename, String url) {
+        if (!url.endsWith(".")) {
+            filename = url.substring(url.indexOf(filename));
+        }
+        
+        return filename;
     }
 }

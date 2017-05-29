@@ -26,10 +26,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.dao.MessageDao;
@@ -38,6 +38,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.Message;
@@ -49,9 +50,9 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
+import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -115,10 +116,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
@@ -184,6 +182,8 @@ public class ConsoleWebController {
     EnvironmentVariableDao environmentVariableDao;
     @Resource
     PluginDefaultPropertiesDao pluginDefaultPropertiesDao;
+    @Resource
+    AppResourceDao appResourceDao;
     @Resource
     UserviewDefinitionDao userviewDefinitionDao;
     @Resource
@@ -3101,7 +3101,170 @@ public class ConsoleWebController {
         }
         return "console/dialogClose";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/resources")
+    public String consoleResources(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        String result = checkVersionExist(map, appId, version);
+        boolean protectedReadonly = false;
+        if (result != null) {
+            protectedReadonly = result.contains("status=invalidLicensor");
+            if (!protectedReadonly) {
+                return result;
+            }
+        }
 
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        map.addAttribute("protectedReadonly", protectedReadonly);
+        
+        return "console/apps/resources";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/resource/create")
+    public String consoleAppResourceCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        return "console/apps/appResourceCreate";
+    }
+    
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/submit", method = RequestMethod.POST)
+    public String consoleAppResourceSubmit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        Collection<String> errors = new ArrayList<String>();
+        
+        MultipartFile file = null;
+        
+        try {
+            file = FileStore.getFile("file");
+        } catch (FileLimitException e) {
+            errors.add(ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+        }
+
+        if (file == null || !errors.isEmpty()) {
+            map.addAttribute("errors", errors);
+            return "console/apps/appResourceCreate";
+        } else {
+            AppResource appResource = appResourceDao.loadById(file.getOriginalFilename(), appDef);
+            if (appResource != null) { //replace
+                appResource.setFilesize(file.getSize());
+                appResourceDao.update(appResource);
+            } else {
+                appResource = new AppResource();
+                appResource.setAppDefinition(appDef);
+                appResource.setAppId(appDef.getAppId());
+                appResource.setAppVersion(appDef.getVersion());
+                appResource.setId(file.getOriginalFilename());
+                appResource.setFilesize(file.getSize());
+                appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
+                appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
+                appResourceDao.add(appResource);
+            }
+            
+            String filename = appResource.getId();
+            try {
+                filename = URLEncoder.encode(filename, "UTF-8");
+            } catch (Exception e){}
+            
+            //store file
+            AppResourceUtil.storeFile(appId, version, file);
+            return "redirect:/web/console/app/"+appId+"/resource/permission?upload=true&id="+filename;
+        }
+    }
+
+    @RequestMapping("/console/app/(*:appId)/(~:version)/resource/permission")
+    public String consoleAppResourcePermission(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        map.addAttribute("upload", upload);
+
+        AppResource appResource = appResourceDao.loadById(id, appDef);
+        map.addAttribute("appResource", appResource);
+        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(appResource.getPermissionProperties()));
+        
+        return "console/apps/appResourcePermission";
+    }
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/permission/submit", method = RequestMethod.POST)
+    public String consoleAppResourcePermissionSubmit(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        
+        AppResource appResource = appResourceDao.loadById(id, appDef);
+        map.addAttribute("appResource", appResource);
+        appResource.setPermissionProperties(PropertyUtil.propertiesJsonStoreProcessing(appResource.getPermissionProperties(), permissionProperties));
+        Map<String, Object> value = PropertyUtil.getPropertiesValueFromJson(appResource.getPermissionProperties());
+        if (value.containsKey("permission") && value.get("permission") instanceof Map && ((Map) value.get("permission")).containsKey("className")) {
+            Map permission = (Map) value.get("permission");
+            appResource.setPermissionClass(permission.get("className").toString());
+        }
+        
+        appResourceDao.update(appResource);
+        
+        String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
+        map.addAttribute("url", url);
+        return "console/dialogClose";
+    }
+
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/resource/list")
+    public void consoleAppResourceListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "filter", required = false) String filterString, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        Collection<AppResource> resources = null;
+        Long count = null;
+
+        if (appDef != null) {
+            resources = appResourceDao.getResources(filterString, appDef, sort, desc, start, rows);
+            count = appResourceDao.getResourcesCount(filterString, appDef);
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        if (resources != null && resources.size() > 0) {
+            for (AppResource r : resources) {
+                Map data = new HashMap();
+                data.put("id", r.getId());
+                data.put("filesize", r.getFilesize());
+                data.put("permissionClass", r.getPermissionClass());
+                Plugin p = pluginManager.getPlugin(r.getPermissionClass());
+                data.put("permissionClassLabel", (p != null)?p.getI18nLabel():"");
+                data.put("permissionProperties", r.getPermissionProperties());
+                jsonObject.accumulate("data", data);
+            }
+        }
+
+        jsonObject.accumulate("total", count);
+        jsonObject.accumulate("start", start);
+        jsonObject.accumulate("sort", sort);
+        jsonObject.accumulate("desc", desc);
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/delete", method = RequestMethod.POST)
+    public String consoleAppResourceDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        StringTokenizer strToken = new StringTokenizer(ids, ",");
+        while (strToken.hasMoreTokens()) {
+            String id = (String) strToken.nextElement();
+            appResourceDao.delete(id, appDef);
+        }
+        return "console/dialogClose";
+    }
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/pluginDefault/create")
     public String consoleAppPluginDefaultCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);

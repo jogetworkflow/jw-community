@@ -28,6 +28,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -36,6 +37,7 @@ import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -114,6 +116,8 @@ public class AppServiceImpl implements AppService {
     MessageDao messageDao;
     @Autowired
     EnvironmentVariableDao environmentVariableDao;
+    @Autowired
+    AppResourceDao appResourceDao;
     @Autowired
     PluginDefaultPropertiesDao pluginDefaultPropertiesDao;
     @Autowired
@@ -997,6 +1001,8 @@ public class AppServiceImpl implements AppService {
                     //import
                     appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appDefinitionXml), false);
                     AppDefinition newAppDef = importAppDefinition(appDef, 1L, xpdl);
+                    
+                    AppResourceUtil.copyAppResources(copy.getAppId(), copy.getVersion().toString(), newAppDef.getAppId(), newAppDef.getVersion().toString());
                 } catch (Exception ex) {
                     LogUtil.error(getClass().getName(), ex, "");
                     appDefinitionDao.saveOrUpdate(appDefinition);
@@ -1050,6 +1056,9 @@ public class AppServiceImpl implements AppService {
             replacement.put("</description-->", "</description>");
             replacement.put("<!--meta>", "<meta>");
             replacement.put("</meta-->", "</meta>");
+            replacement.put("<!--resourceList>", "<resourceList>");
+            replacement.put("</resourceList-->", "</resourceList>");
+            replacement.put("<!--resourceList/-->", "<resourceList/>");
             appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
             
             newAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData));
@@ -1063,6 +1072,9 @@ public class AppServiceImpl implements AppService {
 
             Long newAppVersion = newAppDef.getVersion() + 1;
             newAppDef = importAppDefinition(newAppDef, newAppVersion, xpdl);
+            
+            AppResourceUtil.copyAppResources(appId, version.toString(), appId, newAppDef.getVersion().toString());
+            
             return newAppDef;
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
@@ -1083,6 +1095,8 @@ public class AppServiceImpl implements AppService {
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, version);
 
         appDefinitionDao.delete(appDef);
+        
+        AppResourceUtil.deleteAppResources(appDef.getAppId(), appDef.getVersion().toString());
     }
 
     /**
@@ -1097,6 +1111,7 @@ public class AppServiceImpl implements AppService {
 
         // TODO: delete processes
 
+        AppResourceUtil.deleteAppResourcesForAllVersion(appId);
     }
 
     //----- Console workflow management use cases ------
@@ -1634,6 +1649,11 @@ public class AppServiceImpl implements AppService {
                 afterMessagePos += value.indexOf("</messageList>");
             }
             value = value.substring(0, afterMessagePos) + commentTag(value.substring(afterMessagePos+1), "description");
+            
+            value = value.replace("<resourceList>", "<!--resourceList>");
+            value = value.replace("</resourceList>", "</resourceList-->");
+            value = value.replace("<resourceList/>", "<!--resourceList/-->");
+            
             return value.getBytes("UTF-8");
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -1705,6 +1725,8 @@ public class AppServiceImpl implements AppService {
                     zip.closeEntry();
                 }
                 
+                AppResourceUtil.addResourcesToZip(appId, version, zip);
+                
                 // finish the zip
                 zip.finish();
             }
@@ -1741,6 +1763,8 @@ public class AppServiceImpl implements AppService {
             replacement.put("</description-->", "</description>");
             replacement.put("<!--meta>", "<meta>");
             replacement.put("</meta-->", "</meta>");
+            replacement.put("<!--resourceList>", "<resourceList>");
+            replacement.put("</resourceList-->", "</resourceList>");
             appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
             Serializer serializer = new Persister();
@@ -1751,6 +1775,8 @@ public class AppServiceImpl implements AppService {
             //Store appDef
             long newAppVersion = appVersion + 1;
             AppDefinition newAppDef = importAppDefinition(appDef, newAppVersion, xpdl);
+            
+            AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
 
             importPlugins(zip);
 
@@ -2038,6 +2064,13 @@ public class AppServiceImpl implements AppService {
                 
                 o.setAppDefinition(newAppDef);
                 pluginDefaultPropertiesDao.add(o);
+            }
+        }
+        
+        if (appDef.getResourceList() != null) {
+            for (AppResource o : appDef.getResourceList()) {
+                o.setAppDefinition(newAppDef);
+                appResourceDao.add(o);
             }
         }
 

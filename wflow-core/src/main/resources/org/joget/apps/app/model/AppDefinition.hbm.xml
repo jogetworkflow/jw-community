@@ -62,5 +62,12 @@
             </key>
             <one-to-many entity-name="Message"/>
         </bag>
+        <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="resourceList">
+            <key>
+                <column name="appId"/>
+                <column name="appVersion"/>
+            </key>
+            <one-to-many entity-name="AppResource"/>
+        </bag>
     </class>
 </hibernate-mapping>

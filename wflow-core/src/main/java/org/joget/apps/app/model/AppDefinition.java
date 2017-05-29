@@ -40,6 +40,10 @@ public class AppDefinition extends AbstractVersionedObject {
     @ElementList(required = false,inline=true)
     private Collection<Message> messageList;
     
+    @Path("resourceList")
+    @ElementList(required = false,inline=true)
+    private Collection<AppResource> resourceList;
+    
     private Boolean published;
     @Element(required = false)
     private String license;
@@ -114,6 +118,14 @@ public class AppDefinition extends AbstractVersionedObject {
 
     public void setMessageList(Collection<Message> messageList) {
         this.messageList = messageList;
+    }
+    
+    public Collection<AppResource> getResourceList() {
+        return resourceList;
+    }
+
+    public void setResourceList(Collection<AppResource> resourceList) {
+        this.resourceList = resourceList;
     }
 
     public Collection<PluginDefaultProperties> getPluginDefaultPropertiesList() {

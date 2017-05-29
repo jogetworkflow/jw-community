@@ -64,6 +64,9 @@
         
         <!-- RSS feed: permissions controlled by assignment -->
         <security:intercept-url pattern="/web/rss/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
+        
+        <!-- App Resource: permissions controlled by setting -->
+        <security:intercept-url pattern="/web/app/**/resources/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS"/>
                 
         <!-- Task assignment and form download paths: permissions controlled by assignment  -->
         <security:intercept-url pattern="/web/client/app/**/form/download/**" access="ROLE_ADMIN, ROLE_USER, ROLE_ANONYMOUS" />
