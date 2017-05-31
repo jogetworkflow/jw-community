@@ -7,15 +7,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.model.UserReplacement;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.DefaultAuditTrailPlugin;
 import org.joget.plugin.base.PluginWebSupport;
@@ -90,7 +93,10 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
     protected void sendEmail (final Map props, final AuditTrail auditTrail, final WorkflowManager workflowManager, final List<String> users, final WorkflowActivity wfActivity) {
         final String smtpHost = (String) props.get("host");
         
-        if (smtpHost != null && !smtpHost.isEmpty()) {
+        SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+        String setupSmtpHost = setupManager.getSettingValue("smtpHost");
+        
+        if ((smtpHost != null && !smtpHost.isEmpty()) || (setupSmtpHost != null && !setupSmtpHost.isEmpty())) {
             final String profile = DynamicDataSourceManager.getCurrentProfile();            
             new PluginThread(new Runnable() {
 
@@ -156,6 +162,19 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, auditTrail.getAppDef());
                                         for (String address : ccs) {
                                             email.addCc(StringUtil.encodeEmail(address));
+                                        }
+                                    }
+                                    
+                                    //send to replacement user
+                                    UserReplacementDao urDao = (UserReplacementDao) AppUtil.getApplicationContext().getBean("userReplacementDao");
+                                    String args[] = wfAssignment.getProcessDefId().split("#");
+                                    Collection<UserReplacement> replaces = urDao.getUserTodayReplacedBy(username, args[0], args[2]);
+                                    if (replaces != null && !replaces.isEmpty()) {
+                                        for (UserReplacement ur : replaces) {
+                                            Collection<String> emails = AppUtil.getEmailList(null, ur.getReplacementUser(), null, null);
+                                            if (emails != null && !emails.isEmpty()) {
+                                                addresses.addAll(emails);
+                                            }
                                         }
                                     }
 

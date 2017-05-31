@@ -14,10 +14,12 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
+import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.app.model.UserReplacement;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
@@ -579,6 +581,26 @@ public class AppUtil implements ApplicationContextAware {
                 userList = WorkflowUtil.getAssignmentUsers(process.getPackageId(), wfAssignment.getProcessDefId(), wfAssignment.getProcessId(), wfAssignment.getProcessVersion(), wfAssignment.getActivityId(), "", pId.trim());
 
                 if (userList != null && userList.size() > 0) {
+                    users.addAll(userList);
+                }
+            }
+            
+            //send to replacement user
+            if (!users.isEmpty()) {
+                Collection<String> userList = new HashSet<String>();
+                String args[] = wfAssignment.getProcessDefId().split("#");
+                
+                for (String u : users) {
+                    UserReplacementDao urDao = (UserReplacementDao) AppUtil.getApplicationContext().getBean("userReplacementDao");
+                    Collection<UserReplacement> replaces = urDao.getUserTodayReplacedBy(u, args[0], args[2]);
+                    if (replaces != null && !replaces.isEmpty()) {
+                        for (UserReplacement ur : replaces) {
+                            userList.add(ur.getReplacementUser());
+                        }
+                    }
+                }
+                
+                if (userList.size() > 0) {
                     users.addAll(userList);
                 }
             }

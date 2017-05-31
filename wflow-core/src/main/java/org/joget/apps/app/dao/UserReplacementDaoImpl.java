@@ -39,4 +39,18 @@ public class UserReplacementDaoImpl extends AbstractSpringDao implements UserRep
     public void delete(String id) {
         super.delete(ENTITY_NAME, getUserReplacement(id));
     }
+
+    public List<UserReplacement> getUserTodayReplacedBy(String username, String appId, String processId) {
+        String pId = appId + ":" +processId;
+        Collection<Object> params = new ArrayList<Object>();
+        String condition = " where e.username = ? and ? between e.startDate and e.endDate and (e.processIds like ? or e.processIds like ? or e.processIds like ? or e.processIds = ?)";
+        params.add(username);
+        params.add(new Date());
+        params.add(pId + ";%");
+        params.add("%;"+pId);
+        params.add("%;"+pId+";%");
+        params.add(pId);
+        
+        return (List<UserReplacement>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, null, null);
+    }
 }
