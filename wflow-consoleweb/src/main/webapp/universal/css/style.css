@@ -19,10 +19,15 @@ body {
 }
 
 body:not(.embeded) {
-    width: 100vw;
+    width: 100%;
     overflow-y: auto;
     height: calc(100% - 65px);
     margin-top: 65px;
+}
+
+body.popupBody:not(.embeded) {
+    height: 100%;
+    margin-top: 0px;
 }
 
 .inline-block {
