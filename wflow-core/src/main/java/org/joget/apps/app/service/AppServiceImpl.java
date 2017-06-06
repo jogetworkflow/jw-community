@@ -2301,6 +2301,9 @@ public class AppServiceImpl implements AppService {
                     if (userviewSetting != null && (userviewSetting.getPermission() == null || (userviewSetting.getPermission() != null && userviewSetting.getPermission().isAuthorize()))
                             && (!mobileView || !userviewSetting.getTheme().isMobileViewDisabled())
                             && (!mobileCache || "true".equals(userviewSetting.getProperty("mobileCacheEnabled")))) {
+                        if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
+                            uvDef.setThumbnail(userviewSetting.getPropertyString("userview_thumbnail"));
+                        }
                         newUvDefList.add(uvDef);
                     }
                 }

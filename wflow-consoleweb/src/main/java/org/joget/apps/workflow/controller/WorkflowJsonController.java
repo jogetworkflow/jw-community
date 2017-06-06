@@ -1077,6 +1077,9 @@ public class WorkflowJsonController {
                 userview.accumulate("description", StringUtil.stripAllHtmlTag(userviewDef.getDescription()));
                 String url = WorkflowUtil.getHttpServletRequest().getContextPath() + "/web/userview/" + appDef.getId() + "/" + userviewDef.getId();
                 userview.accumulate("url", url);
+                if (userviewDef.getThumbnail() != null && !userviewDef.getThumbnail().isEmpty()) {
+                    userview.accumulate("imageUrl", userviewDef.getThumbnail());
+                }
                 userviews.put(userview);
             }
             app.put("userviews", userviews);

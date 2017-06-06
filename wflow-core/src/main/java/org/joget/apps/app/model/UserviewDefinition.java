@@ -22,6 +22,7 @@ public class UserviewDefinition extends AbstractAppVersionedObject {
     private Date dateCreated;
     @Element(required = false)
     private Date dateModified;
+    private String thumbnail;
 
     public Date getDateCreated() {
         return dateCreated;
@@ -61,5 +62,13 @@ public class UserviewDefinition extends AbstractAppVersionedObject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

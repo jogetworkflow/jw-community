@@ -16,6 +16,13 @@
         label: '@@ubuilder.description@@',
         required: 'false',
         type: 'textarea'
+    }, 
+    {
+        name: 'userview_thumbnail',
+        label: '@@ubuilder.thumbnail@@',
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true'
     }]
 }, {
     title: '@@userview.userviewsetting.configPermission@@',
