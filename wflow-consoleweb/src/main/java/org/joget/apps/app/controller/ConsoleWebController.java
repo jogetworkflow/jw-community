@@ -3102,27 +3102,6 @@ public class ConsoleWebController {
         return "console/dialogClose";
     }
     
-    @RequestMapping("/console/app/(*:appId)/(~:version)/resources")
-    public String consoleResources(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(map, appId, version);
-        boolean protectedReadonly = false;
-        if (result != null) {
-            protectedReadonly = result.contains("status=invalidLicensor");
-            if (!protectedReadonly) {
-                return result;
-            }
-        }
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        checkAppPublishedVersion(appDef);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-        map.addAttribute("protectedReadonly", protectedReadonly);
-        
-        return "console/apps/resources";
-    }
-    
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/create")
     public String consoleAppResourceCreate(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -3215,7 +3194,7 @@ public class ConsoleWebController {
         appResourceDao.update(appResource);
         
         String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=resources";
         map.addAttribute("url", url);
         return "console/dialogClose";
     }
