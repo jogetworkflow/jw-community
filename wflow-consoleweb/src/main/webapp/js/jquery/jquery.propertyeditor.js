@@ -7,6 +7,7 @@ PropertyEditor.Validator = {};
 PropertyEditor.Util = {
     ajaxLoading: 0,
     ajaxLoadingTimeoutConter: 0,
+    resources: {},
     ajaxCalls: {},
     types: {},
     validators: {},
@@ -609,6 +610,144 @@ PropertyEditor.Util = {
             PropertyEditor.Util.ajaxLoadingTimeoutConter = 0;
             $(editor).find(".ajaxLoader").hide();
         }
+    },
+    getAppResources: function(field, callback) {
+        if (PropertyEditor.Util.resources[field.properties.appPath] !== null && PropertyEditor.Util.resources[field.properties.appPath] !== undefined) {
+            callback(PropertyEditor.Util.resources[field.properties.appPath]);
+        } else {
+            $.ajax({
+                url: field.options.contextPath+"/web/property/json"+field.properties.appPath+"/getAppResources",
+                dataType: "json",
+                method: "GET",
+                success: function(data) {
+                    PropertyEditor.Util.resources[field.properties.appPath] = data;
+                    callback(data);
+                }
+            });
+        }
+    },
+    showAppResourcesDialog: function(field) {
+        PropertyEditor.Util.getAppResources(field, function(resources) {
+            var height = $(field.editor).height() * 0.95;
+            var width = $(field.editor).width() * 0.80;
+            
+            var html = "<div class=\"property_editor_app_resources\"><div id=\"app_resource_dropzone\" class=\"dropzone\"><div class=\"dz-message needsclick\">"+get_peditor_msg('peditor.dropfile')+"</div><div class=\"uploading\"></div></div><div class=\"search_field\"><i class=\"fa fa-search\"></i><input type=\"text\"/></div><ul class=\"app_resources\"></ul></div>";
+            var object = $(html);
+            
+            var options = {
+                url : field.options.contextPath+"/web/property/json"+field.properties.appPath+"/appResourceUpload",
+                paramName : 'app_resource',
+                previewsContainer : ".property_editor_app_resources .uploading",
+                previewTemplate : '<div><span class="name" data-dz-name></span><strong class="error text-danger" data-dz-errormessage></strong><div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div></div></div>',
+                dictInvalidFileType : get_peditor_msg('peditor.invalidFileType'),
+                dictFileTooBig : get_peditor_msg('peditor.fileTooBig')
+            };
+            
+            var types = [];
+            if (field.properties.allowType !== undefined && field.properties.allowType !== null && field.properties.allowType !== "") {
+                options.acceptedFiles = field.properties.allowType.replace(/;/g, ',');
+                types = field.properties.allowType.split(";");
+            }
+            
+            if (field.properties.maxSize !== undefined && field.properties.maxSize !== null && field.properties.maxSize !== "") {
+                try {
+                    options.maxFilesize = parseInt(field.properties.maxSize) / 1024;
+                } catch (err) {}
+            }
+            
+            for (var r in resources) {
+                var ar_container = $(object).find(".app_resources");
+                
+                var fileType = resources[r].value.substring(resources[r].value.indexOf("."));
+                //check valid file type
+                if (types.length > 0) {
+                    var valid = false;
+                    for (var t in types) {
+                        if (fileType === types[t]) {
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if (!valid) {
+                        continue;
+                    }
+                }
+                
+                if (!resources[r].value.match(/.(jpg|jpeg|png|gif)$/i)){
+                    ar_container.append("<li><div class=\"image\"><div class=\"ext\"><span>"+fileType.substring(1)+"</span></div></div><span class=\"name\">"+resources[r].value+"</span></li>");
+                } else {
+                    ar_container.append("<li><div class=\"image\" style=\"background-image:url('"+resources[r].url+"');\"></div><span class=\"name\">"+resources[r].value+"</span></li>");
+                }
+            }
+            
+            $(object).dialog({
+                autoOpen: false, 
+                modal: true, 
+                height: height,
+                width: width,
+                close: function( event, ui ) {
+                    $(object).dialog("destroy");
+                    $(object).remove();
+                    $(field).focus();
+                }
+            });
+            $(object).dialog("open");
+            
+            $(object).on("click", ".app_resources li", function(){
+                field.selectResource($(this).find(".name").text());
+                $(object).dialog("close");
+            });
+            
+            $(object).find(".search_field input").on("keyup", function(){
+                var text = $(this).val();
+                if (text.length > 3) {
+                    $(object).find(".app_resources li").each(function(){
+                        if($(this).find(".name").text().indexOf(text) === -1){
+                            $(this).hide();
+                        } else {
+                            $(this).show();
+                        }
+                    });
+                } else if (text.length === 0) {
+                    $(object).find(".app_resources li").show();
+                }
+            });
+            
+            var myDropzone = new Dropzone("#app_resource_dropzone", options);
+            myDropzone.on("success", function(file, resp) {
+                resp = $.parseJSON(resp);
+                var ar_container = $(object).find(".app_resources");
+                
+                //check existing and remove it
+                for (var i in PropertyEditor.Util.resources[field.properties.appPath]) {
+                    if (PropertyEditor.Util.resources[field.properties.appPath][i].value === resp.value) {
+                        PropertyEditor.Util.resources[field.properties.appPath].splice(i, 1);
+                        
+                        ar_container.find("li").each(function(){
+                            if($(this).find(".name").text() === resp.value){
+                                $(this).remove();
+                            }
+                        });
+                    }
+                }
+                
+                PropertyEditor.Util.resources[field.properties.appPath].unshift(resp);
+                $(file.previewElement).remove();
+                
+                var fileType = resp.value.substring(resp.value.indexOf("."));
+                if (!resp.value.match(/.(jpg|jpeg|png|gif)$/i)){
+                    ar_container.prepend("<li><div class=\"image\"><div class=\"ext\"><span>"+fileType.substring(1)+"</span></div></div><span class=\"name\">"+resp.value+"</span></li>");
+                } else {
+                    ar_container.prepend("<li><div class=\"image\" style=\"background-image:url('"+resp.url+"');\"></div><span class=\"name\">"+resp.value+"</span></li>");
+                }
+            });
+            myDropzone.on("error", function(file, error) {
+                setTimeout(function(){
+                    $(object).find(".app_resources .error").remove();
+                }, 8000);
+            });
+            
+        });
     }
 };
         
@@ -3792,6 +3931,116 @@ PropertyEditor.Type.AutoComplete.prototype = {
     }
 };
 PropertyEditor.Type.AutoComplete = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.AutoComplete.prototype);
+
+PropertyEditor.Type.File = function(){};
+PropertyEditor.Type.File.prototype = {
+    shortname : "file",
+    source : [],
+    renderField: function() {
+        var size = '';
+        var imagesize = '';
+        if(this.value === null){
+            this.value = "";
+        }
+        if(this.properties.size !== undefined && this.properties.size !== null){
+            size = ' size="'+ this.properties.size +'"';
+        } else {
+            size = ' size="50"';
+        }
+        var maxlength = '';
+        if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
+            maxlength = ' maxlength="'+ this.properties.maxlength +'"';
+        }
+        
+        if (this.properties.allowInput === undefined || this.properties.allowInput === null || this.properties.allowInput !== "true") {
+            maxlength += " readonly";
+        }
+        
+        return '<input type="text" class="image" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/> <a class="choosefile btn button small">'+get_peditor_msg('peditor.chooseFile')+'</a> <a class="clearfile btn button small">'+get_peditor_msg('peditor.clear')+'</a>';
+    },
+    initScripting: function () {
+        var thisObj = this;
+        $("#"+this.id).parent().find(".clearfile").on("click", function() {
+            $("#"+thisObj.id).val("").trigger("change");
+        });
+        
+        $("#"+this.id).parent().find(".choosefile").on("click", function() {
+            PropertyEditor.Util.showAppResourcesDialog(thisObj);
+        });
+    },
+    selectResource: function (filename) {
+        if (this.properties.appResourcePrefix !== undefined && this.properties.appResourcePrefix !== null && this.properties.appResourcePrefix === "true") {
+            filename = "AppResource::"+filename;
+        }
+        $("#"+this.id).val(filename).trigger("change");
+    }
+};
+PropertyEditor.Type.File = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.File.prototype);
+
+PropertyEditor.Type.Image = function(){};
+PropertyEditor.Type.Image.prototype = {
+    shortname : "image",
+    source : [],
+    renderField: function() {
+        var size = '';
+        var imagesize = '';
+        if(this.value === null){
+            this.value = "";
+        }
+        if(this.properties.size !== undefined && this.properties.size !== null){
+            size = ' size="'+ this.properties.size +'"';
+        } else {
+            size = ' size="50"';
+        }
+        if(this.properties.imageSize !== undefined && this.properties.imageSize !== null){
+            imagesize = ' width:'+ this.properties.imageSize +'px; height:'+ this.properties.imageSize +'px;';
+        } else {
+            imagesize = ' width:80px; height:80px;';
+        }
+        var maxlength = '';
+        if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
+            maxlength = ' maxlength="'+ this.properties.maxlength +'"';
+        }
+        
+        if (this.properties.allowInput === undefined || this.properties.allowInput === null || this.properties.allowInput !== "true") {
+            maxlength += " readonly";
+        }
+        
+        if (this.properties.allowType === undefined || this.properties.allowType === null || this.properties.allowType === "") {
+            this.properties.allowType = ".jpeg;.jpg;.gif;.png";
+        }
+        
+        var style = imagesize;
+        if (this.value !== "") {
+            var path = this.value.replace("AppResource::", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
+            style += " background-image:url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')";
+        }
+        
+        return '<input type="text" class="image" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/><a class="choosefile btn button small">'+get_peditor_msg('peditor.chooseImage')+'</a><div class="image-placeholder" style="'+style+'"><a class="image-remove"><i class="fa fa-times"></i></a></div>';
+    },
+    initScripting: function () {
+        var thisObj = this;
+        $("#"+this.id).on("change", function(){
+            var value = $(this).val();
+            var path = value.replace("AppResource::", thisObj.options.contextPath+"/web/app"+thisObj.properties.appPath+"/resources/");
+            var imagePlaceholder = $(this).parent().find(".image-placeholder");
+            $(imagePlaceholder).css("background-image", "url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')");
+        });
+        
+        $("#"+this.id).parent().find(".image-remove").on("click", function() {
+            $("#"+thisObj.id).val("").trigger("change");
+        });
+        
+        $("#"+this.id).parent().find(".choosefile").on("click", function() {
+            PropertyEditor.Util.showAppResourcesDialog(thisObj);
+        });
+        
+    },
+    selectResource: function (filename) {
+        $("#"+this.id).val("AppResource::"+filename).trigger("change");
+    }
+};
+PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.Image.prototype);
 
 (function($) {
     $.fn.extend({
