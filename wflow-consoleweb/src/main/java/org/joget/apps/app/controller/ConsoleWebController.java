@@ -3510,7 +3510,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/form/columns/options")
-    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tableName", required = false) String formTable, @RequestParam(value = "tables", required = false) String tables) throws IOException, JSONException {
+    public void consoleFormColumnsOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "formDefId", required = false) String formDefId, @RequestParam(value = "tableName", required = false) String formTable, @RequestParam(value = "tables", required = false) String tables, @RequestParam(value = "fields", required = false) String fields) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         JSONArray jsonArray = new JSONArray();
@@ -3531,6 +3531,15 @@ public class ConsoleWebController {
             if (tables != null && !tables.isEmpty()) {
                 for (String t : tables.split(";")) {
                     populateColumns(jsonArray, t, true);
+                }
+            }
+            
+            if (fields != null && !fields.isEmpty()) {
+                for (String t : fields.split(";")) {
+                    Map m = new HashMap();
+                    m.put("value", t);
+                    m.put("label", t);
+                    jsonArray.put(m);
                 }
             }
         } catch (Exception e) {
