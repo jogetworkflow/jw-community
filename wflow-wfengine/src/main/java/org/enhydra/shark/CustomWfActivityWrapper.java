@@ -2,6 +2,7 @@ package org.enhydra.shark;
 
 import java.util.List;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
+import org.enhydra.shark.api.client.wfmodel.CannotComplete;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.xpdl.elements.Activity;
@@ -74,5 +75,24 @@ public class CustomWfActivityWrapper extends WfActivityWrapper {
         WfActivityWrapper wrapper = new WfActivityWrapper(shandle, mgrName, processId, id);
         WfActivityInternal internal = wrapper.getActivityImpl(processId, id, SharkUtilities.READ_ONLY_MODE);
         return internal.getAssignmentResourceIds(shandle);
+    }
+    
+    @Override
+    public void complete() throws Exception, CannotComplete {
+        long tStamp = SharkUtilities.methodStart(this.shandle, "WfActivityWrapper.complete");
+        try {
+            checkSecurity("complete", null);
+
+            WfActivityInternal actInternal = getActivityImpl(this.processId, this.id, 1);
+            
+            int type = getActivityDefinition().getActivityType();
+            if (type == 2) {
+                actInternal.finish(this.shandle);
+            } else {
+                actInternal.complete(this.shandle);
+            }
+        } finally {
+            SharkUtilities.methodEnd(this.shandle, tStamp, "WfActivityWrapper.complete", this);
+        }
     }
 }

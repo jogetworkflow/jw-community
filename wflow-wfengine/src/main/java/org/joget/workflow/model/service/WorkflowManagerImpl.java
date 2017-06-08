@@ -1617,6 +1617,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WfActivityIterator ai = sc.get_iterator_activity();
             ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
+            XPDLBrowser xpdl = shark.getXPDLBrowser();
 
             WMFilter filter = new WMFilter();
 
@@ -1645,7 +1646,25 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 workflowActivity.setProcessVersion(manager.version());
                 workflowActivity.setPriority(String.valueOf(wfActivity.priority()));
                 workflowActivity.setProcessStatus(process.state());
-                workflowActivity.setType(entity.getType());
+                
+                workflowActivity.setType(WorkflowActivity.TYPE_NORMAL);
+                //check activity type
+                WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, entity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity actEnt = (WMEntity) activityEntityIterator.next();
+                    if (actEnt.getType().equalsIgnoreCase("tool")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_TOOL);
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("route")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_ROUTE);
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("subflow")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_SUBFLOW);
+                        workflowActivity.setPerformer(actEnt.getId());
+                        break;
+                    }
+                }
+                
                 // check for hash variable
                 if (WorkflowUtil.containsHashVariable(workflowActivity.getName()) || WorkflowUtil.containsHashVariable(workflowActivity.getProcessName())) {
                     WorkflowAssignment ass = new WorkflowAssignment();
@@ -4135,6 +4154,36 @@ public class WorkflowManagerImpl implements WorkflowManager {
         // complete assignment
         assignmentComplete(activityId);
     }
+    
+    /**
+     * Force completes an activity
+     * @param processDefId
+     * @param activityId
+     * @param processId
+     */
+    public void activityForceComplete(String processDefId, String processId, String activityId) {
+        SharkConnection sc = null;
+
+        try {
+            if (activityId == null || activityId.trim().length() == 0) {
+                return;
+            }
+
+            sc = connect();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processId, activityId);
+            wrapper.complete();
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+    }
 
     /**
      * Abort an activity based on the process instance Id and activity definition ID.
@@ -4374,7 +4423,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
     }
-
+    
     /**
      * Set workflow variable value based on activity instance ID. This only works when the current user is assigned to the activity.
      * @param activityId

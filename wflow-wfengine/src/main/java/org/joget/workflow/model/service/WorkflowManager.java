@@ -84,6 +84,14 @@ public interface WorkflowManager {
     void assignmentComplete(String activityId, Map<String, String> variableMap);
 
     /**
+     * Force completes an activity
+     * @param processDefId
+     * @param activityId
+     * @param processId
+     */
+    public void activityForceComplete(String processDefId, String processId, String activityId);
+    
+    /**
      * Abort an activity based on the process instance Id and activity definition ID.
      * @param processId
      * @param activityDefId 
