@@ -634,8 +634,13 @@ PropertyEditor.Util = {
             var html = "<div class=\"property_editor_app_resources\"><div id=\"app_resource_dropzone\" class=\"dropzone\"><div class=\"dz-message needsclick\">"+get_peditor_msg('peditor.dropfile')+"</div><div class=\"uploading\"></div></div><div class=\"search_field\"><i class=\"fa fa-search\"></i><input type=\"text\"/></div><ul class=\"app_resources\"></ul></div>";
             var object = $(html);
             
+            var isPublic = "";
+            if (field.properties.isPublic !== undefined && field.properties.isPublic !== null && field.properties.isPublic.toLowerCase() === "true") {
+                isPublic = "?isPublic=true";
+            }
+            
             var options = {
-                url : field.options.contextPath+"/web/property/json"+field.properties.appPath+"/appResourceUpload",
+                url : field.options.contextPath+"/web/property/json"+field.properties.appPath+"/appResourceUpload"+isPublic,
                 paramName : 'app_resource',
                 previewsContainer : ".property_editor_app_resources .uploading",
                 previewTemplate : '<div><span class="name" data-dz-name></span><strong class="error text-danger" data-dz-errormessage></strong><div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div></div></div>',

@@ -159,7 +159,7 @@ public class PropertyJsonController {
     }
     
     @RequestMapping(value = "/property/json/(*:appId)/(~:version)/appResourceUpload", method = RequestMethod.POST)
-    public void appResourcesUpload(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version) throws IOException, JSONException {
+    public void appResourcesUpload(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "isPublic", required = false) Boolean isPublic) throws IOException, JSONException {
         JSONObject obj = new JSONObject();
         try {
             MultipartFile file = null;
@@ -179,8 +179,14 @@ public class PropertyJsonController {
                             appResource.setAppVersion(appDef.getVersion());
                             appResource.setId(file.getOriginalFilename());
                             appResource.setFilesize(file.getSize());
-                            appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
-                            appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
+                            
+                            if (isPublic != null && isPublic) {
+                                appResource.setPermissionClass("");
+                                appResource.setPermissionProperties("{\"permission\": { \"className\": \"\", \"properties\": {}}}");
+                            } else {
+                                appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
+                                appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
+                            }
                             appResourceDao.add(appResource);
                         }
                         

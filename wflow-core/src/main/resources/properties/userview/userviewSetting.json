@@ -22,7 +22,8 @@
         label: '@@ubuilder.thumbnail@@',
         type: 'image',
         appPath: '[APP_PATH]',
-        allowInput : 'true'
+        allowInput : 'true',
+        isPublic : 'true'
     }]
 }, {
     title: '@@userview.userviewsetting.configPermission@@',
