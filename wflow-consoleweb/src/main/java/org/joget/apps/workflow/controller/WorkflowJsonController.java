@@ -1045,9 +1045,13 @@ public class WorkflowJsonController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
         }
         
-        String username = workflowUserManager.getCurrentUsername();
-        appService.getAppDefinitionForWorkflowActivity(activityId);
-        workflowManager.assignmentForceComplete(processDefId, processId, activityId, username);
+        if (WorkflowActivity.TYPE_TOOL.equals(assignment.getType())) {
+            workflowManager.activityForceComplete(processDefId, processId, activityId);
+        } else {
+            String username = workflowUserManager.getCurrentUsername();
+            appService.getAppDefinitionForWorkflowActivity(activityId);
+            workflowManager.assignmentForceComplete(processDefId, processId, activityId, username);
+        }
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
     

@@ -4309,24 +4309,28 @@ public class WorkflowManagerImpl implements WorkflowManager {
             sc = connect();
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             WfAssignment wfa = getWfAssignmentByActivityId(sc, activityId);
-            WfResource res = sc.getResource(username);
+            
+            if (wfa != null) {
+                WfResource res = sc.getResource(username);
 
-            if (res == null) {
-                CustomWfResourceImpl.createResource(sessionHandle, username);
-                res = sc.getResource(username);
+                if (res == null) {
+                    CustomWfResourceImpl.createResource(sessionHandle, username);
+                    res = sc.getResource(username);
+                }
+
+                if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
+                    wfa.set_assignee(res);
+                }
+
+                if (!wfa.get_accepted_status()) {
+                    wfa.set_accepted_status(true);
+                }
+
+                wfa.activity().complete();
+            } else {
+                CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, processDefId, processId, activityId);
+                wrapper.complete();
             }
-
-            if (wfa.assignee() == null || (wfa.assignee() != null && !res.resource_key().equals(wfa.assignee().resource_key()))) {
-                wfa.set_assignee(res);
-            }
-
-            if (!wfa.get_accepted_status()) {
-                wfa.set_accepted_status(true);
-            }
-
-            wfa.activity().complete();
-
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
