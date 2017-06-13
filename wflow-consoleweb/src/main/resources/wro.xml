@@ -4,6 +4,7 @@
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/jquery/jquerycluetip/css/jquery.cluetip.css</css>
+        <css>/js/boxy/stylesheets/boxy.css</css>
         <js>/js/jquery/jquery-1.9.1.min.js</js>
         <js>/js/jquery/jquery-migrate-1.2.1.min.js</js>
         <js>/js/jquery/ui/jquery-ui-1.10.3.min.js</js>
@@ -17,6 +18,7 @@
         <js>/js/jquery/jquery.blockUI.js</js>
         <js>/js/jquery/jquerycluetip/jquery.hoverIntent.js</js>
         <js>/js/jquery/jquerycluetip/jquery.cluetip.js</js>
+        <js>/js/boxy/javascripts/jquery.boxy.js</js>
     </group>
     <group name="advancedTool">
         <css>/js/jstree/themes/default/style.min.css</css>
@@ -34,8 +36,6 @@
     <group name="form_common">
         <css>/css/form.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
-        <css>/js/boxy/stylesheets/boxy.css</css>
-        <js>/js/boxy/javascripts/jquery.boxy.js</js>
         <js>/js/tablesaw/tablesaw.stackonly.js</js>
         <js>/js/json/formUtil.js</js>
         <js>classpath:resources/js/jquery.custom.datepicker.js</js>
