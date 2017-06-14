@@ -1982,7 +1982,7 @@ public class FormUtil implements ApplicationContextAware {
         }
     }
     
-    public static void recursiveDeleteChildFormData(Form form, String primaryKey, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+    public static void recursiveDeleteChildFormData(Form form, String primaryKey, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
         FormData formData = new FormData();
         formData.setPrimaryKeyValue(primaryKey);
         formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, FormUtil.FORM_RESULT_LOAD_ALL_DATA);
@@ -1995,11 +1995,11 @@ public class FormUtil implements ApplicationContextAware {
         
         //skip the form element and start with its child
         for (Element e : form.getChildren()) {
-            recursiveExecuteFormDeleteBinders(e, formData, deleteGrid, deleteSubform, abortProcess);
+            recursiveExecuteFormDeleteBinders(e, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
         }
     }
     
-    private static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess) {
+    private static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
         if (FormUtil.isReadonly(element, formData)) {
             return;
         }
@@ -2019,7 +2019,7 @@ public class FormUtil implements ApplicationContextAware {
             if ((isGrid && deleteGrid) || (!isGrid && deleteSubform)) {
                 boolean delete = false;
                 if (storeBinder instanceof FormDeleteBinder) {
-                    ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess);
+                    ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
                     delete = true;
                 } else if (loadBinder instanceof FormDataDeletableBinder) {
                     FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
@@ -2036,7 +2036,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         
         for (Element child : element.getChildren()) {
-            recursiveExecuteFormDeleteBinders(child, formData, deleteGrid, deleteSubform, abortProcess);
+            recursiveExecuteFormDeleteBinders(child, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
         }
     }
     

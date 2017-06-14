@@ -10,6 +10,10 @@ public interface FormDeleteBinder {
      * @param element The element from which the data originates.
      * @param rows This is the data to be deleted. A Collection of Map objects. Each Map object contains property=value pairs to represent a data row.
      * @param formData Contains form data eg request parameters, primary key, foreign key, etc.
+     * @param deleteGrid
+     * @param deleteSubform
+     * @param abortProcess
+     * @param deleteFiles
      */
-    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess);
+    public void delete(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles);
 }

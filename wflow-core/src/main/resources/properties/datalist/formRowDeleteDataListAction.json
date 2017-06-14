@@ -35,6 +35,18 @@
         ]
     },
     {
+        name:'deleteFiles',
+        label:'@@datalist.formrowdeletedatalistaction.deleteFiles@@',
+        type:'checkbox',
+        value:'false',
+        options:[
+            {
+                value:'true',
+                label:''
+            }
+        ]
+    },
+    {
         name:'abortRelatedRunningProcesses',
         label:'@@datalist.formrowdeletedatalistaction.abortRelatedRunningProcesses@@',
         type:'checkbox',

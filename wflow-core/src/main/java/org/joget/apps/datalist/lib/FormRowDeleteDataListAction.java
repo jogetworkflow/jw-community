@@ -11,6 +11,7 @@ import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
+import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -158,12 +159,16 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
                 FormUtil.abortRunningProcessForRecord(primaryKey);
             }
             formDataDao.delete(form.getPropertyString(FormUtil.PROPERTY_ID), form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME), new String[]{primaryKey});
+            
+            if ("true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
+                FileUtil.deleteFiles(form, primaryKey);
+            }
         } catch (HibernateObjectRetrievalFailureException e) {
             //ignore
         }
         
         if ("true".equalsIgnoreCase(getPropertyString("deleteGridData")) || "true".equalsIgnoreCase(getPropertyString("deleteSubformData"))) {
-            FormUtil.recursiveDeleteChildFormData(form, primaryKey, "true".equalsIgnoreCase(getPropertyString("deleteGridData")), "true".equalsIgnoreCase(getPropertyString("deleteSubformData")), "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")));
+            FormUtil.recursiveDeleteChildFormData(form, primaryKey, "true".equalsIgnoreCase(getPropertyString("deleteGridData")), "true".equalsIgnoreCase(getPropertyString("deleteSubformData")), "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")), "true".equalsIgnoreCase(getPropertyString("deleteFiles")));
         }
     }
 

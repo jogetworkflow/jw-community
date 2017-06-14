@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormRow;
@@ -334,8 +335,92 @@ public class FileUtil implements ApplicationContextAware {
      * @throws IOException 
      */
     public static File getFile(String fileName, String tableName, String primaryKeyValue) throws IOException {
+        // validate input
+        String normalizedFileName = Normalizer.normalize(fileName, Normalizer.Form.NFKC);
+        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+            throw new SecurityException("Invalid filename " + normalizedFileName);
+        }
+                
         String path = getUploadPath(tableName, primaryKeyValue);
         return new File(path + fileName);
+    }
+    
+    /**
+     * Delete the file from target upload directory of a form data record
+     * @param fileName
+     * @param element A Form object
+     * @param primaryKeyValue
+     */
+    public static void deleteFile(String fileName, Element element, String primaryKeyValue) {
+        try {
+            File file = getFile(fileName, element, primaryKeyValue);
+
+            if (file != null && file.exists()) {
+                file.delete();
+                
+                //delete thumbnail 
+                FileUtil.deleteFile(fileName + FileManager.THUMBNAIL_EXT, element, primaryKeyValue);
+            }
+        } catch (Exception e) {
+            LogUtil.error(FileUtil.class.getName(), e, fileName);
+        }
+    }
+    
+    /**
+     * Gets the file from target upload directory of a form data record
+     * @param fileName
+     * @param tableName
+     * @param primaryKeyValue
+     */
+    public static void deleteFile(String fileName, String tableName, String primaryKeyValue) {
+        try {
+            File file = getFile(fileName, tableName, primaryKeyValue);
+
+            if (file != null && file.exists()) {
+                file.delete();
+                
+                //delete thumbnail
+                FileUtil.deleteFile(fileName + FileManager.THUMBNAIL_EXT, tableName, primaryKeyValue);
+            }
+        } catch (Exception e) {
+            LogUtil.error(FileUtil.class.getName(), e, fileName);
+        }
+    }
+    
+    /**
+     * Delete the files from target upload directory of a form data record
+     * @param element A Form object
+     * @param primaryKeyValue
+     */
+    public static void deleteFiles(Element element, String primaryKeyValue) {
+        try {
+            String path = getUploadPath(element, primaryKeyValue);
+            File directory = new File(path);
+
+            if (directory.exists()) {
+                FileUtils.deleteDirectory(directory);
+            }
+        } catch (Exception e) {
+            LogUtil.error(FileUtil.class.getName(), e, primaryKeyValue);
+        }
+    }
+    
+    /**
+     * Delete the files from target upload directory of a form data record
+     * @param tableName
+     * @param primaryKeyValue
+     */
+    public static void deleteFiles(String tableName, String primaryKeyValue) {
+        try {
+            String path = getUploadPath(tableName, primaryKeyValue);
+            File directory = new File(path);
+
+            if (directory.exists()) {
+                FileUtils.deleteDirectory(directory);
+            }
+        } catch (Exception e) {
+            LogUtil.error(FileUtil.class.getName(), e, primaryKeyValue);
+        }
     }
 
     /**
@@ -395,7 +480,7 @@ public class FileUtil implements ApplicationContextAware {
         }
         return tableName;
     }
-
+    
     /**
      * Method used by the system to set an ApplicationContext object
      * @param appContext
