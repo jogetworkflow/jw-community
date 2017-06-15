@@ -135,6 +135,13 @@ public class DataList {
     }
 
     public void setActions(DataListAction[] actions) {
+        if (actions != null && actions.length > 0) {
+            for (DataListAction a : actions) {
+                if (a instanceof DataListActionDefault) {
+                    ((DataListActionDefault) a).setDatalist(this);
+                }
+            }
+        }
         this.actions = actions;
     }
 
@@ -143,6 +150,9 @@ public class DataList {
     }
 
     public void setBinder(DataListBinder binder) {
+        if (binder != null && binder instanceof DataListBinderDefault) {
+            ((DataListBinderDefault) binder).setDatalist(this);
+        }
         this.binder = binder;
     }
 
@@ -167,6 +177,21 @@ public class DataList {
     }
 
     public void setColumns(DataListColumn[] columns) {
+        if (columns != null && columns.length > 0) {
+            for (DataListColumn c : columns) {
+                if (c.getFormats() != null && !c.getFormats().isEmpty()) {
+                    for (DataListColumnFormat f : c.getFormats()) {
+                        if (f instanceof DataListColumnFormatDefault) {
+                            ((DataListColumnFormatDefault) f).setDatalist(this);
+                        }
+                    }
+                }
+                if (c.getAction() != null && c.getAction() instanceof DataListActionDefault) {
+                    ((DataListActionDefault) c.getAction()).setDatalist(this);
+                }
+            }
+        }
+        
         this.columns = columns;
     }
 
@@ -175,6 +200,14 @@ public class DataList {
     }
 
     public void setFilters(DataListFilter[] filters) {
+        if (filters != null && filters.length > 0) {
+            for (DataListFilter f : filters) {
+                if (f.getType() != null && f.getType() instanceof DataListFilterTypeDefault) {
+                    ((DataListFilterTypeDefault) f.getType()).setDatalist(this);
+                }
+            }
+        }
+        
         this.filters = filters;
     }
 
@@ -292,6 +325,14 @@ public class DataList {
     }
 
     public void setRowActions(DataListAction[] rowActions) {
+        if (rowActions != null && rowActions.length > 0) {
+            for (DataListAction a : rowActions) {
+                if (a instanceof DataListActionDefault) {
+                    ((DataListActionDefault) a).setDatalist(this);
+                }
+            }
+        }
+        
         this.rowActions = rowActions;
     }
 

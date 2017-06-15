@@ -6,7 +6,16 @@ import org.joget.plugin.base.ExtDefaultPlugin;
  * Base class for a data list action
  */
 public abstract class DataListActionDefault extends ExtDefaultPlugin implements DataListAction {
+    private DataList datalist;
 
+    public DataList getDatalist() {
+        return datalist;
+    }
+
+    public void setDatalist(DataList datalist) {
+        this.datalist = datalist;
+    }
+    
     /**
      * Flag that decide to show an action object or not when no record
      * 

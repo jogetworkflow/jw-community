@@ -11,6 +11,15 @@ import org.joget.plugin.base.ExtDefaultPlugin;
 public abstract class DataListBinderDefault extends ExtDefaultPlugin implements DataListBinder {
 
     public static final String USERVIEW_KEY_SYNTAX = "#userviewKey#";
+    private DataList datalist;
+
+    public DataList getDatalist() {
+        return datalist;
+    }
+
+    public void setDatalist(DataList datalist) {
+        this.datalist = datalist;
+    }
     
     /**
      * To get the actual column name

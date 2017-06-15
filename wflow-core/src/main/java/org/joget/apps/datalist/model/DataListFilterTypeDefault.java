@@ -7,7 +7,16 @@ import org.joget.plugin.base.ExtDefaultPlugin;
  * 
  */
 public abstract class DataListFilterTypeDefault extends ExtDefaultPlugin implements DataListFilterType {
+    private DataList datalist;
 
+    public DataList getDatalist() {
+        return datalist;
+    }
+
+    public void setDatalist(DataList datalist) {
+        this.datalist = datalist;
+    }
+    
     /**
      * Convenience method to get value from request parameters.
      * 
