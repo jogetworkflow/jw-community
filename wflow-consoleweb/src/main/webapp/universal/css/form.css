@@ -145,8 +145,8 @@ body .editor-cell select:not([class^=ui]){
   border: none;
   border-radius: 0;
   outline: none;
-  height: 3rem;
-  min-height: 3rem;
+  height: 30px;
+  min-height: 30px;
   width: 100%;
   max-width: 70%;
   margin: 0 0 15px 0;
@@ -288,13 +288,25 @@ body .filter-cell select:not([class^=ui]){
 }
 
 body .form-container .form-cell-value,
-body .form-container .subform-cell-value {
-    min-height: 46px;
+body .form-container .subform-cell-value,
+body .form-container .selector_element,
+body .form-container .form-fileupload,
+body .form-container .subform-fileupload{
+    min-height: 31px;
+    margin-bottom: 15px;
+}
+
+body .form-container.readonly .form-cell-value,
+body .form-container .readonly .subform-cell-value,
+body .form-container.readonly .form-fileupload,
+body .form-container .readonly .subform-fileupload{
+    margin-bottom: 5px;
 }
 
 body .form-container .pq-td-div .form-cell-value,
 body .form-container .pq-td-div .subform-cell-value {
     min-height: auto;
+    margin-bottom: 0;
 }
 
 body input:-webkit-autofill, body textarea:-webkit-autofill, body select:-webkit-autofill {
@@ -309,7 +321,6 @@ body input:focus:-webkit-autofill, body textarea:focus:-webkit-autofill, body se
 body textarea {
   overflow-y: hidden;
   resize: none;
-  padding: 6px 0 0 0;
 }
 
 /* Radio Buttons
@@ -453,12 +464,22 @@ body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-
     display: inline-block;
     font-weight: normal;
 }
+body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 10px 7px 0;
+    margin-bottom: 15px;
+}
+body .form-container.readonly label.label + span:not(.form-cell-value):not(.subform-cell-value),
+body .form-container .readonly label.label + span:not(.form-cell-value):not(.subform-cell-value){
+    margin-bottom: 5px;
+}
 body.rtl .form-container [class*=form-cell-value] > span,
 body.rtl .form-container [class*=form-cell-value] > .readonly_label,
 body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
     padding: 6px 0px 0 10px;
 }
-
+body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 0px 7px 10px;
+}
 body .form-container .pq-td-div [class*=form-cell-value] > span,
 body .form-container .pq-td-div [class*=form-cell-value] > .readonly_label,
 body .form-container .pq-td-div label.label + span:not(.form-cell-value):not(.subform-cell-value) {
@@ -606,11 +627,16 @@ body .chosen-container-single .chosen-single {
     border-bottom: 1px solid #B6B6B6;
     background-color: transparent;
     background: transparent;
+    margin-bottom: 15px;
     color: inherit;
 }
 
 body .chosen-container-multi .chosen-choices{
-    padding: 2px 0 1px;
+    padding: 0px;
+}
+
+body .chosen-container-multi .chosen-choices li.search-choice {
+    margin: 0px 5px 5px 0;
 }
 
 body .chosen-container-single .chosen-single abbr {
@@ -643,6 +669,7 @@ body .chosen-container-single .chosen-search input[type="text"] {
 
 body .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
     color: inherit !important;
+    margin: 0;
 }
 
 body .chosen-disabled {

@@ -201,7 +201,7 @@ _customFooTableArgs = {
         var scrollTop  = window.pageYOffset ||
             (document.documentElement || document.body.parentNode || document.body).scrollTop;
 
-        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'}).height(e.scrollHeight);
+        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'}).height(e.scrollHeight + (e.scrollHeight > 30?6:0));
         
         window.scrollTo(scrollLeft, scrollTop);
     }
