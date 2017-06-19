@@ -39,7 +39,7 @@
                                     e.preventDefault();
                                 }
                             }
-                        } else if (keyCode == 27) {
+                        } else if (keyCode === 27) {
                             $(element).datepicker( "hide" );
                             $(element).next("a.trigger").focus();
                         }
@@ -56,10 +56,10 @@
                 
                 var a = $("<a>").attr("href","#");
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
-                $(element).next("a.trigger").off("keydown").click(function(evt){
+                $(element).parent().find("input , a.trigger").off("keydown").click(function(evt){
                     show(element, evt);
                 }).on("keydown", function(evt){
-                    if (evt.keyCode == 13) {
+                    if (evt.keyCode === 13) {
                         show(element, evt);
                     }
                 });  
