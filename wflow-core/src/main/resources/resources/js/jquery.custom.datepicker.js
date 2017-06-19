@@ -56,13 +56,15 @@
                 
                 var a = $("<a>").attr("href","#");
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
-                $(element).parent().find("input , a.trigger").off("keydown").click(function(evt){
+                
+                $(element).parent().find("input[readonly] , a.trigger").click(function(evt){
                     show(element, evt);
-                }).on("keydown", function(evt){
+                });
+                $(element).parent().find("input , a.trigger").off("keydown").on("keydown", function(evt){
                     if (evt.keyCode === 13) {
                         show(element, evt);
                     }
-                });  
+                });
                 
                 if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
                     var startDate = FormUtil.getField(o.startDateFieldId);
