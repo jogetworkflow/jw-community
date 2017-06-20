@@ -429,6 +429,10 @@ body .editor-cell select:not([class^="ui-"]):focus{
     -webkit-box-shadow: 0 1px 0 0 #727272;
 }
 
+body .close-icon:after {
+    right: 35px;
+}
+
 body .hasDatepicker + a, body .hasDatepicker + img {
     position: absolute;
     padding: 8px 5px;

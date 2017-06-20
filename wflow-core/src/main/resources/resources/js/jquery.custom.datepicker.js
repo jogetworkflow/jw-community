@@ -3,7 +3,8 @@
         cdatepicker : function(o){
             this.each(function(){
                 var element = $(this);
-                
+                var elementParent = element.parent();
+
                 o.onClose = function(selectedDate) {
                     $(element).focus();
                 };
@@ -56,13 +57,35 @@
                 
                 var a = $("<a>").attr("href","#");
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
+
+                $(element).next("a.trigger").after("<a class=\"close-icon\" type=\"reset\"></a>");
                 
-                $(element).parent().find("input[readonly] , a.trigger").click(function(evt){
+                $(element).change(function() {
+                    if ( $(element).val() !== "" ) {
+                        $(elementParent).find("a.close-icon").show();
+                    } else {
+                        $(elementParent).find("a.close-icon").hide();
+                    }
+                });
+                
+                //Always check first if value already exists
+                $(element).change();
+                
+                $(elementParent).find("a.close-icon").click(function(){
+                            $(element).val("").change();
+                        });
+                
+                $(elementParent).find("input[readonly] , a.trigger").click(function(evt){
                     show(element, evt);
                 });
-                $(element).parent().find("input , a.trigger").off("keydown").on("keydown", function(evt){
+                $(elementParent).find("input , a.trigger").off("keydown").on("keydown", function(evt){
                     if (evt.keyCode === 13) {
                         show(element, evt);
+                    }
+                });
+                $(elementParent).find("input[readonly]").on("keydown", function(evt){
+                    if (evt.keyCode === 8) {
+                        $(element).val("").change();
                     }
                 });
                 
