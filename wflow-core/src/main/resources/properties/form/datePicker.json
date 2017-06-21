@@ -89,6 +89,14 @@
         type : 'header'
     },
     {
+        name : 'placeholder',
+        label : '@@form.textfield.placeholder@@',
+        type : 'textfield',
+        control_field : 'allowManual',
+        control_value : 'true',
+        control_use_regex : 'false'
+    },
+    {
         name : 'format',
         label : '@@form.datepicker.format@@',
         type : 'textfield',
