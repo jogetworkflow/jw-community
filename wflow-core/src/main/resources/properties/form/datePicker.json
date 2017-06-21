@@ -91,10 +91,7 @@
     {
         name : 'placeholder',
         label : '@@form.textfield.placeholder@@',
-        type : 'textfield',
-        control_field : 'allowManual',
-        control_value : 'true',
-        control_use_regex : 'false'
+        type : 'textfield'
     },
     {
         name : 'format',
