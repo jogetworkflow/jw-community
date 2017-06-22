@@ -251,7 +251,6 @@
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px;
     border-radius: 10px;
-    overflow: hidden;
 }
 .element-options button span{
     width:0px;
