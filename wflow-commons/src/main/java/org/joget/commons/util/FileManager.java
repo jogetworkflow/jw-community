@@ -33,7 +33,6 @@ public class FileManager {
     public static String storeFile(MultipartFile file) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
             String id = UuidGenerator.getInstance().getUuid();
-            FileOutputStream out = null;
             String path =  id + File.separator;
             String filename = path;
             try {
@@ -44,18 +43,10 @@ public class FileManager {
                     new File(getBaseDirectory(), path).mkdirs();
 
                     // write file
-                    out = new FileOutputStream(uploadFile);
-                    out.write(file.getBytes());
+                    file.transferTo(uploadFile);
                 }
             } catch (Exception ex) {
                 LogUtil.error(FileManager.class.getName(), ex, "");
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (Exception ex) {
-                    }
-                }
             }
             return filename;
         }
