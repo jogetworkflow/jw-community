@@ -2,6 +2,17 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.15
+=================
+e3395556 Fixed: wflow-commons - FileManager - OutOfMemoryError when uploading large file. #4878 @5.0-SNAPSHOT
+dbb38a68 Fixed: wflow-consoleweb - WorkflowJsonController - Correction for 1e761e. @5.0-SNAPSHOT
+cfa5fc1f Fixed: wflow-consoleweb - Form/List/Userview Builder - Button tooltips are truncated. @5.0-SNAPSHOT
+45d637e0 Modified: wflow-wfengine - Workflow Manager - Support force complete a stuck tool. @5.0-SNAPSHOT
+1e761e14 Fixed: wflow-consoleweb - Popup Dialog - Dependency of JPopup library is not included in common.js. #4862 @5.0-SNAPSHOT
+578bca40 Fixed: wflow-consoleweb - Userview Theme - Missing "X-UA-Compatible" meta tag in login page. #4810 @5.0-SNAPSHOT
+24878fbf Fixed: wflow-consoleweb - SSO JSON API - Using username and password parameters will fail the 1st time. @5.0-SNAPSHOT
+e38439cb Fixed: wflow-core - Userview v5 Theme - Custom HTML before and after login form are not render. @5.0-SNAPSHOT
+
 CHANGES IN 5.0.14
 =================
 10913061 Fixed: wflow-install - Fixed missing hashpling in tomcat startup script @5.0-SNAPSHOT
