@@ -61,7 +61,6 @@ DependencyTree.Util = {
         node.data["parent"] = null;
         node.data["properties"] = null;
         node.data["propertiesDef"] = null;
-        node.data["element"] = null;
         for (var i in node.children) {
             DependencyTree.Util.cleanData(node.children[i]);
         }
