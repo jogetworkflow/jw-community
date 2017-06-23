@@ -3,7 +3,7 @@ package org.joget.apps.form.model;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -259,7 +259,7 @@ public class FormData {
     public void addRequestParameterValues(String parameter, String[] values) {
         
         if (values.length > 1) {
-            Set result = new HashSet(Arrays.asList(values));
+            Set result = new LinkedHashSet(Arrays.asList(values));
             values = (String[]) result.toArray(new String[0]);
         }
         
