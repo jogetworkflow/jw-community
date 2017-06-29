@@ -9,6 +9,7 @@ PropertyEditor.Util = {
     ajaxLoadingTimeoutConter: 0,
     resources: {},
     ajaxCalls: {},
+    prevAjaxCalls: {},
     types: {},
     validators: {},
     escapeHtmlTag: function(string){
@@ -287,9 +288,13 @@ PropertyEditor.Util = {
                 var selector = "";
                 var fieldId = fieldIds[i];
                 if (fieldId.indexOf(".") !== -1) {
-                    selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
-                    if ($(field.editor).find(selector).length === 0) {
-                        selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                    if (fieldId.indexOf(".properties") !== -1) {
+                        selector = ".property-editor-page[elementid=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"] .property-editor-property:not(.hidden) [name]";
+                    } else {
+                        selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                        if ($(field.editor).find(selector).length === 0) {
+                            selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                        }
                     }
                 } else {
                     selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]";
@@ -374,6 +379,11 @@ PropertyEditor.Util = {
                 ajaxUrl += param + "=" + escape(targetValue);
             }
         }
+        var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id];
+        if (prevAjaxUrl !== null && prevAjaxUrl !== undefined && prevAjaxUrl === ajaxUrl) {
+            return;
+        }
+        
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl] === undefined || PropertyEditor.Util.ajaxCalls[ajaxUrl] === null) {
             PropertyEditor.Util.ajaxCalls[ajaxUrl] = [];
         }
@@ -383,6 +393,7 @@ PropertyEditor.Util = {
             mapping : mapping,
             reference : reference
         });
+        PropertyEditor.Util.prevAjaxCalls[field.id] = ajaxUrl;
         
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl].length === 1) {
             if (method === undefined || method.toUpperCase() !== "POST") {
@@ -459,9 +470,13 @@ PropertyEditor.Util = {
             var selector = "";
             var fieldId = fieldIds[i];
             if (fieldId.indexOf(".") !== -1) {
-                selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
-                if ($(field.editor).find(selector).length === 0) {
-                    selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                if (fieldId.indexOf(".properties") !== -1) {
+                    selector = ".property-editor-page[elementid=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"] .property-editor-property:not(.hidden) [name]";
+                } else {
+                    selector = "#" + field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id + " [name=\"" + fieldId.substring(fieldId.indexOf(".") + 1) + "\"]";
+                    if ($(field.editor).find(selector).length === 0) {
+                        selector = "[name=\""+field.editorObject.fields[fieldId.substring(0, fieldId.indexOf("."))].id+"\"]";
+                    }
                 }
             } else {
                 selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]";
@@ -966,12 +981,6 @@ PropertyEditor.Model.Editor.prototype = {
         }
     },
     changePageCallback: function (pageId, scroll) {
-        //trigger change if the current page is property page of an element
-        var elementId = $(this.editor).find('.property-page-show.current').attr("elementid");
-        if (elementId !== undefined && elementId !== null) {
-            $(this.editor).find("#"+elementId).trigger("change");
-        }
-        
         $(this.editor).find('.property-page-hide, .property-type-hidden, .property-page-show').hide();
         $(this.editor).find('.property-page-show').removeClass("current");
         this.pages[pageId].show(scroll);
