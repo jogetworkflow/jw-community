@@ -235,6 +235,16 @@ body .ui-widget-overlay {
 body .ui-front {
     z-index: 500;
 }
+.ui-html .ui-welcome {
+    width: 80%;
+    margin: auto;
+}
+.ui-html .ui-welcome .icon {
+    margin-right: 20px; 
+    margin-bottom: 20px; 
+    float: left; 
+    clear: left;
+}
 .stop-scrolling {
     height: 100%;
     overflow: hidden;
