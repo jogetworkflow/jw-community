@@ -20,18 +20,20 @@ try {
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title", locale) %></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/home/style.css"/>
     </head>
-    <body>
-        <div id="container">
+    <body class="page-body">
+        <div id="page-container">
             <div id="logo">
                 <a href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/home/logo.png" border="0" height="60" /></a>
             </div>
-            <div id="title">
+            <div id="icon"><i class="warning fa fa-exclamation-circle" aria-hidden="true"></i></div>
+            <div id="content">
+                <h1>
                 <%= ResourceBundleUtil.getMessage("general.error.error500", locale) %>
-            </div>
-            <div id="content" style="font-size:13px">
-                <br><br>
+                </h1>
+                <p>&nbsp;</p>
                 <%= ResourceBundleUtil.getMessage("general.error.error500Description", locale) %>
                 <br><br>
                 <ul style="text-align:left; display:inline-block">
@@ -41,9 +43,6 @@ try {
                     <%= ResourceBundleUtil.getMessage("general.error.errorDetails", locale) %>
                 </ul>
                 <p>&nbsp;</p>
-            </div>
-            <div id="footer">
-                <%= ResourceBundleUtil.getMessage("console.builder.footer", locale) %>
             </div>
         </div>
     </body>

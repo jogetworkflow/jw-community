@@ -276,3 +276,32 @@ body#desktop {
 #desktop .filterlabel {
     margin-left: 3px;
 }
+
+body.page-body {
+    background: white;
+    text-align: left;
+}
+#page-container { 
+    display: block; 
+    width: fit-content; 
+    margin: 50px auto; 
+    color: #555;
+}
+#page-container #logo { 
+    width: 200px; 
+    margin: auto;
+}
+#icon { 
+    float: left; 
+    width: 100px; 
+    margin-top: 50px;
+}
+#icon .warning { 
+    color: orange; 
+    font-size: 80px;
+}           
+#page-container #content { 
+    float: left; 
+    width: 70%; 
+    margin-top: 30px;
+}
