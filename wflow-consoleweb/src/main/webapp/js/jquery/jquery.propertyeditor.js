@@ -963,7 +963,7 @@ PropertyEditor.Model.Editor.prototype = {
             var current = $(this.editor).find('.property-page-show.current');
             var prev = $(current).prev();
             while(!$(prev).hasClass("property-page-show") && $(prev).hasClass("property-editor-page")){
-                prev = $(prev).next();
+                prev = $(prev).prev();
             }
             if ($(prev).hasClass("property-editor-page")) {
                 this.changePage($(current).attr('id'), $(prev).attr('id'), scroll);
