@@ -78,6 +78,7 @@ public class CustomExcelHssfView implements BinaryExportView {
             wb = new SXSSFWorkbook(wb_template, 100, true); 
             SXSSFSheet sheet = (SXSSFSheet) wb.createSheet("-");
             sheet.setRandomAccessWindowSize(100);
+            sheet.trackAllColumnsForAutoSizing();
 
             int rowNum = 0;
             int colNum = 0;
