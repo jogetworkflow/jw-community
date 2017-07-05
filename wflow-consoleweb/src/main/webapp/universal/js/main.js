@@ -201,7 +201,15 @@ _customFooTableArgs = {
         var scrollTop  = window.pageYOffset ||
             (document.documentElement || document.body.parentNode || document.body).scrollTop;
 
-        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'}).height(e.scrollHeight + (e.scrollHeight > 30?6:0));
+        var rows = $(e).attr("rows");
+        var rowHeight = 22;
+        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'});
+        var minTextAreaHeight = (rows * rowHeight);
+        var newHeight = e.scrollHeight + (e.scrollHeight > 30?6:0);
+        if (newHeight < minTextAreaHeight) {
+            newHeight = minTextAreaHeight;
+        }
+        $(e).attr("rows", rows).css({'height':'auto','overflow-y':'hidden'}).height(newHeight);
         
         window.scrollTo(scrollLeft, scrollTop);
     }
