@@ -16,32 +16,19 @@
         text-shadow:1px 1px 1px #767676;
     }
     .runProcess-body-submessage {
-        color:gray;
         font-size:16px;
         line-height:15px;
         text-align:center;
         text-shadow:none;
     }
-    .runProcess-body-message button{
-        padding:4px 10px;
-        color:#565656;
-        cursor:pointer;
-        border:1px solid #799837;
-        background:url("${requestParameters.contextPath}/plugin/org.joget.apps.userview.lib.RunProcess/images/dropdown_btn_bg.gif") repeat-x scroll 0 0 #E7FAB6;
-    }
     .runProcess-body-message button {
-        border: 1px solid #799837;
         -moz-border-radius: 4px;
         -webkit-border-radius: 4px;
-        padding: 4px 10px;
-        background: #e7fab6 url("${requestParameters.contextPath}/plugin/org.joget.apps.userview.lib.RunProcess/images/dropdown_btn_bg_hover.gif") 0 0 repeat-x;
-        font-size: 12px;
-        color: #565656;
+        padding: 10px 20px;
+        margin: 20px;
+        font-size: 20px;
         cursor: pointer;
         border-radius: 4px; }
-    .runProcess-body-message button:hover {
-        background: #e7fab6 url("${requestParameters.contextPath}/plugin/org.joget.apps.userview.lib.RunProcess/images/dropdown_btn_bg.gif") 0 0 repeat-x;
-    }
 </style>
 <c:if test="${requestParameters.isPreview eq 'true'}">
     <script>
@@ -67,7 +54,7 @@
             <div class="runProcess-body-message">
                 <c:out value="${properties.processName}"/>
                 <p class="runProcess-body-submessage"><c:out value="${properties.process.packageName}"/></p>
-                <button onclick="return startProcess()" class="form-button-large"><fmt:message key="client.app.run.process.label.start"/></button>
+                <button onclick="return startProcess()" class="form-button"><fmt:message key="client.app.run.process.label.start"/></button>
             </div>
         </form>
         <script>
