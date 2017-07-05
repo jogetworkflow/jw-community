@@ -1319,7 +1319,7 @@ body .dataList .exportlinks span.export {
 }
 
 div[class*="-body-content"] div[class*="-body-header"] {
-    font-size: 33px;
+    font-size: 24px;
     height: auto;
     font-family: inherit;
     padding: 0 5px;
