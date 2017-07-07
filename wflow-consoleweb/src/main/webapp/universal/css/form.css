@@ -737,7 +737,7 @@ body.rtl .form-container .selector_item .selector_remove:after {
 body .multiPagedForm.wizard .page-nav-panel,
 body .multiPagedForm.tab .page-nav-panel {
     border-bottom: 0; 
-    margin-bottom: 0; 
+    margin-bottom: 10px; 
 }
 
 body .multiPagedForm.wizard .page-nav-panel ul,
