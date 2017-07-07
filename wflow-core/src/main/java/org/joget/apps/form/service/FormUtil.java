@@ -1709,7 +1709,9 @@ public class FormUtil implements ApplicationContextAware {
         }
         
         //if control field not exist
-        if (!(element instanceof FormAjaxOptionsElement && ((FormAjaxOptionsElement) element).getControlElement(formData) != null)) {
+        if (element.getParent() != null && !(element instanceof FormAjaxOptionsElement && ((FormAjaxOptionsElement) element).getControlElement(formData) != null)) {
+            supported = false;
+        } else if (element.getParent() == null && element.getPropertyString("controlField").isEmpty()) {
             supported = false;
         }
         
