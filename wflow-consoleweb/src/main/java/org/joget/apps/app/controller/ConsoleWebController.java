@@ -4592,6 +4592,19 @@ public class ConsoleWebController {
         map.addAttribute("trackWflowProcess", trackWflowProcess);
 
         AppDefinition appDef = appService.getAppDefinitionForWorkflowProcess(processId);
+        if (appDef == null) {
+            Long procVer = Long.parseLong(wfProcess.getVersion());
+            String appId = wfProcess.getPackageId();
+            Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, "version", true, 0, -1);
+            for (AppDefinition appDefVer: appDefList) {
+                Long packageVer = appDefVer.getPackageDefinition().getVersion();
+                if (packageVer >= procVer) {
+                    appDef = appDefVer;
+                } else {
+                    break;
+                }
+            }
+        }
         map.addAttribute("appDef", appDef);
         
         return "console/monitor/completedProcess";
