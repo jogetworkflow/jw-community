@@ -3768,6 +3768,34 @@ ProcessBuilder.Designer = {
                         xml += '<xpdl:Deadline Execution="' + deadline.execution + '">';
                         // determine condition
                         var deadlineCondition;
+                        
+                        //if date, and the value is not quoted and it is not workflow variable, add quote for it
+                        if ((deadline.durationUnit === 'd' || deadline.durationUnit ==='t' || deadline.durationUnit === '1' || deadline.durationUnit === '2')) {
+                            if (!((deadline.deadlineLimit.substring(0, 1) === "\"" && deadline.deadlineLimit.substring(deadline.deadlineLimit.length - 1, deadline.deadlineLimit.length) === "\"") 
+                                    || (deadline.deadlineLimit.substring(0, 1) === "'" && deadline.deadlineLimit.substring(deadline.deadlineLimit.length - 1, deadline.deadlineLimit.length) === "'"))) {
+                                //check is workflow variable
+                                var isWV = false;
+                                for (var df=0; df<process.dataFields.length; df++) {
+                                    var dataField = process.dataFields[df];
+                                    if (dataField.variableId === deadline.deadlineLimit) {
+                                        isWV = true;
+                                        break;
+                                    }
+                                }
+                                if (!isWV) {
+                                    deadline.deadlineLimit = "\"" + deadline.deadlineLimit + "\"";
+                                }
+                            } else {
+                                for (var df=0; df<process.dataFields.length; df++) {
+                                    var dataField = process.dataFields[df];
+                                    if ("\"" + dataField.variableId + "\"" === deadline.deadlineLimit || "'" + dataField.variableId + "'" === deadline.deadlineLimit) {
+                                        deadline.deadlineLimit = dataField.variableId;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        
                         if (deadline.durationUnit === 'd') {
                             deadlineCondition = "var d = new java.text.SimpleDateFormat('dd/MM/yyyy'); d.parse(" + deadline.deadlineLimit + ");";
                         } else if (deadline.durationUnit ==='t') {
