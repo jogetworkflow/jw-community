@@ -22,14 +22,16 @@
     </div>
     <div id="main-body">
         <dl>
+            <dt><fmt:message key="adminBar.label.app"/></dt>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${appDef.appId}"/>/<c:out value="${appDef.version}"/>/forms"><c:out value="${appDef.name}"/> v<c:out value="${appDef.version}"/></a></dd>
+            <dt><fmt:message key="console.app.process.common.label.name"/></dt>
+            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${wfProcess.packageId}"/>/<c:out value="${appDef.version}"/>/processes/<c:out value="${wfProcess.idWithoutVersion}"/>"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.id"/></dt>
             <dd><c:out value="${wfProcess.instanceId}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
             <dd><c:out value="${wfProcess.id}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.version"/></dt>
             <dd><c:out value="${wfProcess.version}"/>&nbsp;</dd>
-            <dt><fmt:message key="console.app.process.common.label.name"/></dt>
-            <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/${wfProcess.packageId}/${appDef.version}/processes/${wfProcess.idWithoutVersion}"><c:out value="${wfProcess.name}"/></a>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.state"/></dt>
             <dd><c:out value="${wfProcess.state}"/>&nbsp;</dd>
             <dt><fmt:message key="console.app.process.common.label.serviceLevelMonitor"/></dt>
