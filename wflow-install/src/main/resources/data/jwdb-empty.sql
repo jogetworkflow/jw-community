@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.41, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.28, for osx10.8 (x86_64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.5.41-0ubuntu0.14.04.1
+-- Server version	5.6.28
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -2585,6 +2585,33 @@ LOCK TABLES `app_report_process_instance` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `app_resource`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `app_resource` (
+  `appId` varchar(255) NOT NULL,
+  `appVersion` bigint(20) NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `filesize` bigint(20) DEFAULT NULL,
+  `permissionClass` varchar(255) DEFAULT NULL,
+  `permissionProperties` longtext,
+  PRIMARY KEY (`appId`,`appVersion`,`id`),
+  CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `app_resource`
+--
+
+LOCK TABLES `app_resource` WRITE;
+/*!40000 ALTER TABLE `app_resource` DISABLE KEYS */;
+/*!40000 ALTER TABLE `app_resource` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `app_userview`
 --
 
@@ -2899,6 +2926,29 @@ LOCK TABLES `dir_user_group` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `dir_user_meta`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dir_user_meta` (
+  `username` varchar(255) NOT NULL,
+  `meta_key` varchar(255) NOT NULL,
+  `meta_value` longtext,
+  PRIMARY KEY (`username`,`meta_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dir_user_meta`
+--
+
+LOCK TABLES `dir_user_meta` WRITE;
+/*!40000 ALTER TABLE `dir_user_meta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dir_user_meta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `dir_user_password_history`
 --
 
@@ -2921,6 +2971,33 @@ CREATE TABLE `dir_user_password_history` (
 LOCK TABLES `dir_user_password_history` WRITE;
 /*!40000 ALTER TABLE `dir_user_password_history` DISABLE KEYS */;
 /*!40000 ALTER TABLE `dir_user_password_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `dir_user_replacement`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dir_user_replacement` (
+  `id` varchar(255) NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `replacementUser` varchar(255) DEFAULT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `processIds` varchar(255) DEFAULT NULL,
+  `startDate` datetime DEFAULT NULL,
+  `endDate` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dir_user_replacement`
+--
+
+LOCK TABLES `dir_user_replacement` WRITE;
+/*!40000 ALTER TABLE `dir_user_replacement` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dir_user_replacement` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -3196,4 +3273,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-03-30  4:48:32
+-- Dump completed on 2017-07-12 17:10:05
