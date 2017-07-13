@@ -1033,15 +1033,17 @@ public class FormUtil implements ApplicationContextAware {
             FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
             
             Element controlElement = ajaxElement.getControlElement(formData);
-            String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
-            
-            FormAjaxOptionsBinder binder = (FormAjaxOptionsBinder) element.getOptionsBinder();
-            FormRowSet rowSet = binder.loadAjaxOptions(controlValues);
-            
-            if (rowSet != null) {
-                optionsMap = new ArrayList<Map>();
-                for (Map row : rowSet) {
-                    optionsMap.add(row);
+            if (controlElement != null) {
+                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+
+                FormAjaxOptionsBinder binder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+                FormRowSet rowSet = binder.loadAjaxOptions(controlValues);
+
+                if (rowSet != null) {
+                    optionsMap = new ArrayList<Map>();
+                    for (Map row : rowSet) {
+                        optionsMap.add(row);
+                    }
                 }
             }
         } else {
