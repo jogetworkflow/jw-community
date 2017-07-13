@@ -972,7 +972,7 @@ PropertyEditor.Model.Editor.prototype = {
     },
     changePage: function(currentPageId, pageId, scroll) {
         var thisObject = this;
-        if (currentPageId !== null && currentPageId !== undefined) {
+        if (!this.isSinglePageDisplay() && currentPageId !== null && currentPageId !== undefined) {
             this.pages[currentPageId].validation(function(data){
                 thisObject.changePageCallback(pageId, scroll);
             }, thisObject.alertValidationErrors);
