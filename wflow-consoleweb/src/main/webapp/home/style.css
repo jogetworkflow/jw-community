@@ -284,6 +284,7 @@ body.page-body {
 #page-container { 
     display: block; 
     width: fit-content; 
+    max-width: 680px;
     margin: 50px auto; 
     color: #555;
 }
