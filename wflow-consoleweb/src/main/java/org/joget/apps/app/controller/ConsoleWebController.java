@@ -3216,7 +3216,7 @@ public class ConsoleWebController {
             for (AppResource r : resources) {
                 Map data = new HashMap();
                 data.put("id", r.getId());
-                data.put("filesize", r.getFilesize());
+                data.put("filesize", r.getFilesizeString());
                 data.put("permissionClass", r.getPermissionClass());
                 Plugin p = pluginManager.getPlugin(r.getPermissionClass());
                 data.put("permissionClassLabel", (p != null)?p.getI18nLabel():"");

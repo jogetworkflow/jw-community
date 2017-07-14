@@ -60,7 +60,7 @@
             var prop = ${properties};
             prop['filename'] = "${appResource.id}";
             prop['url'] = "${pageContext.request.contextPath}/web/app/${appId}/resources/${appResource.id}";
-            prop['filesize'] = "${appResource.filesize}";
+            prop['filesize'] = "${appResource.filesizeString}";
             
             var options = {
                 contextPath: '${pageContext.request.contextPath}',
