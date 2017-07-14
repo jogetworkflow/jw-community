@@ -421,6 +421,10 @@ public class AppUtil implements ApplicationContextAware {
      * @return 
      */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
+        if (content == null || content.isEmpty()) {
+            return content;
+        }
+        
         content = StringUtil.decryptContent(content);
         AppDefinition originalAppDef = AppUtil.getCurrentAppDefinition();
         
