@@ -106,6 +106,18 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
                 if (tableName != null) {
                     FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
                     formDataDao.delete(formDefId, tableName, rowKeys);
+                    
+                    if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")) || "true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
+                        for (String id : rowKeys) {
+                            if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
+                                FormUtil.abortRunningProcessForRecord(id);
+                            }
+                            
+                            if ("true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
+                                FileUtil.deleteFiles(tableName, id);
+                            }
+                        }
+                    }
                 }
             }
         }
