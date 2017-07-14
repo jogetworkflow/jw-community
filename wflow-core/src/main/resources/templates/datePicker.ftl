@@ -23,6 +23,7 @@
         <#if request.getAttribute("currentLocale")!?starts_with("zh") >
             <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
         </#if>
+        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js"></script>
     </#if>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -56,9 +57,6 @@
         <span>${value!?html}</span>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>
-        <#if (element.properties.allowManual! == 'true')>
-            <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js"></script>
-        </#if>
         <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="text" size="${element.properties.size!}" value="${value!?html}" class="${elementParamName!} <#if error??>form-error-cell</#if>" <#if (element.properties.allowManual! != 'true' || element.properties.readonly! == 'true')>readonly</#if> placeholder="<#if (element.properties.placeholder! != '')>${element.properties.placeholder}<#else>${displayFormat!?html}</#if>" />
     </#if>
 </div>

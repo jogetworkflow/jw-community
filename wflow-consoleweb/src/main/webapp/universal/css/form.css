@@ -200,6 +200,7 @@ body input[type=number]:focus:not([readonly]),
 body input[type=search]:focus:not([readonly]),
 body textarea:focus:not([readonly]),
 body select:focus:not([readonly]):not([class^=ui]),
+body input.focus,
 body .editor-cell input:not([type]):focus:not([readonly]),
 body .editor-cell input[type=text]:focus:not([readonly]),
 body .editor-cell input[type=password]:focus:not([readonly]),
@@ -213,7 +214,8 @@ body .editor-cell input[type=tel]:focus:not([readonly]),
 body .editor-cell input[type=number]:focus:not([readonly]),
 body .editor-cell input[type=search]:focus:not([readonly]),
 body .editor-cell textarea:focus:not([readonly]),
-body .editor-cell select:focus:not([readonly]):not([class^=ui]){
+body .editor-cell select:focus:not([readonly]):not([class^=ui]),
+body .editor-cell input.focus,{
   border-bottom: 1px solid #727272;
   box-shadow: 0 1px 0 0 #727272;
 }

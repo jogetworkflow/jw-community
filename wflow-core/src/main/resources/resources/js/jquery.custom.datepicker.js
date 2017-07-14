@@ -5,55 +5,53 @@
                 var element = $(this);
                 var elementParent = element.parent();
 
+                o.beforeShow = function(input, inst) {
+                    $(element).addClass("popup-picker");
+                    setTimeout(function(){
+                        var tabbables = $("#ui-datepicker-div").find(':tabbable');
+                        var first = tabbables.filter(':first');
+                        var last  = tabbables.filter(':last');
+
+                        $("#ui-datepicker-div").off("keydown", ":tabbable");
+                        $("#ui-datepicker-div").on("keydown", ":tabbable", function(e) {
+                            var keyCode = e.keyCode || e.which;
+                            if (keyCode === 9) {
+                                var focusedElement = $(e.target);
+
+                                var isFirstInFocus = (first.get(0) === focusedElement.get(0));
+                                var isLastInFocus = (last.get(0) === focusedElement.get(0));
+
+                                var tabbingForward = !e.shiftKey;
+
+                                if (tabbingForward) {
+                                    if (isLastInFocus) {
+                                        first.focus();
+                                        e.preventDefault();
+                                    }
+                                } else {
+                                    if (isFirstInFocus) {
+                                        last.focus();
+                                        e.preventDefault();
+                                    }
+                                }
+                            } else if (keyCode === 27) {
+                                $(element).datepicker( "hide" );
+                                $(element).next("a.trigger").focus();
+                            }
+                        });
+                        first.focus();
+                    }, 100);
+                };
                 o.onClose = function(selectedDate) {
+                    $(element).removeClass("popup-picker");
                     $(element).focus();
                 };
                 
                 $(element).datepicker(o);
                 
-                var show = function(element, evt) {
-                    $(element).datepicker( "show" );
-                    
-                    var tabbables = $("#ui-datepicker-div").find(':tabbable');
-                    var first = tabbables.filter(':first');
-                    var last  = tabbables.filter(':last');
-
-                    $("#ui-datepicker-div").off("keydown", ":tabbable");
-                    $("#ui-datepicker-div").on("keydown", ":tabbable", function(e) {
-                        var keyCode = e.keyCode || e.which;
-                        if (keyCode === 9) {
-                            var focusedElement = $(e.target);
-
-                            var isFirstInFocus = (first.get(0) === focusedElement.get(0));
-                            var isLastInFocus = (last.get(0) === focusedElement.get(0));
-
-                            var tabbingForward = !e.shiftKey;
-
-                            if (tabbingForward) {
-                                if (isLastInFocus) {
-                                    first.focus();
-                                    e.preventDefault();
-                                }
-                            } else {
-                                if (isFirstInFocus) {
-                                    last.focus();
-                                    e.preventDefault();
-                                }
-                            }
-                        } else if (keyCode === 27) {
-                            $(element).datepicker( "hide" );
-                            $(element).next("a.trigger").focus();
-                        }
-                    });
-                    
-                    var focused = false;
-                    while ($("#ui-datepicker-div").is(":visible") && !focused) {
-                        first.focus();
-                        focused = true;
-                    }
-                    
-                    evt.preventDefault();
-                };
+                if($.placeholder) {
+                    $(element).placeholder();
+                }
                 
                 var a = $("<a>").attr("href","#");
                 $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\" href=\"#\"></a>");
@@ -72,15 +70,23 @@
                 $(element).change();
                 
                 $(elementParent).find("a.close-icon").click(function(){
-                            $(element).val("").change();
-                        });
+                    $(element).val("").change();
+                });
                 
                 $(elementParent).find("input[readonly] , a.trigger").click(function(evt){
-                    show(element, evt);
+                    evt.preventDefault();
+                    evt.stopImmediatePropagation();
+                    $(element).datepicker( "show" );
                 });
                 $(elementParent).find("input , a.trigger").off("keydown").on("keydown", function(evt){
                     if (evt.keyCode === 13) {
                         show(element, evt);
+                    }
+                }).on("focus", function() {
+                    $(element).addClass("focus");
+                }).on("focusout", function(){
+                    if (!$(element).hasClass("popup-picker")) {
+                        $(element).removeClass("focus");
                     }
                 });
                 $(elementParent).find("input[readonly]").on("keydown", function(evt){
