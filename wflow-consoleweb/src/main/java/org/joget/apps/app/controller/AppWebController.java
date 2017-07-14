@@ -527,7 +527,7 @@ public class AppWebController {
         
         ServletOutputStream stream = response.getOutputStream();
         File file = AppResourceUtil.getFile(appId, version, decodedFileName);
-        if (file.isDirectory() || !file.exists()) {
+        if (file == null || file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
