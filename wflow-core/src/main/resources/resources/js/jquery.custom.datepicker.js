@@ -86,6 +86,7 @@
                 $(elementParent).find("input[readonly]").on("keydown", function(evt){
                     if (evt.keyCode === 8) {
                         $(element).val("").change();
+                        return false;
                     }
                 });
                 
