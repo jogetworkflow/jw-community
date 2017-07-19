@@ -77,7 +77,7 @@
                         if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
                             checked = "checked=\"checked\"";
                         }
-                        options += "<label><input "+checked+" id=\""+o.paramName+"\" name=\""+o.paramName+"\" type=\""+o.type+"\" value=\""+UI.escapeHTML(data[i].value)+"\" /><i></i>"+UI.escapeHTML(data[i].label)+"</label>";
+                        options += "<label tabindex=\"0\" ><input "+checked+" id=\""+o.paramName+"\" name=\""+o.paramName+"\" type=\""+o.type+"\" value=\""+UI.escapeHTML(data[i].value)+"\" /><i></i>"+UI.escapeHTML(data[i].label)+"</label>";
                     }
                     $(target).html(options);
                     

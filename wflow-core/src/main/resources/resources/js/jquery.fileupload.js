@@ -31,7 +31,9 @@
                     try {
                         options.maxFilesize = parseInt(o.maxSize) / 1024;
                     } catch (err) {}
-                }
+                } else {
+                    options.maxFilesize = 100000;
+                } 
                 if (o.height !== "") {
                     options.thumbnailHeight = o.height + "px";
                 }
@@ -62,6 +64,13 @@
                 
                 $(target).on("click", ".remove", function(){
                     $(this).closest("li").remove();
+                });
+                $(target).on('keyup', function(e){
+                    var keyCode = e.keyCode || e.which;
+                    if (keyCode === 13) { 
+                        $(target).trigger("click");
+                        return false;
+                    }
                 });
                 
                 if ($(target).hasClass("dropzone") && o.padding !== "") {
