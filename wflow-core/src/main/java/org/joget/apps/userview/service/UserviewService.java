@@ -158,6 +158,7 @@ public class UserviewService {
 
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
+        json = AppUtil.replaceAppMessages(json);
 
         User currentUser = workflowUserManager.getCurrentUser();
 
@@ -247,11 +248,6 @@ public class UserviewService {
 
                     UserviewCategory category = new UserviewCategory();
                     category.setProperties(PropertyUtil.getProperties(categoryObj.getJSONObject("properties")));
-
-                    // label i18n
-                    String catLabel = category.getPropertyString(FormUtil.PROPERTY_LABEL);
-                    catLabel = AppUtil.replaceAppMessage(catLabel);
-                    category.setProperty(FormUtil.PROPERTY_LABEL, catLabel);
                     
                     boolean hasPermis = false;
                     if (preview || "true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
@@ -329,11 +325,6 @@ public class UserviewService {
                                 if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
                                     userview.setProperty("homeMenuId", mId);
                                 }
-
-                                // label i18n
-                                String menuLabel = menu.getPropertyString(FormUtil.PROPERTY_LABEL);
-                                menuLabel = AppUtil.replaceAppMessage(menuLabel);
-                                menu.setProperty(FormUtil.PROPERTY_LABEL, menuLabel);
                                 
                                 menu = new CachedUserviewMenu(menu);
                                 menus.add(menu);

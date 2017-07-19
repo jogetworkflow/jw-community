@@ -905,6 +905,22 @@ public class AppUtil implements ApplicationContextAware {
         }
         return result;
     }
+    
+    /**
+     * Replace all app-specific message in content
+     *
+     * @param label
+     * @return
+     */
+    public static String replaceAppMessages(String content) {
+        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
+        if (appMessages != null) {
+            for (String key : appMessages.keySet()) {
+                content = content.replaceAll("(['\"])" + StringUtil.escapeString(key, StringUtil.TYPE_JSON + ";" + StringUtil.TYPE_REGEX, null) + "(['\"])" , "$1" + StringUtil.escapeRegex(appMessages.get(key)) + "$2");
+            }
+        }
+        return content;
+    }
 
     private static final ThreadLocal threadLocalAppMessages = new ThreadLocal();
 

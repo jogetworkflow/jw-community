@@ -94,6 +94,7 @@ public class JsonUtil {
     public static Object parseElementFromJson(String json) {
         try {
             // create json object
+            json = AppUtil.replaceAppMessages(json);
             JSONObject obj = new JSONObject(json);
 
             // parse json object
@@ -149,12 +150,6 @@ public class JsonUtil {
 
             //set columns
             Collection<DataListColumn> columns = parseColumnsFromJsonObject(obj);
-            for (DataListColumn element: columns) {
-                // label i18n
-                String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
-                label = AppUtil.replaceAppMessage(label);
-                element.setProperty(FormUtil.PROPERTY_LABEL, label);                
-            }
             DataListColumn[] temp = (DataListColumn[]) columns.toArray(new DataListColumn[columns.size()]);
             object.setColumns(temp);
 
@@ -164,34 +159,16 @@ public class JsonUtil {
 
             //set actions
             Collection<DataListAction> actions = parseActionsFromJsonObject(obj);
-            for (DataListAction element: actions) {
-                // label i18n
-                String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
-                label = AppUtil.replaceAppMessage(label);
-                element.setProperty(FormUtil.PROPERTY_LABEL, label);                
-            }
             DataListAction[] temp2 = (DataListAction[]) actions.toArray(new DataListAction[actions.size()]);
             object.setActions(temp2);
 
             //set row actions
             Collection<DataListAction> rowActions = parseRowActionsFromJsonObject(obj);
-            for (DataListAction element: rowActions) {
-                // label i18n
-                String label = element.getPropertyString(FormUtil.PROPERTY_LABEL);
-                label = AppUtil.replaceAppMessage(label);
-                element.setProperty(FormUtil.PROPERTY_LABEL, label);                
-            }
             DataListAction[] temp3 = (DataListAction[]) rowActions.toArray(new DataListAction[rowActions.size()]);
             object.setRowActions(temp3);
 
             //set filters
             Collection<DataListFilter> filters = parseFiltersFromJsonObject(obj);
-            for (DataListFilter element: filters) {
-                // label i18n
-                String label = element.getLabel();
-                label = AppUtil.replaceAppMessage(label);
-                element.setLabel(label);                
-            }
             DataListFilter[] temp4 = (DataListFilter[]) filters.toArray(new DataListFilter[filters.size()]);
             object.setFilters(temp4);
             
