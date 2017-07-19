@@ -3,7 +3,8 @@
     properties : [{
         name : 'label',
         label : '@@datalist.formrowdeletedatalistaction.label@@',
-        type : 'textfield'
+        type : 'textfield',
+        required : 'true'
     },
     %s,{
         name : 'confirmation',

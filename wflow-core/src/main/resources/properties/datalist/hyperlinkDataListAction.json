@@ -63,7 +63,8 @@
         name : 'label',
         type : 'textfield',
         description : '@@datalist.hyperlinkdatalistaction.label.desc@@',
-        value : 'Hyperlink'
+        value : 'Hyperlink',
+        required : 'true'
     },
     {
         label : '@@datalist.hyperlinkdatalistaction.confirmationMessage@@',
