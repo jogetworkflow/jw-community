@@ -109,7 +109,10 @@ I18nEditor = {
                         for (var i in response.data) {
                             var message = response.data[i];
                             var mid = message.id.replace(new RegExp('"', 'g'), "'");
-                            $(container).find('td.'+id+' textarea[rel="'+mid+'"]').val(message.message);
+                            var field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
+                            if ($(field).attr("rel") === mid) {
+                                $(field).val(message.message);
+                            }
                         }
                     }
                 }
