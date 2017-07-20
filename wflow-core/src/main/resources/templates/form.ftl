@@ -39,7 +39,7 @@
                 $('form').find("input:visible, select:visible, textarea:visible, label[tabindex]:visible").first().focus();
                 $('form').on('keyup', "label[tabindex]", function(e) {
                     var keyCode = e.keyCode || e.which;
-                    if (keyCode === 13)) { 
+                    if (keyCode === 13) { 
                         e.preventDefault();
                         $(this).find("input").trigger("click");
                         return false;
