@@ -2,6 +2,75 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0-BETA3
+====================
+228c823f Fixed: wflow-core - Correction for d1e2a5. @6.0-SNAPSHOT
+652f8fa2 Fixed: wflow-core - Form - Does not focus on first field after load. @6.0-SNAPSHOT Fixed: wflow-core - Checkbox/Radio Button/File Upload - Not tabbable. @6.0-SNAPSHOT Fixed: wflow-core - File Upload - Default file size limit is too small. Changed to 100Mb. @6.0-SNAPSHOT
+6f9992a2 Fixed: wflow-core - Advanced Tool - i18n - Message key should be case sensitive. @6.0-SNAPSHOT
+d1e2a537 Fixed: wflow-core - Advanced Tool - i18n - Option label is not translate correctly in fontend. #4927 @6.0-SNAPSHOT
+a6be4755 Modified: wflow-core - Delete & Hyperlink Datalist Action - Make labels mandatory @6.0-SNAPSHOT
+7480e5aa Fixed: wflow-consoleweb - App Center - Admin buttons showing for all users in the Community Edition @6.0-SNAPSHOT
+e9b7a8c9 Fixed: wflow-consoleweb - Universal Theme - Date picker field not highlight when focus. @6.0-SNAPSHOT Fixed: wflow-core - Date Picker - Keyboard support on picker is not working correctly. @6.0-SNAPSHOT Fixed: wflow-core - Date Picker - Placeholder library is not included when allow manual is not enable. @6.0-SNAPSHOT
+2ee7b6d0 Fixed: wflow-consoleweb - Resource - NullPointerException thrown when resource file is not found @6.0-SNAPSHOT
+e354378a Modified: wflow-core/wflow-consoleweb - App Resource - Show file size with unit. @6.0-SNAPSHOT
+8b10ea6d Fixed: wflow-consoleweb - Universal Theme - Select box is not display correctly in IE11. @6.0-SNAPSHOT
+d33cd988 Fixed: wflow-core - App Util - Error throws in process Hash Variable when content is null. @6.0-SNAPSHOT
+5459b487 Fixed: wflow-core - Date Picker - Edge browser BACKSPACE function overriding intended function @6.0-SNAPSHOT
+92272990 Fixed: wflow-core - Form Row Delete Datalist Action - Delete file & abort process are not working without enable delete subform data or grid data. @6.0-SNAPSHOT
+8389bf41 Fixed: wflow-consoleweb - Property Editor - Switch page validation in single page mode causing infinity errors popup. @6.0-SNAPSHOT
+56a637e5 Fixed: wflow-consoleweb - Error Pages - Content not centered in Firefox and IE @6.0-SNAPSHOT
+f35c67dc Fixed: wflow-core - Form Util - Fixed regression bug of fcd7bd. @6.0-SNAPSHOT
+52852392 Modified: wflow-consoleweb, wflow-install - Setup - Updated MySQL SQL with latest default apps @6.0-SNAPSHOT
+5e957c9a Modified: wflow-consoleweb - Setup - Updated default apps @6.0-SNAPSHOT
+0f77db59 Modified: wflow-consoleweb - Multi Select Box - More keyboard functions like Esc, Enter, Backspace @6.0-SNAPSHOT
+1b4f8d8d Fixed - wflow-consoleweb - Monitoring - Link to completed process might not link to the correct app version @6.0-SNAPSHOT
+1b3c5133 Modified - wflow-consoleweb - Monitoring - Added link to app version in running and completed process page @6.0-SNAPSHOT
+f0c46944 Modified: wflow-consoleweb - Process Builder - Deadline - Auto handle missing quote for date value. @6.0-SNAPSHOT
+2777597a Fixed: wflow-consoleweb - Universal Theme - No gap between the tab and content of Multi Paged Form. @6.0-SNAPSHOT
+fcd7bdf9 Modified: wflow-core - FormUtil - Modified AJAX options support rule for internal parsed field. @6.0-SNAPSHOT
+42d49f7f Modified: wflow-install - Upgraded to Apache Tomcat 8.5.16 @6.0-SNAPSHOT
+d0079454 Modified: wflow-consoleweb - Upgraded Apache POI library to 3.15 @6.0-SNAPSHOT
+c8e71042 Fixed: wflow-consoleweb - Run Process - Headers overlapping in some themes @6.0-SNAPSHOT
+3d2a0ddb Fixed: wflow-consoleweb - Universal Theme - Textarea height does not follow number of rows configured @6.0-SNAPSHOT
+93741b8f Modified: wflow-consoleweb - Universal Theme - Adjusted header font sizes @6.0-SNAPSHOT
+2f2a19ab Fixed: wflow-consoleweb - Property Editor - Fail to go back to previous page when there is hidden page. @6.0-SNAPSHOT
+7c39ed17 Modified: wflow-consoleweb - Error Pages - Simplified 403, 404 and 500 error pages @6.0-SNAPSHOT
+c4b7075b Modified: wflow-consoleweb - Userview - Updated default userview welcome page @6.0-SNAPSHOT
+1850f6d3 Fixed: wflow-consoleweb - Property Editor - AJAX call dependent on element's properties is not trigger immediately when the property is changed. @6.0-SNAPSHOT Modified: wflow-consoleweb - Property Editor - Reduced AJAX call if dependent values are same. @6.0-SNAPSHOT
+3cf97952 Fixed: wflow-core - Deadline Limit - Can't use Environment Hash Variable in limit. @6.0-SNAPSHOT
+a703a3ee Fixed: wflow-core - Form - Multi value field is not storing the values in correct order as its display in the form. @6.0-SNAPSHOT
+10be3d78 Fixed: wflow-consoleweb - Advanced Tool - Tree Viewer - Edit not working. @6.0-SNAPSHOT
+450963ea Fixed: wflow-consoleweb - File Upload - Progress bar is missing. @6.0-SNAPSHOT
+1f9c3287 Fixed: wflow-commons - FileManager - OutOfMemoryError when uploading large file. #4878 @6.0-SNAPSHOT
+f1ecb1db Modified: wflow-core - Date Picker - Allow custom placeholder for manual and assisted input @6.0-SNAPSHOT
+c0bfdec7 @Modified: wflow-core - Date Picker - Allow custom placeholder @6.0-SNAPSHOT
+1d612de4 Modified: wflow-core - Date Picker - Allow selected date to be removed @6.0-SNAPSHOT
+b4615a7a Fixed: wflow-core - Date Picker - Manual input canceled by click event @6.0-SNAPSHOT
+c4840ad4 Modified: wflow-core - Date Picker - Click field to pop up picker. @6.0-SNAPSHOT
+e9e77929 Fixed: wflow-consoleweb - Universal Theme - Space between fields are not consistent. @6.0-SNAPSHOT
+0d6be8a4 Modified: wflow-core - Datalist - Make datalist object available for action, formatter, filter and binder object. @6.0-SNAPSHOT
+b8951faf Modified: wflow-core/wflow-consoleweb - Form Row Delete Datalist Action/GridInnerDataStoreBinderWrapper - Support delete files when delete record. @6.0-SNAPSHOT
+971dd21b Fixed: wflow-consoleweb - Popup Dialog - Dependency of JPopup library is not included in common.js. #4862 @6.0-SNAPSHOT
+e19b9064 Fixed: wflow-wfengine - Workflow Manager - Activity Type returned by getActivityById is wrong. @6.0-SNAPSHOT Modified: wflow-wfengine/wflow-consoleweb - Monitoring - Provide feature to complete tool activity. @6.0-SNAPSHOT
+d2d8ea6b Modified: wflow-core/wflow-consoleweb - Property Editor - Allow uploaded app resource set to public permission. @6.0-SNAPSHOT
+caf56b4d Fixed: wflow-core - AppResourceUtil - Prevent path manipulation. @6.0-SNAPSHOT
+668d3a93 Modified: wflow-consoleweb - ConsoleWebController - Add fields parameter to "/json/console/app/(*:appId)/(~:version)/form/columns/options" to add customs field to the options. @6.0-SNAPSHOT
+16a75ac5 Added: wflow-core/wflow-consoleweb - Userview - Support custom thumbnail. @6.0-SNAPSHOT
+a0d9c539 Added: wflow-core/wflow-consoleweb - Property Editor - Support file & image type to choose file from app resources. @6.0-SNAPSHOT
+f0bb173c Modified: wflow-consoleweb - App - Moved resources to properties menu. @6.0-SNAPSHOT
+8d6a8dfe Fixed: wflow-consoleweb - Universal Theme - Popup dialogs have extra margin at the top, and header navigation buttons too close to scrollbar @6.0-SNAPSHOT
+146fb810 Modified: wflow-core - User Notification/ Email Tool - Send email to process task delegated user. #4832 @6.0-SNAPSHOT Fixed: wflow-core - User Notification - Email does not send when using general SMTP setting. @6.0-SNAPSHOT
+f38a760b Added: wflow-core/wflow-consoleweb - App - Support for bundle web resources in the app.  @6.0-SNAPSHOT
+7103d575 Modified: wflow-consoleweb - Universal Theme - Scrollbar covered by header.  @6.0-SNAPSHOT
+cc79ed9a Modified: wflow-consoleweb - Admin Bar - Adjust css for smaller window.  @6.0-SNAPSHOT
+34edddf0 Modified: wflow-consoleweb - Log all error during initializing WebApplicationContext when log4j debug mode is enable.  @6.0-SNAPSHOT
+d1cdcef0 Modified: wflow-core - Id Generator Field - Add validation for environment variable.  @6.0-SNAPSHOT
+94acc3a2 Fixed: wflow-consoleweb - Universal Theme - Quick edit link is not show correctly.  @6.0-SNAPSHOT
+6b334097 Fixed: wflow-consoleweb - Universal Theme - Content in popup dialog is not able to scroll.  @6.0-SNAPSHOT Fixed: wflow-consoleweb - Universal Theme - Header in popup dialog is not showing.  @6.0-SNAPSHOT
+07a3c7ed Fixed: wflow-common - File/Image Upload - Not working in community version.  @6.0-SNAPSHOT
+ac25921d Fixed: wflow-consoleweb - App Center - Checkbox is missing in "Import App" dialog. @6.0-SNAPSHOT
+7c439b90 Fixed: wflow-consoleweb - Userview Theme - Missing "X-UA-Compatible" meta tag in login page. #4810 @6.0-SNAPSHOT
+
 CHANGES IN 6.0-BETA2
 ====================
 671d4ac5 Fixed: wflow-consoleweb - Websphere - Exception in admin bar web console pages due to WAS bug PI59436 @6.0-SNAPSHOT
