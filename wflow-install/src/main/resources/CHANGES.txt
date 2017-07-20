@@ -4,6 +4,9 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0-BETA3
 ====================
+04e64400 Fixed: wflow-consoleweb - Universal Theme - Checkbox or radio button not in form field are not visible. @6.0-SNAPSHOT
+1f8b923a Fixed: wflow-core - Correction for 652f8f. @6.0-SNAPSHOT
+1dcd6ac0 Modified: wflow-install - Updated CHANGES.txt @6.0-SNAPSHOT
 228c823f Fixed: wflow-core - Correction for d1e2a5. @6.0-SNAPSHOT
 652f8fa2 Fixed: wflow-core - Form - Does not focus on first field after load. @6.0-SNAPSHOT Fixed: wflow-core - Checkbox/Radio Button/File Upload - Not tabbable. @6.0-SNAPSHOT Fixed: wflow-core - File Upload - Default file size limit is too small. Changed to 100Mb. @6.0-SNAPSHOT
 6f9992a2 Fixed: wflow-core - Advanced Tool - i18n - Message key should be case sensitive. @6.0-SNAPSHOT
