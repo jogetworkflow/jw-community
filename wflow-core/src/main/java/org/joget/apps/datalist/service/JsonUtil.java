@@ -18,8 +18,8 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterType;
-import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -94,7 +94,7 @@ public class JsonUtil {
     public static Object parseElementFromJson(String json) {
         try {
             // create json object
-            json = AppUtil.replaceAppMessages(json);
+            json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
             JSONObject obj = new JSONObject(json);
 
             // parse json object

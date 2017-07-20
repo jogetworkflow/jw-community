@@ -139,7 +139,7 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static Element parseElementFromJson(String json) throws Exception {
         // create json object
-        json = AppUtil.replaceAppMessages(json);
+        json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
         JSONObject obj = new JSONObject(json);
 
         // parse json object
@@ -156,7 +156,7 @@ public class FormUtil implements ApplicationContextAware {
     public static Element findAndParseElement(String json, String fieldId) {
         if (json != null && !json.isEmpty() && fieldId != null && !fieldId.isEmpty()) {
             try {
-                json = AppUtil.replaceAppMessages(json);
+                json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
                 JSONObject obj = new JSONObject(json);
                 return FormUtil.findAndParseElementFromJsonObject(obj, fieldId);
             } catch (Exception e) {

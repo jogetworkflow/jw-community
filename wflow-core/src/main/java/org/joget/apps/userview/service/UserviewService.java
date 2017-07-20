@@ -158,7 +158,7 @@ public class UserviewService {
 
         //process json with hash variable
         json = AppUtil.processHashVariable(json, null, StringUtil.TYPE_JSON, null);
-        json = AppUtil.replaceAppMessages(json);
+        json = AppUtil.replaceAppMessages(json, StringUtil.TYPE_JSON);
 
         User currentUser = workflowUserManager.getCurrentUser();
 

@@ -912,11 +912,16 @@ public class AppUtil implements ApplicationContextAware {
      * @param label
      * @return
      */
-    public static String replaceAppMessages(String content) {
+    public static String replaceAppMessages(String content, String escapeType) {
         Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
         if (appMessages != null) {
             for (String key : appMessages.keySet()) {
-                content = content.replaceAll("(['\"])" + StringUtil.escapeString(key, StringUtil.TYPE_JSON + ";" + StringUtil.TYPE_REGEX, null) + "(['\"])" , "$1" + StringUtil.escapeRegex(appMessages.get(key)) + "$2");
+                String translated = appMessages.get(key);
+                if (escapeType != null) {
+                    key = StringUtil.escapeString(key, escapeType, null);
+                    translated = StringUtil.escapeString(translated, escapeType, null);
+                }
+                content = content.replaceAll("(['\"])" + StringUtil.escapeRegex(key) + "(['\"])" , "$1" + StringUtil.escapeRegex(translated) + "$2");
             }
         }
         return content;
