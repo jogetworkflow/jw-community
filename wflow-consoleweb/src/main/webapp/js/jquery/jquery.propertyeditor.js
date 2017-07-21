@@ -1595,9 +1595,18 @@ PropertyEditor.Validator.Ajax.prototype = {
         var d = $.Deferred();
         deffers.push(d);
         
+        var temp = $.extend({}, data);
+        if (thisObject.options.defaultPropertyValues !== null && thisObject.options.defaultPropertyValues !== undefined) {
+            for (var t in temp) {
+                if(temp[t] === "" && thisObject.options.defaultPropertyValues[t] !== undefined) {
+                    temp[t] = thisObject.options.defaultPropertyValues[t];
+                }
+            }
+        }
+        
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, thisObject.options.contextPath),
-            data : $.param( data ),
+            data : $.param( temp ),
             dataType : "text",
             success: function(response) {
                 var r = $.parseJSON(response);
