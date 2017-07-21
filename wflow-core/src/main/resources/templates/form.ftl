@@ -36,7 +36,9 @@
                     }, message : "<h1>@@form.form.message.wait@@</h1>" }); 
                     return true;
                 });
-                $('form').find("input:visible, select:visible, textarea:visible, label[tabindex]:visible").first().focus();
+                if (!UI.isMobileUserAgent()) {
+                    $('form').find("input:visible, select:visible, textarea:visible, label[tabindex]:visible").first().focus();
+                }
                 $('form').on('keyup', "label[tabindex]", function(e) {
                     var keyCode = e.keyCode || e.which;
                     if (keyCode === 13) { 
