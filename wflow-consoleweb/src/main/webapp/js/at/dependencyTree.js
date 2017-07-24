@@ -40,7 +40,9 @@ $.jstree.plugins.joget = function (options, parent) {
 
 $.jstree.defaults.joget = {};
 
-DependencyTree = {};
+DependencyTree = {
+    elements : []
+};
 DependencyTree.Matchers = {};
 
 DependencyTree.Node = {
@@ -284,9 +286,10 @@ DependencyTree.Matchers['formContainer'] = {
             var parentElement;
             if (node.data['parent'] === undefined) {
                 parentElement = $("form.form-container");
-                node.data["element"] = $("form.form-container");
+                node.data["element"] = DependencyTree.elements.length;
+                DependencyTree.elements.push($("form.form-container"));
             } else {
-                parentElement = node.data["element"];
+                parentElement = DependencyTree.elements[node.data["element"]];
             }
             
             var open = false;
@@ -295,7 +298,8 @@ DependencyTree.Matchers['formContainer'] = {
                 var c = jsonObj['elements'][j];
                 var cnode = $.extend(true, {}, DependencyTree.Node);
                 cnode.data['isFormElement'] = true;
-                cnode.data["element"] = $(parentElement).find("> [element-class]:eq("+j+")");
+                cnode.data["element"] = DependencyTree.elements.length;
+                DependencyTree.elements.push($(parentElement).find("> [element-class]:eq("+j+")"));
                 cnode.data['parent'] = node;
                 node.children.push(cnode);
                 DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
@@ -324,7 +328,7 @@ DependencyTree.Matchers['formElement'] = {
                     });
                 } else {
                     DependencyTree.Util.createEditIndicator(viewer, node, function() {
-                        FormBuilder.editElementProperties(node.data["element"]);
+                        FormBuilder.editElementProperties(DependencyTree.elements[node.data["element"]]);
                     });
                 }   
                 
