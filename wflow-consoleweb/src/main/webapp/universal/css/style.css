@@ -16,6 +16,7 @@ html.ismobile * {
 body {
     font-size: 13px;
     line-height: 1.42857143;
+    -ms-overflow-style: scrollbar;
 }
 
 body:not(.embeded) {
