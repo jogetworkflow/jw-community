@@ -4,6 +4,12 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0-BETA3
 ====================
+3a7d535 Fixed: wflow-consoleweb - Datalist - Responsive width not detected correctly on iOS @6.0-SNAPSHOT
+ee11127 Fixed: wflow-consoleweb - Advanced Tool - Tree Viewer - Clear previous data before redraw. @6.0-SNAPSHOT
+f9547c0 Fixed: wflow-consoleweb - Advanced Tools - Tree Viewer - Error rendering tree after using App Generator.  @6.0-SNAPSHOT
+764abac Fixed: wflow-consoleweb - Universal Theme - Scrollbar is missing in IE.  #4936 @6.0-SNAPSHOT
+76f85e8 Fixed: wflow-core - Correction of 652f8f.  @6.0-SNAPSHOT
+1273d94 Fixed: wflow-consoleweb - Property Editor - Page validation does not work with plugin default property. #4930 @6.0-SNAPSHOT
 04e64400 Fixed: wflow-consoleweb - Universal Theme - Checkbox or radio button not in form field are not visible. @6.0-SNAPSHOT
 1f8b923a Fixed: wflow-core - Correction for 652f8f. @6.0-SNAPSHOT
 1dcd6ac0 Modified: wflow-install - Updated CHANGES.txt @6.0-SNAPSHOT
