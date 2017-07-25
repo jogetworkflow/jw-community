@@ -1273,6 +1273,7 @@ DependencyTree.Viewer.prototype = {
         var jsonObj = JSON.parse(data);
         
         var deferreds = [];
+        DependencyTree.elements = []; //clear previous data
         var tree = $.extend(true, {}, DependencyTree.Node);
         DependencyTree.Util.runMatchers(this, deferreds, tree, jsonObj);
         
