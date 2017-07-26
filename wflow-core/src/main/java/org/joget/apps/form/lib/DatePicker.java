@@ -17,7 +17,6 @@ import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.servlet.LocaleResolver;
 
 public class DatePicker extends Element implements FormBuilderPaletteElement {
     
@@ -44,7 +43,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-        value = formattedValue(value, displayFormat, formData);
+        value = formattedDisplayValue(value, displayFormat, formData);
         
         dataModel.put("displayFormat", displayFormat.toUpperCase());
         
@@ -275,8 +274,8 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         return value;
     }
     
-    private String formattedValue(String value, String displayFormat, FormData formData) {
-        if (!FormUtil.isFormSubmitted(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+    private String formattedDisplayValue(String value, String displayFormat, FormData formData) {
+        if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
             try {
                 if (!displayFormat.equals(getPropertyString("dataFormat"))) {
                     SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
@@ -286,6 +285,13 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                 }
             } catch (Exception e) {
             }
+        }
+        return value;
+    }
+    
+    private String formattedValue(String value, String displayFormat, FormData formData) {
+        if (!FormUtil.isFormSubmitted(this, formData)) {
+            value = formattedDisplayValue(value, displayFormat, formData);
         }
         return value;
     }
