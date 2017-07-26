@@ -35,7 +35,7 @@
                                     }
                                 }
                             } else if (keyCode === 27) {
-                                $(element).datepicker( "hide" );
+                                $(element).datepicker("hide");
                                 $(element).next("a.trigger").focus();
                             }
                         });
@@ -47,7 +47,13 @@
                     $(element).focus();
                 };
                 
-                $(element).datepicker(o);
+                if (o.datePickerType === "dateTime") {
+                    $(element).datetimepicker(o);
+                } else if (o.datePickerType === "timeOnly") {
+                    $(element).timepicker(o);
+                } else {
+                    $(element).datepicker(o);
+                }
                 
                 if($.placeholder) {
                     $(element).placeholder();
@@ -76,11 +82,13 @@
                 $(elementParent).find("input[readonly] , a.trigger").click(function(evt){
                     evt.preventDefault();
                     evt.stopImmediatePropagation();
-                    $(element).datepicker( "show" );
+                    $(element).datepicker("show");
                 });
                 $(elementParent).find("input , a.trigger").off("keydown").on("keydown", function(evt){
                     if (evt.keyCode === 13) {
-                        show(element, evt);
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        $(element).datepicker("show");
                     }
                 }).on("focus", function() {
                     $(element).addClass("focus");
@@ -92,6 +100,7 @@
                 $(elementParent).find("input[readonly]").on("keydown", function(evt){
                     if (evt.keyCode === 8) {
                         $(element).val("").change();
+                        $(element).datepicker("hide");
                         return false;
                     }
                 });
@@ -117,7 +126,7 @@
                 if (o.currentDateAs !== undefined && o.currentDateAs !== "") {
                     var option = $(element).datepicker( "option", o.currentDateAs);
                     if (option === undefined || option === null) {
-                        $(element).datepicker( "option", o.currentDateAs, new Date());
+                        $(element).datepicker("option", o.currentDateAs, new Date());
                     }
                 }
             });
@@ -127,7 +136,7 @@
     function setDateRange(element, type, target) {
         var value = $(element).val();
         if (value !== "") {
-            $(target).datepicker( "option", type, value);
+            $(target).datepicker("option", type, value);
         }
     }
 })(jQuery);

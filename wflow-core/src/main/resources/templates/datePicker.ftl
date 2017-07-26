@@ -17,6 +17,8 @@
 }
 </style>
 
+<link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css" />
+
 <div class="form-cell" ${elementMetaData!}>
 <#if element.properties.readonly! != 'true'>
     <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??) >
@@ -32,7 +34,11 @@
                         buttonImage: "${request.contextPath}/css/images/calendar.png",
                         buttonImageOnly: true,
                         changeMonth: true,
-                        changeYear: true
+                        changeYear: true,
+                        timeInput: true
+                        <#if element.properties.format24hr! == ''>
+                        ,timeFormat: "hh:mm tt"
+                        </#if>
                         <#if element.properties.format! != ''>
                         ,dateFormat: "${element.properties.format}"
                         </#if>
@@ -48,9 +54,19 @@
                         <#if element.properties.currentDateAs! != ''>
                         ,currentDateAs: "${element.properties.currentDateAs}"
                         </#if>
+                        <#if element.properties.startTime! != ''>
+                        ,hourMin: ${element.properties.startTime}    
+                        </#if>
+                        <#if element.properties.endTime! != '' && element.properties.startTime?has_content && element.properties.endTime?number gte element.properties.startTime?number>
+                        ,hourMax: ${element.properties.endTime}    
+                        </#if>
+                        <#if element.properties.datePickerType! != ''>
+                        ,datePickerType: "${element.properties.datePickerType}"
+                        </#if>
         });
     });
 </script>
+<script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js"></script>
 </#if>
     <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >

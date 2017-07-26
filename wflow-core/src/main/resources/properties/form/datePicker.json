@@ -25,8 +25,26 @@
             value : 'true',
             label : ''
         }]
-    }]
-},
+    },
+    {
+        name : 'datePickerType',
+        label : '@@form.datepicker.datePickerType@@',
+        type : 'selectbox',
+        value : 'dateTime',
+        options : [{
+            value : 'dateTime',
+            label : '@@form.datepicker.datePickerType.dateTime@@'
+        },
+        {
+            value : 'dateOnly',
+            label : '@@form.datepicker.datePickerType.dateOnly@@'
+        },
+        {
+            value : 'timeOnly',
+            label : '@@form.datepicker.datePickerType.timeOnly@@'
+        }]
+    }
+]},
 {
     title : '@@form.datepicker.advancedOptions@@',
     properties : [{
@@ -42,7 +60,23 @@
         name : 'dataFormat',
         label : '@@form.datepicker.dataFormat@@',
         type : 'textfield',
-        description : '@@form.datepicker.dataFormat.eg@@'
+        description : '@@form.datepicker.dataFormat.eg@@',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true'
+    },
+    {
+        name : 'format24hr',
+        label : '@@form.datepicker.24hr@@',
+        type : 'checkbox',
+        value : 'true',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|timeOnly',
+        control_use_regex: 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     },
     {
         label : '@@form.datepicker.validation@@',
@@ -59,18 +93,27 @@
         name : 'startDateFieldId',
         label : '@@form.datepicker.startDateFieldId@@',
         type : 'selectbox',
-        options_callback : 'FormBuilder.getFieldOptions'
+        options_callback : 'FormBuilder.getFieldOptions',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true'
     },
     {
         name : 'endDateFieldId',
         label : '@@form.datepicker.endDateFieldId@@',
         type : 'selectbox',
-        options_callback : 'FormBuilder.getFieldOptions'
+        options_callback : 'FormBuilder.getFieldOptions',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true'
     },
     {
         name : 'currentDateAs',
         label : '@@form.datepicker.currentDateAs@@',
         type : 'selectbox',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true',
         options : [{
             value : '',
             label : ''
@@ -85,6 +128,28 @@
         }]
     },
     {
+        name : 'startTime',
+        label : '@@form.datepicker.startTime@@',
+        type : 'textfield',
+        description : '@@form.datepicker.time.eg@@',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|timeOnly',
+        control_use_regex: 'true',
+        regex_validation : '^[0-9]+$',
+        validation_message : '@@form.datepicker.time.error.invalidFormat@@'
+    },
+    {
+        name : 'endTime',
+        label : '@@form.datepicker.endTime@@',
+        type : 'textfield',
+        description : '@@form.datepicker.endTime.eg@@',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|timeOnly',
+        control_use_regex: 'true',
+        regex_validation : '^[0-9]+$',
+        validation_message : '@@form.datepicker.time.error.invalidFormat@@'
+    },
+    {
         label : '@@form.datepicker.ui@@',
         type : 'header'
     },
@@ -97,14 +162,20 @@
         name : 'format',
         label : '@@form.datepicker.format@@',
         type : 'textfield',
-        description : '@@form.datepicker.format.eg@@'
+        description : '@@form.datepicker.format.eg@@',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true'
     },
     {
         name : 'yearRange',
         label : '@@form.datepicker.yearRange@@',
         type : 'textfield',
         value : 'c-10:c+10',
-        required : 'true'
+        required : 'true',
+        control_field: 'datePickerType',
+        control_value: 'dateTime|dateOnly',
+        control_use_regex: 'true'
     },
     {
         name : 'readonly',
