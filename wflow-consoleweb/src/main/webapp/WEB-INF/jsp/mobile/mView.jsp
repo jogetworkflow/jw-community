@@ -166,7 +166,7 @@
                         <ui:stripTag html="${userview.setting.theme.header}"/>
                     </c:when>
                     <c:otherwise>
-                        <ui:stripTag html="${userview.properties.name}"/>
+                        <ui:stripTag html="${userview.properties.name}" processHashVariable="true"/>
                     </c:otherwise>
                 </c:choose>                    
                 </h1>
