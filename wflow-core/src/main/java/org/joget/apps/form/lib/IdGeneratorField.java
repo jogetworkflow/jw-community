@@ -15,6 +15,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 
 public class IdGeneratorField extends Element implements FormBuilderPaletteElement {
 
@@ -78,7 +79,7 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
 
                         DecimalFormat myFormatter = new DecimalFormat(formater);
                         String runningNumber = myFormatter.format(count);
-                        value = value.replaceAll(pattern, runningNumber);
+                        value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
                     }
                 }
             } catch (Exception e) {
