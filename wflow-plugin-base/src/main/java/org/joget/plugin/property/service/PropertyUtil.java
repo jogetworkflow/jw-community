@@ -207,7 +207,7 @@ public class PropertyUtil {
             Matcher matcher2 = pattern2.matcher(newJson);
             while (matcher2.find()) {
                 sList.add(SecurityUtil.ENVELOPE + matcher2.group(1) + SecurityUtil.ENVELOPE);
-                newJson = newJson.replaceAll(StringUtil.escapeRegex(matcher2.group(1)), SecurityUtil.ENVELOPE + matcher2.group(1) + SecurityUtil.ENVELOPE);
+                newJson = newJson.replaceAll(StringUtil.escapeRegex(matcher2.group(1)), SecurityUtil.ENVELOPE + StringUtil.escapeRegex(matcher2.group(1)) + SecurityUtil.ENVELOPE);
             }
             
             //For datalist binder initialization (getBuilderDataColumnList) 
@@ -220,12 +220,12 @@ public class PropertyUtil {
                 if (!sList.isEmpty()) {
                     for (String s : sList) {
                         if (s.contains(PASSWORD_PROTECTED_VALUE)) {
-                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), passwordProperty.get(s));
+                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(passwordProperty.get(s)));
                         } else {
                             String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
                             tempS = SecurityUtil.encrypt(tempS);
 
-                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), tempS);
+                            newJson = newJson.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(tempS));
                         }
                     }
                 }

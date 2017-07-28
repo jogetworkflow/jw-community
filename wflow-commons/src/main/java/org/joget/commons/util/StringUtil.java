@@ -243,7 +243,7 @@ public class StringUtil {
             Iterator it = replaceMap.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-                inStr = inStr.replaceAll(pairs.getKey(), escapeRegex(pairs.getValue()));
+                inStr = inStr.replaceAll(escapeRegex(pairs.getKey()), escapeRegex(pairs.getValue()));
             }
         }
         
@@ -408,7 +408,7 @@ public class StringUtil {
                         String tempS = s.replaceAll(SecurityUtil.ENVELOPE, "");
                         tempS = SecurityUtil.encrypt(tempS);
 
-                        content = content.replaceAll(s, tempS);
+                        content = content.replaceAll(escapeRegex(s), escapeRegex(tempS));
                     }
                 }
             } catch (Exception ex) {
@@ -439,7 +439,7 @@ public class StringUtil {
                 if (!sList.isEmpty()) {
                     for (String s : sList) {
                         String tempS = SecurityUtil.decrypt(s);
-                        content = content.replaceAll(StringUtil.escapeRegex(s), tempS);
+                        content = content.replaceAll(StringUtil.escapeRegex(s), StringUtil.escapeRegex(tempS));
                     }
                 }
             } catch (Exception ex) {
@@ -462,7 +462,7 @@ public class StringUtil {
             try {
                 String content = new String(bytes, "UTF-8");
 
-                content = content.replaceAll(search, replacement);
+                content = content.replaceAll(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacement));
                 bytes = content.getBytes("UTF-8");
             } catch (Exception e) {
                 //ignore
@@ -483,7 +483,7 @@ public class StringUtil {
                 String content = new String(bytes, "UTF-8");
                 
                 for (String search : replacements.keySet()) {
-                    content = content.replaceAll(search, replacements.get(search));
+                    content = content.replaceAll(StringUtil.escapeRegex(search), StringUtil.escapeRegex(replacements.get(search)));
                 }
                 bytes = content.getBytes("UTF-8");
             } catch (Exception e) {

@@ -30,6 +30,7 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.StringUtil;
 
 public class FormRowDataListBinder extends DataListBinderDefault {
 
@@ -269,7 +270,7 @@ public class FormRowDataListBinder extends DataListBinderDefault {
             if (keyValue == null) {
                 keyValue = "";
             }
-            extraCondition = extraCondition.replaceAll(USERVIEW_KEY_SYNTAX, keyValue);
+            extraCondition = extraCondition.replaceAll(USERVIEW_KEY_SYNTAX, StringUtil.escapeRegex(keyValue));
         } else if (keyName != null && !keyName.isEmpty() && keyValue != null && !keyValue.isEmpty()) {
             if (condition.trim().length() > 0) {
                 condition += " AND ";
