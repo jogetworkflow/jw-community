@@ -141,7 +141,9 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                 
                                 int count = 0;
                                 do {
-                                    wfAssignment = workflowManager.getAssignment(activityInstanceId);
+                                    try {
+                                        wfAssignment = workflowManager.getAssignment(activityInstanceId);
+                                    } catch (Exception ex) {}
                                     
                                     if (wfAssignment == null) {
                                         Thread.sleep(4000); //wait for assignment creation
@@ -191,17 +193,18 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                     if (emailMessage != null && emailMessage.length() != 0) {
 
                                         String msg;
+                                        String tempLink = "";
                                         if ("true".equalsIgnoreCase(isHtml)) {
                                             if (urlName != null && urlName.length() != 0) {
-                                                link = "<a href=\"" + link + "\">" + urlName + "</a>";
+                                                tempLink = "<a href=\"" + link + "\">" + urlName + "</a>";
                                             } else {
-                                                link = "<a href=\"" + link + "\">" + link + "</a>";
+                                                tempLink = "<a href=\"" + link + "\">" + link + "</a>";
                                             }
-                                            msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + link, wfAssignment, null, replace);
+                                            msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + tempLink, wfAssignment, null, replace);
                                             msg = msg.replaceAll("\\n", "<br/>");
                                             email.setHtmlMsg(msg);
                                         } else {
-                                            msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + link, wfAssignment, null, replace);
+                                            msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + tempLink, wfAssignment, null, replace);
                                             email.setMsg(msg);
                                         }
                                     }
