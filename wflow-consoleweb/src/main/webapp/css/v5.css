@@ -421,6 +421,20 @@ body#appcenter #footer {
     display: inline-block;
     margin-bottom: 6px;
 }
+#nv .nv-link-name i.fa {
+    background: #3f84f4;
+    color: #fff;
+    padding: 3px;
+    border-radius: 3px;
+    width: 13px;
+    text-align: center;
+}
+#nv-list .nv-link-name i.fa {
+    background: #6638b6;
+}
+#nv-userview .nv-link-name i.fa {
+    background: #f3b328;
+}
 #nv .nv-link-hilite {
     font-weight: bold;
 }

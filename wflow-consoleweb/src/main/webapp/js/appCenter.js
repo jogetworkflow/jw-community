@@ -6,7 +6,7 @@ var AppCenter = {
         var timer;
         var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
         input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).appendTo(header);  
+        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search fa fa-search'></i></span>")).appendTo(header);  
         $(form).submit(function() { return false });
         $(input).change(function () { 
             var filter = $(this).val(); 
@@ -40,7 +40,7 @@ var AppCenter = {
 
         // show loading icon
         $(container).empty();
-        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x"></i></div>');
+        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x fa fa-spinner fa-spin fa-2x"></i></div>');
         $(container).append(loading);
 
         // load JSON
@@ -73,7 +73,7 @@ var AppCenter = {
                                             <div class="app-name">' + app.name + '</div>\
                                             <div class="userview-description">' + userviewDescription + '</div>';
                         if ($("#adminControl").length > 0) {
-                            content += "<span class='app-design-button' onclick='AppCenter.designApp(event,\"" + app.id + "\",\"" + app.version + "\",\"" + uv.id + "\");return false'><i class='icon-pencil'></i></span>";
+                            content += "<span class='app-design-button' onclick='AppCenter.designApp(event,\"" + app.id + "\",\"" + app.version + "\",\"" + uv.id + "\");return false'><i class='fa fa-pencil icon-pencil'></i></span>";
                         }
                         content += '</a>\
                                     </li>';

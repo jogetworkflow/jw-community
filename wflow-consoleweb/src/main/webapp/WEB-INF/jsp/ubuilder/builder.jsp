@@ -83,6 +83,7 @@
     <body id="userviewbuilder">
         <div id="builder-container">
             <div id="builder-header">
+                <i class="fa fa-2x fa-desktop"></i>
                 <div id="builder-logo"></div>
                 <div id="builder-title"><fmt:message key="ubuilder.title"/> <i><c:out value="${appDefinition.name}" /> v${appDefinition.version}: <c:out value="${userview.name}"/> <c:if test="${appDefinition.published}">(<fmt:message key="console.app.common.label.published"/>)</c:if></i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appVersion}/builder/navigator/u/${userviewId}" flush="true" />--%>

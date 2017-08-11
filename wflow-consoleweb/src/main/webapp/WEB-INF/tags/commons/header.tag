@@ -27,7 +27,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v5.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">
         <script>
@@ -77,15 +77,15 @@
                 <span id="logo-title"><jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=header" /></span>
             </a>
             <div id="header-links">
-                <a href="${pageContext.request.contextPath}/" id="header-home"><i class="icon-home"></i> <fmt:message key="console.header.menu.label.home"/></a>
+                <a href="${pageContext.request.contextPath}/" id="header-home"><i class="fa fa-home"></i> <fmt:message key="console.header.menu.label.home"/></a>
                 <c:if test="${!isAnonymous}">
-                    <a href="${pageContext.request.contextPath}/web/console/run/inbox" id="header-inbox"><i class="icon-inbox"></i> <fmt:message key="console.header.submenu.label.inbox"/></a>
+                    <a href="${pageContext.request.contextPath}/web/console/run/inbox" id="header-inbox"><i class="fa fa-inbox"></i> <fmt:message key="console.header.submenu.label.inbox"/></a>
                     <c:choose>
                         <c:when test="${isCustomDirectoryManager || userIsReadonly}">
-                            <a><i class="icon-user"></i> ${username}</a>
+                            <a><i class="fa fa-user"></i> ${username}</a>
                             </c:when>
                             <c:otherwise>
-                            <a href="javascript:navMenuUserProfile()" id="header-profile"><i class="icon-user"></i> <fmt:message key="console.header.top.label.userProfile"/> (<c:out value="${username}"/>)</a>
+                            <a href="javascript:navMenuUserProfile()" id="header-profile"><i class="fa fa-user"></i> <fmt:message key="console.header.top.label.userProfile"/> (<c:out value="${username}"/>)</a>
                             <script>
                                 <ui:popupdialog var="userProfilePopupDialog" src="${pageContext.request.contextPath}/web/console/profile"/>
                                     function navMenuUserProfile() {
@@ -98,12 +98,12 @@
                             </script>
                         </c:otherwise>
                     </c:choose>
-                    <a href="${pageContext.request.contextPath}/j_spring_security_logout" id="header-logout"><i class="icon-signout"></i> <fmt:message key="console.header.top.label.logout"/></a>
+                    <a href="${pageContext.request.contextPath}/j_spring_security_logout" id="header-logout"><i class="fa fa-signout"></i> <fmt:message key="console.header.top.label.logout"/></a>
                 </c:if>
                 <c:if test="${isAnonymous}">
-                <a href="${pageContext.request.contextPath}/web/login" id="header-login"><i class="icon-signin"></i> <fmt:message key="console.header.top.label.login"/></a>
+                <a href="${pageContext.request.contextPath}/web/login" id="header-login"><i class="fa fa-signin"></i> <fmt:message key="console.header.top.label.login"/></a>
                 </c:if>
-                <a id="main-action-help"><i class="icon-info-sign"></i></a>
+                <a id="main-action-help"><i class="fa fa-info-circle"></i></a>
             </div>
         </div>
         <div id="container">

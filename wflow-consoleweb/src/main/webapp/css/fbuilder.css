@@ -347,14 +347,6 @@
     width: auto;
     z-index: 200;
 }
-#generator-button{
-    position: fixed;
-    right:0;
-}
-.rtl #generator-button{
-    left:0;
-    right: auto;
-}
 .section-comment {
     padding: 5px;
     margin-right: 150px;

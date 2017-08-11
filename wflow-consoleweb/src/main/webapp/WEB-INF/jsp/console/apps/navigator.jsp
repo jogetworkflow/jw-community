@@ -14,7 +14,7 @@
         function listFilter(header, list) {
             var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
             input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-            $(form).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).append(input).appendTo(header);
+            $(form).append($("<span class='filterlabel'><i class='fa fa-search'></i></span>")).append(input).appendTo(header);
             $(input) .change( function () { 
                 var filter = $(this).val();
                 if(filter) { 
@@ -50,7 +50,7 @@
         <ul class="nv-list">
             <c:forEach items="${formDefinitionList}" var="formDef">
                 <li>
-                    <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}" target="_blank" title='<fmt:message key="console.form.common.label.id"/>: ${formDef.id};&#13;<fmt:message key="console.form.common.label.dateCreated"/>: <ui:dateToString date="${formDef.dateCreated}"/>;&#13;<fmt:message key="console.form.common.label.dateModified"/>: <ui:dateToString date="${formDef.dateModified}"/>;&#13;<fmt:message key="form.form.description"/>: <c:out value="${formDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${formDef.id}', 'form', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="icon-remove"></i></button><span class="nv-link-name"><i class="icon-file-alt"></i> <c:out value="${formDef.name}"/></span> <span class="nv-form-table">${formDef.tableName}</span></a>
+                    <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/builder/${formDef.id}" target="_blank" title='<fmt:message key="console.form.common.label.id"/>: ${formDef.id};&#13;<fmt:message key="console.form.common.label.dateCreated"/>: <ui:dateToString date="${formDef.dateCreated}"/>;&#13;<fmt:message key="console.form.common.label.dateModified"/>: <ui:dateToString date="${formDef.dateModified}"/>;&#13;<fmt:message key="form.form.description"/>: <c:out value="${formDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${formDef.id}', 'form', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fa fa-times"></i></button><span class="nv-link-name"><i class="fa fa-file-o"></i> <c:out value="${formDef.name}"/></span> <span class="nv-form-table">${formDef.tableName}</span></a>
                 </li>
             </c:forEach>
         </ul>
@@ -61,7 +61,7 @@
         <ul class="nv-list">
             <c:forEach items="${datalistDefinitionList}" var="listDef">
                 <li>
-                    <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}" target="_blank" title='<fmt:message key="console.datalist.common.label.id"/>: ${listDef.id};&#13;<fmt:message key="console.datalist.common.label.dateCreated"/>: <ui:dateToString date="${listDef.dateCreated}"/>;&#13;<fmt:message key="console.datalist.common.label.dateModified"/>: <ui:dateToString date="${listDef.dateModified}"/>;&#13;<fmt:message key="console.datalist.common.label.description"/>: <c:out value="${listDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${listDef.id}', 'datalist', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="icon-remove"></i></button><span class="nv-link-name"><i class="icon-calendar"></i> <c:out value="${listDef.name}"/></span></a>
+                    <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/builder/${listDef.id}" target="_blank" title='<fmt:message key="console.datalist.common.label.id"/>: ${listDef.id};&#13;<fmt:message key="console.datalist.common.label.dateCreated"/>: <ui:dateToString date="${listDef.dateCreated}"/>;&#13;<fmt:message key="console.datalist.common.label.dateModified"/>: <ui:dateToString date="${listDef.dateModified}"/>;&#13;<fmt:message key="console.datalist.common.label.description"/>: <c:out value="${listDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${listDef.id}', 'datalist', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fa fa-times"></i></button><span class="nv-link-name"><i class="fa fa-list"></i> <c:out value="${listDef.name}"/></span></a>
                 </li>
             </c:forEach>
         </ul>
@@ -72,7 +72,7 @@
         <ul class="nv-list">
             <c:forEach items="${userviewDefinitionList}" var="userviewDef">
                 <li>
-                    <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}" target="_blank" title='<fmt:message key="console.userview.common.label.id"/>: ${userviewDef.id};&#13;<fmt:message key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${userviewDef.dateCreated}"/>;&#13;<fmt:message key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${userviewDef.dateModified}"/>;&#13;<fmt:message key="console.userview.common.label.description"/>: <c:out value="${userviewDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${userviewDef.id}', 'userview', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="icon-remove"></i></button><span class="nv-link-name"><i class="icon-desktop"></i> <c:out value="${userviewDef.name}"/></span></a>
+                    <a class="nv-link nv-left" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/userview/builder/${userviewDef.id}" target="_blank" title='<fmt:message key="console.userview.common.label.id"/>: ${userviewDef.id};&#13;<fmt:message key="console.userview.common.label.dateCreated"/>: <ui:dateToString date="${userviewDef.dateCreated}"/>;&#13;<fmt:message key="console.userview.common.label.dateModified"/>: <ui:dateToString date="${userviewDef.dateModified}"/>;&#13;<fmt:message key="console.userview.common.label.description"/>: <c:out value="${userviewDef.description}"/>'><button href="#" onclick="return checkUsageDelete('${userviewDef.id}', 'userview', event)" class="nv-delete" title='<fmt:message key="general.method.label.delete"/>'><i class="fa fa-times"></i></button><span class="nv-link-name"><i class="fa fa-desktop"></i> <c:out value="${userviewDef.name}"/></span></a>
                             <c:if test="${appDef.published}">
                         <button class="nv-button-small" onclick="window.open('${pageContext.request.contextPath}/web/userview/${appDef.id}/${userviewDef.id}')" target="_blank"><fmt:message key="console.run.launch"/></button>
                     </c:if>

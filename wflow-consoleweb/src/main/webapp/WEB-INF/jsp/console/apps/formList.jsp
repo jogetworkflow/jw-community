@@ -3,7 +3,6 @@
 <c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
 <commons:header title="${title}" />
 
-<link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
 <link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
 <link href="${pageContext.request.contextPath}/js/at/usages.css" rel="stylesheet" type="text/css" />
 <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
@@ -29,8 +28,8 @@
     <div id="main-body">
 
         <div id='nv-refresh'>
-            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='icon-th-list'></i></a>&nbsp;&nbsp;
-            <a href='#' onclick='return refreshNavigator()'><i class='icon-refresh'></i> <fmt:message key="general.method.label.refresh"/></a>
+            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='fa fa-th-list'></i></a>&nbsp;&nbsp;
+            <a href='#' onclick='return refreshNavigator()'><i class='fa fa-refresh'></i> <fmt:message key="general.method.label.refresh"/></a>
         </div>
         <div id="nv-container">
         <jsp:include page="/web/console/app/${appId}/${appVersion}/navigator" flush="true"/>

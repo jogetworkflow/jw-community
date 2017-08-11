@@ -551,7 +551,7 @@ PropertyEditor.Util = {
         if (field.properties.supportHash !== undefined && field.properties.supportHash.toLowerCase() === "true") {
             var propertyInput = $("#"+field.id + "_input");
             propertyInput.append('<div class="hashField"><input type="text" id="'+ field.id + '_hash" name="'+ field.id + '_hash" size="50" value="'+ PropertyEditor.Util.escapeHtmlTag(field.value) +'"/></div>');
-            propertyInput.append("<a class=\"hashFieldAction\"><i class=\"icon-chevron-left\"></i><span>#</span><i class=\"icon-chevron-right\"></i></a>");
+            propertyInput.append("<a class=\"hashFieldAction\"><i class=\"fa fa-chevron-left\"></i><span>#</span><i class=\"fa fa-chevron-right\"></i></a>");
 
             if ($(propertyInput).find(".default").length > 0) {
                 propertyInput.append($(propertyInput).find(".default"));
@@ -560,10 +560,10 @@ PropertyEditor.Util = {
             var toogleHashField = function() {
                 if ($(propertyInput).hasClass("hash")) {
                     $(propertyInput).removeClass("hash");
-                    $(propertyInput).find(".hashFieldAction").html("<i class=\"icon-chevron-left\"></i><span>#</span><i class=\"icon-chevron-right\"></i>");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fa fa-chevron-left\"></i><span>#</span><i class=\"fa fa-chevron-right\"></i>");
                 } else {
                     $(propertyInput).addClass("hash");
-                    $(propertyInput).find(".hashFieldAction").html("<i class=\"icon-share-alt\"></i>");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fa fa-share\"></i>");
                 }
             };
 

@@ -1689,6 +1689,9 @@ body#login {
 #nv .nv-link:hover button.nv-delete {
     visibility: visible;
     color: red;
+    height: 15px;
+    width: 15px;
+    box-sizing: border-box;
 }
 #nv .nv-link button.nv-delete:hover {
     visibility: visible;

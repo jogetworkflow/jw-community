@@ -1,18 +1,5 @@
 @import url("builder.css");
 
-/*Custom builder style*/
-#builder-bar a {
-    padding:0 30px 0 10px;
-}
-
-#builder-bar li.last-inactive a {
-    padding:0 30px 0 10px;
-}
-
-#builder-bar a span.steps-bg {
-    widthx:180px;
-}
-
 .builder-palette-element{
     border: dotted 1px #dddddd;
     cursor: pointer;

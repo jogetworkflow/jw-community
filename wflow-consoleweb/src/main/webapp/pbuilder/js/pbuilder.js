@@ -848,7 +848,7 @@ ProcessBuilder.ApiClient = {
     appVersion: "",
     appName: null,
     httpGet: function(url, callback) {
-        var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.loading") + '</div>');
+        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.loading") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -868,7 +868,7 @@ ProcessBuilder.ApiClient = {
         ConnectionManager.get(url, connCallback);
     },
     httpPost: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
+        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -887,7 +887,7 @@ ProcessBuilder.ApiClient = {
         ConnectionManager.post(url, connCallback, params);
     },
     httpPostMultipart: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
+        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -964,7 +964,7 @@ ProcessBuilder.ApiClient = {
                             function listFilter(header, list) {
                                 var form = $("<form>").attr({"class": "filterform", "action": "#", "onsubmit": "return false"}),
                                 input = $("<input>").attr({"class": "filterinput", "type": "text"});
-                                $(form).append(input).append($("<span class='filterlabel'><i class='icon-search'></i></span>")).appendTo(header);
+                                $(form).append(input).append($("<span class='filterlabel'><i class='fa fa-search'></i></span>")).appendTo(header);
                                 $(input).change(function() {
                                     var filter = $(this).val();
                                     if (filter) {
@@ -1145,7 +1145,7 @@ ProcessBuilder.ApiClient = {
                     alert(get_pbuilder_msg("pbuilder.label.deploymentSuccessful"));
                     // don't generate screenshot here, as it will be generated on-demand later
                     /*
-                    var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
+                    var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
                     $("body").append(loading);
                     setTimeout(function() {
                         $("#loading").remove();
@@ -2145,7 +2145,7 @@ ProcessBuilder.Actions = {
             return;
         }
         ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.undoing") + '</div>');
+        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.undoing") + '</div>');
         $("body").append(loading);
         setTimeout(function() {
             ProcessBuilder.Actions.undoRedoInProgress = true;
@@ -2161,7 +2161,7 @@ ProcessBuilder.Actions = {
             return;
         }
         ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.redoing") + '</div>');
+        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.redoing") + '</div>');
         $("body").append(loading);
         setTimeout(function() {
             ProcessBuilder.Actions.undoRedoInProgress = true;
@@ -2751,7 +2751,7 @@ ProcessBuilder.Designer = {
                     color = "#E37F96";
                 }
                 var transitionId = "transition_" + transition.id;
-                label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='icon-edit'></i></span><span class='transition_delete'>x</span></div>";
+                label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
                 var connector = (transition.style === 'orthogonal') ?
                         ["Flowchart", {cornerRadius: 5, gap: 0}] :
                         ["StateMachine", {curviness:0.1}];
@@ -3009,7 +3009,7 @@ ProcessBuilder.Designer = {
 
         // append edit button
         if (!$(nodes).hasClass("end")) {
-            var $editButton = $("<div class='node_edit'><i class='icon-edit'></i></div>");
+            var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
             var $nodes = $(nodes);
             $nodes.find(".node_edit").remove();
             $nodes.prepend($editButton);
@@ -3028,7 +3028,7 @@ ProcessBuilder.Designer = {
 
         // make nodes connectable with transitions
         $(".node, .start").each(function(i, e) {
-            var label = "<div class='transition_editable'><span class='transition_edit'><i class='icon-edit'></i></span><span class='transition_delete'>x</span></div>";
+            var label = "<div class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
             ProcessBuilder.Util.jsPlumb.makeSource($(e), {
                 filter: ".endpoint",
                 anchor: "Continuous",
@@ -3158,7 +3158,7 @@ ProcessBuilder.Designer = {
         });
 
         // append edit button
-        var $editButton = $("<div class='node_edit'><i class='icon-edit'></i></div>");
+        var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
         var $participants = $(participants).find(".participant_handle");
         $participants.find(".node_edit").remove();
         $participants.prepend($editButton);
@@ -3295,7 +3295,7 @@ ProcessBuilder.Designer = {
         $buttons = $processes.find(".node_buttons");
 
         // append duplicate button to processes
-        var $copyButton = $("<div class='node_copy'><i class='icon-copy'></i></div>");
+        var $copyButton = $("<div class='node_copy'><i class='fa fa-files-o'></i></div>");
         $buttons.prepend($copyButton);
         $processes.find(".node_copy").on("click", function(e) {
             var $process = $(this).closest(".header_process");
@@ -3305,7 +3305,7 @@ ProcessBuilder.Designer = {
         });
 
         // append edit button to processes
-        var $editButton = $("<div class='node_edit'><i class='icon-edit'></i></div>");
+        var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
         $buttons.prepend($editButton);
         $processes.find(".node_edit").on("click", function(e) {
             var $process = $(this).closest(".header_process");
@@ -3379,7 +3379,7 @@ ProcessBuilder.Designer = {
                     var $label = $(connection.canvas).next(".transition_label").find(".transition_editable");
                     $label.attr("id", transitionId);
                     if ($label.length === 0) {
-                        var label = "<span class='transition_edit'><i class='icon-edit'></i></span><span class='transition_delete'>x</span>";
+                        var label = "<span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span>";
                         var overlay = connection.getOverlay();
                         if (overlay) {
                             overlay.setLabel(label);
@@ -3467,7 +3467,7 @@ ProcessBuilder.Designer = {
                         ProcessBuilder.Actions.addNode($newNode, $participant, nodeTop);
                         // connect nodes
                         var connector = ["StateMachine", {curviness:0.1}];
-                        var label = "<div class='transition_editable'><span class='transition_edit'><i class='icon-edit'></i></span><span class='transition_delete'>x</span></div>";
+                        var label = "<div class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
                         ProcessBuilder.Util.jsPlumb.setSuspendDrawing(true);
                         var newConnection = ProcessBuilder.Util.jsPlumb.connect({
                             source: $(source).attr("id"),
@@ -3644,7 +3644,7 @@ ProcessBuilder.Designer = {
 
 //                var $loading = $("<span>generating image... &nbsp;</span> ");
 //                $("#controls").prepend($loading);
-                var $loading = $('<div id="loading"><i class="icon-spinner icon-spin icon-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
+                var $loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
                 $("body").append($loading);
 
                 // restore zoom

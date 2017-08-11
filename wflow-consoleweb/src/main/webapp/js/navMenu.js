@@ -10,7 +10,7 @@ var NavMenu = {
         if ($("#quickOverlayContainer").length === 0) {
             var overlayContainer =
                     '<div id="quickOverlayContainer"><div id="quickOverlay"></div>\
-                        <div id="quickOverlayButton"><a href="#" onclick="NavMenu.hideQuickOverlay()"><i class="icon-remove"></i></a></div>\
+                        <div id="quickOverlayButton"><a href="#" onclick="NavMenu.hideQuickOverlay()"><i class="fa fa-times"></i></a></div>\
                         <iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div>';
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");

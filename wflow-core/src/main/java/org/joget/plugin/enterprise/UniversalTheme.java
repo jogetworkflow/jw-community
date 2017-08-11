@@ -597,13 +597,13 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     }
     
     protected String getBreadcrumb(Map<String, Object> data) {
-        String breadcrumb = "<ul class=\"breadcrumb\"><li><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <i class=\"icon-angle-right\"></i></li>";
+        String breadcrumb = "<ul class=\"breadcrumb\"><li><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <i class=\"fa fa-angle-right\"></i></li>";
         if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
             return "";
         } else if (userview.getCurrent() != null) {
             UserviewCategory category = userview.getCurrentCategory();
             if (!(category.getMenus().size() <= 1 && ((Boolean) data.get("combine_single_menu_category"))) && !"yes".equals(category.getPropertyString("hide"))) {
-                breadcrumb += "<li><a href=\"" + getCategoryLink(category, data) + "\">" + StringUtil.stripAllHtmlTag(category.getPropertyString("label")) + "</a> <i class=\"icon-angle-right\"></i></li>";
+                breadcrumb += "<li><a href=\"" + getCategoryLink(category, data) + "\">" + StringUtil.stripAllHtmlTag(category.getPropertyString("label")) + "</a> <i class=\"fa fa-angle-right\"></i></li>";
             }
             breadcrumb += "<li><a>" + StringUtil.stripAllHtmlTag(userview.getCurrent().getPropertyString("label")) + "</a></li>";
         } else if (PROFILE.equals(userview.getParamString("menuId"))) {

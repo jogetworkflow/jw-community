@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><i class="icon-tasks"></i> <fmt:message key="console.header.submenu.label.inbox"/></p>
+        <p><i class="fa fa-tasks"></i> <fmt:message key="console.header.submenu.label.inbox"/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">

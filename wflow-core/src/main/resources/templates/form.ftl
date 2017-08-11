@@ -1,7 +1,7 @@
 <#if isAuthorize>
     <#if quickEditEnabled>
     <div class="quickEdit">
-         <a href="${request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/${element.properties.id!}" target="_blank"><i class="icon-edit"></i> @@adminBar.label.form@@: ${element.properties.name!?html}</a>
+         <a href="${request.contextPath}/web/console/app/${appId}/${appVersion}/form/builder/${element.properties.id!}" target="_blank"><i class="fa fa-pencil"></i> @@adminBar.label.form@@: ${element.properties.name!?html}</a>
     </div>
     </#if>
     

@@ -14,7 +14,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link href="${pageContext.request.contextPath}/js/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script src="${pageContext.request.contextPath}/js/JSON.js"></script>

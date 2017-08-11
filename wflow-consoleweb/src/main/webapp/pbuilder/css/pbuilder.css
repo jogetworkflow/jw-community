@@ -30,8 +30,7 @@ div, label, input, button, select, th, td, a, span {
     display: none;
 }
 #deploy-button { 
-    background: #aaaaff; 
-    opacity: 0.9;
+    background: #37C8A9; 
     height: 40px;
     width: 120px;
     position: fixed;
@@ -40,12 +39,14 @@ div, label, input, button, select, th, td, a, span {
     padding: 3px;
     text-align: center;
 }
+#deploy-button:hover { 
+    opacity: 0.8;
+}
 #deploy-button a span.steps-bg {
     min-width: 100px;
     display: block;
     font-size: 16px;
     color: #acacac;
-    text-shadow: 1px 1px 0 #fff;
     height: 25px;
     text-decoration: none;
     cursor: pointer;
@@ -53,8 +54,7 @@ div, label, input, button, select, th, td, a, span {
 #deploy-button span.title {
     font-size: 16px;
     height:14px;
-    color: #f1ffbf;
-    text-shadow: 1px 1px 0 #767676;
+    color: #fff;
     display: block;
     padding: 11px 0 0 0;
     width: 94%;
@@ -110,6 +110,7 @@ body {
     z-index: 20;
     opacity: 0.9;
     font-size: 1.2em;
+    background: #eee;
 }
 #header_name {
     float: left;
@@ -217,12 +218,15 @@ tr#header {
 }
 #controls a {
     text-decoration: none;
-    color: #999;
+    color: #000;
     margin: 0px 4px;
+}
+#controls a:hover {
+    opacity: 0.7;
 }
 #controls i {
     text-decoration: none;
-    color: #333;
+    color: #000;
 }
 #launchDesigner {
     display: none;
@@ -484,15 +488,18 @@ x.route x.node_route {
     position: absolute;
     top: 20px;
     left: 40%;
-    min-widthx: 34px;
     border-radius: 14px;
     cursor: pointer;
     text-align: center;
-    padding: 4px;
+    padding: 0;
     display: none;
     opacity: 0.8;
     border: solid 1px #999;
     box-shadow: 0px 0px 1px 1px #ddd;
+    width: 20px;
+    height: 20px;
+    box-sizing: border-box;
+    line-height: 18px;
 }
 .node_edit:hover, .transition_edit:hover, .node_copy:hover {
     background: #ddd;

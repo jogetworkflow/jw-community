@@ -126,6 +126,7 @@
 
         <div id="builder-container">
             <div id="builder-header">
+                <i class="fa fa-2x fa-file-text-o"></i>
                 <div id="builder-logo"></div>
                 <div id="builder-title"><fmt:message key="fbuilder.title"/> <i><c:out value="${appDefinition.name}" /> v${appDefinition.version}: <c:out value="${formDef.name}" /> <c:if test="${appDefinition.published}">(<fmt:message key="console.app.common.label.published"/>)</c:if></i></div>
                 <%--<jsp:include page="/web/console/app/${appId}/${appDefinition.version}/builder/navigator/f/${formId}" flush="true" />--%>
@@ -171,7 +172,7 @@
                                     </div>
                                 </fieldset>
                             </td>
-                            <td valign="top" style="padding-left: 175px;">
+                            <td valign="top" style="padding-left: 185px;">
                                 <fieldset id="form-canvas">
                                     <legend><fmt:message key="fbuilder.canvas"/></legend>
                                     <div class="form-container-div">
