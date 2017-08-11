@@ -37,6 +37,7 @@ div, label, input, button, select, th, td, a, span {
 #builder-header {
     position: fixed;
     top: 0px;
+    left: 0;
     z-index: 301;
     width: 100%;
     height: 39px;
@@ -82,11 +83,12 @@ div, label, input, button, select, th, td, a, span {
     font-size: 14px;
 }
 #builder-body {
-    min-width: 97%;
+    min-width: 100%;
     min-height: 520px;
     background-color: #FFFFFF;
     padding: 0 3% 100px 0px;
     display: table;
+    box-sizing: border-box;
 }
 #builder-logo {
     background: url(../images/v3/builder/logo.png) no-repeat;
@@ -303,7 +305,7 @@ div, label, input, button, select, th, td, a, span {
 }
 #form-canvas {
     position: relative;
-    top: 0px;
+    top: 16px;
     left: 0px;
     floatx: right;
     display: block;
@@ -516,7 +518,7 @@ li.jsondiffpatch-unchanged {
     right:0;
 }
 #builder-bar .highlight-button a, #builder-bar .highlight-button a:hover{
-    background: #37C8A9;
+    background: #009688;
     padding-right: 0;
 }
 #builder-bar .highlight-button a:hover {
@@ -534,5 +536,17 @@ li.jsondiffpatch-unchanged {
     display: none !important;
 }
 @media (min-width: 1200px) {
-    #builder-bar .controls {top:15px;}
+    #builder-bar .controls {top:15px; }
+}
+@media (max-width: 1199px) {
+    #builder-bar .controls {position: absolute; margin-right: 0px; right:15px; top: 43px;}
+}
+a.reload {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 120px;
+    height: 39px;
+    z-index: 9;
+    cursor: pointer;
 }

@@ -3,6 +3,7 @@
 #form-canvas {
     border: none;
     padding: 5px;
+    top:0;
     -moz-box-shadow: 0 0 6px gray;
     -webkit-box-shadow: 0 0 6px gray;
     box-shadow: 0 0 6px gray;

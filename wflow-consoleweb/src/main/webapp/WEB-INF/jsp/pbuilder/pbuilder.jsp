@@ -111,6 +111,7 @@
     <body id="pbuilder">
         <div id="builder-container">
             <div id="builder-header">
+                <a class="reload" onclick="location.reload(true);"></a>
                 <i class="fa fa-2x fa-gears"></i>
                 <div id="builder-logo"></div>
                 <div id="builder-title"><fmt:message key="pbuilder.title"/> <i> - <c:out value="${appDefinition.name}"/> v${appDefinition.version}</i></div>

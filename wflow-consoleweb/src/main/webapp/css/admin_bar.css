@@ -346,9 +346,6 @@ body.embeded #adminBar {
 div#category-container {
     display: inline-block;
 }
-div#builder-body {
-    min-width: 93%;
-}
 div#adminBarWelcome {
     height: 35px;
     width: 40px;

@@ -1,93 +1,98 @@
 body{
     direction:rtl;
 }
-
+#builder-body {
+    padding: 0 0 100px 3%;
+}
+#builder-content > table > tbody > tr > td[valign="top"] {
+    padding-left: 0px !important;
+    width: 100%;
+}
 #builder-title {
     float: right;
 }
-
 #builder_quick_navigator {
     right: 621px;
     left: auto;
 }
-
 .form-palette-element,
 .builder-palette-element{
     clear:both
 }
-
 .form-palette-element img,
 .builder-palette-element img{
     float:right;
 }
-
 .form-palette-element label,
 .builder-palette-element label {
     padding-left: 0px;
     padding-right: 3px;
 }
-
-#builder-bar li {
-    background: url("../images/v3/builder/steps_inactive-bg.gif") repeat-x scroll right top transparent;
-    float: right;
-    margin: 0;
-}
-
-#builder-bar a {
-    background: url(../images/v3/builder/steps_arrow_inactive_rtl.gif) left top no-repeat;
-    padding:0 10px 0 30px;
-}
-
-#builder-bar li.active {
-    background:url(../images/v3/builder/steps_active-bg.gif) right top repeat-x;
-}
-
-#builder-bar li.active a {
-    background: url(../images/v3/builder/steps_arrow_active_rtl.gif) left top no-repeat
-}
-
-#builder-bar .first-active {
-    border-right: 1px solid #989898;
-    border-left:0;
-}
-
-#builder-bar .first-inactive {
-    border-right: 1px solid #c2c1c1;
-    border-left: 0;    
-}
-
-#builder-bar li.next a {
-    background:url(../images/v3/builder/steps_active_next_rtl.gif) left top no-repeat
-}
-
-#builder-bar li.last-inactive a {
-    border-left: 1px solid #c2c1c1;
-    border-right: 0;
-}
-
-#builder-bar li.last-active a {
-    border-right: 0; 
-    border-left: 1px solid #989898; 
-}
-
 .element-options {
     right: auto;
     left:0;
     text-align: left;
 }
-
 .builder_qn_items ul li a {
     float: right !important;
 }
-
 .builder_qn_items ul li a.builder_qn_open {
     float: left !important;
 }
-
 #builder-palette {
     position: fixed;
     right: -5px;
     left: auto;
+    padding: 0px 0px 95px 0px;
+    height: calc(100% - 75px);
+}
+#builder-bar a {
+    padding-right:0px;   
+    padding-left:18px;  
+}
+#builder-bar #builder-steps, #builder-bar #builder-steps li {
+    float: right;
+}
+#builder-bar #builder-steps li.active a:before,
+#builder-bar #builder-steps li:not(.active):hover a:before,
+#builder-bar span.title:after,
+#builder-bar span.title:before{
+    left:-17px;
+    right:inherit;
+    border-width:19px 18px 19px 0px;
+    border-color:transparent #ccc transparent transparent ;    
+}
+#builder-bar #builder-steps li.active a:before,
+#builder-bar #builder-steps li:not(.active):hover a:before{
+    left: inherit;
+    right:-18px;
+    border-color:#888 transparent #888 #888;    
+}
+#builder-bar span.title:before{
+    left: -18px;
+    right: inherit;
+    border-color:transparent #fff transparent transparent;  
+}
+#builder-bar li.active span.title:after{
+    border-color:transparent #888 transparent transparent ;    
+}
+#builder-bar li:not(.active):hover span.title:after{
+    border-color:transparent #c0c0c0 transparent transparent;    
+}
+#builder-bar #builder-steps li:not(.active):hover a:before{
+    border-color:#c0c0c0 transparent #c0c0c0 #c0c0c0; 
+}
+#builder-bar .highlight-button {
+    left: 0;
+    right: inherit;
+}
+#builder-bar .controls {
+    float: left;
+    margin-left: 220px;
+    margin-right: 0;
+}
+@media (max-width: 1199px) {
+    #builder-bar .controls {position: absolute; margin-left: 0px; left:15px; right: inherit; top: 43px;}
 }
 
 /*Form Builder*/
@@ -122,9 +127,13 @@ body{
 
 .form-floating-label {
     left: 10px;
+    right: inherit;
 }
 
 /*Datalist Builder*/
+#datalistbuilder #form-canvas{
+    right: 30px;
+}
 #datalistbuilder td#tdDatabuilderContentRowActions {
     float:right;
 }
@@ -144,7 +153,7 @@ body{
 
 /*Userview Builder*/
 #userviewbuilder #canvas {
-    right: 185px;
+    right: 210px;
 }
 
 #userviewbuilder #header-welcome-message {
@@ -173,10 +182,6 @@ body{
     padding: 4px;
 }
 
-#userviewbuilder #builder-bar li.last-inactive a {
-    padding: 0 10px 0 30px;
-}
-
 #userviewbuilder #userview-advanced {
     margin-left: 0px;
     margin-right: 220px;
@@ -184,4 +189,8 @@ body{
 
 #ui-datepicker-div {
     display:none;
+}
+
+#pbuilder {
+    direction: ltr;
 }
