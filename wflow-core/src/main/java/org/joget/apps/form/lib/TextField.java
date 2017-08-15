@@ -48,12 +48,12 @@ public class TextField extends Element implements FormBuilderPaletteElement {
     
     @Override
     public FormData formatDataForValidation(FormData formData) {
-        String id = FormUtil.getElementParameterName(this);
-        if (id != null) {
-            submittedValue = FormUtil.getElementPropertyValue(this, formData);
-            validationValue = submittedValue;
-            
-            if (!getPropertyString("style").isEmpty()) {
+        if (!getPropertyString("style").isEmpty()) {
+            String id = FormUtil.getElementParameterName(this);
+            if (id != null) {
+                submittedValue = FormUtil.getElementPropertyValue(this, formData);
+                validationValue = submittedValue;
+                
                 validationValue = validationValue.replaceAll(" ", "");
                 if ("EURO".equalsIgnoreCase(getPropertyString("style"))) {
                     validationValue = validationValue.replaceAll(StringUtil.escapeRegex("."), "");
@@ -62,9 +62,8 @@ public class TextField extends Element implements FormBuilderPaletteElement {
                 }
                 validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("prefix")), "");
                 validationValue = validationValue.replaceAll(StringUtil.escapeRegex(getPropertyString("postfix")), "");
+                formData.addRequestParameterValues(id, new String[]{validationValue});
             }
-
-            formData.addRequestParameterValues(id, new String[]{validationValue});
         }
         return formData;
     }
