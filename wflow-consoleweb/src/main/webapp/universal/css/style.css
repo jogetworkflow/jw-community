@@ -837,6 +837,7 @@ body#login #page > footer {
     body.horizontal_menu {
         height: auto;
         margin-top: 0px;
+        overflow-y: visible;
     }
     body.horizontal_menu #main {
         margin-top: 0;
