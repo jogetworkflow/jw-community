@@ -24,10 +24,12 @@ public class CustomCsvViewer extends CsvView {
                     locale = new Locale(temp[0], temp[1], temp[2]);
                 }
 
-                String charset = Utils.getCharset(locale);
+                if (locale != null) {    
+                    String charset = Utils.getCharset(locale);
 
-                if (charset != null && !charset.isEmpty()) {
-                    return "text/csv;charset=" + charset;
+                    if (charset != null && !charset.isEmpty()) {
+                        return "text/csv;charset=" + charset;
+                    }
                 }
             }
         } catch (Exception e) {
