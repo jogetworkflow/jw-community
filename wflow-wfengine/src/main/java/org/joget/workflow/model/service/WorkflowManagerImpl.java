@@ -4396,6 +4396,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param variableMap key=variable name and value=variable value
      */
     public void assignmentVariables(String activityId, Map<String, String> variableMap) {
+        if (variableMap == null) {
+            return;
+        }
+        
         SharkConnection sc = null;
 
         try {
