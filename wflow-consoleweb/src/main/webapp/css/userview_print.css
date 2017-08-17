@@ -49,4 +49,7 @@ body .section-actions{
     body #main div.span9 {
         width: 100%;
     }
+    
+    a[href]:after { content: none !important; }
+    img[src]:after { content: none !important; }
 }
