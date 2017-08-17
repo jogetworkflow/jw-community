@@ -13,6 +13,7 @@
     border: solid 1px silver;
     -moz-border-radius: 10px 10px 10px 10px;
     -webkit-border-radius: 10px;
+    min-width: 0;
 }
 #form-canvas textarea {
     font-size: 13px;
@@ -163,6 +164,13 @@
 .form-cell-value, .subform-cell-value {
     float: left;
     width: 70%;
+}
+.form-cell-value, .subform-cell-value, .form-cell-value span, .subform-cell-value span, .grid-cell{
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+.grid-cell{
+    max-width: 800px;
 }
 .form-cell-value label, .subform-cell-value label {
     display: block;

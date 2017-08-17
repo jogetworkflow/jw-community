@@ -17,6 +17,9 @@
     padding:2px 4px !important;
     text-align:left;
     vertical-align:top;
+    max-width: 800px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 .dataList thead tr {
     background-color:#DFDFDF;

@@ -464,6 +464,7 @@ body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-
     padding: 6px 10px 0 0;
     display: inline-block;
     font-weight: normal;
+    max-width: 100%;
 }
 body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
     padding: 6px 10px 7px 0;

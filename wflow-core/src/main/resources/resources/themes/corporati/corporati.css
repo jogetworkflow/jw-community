@@ -282,7 +282,9 @@ body.embeded #page {
 #footer {
     display: none;
 }
-
+#page #form-canvas {
+    max-width: calc(100vw - 300px);
+}
 @media print {
     body.userview_print #main {
         left:0;
