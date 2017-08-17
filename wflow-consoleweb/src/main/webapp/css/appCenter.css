@@ -19,7 +19,7 @@
     margin-bottom: 20px;
     margin-right: 20px;
 }
-#apps div.userview-icon {
+#apps span.userview-icon {
     display: inline-block;
     height: 70px;
     overflow: hidden;

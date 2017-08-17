@@ -68,7 +68,7 @@ var AppCenter = {
                             imageUrl = UI.base + '/web/userview/screenshot/' + app.id + '/' + uv.id;
                         }
                         content += '<a class="app-link"' + target + ' href="' + userviewUrl + '">\
-                                            <div class="userview-icon" style="background-image:url(\''+imageUrl+'\')"></div>\
+                                            <span class="userview-icon" style="background-image:url(\''+imageUrl+'\')"></span>\
                                             <div class="userview-name">' + uv.name + '</div>\
                                             <div class="app-name">' + app.name + '</div>\
                                             <div class="userview-description">' + userviewDescription + '</div>';
