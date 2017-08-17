@@ -1396,7 +1396,7 @@ PropertyEditor.Model.Page.prototype = {
         }
     },
     attachDescriptionEvent: function(){
-        $(this.editor).find("#"+this.id).find("input, select, textarea").focus(function(){
+        $(this.editor).find("#"+this.id).on("focus", "input, select, textarea", function(){
             $(this.editor).find(".property-description").hide();
             var property = $(this).parentsUntil(".property-editor-property-container", ".property-editor-property");
             $(property).find(".property-description").show();
