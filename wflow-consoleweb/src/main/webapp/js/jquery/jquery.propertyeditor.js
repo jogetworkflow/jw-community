@@ -379,7 +379,7 @@ PropertyEditor.Util = {
                 ajaxUrl += param + "=" + escape(targetValue);
             }
         }
-        var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id];
+        var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference];
         if (prevAjaxUrl !== null && prevAjaxUrl !== undefined && prevAjaxUrl === ajaxUrl) {
             return;
         }
@@ -393,7 +393,7 @@ PropertyEditor.Util = {
             mapping : mapping,
             reference : reference
         });
-        PropertyEditor.Util.prevAjaxCalls[field.id] = ajaxUrl;
+        PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference] = ajaxUrl;
         
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl].length === 1) {
             if (method === undefined || method.toUpperCase() !== "POST") {
@@ -443,7 +443,7 @@ PropertyEditor.Util = {
                                     tempOptions = extra;
                                 }
                             }
-
+                            
                             calls[i].field.handleAjaxOptions(tempOptions, calls[i].reference);
                             calls[i].field.isDataReady = true;
                         }
