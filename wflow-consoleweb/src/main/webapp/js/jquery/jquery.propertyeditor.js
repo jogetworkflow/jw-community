@@ -2431,7 +2431,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
         html += '<select id="'+ this.id +'" name="'+ this.id +'" multiple'+ size +'>';
         if(this.properties.options !== undefined && this.properties.options !== null && values.length > 0){
             $.each(values, function(i, v){
-                $.each(this.properties.options, function(i, option){
+                $.each(thisObj.properties.options, function(i, option){
                     if(v === option.value){
                         html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'">'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
                     }
