@@ -240,16 +240,21 @@ PropertyEditor.Util = {
                 var match  = PropertyEditor.Util.dynamicOptionsCheckValue(field, controlVal, isRegex);
                 if (match) {
                     element.show();
-                    element.find("input, select, textarea, table").removeClass("hidden");
                     element.removeClass("hidden");
                     if (element.hasClass("property-editor-page")) {
                         element.removeClass("property-page-hide");
                         element.addClass("property-page-show");
+                        
+                        element.find(".property-editor-property:not(.hidden)").each(function(){
+                            $(this).find("input, select, textarea, table").removeClass("hidden");
+                        });
+                    } else {
+                        element.find("input, select, textarea, table").removeClass("hidden");
                     }
                 } else {
                     element.hide();
-                    element.find("input, select, textarea, table").addClass("hidden");
                     element.addClass("hidden");
+                    element.find("input, select, textarea, table").addClass("hidden");
                     if (element.hasClass("property-editor-page")) {
                         element.addClass("property-page-hide");
                         element.removeClass("property-page-show");
@@ -3779,7 +3784,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
         $(field).chosen({width: "54%", placeholder_text : " "});
 
-        if(!$(field).hasClass("hidden") && $(field).val() !== undefined
+        if(!$(field).is(":not(.hidden)") && $(field).val() !== undefined
                 && $(field).val() !== null && this.properties.options !== undefined
                 && this.properties.options !== null && this.properties.options.length > 0){
             this.renderPages();
@@ -4040,7 +4045,11 @@ PropertyEditor.Type.Image.prototype = {
             size = ' size="50"';
         }
         if(this.properties.imageSize !== undefined && this.properties.imageSize !== null){
-            imagesize = ' width:'+ this.properties.imageSize +'px; height:'+ this.properties.imageSize +'px;';
+            if (isNaN(this.properties.imageSize)) {
+                imagesize = " " + this.properties.imageSize;
+            } else {
+                imagesize = ' width:'+ this.properties.imageSize +'px; height:'+ this.properties.imageSize +'px;';
+            }
         } else {
             imagesize = ' width:80px; height:80px;';
         }
