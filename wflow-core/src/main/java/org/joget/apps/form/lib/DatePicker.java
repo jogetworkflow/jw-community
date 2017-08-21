@@ -156,6 +156,11 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
             format = format.replaceAll("y", "yy");
         }
         
+        if (format.contains("tt") || format.contains("TT")) {
+            format = format.replaceAll("tt","a");
+            format = format.replaceAll("TT","a");
+        }
+        
         return format;
     }
     
@@ -168,6 +173,10 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getPropertyString("format"));
             String formattedValue = formattedValue(value, displayFormat, formData);
+            
+            if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                displayFormat = "hh:mm a";
+            }
             
             valid = DateUtil.validateDateFormat(formattedValue, displayFormat);
             
