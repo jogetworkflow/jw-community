@@ -222,6 +222,11 @@
     padding-right:10px;
 }
 
+.property-type-readonly .property-description,
+.property-type-label .property-description {
+    display:block !important;
+}
+
 .property-label{
     padding-right:10px;
     color: #535353;

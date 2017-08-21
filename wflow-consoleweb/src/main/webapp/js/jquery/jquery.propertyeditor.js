@@ -14,11 +14,11 @@ PropertyEditor.Util = {
     validators: {},
     escapeHtmlTag: function(string){
         string = String(string);
-        
+
         var regX = /&/g;
         var replaceString = '&amp;';
         string = string.replace(regX, replaceString);
-        
+
         var regX = /</g;
         var replaceString = '&lt;';
         string = string.replace(regX, replaceString);
@@ -34,7 +34,7 @@ PropertyEditor.Util = {
     deepEquals: function (o1, o2) {
         var aProps = Object.getOwnPropertyNames(o1);
         var bProps = Object.getOwnPropertyNames(o2);
-        
+
         var temp = [];
         for (var i = 0; i < aProps.length; i++) {
             if ($.inArray(aProps[i], temp ) === -1) {
@@ -46,42 +46,42 @@ PropertyEditor.Util = {
                 temp.push(bProps[i]);
             }
         }
-        
+
         for (var i = 0; i < temp.length; i++) {
             var propName = temp[i];
             if ((typeof o1[propName] === "object" || typeof o2[propName] === "object")) {
                 if (o1[propName] !== undefined && o2[propName] !== undefined && !PropertyEditor.Util.deepEquals(o1[propName], o2[propName])) {
                     return false;
-                } else if ((o1[propName] === undefined && o2[propName]["className"] !== "") 
+                } else if ((o1[propName] === undefined && o2[propName]["className"] !== "")
                         || (o2[propName] === undefined && o1[propName]["className"] !== "")) {
                     return false;
                 }
-            } else if ((o1[propName] !== undefined && o2[propName] !== undefined && o1[propName] !== o2[propName]) 
+            } else if ((o1[propName] !== undefined && o2[propName] !== undefined && o1[propName] !== o2[propName])
                     || (o1[propName] === undefined && o2[propName] !== "")
                     || (o2[propName] === undefined && o1[propName] !== "")) {
                 return false;
             }
         }
-        
+
         return true;
     },
-    inherit: function (base, methods) {  
+    inherit: function (base, methods) {
         var sub = function() {
             base.apply(this, arguments); // Call base class constructor
             // Call sub class initialize method that will act like a constructor
             this.initialize.apply(this);
         };
-        
+
         sub.prototype = Object.create(base.prototype);
         $.extend(sub.prototype, methods);
-        
+
         //register types and validators
         if (base === PropertyEditor.Model.Type) {
             PropertyEditor.Util.types[methods.shortname.toLowerCase()] = sub;
         } else if (base === PropertyEditor.Model.Validator) {
             PropertyEditor.Util.validators[methods.shortname.toLowerCase()] = sub;
         }
-        
+
         return sub;
     },
     nl2br: function(string){
@@ -105,7 +105,7 @@ PropertyEditor.Util = {
                     func = func[parts[i]];
                 }
             }
-            
+
             return func;
         } catch (err) {};
         return null;
@@ -117,11 +117,11 @@ PropertyEditor.Util = {
                 if (properties.options_callback_on_change !== undefined && properties.options_callback_on_change !== null && properties.options_callback_on_change !== "" ) {
                     on_change = properties.options_callback_on_change;
                 }
-                
+
                 var func = PropertyEditor.Util.getFunction(properties.options_callback);
                 if ($.isFunction(func)) {
                     var onChangeValues = {};
-                    
+
                     if(on_change !== undefined && on_change !== null){
                         var onChanges = on_change.split(";");
                         for (var i in onChanges) {
@@ -139,7 +139,7 @@ PropertyEditor.Util = {
 
                             var targetField = field.editorObject.fields[fieldId];
                             var targetValue = targetField.value;
-                            if (targetField.editor.find("#"+targetField.id).length > 0) {        
+                            if (targetField.editor.find("#"+targetField.id).length > 0) {
                                 var data = targetField.getData(true);
                                 targetValue = data[fieldId];
                             }
@@ -164,7 +164,7 @@ PropertyEditor.Util = {
                             onChangeValues[param] = targetValue;
                         }
                     }
-                    
+
                     var options = func(properties, onChangeValues);
                     if (options !== null) {
                         properties.options = options;
@@ -178,10 +178,17 @@ PropertyEditor.Util = {
                     }
                 }catch (e) {}
             }
-            if (properties.options_extra !== undefined && properties.options_extra !== null) {
+            if (properties.options_ajax === undefined && (properties.options_extra !== undefined && properties.options_extra !== null)) {
                 var options = properties.options_extra;
-                if (properties.options !== undefined) {
-                    properties.options = options.concat(properties.options);
+                if (properties.options !== undefined && properties.options.length > 0) {
+                    if (properties.options[0].value === "") {
+                        var empty = properties.options[0];
+                        properties.options.shift();
+                        properties.options = options.concat(properties.options);
+                        properties.options.unshift(empty);
+                    } else {    
+                        properties.options = options.concat(properties.options);
+                    }
                 } else {
                     properties.options = options;
                 }
@@ -257,7 +264,7 @@ PropertyEditor.Util = {
                         }
                     });
                 }
-                
+
                 if (element.hasClass("property-editor-page")) {
                     var current = $(page.editor).find('.property-page-show.current');
                     if ($(current).length > 0) {
@@ -266,12 +273,12 @@ PropertyEditor.Util = {
                         page.editorObject.pages[pageId].buttonPanel.refresh();
                     }
                 }
-            });  
+            });
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
         }
     },
     handleOptionsField: function (field, reference, ajax_url, on_change, mapping, method, extra) {
-        if (field.properties.options_callback !== undefined && field.properties.options_callback !== null && field.properties.options_callback !== "" 
+        if (field.properties.options_callback !== undefined && field.properties.options_callback !== null && field.properties.options_callback !== ""
                 && field.properties.options_callback_on_change !== undefined && field.properties.options_callback_on_change !== null && field.properties.options_callback_on_change !== "" ) {
             var onChanges = field.properties.options_callback_on_change.split(";");
             var fieldIds = [];
@@ -345,17 +352,17 @@ PropertyEditor.Util = {
                     childField = fieldId.substring(fieldId.indexOf(".") + 1);
                     fieldId = fieldId.substring(0, fieldId.indexOf("."));
                 }
-                
+
                 if(ajaxUrl.indexOf('?') !== -1){
                     ajaxUrl += "&";
                 }else{
                     ajaxUrl += "?";
                 }
-                
+
                 var targetField = field.editorObject.fields[fieldId];
                 var data = targetField.getData(true);
                 var targetValue = data[fieldId];
-                
+
                 if (childField !== "" ) {
                     if ($.isArray(targetValue)) { //is grid
                         var values = [];
@@ -375,7 +382,7 @@ PropertyEditor.Util = {
                 } else if(targetValue === null || targetValue === undefined){
                     targetValue = "";
                 }
-                
+
                 ajaxUrl += param + "=" + escape(targetValue);
             }
         }
@@ -383,23 +390,23 @@ PropertyEditor.Util = {
         if (prevAjaxUrl !== null && prevAjaxUrl !== undefined && prevAjaxUrl === ajaxUrl) {
             return;
         }
-        
+
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl] === undefined || PropertyEditor.Util.ajaxCalls[ajaxUrl] === null) {
             PropertyEditor.Util.ajaxCalls[ajaxUrl] = [];
         }
-        
+
         PropertyEditor.Util.ajaxCalls[ajaxUrl].push({
             field : field,
             mapping : mapping,
             reference : reference
         });
         PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference] = ajaxUrl;
-        
+
         if (PropertyEditor.Util.ajaxCalls[ajaxUrl].length === 1) {
             if (method === undefined || method.toUpperCase() !== "POST") {
                 method = "GET";
             }
-            
+
             PropertyEditor.Util.showAjaxLoading(field.editor);
             $.ajax({
                 url: ajaxUrl,
@@ -411,22 +418,22 @@ PropertyEditor.Util = {
                         var calls = PropertyEditor.Util.ajaxCalls[ajaxUrl];
                         for (var i in calls) {
                             var tempOptions = options;
-                            
+
                             if (calls[i].mapping !== undefined) {
                                 if (calls[i].mapping.arrayObj !== undefined) {
                                     tempOptions = PropertyEditor.Util.getValueFromObject(tempOptions, calls[i].mapping.arrayObj);
                                 }
-                                
+
                                 var newOptions = [];
                                 calls[i].mapping.addEmpty = true;
                                 if (calls[i].mapping.addEmpty !== undefined && calls[i].mapping.addEmpty) {
                                     newOptions.push({value:'', label:''});
                                 }
-                                
+
                                 for (var o in tempOptions) {
                                     if (calls[i].mapping.value !== undefined && calls[i].mapping.label !== undefined) {
                                         newOptions.push({
-                                            value: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.value), 
+                                            value: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.value),
                                             label: PropertyEditor.Util.getValueFromObject(tempOptions[o], calls[i].mapping.label)
                                         });
                                     } else {
@@ -437,8 +444,15 @@ PropertyEditor.Util = {
                             }
                             
                             if (extra !== undefined && extra !== null) {
-                                if (tempOptions !== undefined) {
-                                    tempOptions = extra.concat(tempOptions);
+                                if (tempOptions !== undefined && tempOptions.length > 0) {
+                                    if (tempOptions[0].value === "") {
+                                        var empty = tempOptions[0];
+                                        tempOptions.shift();
+                                        tempOptions = extra.concat(tempOptions);
+                                        tempOptions.unshift(empty);
+                                    } else {
+                                        tempOptions = extra.concat(tempOptions);
+                                    }
                                 } else {
                                     tempOptions = extra;
                                 }
@@ -454,7 +468,7 @@ PropertyEditor.Util = {
             });
         }
     },
-    fieldOnChange: function (field, reference, ajax_url, on_change, mapping, method) {
+    fieldOnChange: function (field, reference, ajax_url, on_change, mapping, method, extra) {
         var onChanges = on_change.split(";");
         var fieldIds = [];
         for (var i in onChanges) {
@@ -482,7 +496,7 @@ PropertyEditor.Util = {
                 selector = "[name=\""+field.editorObject.fields[fieldId].id+"\"]";
             }
             $(field.editor).on("change", selector, function() {
-                PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method);
+                PropertyEditor.Util.callLoadOptionsAjax(field, reference, ajax_url, on_change, mapping, method, extra);
             });
         }
     },
@@ -490,7 +504,7 @@ PropertyEditor.Util = {
         if ($.type(obj) === "string") {
             return obj;
         }
-        
+
         try {
             var parts = name.split(".");
             var value = null;
@@ -502,7 +516,7 @@ PropertyEditor.Util = {
                     value = value[parts[i]];
                 }
             }
-            
+
             return value;
         } catch (err) {};
         return null;
@@ -511,20 +525,20 @@ PropertyEditor.Util = {
         if (control.isHidden()) {
             return false;
         }
-        
+
         var values = new Array();
-        
+
         var data = control.getData(true);
         var value = data[control.properties.name];
-        
+
         if (value !== undefined && value !== null) {
             values = value.split(";");
         }
-        
+
         if (values.length === 0) {
             values.push("");
         }
-        
+
         for (var i = 0; i < values.length; i++) {
             if (isRegex !== undefined && isRegex) {
                 var regex = new RegExp(controlVal);
@@ -544,7 +558,7 @@ PropertyEditor.Util = {
                 }
             }
         }
-        
+
         return false;
     },
     supportHashField: function(field) {
@@ -645,15 +659,15 @@ PropertyEditor.Util = {
         PropertyEditor.Util.getAppResources(field, function(resources) {
             var height = $(field.editor).height() * 0.95;
             var width = $(field.editor).width() * 0.80;
-            
+
             var html = "<div class=\"property_editor_app_resources\"><div id=\"app_resource_dropzone\" class=\"dropzone\"><div class=\"dz-message needsclick\">"+get_peditor_msg('peditor.dropfile')+"</div><div class=\"uploading\"></div></div><div class=\"search_field\"><i class=\"fa fa-search\"></i><input type=\"text\"/></div><ul class=\"app_resources\"></ul></div>";
             var object = $(html);
-            
+
             var isPublic = "";
             if (field.properties.isPublic !== undefined && field.properties.isPublic !== null && field.properties.isPublic.toLowerCase() === "true") {
                 isPublic = "?isPublic=true";
             }
-            
+
             var options = {
                 url : field.options.contextPath+"/web/property/json"+field.properties.appPath+"/appResourceUpload"+isPublic,
                 paramName : 'app_resource',
@@ -662,22 +676,22 @@ PropertyEditor.Util = {
                 dictInvalidFileType : get_peditor_msg('peditor.invalidFileType'),
                 dictFileTooBig : get_peditor_msg('peditor.fileTooBig')
             };
-            
+
             var types = [];
             if (field.properties.allowType !== undefined && field.properties.allowType !== null && field.properties.allowType !== "") {
                 options.acceptedFiles = field.properties.allowType.replace(/;/g, ',');
                 types = field.properties.allowType.split(";");
             }
-            
+
             if (field.properties.maxSize !== undefined && field.properties.maxSize !== null && field.properties.maxSize !== "") {
                 try {
                     options.maxFilesize = parseInt(field.properties.maxSize) / 1024;
                 } catch (err) {}
             }
-            
+
             for (var r in resources) {
                 var ar_container = $(object).find(".app_resources");
-                
+
                 var fileType = resources[r].value.substring(resources[r].value.indexOf("."));
                 //check valid file type
                 if (types.length > 0) {
@@ -692,17 +706,17 @@ PropertyEditor.Util = {
                         continue;
                     }
                 }
-                
+
                 if (!resources[r].value.match(/.(jpg|jpeg|png|gif)$/i)){
                     ar_container.append("<li><div class=\"image\"><div class=\"ext\"><span>"+fileType.substring(1)+"</span></div></div><span class=\"name\">"+resources[r].value+"</span></li>");
                 } else {
                     ar_container.append("<li><div class=\"image\" style=\"background-image:url('"+resources[r].url+"');\"></div><span class=\"name\">"+resources[r].value+"</span></li>");
                 }
             }
-            
+
             $(object).dialog({
-                autoOpen: false, 
-                modal: true, 
+                autoOpen: false,
+                modal: true,
                 height: height,
                 width: width,
                 close: function( event, ui ) {
@@ -712,12 +726,12 @@ PropertyEditor.Util = {
                 }
             });
             $(object).dialog("open");
-            
+
             $(object).on("click", ".app_resources li", function(){
                 field.selectResource($(this).find(".name").text());
                 $(object).dialog("close");
             });
-            
+
             $(object).find(".search_field input").on("keyup", function(){
                 var text = $(this).val();
                 if (text.length > 3) {
@@ -732,17 +746,17 @@ PropertyEditor.Util = {
                     $(object).find(".app_resources li").show();
                 }
             });
-            
+
             var myDropzone = new Dropzone("#app_resource_dropzone", options);
             myDropzone.on("success", function(file, resp) {
                 resp = $.parseJSON(resp);
                 var ar_container = $(object).find(".app_resources");
-                
+
                 //check existing and remove it
                 for (var i in PropertyEditor.Util.resources[field.properties.appPath]) {
                     if (PropertyEditor.Util.resources[field.properties.appPath][i].value === resp.value) {
                         PropertyEditor.Util.resources[field.properties.appPath].splice(i, 1);
-                        
+
                         ar_container.find("li").each(function(){
                             if($(this).find(".name").text() === resp.value){
                                 $(this).remove();
@@ -750,10 +764,10 @@ PropertyEditor.Util = {
                         });
                     }
                 }
-                
+
                 PropertyEditor.Util.resources[field.properties.appPath].unshift(resp);
                 $(file.previewElement).remove();
-                
+
                 var fileType = resp.value.substring(resp.value.indexOf("."));
                 if (!resp.value.match(/.(jpg|jpeg|png|gif)$/i)){
                     ar_container.prepend("<li><div class=\"image\"><div class=\"ext\"><span>"+fileType.substring(1)+"</span></div></div><span class=\"name\">"+resp.value+"</span></li>");
@@ -766,20 +780,20 @@ PropertyEditor.Util = {
                     $(object).find(".app_resources .error").remove();
                 }, 8000);
             });
-            
+
         });
     }
 };
-        
+
 PropertyEditor.Model.Editor = function(element, options) {
     this.element = element;
     this.options = options;
     this.pages = {};
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
-    
+
     $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fa fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="'+get_peditor_msg('peditor.compress')+'"><i class="fa fa-compress" aria-hidden="true"></i></a><a class="expand" title="'+get_peditor_msg('peditor.expand')+'"><i class="fa fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
-    this.editor = $(this.element).find('div#'+this.editorId);    
+    this.editor = $(this.element).find('div#'+this.editorId);
 };
 PropertyEditor.Model.Editor.prototype = {
     getData: function() {
@@ -796,7 +810,7 @@ PropertyEditor.Model.Editor.prototype = {
         var errors = new Array();
         var data = this.getData();
         var deferreds = [];
-        
+
         if(this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null){
             $.each(this.options.propertiesDefinition, function(i, page){
                 var p = page.propertyEditorObject;
@@ -810,7 +824,7 @@ PropertyEditor.Model.Editor.prototype = {
             deferreds.push(dummy);
             dummy.resolve();
         }
-        
+
         $.when.apply($, deferreds).then(function(){
             if (errors.length > 0) {
                 failureCallback(errors);
@@ -827,7 +841,7 @@ PropertyEditor.Model.Editor.prototype = {
             var editorObject = this;
             $.each(this.options.propertiesDefinition, function(i, page){
                 var p = page.propertyEditorObject;
-                if (p === undefined) {        
+                if (p === undefined) {
                     p = new PropertyEditor.Model.Page(editorObject, i, page);
                     page.propertyEditorObject = p;
                     editorObject.pages[p.id] = p;
@@ -837,33 +851,33 @@ PropertyEditor.Model.Editor.prototype = {
         }
         html += '<div class="property-editor-page-buffer"></div>';
         $(this.editor).find(".property-editor-pages").append(html);
-        
+
         this.initScripting();
     },
     renderNoPropertyPage: function() {
         var p = new PropertyEditor.Model.Page(this, 'no_property', {title:get_peditor_msg('peditor.noProperties')});
         this.pages[p.id] = p;
-        
+
         this.options.propertiesDefinition = new Array();
         this.options.propertiesDefinition.push({
             'propertyEditorObject' : p
         });
-        
+
         return p.render();
     },
     initScripting: function() {
         var thisObject = this;
-        
+
         if(this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null){
             $.each(this.options.propertiesDefinition, function(i, page){
                 var p = page.propertyEditorObject;
                 p.initScripting();
             });
         }
-        
+
         this.adjustSize();
         this.initPage();
-        
+
         if (this.options.showCancelButton) {
             $(this.editor).keydown(function(e){
                 if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
@@ -896,7 +910,7 @@ PropertyEditor.Model.Editor.prototype = {
     },
     initPage: function() {
         var $thisObject = this;
-        
+
         var pageContainer = $(this.editor).find('.property-editor-pages');
         $(pageContainer).scroll(function() {
             if ($thisObject.isSinglePageDisplay()) {
@@ -910,20 +924,20 @@ PropertyEditor.Model.Editor.prototype = {
                 }
             }
         });
-        
+
         this.initDisplayMode();
-        
+
         this.changePage(null, $(this.editor).find('.property-page-show:first').attr("id"));
     },
     initDisplayMode: function() {
         var $thisObject = this;
-        
+
         //init display mode based on cookies value
         var single = $.localStorage.getItem("propertyEditor.singlePageDisplay");
         if (single === "true") {
             this.toggleSinglePageDisplay(true);
         }
-        
+
         $(this.editor).find('.property-editor-display a').click(function(){
             $thisObject.toggleSinglePageDisplay();
         });
@@ -939,13 +953,13 @@ PropertyEditor.Model.Editor.prototype = {
             $(this.editor).removeClass("single-page");
             single = false;
         }
-        
+
         //store display mode to cookies
         $.localStorage.setItem("propertyEditor.singlePageDisplay", single+"");
     },
     isSinglePageDisplay: function() {
         return $(this.editor).hasClass("single-page");
-    }, 
+    },
     nextPage: function(scroll) {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
@@ -1094,15 +1108,15 @@ PropertyEditor.Model.Page.prototype = {
         } else {
             useDefault = true;
         }
-        
+
         var properties = new Object();
         if(pageProperties !== undefined){
             $.each(pageProperties, function(i, property){
                 var type = property.propertyEditorObject;
-                
+
                 if (!type.isHidden()) {
                     var data = type.getData(useDefault);
-                    
+
                     //handle Hash Field
                     if (data !== null && data['HASH_FIELD'] !== null && data['HASH_FIELD'] !== undefined) {
                         if (properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] === undefined) {
@@ -1112,7 +1126,7 @@ PropertyEditor.Model.Page.prototype = {
                         }
                         delete data['HASH_FIELD'];
                     }
-                    
+
                     if (data !== null) {
                         properties = $.extend(properties, data);
                     }
@@ -1125,11 +1139,11 @@ PropertyEditor.Model.Page.prototype = {
         var thisObj = this;
         var deferreds = [];
         var checkEncryption = false;
-        
+
         //remove previous error message
         $("#"+this.id+" .property-input-error").remove();
         $("#"+this.id+" .property-editor-page-errors").remove();
-        
+
         if (!this.isHidden()){
             if (pageProperties === undefined || pageProperties === null) {
                 pageProperties = this.properties.properties;
@@ -1163,22 +1177,22 @@ PropertyEditor.Model.Page.prototype = {
                 });
             }
         }
-        
+
         return deferreds;
     },
     validation: function(successCallback, failureCallback, depthValidation, pageProperties) {
         var errors = [];
         var data = this.getData(pageProperties);
         var deferreds = [];
-        
+
         deferreds = $.merge(deferreds, this.validate(data, errors, depthValidation, pageProperties));
-        
+
         if (deferreds.length === 0) {
             var dummy = $.Deferred();
             deferreds.push(dummy);
             dummy.resolve();
         }
-        
+
         $.when.apply($, deferreds).then(function(){
             if (errors.length > 0) {
                 failureCallback(errors);
@@ -1194,40 +1208,40 @@ PropertyEditor.Model.Page.prototype = {
         if(this.properties.hidden !== undefined && this.properties.hidden.toLowerCase() === "true"){
             hiddenClass = " property-page-hide";
         }
-        
+
         var showHide = "";
-        if (this.properties.control_field !== undefined && this.properties.control_field !== null 
+        if (this.properties.control_field !== undefined && this.properties.control_field !== null
                 && this.properties.control_value !== undefined && this.properties.control_value !== null) {
             showHide = 'data-control_field="' + this.properties.control_field + '" data-control_value="'+this.properties.control_value+'"';
-            
+
             if (this.properties.control_use_regex !== undefined && this.properties.control_use_regex.toLowerCase() === "true") {
                 showHide += ' data-control_use_regex="true"';
             } else {
                 showHide += ' data-control_use_regex="false"';
             }
         }
-        
+
         if(this.properties.title !== undefined && this.properties.title !== null){
             pageTitle = this.properties.title;
         }
-        
+
         if (this.properties.properties === undefined) {
             hiddenClass += " no-property-page";
             pageTitle = get_peditor_msg('peditor.noProperties');
         }
-        
+
         var helplink = "";
         if (this.properties.helplink !== undefined && this.properties.helplink !== "") {
             helplink = ' <a class="helplink" target="_blank" href="'+this.properties.helplink+'"><i class="fa fa-question-circle"></i></a>'
         }
-        
+
         var html = '<div id="' + this.id + '" '+ this.elementData + 'class="property-editor-page' + hiddenClass + '" ' + showHide + '>';
         html += '<div class="property-editor-page-title"><span>'+pageTitle+'</span>'+helplink+'</div><div class="property-editor-page-step-indicator"></div><div class="property-editor-property-container">';
-        
+
         html += this.renderProperties();
-        
+
         html += '<div class="property-editor-page-buffer"></div></div>' + this.buttonPanel.render() + '</div>';
-        
+
         return html;
     },
     renderProperties: function() {
@@ -1242,7 +1256,7 @@ PropertyEditor.Model.Page.prototype = {
     },
     renderProperty: function(i, prefix, property) {
         var type = property.propertyEditorObject;
-        
+
         if (type === undefined) {
             var value = null;
             if(this.options.propertyValues !== null && this.options.propertyValues !== undefined && this.options.propertyValues[property.name] !== undefined){
@@ -1253,19 +1267,19 @@ PropertyEditor.Model.Page.prototype = {
 
             var defaultValue = null;
 
-            if(this.options.defaultPropertyValues !== null && this.options.defaultPropertyValues !== undefined && this.options.defaultPropertyValues[property.name] !== undefined 
+            if(this.options.defaultPropertyValues !== null && this.options.defaultPropertyValues !== undefined && this.options.defaultPropertyValues[property.name] !== undefined
                     && this.options.defaultPropertyValues[property.name] !== ""){
                 defaultValue = this.options.defaultPropertyValues[property.name];
             }
-        
+
             type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, defaultValue);
             property.propertyEditorObject = type;
-            
+
             if (prefix === "" || prefix === null || prefix === undefined) {
                 this.editorObject.fields[property.name] = type;
             }
         }
-        
+
         if (type !== null) {
             return type.render();
         }
@@ -1280,7 +1294,7 @@ PropertyEditor.Model.Page.prototype = {
             });
         }
         PropertyEditor.Util.handleDynamicOptionsField(this);
-        
+
         this.buttonPanel.initScripting();
         this.attachDescriptionEvent();
         this.attachHashVariableAssistant();
@@ -1295,11 +1309,11 @@ PropertyEditor.Model.Page.prototype = {
                 $(this.editor).find('.property-editor-pages').scrollTo(pos, 200);
             }
         }
-        
+
         $(page).addClass("current");
         this.refreshStepsIndicator();
         this.buttonPanel.refresh();
-        
+
         if(this.properties.properties !== undefined){
             $.each(this.properties.properties, function(i, property){
                 var type = property.propertyEditorObject;
@@ -1313,18 +1327,18 @@ PropertyEditor.Model.Page.prototype = {
     },
     remove: function() {
         var page = $(this.editor).find("#"+this.id);
-        
+
         if(this.properties.properties !== undefined){
             $.each(this.properties.properties, function(i, property){
                 var type = property.propertyEditorObject;
                 type.remove();
             });
         }
-        
+
         $(page).remove();
     },
     refreshStepsIndicator: function() {
-        if ((this.editorObject.isSinglePageDisplay() && $(this.editor).find('.property-page-show').length > 0) 
+        if ((this.editorObject.isSinglePageDisplay() && $(this.editor).find('.property-page-show').length > 0)
                 || (!this.editorObject.isSinglePageDisplay() && ($(this.editor).find('.property-page-show').length > 1 || $(this.editor).find('.property-editor-page-step-indicator .step').length > 1))) {
             var thisObject = this;
             var editor = this.editor;
@@ -1335,18 +1349,18 @@ PropertyEditor.Model.Page.prototype = {
             }
             var prev = null;
             var html = '';
-            
+
             $(this.editor).find('.property-page-show').each(function(i){
                 var pageId = $(this).attr("id");
                 var parentElementId = $(this).attr("elementid");
                 if ($(this).attr("parentElementid") !== undefined && $(this).attr("parentElementid") !== "") {
                     parentElementId = $(this).attr("parentElementid");
                 }
-                
+
                 if (prev !== null && prev !== parentElementId && currentPageParentElementId !== prev) {
                     html += ' <span class="seperator">'+get_peditor_msg('peditor.stepSeperator')+'</span> ';
                 }
-                
+
                 if (parentElementId === undefined || currentPageParentElementId === parentElementId) {
                     prev = null;
                     var childPageClass = "";
@@ -1388,7 +1402,7 @@ PropertyEditor.Model.Page.prototype = {
             $(this.editor).find('#'+this.id+' .property-editor-page-step-indicator .clickable').click(function(){
                 thisObject.editorObject.changePage($(currentPage).attr("id"), $(this).attr("rel"));
             });
-            
+
             if (this.editorObject.isSinglePageDisplay()) {
                 $(this.editor).find('.property-editor-nav').html('');
                 $(this.editor).find('.property-editor-nav').append($(this.editor).find('#'+this.id+' .property-editor-page-step-indicator').clone(true));
@@ -1396,8 +1410,9 @@ PropertyEditor.Model.Page.prototype = {
         }
     },
     attachDescriptionEvent: function(){
+        var thisObj = this;
         $(this.editor).find("#"+this.id).on("focus", "input, select, textarea", function(){
-            $(this.editor).find(".property-description").hide();
+            $(thisObj.editor).find(".property-description").hide();
             var property = $(this).parentsUntil(".property-editor-property-container", ".property-editor-property");
             $(property).find(".property-description").show();
         });
@@ -1424,7 +1439,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
         if (page.properties.buttons !== undefined && page.properties.buttons !== null) {
             $.each(page.properties.buttons, function(i, button){
                 var showHide = "";
-        
+
                 if (button.control_field !== undefined && button.control_field !== null && button.control_value !== undefined && button.control_value !== null) {
                     showHide = 'data-control_field="' + button.control_field + '" data-control_value="'+button.control_value+'"';
 
@@ -1434,11 +1449,11 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         showHide += ' data-control_use_regex="false"';
                     }
                 }
-                
+
                 if (button.ajax_method === undefined) {
                     button.ajax_method = "GET";
                 }
-        
+
                 html += '<input id="'+page.id + '_' + button.name+'" type="button" class="page-button-custom" value="'+ button.label +'" data-ajax_url="'+button.ajax_url+'" data-ajax_method="'+button.ajax_method+'" data-action="'+button.name+'" '+showHide+' />';
                 if (button.addition_fields !== undefined && button.addition_fields !== null) {
                     html += '<div id="'+ page.id +'_'+ button.name +'_form" class="button_form" style="display:none;">';
@@ -1450,7 +1465,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 }
             });
         }
-        
+
         html += '<input type="button" class="page-button-save" value="'+ this.options.saveButtonLabel +'"/>';
         if(this.options.showCancelButton){
             html += '<input type="button" class="page-button-cancel" value="'+ this.options.cancelButtonLabel +'"/>';
@@ -1480,12 +1495,12 @@ PropertyEditor.Model.ButtonPanel.prototype = {
         $(currentPage).find('input.page-button-cancel').click(function(){
             page.editorObject.cancel();
         });
-        
+
         //custom page button
         $(currentPage).find('.page-button-custom').click(function(){
             var button = $(this);
             var id = $(button).attr("id");
-            
+
             //get properties
             var buttonProperties;
             $.each(page.properties.buttons, function(i, buttonProp){
@@ -1493,7 +1508,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     buttonProperties = buttonProp;
                 }
             });
-            
+
             var pageProperties = page.properties.properties;
             pageProperties = $.grep(pageProperties, function(property){
                 if (buttonProperties.fields !== undefined && buttonProperties.fields.indexOf(property.name) !== -1) {
@@ -1504,12 +1519,12 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 }
                 return false;
             });
-            
+
             page.validation(function(data){
                 //popup form for extra input
                 if ($("#"+id+"_form").length === 1) {
                     var object = $("#"+id+"_form");
-                    $(object).dialog({ 
+                    $(object).dialog({
                         modal: true,
                         width : "70%",
                         buttons: [{
@@ -1526,7 +1541,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                             $(object).dialog("destroy");
                         }
                     });
-                } else {        
+                } else {
                     panel.executeButtonEvent(data, $(button).data("ajax_url"), $(button).data("ajax_method"));
                 }
             }, function(errors){}, true, pageProperties);
@@ -1534,13 +1549,13 @@ PropertyEditor.Model.ButtonPanel.prototype = {
         });
     },
     executeButtonEvent: function(data, url, method) {
-        
+
         $.each(data, function(i, d){
             if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%", d.substring(d.length - 4) === "%%%%") {
-                data[i] = d.replace(/%%%%/g, ""); 
+                data[i] = d.replace(/%%%%/g, "");
             }
         });
-                    
+
         $.ajax({
             method: method,
             url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),
@@ -1548,7 +1563,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             dataType : "text",
             success: function(response) {
                 var r = $.parseJSON(response);
-                
+
                 if (r.message !== undefined && r.message !== null) {
                     alert(r.message);
                 }
@@ -1564,7 +1579,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             $(this.editor).find('.property-page-show:first .property-editor-page-button-panel .page-button-navigation .page-button-prev').attr("disabled","disabled");
             $(this.editor).find('.property-page-show:last .property-editor-page-button-panel .page-button-navigation .page-button-next').attr("disabled","disabled");
         }
-        
+
         if (this.page.editorObject.isSinglePageDisplay()) {
             $(this.editor).find('.property-editor-buttons').html('');
             $(this.editor).find('.property-editor-buttons').append($(this.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true));
@@ -1594,7 +1609,7 @@ PropertyEditor.Validator.Ajax.prototype = {
         var deffers = [];
         var d = $.Deferred();
         deffers.push(d);
-        
+
         var temp = $.extend({}, data);
         if (thisObject.options.defaultPropertyValues !== null && thisObject.options.defaultPropertyValues !== undefined) {
             for (var t in temp) {
@@ -1603,7 +1618,7 @@ PropertyEditor.Validator.Ajax.prototype = {
                 }
             }
         }
-        
+
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, thisObject.options.contextPath),
             data : $.param( temp ),
@@ -1630,7 +1645,7 @@ PropertyEditor.Validator.Ajax.prototype = {
                         }
                     }
                 }
-                
+
                 if(errorsHtml !== ""){
                     var page = $(thisObject.editor).find('#'+thisObject.page.id);
                     var errorContainer;
@@ -1650,7 +1665,7 @@ PropertyEditor.Validator.Ajax.prototype = {
                 d.resolve();
             }
         });
-        
+
         return deffers;
     }
 };
@@ -1681,22 +1696,22 @@ PropertyEditor.Model.Type.prototype = {
     },
     validate: function(data, errors, checkEncryption) {
         var wrapper = $('#'+ this.id +'_input');
-        
+
         var value = data[this.properties.name];
         var defaultValue = null;
 
         if(this.defaultValue !== undefined && this.defaultValue !== null && this.defaultValue !== ""){
             defaultValue = this.defaultValue;
         }
-        
+
         var hasValue = true;
         if (value === '' || value === undefined || value === null || value === '%%%%%%%%'
             || ($.isArray(value) && value.length === 0)) {
             hasValue = false;
         }
-        
-        if(this.properties.required !== undefined 
-                && this.properties.required.toLowerCase() === "true" 
+
+        if(this.properties.required !== undefined
+                && this.properties.required.toLowerCase() === "true"
                 && defaultValue === null && !hasValue){
             var obj = new Object();
             obj.field = this.properties.name;
@@ -1705,10 +1720,10 @@ PropertyEditor.Model.Type.prototype = {
             errors.push(obj);
             $(wrapper).append('<div class="property-input-error">'+ obj.message +'</div>');
         }
-        
-        if(hasValue 
-                && this.properties.regex_validation !== undefined 
-                && this.properties.regex_validation !== '' 
+
+        if(hasValue
+                && this.properties.regex_validation !== undefined
+                && this.properties.regex_validation !== ''
                 && (typeof value) === "string"){
             var regex = new RegExp(this.properties.regex_validation);
             if(!regex.exec(value)){
@@ -1723,12 +1738,12 @@ PropertyEditor.Model.Type.prototype = {
                 $(wrapper).append('<div class="property-input-error">'+ obj2.message +'</div>');
             }
         }
-        
+
         if(this.properties.js_validation !== undefined && this.properties.js_validation !== ''){
             var func = PropertyEditor.Util.getFunction(this.properties.js_validation);
             if ($.isFunction(func)) {
                 var errorMsg = func(this.properties.name, value);
-                
+
                 if (errorMsg !== null && errorMsg !== "") {
                     var obj2 = new Object();
                     obj2.fieldName = this.properties.label;
@@ -1738,9 +1753,9 @@ PropertyEditor.Model.Type.prototype = {
                 }
             }
         }
-        
+
         if ((checkEncryption !== undefined && checkEncryption) && hasValue && (typeof value) === "string") {
-            if ((value.substring(0, 25) === "%%%%****SECURE_VALUE****-")) { 
+            if ((value.substring(0, 25) === "%%%%****SECURE_VALUE****-")) {
                 var obj2 = new Object();
                 obj2.fieldName = this.properties.label;
                 obj2.message = get_peditor_msg('peditor.dataIsEncypted');
@@ -1748,7 +1763,7 @@ PropertyEditor.Model.Type.prototype = {
                 $(wrapper).append('<div class="property-input-error">'+ obj2.message +'</div>');
             }
         }
-        
+
         this.addOnValidation(data, errors, checkEncryption);
     },
     addOnValidation : function (data, errors, checkEncryption) {
@@ -1757,11 +1772,11 @@ PropertyEditor.Model.Type.prototype = {
     getData: function(useDefault) {
         var data = new Object();
         var value = this.value;
-        
-        if (this.isDataReady) {        
+
+        if (this.isDataReady) {
             value = $('[name='+this.id+']:not(.hidden)').val();
             if (value === undefined || value === null || value === "") {
-                if (useDefault !== undefined && useDefault 
+                if (useDefault !== undefined && useDefault
                         && this.defaultValue !== undefined && this.defaultValue !== null) {
                     value = this.defaultValue;
                 } else {
@@ -1776,25 +1791,25 @@ PropertyEditor.Model.Type.prototype = {
     },
     render: function() {
         var showHide = "";
-        
-        if (this.properties.control_field !== undefined && this.properties.control_field !== null 
+
+        if (this.properties.control_field !== undefined && this.properties.control_field !== null
                 && this.properties.control_value !== undefined && this.properties.control_value !== null) {
             showHide = 'data-control_field="' + this.properties.control_field + '" data-control_value="'+this.properties.control_value+'"';
-            
+
             if (this.properties.control_use_regex !== undefined && this.properties.control_use_regex.toLowerCase() === "true") {
                 showHide += ' data-control_use_regex="true"';
             } else {
                 showHide += ' data-control_use_regex="false"';
             }
         }
-        
+
         var html = '<div id="property_'+ this.number +'" class="property_container_'+this.id+' property-editor-property property-type-'+ this.properties.type.toLowerCase() +'" '+showHide+'>';
-        
+
         html += this.renderLabel();
         html += this.renderFieldWrapper();
-        
+
         html += '<div style="clear:both;"></div></div>';
-        
+
         return html;
     },
     renderLabel: function() {
@@ -1849,16 +1864,11 @@ PropertyEditor.Model.Type.prototype = {
     handleAjaxOptions: function(options, reference) {
         if (options !== null && options !== undefined) {
             this.properties.options = options;
-            
-            var value = $('#'+ this.id).val();
-            if (value === "" || value === null) {
-                value = this.value;
-            }
-            
+
             var wrapper = $('#'+ this.id +'_input');
             var html = this.renderField() + this.renderDefault();
             $(wrapper).html(html);
-            $('#'+ this.id).val(value);
+            
             $('#'+ this.id).trigger("change");
         }
     },
@@ -1971,7 +1981,7 @@ PropertyEditor.Type.Color.prototype = {
                     $elm.val('#' + this.color.colors.HEX);
                 }
             }
-        }); 
+        });
         PropertyEditor.Util.supportHashField(this);
     }
 };
@@ -1984,7 +1994,7 @@ PropertyEditor.Type.Password.prototype = {
         var data = new Object();
         var value = $('[name='+this.id+']:not(.hidden)').val();
         if (value === undefined || value === null || value === "") {
-            if (useDefault !== undefined && useDefault 
+            if (useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 value = this.defaultValue;
             } else {
@@ -2011,7 +2021,7 @@ PropertyEditor.Type.Password.prototype = {
         }
 
         this.value = this.value.replace(/%%%%/g, '');
-        
+
         return '<input type="password" autocomplete="new-password" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
     },
     renderDefault: function() {
@@ -2063,7 +2073,7 @@ PropertyEditor.Type.CheckBox.prototype = {
     getData: function(useDefault) {
         var data = new Object();
         var value = this.value;
-        
+
         if (this.isDataReady) {
             value = "";
             $('[name='+ this.id + ']:not(.hidden):checkbox:checked').each(function(i){
@@ -2071,7 +2081,7 @@ PropertyEditor.Type.CheckBox.prototype = {
             });
             if(value !== ''){
                 value = value.replace(/;$/i, '');
-            } else if (useDefault !== undefined && useDefault 
+            } else if (useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 value = this.defaultValue;
             }
@@ -2087,7 +2097,7 @@ PropertyEditor.Type.CheckBox.prototype = {
         if(this.value === null){
             this.value = "";
         }
-        
+
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
         if(this.properties.options !== undefined && this.properties.options !== null){
@@ -2105,11 +2115,11 @@ PropertyEditor.Type.CheckBox.prototype = {
     },
     renderDefault: function() {
         var defaultValueText = '';
-        
+
         if(this.defaultValue === null || this.defaultValue === undefined){
             this.defaultValue = "";
         }
-        
+
         var checkbox = this;
         if(this.properties.options !== undefined && this.properties.options !== null){
             $.each(this.properties.options, function(i, option){
@@ -2125,7 +2135,7 @@ PropertyEditor.Type.CheckBox.prototype = {
             defaultValueText = defaultValueText.substring(0, defaultValueText.length - 2);
             defaultValueText = '<div class="default"><span class="label">'+get_peditor_msg('peditor.default')+'</span><span class="value">' + PropertyEditor.Util.escapeHtmlTag(defaultValueText) + '</span><div class="clear"></div></div>';
         }
-        
+
         return defaultValueText;
     },
     initScripting: function () {
@@ -2140,11 +2150,11 @@ PropertyEditor.Type.Radio.prototype = {
     getData: function(useDefault) {
         var data = new Object();
         var value = this.value;
-        
+
         if (this.isDataReady) {
             value = $('[name='+this.id+']:not(.hidden):checked').val();
             if (value === undefined || value === null || value === "") {
-                if (useDefault !== undefined && useDefault 
+                if (useDefault !== undefined && useDefault
                         && this.defaultValue !== undefined && this.defaultValue !== null) {
                     value = this.defaultValue;
                 } else {
@@ -2163,9 +2173,9 @@ PropertyEditor.Type.Radio.prototype = {
         if(this.value === null){
             this.value = "";
         }
-        
-        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
+        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+        
         if(this.properties.options !== undefined && this.properties.options !== null){
             $.each(this.properties.options, function(i, option){
                 var checked = "";
@@ -2194,7 +2204,7 @@ PropertyEditor.Type.SelectBox.prototype = {
         if(this.value === null){
             this.value = "";
         }
-        
+
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
         if(this.properties.options !== undefined && this.properties.options !== null){
@@ -2215,7 +2225,7 @@ PropertyEditor.Type.SelectBox.prototype = {
         if (options !== null && options !== undefined) {
             this.properties.options = options;
             var html = "";
-            
+
             var value = $("#"+this.id).val();
             if (value === "" || value === null) {
                 value = thisObj.value;
@@ -2238,7 +2248,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#"+this.id).addClass("chosen-rtl");
         }
         $("#"+this.id).chosen({width: "54%", placeholder_text : " "});
-        
+
         //support options_label_processor for selectobox & multiselect
         if (this.properties.options_label_processor !== undefined && this.properties.options_label_processor !== null) {
             var processors = this.properties.options_label_processor.split(";");
@@ -2278,7 +2288,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             });
             updateLabel($("#"+field.id).data("chosen"));
         }
-        
+
         PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function () {
@@ -2293,7 +2303,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
     getData: function(useDefault) {
         var data = new Object();
         var value = this.value;
-        
+
         if (this.isDataReady) {
             value = "";
             var values = $('[name='+this.id+']:not(.hidden)').val();
@@ -2304,7 +2314,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
             }
             if(value !== ''){
                 value = value.replace(/;$/i, '');
-            } else if (useDefault !== undefined && useDefault 
+            } else if (useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 value = this.defaultValue;
             }
@@ -2325,7 +2335,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
         }
 
         var html = '<select id="'+ this.id +'" name="'+ this.id +'" multiple'+ size +' class="initChosen">';
-        
+
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
 
         if(this.properties.options !== undefined && this.properties.options !== null){
@@ -2347,7 +2357,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
         var thisObj = this;
         if (options !== null && options !== undefined) {
             this.properties.options = options;
-            
+
             var values = $("#"+this.id).val();
             if (values !== null && !$.isArray(values)) {
                 values = [values];
@@ -2355,7 +2365,7 @@ PropertyEditor.Type.MultiSelect.prototype = {
             if (values === null || values.length === 0 || (values.length === 1 && values[0] === "")) {
                 values = thisObj.value.split(";");
             }
-            
+
             var html = "";
             $.each(this.properties.options, function(i, option){
                 var selected = "";
@@ -2383,7 +2393,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
     getData: function(useDefault) {
         var data = new Object();
         var value = this.value;
-        
+
         if (this.isDataReady) {
             value = "";
             $('[name='+this.id+']:not(.hidden) option').each(function(){
@@ -2391,7 +2401,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
             });
             if(value !== ''){
                 value = value.replace(/;$/i, '');
-            } else if (useDefault !== undefined && useDefault 
+            } else if (useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 value = this.defaultValue;
             }
@@ -2407,11 +2417,11 @@ PropertyEditor.Type.SortableSelect.prototype = {
         }
 
         var size = ' size="8"';
-        
+
         var values = thisObj.value.split(";");
 
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
-        
+
         var html = '<select id="'+ this.id +'_options" class="options" name="'+ this.id +'_options" multiple'+ size +'>';
         if(this.properties.options !== undefined && this.properties.options !== null){
             $.each(this.properties.options, function(i, option){
@@ -2440,7 +2450,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
         }
         html += '</select>';
         html += '<div class="sorted_select_control sort"><button class="moveup btn"><i class="fa fa-angle-up" aria-hidden="true"></i></button><button class="movedown btn"><i class="fa fa-angle-down" aria-hidden="true"></i></button></div>';
-        
+
         return html;
     },
     handleAjaxOptions: function(options, reference) {
@@ -2448,7 +2458,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
         if (options !== null && options !== undefined) {
             this.properties.options = options;
             var html = "";
-            
+
             var isInit = true;
             var values = thisObj.value.split(";");
             if ($("#"+thisObj.id+"_options option").length > 0) {
@@ -2458,7 +2468,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
                     values.push($(this).attr("value"));
                 });
             }
-            
+
             $.each(this.properties.options, function(i, option){
                 if (option.value !== "") {
                     var selected = "";
@@ -2483,6 +2493,12 @@ PropertyEditor.Type.SortableSelect.prototype = {
                 });
             } else {
                 $("#"+thisObj.id+ "option").each(function() {
+                    var value = $(this).attr("value");
+                    if ($("#"+thisObj.id+"_options").find("option[value='"+value+"']").length === 0) {
+                        $(this).remove();
+                    }
+                });
+                $("#"+thisObj.id+" option").each(function(){
                     var value = $(this).attr("value");
                     if ($("#"+thisObj.id+"_options").find("option[value='"+value+"']").length === 0) {
                         $(this).remove();
@@ -2557,7 +2573,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
         var element = $("#"+this.id);
         var container = $(element).parent();
         var field = this;
-        
+
         //selectAll
         $(container).find('button.selectAll').click(function(){
             field.optionsSelectAll();
@@ -2585,21 +2601,21 @@ PropertyEditor.Type.SortableSelect.prototype = {
             element.trigger("change");
             return false;
         });
-        
+
         //moveup
         $(container).find('button.moveup').click(function(){
             field.optionsMoveUp();
             element.trigger("change");
             return false;
         });
-        
+
         //movedown
         $(container).find('button.movedown').click(function(){
             field.optionsMoveDown();
             element.trigger("change");
             return false;
         });
-        
+
         PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function () {
@@ -2615,7 +2631,7 @@ PropertyEditor.Type.Grid.prototype = {
     getData: function(useDefault) {
         var field = this;
         var data = new Object();
-        
+
         if (this.isDataReady) {
             var gridValue = new Array();
             if (!field.isHidden()) {
@@ -2641,7 +2657,7 @@ PropertyEditor.Type.Grid.prototype = {
                         gridValue.push(obj);
                     }
                 });
-                if (gridValue.length === 0 && useDefault !== undefined && useDefault 
+                if (gridValue.length === 0 && useDefault !== undefined && useDefault
                         && this.defaultValue !== null && this.defaultValue !== undefined) {
                     gridValue = this.defaultValue;
                 }
@@ -2650,7 +2666,7 @@ PropertyEditor.Type.Grid.prototype = {
         } else {
             data[this.properties.name] = this.value;
         }
-        
+
         return data;
     },
     addOnValidation : function (data, errors, checkEncryption) {
@@ -2658,7 +2674,7 @@ PropertyEditor.Type.Grid.prototype = {
         var wrapper = $('#'+ this.id +'_input');
         var table = $("#"+this.id);
         $(table).find("td").removeClass("error");
-                        
+
         var value = data[this.properties.name];
         var hasError = false;
         if ($.isArray(value) && value.length > 0) {
@@ -2674,7 +2690,7 @@ PropertyEditor.Type.Grid.prototype = {
                 });
             });
         }
-        
+
         if(hasError){
             var obj = new Object();
             obj.field = this.properties.name;
@@ -2710,7 +2726,7 @@ PropertyEditor.Type.Grid.prototype = {
             } else if (column.options !== undefined || column.options_ajax !== undefined) {
                 if (column.type === "autocomplete") {
                     thisObj.updateSource(column.key, column.options);
-                    html += '<input name="' + column.key + '" class="autocomplete" size="10" value=""/>';    
+                    html += '<input name="' + column.key + '" class="autocomplete" size="10" value=""/>';
                 } else {
                     html += '<select name="' + column.key + '" data-value="">';
                     if (column.options !== undefined) {
@@ -2750,7 +2766,7 @@ PropertyEditor.Type.Grid.prototype = {
                         html += '<input name="' + column.key + '" type="checkbox" '+checked+' value="'+column.true_value+'"/>';
                     } else if (column.options !== undefined || column.options_ajax !== undefined) {
                         if (column.type === "autocomplete") {
-                            html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';    
+                            html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                         } else {
                             html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
                             if (column.options !== undefined) {
@@ -2813,18 +2829,18 @@ PropertyEditor.Type.Grid.prototype = {
     initScripting: function() {
         var table = $("#"+this.id);
         var grid = this;
-        
+
         $(table).find("select.initFullWidthChosen").each(function(){
             if (UI.rtl) {
                 $(this).addClass("chosen-rtl");
             }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
-        
+
         $(table).find("input.autocomplete").each(function(){
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source : grid.options_sources[key], 
+                source : grid.options_sources[key],
                 minLength : 0,
                 open: function(){
                     $(this).autocomplete('widget').css('z-index', 99999);
@@ -2832,7 +2848,7 @@ PropertyEditor.Type.Grid.prototype = {
                 }
             });
         });
-        
+
         //add
         $(table).next('a.property-type-grid-action-add').click(function(){
             grid.gridActionAdd(this);
@@ -2861,7 +2877,7 @@ PropertyEditor.Type.Grid.prototype = {
         });
 
         grid.gridDisabledMoveAction(table);
-        
+
         $.each(grid.properties.columns, function(i, column) {
             if ((column.options_ajax !== undefined && column.options_ajax !== null) || (column.options_callback_on_change !== undefined && column.options_callback_on_change !== null)) {
                 PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method, column.options_extra);
@@ -2880,19 +2896,19 @@ PropertyEditor.Type.Grid.prototype = {
                         filter = column.options_ajax_row_regex_filter;
                     }
                 });
-                
+
                 var html = "";
                 $.each(options, function(i, option){
                     html += '<option value="'+PropertyEditor.Util.escapeHtmlTag(option.value)+'">'+PropertyEditor.Util.escapeHtmlTag(option.label)+'</option>';
                 });
                 var change = false;
                 $("#"+grid.id+ " [name='"+reference+"']").each(function() {
-                    var val = $(this).val(); 
+                    var val = $(this).val();
                     if (val === "" || val === null) {
                         val = $(this).data("value");
                     }
                     $(this).html(html);
-                    
+
                     if (filter !== null) {
                         var tempFilter = filter;
                         $(this).closest("tr").find("[name]").each(function(){
@@ -2901,7 +2917,7 @@ PropertyEditor.Type.Grid.prototype = {
                             tempFilter = tempFilter.replace("${"+name+"}", val);
                         });
                         var regex = new RegExp(tempFilter);
-                        
+
                         $(this).find("option").each(function(){
                             var option_value = $(this).attr("value");
                             if (option_value !== "") {
@@ -2912,7 +2928,7 @@ PropertyEditor.Type.Grid.prototype = {
                             }
                         });
                     }
-                    
+
                     if ($(this).hasClass("initFullWidthChosen")) {
                         $(this).val(val);
                         $(this).trigger("chosen:updated");
@@ -2940,11 +2956,11 @@ PropertyEditor.Type.Grid.prototype = {
             }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
-        
+
         $(row).find("input.autocomplete").each(function(){
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source : grid.options_sources[key], 
+                source : grid.options_sources[key],
                 minLength : 0,
                 open: function(){
                     $(this).autocomplete('widget').css('z-index', 99999);
@@ -3012,19 +3028,19 @@ PropertyEditor.Type.Grid.prototype = {
             });
         }
         this.options_sources[key].sort();
-        
+
         var table = $("#"+this.id);
-        
+
         var filter = null;
         $.each(thisObj.properties.columns, function(i, column) {
             if (column.key === key && column.options_ajax_row_regex_filter !== undefined && column.options_ajax_row_regex_filter !== "") {
                 filter = column.options_ajax_row_regex_filter;
             }
         });
-        
+
         $(table).find("input[name='"+key+"'].ui-autocomplete-input").each(function(){
             var source = thisObj.options_sources[key];
-            
+
             if (filter !== null) {
                 var tempFilter = filter;
                 $(this).closest("tr").find("[name]").each(function(){
@@ -3048,7 +3064,7 @@ PropertyEditor.Type.Grid.prototype = {
                 }
                 source = tempSource;
             }
-            
+
             $(this).autocomplete("option", "source", source);
         });
     },
@@ -3065,7 +3081,7 @@ PropertyEditor.Type.GridCombine.prototype = {
     getData: function(useDefault) {
         var field = this;
         var data = new Object();
-        
+
         if (this.isDataReady) {
             if (!field.isHidden()) {
                 if ($('#'+this.id + ' tr').length > 2) {
@@ -3080,7 +3096,7 @@ PropertyEditor.Type.GridCombine.prototype = {
                                 } else {
                                     value += ';';
                                 }
-                                
+
                                 var fieldValue = "";
                                 if (column.type !== "truefalse") {
                                     fieldValue = $(row).find('input[name='+ column.key +'], select[name='+ column.key +']').val();
@@ -3126,7 +3142,7 @@ PropertyEditor.Type.GridCombine.prototype = {
         var wrapper = $('#'+ this.id +'_input');
         var table = $("#"+this.id);
         $(table).find("td").removeClass("error");
-                        
+
         var hasError = false;
         if (data !== undefined && data !== null) {
             $.each(thisObj.properties.columns, function(j, column) {
@@ -3146,7 +3162,7 @@ PropertyEditor.Type.GridCombine.prototype = {
                 }
             });
         }
-        
+
         if(hasError){
             var obj = new Object();
             obj.field = this.properties.name;
@@ -3182,7 +3198,7 @@ PropertyEditor.Type.GridCombine.prototype = {
             } else if (column.options !== undefined || column.options_ajax !== undefined) {
                 if (column.type === "autocomplete") {
                     thisObj.updateSource(column.key, column.options);
-                    html += '<input name="' + column.key + '" class="autocomplete" size="10" value=""/>';    
+                    html += '<input name="' + column.key + '" class="autocomplete" size="10" value=""/>';
                 } else {
                     html += '<select name="' + column.key + '" data-value="">';
                     if (column.options !== undefined) {
@@ -3219,7 +3235,7 @@ PropertyEditor.Type.GridCombine.prototype = {
                 }
             });
         }
-        
+
         //check for all empty columns if there is only one row
         if (values.length === 1) {
             var row = values[0];
@@ -3253,7 +3269,7 @@ PropertyEditor.Type.GridCombine.prototype = {
                         html += '<input name="' + column.key + '" type="checkbox" '+checked+' value="'+column.true_value+'"/>';
                     } else if (column.options !== undefined || column.options_ajax !== undefined) {
                         if (column.type === "autocomplete") {
-                            html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';    
+                            html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                         } else {
                             html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
                             if (column.options !== undefined) {
@@ -3280,14 +3296,14 @@ PropertyEditor.Type.GridCombine.prototype = {
                 html += '</td></tr>';
             });
         }
-        
+
         html += '</table><a href="#" class="property-type-grid-action-add"><span>' + get_peditor_msg('peditor.add') + '</span></a>';
         return html;
     },
     renderDefault: function() {
         var thisObj = this;
         var defaultValueText = '';
-        
+
         var defaultValues = new Array();
         if (thisObj.options.defaultPropertyValues !== null && thisObj.options.defaultPropertyValues !== undefined) {
             $.each(thisObj.properties.columns, function(i, column){
@@ -3304,7 +3320,7 @@ PropertyEditor.Type.GridCombine.prototype = {
                 }
             });
         }
-        
+
         if(defaultValues !== null){
             $.each(defaultValues, function(i, row){
                 $.each(thisObj.properties.columns, function(i, column){
@@ -3333,7 +3349,7 @@ PropertyEditor.Type.GridCombine.prototype = {
     },
     initScripting: PropertyEditor.Type.Grid.prototype.initScripting,
     gridActionAdd: PropertyEditor.Type.Grid.prototype.gridActionAdd,
-    gridActionDelete: PropertyEditor.Type.Grid.prototype.gridActionDelete, 
+    gridActionDelete: PropertyEditor.Type.Grid.prototype.gridActionDelete,
     gridActionMoveUp: PropertyEditor.Type.Grid.prototype.gridActionMoveUp,
     gridActionMoveDown: PropertyEditor.Type.Grid.prototype.gridActionMoveDown,
     gridDisabledMoveAction: PropertyEditor.Type.Grid.prototype.gridDisabledMoveAction,
@@ -3353,16 +3369,16 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         var wrapper = $('#'+ this.id +'_input');
         var table = $("#"+this.id);
         $(table).find("td").removeClass("error");
-                        
+
         var value = data[this.properties.name];
-        
+
         var hasError = false;
         if (thisObj.properties.rows !== null) {
             $.each(thisObj.properties.rows, function(i, row) {
                 if (row.required !== undefined && row.required.toLowerCase() === 'true') {
                     $.each(thisObj.properties.columns, function(j, column) {
                         if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                            if (value[i] === undefined || value[i] === null 
+                            if (value[i] === undefined || value[i] === null
                                     || value[i][column.key] === undefined || value[i][column.key] === null || value[i][column.key] === "") {
                                 var td = $(table).find("tr:eq("+(i+1)+") td:eq("+j+")");
                                 $(td).addClass("error");
@@ -3373,7 +3389,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                 }
             });
         }
-        
+
         if(hasError){
             var obj = new Object();
             obj.field = this.properties.name;
@@ -3406,17 +3422,17 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                         if (row.required !== undefined && row.required.toLowerCase() === 'true') {
                             required = ' <span class="property-required">'+get_peditor_msg('peditor.mandatory.symbol')+'</span>';
                         }
-                        
+
                         html += '<td><span>' + row.label + '</span>' + required;
                         html += '<input type="hidden" name="' + column.key + '" value="' + PropertyEditor.Util.escapeHtmlTag(row.label) + '"/></td>';
                     } else {
                         var columnValue = "";
-                        if (thisObj.value !== undefined && thisObj.value !== null 
-                                && thisObj.value[i] !== undefined && thisObj.value[i] !== null 
+                        if (thisObj.value !== undefined && thisObj.value !== null
+                                && thisObj.value[i] !== undefined && thisObj.value[i] !== null
                                 && thisObj.value[i][column.key] !== undefined) {
                             columnValue = thisObj.value[i][column.key];
                         }
-                        
+
                         PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
 
                         html += '<td><span>';
@@ -3432,7 +3448,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                                 if (i === 0) {
                                     thisObj.updateSource(column.key, column.options);
                                 }
-                                html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';    
+                                html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                             } else {
                                 html += '<select name="' + column.key + '" data-value="'+columnValue+'" class="initFullWidthChosen">';
                                 if (column.options !== undefined){
@@ -3464,18 +3480,18 @@ PropertyEditor.Type.GridFixedRow.prototype = {
     initScripting: function() {
         var table = $("#"+this.id);
         var grid = this;
-        
+
         $(table).find("select.initFullWidthChosen").each(function(){
             if (UI.rtl) {
                 $(this).addClass("chosen-rtl");
             }
             $(this).chosen({width: "100%", placeholder_text : " "});
         });
-        
+
         $(table).find("input.autocomplete").each(function(){
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source : grid.options_sources[key], 
+                source : grid.options_sources[key],
                 minLength : 0,
                 open: function(){
                     $(this).autocomplete('widget').css('z-index', 99999);
@@ -3483,7 +3499,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                 }
             });
         });
-        
+
         $.each(grid.properties.columns, function(i, column) {
             if ((column.options_ajax !== undefined && column.options_ajax !== null) || (column.options_callback_on_change !== undefined && column.options_callback_on_change !== null)) {
                 PropertyEditor.Util.handleOptionsField(grid, column.key, column.options_ajax, column.options_ajax_on_change, column.options_ajax_mapping, column.options_ajax_method, column.options_extra);
@@ -3506,7 +3522,7 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             value = tinyMCE.editors[$('[name='+this.id+']:not(.hidden)').attr('id')].getContent();
         }
         if (value === undefined || value === null || value === "") {
-            if (useDefault !== undefined && useDefault 
+            if (useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 value = this.defaultValue;
             }
@@ -3530,13 +3546,14 @@ PropertyEditor.Type.HtmlEditor.prototype = {
         return '<textarea id="'+ this.id + '" name="'+ this.id + '" class="tinymce"'+rows +cols+'>'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'</textarea>';
     },
     initScripting: function() {
+        var thisObj = this;
         var height = 500;
         if (!(this.properties.height === undefined || this.properties.height === "")) {
             try {
                 height = parseInt(this.properties.height);
             } catch (err) {}
         }
-        
+
         tinymce.init({
             selector: '#'+this.id,
             height: height,
@@ -3551,7 +3568,14 @@ PropertyEditor.Type.HtmlEditor.prototype = {
             image_advtab: true,
             relative_urls: false,
             convert_urls : false,
-            valid_elements : '*[*]'
+            valid_elements : '*[*]',
+            setup: function(editor) {
+                editor.on('focus', function(e) {
+                    $(thisObj.editor).find(".property-description").hide();
+                    var property = $("#"+e.target.id).parentsUntil(".property-editor-property-container", ".property-editor-property");
+                    $(property).find(".property-description").show();
+                });
+            }
         });
     }
 };
@@ -3566,7 +3590,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
         if (!this.isHidden()) {
             var value = this.codeeditor.getValue();
             if (value === undefined || value === null || value === "") {
-                if (useDefault !== undefined && useDefault 
+                if (useDefault !== undefined && useDefault
                         && this.defaultValue !== undefined && this.defaultValue !== null) {
                     value = this.defaultValue;
                 }
@@ -3620,7 +3644,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
     getData: function(useDefault) {
         var thisObj = this;
         var data = new Object();
-        
+
         if (this.isDataReady) {
             var element = new Object();
             element['className'] = $('[name='+this.id+']:not(.hidden)').val();
@@ -3633,7 +3657,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 });
             }
 
-            if (element['className'] === "" && useDefault !== undefined && useDefault 
+            if (element['className'] === "" && useDefault !== undefined && useDefault
                     && this.defaultValue !== undefined && this.defaultValue !== null) {
                 element = this.defaultValue;
             }
@@ -3646,7 +3670,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
     },
     validate : function (data, errors, checkEncryption) {
         var wrapper = $('#'+ this.id +'_input');
-        
+
         var value = data[this.properties.name];
         var deferreds = [];
         var defaultValue = null;
@@ -3654,8 +3678,8 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if(this.defaultValue !== undefined && this.defaultValue !== null && this.defaultValue.className !== ""){
             defaultValue = this.defaultValue;
         }
-        
-        if(this.properties.required !== undefined && this.properties.required.toLowerCase() === "true" 
+
+        if(this.properties.required !== undefined && this.properties.required.toLowerCase() === "true"
                 && value.className === '' && defaultValue === null){
             var obj = new Object();
             obj.field = this.properties.name;
@@ -3664,7 +3688,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             errors.push(obj);
             $(wrapper).append('<div class="property-input-error">'+ obj.message +'</div>');
         }
-        
+
         if(this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null){
             $.each(this.options.propertiesDefinition, function(i, page){
                 var p = page.propertyEditorObject;
@@ -3687,9 +3711,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if(this.value !== null){
             valueString = this.value.className;
         }
-        
+
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
-        
+
         if(this.properties.options !== undefined && this.properties.options !== null){
             $.each(this.properties.options, function(i, option){
                 var selected = "";
@@ -3707,7 +3731,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var defaultValueString = '';
         if(this.defaultValue !== null && this.defaultValue !== undefined){
             defaultValueString = this.defaultValue.classname;
-            
+
             if(this.properties.options !== undefined && this.properties.options !== null){
                 $.each(this.properties.options, function(i, option){
                     if(defaultValueString !== "" && defaultValueString === option.value){
@@ -3728,12 +3752,12 @@ PropertyEditor.Type.ElementSelect.prototype = {
             this.properties.options = options;
             var value = "";
             var html = "";
-            
+
             value = $("#"+this.id).val();
             if ((value === "" || value === null) && thisObj.value !== undefined && thisObj.value !== null) {
                 value = thisObj.value.className;
             }
-            
+
             $.each(this.properties.options, function(i, option){
                 var selected = "";
                 if(value === option.value){
@@ -3749,18 +3773,18 @@ PropertyEditor.Type.ElementSelect.prototype = {
     initScripting: function () {
         var thisObj = this;
         var field = $("#"+this.id);
-        
+
         if (UI.rtl) {
             $(field).addClass("chosen-rtl");
         }
         $(field).chosen({width: "54%", placeholder_text : " "});
-        
-        if(!$(field).hasClass("hidden") && $(field).val() !== undefined 
-                && $(field).val() !== null && this.properties.options !== undefined 
+
+        if(!$(field).hasClass("hidden") && $(field).val() !== undefined
+                && $(field).val() !== null && this.properties.options !== undefined
                 && this.properties.options !== null && this.properties.options.length > 0){
             this.renderPages();
         }
-        
+
         $(field).change(function(){
             thisObj.renderPages();
         });
@@ -3770,7 +3794,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var field = $("#"+this.id);
         var value = $(field).filter(":not(.hidden)").val();
         var currentPage = $(this.editor).find("#"+this.page.id);
-        
+
         var data = null;
         if (this.properties.keep_value_on_change !== undefined && this.properties.keep_value_on_change.toLowerCase() === "true") {
             if (this.options.propertiesDefinition !== undefined && this.options.propertiesDefinition !== null) {
@@ -3780,19 +3804,19 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 this.options.propertyValues = (this.value) ? this.value.properties : null;
             }
         }
-        
+
         //check if value is different, remove all the related properties page
         if($(this.editor).find('.property-editor-page[elementId='+this.id+']:first').attr('elementValue') !== value){
             this.removePages();
             thisObj.editorObject.refresh();
         }
-        
+
         //if properties page not found, render it now
         if($(this.editor).find('.property-editor-page[elementId='+this.id+']').length === 0){
             var deferreds = [];
-            
+
             PropertyEditor.Util.showAjaxLoading(thisObj.editor);
-            
+
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));
             $.when.apply($, deferreds).then(function(){
@@ -3804,16 +3828,16 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     if (currentPage.attr("elementId") !== undefined && currentPage.attr("elementId") !== "") {
                         parentId = currentPage.attr("elementId") + "_" + parentId;
                         if (currentPage.attr("parentElementId") !== undefined && currentPage.attr("parentElementId") !== "") {
-                            elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"'; 
+                            elementdata += ' parentElementId="' + currentPage.attr("parentElementId") + '"';
                         } else {
-                            elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"'; 
+                            elementdata += ' parentElementId="' + currentPage.attr("elementId") + '"';
                         }
                     }
 
                     var html = "";
                     $.each(thisObj.options.propertiesDefinition, function(i, page){
                         var p = page.propertyEditorObject;
-                        if (p === undefined) {        
+                        if (p === undefined) {
                             p = new PropertyEditor.Model.Page(thisObj.editorObject, i, page, elementdata, parentId);
                             p.options = thisObj.options;
                             page.propertyEditorObject = p;
@@ -3822,12 +3846,12 @@ PropertyEditor.Type.ElementSelect.prototype = {
                         html += p.render();
                     });
                     $(currentPage).after(html);
-                
+
                     $.each(thisObj.options.propertiesDefinition, function(i, page){
                         var p = page.propertyEditorObject;
                         p.initScripting();
                     });
-                    
+
                     //add parent properties to plugin header
                     var valueLabel = $("#"+thisObj.id).find('option[value="'+value+'"]').text();
                     var parentTitle = '<h1>'+thisObj.properties.label + " (" + valueLabel + ')</h1>';
@@ -3842,7 +3866,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
     getElementProperties: function(value) {
         var thisObj = this;
         var d = $.Deferred();
-        
+
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
             data : "value="+escape(value),
@@ -3857,14 +3881,14 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 d.resolve();
             }
         });
-        
+
         return d;
     },
     getElementDefaultProperties: function(value) {
         var thisObj = this;
         var d = $.Deferred();
-        
-        if (this.properties.default_property_values_url !== null && this.properties.default_property_values_url !== undefined 
+
+        if (this.properties.default_property_values_url !== null && this.properties.default_property_values_url !== undefined
                 && this.properties.default_property_values_url !== "") {
             $.ajax({
                 url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
@@ -3883,7 +3907,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         } else {
             d.resolve();
         }
-        
+
         return d;
     },
     removePages: function() {
@@ -3918,10 +3942,10 @@ PropertyEditor.Type.AutoComplete.prototype = {
         if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
             maxlength = ' maxlength="'+ this.properties.maxlength +'"';
         }
-        
+
         PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
         this.updateSource();
-        
+
         return '<input type="text" class="autocomplete" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
     },
     handleAjaxOptions: function(options, reference) {
@@ -3944,7 +3968,7 @@ PropertyEditor.Type.AutoComplete.prototype = {
     initScripting: function () {
         var thisObj = this;
         $("#"+this.id).autocomplete({
-            source : thisObj.source, 
+            source : thisObj.source,
             minLength : 0,
             open: function(){
                 $(this).autocomplete('widget').css('z-index', 99999);
@@ -3974,11 +3998,11 @@ PropertyEditor.Type.File.prototype = {
         if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
             maxlength = ' maxlength="'+ this.properties.maxlength +'"';
         }
-        
+
         if (this.properties.allowInput === undefined || this.properties.allowInput === null || this.properties.allowInput !== "true") {
             maxlength += " readonly";
         }
-        
+
         return '<input type="text" class="image" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/> <a class="choosefile btn button small">'+get_peditor_msg('peditor.chooseFile')+'</a> <a class="clearfile btn button small">'+get_peditor_msg('peditor.clear')+'</a>';
     },
     initScripting: function () {
@@ -3986,7 +4010,7 @@ PropertyEditor.Type.File.prototype = {
         $("#"+this.id).parent().find(".clearfile").on("click", function() {
             $("#"+thisObj.id).val("").trigger("change");
         });
-        
+
         $("#"+this.id).parent().find(".choosefile").on("click", function() {
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
         });
@@ -4024,21 +4048,21 @@ PropertyEditor.Type.Image.prototype = {
         if(this.properties.maxlength !== undefined && this.properties.maxlength !== null){
             maxlength = ' maxlength="'+ this.properties.maxlength +'"';
         }
-        
+
         if (this.properties.allowInput === undefined || this.properties.allowInput === null || this.properties.allowInput !== "true") {
             maxlength += " readonly";
         }
-        
+
         if (this.properties.allowType === undefined || this.properties.allowType === null || this.properties.allowType === "") {
             this.properties.allowType = ".jpeg;.jpg;.gif;.png";
         }
-        
+
         var style = imagesize;
         if (this.value !== "") {
             var path = this.value.replace("AppResource::", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
             style += " background-image:url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')";
         }
-        
+
         return '<input type="text" class="image" id="'+ this.id + '" name="'+ this.id + '"'+ size + maxlength +' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/><a class="choosefile btn button small">'+get_peditor_msg('peditor.chooseImage')+'</a><div class="image-placeholder" style="'+style+'"><a class="image-remove"><i class="fa fa-times"></i></a></div>';
     },
     initScripting: function () {
@@ -4049,15 +4073,15 @@ PropertyEditor.Type.Image.prototype = {
             var imagePlaceholder = $(this).parent().find(".image-placeholder");
             $(imagePlaceholder).css("background-image", "url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')");
         });
-        
+
         $("#"+this.id).parent().find(".image-remove").on("click", function() {
             $("#"+thisObj.id).val("").trigger("change");
         });
-        
+
         $("#"+this.id).parent().find(".choosefile").on("click", function() {
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
         });
-        
+
     },
     selectResource: function (filename) {
         $("#"+this.id).val("AppResource::"+filename).trigger("change");
@@ -4087,14 +4111,14 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
             $.ajaxSetup ({
                 cache: false
             });
-            
+
             var element = null;
             if (this.length > 1) {
                 element = $(this[this.length - 1]);
             } else {
                 element = $(this[0]);
             }
-            
+
             return element.each(function() {
                 var editor = new PropertyEditor.Model.Editor(this, o);
                 editor.render();
@@ -4103,16 +4127,16 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
         },
         hashVariableAssitant : function (contextPath) {
             var container = this;
-            
+
             var showHashVariableAssit = function (field, caret, syntax) {
                 var html = "<div class=\"property_editor_hashassit\">";
                 html += "<input type=\"text\" id=\"property_editor_hashassit_input\" class=\"hashassit_input\" style=\"width:90%\"/>";
                 html += "</div>";
-                
+
                 var object = $(html);
                 $(object).dialog({
-                    autoOpen: false, 
-                    modal: true, 
+                    autoOpen: false,
+                    modal: true,
                     height: 85,
                     close: function( event, ui ) {
                         $(object).dialog("destroy");
@@ -4120,7 +4144,7 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
                         $(field).focus();
                     }
                 });
-                
+
                 $.ajax({
                     url: contextPath + '/web/json/hash/options',
                     dataType: "text",
@@ -4128,13 +4152,13 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
                         if(data !== undefined && data !== null){
                             var options = $.parseJSON(data);
                             $(object).find(".hashassit_input").autocomplete({
-                                source : options, 
+                                source : options,
                                 minLength : 0,
                                 open: function(){
                                     $(this).autocomplete('widget').css('z-index', 99999);
                                     return false;
                                 }
-                            }).focus(function(){ 
+                            }).focus(function(){
                                 $(this).data("uiAutocomplete").search($(this).val());
                             }).keydown(function(e){
                                 var autocomplete = $(this).autocomplete("widget");
@@ -4169,7 +4193,7 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
                     }
                 });
             };
-            
+
             var doGetCaretPosition = function (oField) {
                 // Initialize
                 var iCaretPos = 0;
@@ -4190,7 +4214,7 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
                 // Return results
                 return (iCaretPos);
             };
-            
+
             var keys = {};
             $(container).keydown(function(e){
                 if (!(e.ctrlKey && e.altKey)) {
@@ -4205,5 +4229,5 @@ PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Ty
                 delete keys[e.which];
             });
         }
-    });    
+    });
 })(jQuery);
