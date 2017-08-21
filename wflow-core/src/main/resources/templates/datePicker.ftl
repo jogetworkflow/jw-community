@@ -1,31 +1,13 @@
-<style>
-.close-icon:after {
-    content: "x";
-    width: 16px;
-    height: 16px;
-    position: absolute;
-    text-align: center;
-    line-height: 15px;
-    margin-left: 10px;
-    top: 10px;
-    background-color: #FA9595;
-    border-radius: 50%;
-    color: white;
-    font-size: 15px;
-    box-shadow: 0 0 2px #E50F0F;
-    cursor: pointer;
-}
-</style>
-
-<link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css" />
-
 <div class="form-cell" ${elementMetaData!}>
 <#if element.properties.readonly! != 'true'>
-    <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??) >
+    <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??)>
         <#if request.getAttribute("currentLocale")!?starts_with("zh") >
             <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.ui.datepicker-zh-CN.js"></script>
         </#if>
         <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery.placeholder.min.js"></script>
+        <link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/datePicker.css" />
+        <link rel="stylesheet" href="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/css/jquery-ui-timepicker-addon.css" />
+        <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js"></script>
     </#if>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -66,7 +48,6 @@
         });
     });
 </script>
-<script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.DatePicker/js/jquery-ui-timepicker-addon.js"></script>
 </#if>
     <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
