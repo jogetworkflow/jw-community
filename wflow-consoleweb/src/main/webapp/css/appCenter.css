@@ -46,7 +46,7 @@
     word-wrap: break-word;
 }
 #apps div.app-name {
-    display: inline;
+    display: block;
     font-size: 80%;
     color: #999;
     max-height: 14px;
