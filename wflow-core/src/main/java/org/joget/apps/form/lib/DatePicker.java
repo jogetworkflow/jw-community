@@ -43,7 +43,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-        value = formattedDisplayValue(value, displayFormat, formData);
+        
+        if (FormUtil.isReadonly(this, formData)) {
+            value = formattedDisplayValue(value, displayFormat, formData);
+        } else {
+            value = formattedValue(value, displayFormat, formData);
+        }
         
         dataModel.put("displayFormat", displayFormat.toUpperCase());
         
