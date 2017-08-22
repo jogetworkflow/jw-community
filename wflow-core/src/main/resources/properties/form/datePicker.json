@@ -30,7 +30,7 @@
         name : 'datePickerType',
         label : '@@form.datepicker.datePickerType@@',
         type : 'selectbox',
-        value : 'dateTime',
+        value : 'dateOnly',
         options : [{
             value : 'dateTime',
             label : '@@form.datepicker.datePickerType.dateTime@@'
