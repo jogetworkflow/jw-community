@@ -107,20 +107,26 @@
                 
                 if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
                     var startDate = FormUtil.getField(o.startDateFieldId);
-                    
-                    startDate.live("change", function(){
-                        setDateRange(startDate, "minDate", element);
+                    var startDateOrg = null;
+                    startDate.live("change", function() {
+                        if (startDateOrg !== $(startDate).val()) {
+                            startDateOrg = $(startDate).val();
+                            setDateRange(startDate, "minDate", element, o);
+                        }
                     });
-                    setDateRange(startDate, "minDate", element);
+                    setDateRange(startDate, "minDate", element, o);
                 }
                 
                 if (o.endDateFieldId  !== undefined && o.endDateFieldId !== "") {
                     var endDate = FormUtil.getField(o.endDateFieldId);
-                    
-                    endDate.live("change", function(){
-                        setDateRange(endDate, "maxDate", element);
+                    var endDateOrg = null;
+                    endDate.live("change", function() {
+                        if (endDateOrg !== $(endDate).val()) {
+                            endDateOrg = $(endDate).val();
+                             setDateRange(endDate, "maxDate", element, o);
+                        }
                     });
-                    setDateRange(endDate, "maxDate", element);
+                    setDateRange(endDate, "maxDate", element, o);
                 }
                 
                 if (o.currentDateAs !== undefined && o.currentDateAs !== "") {
@@ -133,9 +139,21 @@
         }
     });
     
-    function setDateRange(element, type, target) {
+    function setDateRange(element, type, target, o) {
         var value = $(element).val();
-        if (value !== "") {
+        if (value === "" && $(target).datetimepicker("option", type) === null) {
+            return;
+        }
+        if (o.datePickerType === "dateTime") {
+            $(target).datetimepicker("option", type, value);
+        } else if (o.datePickerType === "timeOnly") {
+            if (type === "maxDate") {
+                type = "maxTime";
+            } else {
+                type = "minTime";
+            }
+            $(target).timepicker("option", type, value);
+        } else {
             $(target).datepicker("option", type, value);
         }
     }
