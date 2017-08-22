@@ -11,6 +11,7 @@
 #apps {
     margin: auto;
     width: 88vw;
+    margin-left:5%;
 }
 #apps li {
     float: left;
@@ -45,7 +46,7 @@
     word-wrap: break-word;
 }
 #apps div.app-name {
-    display: block;
+    display: inline;
     font-size: 80%;
     color: #999;
     max-height: 14px;
