@@ -3142,6 +3142,49 @@ PropertyEditor.Type.GridCombine.prototype = {
         }
         return data;
     },
+    validate: function(data, errors, checkEncryption) {
+        var wrapper = $('#'+ this.id +'_input');
+
+        var value = this.getData(false);
+        var defaultValue = null;
+
+        if(this.defaultValue !== undefined && this.defaultValue !== null && this.defaultValue !== ""){
+            defaultValue = this.defaultValue;
+        }
+
+        var hasValue = true;
+        if (Object.keys(value).length === 0) {
+            hasValue = false;
+        }
+
+        if(this.properties.required !== undefined
+                && this.properties.required.toLowerCase() === "true"
+                && defaultValue === null && !hasValue){
+            var obj = new Object();
+            obj.field = this.properties.name;
+            obj.fieldName = this.properties.label;
+            obj.message = this.options.mandatoryMessage;
+            errors.push(obj);
+            $(wrapper).append('<div class="property-input-error">'+ obj.message +'</div>');
+        }
+
+        if(this.properties.js_validation !== undefined && this.properties.js_validation !== ''){
+            var func = PropertyEditor.Util.getFunction(this.properties.js_validation);
+            if ($.isFunction(func)) {
+                var errorMsg = func(this.properties.name, value);
+
+                if (errorMsg !== null && errorMsg !== "") {
+                    var obj2 = new Object();
+                    obj2.fieldName = this.properties.label;
+                    obj2.message = errorMsg;
+                    errors.push(obj2);
+                    $(wrapper).append('<div class="property-input-error">'+ obj2.message +'</div>');
+                }
+            }
+        }
+
+        this.addOnValidation(data, errors, checkEncryption);
+    },
     addOnValidation : function (data, errors, checkEncryption) {
         var thisObj = this;
         var wrapper = $('#'+ this.id +'_input');
