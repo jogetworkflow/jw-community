@@ -3827,7 +3827,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
         $(field).chosen({width: "54%", placeholder_text : " "});
 
-        if(!$(field).is(":not(.hidden)") && $(field).val() !== undefined
+        if(!$(field).hasClass("hidden") && $(field).val() !== undefined
                 && $(field).val() !== null && this.properties.options !== undefined
                 && this.properties.options !== null && this.properties.options.length > 0){
             this.renderPages();
