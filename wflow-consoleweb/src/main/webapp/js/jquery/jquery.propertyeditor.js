@@ -1009,7 +1009,7 @@ PropertyEditor.Model.Editor.prototype = {
         if ($(this.editor).find('.property-page-show.current').length > 0) {
             var current = $(this.editor).find('.property-page-show.current');
             var pageId = $(current).attr('id');
-            this.pages[pageId].show();
+            this.pages[pageId].show(false, false);
         }
         this.adjustSize();
     },
@@ -1304,7 +1304,7 @@ PropertyEditor.Model.Page.prototype = {
         this.attachDescriptionEvent();
         this.attachHashVariableAssistant();
     },
-    show: function(scroll) {
+    show: function(scroll, changeFocus) {
         var page = $(this.editor).find("#"+this.id);
         $(page).show();
         if (this.editorObject.isSinglePageDisplay()) {
@@ -1325,9 +1325,11 @@ PropertyEditor.Model.Page.prototype = {
                 type.pageShown();
             });
         }
-        var fields = $(page).find('.property-editor-property-container .property-editor-property .property-input').find('input:not(:hidden), select, textarea');
-        if (fields.length > 0) {
-            fields[0].focus();
+        if (changeFocus === undefined || changeFocus) {
+            var fields = $(page).find('.property-editor-property-container .property-editor-property .property-input').find('input:not(:hidden), select, textarea');
+            if (fields.length > 0) {
+                fields[0].focus();
+            }
         }
     },
     remove: function() {
