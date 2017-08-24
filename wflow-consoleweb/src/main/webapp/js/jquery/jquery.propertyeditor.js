@@ -572,8 +572,8 @@ PropertyEditor.Util = {
             propertyInput.append('<div class="hashField"><input type="text" id="'+ field.id + '_hash" name="'+ field.id + '_hash" size="50" value="'+ PropertyEditor.Util.escapeHtmlTag(field.value) +'"/></div>');
             propertyInput.append("<a class=\"hashFieldAction\"><i class=\"fa fa-chevron-left\"></i><span>#</span><i class=\"fa fa-chevron-right\"></i></a>");
 
-            if ($(propertyInput).find(".default").length > 0) {
-                propertyInput.append($(propertyInput).find(".default"));
+            if ($(propertyInput).find("div.default").length > 0) {
+                propertyInput.append($(propertyInput).find("div.default"));
             }
 
             var toogleHashField = function() {
