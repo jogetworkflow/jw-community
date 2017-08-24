@@ -3156,7 +3156,11 @@ public class ConsoleWebController {
             
             //store file
             AppResourceUtil.storeFile(appId, version, file);
-            return "redirect:/web/console/app/"+appId+"/resource/permission?upload=true&id="+filename;
+            
+            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=resources";
+            map.addAttribute("url", url);
+            return "console/dialogClose";
         }
     }
 
