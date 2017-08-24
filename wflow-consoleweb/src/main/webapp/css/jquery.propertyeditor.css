@@ -595,3 +595,6 @@ td.error .chosen-container, td.error input {
     margin-left: 15px;
     color:red;
 }
+.cp-color-picker {
+    z-index: 90000;
+}

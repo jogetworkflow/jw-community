@@ -1976,6 +1976,7 @@ PropertyEditor.Type.Color.prototype = {
         if(this.value === null){
             this.value = "";
         }
+        this.value = this.value.toUpperCase();
         return '<input class="jscolor" type="text" id="'+ this.id + '" name="'+ this.id + '"'+ ' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
     },
     initScripting: function () {
@@ -4112,6 +4113,8 @@ PropertyEditor.Type.Image.prototype = {
         var style = imagesize;
         if (this.value !== "") {
             var path = this.value.replace("AppResource::", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
+            path = this.value.replace("[CONTEXT_PATH]", this.options.contextPath);
+            path = this.value.replace("[APP_PATH]", this.properties.appPath);
             style += " background-image:url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')";
         }
 
