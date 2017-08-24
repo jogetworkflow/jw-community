@@ -4057,10 +4057,11 @@ PropertyEditor.Type.File.prototype = {
     initScripting: function () {
         var thisObj = this;
         $("#"+this.id).parent().find(".clearfile").on("click", function() {
-            $("#"+thisObj.id).val("").trigger("change");
+            $("#"+thisObj.id).val("").trigger("focus").trigger("change");
         });
 
         $("#"+this.id).parent().find(".choosefile").on("click", function() {
+            $("#"+thisObj.id).trigger("focus");
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
         });
     },
@@ -4130,10 +4131,11 @@ PropertyEditor.Type.Image.prototype = {
         });
 
         $("#"+this.id).parent().find(".image-remove").on("click", function() {
-            $("#"+thisObj.id).val("").trigger("change");
+            $("#"+thisObj.id).val("").trigger("focus").trigger("change");
         });
 
         $("#"+this.id).parent().find(".choosefile").on("click", function() {
+            $("#"+thisObj.id).trigger("focus");
             PropertyEditor.Util.showAppResourcesDialog(thisObj);
         });
 
