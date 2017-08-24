@@ -1978,8 +1978,7 @@ PropertyEditor.Type.Color.prototype = {
         if(this.value === null){
             this.value = "";
         }
-        this.value = this.value.toUpperCase();
-        return '<input class="jscolor" type="text" id="'+ this.id + '" name="'+ this.id + '"'+ ' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value) +'"/>';
+        return '<input class="jscolor" type="text" id="'+ this.id + '" name="'+ this.id + '"'+ ' value="'+ PropertyEditor.Util.escapeHtmlTag(this.value.toUpperCase()) +'"/>';
     },
     initScripting: function () {
         $("#"+this.id).data('colorMode', 'HEX').colorPicker({
