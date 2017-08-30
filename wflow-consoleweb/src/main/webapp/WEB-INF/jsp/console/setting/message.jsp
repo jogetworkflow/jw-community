@@ -88,6 +88,7 @@
             var callback = {
                 success : function() {
                     filter(JsonMessageDataTable, '', '');
+                    JsonMessageDataTable.clearSelectedRows();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/message/delete', callback, 'ids='+selectedList);

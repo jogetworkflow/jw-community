@@ -629,8 +629,11 @@ JsonTable.prototype = {
             selected = ids.split(",");
         }
         return selected;
-    }
+    },
 
+    clearSelectedRows: function() {
+        $("#"+this.divToUpdate+"_selectedIds").html("");
+    }
 }
 
 /**

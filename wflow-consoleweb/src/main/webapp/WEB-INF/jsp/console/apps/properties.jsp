@@ -217,6 +217,7 @@
             var callback = {
                 success : function() {
                     filter(JsonMessageDataTable, '', '');
+                    JsonMessageDataTable.clearSelectedRows();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/delete', callback, 'ids='+selectedList);
@@ -236,6 +237,7 @@
             var callback = {
                 success : function() {
                     filter(JsonVariableDataTable, '&filter=', $('#JsonVariableDataTable_searchCondition').val());
+                    JsonVariableDataTable.clearSelectedRows();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/envVariable/delete', callback, 'ids='+selectedList);
@@ -247,6 +249,7 @@
             var callback = {
                 success : function() {
                     filter(JsonPluginDefaultDataTable, '&filter=', $('#JsonPluginDefaultDataTable_searchCondition').val());
+                    JsonPluginDefaultDataTable.clearSelectedRows();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
@@ -262,6 +265,7 @@
             var callback = {
                 success : function() {
                     filter(JsonResourcesDataTable, '&filter=', $('#JsonResourcesDataTable_searchCondition').val());
+                    JsonResourcesDataTable.clearSelectedRows();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/resource/delete', callback, 'ids='+selectedList);
