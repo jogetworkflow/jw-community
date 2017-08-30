@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.springframework.beans.BeansException;
@@ -84,7 +86,7 @@ public class ResourceBundleUtil implements ApplicationContextAware {
      */
     public static void POFileImport(MultipartFile multipartFile, String locale) throws IOException {
 
-        InputStream inputStream = null;
+    InputStream inputStream = null;
         try {
             inputStream = multipartFile.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -92,7 +94,8 @@ public class ResourceBundleUtil implements ApplicationContextAware {
             List<ResourceBundleMessage> resourceBundleMessageList = new ArrayList<ResourceBundleMessage>();
             ResourceBundleMessage resourceBundleMessage;
 
-            String line = null, key = null, original = null, translated = null;
+            Set<String> keys = new HashSet<String>();
+            String line = null, original = null, translated = null;
 
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.equalsIgnoreCase("") || line.length() == 0) {
@@ -105,28 +108,35 @@ public class ResourceBundleUtil implements ApplicationContextAware {
 
                 } else if (line.length() > 4 && locale != null && line.substring(0, 3).equalsIgnoreCase("#: ")) {
                     //this is the key
-                    key = line.substring(3, line.length());
-                    original = null;
-                    translated = null;
-
-                } else if (line.length() > 8 && locale != null && key != null && line.substring(0, 7).equalsIgnoreCase("msgid \"")) {
+                    String[] temp = line.substring(3, line.length()).split(" ");
+                    for (String t : temp) {
+                        if (!t.isEmpty()) {
+                            keys.add(t);
+                        }
+                    }
+                    
+                } else if (line.length() > 8 && locale != null && !keys.isEmpty() && line.substring(0, 7).equalsIgnoreCase("msgid \"")) {
                     //this is the original string
                     original = line.substring(7, line.length() - 1);
 
-                } else if (line.length() > 9 && locale != null && key != null && original != null && line.substring(0, 8).equalsIgnoreCase("msgstr \"")) {
+                } else if (line.length() > 9 && locale != null && !keys.isEmpty() && original != null && line.substring(0, 8).equalsIgnoreCase("msgstr \"")) {
                     //this is the translated string
                     translated = line.substring(8, line.length() - 1);
-
                 }
 
-                if (key != null && original != null && translated != null) {
-                    //if this is a entry, insert into the list
-                    resourceBundleMessage = new ResourceBundleMessage();
-                    resourceBundleMessage.setKey(key);
-                    resourceBundleMessage.setLocale(locale);
-                    resourceBundleMessage.setMessage(translated);
-                    resourceBundleMessageList.add(resourceBundleMessage);
-                    key = null;
+                if (!keys.isEmpty() && original != null && translated != null) {
+                    if (!translated.isEmpty()) {
+                        for (String key : keys.toArray(new String[0])) {
+                            //if this is a entry, insert into the list
+                            resourceBundleMessage = new ResourceBundleMessage();
+                            resourceBundleMessage.setKey(key);
+                            resourceBundleMessage.setLocale(locale);
+                            resourceBundleMessage.setMessage(translated);
+                            resourceBundleMessageList.add(resourceBundleMessage);
+                        }
+                    }
+                    
+                    keys = new HashSet<String>();
                     original = null;
                     translated = null;
                 }
