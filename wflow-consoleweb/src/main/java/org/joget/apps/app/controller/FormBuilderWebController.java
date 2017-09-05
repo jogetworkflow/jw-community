@@ -4,12 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +15,6 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.datalist.lib.FormRowDataListBinder;
-import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.lib.HiddenField;
@@ -36,7 +30,6 @@ import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -213,6 +206,7 @@ public class FormBuilderWebController {
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
+        json = SecurityUtil.decrypt(json);
         Form form = formService.loadFormFromJson(json, formData);
         
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
