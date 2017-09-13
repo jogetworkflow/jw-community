@@ -1,5 +1,6 @@
 package org.joget.commons.spring.web;
 
+import java.util.HashMap;
 import org.springframework.util.PathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,6 +68,9 @@ public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapp
     public static final String PATH_PARAMETERS = "ParameterizedUrlHandlerMapping.path-parameters";
     private ParameterizedPathMatcher pathMatcher = null;
 
+    private static Map<String, String> pathCache = new HashMap<String, String>();
+    private static Map<String, Map<String, String>> parameterCache = new HashMap<String, Map<String, String>>();
+    
     public ParameterizedUrlHandlerMapping() {
         pathMatcher = new ParameterizedPathMatcher();
         super.setPathMatcher(pathMatcher);
@@ -82,20 +86,24 @@ public class ParameterizedUrlHandlerMapping extends DefaultAnnotationHandlerMapp
         Map<String, Object> handlerMap = (Map<String, Object>) getHandlerMap();
 
         // Pattern match?
-        Map<String, String> bestParamters = null;
-        String bestPathMatch = null;
-        for (Iterator it = handlerMap.keySet().iterator(); it.hasNext();) {
-            String registeredPath = (String) it.next();
-            Map<String, String> parameters = pathMatcher.namedParameters(registeredPath, urlPath);
-            if ((parameters != null) && (bestPathMatch == null || bestPathMatch.length() <= registeredPath.length())) {
-                bestPathMatch = registeredPath;
-                bestParamters = parameters;
+        Map<String, String> bestParameters = parameterCache.get(urlPath);
+        String bestPathMatch = pathCache.get(urlPath);
+        if (bestPathMatch == null) {
+            for (Iterator it = handlerMap.keySet().iterator(); it.hasNext();) {
+                String registeredPath = (String) it.next();
+                Map<String, String> parameters = pathMatcher.namedParameters(registeredPath, urlPath);
+                if ((parameters != null) && (bestPathMatch == null || bestPathMatch.length() <= registeredPath.length())) {
+                    bestPathMatch = registeredPath;
+                    bestParameters = parameters;
+                }
             }
+            pathCache.put(urlPath, bestPathMatch);
+            parameterCache.put(urlPath, bestParameters);
         }
         if (bestPathMatch != null) {
             handler = handlerMap.get(bestPathMatch);
             exposePathWithinMapping(this.pathMatcher.extractPathWithinPattern(bestPathMatch, urlPath), urlPath, request);
-            request.setAttribute(PATH_PARAMETERS, bestParamters);
+            request.setAttribute(PATH_PARAMETERS, bestParameters);
         }
         return handler;
     }
