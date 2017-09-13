@@ -36,6 +36,7 @@ public class ExpireFilter implements Filter {
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             if (isWebResouces(httpRequest.getRequestURI())) {
                 httpResponse.addDateHeader("Expires", System.currentTimeMillis() + expires);
+                httpResponse.addHeader("Cache-Control", "private, max-age=" + expires/1000);
             }
         }
         
