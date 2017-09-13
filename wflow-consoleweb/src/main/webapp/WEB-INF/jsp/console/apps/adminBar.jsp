@@ -7,9 +7,10 @@
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:if test="${isAdmin}">
         <c:if test="${empty isDefaultUserview}"><c:set var="isDefaultUserview" value="<%= false %>"/></c:if>
-        <link href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar.css" />
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/admin_bar_custom.css" />
+        <script>
+            loadCSS("${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css");
+            loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
+        </script>
         <div id="adminBar" class="adminBarInactive">
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<fmt:message key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"></a>
             <div id="quickEditModeOption">
@@ -62,7 +63,6 @@
             <i class="fa fa-edit"></i>
         </div>    
             
-        <script src="${pageContext.request.contextPath}/js/jquery/jquery.cookie.js"></script>
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';

@@ -209,6 +209,7 @@ body.embeded #adminBar {
     font-family: FontAwesome;
 }
 #adminBar.adminBarActive {
+    display: block;
     right: 0px;
     transition: right 0.2s ease-in-out;
 }

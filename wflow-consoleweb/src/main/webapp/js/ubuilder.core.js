@@ -1018,6 +1018,7 @@ UserviewBuilder = {
                 var d = iframe.contentWindow.document;
                 d.open();
                 $(iframe.contentWindow).load(function() {
+                    $(iframe).contents().find(".page-loader").remove();
                     var ibody = $(iframe).contents().find('body');
                     html2canvas(ibody, {
                         onrendered: function(canvas) {

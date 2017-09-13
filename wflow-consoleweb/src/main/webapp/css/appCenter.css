@@ -85,6 +85,11 @@ a.print-button {
     display: none;
     box-shadow: #666 1px 1px 2px 0px;
 }    
+.app-design-button i {
+    display: inline-block;
+    width: 1.25em;
+    text-align: center;
+}
 
 /** banner positioning **/
 div#appcenter_banner {

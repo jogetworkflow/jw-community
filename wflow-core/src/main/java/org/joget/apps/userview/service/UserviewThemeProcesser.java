@@ -303,7 +303,6 @@ public class UserviewThemeProcesser {
         String cp = request.getContextPath();
         String bn = ResourceBundleUtil.getMessage("build.number");
         String html = "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/common.css?build=" + bn + "\" />\n"
-                + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + cp + "/wro/userview_v5.min.css?build=" + bn + "\" />\n"
                 + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\"></script>\n"
                 + "<script type=\"text/javascript\">\n";
 
@@ -381,7 +380,11 @@ public class UserviewThemeProcesser {
                 + "            HelpGuide.base = \"" + request.getContextPath() + "\"\n"
                 + "            HelpGuide.attachTo = \"#help-container\";\n"
                 + "            HelpGuide.key = \"help.web.userview."+userview.getParamString("appId")+"."+userview.getParamString("userviewId")+"."+getBodyId()+"\";\n"
-                + "            HelpGuide.show();\n"
+                + "            $(window).on('load', function() {\n"
+                + "                setTimeout(function() {"
+                + "                    HelpGuide.show();\n"
+                + "                }, 0);"
+                + "            });\n"
                 + "        </script>\n";
         }
 

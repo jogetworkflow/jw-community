@@ -1,5 +1,6 @@
 package org.joget.plugin.enterprise;
 
+import com.asual.lesscss.LessEngine;
 import de.bripkens.gravatar.DefaultImage;
 import de.bripkens.gravatar.Gravatar;
 import de.bripkens.gravatar.Rating;
@@ -13,6 +14,8 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.InboxMenu;
@@ -33,6 +36,7 @@ import org.json.JSONObject;
 public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport {
     protected final static String PROFILE = "_ja_profile"; 
     protected final static String INBOX = "_ja_inbox"; 
+    protected static LessEngine lessEngine = new LessEngine();
     
     public enum Color {
         RED("#F44336", "#D32F2F", ""),
@@ -147,9 +151,25 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String path = data.get("context_path") + "/universal";
 
         String jsCssLink = "";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/universal.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link href=\""+path+"/css/"+getPropertyString("themeScheme")+".less\" rel=\"stylesheet/less\" type=\"text/css\" />\n";
+        jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/universal.preload.min.css" + "\" rel=\"stylesheet\" />\n";
+        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/wro/universal.min.css" + "\")</script>\n";
         
+        jsCssLink += "<style>" + generateLessCss() + "</style>";
+
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.preload.min.js\"></script>\n";
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\" async></script>\n";
+        
+        if (enableResponsiveSwitch()) {
+            jsCssLink += "<script src=\"" + path + "/lib/responsive-switch.min.js\" defer></script>\n";
+        }        
+        jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
+        
+        return jsCssLink;
+    }
+
+    protected String generateLessCss() {
+        String css = "";
+        String lessVariables = "";
         String primary = "";
         String dark = "darken(@primary , 10%)";
         String light = "lighten(@primary , 5%)";
@@ -231,20 +251,43 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 }
             }
             
-            jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", menuFont: \"" + menuFont + "\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @menuFont: " + menuFont + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
         } else {
-            jsCssLink += "<script>less = { env: 'development' }; less.globalVars = { primary: \""+primary+"\", darkPrimary: \""+dark+"\", lightPrimary: \""+light+"\", accent: \""+accent+"\", lightAccent: \""+lightAccent+"\", button: \""+button+"\", buttonText: \""+buttonText+"\", defaultFontColor : \""+font+"\", font: \"inherit\"};</script>\n";
+            lessVariables += "@primary: " + primary + "; @darkPrimary: " + dark + "; @lightPrimary: " + light + "; @accent: " + accent + "; @lightAccent: " + lightAccent + "; @button: " + button + "; @buttonText: " + buttonText + "; @defaultFontColor : " + font + ";";
         }
         
-        
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\"></script>\n";
-        
-        if (enableResponsiveSwitch()) {
-            jsCssLink += "<script src=\"" + path + "/lib/responsive-switch.min.js\"></script>\n";
-        }        
-        jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
-        
-        return jsCssLink;
+        // process LESS
+        String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/universal/" + getPropertyString("themeScheme") + ".less");
+        less = lessVariables + "\n" + less;
+        // read CSS from cache
+        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        if (cache != null) {
+            Element element = cache.get(less);
+            if (element != null) {
+                css = (String) element.getObjectValue();
+            }
+        }
+        if (css == null || css.isEmpty()) {
+            // not available in cache, compile LESS
+            css = compileLess(less);
+            // store CSS in cache
+            if (cache != null) {
+                Element element = new Element(less, css);
+                cache.put(element);
+            }
+        }
+        return css;
+    }
+
+    protected String compileLess(String less) {
+        String css = "";
+        try {
+            css = lessEngine.compile(less);
+        } catch(Exception e) {
+            LogUtil.error(this.getClass().getName(), e, "Error compiling LESS");
+            LogUtil.debug(this.getClass().getName(), "LESS: " + less);
+        }
+        return css;
     }
     
     @Override

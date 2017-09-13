@@ -5,6 +5,7 @@
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/jquery/jquerycluetip/css/jquery.cluetip.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
+        <css>/css/admin_bar.css</css>
         <js>/js/jquery/jquery-1.9.1.min.js</js>
         <js>/js/jquery/jquery-migrate-1.2.1.min.js</js>
         <js>/js/jquery/ui/jquery-ui-1.10.3.min.js</js>
@@ -19,6 +20,7 @@
         <js>/js/jquery/jquerycluetip/jquery.hoverIntent.js</js>
         <js>/js/jquery/jquerycluetip/jquery.cluetip.js</js>
         <js>/js/boxy/javascripts/jquery.boxy.js</js>
+        <js>/js/loadCSS/loadCSS.js</js>
     </group>
     <group name="advancedTool">
         <css>/js/jstree/themes/default/style.min.css</css>
@@ -86,20 +88,22 @@
         <css>/js/font-awesome/css/font-awesome.min.css</css>
         <css>/js/font-awesome4/css/font-awesome.min.css</css>
     </group>
-    <group name="universal.min">
+    <group name="universal.preload.min">
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
-        <css>/js/font-awesome/css/font-awesome.min.css</css>
-        <css>/js/font-awesome4/css/font-awesome.min.css</css>
+        <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
-        <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
-        <css>/universal/lib/waves/waves.min.css</css>
         <css>/universal/css/form.css</css>
         <css>/universal/css/style.css</css>
+        <js>/universal/js/preload.js</js>
+    </group>    
+    <group name="universal.min">
+        <css>/js/font-awesome4/css/font-awesome.min.css</css>
+        <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
+        <css>/universal/lib/waves/waves.min.css</css>
         <js>/js/bootstrap3/js/bootstrap.min.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
-        <js>/universal/js/less.js</js>
         <js>/universal/js/main.js</js>
     </group>
 </groups> 

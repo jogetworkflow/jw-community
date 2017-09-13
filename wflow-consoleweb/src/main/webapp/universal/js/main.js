@@ -23,7 +23,6 @@ _customFooTableArgs = {
             $(this).text(count);
             $(this).addClass("pull-right badge");
         });
-        loadInbox();
         
         $("body").swipe( {
             swipeRight:function(event, direction, distance, duration, fingerCount, fingerData) {
@@ -118,17 +117,8 @@ _customFooTableArgs = {
             $("html").addClass("ismobile");
         }
 
-        $(document).ready(function() {
-            Waves.init();
-            attachButtonEffect();
-            setTimeout(function() {
-                $(".page-loader").fadeOut(100);
-            }, 0);
-        });
-
-        setTimeout(function() {
-            $(".page-loader").fadeOut(100);
-        }, 5000);
+        Waves.init();
+        attachButtonEffect();
 
         var scrollBar = function(selector, theme, mousewheelaxis) {
             $(selector).mCustomScrollbar({
@@ -175,6 +165,17 @@ _customFooTableArgs = {
         });
         
         initTextareaAutoHeight();
+        
+        // hide responsive switch if within IFRAME
+        if (window.self !== window.top) {
+            $("#responsiveSwitch").hide();
+        }
+    });
+    
+    $(window).on("load", function() {
+        setTimeout(function() {
+            loadInbox();
+        }, 0);
     });
     
     function onFormChange() {
@@ -217,7 +218,7 @@ _customFooTableArgs = {
     function attachButtonEffect() {
         setTimeout(function() {
             Waves.attach('.btn:not(.waves-button), .form-button:not(.waves-button), button:not(.waves-button), input[type=button]:not(.waves-button), input[type=reset]:not(.waves-button), input[type=submit]:not(.waves-button)', ['btn', 'waves-button', 'waves-float']);
-        }, 500);
+        }, 0);
     }
     
     /* ---------- Inbox ------------------------- */
@@ -261,19 +262,5 @@ _customFooTableArgs = {
             }
         );
     }
-    
-    // show page loader on leaving page
-    $(window).on('beforeunload', function() {
-        if ($("html.ismobile").length > 0) {
-            $(".page-loader").fadeIn(100);
-        }
-    });    
-    
-    $(function() {
-        // hide responsive switch if within IFRAME
-        if (window.self !== window.top) {
-            $("#responsiveSwitch").hide();
-        }
-    });
     
 }(window.jQuery);

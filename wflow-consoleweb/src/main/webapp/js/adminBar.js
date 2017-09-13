@@ -201,8 +201,10 @@ var AdminBar = {
         return ($("#adminBar").hasClass("adminBarActive"));
     }
 };
-$(function () {
-    AdminBar.initAdminBar();
-    AdminBar.initQuickEditMode();
+$(window).on("load", function() {
+    setTimeout(function () {
+        AdminBar.initAdminBar();
+        AdminBar.initQuickEditMode();
+    }, 0);
 });
 
