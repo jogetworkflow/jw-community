@@ -451,9 +451,15 @@ public class FormPdfUtil {
                 return null;
             }
         } else {
-            String value = FormUtil.getElementPropertyValue(element, formData);
-            if (value == null || value.isEmpty()) {
-                return null;
+            if (element.getLoadBinder() != null) {
+                if (formData.getLoadBinderData(element).isEmpty()) {
+                    return null;
+                }
+            } else {
+                String value = FormUtil.getElementPropertyValue(element, formData);
+                if (value == null || value.isEmpty()) {
+                    return null;
+                }
             }
         }
         
