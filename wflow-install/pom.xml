@@ -148,6 +148,7 @@
                                     </fileset>
                                 </copy>
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true" />
+                                <copy tofile="target/apache-tomcat-${tomcat.version}/conf/context.xml" file="src/main/resources/context.xml" overwrite="true" />
                                 <copy todir="target/mysql-${mysql.version}-win32/" file="src/main/resources/my.ini" />
                                 <copy todir="target/mysql-${mysql.version}-win32/data/">
                                     <fileset dir="src/main/resources/mysql-data" />
