@@ -19,7 +19,6 @@
             </select>
             </form>
         </div>
-        <br/>
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listDefault?${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="pluginList"
@@ -32,10 +31,17 @@
                        hrefParam="id"
                        hrefQuery="true"
                        hrefDialog="false"
-                       fields="['id','name','description','version']"
-                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false}"
-                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false}"
-                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false}"
+                       searchItems="name|Name"
+                       fields="['id','name','description','version','plugintype']"
+                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
+                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 80}"
+                       column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
                        />
     </div>
+    <script>
+        $(document).ready(function(){
+            $('#JsonDataTable_searchTerm').hide();
+        });
+    </script>    
 <commons:popupFooter />

@@ -270,6 +270,7 @@
                     </form>
                 </div>
                 <div id="plugin">
+                    <br/>
                     <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?className=org.joget.workflow.model.ParticipantPlugin&${pageContext.request.queryString}"
                        var="JsonPluginDataTable"
                        divToUpdate="pluginList"
@@ -282,10 +283,11 @@
                        checkboxButton1="general.method.label.submit"
                        checkboxCallback1="submitPlugin"
                        checkboxSelectSingle="true"
+                       searchItems="name|Name"
                        fields="['id','name','description','version']"
-                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false}"
-                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false}"
-                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false}"
+                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
+                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 80}"
                        />
                 </div>
             </div>
@@ -306,6 +308,7 @@
             $('#JsonUserDataTable_searchTerm').hide();
             $('#JsonHodDataTable_searchTerm').hide();
             $('#JsonDeptDataTable_searchTerm').hide();
+            $('#JsonPluginDataTable_searchTerm').hide();
 
             <c:if test="${!isExtDirectoryManager}">
                 $('#userGroupTabView #group .main-body-content-filter').hide();

@@ -22,11 +22,18 @@
                        hrefQuery="true"
                        hrefDialog="false"
                        hrefPost="true"
+                       searchItems="name|Name"
                        fields="['id','name','description','version']"
-                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false}"
-                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false}"
-                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false}"
+                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
+                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 80}"
                        />
 
     </div>
+        
+    <script>
+        $(document).ready(function(){
+            $('#JsonDataTable_searchTerm').hide();
+        });
+    </script>
 <commons:popupFooter />

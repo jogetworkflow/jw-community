@@ -41,7 +41,7 @@ public class PluginJsonController {
     private AppService appService;
 
     @RequestMapping("/json/plugin/listDefault")
-    public void pluginListDefault(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+    public void pluginListDefault(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
         Collection<Plugin> pluginList = null;
 
         try {
@@ -60,23 +60,41 @@ public class PluginJsonController {
             }
 
             JSONObject jsonObject = new JSONObject();
-            int size = pluginList.size();
             int counter = 0;
 
+            Map<String, String> pluginType = PluginManager.getPluginType();
             for (Plugin plugin : pluginList) {
+                if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+                    continue;
+                }
+                if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                    continue;
+                }
+                
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
                     data.put("id", ClassUtils.getUserClass(plugin).getName());
                     data.put("name", plugin.getI18nLabel());
                     data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
-
+                    
+                    String type = "";
+                    for (String c : pluginType.keySet()) {
+                        if (Class.forName(c).isInstance(plugin)) {
+                            if (!type.isEmpty()) {
+                                type += ", ";
+                            }
+                            type += pluginType.get(c);
+                        }
+                    }
+                    data.put("plugintype", type);
+                    
                     jsonObject.accumulate("data", data);
                 }
                 counter++;
             }
 
-            jsonObject.accumulate("total", size);
+            jsonObject.accumulate("total", counter);
             jsonObject.accumulate("start", start);
             jsonObject.write(writer);
         } catch (Exception e) {
@@ -85,7 +103,7 @@ public class PluginJsonController {
     }
 
     @RequestMapping("/json/plugin/list")
-    public void pluginList(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+    public void pluginList(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
         Collection<Plugin> pluginList = null;
 
         try {
@@ -96,23 +114,42 @@ public class PluginJsonController {
             }
 
             JSONObject jsonObject = new JSONObject();
-            int size = pluginList.size();
             int counter = 0;
-
+            
+            Map<String, String> pluginType = PluginManager.getPluginType();
             for (Plugin plugin : pluginList) {
+                if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+                    continue;
+                }
+                if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                    continue;
+                }
+                
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
                     data.put("id", ClassUtils.getUserClass(plugin).getName());
                     data.put("name", plugin.getI18nLabel());
                     data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
-
+                    
+                    String type = "";
+                    for (String c : pluginType.keySet()) {
+                        if (Class.forName(c).isInstance(plugin)) {
+                            if (!type.isEmpty()) {
+                                type += ", ";
+                            }
+                            type += pluginType.get(c);
+                        }
+                    }
+                    data.put("plugintype", type);
+                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<div class=\"tick\"></div>" : "");
+                    
                     jsonObject.accumulate("data", data);
                 }
                 counter++;
             }
 
-            jsonObject.accumulate("total", size);
+            jsonObject.accumulate("total", counter);
             jsonObject.accumulate("start", start);
             jsonObject.write(writer);
         } catch (Exception e) {
@@ -121,7 +158,7 @@ public class PluginJsonController {
     }
 
     @RequestMapping("/json/plugin/listOsgi")
-    public void pluginListOsgi(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+    public void pluginListOsgi(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
         Collection<Plugin> pluginList = null;
 
         try {
@@ -132,23 +169,42 @@ public class PluginJsonController {
             }
 
             JSONObject jsonObject = new JSONObject();
-            int size = pluginList.size();
             int counter = 0;
 
+            Map<String, String> pluginType = PluginManager.getPluginType();
             for (Plugin plugin : pluginList) {
+                if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+                    continue;
+                }
+                if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                    continue;
+                }
+                
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
                     data.put("id", ClassUtils.getUserClass(plugin).getName());
                     data.put("name", plugin.getI18nLabel());
                     data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
-
+                    
+                    String type = "";
+                    for (String c : pluginType.keySet()) {
+                        if (Class.forName(c).isInstance(plugin)) {
+                            if (!type.isEmpty()) {
+                                type += ", ";
+                            }
+                            type += pluginType.get(c);
+                        }
+                    }
+                    data.put("plugintype", type);
+                    data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<div class=\"tick\"></div>" : "");
+                    
                     jsonObject.accumulate("data", data);
                 }
                 counter++;
             }
 
-            jsonObject.accumulate("total", size);
+            jsonObject.accumulate("total", counter);
             jsonObject.accumulate("start", start);
             jsonObject.write(writer);
         } catch (Exception e) {

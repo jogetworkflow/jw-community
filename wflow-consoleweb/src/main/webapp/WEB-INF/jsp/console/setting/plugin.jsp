@@ -37,7 +37,6 @@
             </select>
             </form>
         </div>
-        <br/>
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?${pageContext.request.queryString}"
                        var="JsonDataTable"
                        divToUpdate="pluginList"
@@ -55,10 +54,13 @@
                        checkbox="true"
                        checkboxButton2="console.setting.plugin.unintall.label"
                        checkboxCallback2="uninstall"
-                       fields="['id','name','description','version']"
-                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false}"
-                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false}"
-                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false}"
+                       searchItems="name|Name"
+                       fields="['id','name','description','version','plugintype', 'uninstallable']"
+                       column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                       column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
+                       column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 80}"
+                       column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
+                       column5="{key: 'uninstallable', label: 'console.plugin.label.uninstallable', sortable: false, width: 80, relaxed: true}"
                        />
     </div>
 </div>
@@ -102,6 +104,13 @@
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/plugin/uninstall', callback, 'selectedPlugins='+selectedList);
         }
     }
+    
+    var org_filter = window.filter;
+    var filter = function(jsonTable, url, value){
+        url = "&className=" + $('#JsonDataTable_filterbytype').val();
+        url += "&name=" + $('#JsonDataTable_searchCondition').val();
+        org_filter(jsonTable, url, '');
+    };
 </script>
 
 <script>
