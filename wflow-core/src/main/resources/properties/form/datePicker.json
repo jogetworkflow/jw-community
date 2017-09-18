@@ -30,14 +30,15 @@
         name : 'datePickerType',
         label : '@@form.datepicker.datePickerType@@',
         type : 'selectbox',
-        value : 'dateOnly',
-        options : [{
-            value : 'dateTime',
-            label : '@@form.datepicker.datePickerType.dateTime@@'
+        value : '',
+        options : [
+        {
+            value : '',
+            label : '@@form.datepicker.datePickerType.dateOnly@@'
         },
         {
-            value : 'dateOnly',
-            label : '@@form.datepicker.datePickerType.dateOnly@@'
+            value : 'dateTime',
+            label : '@@form.datepicker.datePickerType.dateTime@@'
         },
         {
             value : 'timeOnly',
@@ -93,26 +94,20 @@
         name : 'startDateFieldId',
         label : '@@form.datepicker.startDateFieldId@@',
         type : 'selectbox',
-        options_callback : 'FormBuilder.getFieldOptions',
-        control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
-        control_use_regex: 'true'
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         name : 'endDateFieldId',
         label : '@@form.datepicker.endDateFieldId@@',
         type : 'selectbox',
-        options_callback : 'FormBuilder.getFieldOptions',
-        control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
-        control_use_regex: 'true'
+        options_callback : 'FormBuilder.getFieldOptions'
     },
     {
         name : 'currentDateAs',
         label : '@@form.datepicker.currentDateAs@@',
         type : 'selectbox',
         control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
+        control_value: '^$|dateTime',
         control_use_regex: 'true',
         options : [{
             value : '',
@@ -126,28 +121,6 @@
             value : 'maxDate',
             label : '@@form.datepicker.currentDateAs.max@@'
         }]
-    },
-    {
-        name : 'startTime',
-        label : '@@form.datepicker.startTime@@',
-        type : 'textfield',
-        description : '@@form.datepicker.time.eg@@',
-        control_field: 'datePickerType',
-        control_value: 'dateTime|timeOnly',
-        control_use_regex: 'true',
-        regex_validation : '^[0-9]+$',
-        validation_message : '@@form.datepicker.time.error.invalidFormat@@'
-    },
-    {
-        name : 'endTime',
-        label : '@@form.datepicker.endTime@@',
-        type : 'textfield',
-        description : '@@form.datepicker.endTime.eg@@',
-        control_field: 'datePickerType',
-        control_value: 'dateTime|timeOnly',
-        control_use_regex: 'true',
-        regex_validation : '^[0-9]+$',
-        validation_message : '@@form.datepicker.time.error.invalidFormat@@'
     },
     {
         label : '@@form.datepicker.ui@@',
@@ -164,7 +137,7 @@
         type : 'textfield',
         description : '@@form.datepicker.format.eg@@',
         control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
+        control_value: '^$|dateTime',
         control_use_regex: 'true'
     },
     {
@@ -174,7 +147,7 @@
         value : 'c-10:c+10',
         required : 'true',
         control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
+        control_value: '^$|dateTime',
         control_use_regex: 'true'
     },
     {

@@ -40,6 +40,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         String template = "datePicker.ftl";
         
         String displayFormat = getJavaDateFormat(getPropertyString("format"));
+        String timeformat = getTimeFormat();
+        if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            displayFormat = timeformat;
+        } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            displayFormat = displayFormat + " " + timeformat;
+        }
         
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
@@ -65,14 +71,20 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
-            if (!FormUtil.isReadonly(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
+            if (!FormUtil.isReadonly(this, formData) && getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty() 
+                    && ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) || getPropertyString("datePickerType").isEmpty())) {
                 String binderValue = formData.getLoadBinderDataProperty(this, id);
                 if (value != null && !value.equals(binderValue)) {
                     try {
                         String displayFormat = getJavaDateFormat(getPropertyString("format"));
                         if (!displayFormat.equals(getPropertyString("dataFormat"))) {
-                            SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
-                            SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                            String timeformat = "";
+                            if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                                timeformat = " " + getTimeFormat();
+                            }
+                            
+                            SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
+                            SimpleDateFormat display = new SimpleDateFormat(displayFormat + timeformat);
                             Date date = display.parse(value);
                             value = data.format(date);
                         }
@@ -126,6 +138,17 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
         return "/plugin/org.joget.apps.form.lib.TextField/images/textField_icon.gif";
     }
     
+    protected String getTimeFormat() {
+        if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType")) || "dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            if ("true".equalsIgnoreCase(getPropertyString("format24hr"))) {
+                return "HH:mm";
+            } else {
+                return "hh:mm a";
+            }
+        }
+        return "";
+    }
+    
     protected String getJavaDateFormat(String format) {
         if (format == null || format.isEmpty()) {
             Locale locale = LocaleContextHolder.getLocale();
@@ -177,12 +200,15 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
                
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getPropertyString("format"));
-            String formattedValue = formattedValue(value, displayFormat, formData);
             
+            String timeformat = getTimeFormat();
             if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
-                displayFormat = "hh:mm a";
+                displayFormat = timeformat;
+            } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                displayFormat = displayFormat + " " + timeformat;
             }
             
+            String formattedValue = formattedValue(value, displayFormat, formData);
             valid = DateUtil.validateDateFormat(formattedValue, displayFormat);
             
             if (!valid) {
@@ -274,10 +300,18 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     
     private String formatCompareValue(String value, String displayFormat) {
         String dataFormat = getPropertyString("dataFormat");
+        
+        String timeformat = getTimeFormat();
+        if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            dataFormat = timeformat;
+        } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            dataFormat = dataFormat + " " + timeformat;
+        }
+        
         String tempValue = value.replaceAll("[0-9]", "x");
         String tempFormat = dataFormat.replaceAll("[a-zA-Z]", "x");
             
-        if (dataFormat != null && !dataFormat.isEmpty() && !displayFormat.equals(dataFormat) && tempValue.equals(tempFormat)) {
+        if (!displayFormat.equals(dataFormat) && tempValue.equals(tempFormat)) {
             try {
                 SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                 SimpleDateFormat display = new SimpleDateFormat(displayFormat);
@@ -291,8 +325,16 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
     private String formattedDisplayValue(String value, String displayFormat, FormData formData) {
         if (getPropertyString("dataFormat") != null && !getPropertyString("dataFormat").isEmpty()) {
             try {
-                if (!displayFormat.equals(getPropertyString("dataFormat"))) {
-                    SimpleDateFormat data = new SimpleDateFormat(getPropertyString("dataFormat"));
+                String dataFormat = getPropertyString("dataFormat");
+                String timeformat = getTimeFormat();
+                if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                    dataFormat = timeformat;
+                } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                    dataFormat = dataFormat + " " + timeformat;
+                }
+                    
+                if (!displayFormat.equals(dataFormat)) {
+                    SimpleDateFormat data = new SimpleDateFormat(dataFormat);
                     SimpleDateFormat display = new SimpleDateFormat(displayFormat);
                     Date date = data.parse(value);
                     value = display.format(date);

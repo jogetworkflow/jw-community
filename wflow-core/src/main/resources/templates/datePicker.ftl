@@ -36,12 +36,6 @@
                         <#if element.properties.currentDateAs! != ''>
                         ,currentDateAs: "${element.properties.currentDateAs}"
                         </#if>
-                        <#if element.properties.startTime! != ''>
-                        ,hourMin: ${element.properties.startTime}    
-                        </#if>
-                        <#if element.properties.endTime! != '' && element.properties.startTime?has_content && element.properties.endTime?number gte element.properties.startTime?number>
-                        ,hourMax: ${element.properties.endTime}    
-                        </#if>
                         <#if element.properties.datePickerType! != ''>
                         ,datePickerType: "${element.properties.datePickerType}"
                         </#if>
