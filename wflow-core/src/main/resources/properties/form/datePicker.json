@@ -63,7 +63,7 @@
         type : 'textfield',
         description : '@@form.datepicker.dataFormat.eg@@',
         control_field: 'datePickerType',
-        control_value: 'dateTime|dateOnly',
+        control_value: '^$|dateTime',
         control_use_regex: 'true'
     },
     {
