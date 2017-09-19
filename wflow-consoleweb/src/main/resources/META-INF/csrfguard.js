@@ -408,45 +408,46 @@ $(function() {
 	 * the token hijacking problem.
 	 */
 	if(isValidDomain(document.domain, "%DOMAIN_ORIGIN%")) {
-		/** optionally include Ajax support **/
-		if(%INJECT_XHR% == true) {
-			if(navigator.appName == "Microsoft Internet Explorer") {
-				hijackExplorer();
-			} else {
-				hijackStandard();
-			}
-		
-                // CUSTOM: workaround for IE8
-		//var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
-		var xhr = window.XMLHttpRequest && document.addEventListener ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
-		var csrfToken = {};
-                var csrfUrl = "%SERVLET_PATH%";
-                if (!document.addEventListener) {
-                    csrfUrl += "?FETCH-CSRF-TOKEN-PARAM=1";
-                }
-		xhr.open("POST", csrfUrl, false);
-		//xhr.open("POST", "%SERVLET_PATH%", false);
-                // END CUSTOM
-		xhr.setRequestHeader("FETCH-CSRF-TOKEN", "1");
-		xhr.send(null);
-		
-		var token_pair = xhr.responseText;
-		token_pair = token_pair.split(":");
-		var token_name = token_pair[0];
-		var token_value = token_pair[1];
-
-			XMLHttpRequest.prototype.onsend = function(data) {
-				if(isValidUrl(this.url)) {
-					this.setRequestHeader("X-Requested-With", "XMLHttpRequest")
-					this.setRequestHeader(token_name, token_value);
-				}
-			};
-		}
+//		/** optionally include Ajax support **/
+//		if(%INJECT_XHR% == true) {
+//			if(navigator.appName == "Microsoft Internet Explorer") {
+//				hijackExplorer();
+//			} else {
+//				hijackStandard();
+//			}
+//		
+//                // CUSTOM: workaround for IE8
+//		//var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
+//		var xhr = window.XMLHttpRequest && document.addEventListener ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
+//		var csrfToken = {};
+//                var csrfUrl = "%SERVLET_PATH%";
+//                if (!document.addEventListener) {
+//                    csrfUrl += "?FETCH-CSRF-TOKEN-PARAM=1";
+//                }
+//		xhr.open("POST", csrfUrl, false);
+//		//xhr.open("POST", "%SERVLET_PATH%", false);
+//                // END CUSTOM
+//		xhr.setRequestHeader("FETCH-CSRF-TOKEN", "1");
+//		xhr.send(null);
+//		
+//		var token_pair = xhr.responseText;
+//		token_pair = token_pair.split(":");
+//		var token_name = token_pair[0];
+//		var token_value = token_pair[1];
+//
+//			XMLHttpRequest.prototype.onsend = function(data) {
+//				if(isValidUrl(this.url)) {
+//					this.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+//					this.setRequestHeader(token_name, token_value);
+//				}
+//			};
+//		}
 		
 		/** update nodes in DOM after load **/
 		addEvent(window,'unload',EventCache.flush);
 		addEvent(window,'load', function() {
-			injectTokens(token_name, token_value);
+			//injectTokens(token_name, token_value);
+                        injectTokens(ConnectionManager.tokenName, ConnectionManager.tokenValue);
 		});
 	} else {
 		alert("OWASP CSRFGuard JavaScript was included from within an unauthorized domain!");
