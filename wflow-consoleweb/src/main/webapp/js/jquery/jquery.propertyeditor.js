@@ -3865,6 +3865,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if($(this.editor).find('.property-editor-page[elementId='+this.id+']').length === 0){
             var deferreds = [];
 
+            PropertyEditor.Util.prevAjaxCalls = {};
             PropertyEditor.Util.showAjaxLoading(thisObj.editor);
 
             deferreds.push(this.getElementProperties(value));
