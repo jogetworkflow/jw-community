@@ -408,14 +408,14 @@ $(function() {
 	 * the token hijacking problem.
 	 */
 	if(isValidDomain(document.domain, "%DOMAIN_ORIGIN%")) {
-//		/** optionally include Ajax support **/
-//		if(%INJECT_XHR% == true) {
-//			if(navigator.appName == "Microsoft Internet Explorer") {
-//				hijackExplorer();
-//			} else {
-//				hijackStandard();
-//			}
-//		
+		/** optionally include Ajax support **/
+		if(%INJECT_XHR% == true) {
+			if(navigator.appName == "Microsoft Internet Explorer") {
+				hijackExplorer();
+			} else {
+				hijackStandard();
+			}
+		
 //                // CUSTOM: workaround for IE8
 //		//var xhr = window.XMLHttpRequest ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
 //		var xhr = window.XMLHttpRequest && document.addEventListener ? new window.XMLHttpRequest : new window.ActiveXObject("Microsoft.XMLHTTP");
@@ -434,14 +434,15 @@ $(function() {
 //		token_pair = token_pair.split(":");
 //		var token_name = token_pair[0];
 //		var token_value = token_pair[1];
-//
-//			XMLHttpRequest.prototype.onsend = function(data) {
-//				if(isValidUrl(this.url)) {
-//					this.setRequestHeader("X-Requested-With", "XMLHttpRequest")
-//					this.setRequestHeader(token_name, token_value);
-//				}
-//			};
-//		}
+
+			XMLHttpRequest.prototype.onsend = function(data) {
+				if(isValidUrl(this.url)) {
+					this.setRequestHeader("X-Requested-With", "XMLHttpRequest")
+					//this.setRequestHeader(token_name, token_value);
+                                        this.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+				}
+			};
+		}
 		
 		/** update nodes in DOM after load **/
 		addEvent(window,'unload',EventCache.flush);
