@@ -696,13 +696,15 @@ public class PluginManager implements ApplicationContextAware {
     public InputStream getPluginResource(String pluginName, String resourceUrl) throws IOException {
         InputStream result = null;
 
-        URL url = getPluginResourceURL(pluginName, resourceUrl);
-        if (url != null) {
-            // get inputstream from url
+        try {
+            URL url = getPluginResourceURL(pluginName, resourceUrl);
             if (url != null) {
-                result = url.openConnection().getInputStream();
+                File file = new File(url.toURI());
+                if (file != null && file.isFile()) {
+                    result = new FileInputStream(file);
+                }
             }
-        }
+        } catch (Exception e) {}
 
         return result;
     }
