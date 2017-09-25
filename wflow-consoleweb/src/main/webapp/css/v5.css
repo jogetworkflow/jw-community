@@ -826,5 +826,14 @@ button#installApp {
     opacity: 0.7;
     text-decoration: none;
 }
-
+div#adminWelcome {
+    height: 35px;
+    width: 40px;
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+    overflow: hidden;
+    background: none;
+    opacity: 0.9;  
+}
 

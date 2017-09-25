@@ -10,6 +10,10 @@
         <ul id="nav-list">
             <li id="nav-apps"><a class="nav-link" href="${pageContext.request.contextPath}/web/desktop/apps"><span class="nav-steps">&nbsp;</span> <fmt:message key="console.header.submenu.label.allApps"/></a></li>
         </ul>
+        
+        <div id="adminWelcome">
+            <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
+        </div>
     </div>
 </div>
 

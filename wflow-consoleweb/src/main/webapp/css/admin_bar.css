@@ -347,17 +347,6 @@ body.embeded #adminBar {
 div#category-container {
     display: inline-block;
 }
-div#adminBarWelcome {
-    height: 35px;
-    width: 40px;
-    position: absolute;
-    right: 20px;
-    bottom: 0px;
-    overflow: hidden;
-    background: none;
-    opacity: 0.9;
-    margin: 0px auto 100px;    
-}
 @media screen and (max-height:680px) {
     #adminBar .adminBarButton {
         padding:5px;
