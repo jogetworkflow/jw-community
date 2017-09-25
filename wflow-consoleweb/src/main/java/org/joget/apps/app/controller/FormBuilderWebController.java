@@ -206,8 +206,8 @@ public class FormBuilderWebController {
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
-        json = SecurityUtil.decrypt(json);
-        Form form = formService.loadFormFromJson(json, formData);
+        String decryptedJson = SecurityUtil.decrypt(json);
+        Form form = formService.loadFormFromJson(decryptedJson, formData);
         
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId  = "";
