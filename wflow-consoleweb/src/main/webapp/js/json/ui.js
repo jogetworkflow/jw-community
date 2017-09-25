@@ -25,7 +25,7 @@ UI = {
             $(this).attr("action", UI.addThemeParamsToUrl($(this).attr("action")));
         });
         $("a").each(function(){
-            if ($(this).attr("href") === undefined || $(this).attr("href") === null) {
+            if (!($(this).attr("href") === undefined || $(this).attr("href") === null)) {
                 $(this).attr("href", UI.addThemeParamsToUrl($(this).attr("href")));
             }
         });
