@@ -4,6 +4,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -49,7 +50,7 @@ public class UserviewBuilderWebController {
     PluginManager pluginManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/builder/(*:userviewId)")
-    public String builder(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
+    public String builder(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, appVersion);
@@ -94,6 +95,8 @@ public class UserviewBuilderWebController {
         basicRequestParams.put("contextPath", request.getContextPath());
 
         map.addAttribute("menuTypeCategories", userviewBuilderPalette.getUserviewMenuCategoryMap(basicRequestParams));
+        
+        response.addHeader("X-XSS-Protection", "0");
 
         return "ubuilder/builder";
     }
@@ -123,7 +126,7 @@ public class UserviewBuilderWebController {
     }
 
     @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/userview/builderPreview/(*:userviewId)","/console/app/(*:appId)/(~:appVersion)/userview/builderPreview/(*:userviewId)/(*:menuId)"}, method = RequestMethod.POST)
-    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json, @RequestParam(value = "menuId", required = false) String menuId) throws Exception {
+    public String preview(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json, @RequestParam(value = "menuId", required = false) String menuId) throws Exception {
         // get app definition so that it's set in the current thread
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         map.addAttribute("appId", appId);
@@ -143,6 +146,9 @@ public class UserviewBuilderWebController {
         map.addAttribute("userview", userviewObject);
         map.addAttribute("processer", processer);
         map.addAttribute("json", json);
+        
+        response.addHeader("X-XSS-Protection", "0");
+        
         return processer.getPreviewView();
     }
     

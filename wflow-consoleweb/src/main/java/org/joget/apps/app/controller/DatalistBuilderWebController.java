@@ -63,7 +63,7 @@ public class DatalistBuilderWebController {
     PluginManager pluginManager;
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/datalist/builder/(*:id)")
-    public String builder(ModelMap map, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
+    public String builder(ModelMap map, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
         // verify app version
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
@@ -97,6 +97,9 @@ public class DatalistBuilderWebController {
         map.addAttribute("filterParam", new ParamEncoder(id).encodeParameterName(DataList.PARAMETER_FILTER_PREFIX));
         map.addAttribute("datalist", datalist);
         map.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(listJson));
+        
+        response.addHeader("X-XSS-Protection", "0");
+        
         return "dbuilder/builder";
     }
 
@@ -124,7 +127,7 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/datalist/builderPreview/(*:id)", "/client/app/(*:appId)/(*:appVersion)/datalist/(*:id)"})
-    public String preview(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
+    public String preview(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
         String view = "dbuilder/view";
 
         // get current app to set into thread
@@ -162,6 +165,9 @@ public class DatalistBuilderWebController {
 
         // set map into model to be used in the JSP template
         map.addAttribute("properties", new HashMap(map));
+        
+        response.addHeader("X-XSS-Protection", "0");
+        
         return view;
     }
 
