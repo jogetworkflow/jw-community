@@ -29,6 +29,7 @@
 
 <script>
     if (window.parent !== self && window.parent.name !== "quickOverlayFrame") {
+        $("body").addClass("quickOverlayFrame");
         $("#main-header, #main-menu, #header, #footer, #adminBar, #beta").hide();
         $("#container, #nav, #menu-popup").css("top", "0px");
     } else {

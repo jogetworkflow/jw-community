@@ -826,7 +826,7 @@ button#installApp {
     opacity: 0.7;
     text-decoration: none;
 }
-div#adminWelcome {
+body.quickOverlayFrame div#adminWelcome {
     height: 35px;
     width: 40px;
     position: fixed;
@@ -835,5 +835,8 @@ div#adminWelcome {
     overflow: hidden;
     background: none;
     opacity: 0.9;  
+}
+body:not(.quickOverlayFrame) div#adminWelcome {
+    display:none;
 }
 
