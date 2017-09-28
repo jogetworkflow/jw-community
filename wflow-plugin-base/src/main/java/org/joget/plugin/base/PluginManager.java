@@ -699,16 +699,14 @@ public class PluginManager implements ApplicationContextAware {
      */
     public InputStream getPluginResource(String pluginName, String resourceUrl) throws IOException {
         InputStream result = null;
-
-        try {
-            URL url = getPluginResourceURL(pluginName, resourceUrl);
+        
+        URL url = getPluginResourceURL(pluginName, resourceUrl);
+        if (url != null) {
+            // get inputstream from url
             if (url != null) {
-                File file = new File(url.toURI());
-                if (file != null && file.isFile()) {
-                    result = new FileInputStream(file);
-                }
+                result = url.openConnection().getInputStream();
             }
-        } catch (Exception e) {}
+        }
 
         return result;
     }
@@ -1003,6 +1001,11 @@ public class PluginManager implements ApplicationContextAware {
             // get resource url, remove first /
             if (resourceUrl.startsWith("/")) {
                 resourceUrl = resourceUrl.substring(1);
+            }
+            // if filename no have extension, consider it is a directory
+            String filename = resourceUrl.substring(resourceUrl.lastIndexOf("/") + 1);
+            if (!filename.contains(".")) {
+                return null;
             }
             url = loader.getResource(resourceUrl);
         }
