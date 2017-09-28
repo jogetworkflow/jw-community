@@ -201,7 +201,6 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                 tempLink = "<a href=\"" + link + "\">" + link + "</a>";
                                             }
                                             msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + tempLink, wfAssignment, null, replace);
-                                            msg = msg.replaceAll("\\n", "<br/>");
                                             email.setHtmlMsg(msg);
                                         } else {
                                             msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + tempLink, wfAssignment, null, replace);
