@@ -178,7 +178,17 @@
             <groupId>com.asual.lesscss</groupId>  
             <artifactId>lesscss-engine</artifactId>  
             <version>1.5.1</version>
-        </dependency>  
+        </dependency> 
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.15</version>
+        </dependency> 
     </dependencies>
     <distributionManagement>
         <repository>

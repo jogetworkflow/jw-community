@@ -3,9 +3,12 @@ package org.joget.apps.datalist.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
@@ -15,6 +18,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.util.WorkflowUtil;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 public class DataList {
 
@@ -72,6 +76,7 @@ public class DataList {
     private boolean filterQueryBuild = false;
     private boolean disableQuickEdit = false;
     private boolean showDataWhenFilterSet = false;
+    private Map<String, String[]> requestParamMap = null;
 
     //Required when using session
     public void init() {
@@ -611,11 +616,23 @@ public class DataList {
     }
 
     public String[] getDataListParam(String paramName) {
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (requestParamMap == null) {
+            requestParamMap = new HashMap<String, String[]>();
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            Enumeration<String> e = request.getParameterNames();
+            while (e.hasMoreElements()) {
+                String pn = e.nextElement();
+                paramName = StringEscapeUtils.escapeHtml(pn);
+                String[] values = request.getParameterValues(pn);
+                requestParamMap.put(pn, values);
+            }
+        }
+        
         String param = getDataListEncodedParamName(paramName);
-        String[] values = request.getParameterValues(param);
+        String[] values = requestParamMap.get(param);
         if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
             String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             HttpSession session = request.getSession(true);
 
             if (values != null) {
@@ -791,5 +808,29 @@ public class DataList {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Retrieve current request map
+     * @return 
+     */
+    public Map<String, String[]> getRequestParamMap() {
+        return requestParamMap;
+    }
+
+    /**
+     * Set current request map
+     * @return 
+     */
+    public void setRequestParamMap(Map<String, String[]> requestParamMap) {
+        this.requestParamMap = requestParamMap;
+    }
+
+    /**
+     * Method to clear filter
+     */
+    public void clearFilter() {
+        filterQueryBuild = false;
+        dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
     }
 }

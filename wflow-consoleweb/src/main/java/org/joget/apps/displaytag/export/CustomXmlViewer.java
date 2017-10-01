@@ -5,7 +5,6 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
@@ -18,15 +17,13 @@ import org.displaytag.model.Row;
 import org.displaytag.model.RowIterator;
 import org.displaytag.model.TableModel;
 import org.displaytag.model.TableModelWrapper;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
-import org.joget.apps.datalist.model.DataListCsvExportFormatter;
-import org.joget.apps.datalist.model.DataListCsvWriter;
-import org.w3c.www.mime.Utils;
+import org.joget.apps.datalist.model.DataListXmlExportFormatter;
+import org.joget.apps.datalist.model.DataListXmlWriter;
 
-public class CustomCsvViewer implements TextExportView {
+public class CustomXmlViewer implements TextExportView {
     /**
      * TableModel to render.
      */
@@ -49,7 +46,7 @@ public class CustomCsvViewer implements TextExportView {
     /**
      * This is a utility class to create table
      */
-    private DataListCsvWriter writer;
+    private DataListXmlWriter writer;
     /**
      * The datalist object of the current table
      */
@@ -65,7 +62,7 @@ public class CustomCsvViewer implements TextExportView {
     /**
      * A map hold the column number and its formatter
      */
-    private Map<Integer, DataListCsvExportFormatter> formatter = new HashMap<Integer, DataListCsvExportFormatter>();
+    private Map<Integer, DataListXmlExportFormatter> formatter = new HashMap<Integer, DataListXmlExportFormatter>();
     
     @Override
     public void setParameters(TableModel tableModel, boolean exportFullList, boolean includeHeader,
@@ -83,17 +80,17 @@ public class CustomCsvViewer implements TextExportView {
             if (datalist != null) {
                 DataListColumn[] columns = datalist.getColumns();
                 Collection<DataListColumnFormat> formats;
-                DataListCsvExportFormatter ef;
+                DataListXmlExportFormatter ef;
                 for (int i = 0; i < columns.length; i++) {
                     formats = columns[i].getFormats();
                     if (formats != null && !formats.isEmpty()) {
                         for (DataListColumnFormat f : formats) {
-                            if (f instanceof DataListCsvExportFormatter) {
-                                ef = (DataListCsvExportFormatter) f;
-                                if (ef.isCsvBeforeRow()) {
+                            if (f instanceof DataListXmlExportFormatter) {
+                                ef = (DataListXmlExportFormatter) f;
+                                if (ef.isXmlBeforeRow()) {
                                     isBeforeRow = true;
                                 }
-                                if (ef.isCsvAfterRow()) {
+                                if (ef.isXmlAfterRow()) {
                                     isAfterRow = true;
                                 }
                                 formatter.put(i, ef);
@@ -106,40 +103,16 @@ public class CustomCsvViewer implements TextExportView {
     }
     
     @Override
-    public String getMimeType() {
-        String localeCode = AppUtil.getAppLocale();
-        
-        try{
-            if (!"en_US".equals(localeCode)) {
-                Locale locale = null;
-                String[] temp = localeCode.split("_");
-
-                if (temp.length == 1) {
-                    locale = new Locale(temp[0]);
-                } else if (temp.length == 2) {
-                    locale = new Locale(temp[0], temp[1]);
-                } else if (temp.length == 3) {
-                    locale = new Locale(temp[0], temp[1], temp[2]);
-                }
-
-                if (locale != null) {    
-                    String charset = Utils.getCharset(locale);
-
-                    if (charset != null && !charset.isEmpty()) {
-                        return "text/csv;charset=" + charset;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            //ignore
-        }
-        
-        return "text/csv;charset=UTF-8"; //$NON-NLS-1$
+    public String getMimeType()
+    {
+        return "text/xml"; 
     }
     
     public void doExport(Writer out) throws IOException, JspException
     {
-        writer = new DataListCsvWriter(out);
+        writer = new DataListXmlWriter(out);
+        writer.createXmlDocument();
+        
         if (this.header)
         {
             Iterator iterator = this.model.getHeaderCellList().iterator();
@@ -153,15 +126,16 @@ public class CustomCsvViewer implements TextExportView {
                 if (columnHeader == null) {
                     columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());
                 }
-                writer.addCell(columnHeader);
+                writer.addColumn(columnHeader);
             }
+            writer.endRow();
         }
 
         // get the correct iterator (full or partial list according to the exportFull field)
         RowIterator rowIterator = this.model.getRowIterator(this.exportFull);
         Column column = null;
         Object value = null;
-        DataListCsvExportFormatter ef;
+        DataListXmlExportFormatter ef;
         Row row = null;
         int col = 0;
         ColumnIterator columnIterator;
@@ -169,6 +143,7 @@ public class CustomCsvViewer implements TextExportView {
         while (rowIterator.hasNext())
         {
             row = rowIterator.next();
+            writer.createNewRow();
             
             if (isBeforeRow) {
                 // iterator on columns
@@ -177,22 +152,21 @@ public class CustomCsvViewer implements TextExportView {
                 while (columnIterator.hasNext()) {
                     column = columnIterator.nextColumn();
                     ef = formatter.get(col);
-                    if (ef != null && ef.isCsvBeforeRow()) {
+                    if (ef != null && ef.isXmlBeforeRow()) {
                         value = column.getValue(this.decorated);
-                        ef.csvBeforeRow(datalist, row.getObject(), value, writer);
+                        ef.xmlBeforeRow(datalist, row.getObject(), value, writer);
                     }
                     col++;
                 }
             }
 
-            writer.createNewRow();
             columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
             while (columnIterator.hasNext()) {
                 column = columnIterator.nextColumn();
 
                 // Get the value to be displayed for the column
                 value =  column.getValue(this.decorated);
-                writer.addCell(value);
+                writer.addColumn(value);
             }
             
             if (isAfterRow) {
@@ -202,14 +176,16 @@ public class CustomCsvViewer implements TextExportView {
                 while (columnIterator.hasNext()) {
                     column = columnIterator.nextColumn();
                     ef = formatter.get(col);
-                    if (ef != null && ef.isCsvAfterRow()) {
+                    if (ef != null && ef.isXmlAfterRow()) {
                         value = column.getValue(this.decorated);
-                        ef.csvAfterRow(datalist, row.getObject(), value, writer);
+                        ef.xmlAfterRow(datalist, row.getObject(), value, writer);
                     }
                     col++;
                 }
             }
+            writer.endRow();
         }
+        writer.endXmlDocument();
     }
 
     public boolean outputPage() {

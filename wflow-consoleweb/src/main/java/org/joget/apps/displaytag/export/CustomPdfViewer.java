@@ -27,17 +27,22 @@ import com.lowagie.text.Cell;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
 import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Rectangle;
-import com.lowagie.text.Table;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.FontSelector;
 import com.lowagie.text.pdf.PdfWriter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.jsp.PageContext;
+import org.displaytag.model.TableModelWrapper;
 import org.displaytag.util.TagConstants;
+import org.joget.apps.datalist.model.DataList;
+import org.joget.apps.datalist.model.DataListColumn;
+import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.joget.apps.datalist.model.DataListPdfExportFormatter;
+import org.joget.apps.datalist.model.DataListPdfWriter;
 
 public class CustomPdfViewer implements BinaryExportView {
     /* split up the large pdf report into smaller parts */
@@ -60,15 +65,26 @@ public class CustomPdfViewer implements BinaryExportView {
      */
     private boolean decorated;
     /**
-     * This is the table, added as an Element to the PDF document. It contains all the data, needed to represent the
-     * visible table into the PDF
+     * This is a utility class to create table
      */
-    private Table tablePDF;
+    private DataListPdfWriter writer;
     /**
-     * The default font used in the document.
+     * The datalist object of the current table
      */
-    private FontSelector selector;
-    
+    private DataList datalist;
+    /**
+     * A flag that indicate there is formatter to execute before row
+     */
+    private boolean isBeforeRow = false;
+    /**
+     * A flag that indicate there is formatter to execute after row
+     */
+    private boolean isAfterRow = false;
+    /**
+     * A map hold the column number and its formatter
+     */
+    private Map<Integer, DataListPdfExportFormatter> formatter = new HashMap<Integer, DataListPdfExportFormatter>();
+
     private ResourceBundle bundle = null;
 
     /**
@@ -80,6 +96,34 @@ public class CustomPdfViewer implements BinaryExportView {
         this.exportFull = exportFullList;
         this.header = includeHeader;
         this.decorated = decorateValues;
+        
+        PageContext pageContext = (new TableModelWrapper(tableModel)).getPageContext();
+        if (pageContext != null) {
+            datalist = (DataList) pageContext.findAttribute("dataList");
+            
+            if (datalist != null) {
+                DataListColumn[] columns = datalist.getColumns();
+                Collection<DataListColumnFormat> formats;
+                DataListPdfExportFormatter ef;
+                for (int i = 0; i < columns.length; i++) {
+                    formats = columns[i].getFormats();
+                    if (formats != null && !formats.isEmpty()) {
+                        for (DataListColumnFormat f : formats) {
+                            if (f instanceof DataListPdfExportFormatter) {
+                                ef = (DataListPdfExportFormatter) f;
+                                if (ef.isPdfBeforeRow()) {
+                                    isBeforeRow = true;
+                                }
+                                if (ef.isPdfAfterRow()) {
+                                    isAfterRow = true;
+                                }
+                                formatter.put(i, ef);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -87,27 +131,12 @@ public class CustomPdfViewer implements BinaryExportView {
      * @throws BadElementException for errors during table initialization
      */
     protected void initTable() throws BadElementException, DocumentException, IOException{
-        tablePDF = new Table(this.model.getNumberOfColumns());
-        tablePDF.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
-        tablePDF.setCellsFitPage(true);
-        tablePDF.setWidth(100);
-
-        tablePDF.setPadding(2);
-        tablePDF.setSpacing(0);
-
+        writer = new DataListPdfWriter(this.model.getNumberOfColumns());
+        
         if (bundle == null) {
             //get displaytag ressource bundle
             bundle = ResourceBundle.getBundle(org.displaytag.properties.TableProperties.LOCAL_PROPERTIES, Locale.getDefault());
         }
-        
-        selector = new FontSelector();
-        selector.addFont(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 10, Font.NORMAL, new Color(0, 0, 0)));
     }
 
     /**
@@ -127,7 +156,7 @@ public class CustomPdfViewer implements BinaryExportView {
         if (this.header) {
             generateHeaders();
         }
-        tablePDF.endHeaders();
+        writer.endHeaders();
         generateRows(document);
     }
 
@@ -144,7 +173,7 @@ public class CustomPdfViewer implements BinaryExportView {
             Document document = new Document(PageSize.A4.rotate(), 60, 60, 40, 40);
             document.addCreationDate();
 
-            HeaderFooter footer = new HeaderFooter(selector.process(TagConstants.EMPTY_STRING), true);
+            HeaderFooter footer = new HeaderFooter(writer.getSelector().process(TagConstants.EMPTY_STRING), true);
             footer.setBorder(Rectangle.NO_BORDER);
             footer.setAlignment(Element.ALIGN_CENTER);
 
@@ -173,12 +202,7 @@ public class CustomPdfViewer implements BinaryExportView {
             if (columnHeader == null) {
                 columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());
             }
-
-            Cell hdrCell = getCell(columnHeader);
-            hdrCell.setBackgroundColor(new Color(210, 221, 231));
-            hdrCell.setHeader(true);
-            tablePDF.addCell(hdrCell);
-
+            writer.addHeaderCell(columnHeader, new Color(210, 221, 231));
         }
     }
 
@@ -194,52 +218,70 @@ public class CustomPdfViewer implements BinaryExportView {
         Column column = null;
         Object value = null;
         Cell cell = null;
+        Row row = null;
+        DataListPdfExportFormatter ef;
+        int col;
+        ColumnIterator columnIterator;
         while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
+            row = rowIterator.next();
+            
+            if (isBeforeRow) {
+                // iterator on columns
+                columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
+                col = 0;
+                while (columnIterator.hasNext()) {
+                    column = columnIterator.nextColumn();
+                    ef = formatter.get(col);
+                    if (ef != null && ef.isPdfBeforeRow()) {
+                        value = column.getValue(this.decorated);
+                        ef.pdfBeforeRow(datalist, row.getObject(), value, writer);
+                    }
+                    col++;
+                }
+            }
 
             // iterator on columns
-            ColumnIterator columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
-
+            columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
             while (columnIterator.hasNext()) {
                 column = columnIterator.nextColumn();
 
                 // Get the value to be displayed for the column
                 value = column.getValue(this.decorated);
-                cell = getCell(ObjectUtils.toString(value));
-
+                
                 /* some eyecandy stuff */
                 if (rowCnt % 2 == 1) {
-                    cell.setBackgroundColor(new Color(220, 223, 225));
+                    writer.addCell(ObjectUtils.toString(value), new Color(220, 223, 225));
+                } else {
+                    writer.addCell(ObjectUtils.toString(value), null);
                 }
-                tablePDF.addCell(cell);
+            }
+            
+            if (isAfterRow) {
+                // iterator on columns
+                columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
+                col = 0;
+                while (columnIterator.hasNext()) {
+                    column = columnIterator.nextColumn();
+                    ef = formatter.get(col);
+                    if (ef != null && ef.isPdfAfterRow()) {
+                        value = column.getValue(this.decorated);
+                        ef.pdfAfterRow(datalist, row.getObject(), value, writer);
+                    }
+                    col++;
+                }
             }
 
             /* split up the pdf document to prevent OutOfMemoryExceptions */
             if (rowCnt % FRAGMENT_SIZE == FRAGMENT_SIZE - 1) {
-                document.add(this.tablePDF);
+                document.add(writer.getTable());
                 initTable();
-                generateHeaders();
-                this.tablePDF.endHeaders();
             }
 
             rowCnt++;
         }
 
         /* add the rest of the table */
-        document.add(this.tablePDF);
-    }
-
-    /**
-     * Returns a formatted cell for the given value.
-     * @param value cell value
-     * @return Cell
-     * @throws BadElementException errors while generating content
-     */
-    private Cell getCell(String value) throws BadElementException {
-        Cell cell = new Cell(selector.process(StringUtils.trimToEmpty(value)));
-        cell.setVerticalAlignment(Element.ALIGN_TOP);
-        cell.setLeading(8);
-        return cell;
+        document.add(writer.getTable());
     }
 
     /**
