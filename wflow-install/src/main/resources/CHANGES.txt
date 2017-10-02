@@ -2,6 +2,25 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.17
+=================
+6467e19 Fixed: wflow-core - User Notification - extra <br/> tags are added when send as HTML.  #5019 @5.0-SNAPSHOT
+f4e31b1 Fixed: wflow-plugin-base - Regression of f5b131e.  @5.0-SNAPSHOT
+7ab840c Fixed: wflow-consoleweb - Form/List/Userview Builder - Not able to update JSON definition and preview in Chrome when JSON definition contain javascript.  @5.0-SNAPSHOT
+c431ead Fixed: wflow-consoleweb - Correction for 89b65f.  @5.0-SNAPSHOT
+f5b131e Fixed: wflow-plugin-base - Plugin Resource URL - Able to view directory listing in resources folder.  @5.0-SNAPSHOT
+89b65f6 Modified: wflow-consoleweb - Embedded Form - Support encrypted form JSON definition. #5013 @5.0-SNAPSHOT
+4752baf Modified: wflow-core - Form PDF Util - Add CSS class to support show/hide form element in exported PDF. @5.0-SNAPSHOT
+f06557b Fixed: wflow-consoleweb - Date Picker - Regression from e474715. Date value format is wrong when there is form validation error. #4987 @5.0-SNAPSHOT
+bea7937 Modified: wflow-consoleweb - Userview Form Print - Remove url printed in form.  @5.0-SNAPSHOT
+60e98c5 Fixed: wflow-consoleweb - Datalist CSV Export - Prevent null dereference.  @5.0-SNAPSHOT
+1f43b6c Fixed: wflow-wfengine - Workflow Manager - Exception when "variableMap" is null when calling "assignmentVariables" method.  @5.0-SNAPSHOT
+4c2e7ee Fixed: wflow-consoleweb - Form Builder - Copy/paste may render the element wrongly due to scripting. @5.0-SNAPSHOT
+6718231 Fixed: wflow-consoleweb - Datalist CSV export - Support for other charset. #4971 @5.0-SNAPSHOT
+4a0c249 Fixed: wflow-consoleweb - Mobile - URL with embed parameter is not accessible by normal users. @5.0-SNAPSHOT
+4cbe03a Fixed: wflow-core/wflow-commons - Values have regex char can't replace correctly. @5.0-SNAPSHOT
+52bcb7c Fixed: wflow-core - User Notification - Assignment link is wrong when send to multiple users. @5.0-SNAPSHOT
+
 CHANGES IN 5.0.16
 =================
 e474715 Fixed: wflow-core - Date Picker - Date format is wrong for readonly mode after form validation fail. #4939 @5.0-SNAPSHOT
