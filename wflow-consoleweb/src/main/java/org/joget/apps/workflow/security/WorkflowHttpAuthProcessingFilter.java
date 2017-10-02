@@ -175,6 +175,8 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
         String loginAs = request.getParameter("loginAs");
         String loginHash = request.getParameter("hash");
         
+        String ip = request.getRemoteAddr();
+        
         // Place the last username attempted into HttpSession for views
         HttpSession session = request.getSession(false);
 
@@ -214,10 +216,10 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                             auth = new UsernamePasswordAuthenticationToken(user, user.getUsername(), user.getAuthorities());
                             super.setDetails(request, (UsernamePasswordAuthenticationToken) auth);
                         } else {
-                            LogUtil.info(getClass().getName(), "Authentication for user " + loginAs + ": " + false);
+                            LogUtil.info(getClass().getName(), "Authentication for user " + loginAs + " ("+ip+") : " + false);
             
                             WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                            workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + loginAs + ": " + false, new Class[]{String.class}, new Object[]{loginAs}, false);
+                            workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + loginAs + " ("+ip+") : " + false, new Class[]{String.class}, new Object[]{loginAs}, false);
                         
                             throw new BadCredentialsException("");
                         }
@@ -253,10 +255,10 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                             currentUser = directoryManager.getUserByUsername(username);
                         }
                     } catch (BadCredentialsException be) {
-                        LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false);
+                        LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + " ("+ip+") : " + false);
             
                         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + false, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, false);
+                        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + " ("+ip+") : " + false, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, false);
             
                         throw be;
                     }
@@ -268,9 +270,9 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             }
 
             if (!"/WEB-INF/jsp/unauthorized.jsp".equals(request.getServletPath())) {
-                LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true);
+                LogUtil.info(getClass().getName(), "Authentication for user " + ((loginAs == null) ? username : loginAs) + " ("+ip+") : " + true);
                 WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + ": " + true, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, true);
+                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + ((loginAs == null) ? username : loginAs) + " ("+ip+") : " + true, new Class[]{String.class}, new Object[]{((loginAs == null) ? username : loginAs)}, true);
             }
         } else {
             if (us != null && us.getAuthenticateAllApi()) {

@@ -1,10 +1,12 @@
 package org.joget.apps.app.web;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 
 /**
  * HTTP session listener to capture logout events.
@@ -30,7 +32,12 @@ public class SessionListener implements HttpSessionListener {
         WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
         String username = workflowUserManager.getCurrentUsername();
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-        workflowHelper.addAuditTrail(this.getClass().getName(), "logout", "Logout for user " + username, new Class[]{String.class}, new Object[]{username}, false);
+        String ip = "";
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            ip = request.getRemoteAddr();
+        }
+        workflowHelper.addAuditTrail(this.getClass().getName(), "logout", "Logout for user " + username + " ("+ip+")", new Class[]{String.class}, new Object[]{username}, false);
     }
  
 }

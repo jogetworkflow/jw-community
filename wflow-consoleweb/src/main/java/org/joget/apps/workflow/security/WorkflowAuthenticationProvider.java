@@ -50,6 +50,12 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         // Determine username
         String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
         String password = authentication.getCredentials().toString();
+        
+        String ip = "";
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            ip = request.getRemoteAddr();
+        }
 
         // check credentials
         boolean validLogin = false;
@@ -59,16 +65,16 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
             throw new BadCredentialsException(e.getMessage());
         }
         if (!validLogin) {
-            LogUtil.info(getClass().getName(), "Authentication for user " + username + ": " + false);
+            LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : " + false);
             WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-            workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": " + false, new Class[]{String.class}, new Object[]{username}, false);
+            workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : " + false, new Class[]{String.class}, new Object[]{username}, false);
             throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
 
         // add audit trail
-        LogUtil.info(getClass().getName(), "Authentication for user " + username + ": " + true);
+        LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : " + true);
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": " + true, new Class[]{String.class}, new Object[]{username}, true);
+        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : " + true, new Class[]{String.class}, new Object[]{username}, true);
 
         // get authorities
         Collection<Role> roles = directoryManager.getUserRoles(username);

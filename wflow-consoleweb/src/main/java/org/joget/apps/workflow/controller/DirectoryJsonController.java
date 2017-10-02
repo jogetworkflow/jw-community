@@ -644,6 +644,8 @@ public class DirectoryJsonController {
         }
         
         if (username != null && !username.isEmpty() && !loginWithFilter) {
+            String ip = httpRequest.getRemoteAddr();
+            
             try {
                 if (password == null) {
                     password = hash;
@@ -668,16 +670,16 @@ public class DirectoryJsonController {
                 if (authenticated) {
                     workflowUserManager.clearCurrentThreadUser();
                 }
-                LogUtil.info(getClass().getName(), "Authentication for user " + username + ": " + authenticated);
+                LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : " + authenticated);
                 WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": " + authenticated);  
+                workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : " + authenticated);  
                 
             } catch (AuthenticationException e) {
                 // add failure to audit trail
                 if (username != null) {
-                    LogUtil.info(getClass().getName(), "Authentication for user " + username + ": false");
+                    LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : false");
                     WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                    workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + ": false");
+                    workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : false");
                 }
             }
         }
