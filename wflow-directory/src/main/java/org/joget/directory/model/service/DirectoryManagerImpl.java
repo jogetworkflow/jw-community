@@ -225,7 +225,7 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
     }
 
     public Collection<User> getUserByGradeId(String gradeId) {
-        return getUserDao().getUsers(null, null, null, null, null, gradeId, null, "username", false, null, null);
+        return getUserDao().getUsers(null, null, null, gradeId, null, null, null, "username", false, null, null);
     }
 
     public Collection<User> getUserByGroupId(String groupId) {
