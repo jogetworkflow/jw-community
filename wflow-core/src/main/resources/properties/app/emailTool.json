@@ -150,5 +150,121 @@
             key:'fileName',
             label:'@@app.emailtool.fileName@@'
         }]
+    },
+    {
+        label : '@@app.emailtool.ics@@',
+        type : 'header'
+    },
+    {
+        name : 'icsAttachement',
+        label : '@@app.emailtool.icsAttachement@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'icsEventName',
+        label : '@@app.emailtool.icsEventName@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'icsDateStart',
+        label : '@@app.emailtool.icsDateStart@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
+        name : 'icsDateEnd',
+        label : '@@app.emailtool.icsDateEnd@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'icsDateFormat',
+        label : '@@app.emailtool.icsDateFormat@@',
+        type : 'textfield',
+        value : 'yyyy-MM-dd HH:mm',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false',
+        required : 'true'
+    },
+    {
+        name : 'icsTimezone',
+        label : '@@app.emailtool.icsTimezone@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'icsAllDay',
+        label : '@@app.emailtool.icsAllDay@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }],
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false',
+        supportHash : 'true'
+    },
+    {
+        name : 'icsEventDesc',
+        label : '@@app.emailtool.icsEventDesc@@',
+        type : 'textarea',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'icsLocation',
+        label : '@@app.emailtool.icsLocation@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'icsOrganizerEmail',
+        label : '@@app.emailtool.icsOrganizerEmail@@',
+        type : 'textfield',
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
+    },
+    {
+        name:'icsAttendees',
+        label:'@@app.emailtool.icsAttendees@@',
+        type:'grid',
+        columns:[{
+            key:'name',
+            label:'@@app.emailtool.icsAttendees.name@@',
+            required : 'true'
+        },
+        {
+            key:'email',
+            label:'@@app.emailtool.icsAttendees.email@@',
+            required : 'true'
+        },
+        {
+            key:'required',
+            label:'@@app.emailtool.icsAttendees.required@@',
+            type: 'truefalse'
+        }],
+        control_field: 'icsAttachement',
+        control_value: 'true',
+        control_use_regex: 'false'
     }]
 }]

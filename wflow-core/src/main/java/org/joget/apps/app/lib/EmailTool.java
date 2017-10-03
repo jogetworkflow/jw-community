@@ -2,15 +2,37 @@ package org.joget.apps.app.lib;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import javax.activation.FileDataSource;
 import javax.mail.internet.MimeUtility;
+import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.parameter.Cn;
+import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Organizer;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Version;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -30,6 +52,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
@@ -203,6 +226,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                     }
                 }
             }
+            attachIcal(email);
 
             Thread emailThread = new PluginThread(new Runnable() {
 
@@ -224,6 +248,114 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
         }
 
         return null;
+    }
+    
+    protected void attachIcal(final HtmlEmail email) {
+        try {
+            if ("true".equalsIgnoreCase(getPropertyString("icsAttachement"))) {
+                Calendar calendar = new Calendar();
+                calendar.getProperties().add(Version.VERSION_2_0);
+                calendar.getProperties().add(new ProdId("-//Joget Workflow//iCal4j 1.0//EN"));
+                calendar.getProperties().add(CalScale.GREGORIAN);
+                
+                String eventName = getPropertyString("icsEventName");
+                if (eventName.isEmpty()) {
+                    eventName = email.getSubject();
+                }
+                
+                String startDateTime = getPropertyString("icsDateStart");
+                String endDateTime = getPropertyString("icsDateEnd");
+                String dateFormat = getPropertyString("icsDateFormat");
+                String timezoneString = getPropertyString("icsTimezone");
+                SimpleDateFormat sdFormat =  new SimpleDateFormat(dateFormat);
+                
+                TimeZone timezone = null;
+                TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+                try {
+                    if (!timezoneString.isEmpty()) {
+                        timezone = registry.getTimeZone(timezoneString);
+                    } else {
+                        timezone = registry.getTimeZone(TimeZoneUtil.getServerTimeZoneID());
+                    }
+                } catch (Exception et) {}
+                
+                java.util.Calendar startDate = new GregorianCalendar();
+                if (timezone != null) {
+                    startDate.setTimeZone(timezone);
+                }
+                startDate.setTime(sdFormat.parse(startDateTime));
+                DateTime start = new DateTime(startDate.getTime());
+                
+                VEvent event;
+                if (endDateTime.isEmpty()) {
+                    event = new VEvent(start, eventName);
+                } else {
+                    java.util.Calendar endDate = new GregorianCalendar();
+                    if (timezone != null) {
+                        endDate.setTimeZone(timezone);
+                    }
+                    endDate.setTime(sdFormat.parse(endDateTime));
+                    DateTime end = new DateTime(endDate.getTime());
+                    
+                    event = new VEvent(start, end, eventName);
+                }
+                
+                String eventDesc = getPropertyString("icsEventDesc");
+                if (!eventDesc.isEmpty()) {
+                    event.getProperties().add(new Description(getPropertyString("icsEventDesc")));
+                }
+                
+                if (timezone != null) {
+                    VTimeZone tz = timezone.getVTimeZone();
+                    event.getProperties().add(tz.getTimeZoneId());
+                }
+                
+                if ("true".equalsIgnoreCase(getPropertyString("icsAllDay"))) {
+                    event.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
+                }
+                
+                if (!getPropertyString("icsLocation").isEmpty()) {
+                    event.getProperties().add(new Location(getPropertyString("icsLocation")));
+                }
+                
+                if (!getPropertyString("icsOrganizerEmail").isEmpty()) {
+                    event.getProperties().add(new Organizer("MAILTO:"+getPropertyString("icsOrganizerEmail")));
+                } else {
+                    event.getProperties().add(new Organizer("MAILTO:"+email.getFromAddress().getAddress()));
+                }
+                
+                Object[] attendees = null;
+                if (getProperty("icsAttendees") instanceof Object[]){
+                    attendees = (Object[]) getProperty("icsAttendees");
+                }
+                if (attendees != null && attendees.length > 0) {
+                    for (Object o : attendees) {
+                        Map mapping = (HashMap) o;
+                        String name = mapping.get("name").toString();
+                        String mailto = mapping.get("email").toString();
+                        String required = mapping.get("required").toString();
+
+                        try {
+                            Attendee att = new Attendee(URI.create("mailto:"+mailto));
+                            if ("true".equals(required)) {
+                                att.getParameters().add(Role.REQ_PARTICIPANT);
+                            } else {
+                                att.getParameters().add(Role.OPT_PARTICIPANT);
+                            }
+                            att.getParameters().add(new Cn(name));
+                            event.getProperties().add(att);
+                        } catch(Exception ex){
+                            LogUtil.error(getClassName(), ex, "");
+                        }
+                    }
+                }
+                
+                calendar.getComponents().add(event);
+                email.attach(new ByteArrayDataSource(calendar.toString(), "text/calendar;charset=UTF-8;ENCODING=8BIT;method=REQUEST"), MimeUtility.encodeText("invite.ics"), "");
+            }
+        } catch (Exception e) {
+            LogUtil.error(getClassName(), e, null);
+        }
     }
 
     public String getLabel() {
