@@ -185,6 +185,7 @@ var AdminBar = {
         }
     },
     showAdminBar: function() {
+        $("body").addClass("adminBarShown");
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
@@ -192,6 +193,7 @@ var AdminBar = {
         AdminBar.showQuickEdit();
     },
     hideAdminBar: function() {
+        $("body").removeClass("adminBarShown");
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");

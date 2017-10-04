@@ -137,7 +137,8 @@ div, label, input, button, select, th, td, a, span {
     min-height: 380px;
     left: 10px;
     position: relative;
-    top: 100px;    
+    top: 100px; 
+    margin-right: 60px;
 }
 #builder-bar ul {
     list-style: none;
@@ -549,4 +550,10 @@ a.reload {
     height: 39px;
     z-index: 9;
     cursor: pointer;
+}
+body.adminBarShown #builder-bar .highlight-button {
+    right: 82px;
+}
+body.adminBarShown #builder-bar .controls {
+    margin-right: 280px;
 }
