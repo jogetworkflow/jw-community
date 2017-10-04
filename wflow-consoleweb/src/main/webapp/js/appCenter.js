@@ -33,7 +33,7 @@ var AppCenter = {
         event.preventDefault();
         event.stopPropagation();
     }, 
-    loadPublishedApps: function(container, customUrl) {
+    loadPublishedApps: function(container, customUrl, excludes) {
         container = container || "#apps";
         var isMarketplace = (container === '#marketplace-apps');
         var jsonUrl = (customUrl) ? customUrl : UI.base + "/web/json/apps/published/userviews?appCenter=true";
@@ -60,6 +60,11 @@ var AppCenter = {
                     var userviews = app.userviews;
                     for( var j=0; j<userviews.length; j++){
                         var uv = userviews[j];
+                        
+                        if (excludes !== undefined && excludes !== null && excludes.indexOf(app.id+":"+uv.id) !== -1) {
+                            continue;
+                        }
+                        
                         content += '<li>';
                         var userviewUrl = uv.url;
                         var userviewDescription = (typeof uv.description !== "undefined") ? uv.description : "";
