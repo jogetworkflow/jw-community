@@ -2,6 +2,83 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0-BETA4
+====================
+a1e5e49 Fixed: wflow-consoleweb - Builder - Admin bar blocked buttons in builders. @6.0-SNAPSHOT
+df44d7c Fixed: wflow-consoleweb - Advanced Tools - I18n - Infinite loop issue when retrieving i18n hash variables. @6.0-SNAPSHOT
+348a86f Fixed: wflow-core - AppUtil - Replacing app message corrupted the JSON definition when the message key matched the json attribute key. #5059 @6.0-SNAPSHOT
+76f598a Modified: wflow-consoleweb - appCenter.js - Add parameter to AppCenter.loadPublishedApps to exclude userviews. @6.0-SNAPSHOT
+5712cca Modified: wflow-consoleweb - Process View - Remove unused process attribute. @6.0-SNAPSHOT
+c25fc2b Added: wflow-core - Email Tool - Added ICS attachment support. @6.0-SNAPSHOT
+7dfb6ad Fixed: wflow-directory - Directory Manager - getUserByGradeId return wrong results. @6.0-SNAPSHOT
+beb5215 Modified: wflow-consoleweb - Audit Trail - Add ip for login and logout event message. @6.0-SNAPSHOT
+86c680f Modified: wflow-consoleweb/wflow-core - Datalist Column Formatter - Add implementation to customize the export result before/after a row rendering. @6.0-SNAPSHOT
+c84e725 Modified: wflow-consoleweb - Setup - Update sample crm app. @6.0-SNAPSHOT
+1253cef Fixed: wflow-consoleweb - Web Console - Remove KB helplink from console view. @6.0-SNAPSHOT
+29109f1 Fixed: wflow-consoleweb - App Center - Help icon is missing. @6.0-SNAPSHOT
+bb479ce Fixed: wflow-core - User Notification - extra <br/> tags are added when send as HTML.  #5019 @6.0-SNAPSHOT
+c1fc671 Fixed: wflow-plugin-base - Regression of 70c80a.  @6.0-SNAPSHOT
+0d20aef Fixed: wflow-consoleweb - Form/List/Userview Builder - Not able to update JSON definition and preview  in Chrome when JSON definition contain javascript.  @6.0-SNAPSHOT
+389201a Fixed: wflow-consoleweb - Correction for f5b0f2.  @6.0-SNAPSHOT
+cc31d60 Modified: wflow-consoleweb - UI - Moved help from admin bar to console page . #5048 @6.0-SNAPSHOT
+7e64a0b Fixed: wflow-consoleweb - Userview Theme - Theme parameters is populate wrongly for link link without href attribute. #5049 @6.0-SNAPSHOT
+70c80a7 Fixed: wflow-plugin-base - Plugin Resource URL - Able to view directory listing in resources folder.  @6.0-SNAPSHOT
+f20f3f7 Fixed: wflow-consoleweb - Correction of ba13fa.  @6.0-SNAPSHOT
+9c45cd1 Fixed: wflow-consoleweb - Property Editor - Regression bug of 1850f6d3.  @6.0-SNAPSHOT
+ba13fa7 Fixed: wflow-consoleweb - CSRF Guard - JS file does not cache due to "Synchronous XMLHttpRequest on the main thread is deprecated" error.  @6.0-SNAPSHOT
+6c636d3 Fixed: wflow-core - Correction of e6f72b.  @6.0-SNAPSHOT
+e6f72ba Fixed: wflow-core - Date Picker - Support of datetime is not backward compatible.  @6.0-SNAPSHOT Fixed: wflow-core - Date Picker - Validation of datetime support is not handle.  @6.0-SNAPSHOT
+100ff9a Modified: wflow-plugin-base - Plugin Manager - Added method to get plugin type list and check OSGI plugin.  @6.0-SNAPSHOT
+fa7bae7 Modified: wflow-core/wflow-consoleweb - Manage Plugin - Added name filter and plugin type.  @6.0-SNAPSHOT Modified: wflow-core/wflow-consoleweb - Design App - Added name filter to all plugin listing.  @6.0-SNAPSHOT
+9870c9e Fixed: wflow-core - Form Pdf Util - "Hide fields without value" setting does not work correctly with grid field.  @6.0-SNAPSHOT
+b75448d Modified: wflow-commons, wflow-core, wflow-consoleweb - Universal Theme - Improved critical rendering path and performance @6.0-SNAPSHOT
+e9a2644 Modified: wflow-commons - Added lookup cache for URL mapping @6.0-SNAPSHOT
+ef097f1 Modified: wflow-install - Apache Tomcat - Modified default configuration to enable compression and increase resource cache size @6.0-SNAPSHOT
+6d7ef48 Modified: wflow-consoleweb - Browser does not load CSS from cache although Expires header present in the request header @6.0-SNAPSHOT
+f5b0f20 Modified: wflow-consoleweb - Embedded Form - Support encrypted form JSON definition. #5013 @6.0-SNAPSHOT
+176f743 Fixed: wflow-consoleweb - Manage Messages/ App Properties - Not able to delete next records after a delete action. @6.0-SNAPSHOT
+4867ed3 Fixed: wflow-commons - Manage Messages - Not able import keys which shared the same message. @6.0-SNAPSHOT
+5f19f28 Fixed: wflow-consoleweb -Property Editor - "multiselect" is rendered incorrectly when hash support is enabled. @6.0-SNAPSHOT
+3e6ac3b Fixed: wflow-consoleweb -Property Editor - Changes in 921464 caused "color" field hash support feature broken. @6.0-SNAPSHOT
+2354521 Fixed: wflow-consoleweb -Property Editor - Hash support enable link does not display correctly. @6.0-SNAPSHOT
+32d8bcf Fixed: wflow-consoleweb -Property Editor - "elementselect" field is lost focus after value changed. @6.0-SNAPSHOT
+05c0633 Fixed: wflow-consoleweb -App Resources - Exception after resources is added. @6.0-SNAPSHOT
+6684b8b Fixed: wflow-consoleweb - Property Editor - "file" & "image" field type description does not show on browse file. @6.0-SNAPSHOT
+9214644 Fixed: wflow-consoleweb - Property Editor - "color" field color picker sometime does not shown.  @6.0-SNAPSHOT
+a602abd Fixed: wflow-consoleweb - Date Picker - Datetime type throws exception when using start/end date.  @6.0-SNAPSHOT
+7ee2396 Fixed: wflow-consoleweb - App Center - Correction on 4c0bc3.  @6.0-SNAPSHOT
+4c0bc31 Fixed: wflow-consoleweb - App Center - Apps in listing is aligned to left.  @6.0-SNAPSHOT
+4738c87 Fixed: wflow-consoleweb - Property Editor - Regression of f44bae.  @6.0-SNAPSHOT
+e3b62f9 Fixed: wflow-consoleweb - Userview Builder - Change userview thumbnail preview to follow app center size.  @6.0-SNAPSHOT
+be61ac8 Fixed: wflow-consoleweb - Date Picker - Regression from ad05a5e. Date value format is wrong when there is form validation error. #4987 @6.0-SNAPSHOT
+78f727b Fixed: wflow-core - Date Picker - 'dateOnly' is not default choice @6.0-SNAPSHOT
+e8140a3 Fixed: wflow-consoleweb - Property Editor - Mandatory validation of "gridcombine" field type does not work. @6.0-SNAPSHOT
+f44bae1 Modified: wflow-consoleweb - Property Editor - "image" field type support setting thumbnail size with css. @6.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - "elementselect" field type does not work correctly with dynamic field control. @6.0-SNAPSHOT
+1ed2e9f Fixed: wflow-consoleweb - Property Editor - Description of "label", "readonly" & "htmleditor" field types are not shown correctly. @6.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - Extra options for options field are not work correctly when options are retrieve from AJAX. @6.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - Extra options for options field are not take care of empty option correctly. @6.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - First option value are wrongly set for "radio" & "checkbox" field types when using AJAX. @6.0-SNAPSHOT Fixed: wflow-consoleweb - Property Editor - "sortableselect" field type cannot handle AJAX on change correctly. @6.0-SNAPSHOT
+bc6b21c Fixed: wflow-core - Date Picker - Self validation error when using only time picker @6.0-SNAPSHOT
+f1a0f77 Fixed: wflow-core - Date Picker - exposed html bug @6.0-SNAPSHOT
+727acd1 Fixed: wflow-consoleweb - Property Editor - Sortable Selectbox - Not able to load default value.  @6.0-SNAPSHOT
+e4c87d0 Fixed: wflow-consoleweb - Regression from 1850f6d. Property Editor - Ajax options can't load correctly for multiple grid column selectbox.  @6.0-SNAPSHOT
+29dac80 Fixed: wflow-consoleweb - Property Editor - Description of grid field is not shown when clicking on new row input field.  @6.0-SNAPSHOT
+d0fa660 Fixed: wflow-consoleweb - Regression of 83a8ee7. App Center - Userview icon does not align center in mobile.  @6.0-SNAPSHOT
+b2134ae Modified: wflow-consoleweb - Form/ Datalist - Added max width and word break text wrap for long un-break text in table cell.  @6.0-SNAPSHOT Modified: wflow-consoleweb - Form - Added word break text wrap for long un-break text in readonly field value.  @6.0-SNAPSHOT
+588ee36 Modified: wflow-consoleweb - Userview Form Print - Remove url printed in form.  @6.0-SNAPSHOT
+22aa716 Fixed: wflow-consoleweb - Datalist CSV Export - Prevent null dereference.  @6.0-SNAPSHOT
+c3b8229 Fixed: wflow-consoleweb - Universal Theme - Fix css for horizontal menu.  @6.0-SNAPSHOT
+28e860e Fixed: wflow-wfengine - Workflow Manager - Exception when "variableMap" is null when calling "assignmentVariables" method.  @6.0-SNAPSHOT
+00d2208 Fixed: wflow-core - FormUtil - Should not execute formatDataForValidation method for hidden elements.  @6.0-SNAPSHOT Fixed: wflow-core - Text Field - Only format data for validation when style is not empty. @6.0-SNAPSHOT
+61d199a Fixed: wflow-consoleweb - Datalist CSV export - Support for other charset. #4971 @6.0-SNAPSHOT
+24e9ed9 Modified: wflow-entepriseweb - Builder - Update css for rtl. @6.0-SNAPSHOT Modified: wflow-entepriseweb - Builder - Click builder icon to reload page. @6.0-SNAPSHOT
+15134b6 Modified: wflow-consoleweb -Builder - Update design. @6.0-SNAPSHOT Modified: wflow-consoleweb -UI - Update font awesome icons to v4. @6.0-SNAPSHOT
+5fd1176 Fixed: wflow-consoleweb - Mobile - URL with embed parameter is not accessible by normal users. @6.0-SNAPSHOT
+09b4008 Fixed: wflow-core/wflow-commons - Values have regex char can't replace correctly. @6.0-SNAPSHOT
+dc9d1c3 Fixed: wflow-core - User Notification - Assignment link is wrong when send to multiple users. @6.0-SNAPSHOT
+83a8ee7 Fixed: wflow-consoleweb - App Center - Inconsistent thumbnail proportion @6.0-SNAPSHOT
+c3913cd Modified: wflow-consoleweb - File/Image Upload - Change properties for "Multiple File Upload" @6.0-SNAPSHOT
+ac0e067 Modified: wflow-core - Date Picker - Added i18n chinese translation for time picker elements @6.0-SNAPSHOT
+6b71cfa Modified: wflow-core/consoleweb - Date Picker - Added time picker functionality @6.0-SNAPSHOT
+ad05a5e Fixed: wflow-core - Date Picker - Date format is wrong for readonly mode after form validation fail. #4939 @6.0-SNAPSHOT
+
 CHANGES IN 6.0-BETA3
 ====================
 3a7d535 Fixed: wflow-consoleweb - Datalist - Responsive width not detected correctly on iOS @6.0-SNAPSHOT
