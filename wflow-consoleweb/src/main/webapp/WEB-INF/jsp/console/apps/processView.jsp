@@ -46,8 +46,6 @@
                     <dd><c:out value="${process.packageId}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.app.process.common.label.definitionId"/></dt>
                     <dd><c:out value="${process.id}"/>&nbsp;</dd>
-                    <dt><fmt:message key="console.app.process.common.label.description"/></dt>
-                    <dd><c:out value="${process.description}"/>&nbsp;</dd>
                     <dt><fmt:message key="console.process.config.label.linkToRunProcess"/></dt>
                     <dd>${pageContext.request.scheme}://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/web/client/app/<c:out value="${appId}"/>/<c:out value="${appVersion}"/>/process/<c:out value="${processIdWithoutVersion}"/>?start=true</dd>
                 </dl>
