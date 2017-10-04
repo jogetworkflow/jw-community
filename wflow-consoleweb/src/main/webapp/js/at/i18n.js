@@ -19,11 +19,11 @@ I18nEditor = {
     retrieveI18nHash : function (labels, found) {
         for (var i in found) {
             if (found[i].indexOf("#i18n.") !== -1 || found[i].indexOf("{i18n.") === 0) {
-                labels.push(found[i].substring(6, found[i].length -1));
-            } else if (found[i].indexOf("{") !== -1) {
-                var regex = new RegExp("\\{([^\\{^\\}])*\\}", "gi");
-                var found = found[i].match(regex);
-                I18nEditor.retrieveI18nHash(labels, found);
+                labels.push(found[i].substring(6, found[i].length - 1));
+            } else if (found[i].indexOf("{", 1) !== -1) {
+                var regex = new RegExp("\\{([^\\{^\\}])*\\}","gi");
+                var nestedfound = found[i].match(regex);
+                I18nEditor.retrieveI18nHash(labels, nestedfound);
             }
         }
     },
