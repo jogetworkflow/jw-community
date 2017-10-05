@@ -1,6 +1,4 @@
 ConnectionManager = {
-    tokenName : "",
-    tokenValue : "",
     post : function(url, callback, params){
               var thisWindow = window;
               $.support.cors = true;
