@@ -18,7 +18,6 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.util.WorkflowUtil;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 public class DataList {
 
@@ -366,6 +365,10 @@ public class DataList {
     }
 
     public String getSessionKeyPrefix() {
+        if (sessionKeyPrefix == null || sessionKeyPrefix.isEmpty()) {
+            sessionKeyPrefix = AppUtil.processHashVariable("#request.requestURI#", null, null, null);
+        }
+        
         return sessionKeyPrefix;
     }
 
