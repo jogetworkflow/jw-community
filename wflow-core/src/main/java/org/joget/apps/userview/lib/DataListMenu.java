@@ -119,6 +119,9 @@ public class DataListMenu extends UserviewMenu {
                                 setRedirectUrl("REFERER");
                             }
                         } else {
+                            if (ac.getUrl().startsWith("?")) {
+                                ac.setUrl(getUrl() + ac.getUrl());
+                            }
                             setRedirectUrl(ac.getUrl());
                         }
                     }

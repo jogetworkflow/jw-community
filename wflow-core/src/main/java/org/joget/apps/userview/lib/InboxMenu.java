@@ -165,6 +165,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
                             setRedirectUrl("REFERER");
                         }
                     } else {
+                        if (ac.getUrl().startsWith("?")) {
+                            ac.setUrl(getUrl() + ac.getUrl());
+                        }
                         setRedirectUrl(ac.getUrl());
                     }
                 }
