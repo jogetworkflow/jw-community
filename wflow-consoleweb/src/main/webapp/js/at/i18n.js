@@ -45,6 +45,9 @@ I18nEditor = {
             var $table = $(container).find(".i18n_table");
             
             for (var l in labels) {
+                if (UI.escapeHTML(labels[l]) === "") {
+                    continue;
+                }
                 var css = "odd";
                 if (l % 2 === 0) {
                     css = "even";
