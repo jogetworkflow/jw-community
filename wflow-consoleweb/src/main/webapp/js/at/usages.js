@@ -65,12 +65,12 @@ var Usages = {
             var el = $('<li class="item" data-where="'+item.where+'"></li>');
             catContainer.append(el);
             if (item.link !== undefined) {
-                $(el).append('<a class="item_link" target="_blank" href="'+item.link+'">'+item.label+'</a>');
+                $(el).append('<a class="item_link" target="_blank" href="'+item.link+'">'+UI.escapeHTML(item.label)+'</a>');
                 if (item.type.indexOf("process") !== -1 || item.type.indexOf("plugin") !== -1) {
                     $(el).find("a.item_link").addClass("overlay");
                 }
             } else {
-                $(el).append('<a>'+item.label+'</a>');
+                $(el).append('<a>'+UI.escapeHTML(item.label)+'</a>');
             }
 
             if (item.found !== undefined && item.found.length > 0) {
