@@ -37,7 +37,6 @@
         <script src="${pageContext.request.contextPath}/pbuilder/js/StackBlur.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/canvg.js"></script> 
         <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/pbuilder?build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/undomanager.js"></script> 
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.format.js"></script> 
         <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>

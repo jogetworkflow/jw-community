@@ -1175,7 +1175,7 @@ ProcessBuilder.ApiClient = {
                 }
             },
             error: function(e) {
-                alert(get_pbuilder_msg("pbuilder.label.deploymentError") + ": " + e);
+                alert(get_pbuilder_msg("pbuilder.label.deploymentError") + ": " + e.statusText);
             }
         };
         ProcessBuilder.ApiClient.httpPostMultipart(deployUrl, deployCallback, params);
