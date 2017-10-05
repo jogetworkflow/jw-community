@@ -148,6 +148,7 @@ public class DatalistBuilderWebController {
                 }
                 
                 dataList = dataListService.fromJson(AppUtil.processHashVariable(tempJson, null, StringUtil.TYPE_JSON, null));
+                dataList.setUseSession(false);
                 map.addAttribute("json", json);
             } else {
                 dataList = parseFromJsonParameter(map, dataList, id, request);
