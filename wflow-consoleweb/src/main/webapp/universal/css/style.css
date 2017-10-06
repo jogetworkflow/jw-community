@@ -1421,5 +1421,10 @@ main .grid-stack-item-header-refresh {
     .label {
         border: 0px;
     }    
+    body {
+        height: auto !important;
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
 }
 #jqueryDialogDiv {overflow: hidden;}
