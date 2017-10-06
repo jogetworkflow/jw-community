@@ -8,7 +8,9 @@ ConnectionManager = {
                  data: params,
                  dataType : "text",
                  beforeSend: function (request) {
-                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    if (ConnectionManager.tokenName !== undefined) { 
+                        request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    }
                  },
                  xhrFields: {
                      withCredentials: true
