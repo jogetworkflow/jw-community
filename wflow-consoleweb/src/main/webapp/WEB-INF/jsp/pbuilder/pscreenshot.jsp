@@ -30,7 +30,6 @@
         <script src="${pageContext.request.contextPath}/pbuilder/js/canvg.js"></script> 
         <script src="${pageContext.request.contextPath}/web/console/i18n/peditor"></script>
         <script src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js"></script>
-        <script src="${pageContext.request.contextPath}/js/json/util.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/undomanager.js"></script> 
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.format.js"></script> 
         <script src="${pageContext.request.contextPath}/web/console/i18n/pbuilder"></script>
