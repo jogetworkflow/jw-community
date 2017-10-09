@@ -193,7 +193,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                     if (emailMessage != null && emailMessage.length() != 0) {
 
                                         String msg;
-                                        String tempLink = "";
+                                        String tempLink = link;
                                         if ("true".equalsIgnoreCase(isHtml)) {
                                             if (urlName != null && urlName.length() != 0) {
                                                 tempLink = "<a href=\"" + link + "\">" + urlName + "</a>";
