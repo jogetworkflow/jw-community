@@ -160,6 +160,10 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                 if (wfAssignment != null) {
                                     // create the email message
                                     HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, from);
+                                    if (email == null) {
+                                        return;
+                                    }
+                                    
                                     if (cc != null && cc.length() != 0) {
                                         Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, auditTrail.getAppDef());
                                         for (String address : ccs) {

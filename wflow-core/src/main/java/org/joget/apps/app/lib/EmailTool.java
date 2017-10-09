@@ -120,6 +120,9 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             
             // create the email message
             final HtmlEmail email = AppUtil.createEmail(smtpHost, smtpPort, security, smtpUsername, smtpPassword, fromStr);
+            if (email == null) {
+                return null;
+            }
             
             if (cc != null && cc.length() != 0) {
                 Collection<String> ccs = AppUtil.getEmailList(null, cc, wfAssignment, appDef);

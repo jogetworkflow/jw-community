@@ -955,6 +955,11 @@ public class AppUtil implements ApplicationContextAware {
             form = setupManager.getSettingValue("smtpEmail");
         }
         
+        if (host.isEmpty() || form == null || form.isEmpty()) {
+            LogUtil.info(AppUtil.class.getName(), "SMTP is not configure!");
+            return null;
+        }
+        
         HtmlEmail email = new HtmlEmail();
         email.setHostName(host);
         if (port != null && port.length() != 0) {
