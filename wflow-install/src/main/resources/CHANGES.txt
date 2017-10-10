@@ -4,6 +4,21 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0-BETA4
 ====================
+7f7455b Fixed: wflow-core - Correction of 22eea5. @5.0-SNAPSHOT
+0965642 Fixed: wflow-consoleweb - FormUtil.getGridCellValues return wrong value on Grid form element. @6.0-SNAPSHOT
+3eff30c Fixed: wflow-core - User Notification - Regression from dc9d1c3. Assignment link is missing when not send as HTML. @6.0-SNAPSHOT
+c7c37dc Fixed: wflow-consoleweb - Process Builder - Not able to generate process screenshot and process graph due to CSRF token is reset. @6.0-SNAPSHOT
+22eea54 Fixed: wflow-core - AppUtil/Email Tool/ User Notification - Handle exception when SMTP is not configured.  @6.0-SNAPSHOT
+34f652b Fixed: wflow-consoleweb - Universal Print - Form section is not able to notice in some theme. #5064 @6.0-SNAPSHOT Fixed: wflow-consoleweb - Universal Print - Uservew footer and admin control are printed. #5064 @6.0-SNAPSHOT
+a9b33a4 Fixed: wflow-consoleweb - Universal Theme - Only 1 page  of form is print when clicked print button. #5064 @6.0-SNAPSHOT
+1d9f0d6 Fixed: wflow-consoleweb - Regression of 8140f4. @6.0-SNAPSHOT
+b453dd5 Fixed: wflow-core - Datalist - Session key always same when multiple userview menu is using same datalist. @6.0-SNAPSHOT
+41d9119 Fixed: wflow-core - Datalist/Inbox Menu - Redirection is not handled correctly. @6.0-SNAPSHOT
+870ba92 Fixed: wflow-consoleweb - Datalist Builder - Preview with use session enabled is throwing error. @6.0-SNAPSHOT
+8140f40 Fixed: wflow-consoleweb - util.js - ConnectionManager csrf token is reset when the library is included twice. @6.0-SNAPSHOT
+cd8b3d1 Fixed: wflow-consoleweb - Process Builder - Not able to deploy due to CSRF token reset to empty string. @6.0-SNAPSHOT
+0b32813 Fixed: wflow-consoleweb - Advanced Tools - Usage - HTML in label is rendered. @6.0-SNAPSHOT
+606337b Fixed: wflow-consoleweb - Advanced Tools - I18n - Empty label is listed for translate. @6.0-SNAPSHOT
 a1e5e49 Fixed: wflow-consoleweb - Builder - Admin bar blocked buttons in builders. @6.0-SNAPSHOT
 df44d7c Fixed: wflow-consoleweb - Advanced Tools - I18n - Infinite loop issue when retrieving i18n hash variables. @6.0-SNAPSHOT
 348a86f Fixed: wflow-core - AppUtil - Replacing app message corrupted the JSON definition when the message key matched the json attribute key. #5059 @6.0-SNAPSHOT
