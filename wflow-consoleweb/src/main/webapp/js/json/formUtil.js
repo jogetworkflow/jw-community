@@ -115,8 +115,8 @@ FormUtil = {
                     }
                 } else {
                     var cellId = cellFieldId.replace(/\./g, '_');
-                    var cell = $(field).find("[name=" + cellId + "], [name$=_" + cellId + "]");
-                    if (cell.length > 1) {
+                    var cell = $(this).find("[name=" + cellId + "], [name$=_" + cellId + "]");
+                    if (cell.length > 0) {
                         values.push(cell.text());
                     }
                 }
