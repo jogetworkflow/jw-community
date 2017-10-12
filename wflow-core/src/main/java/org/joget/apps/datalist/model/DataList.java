@@ -619,23 +619,16 @@ public class DataList {
     }
 
     public String[] getDataListParam(String paramName) {
-        if (requestParamMap == null) {
-            requestParamMap = new HashMap<String, String[]>();
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-            Enumeration<String> e = request.getParameterNames();
-            while (e.hasMoreElements()) {
-                String pn = e.nextElement();
-                paramName = StringEscapeUtils.escapeHtml(pn);
-                String[] values = request.getParameterValues(pn);
-                requestParamMap.put(pn, values);
-            }
-        }
-        
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         String param = getDataListEncodedParamName(paramName);
-        String[] values = requestParamMap.get(param);
+        String[] values = null; 
+        if (requestParamMap != null) {
+            values = requestParamMap.get(param);
+        } else {
+            values = request.getParameterValues(param);
+        }
         if (isUseSession() && !(TableTagParameters.PARAMETER_EXPORTTYPE.equals(paramName) || PARAMETER_ACTION.equals(paramName) || paramName.startsWith(CHECKBOX_PREFIX))) {
             String sessionKey = "session_" + getId() + "_" + getSessionKeyPrefix() + "_" + param;
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
             HttpSession session = request.getSession(true);
 
             if (values != null) {
