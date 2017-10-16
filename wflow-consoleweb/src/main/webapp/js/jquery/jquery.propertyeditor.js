@@ -4069,7 +4069,7 @@ PropertyEditor.Type.File.prototype = {
     },
     selectResource: function (filename) {
         if (this.properties.appResourcePrefix !== undefined && this.properties.appResourcePrefix !== null && this.properties.appResourcePrefix === "true") {
-            filename = "AppResource::"+filename;
+            filename = "#appResource."+filename+"#";
         }
         $("#"+this.id).val(filename).trigger("change");
     }
@@ -4115,9 +4115,9 @@ PropertyEditor.Type.Image.prototype = {
 
         var style = imagesize;
         if (this.value !== "") {
-            var path = this.value.replace("AppResource::", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
-            path = this.value.replace("[CONTEXT_PATH]", this.options.contextPath);
-            path = this.value.replace("[APP_PATH]", this.properties.appPath);
+            var path = this.value.replace("#appResource.", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
+            path = path.replace("[CONTEXT_PATH]", this.options.contextPath);
+            path = path.replace("[APP_PATH]", this.properties.appPath);
             style += " background-image:url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')";
         }
 
@@ -4127,7 +4127,7 @@ PropertyEditor.Type.Image.prototype = {
         var thisObj = this;
         $("#"+this.id).on("change", function(){
             var value = $(this).val();
-            var path = value.replace("AppResource::", thisObj.options.contextPath+"/web/app"+thisObj.properties.appPath+"/resources/");
+            var path = value.replace("#appResource.", thisObj.options.contextPath+"/web/app"+thisObj.properties.appPath+"/resources/");
             var imagePlaceholder = $(this).parent().find(".image-placeholder");
             $(imagePlaceholder).css("background-image", "url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')");
         });
@@ -4143,7 +4143,7 @@ PropertyEditor.Type.Image.prototype = {
 
     },
     selectResource: function (filename) {
-        $("#"+this.id).val("AppResource::"+filename).trigger("change");
+        $("#"+this.id).val("#appResource."+filename+"#").trigger("change");
     }
 };
 PropertyEditor.Type.Image = PropertyEditor.Util.inherit( PropertyEditor.Model.Type, PropertyEditor.Type.Image.prototype);

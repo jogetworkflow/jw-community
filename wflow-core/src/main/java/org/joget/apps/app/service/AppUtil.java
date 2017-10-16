@@ -429,7 +429,7 @@ public class AppUtil implements ApplicationContextAware {
         AppDefinition originalAppDef = AppUtil.getCurrentAppDefinition();
         
         try {
-            if (!content.contains("AppResource::") && !containsHashVariable(content)) {
+            if (!containsHashVariable(content)) {
                 return content;
             }
             
@@ -439,13 +439,6 @@ public class AppUtil implements ApplicationContextAware {
                 appDef = appService.getAppDefinitionForWorkflowProcess(wfAssignment.getProcessId());
             }
             
-            content = appResourcesPathResolver(content, appDef);
-            
-            // check again for hash # to avoid unnecessary processing
-            if (!containsHashVariable(content)) {
-                return content;
-            }
-
             //parse content
             if (content != null) {
                 Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
@@ -986,20 +979,5 @@ public class AppUtil implements ApplicationContextAware {
         email.setFrom(StringUtil.encodeEmail(form));
         
         return email;
-    }
-    
-    public static String appResourcesPathResolver(String content, AppDefinition appDef){
-        if (content.contains("AppResource::")) {
-            if (appDef == null) {
-                appDef = getCurrentAppDefinition();
-            }
-            
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-            if (appDef != null && request != null) {
-                String path = request.getContextPath() + "/web/app/" + appDef.getAppId() + "/resources/";
-                content = content.replaceAll("AppResource::", path);
-            }
-        }
-        return content;
     }
 }
