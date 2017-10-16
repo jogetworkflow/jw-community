@@ -1047,6 +1047,11 @@
                 {value: '', label: ''},
                 {value: '_blank', label: '@@theme.universal.target.newTab@@'},
             ]
+        },
+        {
+            key : 'isPublic',
+            label : '@@theme.universal.shortcut.public@@',
+            type : 'truefalse'
         }]
     },
     {

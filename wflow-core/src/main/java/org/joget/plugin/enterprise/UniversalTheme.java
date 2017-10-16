@@ -570,8 +570,8 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         html += getHomeLink(data);
         if ((Boolean) data.get("is_logged_in")) {
             html += getInbox(data);
-            html += getShortcut(data);
         }
+        html += getShortcut(data);
         html += getUserMenu(data);
         html += "</ul></div>\n";
         return html;
@@ -603,36 +603,42 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     }
     
     protected String getShortcut(Map<String, Object> data) {
-        String html = "";
+        String shortcutHtml = "";
         
         Object[] shortcut = (Object[]) getProperty("shortcut");
         if (shortcut != null && shortcut.length > 0) {
-            html += "<li class=\"shortcut-link dropdown\">\n"
+            for (Object o : shortcut) {
+                Map link = (HashMap) o;
+                String href = link.get("href").toString();
+                String label = link.get("label").toString();
+                String target = (link.get("target") == null)?"":link.get("target").toString();
+                boolean isPublic = "true".equalsIgnoreCase((String) link.get("isPublic"));
+                
+                if ((Boolean) data.get("is_logged_in") || (!((Boolean) data.get("is_logged_in")) && isPublic)) {
+                    if ("divider".equalsIgnoreCase(label)) {
+                        shortcutHtml += "<li class=\"divider\"></li>\n";
+                    } else if (href.isEmpty()) {
+                         shortcutHtml += "<li class=\"dropdown-menu-title\"><span>" + label + "</span></li>\n";
+                    } else {
+                        if (!href.contains("/")) {
+                            href = data.get("base_link") + href;
+                        }
+                        shortcutHtml += "<li><a href=\"" + href + "\" target=\""+target+"\">" + label + "</a></li>\n";
+                    }
+                }
+            }
+        }
+        
+        String html = "";
+        if (!shortcutHtml.isEmpty()) {
+            html = "<li class=\"shortcut-link dropdown\">\n"
                   + "    <a data-toggle=\"dropdown\" class=\"btn dropdown-toggle\">\n"
                   + "	     <i class=\"fa fa-th-list white\"></i> " + getPropertyString("shortcutLinkLabel") + "\n"
                   + "	     <span class=\"caret\"></span>\n"
                   + "    </a>\n";
             
             html += "<ul class=\"dropdown-menu\">\n";
-            
-            for (Object o : shortcut) {
-                Map link = (HashMap) o;
-                String href = link.get("href").toString();
-                String label = link.get("label").toString();
-                String target = (link.get("target") == null)?"":link.get("target").toString();
-
-                if ("divider".equalsIgnoreCase(label)) {
-                    html += "<li class=\"divider\"></li>\n";
-                } else if (href.isEmpty()) {
-                     html += "<li class=\"dropdown-menu-title\"><span>" + label + "</span></li>\n";
-                } else {
-                    if (!href.contains("/")) {
-                        href = data.get("base_link") + href;
-                    }
-                    html += "<li><a href=\"" + href + "\" target=\""+target+"\">" + label + "</a></li>\n";
-                }
-            }
-            
+            html += shortcutHtml;
             html += "</ul></li>";
         }
         
