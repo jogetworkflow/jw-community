@@ -60,6 +60,7 @@
             var prop = ${properties};
             prop['filename'] = "${appResource.id}";
             prop['url'] = "${pageContext.request.contextPath}/web/app/${appId}/resources/${appResource.id}";
+            prop['hashvariable'] = "#appResource.${appResource.id}#";
             prop['filesize'] = "${appResource.filesizeString}";
             
             var options = {
@@ -74,6 +75,11 @@
                     {
                         name : 'url',
                         label : '<fmt:message key="console.app.resource.common.label.url"/>',
+                        type : 'readonly'
+                    },
+                    {
+                        name : 'hashvariable',
+                        label : '<fmt:message key="setting.plugin.hashVariable"/>',
                         type : 'readonly'
                     },
                     {
