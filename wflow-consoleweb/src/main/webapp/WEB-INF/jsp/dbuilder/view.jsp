@@ -8,6 +8,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/ui/jquery-ui-1.10.3.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/util.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/loadCSS/loadCSS.js"></script>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css">
     
     <link rel="stylesheet" href="<c:url value="/css/datalistBuilderView.css"/>?build=<fmt:message key="build.number"/>" />
