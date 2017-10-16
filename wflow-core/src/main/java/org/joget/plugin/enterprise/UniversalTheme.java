@@ -784,9 +784,6 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     public String getFavIconLink(Map<String, Object> data) {
         String fav = getPropertyString("fav_icon");
         if (!fav.isEmpty()) {
-            if (fav.startsWith("/")) {
-                fav = data.get("context_path") + fav;
-            }
             return fav;
         } else {
             return super.getFavIconLink(data);

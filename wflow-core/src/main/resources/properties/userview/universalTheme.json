@@ -964,12 +964,20 @@
     {
         name : 'fav_icon',
         label : '@@theme.universal.favIcon@@',
-        type : 'textfield'
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:16px;height:16px;'
     },
     {
         name : 'logo',
         label : '@@theme.universal.logo@@',
-        type : 'textfield'
+        type: 'image',
+        appPath: '[APP_PATH]',
+        allowInput : 'true',
+        isPublic : 'true',
+        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
     },
     {
         name : 'profile',
