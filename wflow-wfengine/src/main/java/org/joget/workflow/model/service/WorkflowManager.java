@@ -160,6 +160,14 @@ public interface WorkflowManager {
      * @return 
      */
     WorkflowActivity getActivityById(String activityId);
+    
+    /**
+     * Returns latest activity instance based on the process instance ID and activity definition id.
+     * @param processId
+     * @param actDefId
+     * @return 
+     */
+    WorkflowActivity getActivityByProcess(String processId, String actDefId);
 
     /**
      * Returns a list of running or completed activities for a process instance ID.

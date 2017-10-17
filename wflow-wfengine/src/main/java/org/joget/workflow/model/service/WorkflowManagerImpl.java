@@ -1697,6 +1697,109 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         return workflowActivity;
     }
+    
+    /**
+     * Returns latest activity instance based on the process instance ID and activity definition id.
+     * @param processId
+     * @param actDefId
+     * @return 
+     */
+    public WorkflowActivity getActivityByProcess(String processId, String actDefId) {
+        
+        SharkConnection sc = null;
+        WorkflowActivity workflowActivity = new WorkflowActivity();
+        try {
+            if (processId == null || processId.isEmpty() || actDefId == null || actDefId.isEmpty()) {
+                return null;
+            }
+
+            sc = connect();
+
+            Shark shark = Shark.getInstance();
+            AdminMisc admin = shark.getAdminMisc();
+            WfActivityIterator ai = sc.get_iterator_activity();
+            ActivityFilterBuilder aieb = shark.getActivityFilterBuilder();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+            XPDLBrowser xpdl = shark.getXPDLBrowser();
+
+            WMFilter filter1 = aieb.addProcessIdEquals(sessionHandle, processId);
+            WMFilter filter2 = aieb.addDefinitionIdEquals(sessionHandle, actDefId);
+            WMFilter filter = aieb.and(sessionHandle, filter1, filter2);
+            filter = aieb.setOrderByActivatedTime(sessionHandle, filter, false);
+            filter = aieb.setLimit(sessionHandle, filter, 1);
+
+            ai.set_query_expression(aieb.toIteratorExpression(sessionHandle, filter));
+            WfActivity[] wfActivityList = ai.get_next_n_sequence(0);
+
+            if (wfActivityList.length > 0) {
+                WfActivity wfActivity = wfActivityList[0];
+
+                workflowActivity.setId(wfActivity.key());
+                WMEntity entity = admin.getActivityDefinitionInfo(sessionHandle, wfActivity.container().key(), wfActivity.key());
+                workflowActivity.setActivityDefId(entity.getId());
+
+                WfProcess process = wfActivity.container();
+                WfProcessMgr manager = process.manager();
+
+                workflowActivity.setName(wfActivity.name());
+                workflowActivity.setState(wfActivity.state());
+                workflowActivity.setProcessDefId(wfActivity.container().manager().name());
+                workflowActivity.setProcessId(wfActivity.container().key());
+                workflowActivity.setProcessName(wfActivity.container().name());
+                workflowActivity.setProcessVersion(manager.version());
+                workflowActivity.setPriority(String.valueOf(wfActivity.priority()));
+                workflowActivity.setProcessStatus(process.state());
+                
+                workflowActivity.setType(WorkflowActivity.TYPE_NORMAL);
+                //check activity type
+                WMEntityIterator activityEntityIterator = xpdl.listEntities(sessionHandle, entity, null, true);
+                while (activityEntityIterator.hasNext()) {
+                    WMEntity actEnt = (WMEntity) activityEntityIterator.next();
+                    if (actEnt.getType().equalsIgnoreCase("tool")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_TOOL);
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("route")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_ROUTE);
+                        break;
+                    } else if (actEnt.getType().equalsIgnoreCase("subflow")) {
+                        workflowActivity.setType(WorkflowActivity.TYPE_SUBFLOW);
+                        workflowActivity.setPerformer(actEnt.getId());
+                        break;
+                    }
+                }
+                
+                // check for hash variable
+                if (WorkflowUtil.containsHashVariable(workflowActivity.getName()) || WorkflowUtil.containsHashVariable(workflowActivity.getProcessName())) {
+                    WorkflowAssignment ass = new WorkflowAssignment();
+                    ass.setProcessId(workflowActivity.getProcessId());
+                    ass.setProcessDefId(workflowActivity.getProcessDefId());
+                    ass.setProcessName(workflowActivity.getProcessName());
+                    ass.setProcessVersion(workflowActivity.getProcessVersion());
+                    ass.setProcessRequesterId(getUserByProcessIdAndActivityDefId(workflowActivity.getProcessDefId(), workflowActivity.getProcessId(), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS));
+                    ass.setDescription(workflowActivity.getDescription());
+                    ass.setActivityId(workflowActivity.getId());
+                    ass.setActivityName(workflowActivity.getName());
+                    ass.setActivityDefId(workflowActivity.getActivityDefId());
+                    ass.setAssigneeId(workflowActivity.getPerformer());
+
+                    ass.setProcessVariableList(new ArrayList(getProcessVariableList(workflowActivity.getProcessId())));
+                    //process activity name variable
+                    workflowActivity.setName(WorkflowUtil.processVariable(workflowActivity.getName(), null, ass));
+                    workflowActivity.setProcessName(WorkflowUtil.processVariable(workflowActivity.getProcessName(), null, ass));
+                }
+            }
+
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return workflowActivity;
+    }
 
     /**
      * Returns the variable value based on a process instance ID.
