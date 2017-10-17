@@ -1076,7 +1076,7 @@ public class WorkflowJsonController {
                 
                 JSONObject userview = new JSONObject();
                 userview.accumulate("id", userviewDef.getId());
-                userview.accumulate("name", StringUtil.stripAllHtmlTag(AppUtil.processHashVariable(userviewDef.getName(), null, null, null, appDef)));
+                userview.accumulate("name", StringUtil.stripAllHtmlTag(userviewDef.getName()));
                 userview.accumulate("version", userviewDef.getAppVersion());
                 userview.accumulate("description", StringUtil.stripAllHtmlTag(userviewDef.getDescription()));
                 String url = WorkflowUtil.getHttpServletRequest().getContextPath() + "/web/userview/" + appDef.getId() + "/" + userviewDef.getId();

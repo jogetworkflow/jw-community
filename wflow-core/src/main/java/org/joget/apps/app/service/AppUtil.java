@@ -433,6 +433,10 @@ public class AppUtil implements ApplicationContextAware {
                 return content;
             }
             
+            if (appDef != null) {
+                AppUtil.setCurrentAppDefinition(appDef);
+            }
+            
             if (appDef == null && originalAppDef == null && wfAssignment != null) {
                 //retrieve appDef based on wf assignment
                 AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
