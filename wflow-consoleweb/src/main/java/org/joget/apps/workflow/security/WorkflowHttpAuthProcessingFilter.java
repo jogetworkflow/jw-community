@@ -208,7 +208,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                         if (currentUser != null) {
                             WorkflowUserDetails user = new WorkflowUserDetails(currentUser);
                             
-                            auth = new UsernamePasswordAuthenticationToken(user, user.getUsername(), user.getAuthorities());
+                            auth = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
                             super.setDetails(request, (UsernamePasswordAuthenticationToken) auth);
                         } else {
                             LogUtil.info(getClass().getName(), "Authentication for user " + loginAs + ": " + false);
