@@ -555,6 +555,10 @@ ul#category-container {
     opacity: 1;
 }
 
+#login .systemAlert {
+    display: none !important;
+}
+
 body#login #main {
     padding-top: 0;
     padding-bottom: 0;

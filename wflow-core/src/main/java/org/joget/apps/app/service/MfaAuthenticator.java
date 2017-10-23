@@ -80,7 +80,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
 
         // return result
         UserDetails details = new WorkflowUserDetails(user);
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(details, "", gaList);
+        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user.getUsername(), "", gaList);
         result.setDetails(details);
         SecurityContextHolder.getContext().setAuthentication(result);
         
