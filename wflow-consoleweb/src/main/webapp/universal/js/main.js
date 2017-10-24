@@ -1,9 +1,11 @@
-_customFooTableArgs = {
-    breakpoints: { // The different screen resolution breakpoints
-        phone: 480,
-        tablet: 767
-    }
-};
+if ((typeof _customFooTableArgs) === "undefined") {
+    _customFooTableArgs = {
+        breakpoints: { // The different screen resolution breakpoints
+            phone: 480,
+            tablet: 767
+        }
+    };
+}
 
 !function ($) {
     var bsButton = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
