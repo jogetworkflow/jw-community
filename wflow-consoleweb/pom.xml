@@ -142,7 +142,7 @@
                 <configuration>
                     <minimize>true</minimize>
                     <destinationFolder>${basedir}/src/main/webapp/wro/</destinationFolder>
-                    <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                    <contextFolder>${basedir}/src/main/webapp/,${basedir}\src\main\webapp\</contextFolder>
                     <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                     <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
                     <extraConfigFile>${basedir}/src/main/resources/wro.properties</extraConfigFile>
