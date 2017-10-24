@@ -144,7 +144,7 @@ public class WorkflowUserManager {
             return null;
         }
         
-        Object userObj = auth.getPrincipal();
+        Object userObj = auth.getDetails();
         if (userObj instanceof String) {
             setCurrentThreadUser((String) userObj);
             return getCurrentUser();
@@ -185,7 +185,7 @@ public class WorkflowUserManager {
             Authentication auth = context.getAuthentication();
 
             if (auth != null) {
-                Object userObj = auth.getPrincipal();
+                Object userObj = auth.getDetails();
                 if (userObj instanceof UserDetails) {
                     Collection<? extends GrantedAuthority> authorities = ((UserDetails)userObj).getAuthorities();
                     for (GrantedAuthority ga: authorities) {
