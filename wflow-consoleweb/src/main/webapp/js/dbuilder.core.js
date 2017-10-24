@@ -89,15 +89,15 @@ DatalistBuilder = {
                 type = "rowAction";
             }
             
-            if ($(obj).children(".form-palette-options").length > 0) {
+            var parent = $(obj).parent();
+            if ($(parent).children(".form-palette-options").length > 0) {
                 // remove if already exists
-                $(obj).children(".form-palette-options").remove();
-                $(obj).children(".element-clear").remove();
+                $(parent).children(".form-palette-options").remove();
             }
 
             var optionHtml = "<div class='form-palette-options'>";
             optionHtml += "<button class='element-paste paste-"+type+" disabled' title='"+get_dbuilder_msg('dbuilder.paste.'+type)+"'><i class='fa fa-paste'></i><span>"+get_dbuilder_msg('dbuilder.paste.'+type)+"</span></button>";
-            optionHtml += "</div><div class='element-clear'></div>";
+            optionHtml += "</div>";
             var optionDiv = $(optionHtml);
 
             // handle paste
@@ -110,15 +110,15 @@ DatalistBuilder = {
             });
 
             // add option bar
-            $(obj).prepend(optionDiv);
-            $(obj).mouseover(function() {
+            $(parent).prepend(optionDiv);
+            $(parent).mouseover(function() {
                 DatalistBuilder.updatePasteIcon();
                 $(optionDiv).css("visibility", "visible");
             });
-            $(obj).mouseout(function() {
+            $(parent).mouseout(function() {
                 $(optionDiv).css("visibility", "hidden");
             });
-            $(obj).on("click", function() {
+            $(parent).on("click", function() {
                 if ($(optionDiv).css("visibility") === "visible") {
                     $(optionDiv).css("visibility", "hidden");
                 } else {
@@ -419,7 +419,6 @@ DatalistBuilder = {
             dropOnEmpty: true,
             activeClass: "form-cell-highlight",
             axis:'x',
-            tolerance: 'intersect',
             over: function( event, ui ) {
                 DatalistBuilder.tempJson = DatalistBuilder.getJson();
                 DatalistBuilder.adjustCanvas(event, ui);
@@ -439,6 +438,24 @@ DatalistBuilder = {
                 }
                 
                 DatalistBuilder.adjustCanvas(event, ui);
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                    w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs($(ui.helper).offset().left - $(this).offset().left),
+                        before = $(ui.helper).offset().left > $(this).offset().left; 
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
             }
         });
         
@@ -447,7 +464,6 @@ DatalistBuilder = {
             dropOnEmpty: true,
             activeClass: "form-cell-highlight",
             axis:'x',
-            tolerance: 'intersect',
             over: function( event, ui ) {
                 DatalistBuilder.tempJson = DatalistBuilder.getJson();
                 DatalistBuilder.adjustCanvas(event, ui);
@@ -469,6 +485,24 @@ DatalistBuilder = {
                 }
                 
                 DatalistBuilder.adjustCanvas(event, ui);
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                    w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs($(this).offset().left - $(ui.helper).offset().left),
+                        before = $(ui.helper).offset().left < $(this).offset().left;
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
             }
         });
         
@@ -477,7 +511,6 @@ DatalistBuilder = {
             dropOnEmpty: true,
             activeClass: "form-cell-highlight",
             axis:'x',
-            tolerance: 'intersect',
             over: function( event, ui ) {
                 DatalistBuilder.tempJson = DatalistBuilder.getJson();
                 DatalistBuilder.adjustCanvas(event, ui);
@@ -516,6 +549,24 @@ DatalistBuilder = {
                     DatalistBuilder.addToUndo(DatalistBuilder.tempJson);
                 }
                 DatalistBuilder.adjustCanvas(event, ui);
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                    w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs($(ui.helper).offset().left - $(this).offset().left),
+                        before = $(ui.helper).offset().left > $(this).offset().left; 
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
             }
         });
         
@@ -524,7 +575,6 @@ DatalistBuilder = {
             dropOnEmpty: true,
             activeClass: "form-cell-highlight",
             axis:'x',
-            tolerance: 'intersect',
             over: function( event, ui ) {
                 DatalistBuilder.tempJson = DatalistBuilder.getJson();
                 DatalistBuilder.adjustCanvas(event, ui);
@@ -561,6 +611,24 @@ DatalistBuilder = {
                 }
                 
                 DatalistBuilder.adjustCanvas(event, ui);
+            },
+            sort: function (event, ui) {
+                var that = $(this),
+                    w = ui.helper.outerWidth();
+                that.children().each(function () {
+                    if ($(this).hasClass('ui-sortable-helper') || $(this).hasClass('ui-sortable-placeholder')) 
+                        return true;
+                    // If overlap is more than half of the dragged item
+                    var dist = Math.abs($(ui.helper).offset().left - $(this).offset().left),
+                        before = $(ui.helper).offset().left > $(this).offset().left; 
+                    if ((w - dist) > (w / 2) && (dist < w)) {
+                        if (before)
+                            $('.ui-sortable-placeholder', that).insertBefore($(this));
+                        else
+                            $('.ui-sortable-placeholder', that).insertAfter($(this));
+                        return false;
+                    }
+                });
             }
         });
     },

@@ -49,22 +49,19 @@
     color: gray;
     font-style: italic;
 }
-
-.form-container .ui-sortable-placeholder {
+.ui-dragable:not(.ui-sortable-placeholder) {
+    position: absolute;
+    top:0;
+    left:0;
+}
+.ui-sortable-placeholder {
     border: 1px dotted #111111;
     visibility: visible !important;
-    height: 50px !important;
     background: #666666;
     color: white;
 }
-.form-section .ui-sortable-placeholder {
-    max-width: 150px;
-}
-.form-column .ui-sortable-placeholder {
-    max-width: 100%;
-}
-.form-container .ui-sortable-placeholder * {
-    visibility: visible;
+#databuilderContentColumns .ui-sortable-placeholder, #tdDatabuilderContentRowActions .ui-sortable-placeholder {
+    height: 140px !important;
 }
 .form-palette-options {
     display: block;
@@ -132,19 +129,22 @@
 .form-palette-options button:hover {
     background: lightgreen;
 }
-ul > .form-palette-options {
+td {
+    position: relative;
+}
+td > .form-palette-options {
     position: absolute;
-    top: -15px;
+    top: 0px;
     right: 10px;
 }
-ul > .form-palette-options button {
+td > .form-palette-options button {
     background: #fff;
     -moz-box-shadow: 0 0 2px gray;
     -webkit-box-shadow: 0 0 2px gray;
     box-shadow: 0 0 2px gray;
 }
 
-ul > .form-palette-options button:hover {
+td > .form-palette-options button:hover {
     background : #aaa
 }
 
@@ -431,6 +431,9 @@ ul#databuilderContentActions .builder-palette-action, ul#databuilderContentRowAc
     color: white;
     float: left;
     position: relative;
+}
+ul#databuilderContentColumns .builder-palette-column, ul#databuilderContentRowActions .builder-palette-action{
+    height: 140px !important;
 }
 
 ul#databuilderContentFilters .builder-palette-column{
