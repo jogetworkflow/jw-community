@@ -118,8 +118,8 @@
                             ${SPRING_SECURITY_LAST_EXCEPTION.message}
                         </div>
                     </c:if>
-                    <c:if test="${!empty userview.setting.properties.loginPageTop}">
-                        ${userview.setting.properties.loginPageTop}
+                    <c:if test="${!empty userview.setting.theme.properties.loginPageTop}">
+                        ${userview.setting.theme.properties.loginPageTop}
                     </c:if>
                     <form id="loginForm" name="loginForm" action="<c:url value='/j_spring_security_check'/>" method="POST">
                         <table align="center">
@@ -131,8 +131,8 @@
                             </td></tr>
                         </table>
                     </form>
-                    <c:if test="${!empty userview.setting.properties.loginPageBottom}">
-                        ${userview.setting.properties.loginPageBottom}
+                    <c:if test="${!empty userview.setting.theme.properties.loginPageBottom}">
+                        ${userview.setting.theme.properties.loginPageBottom}
                     </c:if>
                     <script type="text/javascript">
                         $(document).ready(
