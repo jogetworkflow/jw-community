@@ -13,13 +13,22 @@
         <button id="installApp" style="display:none"><fmt:message key="appCenter.label.installApp"/></button>
     </div>
     
-    <div id="main-body-content">
-        <iframe id="marketplaceAppFrame" src='<c:out value="${appUrl}"/>' width="99%" height="98%"></iframe>
-    </div>    
+    <iframe id="marketplaceAppFrame" src='<c:out value="${appUrl}"/>'></iframe>
 
     <style>
+        body {
+            overflow: hidden;
+        }
         #main-action-help {
             display: none;
+        }
+        #marketplaceAppFrame {
+            position: absolute;
+            top: 34px;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 34px);
+            border: 0;
         }
     </style>
     <script>
