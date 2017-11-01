@@ -272,3 +272,8 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 }
 .rowCount:before {content: "("; display: inline-block;}
 .rowCount:after {content: ")"; display: inline-block;}
+@media print {    
+    a[href]:after { content: none !important; }
+    img[src]:after { content: none !important; }
+    #adminControl {display:none !important;}
+}

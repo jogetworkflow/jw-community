@@ -148,3 +148,9 @@ a {
 }
 #help-container {display: inline-block; position: relative; float: right;}
 #help-container #main-action-help {position: relative; right:0px; width: 0; padding: 10px 0px;}
+
+@media print {    
+    a[href]:after { content: none !important; }
+    img[src]:after { content: none !important; }
+    #adminControl {display:none !important;}
+}
