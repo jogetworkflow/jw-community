@@ -140,8 +140,8 @@ public class ITextCustomFontResolver extends ITextFontResolver {
             if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
                 BaseFont font = BaseFont.createFont(path, encoding, embedded);
 
-                String fontFamilyName = TrueTypeUtil.getFamilyName(font);
-                FontFamily fontFamily = getCustomFontFamily(fontFamilyName);
+                String[] fontFamilyName = TrueTypeUtil.getFamilyNames(font);
+                FontFamily fontFamily = getCustomFontFamily(fontFamilyName[0]);
 
                 FontDescription descr = new FontDescription(font);
                 try {
@@ -193,8 +193,8 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(uri, encoding, embedded, false, afmttf, pfb);
             
-            String fontFamilyName = TrueTypeUtil.getFamilyName(font);
-            FontFamily fontFamily = getCustomFontFamily(fontFamilyName);
+            String[] fontFamilyName = TrueTypeUtil.getFamilyNames(font);
+            FontFamily fontFamily = getCustomFontFamily(fontFamilyName[0]);
             
             FontDescription descr = new FontDescription(font);
             try {
@@ -291,7 +291,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         
         FontFamily family = (FontFamily)_fontFamilies.get(normalizedFontFamily);
         if (family != null) {
-            result = family.match(convertWeightToInt(weight), style);
+            result = family.match(customConvertWeightToInt(weight), style);
             if (result != null) {
                 _fontCache.put(cacheKey, result);
                 return new ITextFSFont(result, size);
@@ -322,7 +322,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         return BaseFont.createFont(name, "winansi", true);
     }
     
-    protected int convertWeightToInt(IdentValue weight) {
+    protected int customConvertWeightToInt(IdentValue weight) {
         if (weight == IdentValue.NORMAL) {
             return 400;
         } else if (weight == IdentValue.BOLD) {
@@ -435,8 +435,8 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         FontFamily droidsan = new FontFamily();
         String path = "fonts/Droid-Sans/DroidSans.ttf";
         BaseFont font = BaseFont.createFont(path, BaseFont.IDENTITY_H, true);
-        String fontFamilyName = TrueTypeUtil.getFamilyName(font);
-        droidsan.setName(fontFamilyName);
+        String[] fontFamilyName = TrueTypeUtil.getFamilyNames(font);
+        droidsan.setName(fontFamilyName[0]);
         FontDescription descr = new FontDescription(font);
         try {
             TrueTypeUtil.populateDescription(path, font, descr);
@@ -449,8 +449,8 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         FontFamily thSarabun = new FontFamily();
         String thPath = "fonts/THSarabun/THSarabun.ttf";
         BaseFont thFont = BaseFont.createFont(thPath, BaseFont.IDENTITY_H, true);
-        String thFontFamilyName = TrueTypeUtil.getFamilyName(thFont);
-        thSarabun.setName(thFontFamilyName);
+        String[] thFontFamilyName = TrueTypeUtil.getFamilyNames(thFont);
+        thSarabun.setName(thFontFamilyName[0]);
         FontDescription thDescr = new FontDescription(thFont);
         try {
             TrueTypeUtil.populateDescription(thPath, thFont, thDescr);

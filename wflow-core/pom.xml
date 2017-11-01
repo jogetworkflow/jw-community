@@ -156,8 +156,8 @@
         </dependency>
         <dependency>
             <groupId>org.xhtmlrenderer</groupId>
-            <artifactId>core-renderer</artifactId>
-            <version>R8-final</version>
+            <artifactId>flying-saucer-pdf</artifactId>
+            <version>9.1.6</version>
         </dependency>
         <dependency>
             <groupId>org.directwebremoting</groupId>
