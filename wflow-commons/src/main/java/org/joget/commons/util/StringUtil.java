@@ -21,6 +21,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.util.ReflectionUtils;
 import javax.mail.internet.MimeUtility;
+import org.jsoup.nodes.Document.OutputSettings;
 
 /**
  * Utility methods for String processing
@@ -339,8 +340,22 @@ public class StringUtil {
      * @return 
      */
     public static String stripAllHtmlTag(String content) {
+        return stripAllHtmlTag(content, true);
+    }
+    
+    /**
+     * Remove all HTML tags from the content
+     * @param content
+     * @param prettyPrint
+     * @return 
+     */
+    public static String stripAllHtmlTag(String content, boolean prettyPrint) {
         if (content != null && !content.isEmpty()) {
-            content = Jsoup.clean(content, Whitelist.none());
+            if (prettyPrint) {
+                content = Jsoup.clean(content, Whitelist.none());
+            } else {
+                content = Jsoup.clean(content, "", Whitelist.none(), new OutputSettings().prettyPrint(false));
+            }
         }
         return content;
     }

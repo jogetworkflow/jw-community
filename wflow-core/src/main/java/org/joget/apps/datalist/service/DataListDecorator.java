@@ -138,7 +138,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
 
         // strip tags if media type is not HTML
         if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            text = StringUtil.stripAllHtmlTag(text);
+            text = StringUtil.stripAllHtmlTag(text, false);
             text = StringEscapeUtils.unescapeHtml(text);
         }
 
