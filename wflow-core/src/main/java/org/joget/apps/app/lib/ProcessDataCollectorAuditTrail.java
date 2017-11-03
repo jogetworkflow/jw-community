@@ -230,26 +230,28 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     ReportWorkflowActivity reportActivtiy = reportManager.getReportWorkflowActivity(processInstance.getReportWorkflowProcess(), wfActivity.getActivityDefId(), wfActivity.getName());
                     aInstance.setReportWorkflowActivity(reportActivtiy);
 
-                    //get assignment users
-                    try {
-                        if (users == null) {
-                            int numOfAttempt = 0;
-                            do {
-                                LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
-                                userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
+                    if (!wfActivity.getState().startsWith("closed")) {
+                        //get assignment users
+                        try {
+                            if (users == null) {
+                                int numOfAttempt = 0;
+                                do {
+                                    LogUtil.debug(getClass().getName(), "Attempting to get resource ids....");
+                                    userList = workflowManager.getAssignmentResourceIds(wfActivity.getProcessDefId(), wfActivity.getProcessId(), activityInstanceId);
 
-                                if (userList == null) {
-                                    Thread.sleep(2000); //wait for assignment creation
-                                }
-                                numOfAttempt++;
-                            } while (userList == null && numOfAttempt < 5); // try max 5 times
-                        } else {
-                            userList = users;
+                                    if (userList == null) {
+                                        Thread.sleep(2000); //wait for assignment creation
+                                    }
+                                    numOfAttempt++;
+                                } while (userList == null && numOfAttempt < 5); // try max 5 times
+                            } else {
+                                userList = users;
+                            }
+
+                            LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
+                        } catch (Exception e) {
+                            LogUtil.error(getClass().getName(), e, "Error executing report plugin");
                         }
-
-                        LogUtil.debug(getClass().getName(), "Resource ids=" + userList);
-                    } catch (Exception e) {
-                        LogUtil.error(getClass().getName(), e, "Error executing report plugin");
                     }
                 } else {
                     if (users == null) {
@@ -259,17 +261,19 @@ public class ProcessDataCollectorAuditTrail extends DefaultAuditTrailPlugin {
                     }
                 }
 
-                String assignmentUsers = "";
-                if (userList != null) {
-                    for (String username : userList) {
-                        assignmentUsers += username + ",";
+                if (!wfActivity.getState().startsWith("closed")) {
+                    String assignmentUsers = "";
+                    if (userList != null) {
+                        for (String username : userList) {
+                            assignmentUsers += username + ",";
+                        }
                     }
+                    if (assignmentUsers.endsWith(",")) {
+                        assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
+                    }
+                    aInstance.setAssignmentUsers(assignmentUsers);
                 }
-                if (assignmentUsers.endsWith(",")) {
-                    assignmentUsers = assignmentUsers.substring(0, assignmentUsers.length() - 1);
-                }
-                aInstance.setAssignmentUsers(assignmentUsers);
-
+                
                 aInstance.setPerformer(wfTrackActivity.getPerformer());
                 aInstance.setNameOfAcceptedUser(wfTrackActivity.getNameOfAcceptedUser());
                 aInstance.setState(wfActivity.getState());
