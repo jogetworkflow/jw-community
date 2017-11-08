@@ -28,10 +28,10 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.44</version>
-            <scope>runtime</scope>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>1.6.5</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.oracle</groupId>
