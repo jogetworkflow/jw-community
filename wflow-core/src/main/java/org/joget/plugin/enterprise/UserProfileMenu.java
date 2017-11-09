@@ -257,7 +257,7 @@ public class UserProfileMenu extends UserviewMenu {
             if (currentUser.getUsername().equals(getRequestParameterString("username"))) {
                 userDao.updateUser(currentUser);
                 if (us != null) {
-                    us.updateUserPostProcessing(currentUser);
+                    us.updateUserProfilePostProcessing(currentUser);
                 }
                 
                 setAlertMessage(getPropertyString("message"));
