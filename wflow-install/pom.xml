@@ -17,7 +17,7 @@
         <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
         <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
     <modules>
         <module>../wflow-app</module>
     </modules>
@@ -65,6 +65,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
                 <executions>
                     <execution>
                         <phase>deploy</phase>
@@ -105,10 +106,8 @@
                                 <copy file="src/main/resources/joget.ico" todir="target" />
                                 <copy file="src/main/resources/joget_start.ico" todir="target" />
                                 <copy file="src/main/resources/joget_stop.ico" todir="target" />
-                                <copy file="src/main/resources/mysql-start.bat" todir="target" />
-                                <copy file="src/main/resources/mysql-stop.bat" todir="target" />
-                                <copy file="src/main/resources/mysql-${mysql.version}-start.bat" todir="target" />
-                                <copy file="src/main/resources/mysql-${mysql.version}-stop.bat" todir="target" />
+                                <copy file="src/main/resources/mariadb-start.bat" todir="target" />
+                                <copy file="src/main/resources/mariadb-stop.bat" todir="target" />
                                 <copy file="src/main/resources/tomcat8-run.bat" todir="target" />
                                 <copy file="src/main/resources/tomcat8-stop.bat" todir="target" />
                                 <copy file="src/main/resources/joget-start.bat" todir="target" />
@@ -120,7 +119,7 @@
                                 <mkdir dir="downloads" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-tomcat-${tomcat.version}.tar.gz" dest="downloads/apache-tomcat-${tomcat.version}.tar.gz" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
-                                <get src="https://dev.joget.org/downloads/dependencies/mysql-noinstall-${mysql.version}-win32.zip" dest="downloads/mysql-noinstall-${mysql.version}-win32.zip" username="public" password="public" usetimestamp="true" />
+                                <get src="https://dev.joget.org/downloads/dependencies/mariadb-noinstall-${mariadb.version}-win32.zip" dest="downloads/mariadb-noinstall-${mariadb.version}-win32.zip" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
 
                                 <untar compression="gzip" dest="target">
@@ -133,7 +132,7 @@
 
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
-                                        <include name="mysql-noinstall-${mysql.version}-win32.zip" />
+                                        <include name="mariadb-noinstall-${mariadb.version}-win32.zip" />
                                     </fileset>
                                 </unzip>
 
@@ -149,9 +148,9 @@
                                 </copy>
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true" />
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/context.xml" file="src/main/resources/context.xml" overwrite="true" />
-                                <copy todir="target/mysql-${mysql.version}-win32/" file="src/main/resources/my.ini" />
-                                <copy todir="target/mysql-${mysql.version}-win32/data/">
-                                    <fileset dir="src/main/resources/mysql-data" />
+                                <copy todir="target/mariadb-${mariadb.version}-win32/" file="src/main/resources/my.ini" />
+                                <copy todir="target/mariadb-${mariadb.version}-win32/data/">
+                                    <fileset dir="src/main/resources/mariadb-data" />
                                 </copy>
 
                                 <echo file="target/VERSION.txt">${project.version} - build ${buildNumber}</echo>
@@ -164,10 +163,11 @@
                                     <fileset dir="target">
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
+                                        <include name="jre${jre.version}/**" />
+                                        <include name="mariadb-${mariadb.version}-win32/**" />
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />
-                                        <exclude name="wflow/app_datasource.properties" />
                                         <include name="build.xml" />
                                         <include name="joget-start.bat" />
                                         <include name="joget-stop.bat" />
@@ -177,6 +177,8 @@
                                         <include name="CHANGES.txt" />
                                         <include name="tomcat8-run.bat" />
                                         <include name="tomcat8-stop.bat" />
+                                        <include name="mariadb-start.bat" />
+                                        <include name="mariadb-stop.bat" />
                                         <include name="VERSION.txt" />
                                     </fileset>
                                 </zip>

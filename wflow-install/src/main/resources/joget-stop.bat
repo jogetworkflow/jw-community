@@ -1,9 +1,9 @@
 @ECHO OFF
 
-REM Stop MySQL
-ECHO == Stopping MySQL ==
+REM Stop MariaDB
+ECHO == Stopping MariaDB ==
 ECHO.
-CALL .\mysql-stop.bat
+CALL .\mariadb-stop.bat
 ECHO.
 
 REM Stop Tomcat

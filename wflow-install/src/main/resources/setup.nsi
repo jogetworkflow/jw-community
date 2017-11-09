@@ -239,16 +239,16 @@ Section "Java 8" SecJava
 
 SectionEnd
 
-Section "MySQL 5" SecMySQL
+Section "MariaDB 10" SecMariaDB
 
   SectionIn RO
   SetOutPath "$INSTDIR"
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
-    ;MySQL Files Here
-    File /r mysql-5.0.96-win32
-    File mysql-start.bat
-    File mysql-stop.bat
+    ;MariaDB Files Here
+    File /r mariadb-noinstall-10.2.10-win32
+    File mariadb-start.bat
+    File mariadb-stop.bat
   ${EndIf}
 
 SectionEnd
@@ -294,8 +294,8 @@ Function CheckUpgrade
     StrCpy $EXISTING_TOMCAT_VERSION "8.5.9"  
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.0.20\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
-    StrCpy $EXISTING_TOMCAT_VERSION "7.0.52"
-  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-8.0.20\webapps\jw.war
+    StrCpy $EXISTING_TOMCAT_VERSION "8.0.20"
+  ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.52\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPGRADE}
     StrCpy $EXISTING_TOMCAT_VERSION "7.0.52"
   ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-7.0.39\webapps\jw.war
@@ -319,7 +319,7 @@ FunctionEnd
   LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget Workflow Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
   LangString DESC_SecJava ${LANG_ENGLISH} "Java 8 Standard Edition"
-  LangString DESC_SecMySQL ${LANG_ENGLISH} "MySQL 5 Database Server"
+  LangString DESC_SecMariaDB ${LANG_ENGLISH} "MariaDB 10 Database Server"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start Menu Shortcuts"
 
   ;Assign language strings to sections
@@ -327,7 +327,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${SecJoget} $(DESC_SecJoget)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecTomcat} $(DESC_SecTomcat)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecJava} $(DESC_SecJava)
-    !insertmacro MUI_DESCRIPTION_TEXT ${SecMySQL} $(DESC_SecMySQL)
+    !insertmacro MUI_DESCRIPTION_TEXT ${SecMariaDB} $(DESC_SecMariaDB)
     !insertmacro MUI_DESCRIPTION_TEXT ${SecStartMenu} $(DESC_SecStartMenu)
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
@@ -360,8 +360,8 @@ Section "Uninstall"
   Delete "$INSTDIR\Stop Joget Server.lnk"
   Delete "$INSTDIR\tomcat8-run.bat"
   Delete "$INSTDIR\tomcat8-stop.bat"
-  Delete "$INSTDIR\mysql-start.bat"
-  Delete "$INSTDIR\mysql-stop.bat"
+  Delete "$INSTDIR\mariadb-start.bat"
+  Delete "$INSTDIR\mariadb-stop.bat"
   Delete "$INSTDIR\joget-start.bat"
   Delete "$INSTDIR\joget-stop.bat"
 
