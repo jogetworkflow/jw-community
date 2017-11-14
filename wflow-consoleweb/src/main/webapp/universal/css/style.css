@@ -1001,6 +1001,16 @@ body#login #page > footer {
     font-weight: bold;
 }
 
+.dataList td.column_inboxAction a, .dataList .footable-row-detail-value a {
+    padding-left: 10px;
+    padding-right: 8px;
+    border-left: solid 1px #555;
+}
+
+.dataList td.column_inboxAction a:first-child, .dataList .footable-row-detail-value a:first-child {
+    border-left: none;
+}
+
 #page > footer > div, 
 #content > main {
     padding: 0 15px;
