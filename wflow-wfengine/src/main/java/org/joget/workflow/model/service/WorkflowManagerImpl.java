@@ -1938,6 +1938,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public double getServiceLevelMonitorForRunningProcess(String processInstanceId) {
         WorkflowProcess process = getRunningProcessInfo(processInstanceId);
+        if (process == null) {
+            return -1;
+        }
         return getServiceLevelValue(process.getStartedTime(), process.getFinishTime(), process.getDue());
     }
 
@@ -1948,6 +1951,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public double getServiceLevelMonitorForRunningActivity(String activityInstanceId) {
         WorkflowActivity activity = getRunningActivityInfo(activityInstanceId);
+        if (activity == null) {
+            return -1;
+        }
         return getServiceLevelValue(activity.getCreatedTime(), activity.getFinishTime(), activity.getDue());
     }
 
