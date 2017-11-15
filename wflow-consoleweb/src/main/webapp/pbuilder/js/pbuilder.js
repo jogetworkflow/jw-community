@@ -3183,12 +3183,17 @@ ProcessBuilder.Designer = {
         var $participant = $(participant);
         // recalculate participant height
         var zoom = ProcessBuilder.Designer.zoom;
-        var topOffset = 0, bottomOffset = 0, outer = true;
+        var topOffset = null, bottomOffset = null, outer = true;
         $participant.children().each(function (i, e) {
             var $e = $(e),
                     eTopOffset = $e.offset().top,
                     eBottomOffset = eTopOffset + (outer ? $e.outerHeight() : $e.height());
-
+            if (topOffset === null) {
+                topOffset = eTopOffset;
+            }
+            if (bottomOffset === null) {
+                bottomOffset = eBottomOffset;
+            }    
             if (eTopOffset < topOffset) {
                 topOffset = eTopOffset;
             }
@@ -3196,7 +3201,7 @@ ProcessBuilder.Designer = {
                 bottomOffset = eBottomOffset;
             }
         });
-        var childrenHeight = (bottomOffset - topOffset - $participant.offset().top) / zoom + 50;
+        var childrenHeight = (bottomOffset - topOffset) / zoom + 50;
         $participant.css("height", childrenHeight + "px");
         var participantHeight = $participant.height();
         var participantHeightNoPadding = participantHeight - 20;
