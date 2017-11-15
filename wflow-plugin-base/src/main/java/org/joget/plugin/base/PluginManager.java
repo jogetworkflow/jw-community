@@ -1232,6 +1232,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewPermission", ResourceBundleUtil.getMessage("setting.plugin.userviewPermission"));
         pluginTypeMap.put("org.joget.apps.userview.model.UserviewTheme", ResourceBundleUtil.getMessage("setting.plugin.userviewTheme"));
         pluginTypeMap.put("org.joget.plugin.base.PluginWebSupport", ResourceBundleUtil.getMessage("setting.plugin.webService"));
+        pluginTypeMap.put("org.joget.apps.app.service.MfaAuthenticator", ResourceBundleUtil.getMessage("setting.plugin.mfaAuthenticator"));
         
         return PagingUtils.sortMapByValue(pluginTypeMap, false);
     }
