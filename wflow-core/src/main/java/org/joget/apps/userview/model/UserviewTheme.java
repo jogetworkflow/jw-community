@@ -70,7 +70,7 @@ public abstract class UserviewTheme extends ExtElement {
      * @return true if mobile view is disabled i.e. theme is responsive
      */
     public boolean isMobileViewDisabled() {
-        boolean disableMobileView = "true".equalsIgnoreCase(userview.getSetting().getPropertyString("mobileViewDisabled"));
+        boolean disableMobileView = "true".equalsIgnoreCase(userview.getSetting().getTheme().getPropertyString("mobileViewDisabled"));
         return disableMobileView;
     }
 }
