@@ -275,7 +275,7 @@ public class FormData {
         String value = null;
         String[] values = getRequestParameterValues(paramName);
         if (values != null && values.length > 0) {
-            value = values[0];
+            value = values[values.length-1];
         }
         return value;
     }
