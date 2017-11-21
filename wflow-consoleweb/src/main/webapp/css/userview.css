@@ -77,6 +77,11 @@ body, ul{
     padding:10px 50px;
 }
 
+#footer .footer-mobile-link {
+    display: inline-block;
+    padding: 10px;
+}
+
 body.embeded #page{
     width:100%;
     border: none;

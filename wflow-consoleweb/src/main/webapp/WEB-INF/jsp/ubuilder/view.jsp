@@ -352,7 +352,10 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                         </div>
                     </c:otherwise>
                 </c:choose>
-
+                        
+                <c:if test="${mobileUserAgent && !mobileViewDisabled && (cookie['desktopSite'].value == 'true')}">
+                    <a href='#' class="footer-mobile-link" onclick='$.cookie("desktopSite", null, { path: "${pageContext.request.contextPath}/web/userview/<c:out value="${appId}"/>/", expires: -1 });location.reload();return false'><fmt:message key="appCenter.label.mobileEdition"/></a>
+                </c:if>
             </div>
         </div>
         <c:if test="${empty userview.setting.theme.properties.disableHelpGuide || userview.setting.theme.properties.disableHelpGuide ne 'true'}">
