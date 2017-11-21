@@ -17,6 +17,7 @@ import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,7 +53,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
                 Object value = opt.get("value");
                 Object label = opt.get("label");
                 if (value != null && label != null) {
-                    headerMap.put(value.toString(), label.toString());
+                    headerMap.put(value.toString(), StringUtil.stripHtmlRelaxed(label.toString()));
                 }
             }
         }
