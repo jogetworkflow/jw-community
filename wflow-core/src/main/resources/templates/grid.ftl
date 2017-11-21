@@ -44,7 +44,7 @@
             <thead>
                 <tr>
                 <#list headers?keys as header>
-                    <th id="${elementParamName!}_${header}">${headers[header]?html}</th>
+                    <th id="${elementParamName!}_${header}">${headers[header]}</th>
                 </#list>
                 </tr>
             </thead>
