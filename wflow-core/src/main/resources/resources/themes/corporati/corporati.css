@@ -279,8 +279,13 @@ body.embeded #page {
     border: 1px solid gainsboro;
     background-color: whiteSmoke;
 }
-#footer {
+#footer-message {
     display: none;
+}
+#footer .footer-mobile-link {
+    top: calc(100vh - 150px);
+    left: 10px;
+    position: absolute;
 }
 #page #form-canvas {
     max-width: calc(100vw - 300px);
