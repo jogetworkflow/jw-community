@@ -76,6 +76,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
+import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -86,6 +87,7 @@ import org.joget.workflow.model.WorkflowProcessResult;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.simpleframework.xml.Serializer;
@@ -106,6 +108,8 @@ public class AppServiceImpl implements AppService {
     FormService formService;
     @Autowired
     WorkflowManager workflowManager;
+    @Autowired
+    WorkflowUserManager workflowUserManager;
     @Autowired
     AppDefinitionDao appDefinitionDao;
     @Autowired
@@ -1817,12 +1821,14 @@ public class AppServiceImpl implements AppService {
     protected void updateRunningProcesses(final String packageId, final Long fromVersion, final Long toVersion) {
         final String profile = DynamicDataSourceManager.getCurrentProfile();
         final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        final User currentUser = workflowUserManager.getCurrentUser();
         
         Thread backgroundThread = new Thread(new Runnable() {
 
             public void run() {
                 HostManager.setCurrentProfile(profile);
                 AppUtil.setCurrentAppDefinition(appDef);
+                workflowUserManager.setCurrentThreadUser(currentUser);
                 
                 processMigration.put(profile + "::" + packageId + "::" + fromVersion, toVersion.toString());
                 
