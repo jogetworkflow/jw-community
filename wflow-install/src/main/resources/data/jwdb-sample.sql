@@ -56,7 +56,7 @@ CREATE TABLE `SHKActivities` (
   CONSTRAINT `SHKActivities_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`),
   CONSTRAINT `SHKActivities_State` FOREIGN KEY (`State`) REFERENCES `SHKActivityStates` (`oid`),
   CONSTRAINT `SHKActivities_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -94,7 +94,7 @@ CREATE TABLE `SHKActivityData` (
   UNIQUE KEY `I1_SHKActivityData` (`CNT`),
   UNIQUE KEY `I2_SHKActivityData` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityData_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +121,7 @@ CREATE TABLE `SHKActivityDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityDataBLOBs` (`ActivityDataWOB`,`OrdNo`),
   CONSTRAINT `SHKActivityDataBLOBs_ActivityDataWOB` FOREIGN KEY (`ActivityDataWOB`) REFERENCES `SHKActivityDataWOB` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,7 +158,7 @@ CREATE TABLE `SHKActivityDataWOB` (
   UNIQUE KEY `I1_SHKActivityDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKActivityDataWOB` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityDataWOB_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -184,7 +184,7 @@ CREATE TABLE `SHKActivityStateEventAudits` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStateEventAudits` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -210,7 +210,7 @@ CREATE TABLE `SHKActivityStates` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStates` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -245,7 +245,7 @@ CREATE TABLE `SHKAndJoinTable` (
   CONSTRAINT `SHKAndJoinTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAndJoinTable_BlockActivity` FOREIGN KEY (`BlockActivity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAndJoinTable_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -292,7 +292,7 @@ CREATE TABLE `SHKAssignmentEventAudits` (
   UNIQUE KEY `I1_SHKAssignmentEventAudits` (`CNT`),
   KEY `SHKAssignmentEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKAssignmentEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `SHKAssignmentsTable` (
   CONSTRAINT `FK_rnb6mhntls567xpifcfvygkuu` FOREIGN KEY (`ActivityProcessId`) REFERENCES `SHKProcesses` (`Id`),
   CONSTRAINT `SHKAssignmentsTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAssignmentsTable_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -358,7 +358,7 @@ CREATE TABLE `SHKCounters` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKCounters` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -406,7 +406,7 @@ CREATE TABLE `SHKCreateProcessEventAudits` (
   UNIQUE KEY `I1_SHKCreateProcessEventAudits` (`CNT`),
   KEY `SHKCreateProcessEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKCreateProcessEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -448,7 +448,7 @@ CREATE TABLE `SHKDataEventAudits` (
   UNIQUE KEY `I1_SHKDataEventAudits` (`CNT`),
   KEY `SHKDataEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKDataEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -483,7 +483,7 @@ CREATE TABLE `SHKDeadlines` (
   KEY `I3_SHKDeadlines` (`Activity`,`TimeLimit`),
   CONSTRAINT `SHKDeadlines_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKDeadlines_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -509,7 +509,7 @@ CREATE TABLE `SHKEventTypes` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKEventTypes` (`KeyValue`),
   UNIQUE KEY `I2_SHKEventTypes` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -537,7 +537,7 @@ CREATE TABLE `SHKGroupGroupTable` (
   KEY `I2_SHKGroupGroupTable` (`groupid`),
   CONSTRAINT `SHKGroupGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKGroupGroupTable_sub_gid` FOREIGN KEY (`sub_gid`) REFERENCES `SHKGroupTable` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -562,7 +562,7 @@ CREATE TABLE `SHKGroupTable` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupTable` (`groupid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -586,7 +586,7 @@ CREATE TABLE `SHKGroupUser` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupUser` (`USERNAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -614,7 +614,7 @@ CREATE TABLE `SHKGroupUserPackLevelPart` (
   KEY `SHKGroupUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -642,7 +642,7 @@ CREATE TABLE `SHKGroupUserProcLevelPart` (
   KEY `SHKGroupUserProcLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserProcLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserProcLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -679,7 +679,7 @@ CREATE TABLE `SHKNewEventAuditData` (
   UNIQUE KEY `I1_SHKNewEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -706,7 +706,7 @@ CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNewEventAuditDataBLOBs` (`NewEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataBLOBs_NewEventAuditDataWOB` FOREIGN KEY (`NewEventAuditDataWOB`) REFERENCES `SHKNewEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -742,7 +742,7 @@ CREATE TABLE `SHKNewEventAuditDataWOB` (
   UNIQUE KEY `I1_SHKNewEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -767,7 +767,7 @@ CREATE TABLE `SHKNextXPDLVersions` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNextXPDLVersions` (`XPDLId`,`NextVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -792,7 +792,7 @@ CREATE TABLE `SHKNormalUser` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNormalUser` (`USERNAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -829,7 +829,7 @@ CREATE TABLE `SHKOldEventAuditData` (
   UNIQUE KEY `I1_SHKOldEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,7 +856,7 @@ CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKOldEventAuditDataBLOBs` (`OldEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataBLOBs_OldEventAuditDataWOB` FOREIGN KEY (`OldEventAuditDataWOB`) REFERENCES `SHKOldEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -892,7 +892,7 @@ CREATE TABLE `SHKOldEventAuditDataWOB` (
   UNIQUE KEY `I1_SHKOldEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -919,7 +919,7 @@ CREATE TABLE `SHKPackLevelParticipant` (
   UNIQUE KEY `I1_SHKPackLevelParticipant` (`PARTICIPANT_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelParticipant_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelParticipant_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -946,7 +946,7 @@ CREATE TABLE `SHKPackLevelXPDLApp` (
   UNIQUE KEY `I1_SHKPackLevelXPDLApp` (`APPLICATION_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelXPDLApp_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelXPDLApp_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -974,7 +974,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppDetUsr` (
   KEY `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1002,7 +1002,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppDetail` (
   KEY `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1030,7 +1030,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppUser` (
   KEY `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1058,7 +1058,7 @@ CREATE TABLE `SHKPackLevelXPDLAppToolAgntApp` (
   KEY `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1085,7 +1085,7 @@ CREATE TABLE `SHKProcLevelParticipant` (
   UNIQUE KEY `I1_SHKProcLevelParticipant` (`PARTICIPANT_ID`,`PROCESSOID`),
   KEY `SHKProcLevelParticipant_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelParticipant_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLParticipantProcess` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1112,7 +1112,7 @@ CREATE TABLE `SHKProcLevelXPDLApp` (
   UNIQUE KEY `I1_SHKProcLevelXPDLApp` (`APPLICATION_ID`,`PROCESSOID`),
   KEY `SHKProcLevelXPDLApp_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelXPDLApp_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLApplicationProcess` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1140,7 +1140,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppDetUsr` (
   KEY `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1168,7 +1168,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppDetail` (
   KEY `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1196,7 +1196,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppUser` (
   KEY `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1224,7 +1224,7 @@ CREATE TABLE `SHKProcLevelXPDLAppToolAgntApp` (
   KEY `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1261,7 +1261,7 @@ CREATE TABLE `SHKProcessData` (
   UNIQUE KEY `I1_SHKProcessData` (`CNT`),
   UNIQUE KEY `I2_SHKProcessData` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessData_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1288,7 +1288,7 @@ CREATE TABLE `SHKProcessDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDataBLOBs` (`ProcessDataWOB`,`OrdNo`),
   CONSTRAINT `SHKProcessDataBLOBs_ProcessDataWOB` FOREIGN KEY (`ProcessDataWOB`) REFERENCES `SHKProcessDataWOB` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1324,7 +1324,7 @@ CREATE TABLE `SHKProcessDataWOB` (
   UNIQUE KEY `I1_SHKProcessDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKProcessDataWOB` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessDataWOB_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1353,7 +1353,7 @@ CREATE TABLE `SHKProcessDefinitions` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDefinitions` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1384,7 +1384,7 @@ CREATE TABLE `SHKProcessRequesters` (
   KEY `I3_SHKProcessRequesters` (`ResourceRequester`),
   CONSTRAINT `SHKProcessRequesters_ActivityRequester` FOREIGN KEY (`ActivityRequester`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKProcessRequesters_ResourceRequester` FOREIGN KEY (`ResourceRequester`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1410,7 +1410,7 @@ CREATE TABLE `SHKProcessStateEventAudits` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStateEventAudits` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1436,7 +1436,7 @@ CREATE TABLE `SHKProcessStates` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStates` (`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1486,7 +1486,7 @@ CREATE TABLE `SHKProcesses` (
   KEY `I5_SHKProcesses` (`ResourceRequesterId`),
   CONSTRAINT `SHKProcesses_ProcessDefinition` FOREIGN KEY (`ProcessDefinition`) REFERENCES `SHKProcessDefinitions` (`oid`),
   CONSTRAINT `SHKProcesses_State` FOREIGN KEY (`State`) REFERENCES `SHKProcessStates` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1511,7 +1511,7 @@ CREATE TABLE `SHKResourcesTable` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKResourcesTable` (`Username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1566,7 +1566,7 @@ CREATE TABLE `SHKStateEventAudits` (
   CONSTRAINT `SHKStateEventAudits_OldActivityState` FOREIGN KEY (`OldActivityState`) REFERENCES `SHKActivityStateEventAudits` (`oid`),
   CONSTRAINT `SHKStateEventAudits_OldProcessState` FOREIGN KEY (`OldProcessState`) REFERENCES `SHKProcessStateEventAudits` (`oid`),
   CONSTRAINT `SHKStateEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1591,7 +1591,7 @@ CREATE TABLE `SHKToolAgentApp` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentApp` (`TOOL_AGENT_NAME`,`APP_NAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1618,7 +1618,7 @@ CREATE TABLE `SHKToolAgentAppDetail` (
   UNIQUE KEY `I1_SHKToolAgentAppDetail` (`APP_MODE`,`TOOLAGENT_APPOID`),
   KEY `SHKToolAgentAppDetail_TOOLAGENT_APPOID` (`TOOLAGENT_APPOID`),
   CONSTRAINT `SHKToolAgentAppDetail_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1646,7 +1646,7 @@ CREATE TABLE `SHKToolAgentAppDetailUser` (
   KEY `SHKToolAgentAppDetailUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppDetailUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKToolAgentAppDetailUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1674,7 +1674,7 @@ CREATE TABLE `SHKToolAgentAppUser` (
   KEY `SHKToolAgentAppUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKToolAgentAppUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1699,7 +1699,7 @@ CREATE TABLE `SHKToolAgentUser` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentUser` (`USERNAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1727,7 +1727,7 @@ CREATE TABLE `SHKUserGroupTable` (
   KEY `SHKUserGroupTable_groupid` (`groupid`),
   CONSTRAINT `SHKUserGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKUserGroupTable_userid` FOREIGN KEY (`userid`) REFERENCES `SHKUserTable` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1755,7 +1755,7 @@ CREATE TABLE `SHKUserPackLevelPart` (
   KEY `SHKUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1783,7 +1783,7 @@ CREATE TABLE `SHKUserProcLevelParticipant` (
   KEY `SHKUserProcLevelParticipant_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserProcLevelParticipant_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserProcLevelParticipant_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1811,7 +1811,7 @@ CREATE TABLE `SHKUserTable` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserTable` (`userid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1835,7 +1835,7 @@ CREATE TABLE `SHKXPDLApplicationPackage` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLApplicationPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1862,7 +1862,7 @@ CREATE TABLE `SHKXPDLApplicationProcess` (
   UNIQUE KEY `I1_SHKXPDLApplicationProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLApplicationProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLApplicationProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1891,7 +1891,7 @@ CREATE TABLE `SHKXPDLData` (
   UNIQUE KEY `I1_SHKXPDLData` (`CNT`),
   UNIQUE KEY `I2_SHKXPDLData` (`XPDL`),
   CONSTRAINT `SHKXPDLData_XPDL` FOREIGN KEY (`XPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1900,7 +1900,7 @@ CREATE TABLE `SHKXPDLData` (
 
 LOCK TABLES `SHKXPDLData` WRITE;
 /*!40000 ALTER TABLE `SHKXPDLData` DISABLE KEYS */;
-INSERT INTO `SHKXPDLData` VALUES ('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xpdl=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" Id=\"crm_community\" Name=\"CRM Community\" xsi:schemaLocation=\"http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd\">\n    <PackageHeader>\n        <XPDLVersion>1.0</XPDLVersion>\n        <Vendor/>\n        <Created/>\n    </PackageHeader>\n    <Script Type=\"text/javascript\"/>\n    <Participants>\n        <Participant Id=\"requester\" Name=\"Requester\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n        <Participant Id=\"approver\" Name=\"Approver\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n    </Participants>\n    <Applications>\n        <Application Id=\"default_application\"/>\n    </Applications>\n    <WorkflowProcesses>\n        <WorkflowProcess Id=\"process1\" Name=\"Proposal Approval Process\">\n            <ProcessHeader DurationUnit=\"h\"/>\n            <DataFields>\n                <DataField Id=\"status\" IsArray=\"FALSE\">\n                    <DataType>\n                        <BasicType Type=\"STRING\"/>\n                    </DataType>\n                </DataField>\n            </DataFields>\n            <Activities>\n                <Activity Id=\"approve_proposal\" Name=\"Approve Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Join Type=\"XOR\"/>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"189,51.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"approval\" Name=\"Approval\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"XOR\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition3\"/>\n                                    <TransitionRef Id=\"transition6\"/>\n                                    <TransitionRef Id=\"transition5\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"430,62.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"activity1\" Name=\"Resubmit Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"397,20.787493896484378\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"send_proposal\" Name=\"Send Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"669.0000534057617,92.78333282470703\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"parallel\" Name=\"Parallel\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"AND\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition7\"/>\n                                    <TransitionRef Id=\"transition8\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"588,61.599993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool1\" Name=\"Send Approval Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"735,63.974993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool2\" Name=\"Send Reject Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"394,168.39999694824218\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"route1\" Name=\"Route 1\">\n                    <Route/>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"222,15\"/>\n                    </ExtendedAttributes>\n                </Activity>\n            </Activities>\n            <Transitions>\n                <Transition From=\"approve_proposal\" Id=\"transition2\" To=\"approval\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition3\" To=\"activity1\">\n                    <Condition Type=\"CONDITION\">status===\'resubmit\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"activity1\" Id=\"transition4\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition6\" Name=\"approved\" To=\"parallel\">\n                    <Condition Type=\"OTHERWISE\"/>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition7\" To=\"send_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition8\" To=\"tool1\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition5\" To=\"tool2\">\n                    <Condition Type=\"CONDITION\">status===\'rejected\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"route1\" Id=\"transition1\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n            </Transitions>\n            <ExtendedAttributes>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER\" Value=\"requester;approver\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_START_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n            </ExtendedAttributes>\n        </WorkflowProcess>\n    </WorkflowProcesses>\n    <ExtendedAttributes>\n        <ExtendedAttribute Name=\"EDITING_TOOL\" Value=\"Web Workflow Designer\"/>\n        <ExtendedAttribute Name=\"EDITING_TOOL_VERSION\" Value=\"5.0-pre-alpha\"/>\n    </ExtendedAttributes>\n</Package>\n','¨Ì\0sr\0\'org.enhydra.shark.xpdl.elements.Package~+Vm≈Ä~˜\0Z\0isTransientL\0extPkgRefsToIdst\0.Lorg/enhydra/shark/utilities/SequencedHashMap;L\0internalVersiont\0Ljava/lang/String;L\0\nnamespacest\0,Lorg/enhydra/shark/xpdl/elements/Namespaces;xr\0(org.enhydra.shark.xpdl.XMLComplexElement>≤æΩÓ(⁄Ã\0\0xr\05org.enhydra.shark.xpdl.XMLBaseForCollectionAndComplexÂ‡áÓ·ı2\0L\0\nelementMapq\0~\0L\0elementst\0Ljava/util/ArrayList;xr\0!org.enhydra.shark.xpdl.XMLElement#+Bø#˜åº\0Z\0\nisReadOnlyZ\0\nisRequiredL\0nameq\0~\0L\0originalElementHashCodet\0Ljava/lang/Integer;L\0parentt\0#Lorg/enhydra/shark/xpdl/XMLElement;L\0valueq\0~\0xpt\0Packagesr\0java.lang.Integer‚†§˜Åá8\0I\0valuexr\0java.lang.NumberÜ¨ïî‡ã\0\0xp)dpt\0\0sr\0,org.enhydra.shark.utilities.SequencedHashMap.Í\"ì©\"&\0\0xpw\0\0\0\rt\0Idsr\0#org.enhydra.shark.xpdl.XMLAttribute#c›Ä˛ÀM;\0L\0choicesq\0~\0xq\0~\0q\0~\0sq\0~\0B1Âöq\0~\0\nt\0\rcrm_communitypt\0Namesq\0~\0\0q\0~\0sq\0~\0Ë©q\0~\0\nt\0\rCRM Communitypt\0\rPackageHeadersr\0-org.enhydra.shark.xpdl.elements.PackageHeadervÈí,ÌíÔ\0\0xq\0~\0\0q\0~\0sq\0~\0}ƒÛñq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0XPDLVersionsr\0+org.enhydra.shark.xpdl.elements.XPDLVersion˜\"}◊Y.≈w\0\0xr\0\'org.enhydra.shark.xpdl.XMLSimpleElement¬m›¿éÛ\0\0xq\0~\0q\0~\0!sq\0~\0p1\')q\0~\0t\01.0t\0Vendorsr\0&org.enhydra.shark.xpdl.elements.Vendor t¯ÍE≥:\0\0xq\0~\0#q\0~\0\'sq\0~\0l$fmq\0~\0t\0\0t\0Createdsr\0\'org.enhydra.shark.xpdl.elements.Createdz ÙdKª|[\0\0xq\0~\0#q\0~\0,sq\0~\0`pôRq\0~\0t\0\0t\0Descriptionsr\0+org.enhydra.shark.xpdl.elements.Description€∞73Ê8˚\0\0xq\0~\0#\0q\0~\01sq\0~\0\Zwyq\0~\0t\0\0t\0\rDocumentationsr\0-org.enhydra.shark.xpdl.elements.Documentation`ƒ9ª◊yí\0\0xq\0~\0#\0q\0~\06sq\0~\0)Íæq\0~\0t\0\0t\0PriorityUnitsr\0,org.enhydra.shark.xpdl.elements.PriorityUnitò≥õËõ¯‰Â\0\0xq\0~\0#\0q\0~\0;sq\0~\0B…`uq\0~\0t\0\0t\0CostUnitsr\0(org.enhydra.shark.xpdl.elements.CostUnit‹éŸ=H·å\0\0xq\0~\0#\0q\0~\0@sq\0~\0SÂQdq\0~\0t\0\0xsr\0java.util.ArrayListxÅ“ô«aù\0I\0sizexp\0\0\0w\0\0\0q\0~\0$q\0~\0)q\0~\0.q\0~\03q\0~\08q\0~\0=q\0~\0Bxt\0RedefinableHeadersr\01org.enhydra.shark.xpdl.elements.RedefinableHeaderôøMÎœ™\'H\0\0xq\0~\0\0q\0~\0Gsq\0~\0i[|q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0PublicationStatussq\0~\0\0q\0~\0Msq\0~\0 ’óq\0~\0It\0\0sq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0UNDER_REVISIONt\0RELEASEDt\0\nUNDER_TESTxt\0Authorsr\0&org.enhydra.shark.xpdl.elements.Author5 ƒf·ßÜ\0\0xq\0~\0#\0q\0~\0Usq\0~\0NÓú€q\0~\0It\0\0t\0Versionsr\0\'org.enhydra.shark.xpdl.elements.Version9=3¥~ªJQ\0\0xq\0~\0#\0q\0~\0Zsq\0~\0s~cIq\0~\0It\0\0t\0Codepagesr\0(org.enhydra.shark.xpdl.elements.Codepage9$m˜eΩ\rG\0\0xq\0~\0#\0q\0~\0_sq\0~\0%Ø¡∂q\0~\0It\0\0t\0\nCountrykeysr\0*org.enhydra.shark.xpdl.elements.Countrykeyóã.Å–“—\0\0xq\0~\0#\0q\0~\0dsq\0~\0#ÊÀvq\0~\0It\0\0t\0Responsiblessr\0,org.enhydra.shark.xpdl.elements.Responsibles$ÔÍ{S∆\0\0xr\0$org.enhydra.shark.xpdl.XMLCollectionËèjƒãmÌ∞\0\0xq\0~\0\0q\0~\0isq\0~\0<ªhIq\0~\0It\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~\0Nq\0~\0Wq\0~\0\\q\0~\0aq\0~\0fq\0~\0lxt\0ConformanceClasssr\00org.enhydra.shark.xpdl.elements.ConformanceClass◊Ïy0|k´î\0\0xq\0~\0\0q\0~\0rsq\0~\0oÃ√»q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0GraphConformancesq\0~\0\0q\0~\0xsq\0~\0BÎ«¸q\0~\0tq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0FULL_BLOCKEDt\0LOOP_BLOCKEDt\0NON_BLOCKEDxxsq\0~\0E\0\0\0w\0\0\0q\0~\0yxt\0Scriptsr\0&org.enhydra.shark.xpdl.elements.ScriptQ¶jÁS„8\0\0xq\0~\0\0q\0~\0Äsq\0~\0#Gú„q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0Typesq\0~\0q\0~\0Üsq\0~\0*…¿q\0~\0Çt\0text/javascriptpt\0Versionsq\0~\0\0q\0~\0äsq\0~\06T/Xq\0~\0Çt\0\0pt\0Grammarsq\0~\0\0q\0~\0ésq\0~\0;\Z,q\0~\0Çt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0áq\0~\0ãq\0~\0èxt\0ExternalPackagessr\00org.enhydra.shark.xpdl.elements.ExternalPackagesw¿\"+≈®®â\0\0xq\0~\0k\0q\0~\0ìsq\0~\0íıq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0TypeDeclarationssr\00org.enhydra.shark.xpdl.elements.TypeDeclarations\r· Ox5Õ\0\0xq\0~\0k\0q\0~\0ösq\0~\0B~å›q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Participantssr\0,org.enhydra.shark.xpdl.elements.Participantsh`∑g8J\0\0xq\0~\0k\0q\0~\0°sq\0~\0kæ(cq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Participanto$îÛrc§è\0\0xr\0+org.enhydra.shark.xpdl.XMLCollectionElementC¢x”vÅr\0\0xq\0~\0t\0Participantsq\0~\0PÓH‰q\0~\0£t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0aƒq\0~\0™t\0	requesterpq\0~\0sq\0~\0\0q\0~\0sq\0~\09í^ﬂq\0~\0™t\0	Requesterpt\0ParticipantTypesr\0/org.enhydra.shark.xpdl.elements.ParticipantType>àn•›Ö®˜\0\0xq\0~\0q\0~\0µsq\0~\0å¨	q\0~\0™t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0q\0~\0Üsq\0~\0DZSÕq\0~\0∑t\0ROLEsq\0~\0E\0\0\0w\0\0\0t\0RESOURCE_SETt\0RESOURCEt\0ROLEt\0ORGANIZATIONAL_UNITt\0HUMANt\0SYSTEMxxsq\0~\0E\0\0\0w\0\0\0q\0~\0ªxt\0Descriptionsq\0~\02\0q\0~\0∆sq\0~\0fQä q\0~\0™t\0\0t\0ExternalReferencesr\01org.enhydra.shark.xpdl.elements.ExternalReferenceÜbË∑¡Qœ\0\0xq\0~\0\0q\0~\0 sq\0~\0MDyq\0~\0™t\0\0sq\0~\0w\0\0\0t\0xrefsq\0~\0\0q\0~\0–sq\0~\07E7q\0~\0Ãt\0\0pt\0locationsq\0~\0q\0~\0‘sq\0~\0!⁄¨ q\0~\0Ãt\0\0pt\0	namespacesq\0~\0\0q\0~\0ÿsq\0~\0K7eq\0~\0Ãt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0—q\0~\0’q\0~\0Ÿxt\0ExtendedAttributessr\02org.enhydra.shark.xpdl.elements.ExtendedAttributesÚ∞Oıü⁄UF\0L\0extAttribsStringq\0~\0xq\0~\0k\0q\0~\0›sq\0~\0tµ›òq\0~\0™t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0Øq\0~\0≤q\0~\0∑q\0~\0«q\0~\0Ãq\0~\0ﬂxsq\0~\0®t\0Participantsq\0~\0uÆdq\0~\0£t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0[rÏ…q\0~\0Ât\0approverpq\0~\0sq\0~\0\0q\0~\0sq\0~\0A$Áq\0~\0Ât\0Approverpt\0ParticipantTypesq\0~\0∂q\0~\0sq\0~\0_Bp q\0~\0Ât\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0q\0~\0Üsq\0~\0V‘ÀŸq\0~\0Òt\0ROLEsq\0~\0E\0\0\0w\0\0\0q\0~\0øq\0~\0¿q\0~\0¡q\0~\0¬q\0~\0√q\0~\0ƒxxsq\0~\0E\0\0\0w\0\0\0q\0~\0ıxt\0Descriptionsq\0~\02\0q\0~\0˙sq\0~\0S<Oq\0~\0Ât\0\0t\0ExternalReferencesq\0~\0À\0q\0~\0˛sq\0~\0_÷t”q\0~\0Ât\0\0sq\0~\0w\0\0\0q\0~\0–sq\0~\0\0q\0~\0–sq\0~\0ﬁõ√q\0~\0ˇt\0\0pq\0~\0‘sq\0~\0q\0~\0‘sq\0~\0c$\0bq\0~\0ˇt\0\0pq\0~\0ÿsq\0~\0\0q\0~\0ÿsq\0~\0PâÓ%q\0~\0ˇt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~q\0~	xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~\rsq\0~\0<hq\0~\0Ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0Íq\0~\0Ìq\0~\0Òq\0~\0˚q\0~\0ˇq\0~xxt\0Applicationssr\0,org.enhydra.shark.xpdl.elements.Applications¬Ä¥ﬁˆº\0\0xq\0~\0k\0q\0~sq\0~\0,WÿÓq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Applicationv	¢R˘˛S\0\0xq\0~\0©t\0Applicationsq\0~\0R£l~q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0v¬>q\0~t\0default_applicationpq\0~\0sq\0~\0\0q\0~\0sq\0~\0ˇM*q\0~t\0\0pt\0Descriptionsq\0~\02\0q\0~\'sq\0~\0vœq\0~t\0\0t\0Choicesr\00org.enhydra.shark.xpdl.elements.ApplicationTypesè?˚!≠Æ¶\0\0xr\0\'org.enhydra.shark.xpdl.XMLComplexChoice§|±∫\"Ù˙\0L\0choicesq\0~\0L\0choosenq\0~\0	xq\0~\0q\0~+sq\0~\0C∑Æq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sr\00org.enhydra.shark.xpdl.elements.FormalParametersp∫ƒB«√ÅZ\0\0xq\0~\0k\0t\0FormalParameterssq\0~\0‡ßﬂq\0~.t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0À\0t\0ExternalReferencesq\0~\0YiÈ!q\0~.t\0\0sq\0~\0w\0\0\0q\0~\0–sq\0~\0\0q\0~\0–sq\0~\0|¬SØq\0~9t\0\0pq\0~\0‘sq\0~\0q\0~\0‘sq\0~\0s3e^q\0~9t\0\0pq\0~\0ÿsq\0~\0\0q\0~\0ÿsq\0~\0fxÍ∏q\0~9t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~>q\0~Aq\0~Dxxq\0~3t\0ExtendedAttributessq\0~\0ﬁ\0q\0~Hsq\0~\0pŒ7∑q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$q\0~(q\0~.q\0~Ixxt\0\nDataFieldssr\0*org.enhydra.shark.xpdl.elements.DataFieldsΩµí ¶‘˙U\0\0xq\0~\0k\0q\0~Osq\0~\0_;âq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0WorkflowProcessessr\01org.enhydra.shark.xpdl.elements.WorkflowProcessespé_¢0,\0\0xq\0~\0k\0q\0~Vsq\0~\0{çuºq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0/org.enhydra.shark.xpdl.elements.WorkflowProcess%·v0“◊L\0\0xq\0~\0©t\0WorkflowProcesssq\0~\0u∫PPq\0~Xt\0\0sq\0~\0w\0\0\0\rq\0~\0sq\0~\0q\0~\0sq\0~\0P5µq\0~^t\0process1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0@Ú∂·q\0~^t\0Proposal Approval Processpt\0AccessLevelsq\0~\0\0q\0~isq\0~\0<\në+q\0~^q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0PUBLICt\0PRIVATExt\0\rProcessHeadersr\0-org.enhydra.shark.xpdl.elements.ProcessHeaderåLÆÉC-)ø\0\0xq\0~\0q\0~osq\0~\0k∏„Cq\0~^t\0\0sq\0~\0w\0\0\0t\0DurationUnitsq\0~\0\0q\0~usq\0~\0Lß¥q\0~qt\0hsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0Yt\0Mt\0Dt\0ht\0mt\0sxt\0Createdsq\0~\0-\0q\0~Äsq\0~\0∑Ùq\0~qt\0\0t\0Descriptionsq\0~\02\0q\0~Ñsq\0~\0q\\≠´q\0~qt\0\0t\0Prioritysr\0(org.enhydra.shark.xpdl.elements.Priority`ˆNn>b\0\0xq\0~\0#\0q\0~àsq\0~\0]“Í8q\0~qt\0\0t\0Limitsr\0%org.enhydra.shark.xpdl.elements.Limit¸¢Ë1ò”ó\0\0xq\0~\0#\0q\0~çsq\0~\0)4UÄq\0~qt\0\0t\0	ValidFromsr\0)org.enhydra.shark.xpdl.elements.ValidFromc≈Ö|ÉL<\0\0xq\0~\0#\0q\0~ísq\0~\0H’q\0~qt\0\0t\0ValidTosr\0\'org.enhydra.shark.xpdl.elements.ValidToû¡∂´M…\0\0xq\0~\0#\0q\0~ósq\0~\0#çkq\0~qt\0\0t\0TimeEstimationsr\0.org.enhydra.shark.xpdl.elements.TimeEstimation≈Ä£\'3\0\0xq\0~\0\0q\0~úsq\0~\0QÍ\'q\0~qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesr\0+org.enhydra.shark.xpdl.elements.WaitingTimeNì‰Œ†/\0\0xq\0~\0#\0q\0~¢sq\0~\0Z˘‡ıq\0~ût\0\0t\0WorkingTimesr\0+org.enhydra.shark.xpdl.elements.WorkingTimeæ~±ÉÊ◊\0\0xq\0~\0#\0q\0~ßsq\0~\0gÑ[üq\0~ût\0\0t\0Durationsr\0(org.enhydra.shark.xpdl.elements.Duration© ÙCÙÎË\0\0xq\0~\0#\0q\0~¨sq\0~\0`À⁄—q\0~ût\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~§q\0~©q\0~Æxxsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~Åq\0~Öq\0~äq\0~èq\0~îq\0~ôq\0~ûxt\0RedefinableHeadersq\0~\0H\0q\0~≥sq\0~\0`€\Zq\0~^t\0\0sq\0~\0w\0\0\0q\0~\0Msq\0~\0\0q\0~\0Msq\0~\0uÚq§q\0~¥q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\0Rq\0~\0Sq\0~\0Txt\0Authorsq\0~\0V\0q\0~ªsq\0~\00oî&q\0~¥t\0\0t\0Versionsq\0~\0[\0q\0~øsq\0~\0Ã›®q\0~¥t\0\0t\0Codepagesq\0~\0`\0q\0~√sq\0~\0 #`q\0~¥t\0\0t\0\nCountrykeysq\0~\0e\0q\0~«sq\0~\0F:<ëq\0~¥t\0\0t\0Responsiblessq\0~\0j\0q\0~Àsq\0~\0\n∏N‘q\0~¥t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~∏q\0~ºq\0~¿q\0~ƒq\0~»q\0~Ãxt\0FormalParameterssq\0~2\0q\0~“sq\0~\0bq„∂q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nDataFieldssq\0~P\0q\0~ÿsq\0~\0ZŸ˘ûq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.DataFieldI“3.~ë≠˜\0\0xq\0~\0©t\0	DataFieldsq\0~\0JÎƒƒq\0~Ÿt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ly>q\0~ﬂt\0statuspq\0~\0sq\0~\0\0q\0~\0sq\0~\05¿q\0~ﬂt\0\0pt\0IsArraysq\0~\0\0q\0~Ísq\0~\0wd∞ﬂq\0~ﬂt\0FALSEsq\0~\0E\0\0\0w\0\0\0t\0TRUEt\0FALSExt\0DataTypesr\0(org.enhydra.shark.xpdl.elements.DataTypeÜ\'4sM\0\0xq\0~\0q\0~Òsq\0~\0&´∞q\0~ﬂt\0\0sq\0~\0w\0\0\0t\0	DataTypessr\0)org.enhydra.shark.xpdl.elements.DataTypesµpcH,ﬁ!ì\0Z\0\risInitializedxq\0~-q\0~˜sq\0~\0Yö_¯q\0~Ût\0\0sq\0~\0E\0\0\0	w\0\0\0	sr\0)org.enhydra.shark.xpdl.elements.BasicType∑)®Ωw1øé\0\0xq\0~\0t\0	BasicTypesq\0~\0	,#£q\0~˘t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0q\0~\0Üsq\0~\0u¶q\0~˛t\0STRINGsq\0~\0E\0\0\0w\0\0\0t\0STRINGt\0FLOATt\0INTEGERt\0	REFERENCEt\0DATETIMEt\0BOOLEANt\0	PERFORMERxxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0,org.enhydra.shark.xpdl.elements.DeclaredTypedR.\\^Ë9í\0\0xq\0~\0t\0DeclaredTypesq\0~\0^wrìq\0~˘t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Uôì:q\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0*org.enhydra.shark.xpdl.elements.SchemaType&1oSH™Ö\0\0xq\0~\0t\0\nSchemaTypesq\0~\0=¿ìq\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0Àt\0ExternalReferencesq\0~\0›á4q\0~˘t\0\0sq\0~\0w\0\0\0q\0~\0–sq\0~\0\0q\0~\0–sq\0~\0m[èVq\0~ t\0\0pq\0~\0‘sq\0~\0q\0~\0‘sq\0~\0t¬¡Ñq\0~ t\0\0pq\0~\0ÿsq\0~\0\0q\0~\0ÿsq\0~\0M£úq\0~ t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~%q\0~(q\0~+xsr\0*org.enhydra.shark.xpdl.elements.RecordTypeı%®Ω©ÎK\0\0\0xq\0~\0kt\0\nRecordTypesq\0~\0)£F±q\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.UnionType¥⁄Ô5PŒG˙\0\0xq\0~\0kt\0	UnionTypesq\0~\03]Ïq\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0/org.enhydra.shark.xpdl.elements.EnumerationType™⁄ﬁf3b\0\0xq\0~\0kt\0EnumerationTypesq\0~\0zaèq\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.ArrayTypeg¨$\0≠N@\0\0xq\0~\0t\0	ArrayTypesq\0~\0+çˆq\0~˘t\0\0sq\0~\0w\0\0\0t\0\nLowerIndexsq\0~\0q\0~Jsq\0~\0(L¯q\0~Et\0\0pt\0\nUpperIndexsq\0~\0q\0~Nsq\0~\0\Zˆæ,q\0~Et\0\0pq\0~˜sq\0~¯q\0~˜sq\0~\0dß‰q\0~Et\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~Kq\0~Oq\0~Rxsr\0(org.enhydra.shark.xpdl.elements.ListTypeü\"”ü\nÆ\0\0xq\0~\0t\0ListTypesq\0~\0X%óœq\0~˘t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯q\0~˜sq\0~\0∞Oøq\0~Wt\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~\\xxq\0~˛xsq\0~\0E\0\0\0w\0\0\0q\0~˘xt\0InitialValuesr\0,org.enhydra.shark.xpdl.elements.InitialValuej,z˚îúR\0\0xq\0~\0#\0q\0~asq\0~\0-òñq\0~ﬂt\0\0t\0Lengthsr\0&org.enhydra.shark.xpdl.elements.LengthMW+-Ã©W‹\0\0xq\0~\0#\0q\0~fsq\0~\0˝OÀq\0~ﬂt\0\0t\0Descriptionsq\0~\02\0q\0~ksq\0~\0gí9îq\0~ﬂt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~osq\0~\0gﬂ_nq\0~ﬂt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~‰q\0~Áq\0~Îq\0~Ûq\0~cq\0~hq\0~lq\0~pxxt\0Participantssq\0~\0¢\0q\0~vsq\0~\0Mà‡q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Applicationssq\0~\0q\0~|sq\0~\0ñ±xq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ActivitySetssr\0,org.enhydra.shark.xpdl.elements.ActivitySets–qV[4™Ó÷\0\0xq\0~\0k\0q\0~Çsq\0~\0hû/q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nActivitiessr\0*org.enhydra.shark.xpdl.elements.Activities&G^·æl˛P\0\0xq\0~\0k\0q\0~âsq\0~\0}è∫q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0(org.enhydra.shark.xpdl.elements.Activity√tá45\Z9ï\0\0xq\0~\0©t\0Activitysq\0~\0DßÈ¥q\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ou«q\0~ët\0approve_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0Z<Ï≤q\0~ët\0Approve Proposalpt\0Descriptionsq\0~\02\0q\0~úsq\0~\0t˜ö7q\0~ët\0\0t\0Limitsq\0~é\0q\0~†sq\0~\0w;Xq\0~ët\0\0q\0~\0Üsr\0-org.enhydra.shark.xpdl.elements.ActivityTypese≈Ω{ˆûËË\0\0xq\0~-q\0~\0Üsq\0~\0*ÆBq\0~ët\0\0sq\0~\0E\0\0\0w\0\0\0sr\0%org.enhydra.shark.xpdl.elements.Route0eÓ\r≤G›\0\0xq\0~\0t\0Routesq\0~\01Nä	q\0~•t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0.org.enhydra.shark.xpdl.elements.Implementationúrñí^%ä\0\0xq\0~\0t\0Implementationsq\0~\0y à5q\0~•t\0\0sq\0~\0w\0\0\0q\0~\0Üsr\03org.enhydra.shark.xpdl.elements.ImplementationTypes\rü‰TŸ°9\0\0xq\0~-q\0~\0Üsq\0~\0VÆıöq\0~±t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0\"org.enhydra.shark.xpdl.elements.No{ïÖ⁄.\0\0xq\0~\0t\0Nosq\0~\0Ø≥q\0~∑t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0%org.enhydra.shark.xpdl.elements.ToolsCø÷g©ë\0\0xq\0~\0k\0t\0Toolssq\0~\0JÙƒçq\0~∑t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0\'org.enhydra.shark.xpdl.elements.SubFlow;Oısá7:$\0\0xq\0~\0t\0SubFlowsq\0~\07Ëå∆q\0~∑t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0À≠Ñq\0~ t\0\0pt\0	Executionsq\0~\0\0q\0~“sq\0~\0aﬁLoq\0~ q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ASYNCHRt\0SYNCHRxt\0ActualParameterssr\00org.enhydra.shark.xpdl.elements.ActualParametersÎå˜µ_ÏK˛\0\0xq\0~\0k\0q\0~ÿsq\0~\0\r‚<uq\0~ t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~œq\0~”q\0~⁄xxq\0~ºxsq\0~\0E\0\0\0w\0\0\0q\0~∑xsr\0-org.enhydra.shark.xpdl.elements.BlockActivityíq cƒÍF\0\0xq\0~\0t\0\rBlockActivitysq\0~\0~≥q\0~•t\0\0sq\0~\0w\0\0\0t\0BlockIdsq\0~\0q\0~Ásq\0~\05Û*yq\0~‚t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~Ëxxq\0~±t\0	Performersr\0)org.enhydra.shark.xpdl.elements.Performer¶\"1%ËÃƒ\0\0xq\0~\0#\0q\0~Ïsq\0~\0&›µúq\0~ët\0approvert\0	StartModesr\0)org.enhydra.shark.xpdl.elements.StartModenhÖÑ◊ÛS\0\0xq\0~\0\0q\0~Òsq\0~\0:@$¶q\0~ët\0\0sq\0~\0w\0\0\0t\0Modesr\00org.enhydra.shark.xpdl.elements.StartFinishModes~Á6zÂXã\'\0\0xq\0~-\0q\0~˜sq\0~\0<§V⁄q\0~Ût\0\0sq\0~\0E\0\0\0w\0\0\0sr\0,org.enhydra.shark.xpdl.XMLEmptyChoiceElementÔ2‘;Œ3ı_\0\0xq\0~\0\0t\0XMLEmptyChoiceElementsq\0~\0~¿«åq\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.AutomaticÈt?˚_Äê\0\0xq\0~\0t\0	Automaticsq\0~\0.&U*q\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0&org.enhydra.shark.xpdl.elements.Manual∑v™âÓ[ÿ§\0\0xq\0~\0t\0Manualsq\0~\0d÷á\nq\0~˘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~˛xsq\0~\0E\0\0\0w\0\0\0q\0~˘xt\0\nFinishModesr\0*org.enhydra.shark.xpdl.elements.FinishModeˆÉ¯õúºÛ{\0\0xq\0~\0\0q\0~sq\0~\0ff>Œq\0~ët\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0‚y)q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0.)q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0T—∆q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)˝≈$q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~â\0q\0~0sq\0~\0l‹©Üq\0~ët\0\0t\0	Deadlinessr\0)org.enhydra.shark.xpdl.elements.Deadlines>Ωç…ú√⁄\0\0xq\0~\0k\0q\0~4sq\0~\03Ï{q\0~ët\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsr\05org.enhydra.shark.xpdl.elements.SimulationInformation\"ì|I™£í\0\0xq\0~\0\0q\0~;sq\0~\07J’⁄q\0~ët\0\0sq\0~\0w\0\0\0t\0\rInstantiationsq\0~\0\0q\0~Asq\0~\0pŸÚÚq\0~=q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ONCEt\0MULTIPLExt\0Costsr\0$org.enhydra.shark.xpdl.elements.Costœ˘¿ﬁÚëû\0\0xq\0~\0#q\0~Gsq\0~\0y@Âˆq\0~=t\0\0t\0TimeEstimationsq\0~ùq\0~Lsq\0~\0rõûëq\0~=t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Qsq\0~\0ûqq\0~Mt\0\0t\0WorkingTimesq\0~®\0q\0~Usq\0~\0,ÔO˛q\0~Mt\0\0t\0Durationsq\0~≠\0q\0~Ysq\0~\0R~`¿q\0~Mt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Rq\0~Vq\0~Zxxsq\0~\0E\0\0\0w\0\0\0q\0~Bq\0~Iq\0~Mxt\0Iconsr\0$org.enhydra.shark.xpdl.elements.Icon´TŒU(ˇ}6\0\0xq\0~\0#\0q\0~_sq\0~\0|øq\0~ët\0\0t\0\rDocumentationsq\0~\07\0q\0~dsq\0~\0…Éq\0~ët\0\0t\0TransitionRestrictionssr\06org.enhydra.shark.xpdl.elements.TransitionRestrictionsC)∑◊Äi;\0\0xq\0~\0k\0q\0~hsq\0~\0Jèø√q\0~ët\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\05org.enhydra.shark.xpdl.elements.TransitionRestrictionN˚ƒáπ}˛\0\0xq\0~\0t\0TransitionRestrictionsq\0~\0,ÔJéq\0~jt\0\0sq\0~\0w\0\0\0t\0Joinsr\0$org.enhydra.shark.xpdl.elements.Join⁄ï”©x)Û5\0\0xq\0~\0\0q\0~usq\0~\0QkThq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0–»Mq\0~wt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ANDt\0XORxxsq\0~\0E\0\0\0w\0\0\0q\0~{xt\0Splitsr\0%org.enhydra.shark.xpdl.elements.Split‹ÌØ~—ØWS\0\0xq\0~\0\0q\0~Çsq\0~\0<F«ˇq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0j+Q√q\0~Ñq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~Äxt\0TransitionRefssr\0.org.enhydra.shark.xpdl.elements.TransitionRefs†Ô≥—ä·ƒÎ\0\0xq\0~\0k\0q\0~ãsq\0~\0aËÄ˙q\0~Ñt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~àq\0~çxxsq\0~\0E\0\0\0w\0\0\0q\0~wq\0~Ñxxt\0ExtendedAttributessq\0~\0ﬁ\0q\0~îsq\0~\0kVÆ2q\0~ët\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\01org.enhydra.shark.xpdl.elements.ExtendedAttributeª¬\\±ÏF\0\0xq\0~\0t\0ExtendedAttributesq\0~\0\Z3QÈq\0~ït\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0db8~q\0~õt\0JaWE_GRAPH_PARTICIPANT_IDpt\0Valuesq\0~\0\0q\0~£sq\0~\0<~9q\0~õt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~†q\0~§xsq\0~öt\0ExtendedAttributesq\0~\0t7∏q\0~ït\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Hê∆q\0~®t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0aúÎ˘q\0~®t\0189,51.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~≠q\0~∞xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ñq\0~ôq\0~ùq\0~°q\0~•q\0~Óq\0~Ûq\0~q\0~1q\0~6q\0~=q\0~aq\0~eq\0~jq\0~ïxsq\0~êt\0Activitysq\0~\07åEq\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wB‘Îq\0~µt\0approvalpq\0~\0sq\0~\0\0q\0~\0sq\0~\02K¢Ïq\0~µt\0Approvalpt\0Descriptionsq\0~\02\0q\0~¿sq\0~\0bU √q\0~µt\0\0t\0Limitsq\0~é\0q\0~ƒsq\0~\0dê6Sq\0~µt\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0_˛€ q\0~µt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\00Õ^Òq\0~»t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0|Çô˘q\0~»t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0≈\nîq\0~“t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\00ÀÂWq\0~◊t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0j+iq\0~◊t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~…t\0SubFlowsq\0~\0éÑq\0~◊t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\03Æ%Îq\0~Át\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0\\†üîq\0~Áq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~Úsq\0~\0nB>q\0~Át\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~Ïq\0~Ôq\0~Ûxxq\0~€xsq\0~\0E\0\0\0w\0\0\0q\0~◊xsq\0~·t\0\rBlockActivitysq\0~\0J \\q\0~»t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0^â5Cq\0~˙t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ˇxxq\0~Ãt\0	Performersq\0~Ì\0q\0~sq\0~\0\r]9q\0~µt\0approvert\0	StartModesq\0~Ú\0q\0~sq\0~\0x®Â5q\0~µt\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\02˙ÿVq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0§>√q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0A∫ôq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=´Ihq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~#sq\0~\0gGq\0~µt\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0;\"Êq\0~$t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0qêá„q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0W°®0q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)*Âúq\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~,xsq\0~\0E\0\0\0w\0\0\0q\0~(xt\0Prioritysq\0~â\0q\0~?sq\0~\0]ãÙq\0~µt\0\0t\0	Deadlinessq\0~5\0q\0~Csq\0~\0{á∫Cq\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Isq\0~\0!Ω}+q\0~µt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0_≈jÖq\0~Jq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Qsq\0~\0=%X¢q\0~Jt\0\0t\0TimeEstimationsq\0~ùq\0~Usq\0~\0{6®Áq\0~Jt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Zsq\0~\01(÷èq\0~Vt\0\0t\0WorkingTimesq\0~®\0q\0~^sq\0~\0EMmq\0~Vt\0\0t\0Durationsq\0~≠\0q\0~bsq\0~\0R∫≥.q\0~Vt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~[q\0~_q\0~cxxsq\0~\0E\0\0\0w\0\0\0q\0~Nq\0~Rq\0~Vxt\0Iconsq\0~`\0q\0~hsq\0~\0Hq\0~µt\0\0t\0\rDocumentationsq\0~\07\0q\0~lsq\0~\0kÓyØq\0~µt\0\0t\0TransitionRestrictionssq\0~i\0q\0~psq\0~\0FI‘q\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0\"ªó-q\0~qt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~{sq\0~\0LÈ%q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\00≈Ûq\0~|q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~Äxxsq\0~\0E\0\0\0w\0\0\0q\0~Äxt\0Splitsq\0~É\0q\0~Ñsq\0~\0$ô/q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0nXf˘q\0~Öt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~Äxt\0TransitionRefssq\0~å\0q\0~çsq\0~\0≤Ø÷q\0~Öt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0-org.enhydra.shark.xpdl.elements.TransitionRefÉ%-ÀÒaö\0\0xq\0~\0©t\0\rTransitionRefsq\0~\0≥1q\0~ét\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ïSôq\0~ît\0transition3pxsq\0~\0E\0\0\0w\0\0\0q\0~ôxsq\0~ìt\0\rTransitionRefsq\0~\0oÓåÛq\0~ét\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07Ãi q\0~ùt\0transition6pxsq\0~\0E\0\0\0w\0\0\0q\0~¢xsq\0~ìt\0\rTransitionRefsq\0~\0=˝µ0q\0~ét\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0R0çq\0~¶t\0transition5pxsq\0~\0E\0\0\0w\0\0\0q\0~´xxxsq\0~\0E\0\0\0w\0\0\0q\0~âq\0~éxxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~Öxxt\0ExtendedAttributessq\0~\0ﬁ\0q\0~±sq\0~\0A1±˚q\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0…ßÅq\0~≤t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0|∏ˆq\0~∑t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0U°q\0~∑t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ºq\0~øxsq\0~öt\0ExtendedAttributesq\0~\0x◊®yq\0~≤t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;a˝Mq\0~√t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0U4Iﬂq\0~√t\0430,62.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~»q\0~Àxxpxsq\0~\0E\0\0\0w\0\0\0q\0~∫q\0~Ωq\0~¡q\0~≈q\0~»q\0~q\0~q\0~$q\0~@q\0~Dq\0~Jq\0~iq\0~mq\0~qq\0~≤xsq\0~êt\0Activitysq\0~\0Oíõq\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0PyUƒq\0~–t\0	activity1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0Jwkq\0~–t\0Resubmit Proposalpt\0Descriptionsq\0~\02\0q\0~€sq\0~\0~°`q\0~–t\0\0t\0Limitsq\0~é\0q\0~ﬂsq\0~\0	¨§Jq\0~–t\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0zÑ4Æq\0~–t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0Cò°∫q\0~„t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\06KÔŸq\0~„t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0Z©ìÆq\0~Ìt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0S˝q\0~Út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0@	q\0~Út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~…t\0SubFlowsq\0~\0nÊq\0~Út\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0x>¡hq\0~t\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0fõ\0q\0~q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~\rsq\0~\0aìä°q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\nq\0~xxq\0~ˆxsq\0~\0E\0\0\0w\0\0\0q\0~Úxsq\0~·t\0\rBlockActivitysq\0~\0oﬁn^q\0~„t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0ae«Lq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\Zxxq\0~Ìt\0	Performersq\0~Ì\0q\0~sq\0~\0_@3q\0~–t\0	requestert\0	StartModesq\0~Ú\0q\0~\"sq\0~\0\"{W¯q\0~–t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0>Àawq\0~#t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\03úTq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Õõq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ï<lq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~+xsq\0~\0E\0\0\0w\0\0\0q\0~\'xt\0\nFinishModesq\0~\0q\0~>sq\0~\0Í€q\0~–t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0UÊJÕq\0~?t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0\0\\Ï\0q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\≈-q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Oyq\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~Gxsq\0~\0E\0\0\0w\0\0\0q\0~Cxt\0Prioritysq\0~â\0q\0~Zsq\0~\04hóÏq\0~–t\0\0t\0	Deadlinessq\0~5\0q\0~^sq\0~\0S≥Qçq\0~–t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~dsq\0~\0 ÑáNq\0~–t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0P¿‡q\0~eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~lsq\0~\0 Á⁄Ûq\0~et\0\0t\0TimeEstimationsq\0~ùq\0~psq\0~\0iÿ[q\0~et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~usq\0~\0m´å¿q\0~qt\0\0t\0WorkingTimesq\0~®\0q\0~ysq\0~\0:ª6Âq\0~qt\0\0t\0Durationsq\0~≠\0q\0~}sq\0~\0$ïCq\0~qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~zq\0~~xxsq\0~\0E\0\0\0w\0\0\0q\0~iq\0~mq\0~qxt\0Iconsq\0~`\0q\0~Ésq\0~\0C!î q\0~–t\0\0t\0\rDocumentationsq\0~\07\0q\0~ásq\0~\0r]›‚q\0~–t\0\0t\0TransitionRestrictionssq\0~i\0q\0~ãsq\0~\0≤—Rq\0~–t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~ësq\0~\0±<q\0~–t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0MY©q\0~ít\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0rú\"q\0~ót\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0RJnEq\0~ót\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~úq\0~üxsq\0~öt\0ExtendedAttributesq\0~\0D¡gq\0~ít\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0{≠¡Gq\0~£t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0o™¡úq\0~£t\0397,20.787493896484378pxsq\0~\0E\0\0\0w\0\0\0q\0~®q\0~´xxpxsq\0~\0E\0\0\0w\0\0\0q\0~’q\0~ÿq\0~‹q\0~‡q\0~„q\0~q\0~#q\0~?q\0~[q\0~_q\0~eq\0~Ñq\0~àq\0~åq\0~íxsq\0~êt\0Activitysq\0~\0nì≤jq\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0RõÅq\0~∞t\0\rsend_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\"EÏq\0~∞t\0\rSend Proposalpt\0Descriptionsq\0~\02\0q\0~ªsq\0~\07wL\Zq\0~∞t\0\0t\0Limitsq\0~é\0q\0~øsq\0~\0Ë›Iq\0~∞t\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0}.q\0~∞t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0w„•%q\0~√t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0z˘ _q\0~√t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\023∏‹q\0~Õt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0¸Hq\0~“t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0|\\N?q\0~“t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~…t\0SubFlowsq\0~\0Ob3q\0~“t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`Œ÷Uq\0~‚t\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0û\'Oq\0~‚q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~Ìsq\0~\0-æq\0~‚t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~Áq\0~Íq\0~Óxxq\0~÷xsq\0~\0E\0\0\0w\0\0\0q\0~“xsq\0~·t\0\rBlockActivitysq\0~\0dDPŸq\0~√t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0rÆNzq\0~ıt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~˙xxq\0~Õt\0	Performersq\0~Ì\0q\0~˛sq\0~\0Ìª?q\0~∞t\0	requestert\0	StartModesq\0~Ú\0q\0~sq\0~\0p’bÅq\0~∞t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\06—6⁄q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0*Ç3Ìq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Dv\Zq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\01ÿaaq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~sq\0~\0qAN¿q\0~∞t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0JÁ^q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0m∞0q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0À2ìq\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ùj»q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\'xsq\0~\0E\0\0\0w\0\0\0q\0~#xt\0Prioritysq\0~â\0q\0~:sq\0~\07πóq\0~∞t\0\0t\0	Deadlinessq\0~5\0q\0~>sq\0~\0Ys±q\0~∞t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Dsq\0~\0t‡¶q\0~∞t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0xFjq\0~Eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Lsq\0~\0\\‰Ùq\0~Et\0\0t\0TimeEstimationsq\0~ùq\0~Psq\0~\0^@q\0~Et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Usq\0~\0;	Õùq\0~Qt\0\0t\0WorkingTimesq\0~®\0q\0~Ysq\0~\0såV◊q\0~Qt\0\0t\0Durationsq\0~≠\0q\0~]sq\0~\0`°2q\0~Qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Zq\0~^xxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Mq\0~Qxt\0Iconsq\0~`\0q\0~csq\0~\0kı=q\0~∞t\0\0t\0\rDocumentationsq\0~\07\0q\0~gsq\0~\0{˚§Hq\0~∞t\0\0t\0TransitionRestrictionssq\0~i\0q\0~ksq\0~\0jPq\0~∞t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~qsq\0~\0à—–q\0~∞t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0æ∂ q\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0^_ùq\0~wt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0?’r¯q\0~wt\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~xsq\0~öt\0ExtendedAttributesq\0~\0A˘Ìq\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\'\nq\0~Ét\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0zæüq\0~Ét\0#669.0000534057617,92.78333282470703pxsq\0~\0E\0\0\0w\0\0\0q\0~àq\0~ãxxpxsq\0~\0E\0\0\0w\0\0\0q\0~µq\0~∏q\0~ºq\0~¿q\0~√q\0~ˇq\0~q\0~q\0~;q\0~?q\0~Eq\0~dq\0~hq\0~lq\0~rxsq\0~êt\0Activitysq\0~\0,N˙q\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Èüq\0~êt\0parallelpq\0~\0sq\0~\0\0q\0~\0sq\0~\0≥¯cq\0~êt\0Parallelpt\0Descriptionsq\0~\02\0q\0~õsq\0~\0„Tq\0~êt\0\0t\0Limitsq\0~é\0q\0~üsq\0~\0Pπßq\0~êt\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0\'ïhbq\0~êt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0#a¸q\0~£t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0<Á.Ùq\0~£t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0!˚áVq\0~≠t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0-°=sq\0~≤t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0å›∞q\0~≤t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~…t\0SubFlowsq\0~\0”˚q\0~≤t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0y•5q\0~¬t\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0]À≈˚q\0~¬q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~Õsq\0~\0:M‚Øq\0~¬t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~«q\0~ q\0~Œxxq\0~∂xsq\0~\0E\0\0\0w\0\0\0q\0~≤xsq\0~·t\0\rBlockActivitysq\0~\0pÅhq\0~£t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0 \\ñ‚q\0~’t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~⁄xxq\0~ßt\0	Performersq\0~Ì\0q\0~ﬁsq\0~\0#;{q\0~êt\0approvert\0	StartModesq\0~Ú\0q\0~‚sq\0~\0v6Ω]q\0~êt\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0\rå™Uq\0~„t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0\Zëbîq\0~Át\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0M—∞Äq\0~Át\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=‰ì˝q\0~Át\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~Îxsq\0~\0E\0\0\0w\0\0\0q\0~Áxt\0\nFinishModesq\0~\0q\0~˛sq\0~\0røNq\0~êt\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0cˆYq\0~ˇt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0	Ñ†„q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0bÜq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0»T€q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~â\0q\0~\Zsq\0~\0| ⁄q\0~êt\0\0t\0	Deadlinessq\0~5\0q\0~sq\0~\0Pº˛q\0~êt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~$sq\0~\0BL©≠q\0~êt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0\0`S≥q\0~%q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~,sq\0~\0b«q\0~%t\0\0t\0TimeEstimationsq\0~ùq\0~0sq\0~\0U<∫¬q\0~%t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~5sq\0~\0rö`	q\0~1t\0\0t\0WorkingTimesq\0~®\0q\0~9sq\0~\0pÂX\"q\0~1t\0\0t\0Durationsq\0~≠\0q\0~=sq\0~\0*õÜ•q\0~1t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~6q\0~:q\0~>xxsq\0~\0E\0\0\0w\0\0\0q\0~)q\0~-q\0~1xt\0Iconsq\0~`\0q\0~Csq\0~\0\ZA”ûq\0~êt\0\0t\0\rDocumentationsq\0~\07\0q\0~Gsq\0~\0;zr˜q\0~êt\0\0t\0TransitionRestrictionssq\0~i\0q\0~Ksq\0~\0aÑÚq\0~êt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0J9ƒ\"q\0~Lt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~Vsq\0~\0\0äWÄq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0F¨Âq\0~Wq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~Äxxsq\0~\0E\0\0\0w\0\0\0q\0~[xt\0Splitsq\0~É\0q\0~_sq\0~\05ÜÅq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\01ü\\◊q\0~`t\0ANDsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~Äxt\0TransitionRefssq\0~å\0q\0~hsq\0~\0c˚;3q\0~`t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ìt\0\rTransitionRefsq\0~\0\'‚∫âq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z/Âq\0~nt\0transition7pxsq\0~\0E\0\0\0w\0\0\0q\0~sxsq\0~ìt\0\rTransitionRefsq\0~\0,Ywq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Aµªfq\0~wt\0transition8pxsq\0~\0E\0\0\0w\0\0\0q\0~|xxxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~ixxsq\0~\0E\0\0\0w\0\0\0q\0~Wq\0~`xxt\0ExtendedAttributessq\0~\0ﬁ\0q\0~Çsq\0~\0\\…q\0~êt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\07lM\nq\0~Ét\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Oú¸„q\0~àt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\03≈S¨q\0~àt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~çq\0~êxsq\0~öt\0ExtendedAttributesq\0~\0‘=q\0~Ét\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0H»Œâq\0~ît\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0`õHóq\0~ît\0588,61.599993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~ôq\0~úxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ïq\0~òq\0~úq\0~†q\0~£q\0~ﬂq\0~„q\0~ˇq\0~q\0~q\0~%q\0~Dq\0~Hq\0~Lq\0~Éxsq\0~êt\0Activitysq\0~\0y⁄?q\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0RçSîq\0~°t\0tool1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0*±§!q\0~°t\0\ZSend Approval Notificationpt\0Descriptionsq\0~\02\0q\0~¨sq\0~\0$Éõxq\0~°t\0\0t\0Limitsq\0~é\0q\0~∞sq\0~\0f†èq\0~°t\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\06lvøq\0~°t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0[\\ˇq\0~¥t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0)ª]˜q\0~¥t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0rÚóq\0~æt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0W~•Ëq\0~√t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0	ß\\q\0~√t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0$org.enhydra.shark.xpdl.elements.Tool\\6ñ&∂+GÅ\0\0xq\0~\0©t\0Toolsq\0~\0.\0≠q\0~Õt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0CBÆÉq\0~‘t\0default_applicationpq\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0}_ø√q\0~‘q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0APPLICATIONt\0	PROCEDURExt\0ActualParameterssq\0~Ÿ\0q\0~·sq\0~\0rCŒOq\0~‘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~Ásq\0~\0<7‰»q\0~‘t\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~Îsq\0~\0Cc†ãq\0~‘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~Ÿq\0~‹q\0~‚q\0~Ëq\0~Ïxxsq\0~…t\0SubFlowsq\0~\0o.œq\0~√t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z]¥˜q\0~Út\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0X.±q\0~Úq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~˝sq\0~\0	LpØq\0~Út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~˜q\0~˙q\0~˛xxq\0~Õxsq\0~\0E\0\0\0w\0\0\0q\0~√xsq\0~·t\0\rBlockActivitysq\0~\0”å$q\0~¥t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0>hq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\nxxq\0~æt\0	Performersq\0~Ì\0q\0~sq\0~\0)E<q\0~°t\0approvert\0	StartModesq\0~Ú\0q\0~sq\0~\0Cf¯ãq\0~°t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0Iﬁ˛oq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0q2¿;q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\Ö]q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\\…≠Aq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~.sq\0~\0ΩD<q\0~°t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0ilq\0~/t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0XW%&q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0f—`q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Y‹/Ûq\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~7xsq\0~\0E\0\0\0w\0\0\0q\0~3xt\0Prioritysq\0~â\0q\0~Jsq\0~\0efW¢q\0~°t\0\0t\0	Deadlinessq\0~5\0q\0~Nsq\0~\0y0=q\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Tsq\0~\0j=Õq\0~°t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0R&Œq\0~Uq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\\sq\0~\0™öoq\0~Ut\0\0t\0TimeEstimationsq\0~ùq\0~`sq\0~\0Hü™?q\0~Ut\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~esq\0~\0J›åq\0~at\0\0t\0WorkingTimesq\0~®\0q\0~isq\0~\0(,hoq\0~at\0\0t\0Durationsq\0~≠\0q\0~msq\0~\0yÑˆÁq\0~at\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~fq\0~jq\0~nxxsq\0~\0E\0\0\0w\0\0\0q\0~Yq\0~]q\0~axt\0Iconsq\0~`\0q\0~ssq\0~\0Lˇu∫q\0~°t\0\0t\0\rDocumentationsq\0~\07\0q\0~wsq\0~\0p°#q\0~°t\0\0t\0TransitionRestrictionssq\0~i\0q\0~{sq\0~\0;ÖBq\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~Åsq\0~\0eh®&q\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0`Œ1q\0~Çt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;bÒq\0~át\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0/™søq\0~át\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~åq\0~èxsq\0~öt\0ExtendedAttributesq\0~\07\"|q\0~Çt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0K\0≠q\0~ìt\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0g[⁄Óq\0~ìt\0735,63.974993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~òq\0~õxxpxsq\0~\0E\0\0\0w\0\0\0q\0~¶q\0~©q\0~≠q\0~±q\0~¥q\0~q\0~q\0~/q\0~Kq\0~Oq\0~Uq\0~tq\0~xq\0~|q\0~Çxsq\0~êt\0Activitysq\0~\0z1q\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0túòdq\0~†t\0tool2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\'àèÌq\0~†t\0Send Reject Notificationpt\0Descriptionsq\0~\02\0q\0~´sq\0~\03˚Ÿq\0~†t\0\0t\0Limitsq\0~é\0q\0~Øsq\0~\0=ÜÕq\0~†t\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0%_Èhq\0~†t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0FÀÌ…q\0~≥t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0]=+˙q\0~≥t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0VXÀSq\0~Ωt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0|Yq\0~¬t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0*}∑q\0~¬t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~”t\0Toolsq\0~\0aﬂq\0~Ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wœ◊\0q\0~“t\0default_applicationpq\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0`ò«q\0~“q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ﬂq\0~‡xt\0ActualParameterssq\0~Ÿ\0q\0~›sq\0~\0ü!üq\0~“t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~„sq\0~\0bcÿùq\0~“t\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~Ásq\0~\0oq‹âq\0~“t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~◊q\0~⁄q\0~ﬁq\0~‰q\0~Ëxxsq\0~…t\0SubFlowsq\0~\0!|ˆq\0~¬t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\01Ó≥<q\0~Ót\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0•ıÏq\0~Óq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~˘sq\0~\0H§ÊJq\0~Ót\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~Ûq\0~ˆq\0~˙xxq\0~Ãxsq\0~\0E\0\0\0w\0\0\0q\0~¬xsq\0~·t\0\rBlockActivitysq\0~\0.M#q\0~≥t\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0Jhâq\0~	t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	xxq\0~Ωt\0	Performersq\0~Ì\0q\0~	\nsq\0~\0k∂˛≥q\0~†t\0approvert\0	StartModesq\0~Ú\0q\0~	sq\0~\0O√9q\0~†t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0xt¡∆q\0~	t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0!@’q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0êL8q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0÷!Æq\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	xsq\0~\0E\0\0\0w\0\0\0q\0~	xt\0\nFinishModesq\0~\0q\0~	*sq\0~\0HBÕq\0~†t\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0~.∑Yq\0~	+t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0(‘Õq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0¶´eq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Y±>Eq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	3xsq\0~\0E\0\0\0w\0\0\0q\0~	/xt\0Prioritysq\0~â\0q\0~	Fsq\0~\0s@++q\0~†t\0\0t\0	Deadlinessq\0~5\0q\0~	Jsq\0~\0-2q\0~†t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~	Psq\0~\0g\'|vq\0~†t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\07¥%¡q\0~	Qq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~	Xsq\0~\0EﬂYoq\0~	Qt\0\0t\0TimeEstimationsq\0~ùq\0~	\\sq\0~\0h[oaq\0~	Qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~	asq\0~\04√z–q\0~	]t\0\0t\0WorkingTimesq\0~®\0q\0~	esq\0~\0\"O€§q\0~	]t\0\0t\0Durationsq\0~≠\0q\0~	isq\0~\0d˙£q\0~	]t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~	bq\0~	fq\0~	jxxsq\0~\0E\0\0\0w\0\0\0q\0~	Uq\0~	Yq\0~	]xt\0Iconsq\0~`\0q\0~	osq\0~\0.wÆ	q\0~†t\0\0t\0\rDocumentationsq\0~\07\0q\0~	ssq\0~\0ÕTÌq\0~†t\0\0t\0TransitionRestrictionssq\0~i\0q\0~	wsq\0~\0]É=ãq\0~†t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~	}sq\0~\0gàuzq\0~†t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0Z∑Ëíq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0œ`ÿq\0~	Ét\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0W?Y)q\0~	Ét\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~	àq\0~	ãxsq\0~öt\0ExtendedAttributesq\0~\0ARÀq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0$¡q\0~	èt\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0J¥¨˚q\0~	èt\0394,168.39999694824218pxsq\0~\0E\0\0\0w\0\0\0q\0~	îq\0~	óxxpxsq\0~\0E\0\0\0w\0\0\0q\0~•q\0~®q\0~¨q\0~∞q\0~≥q\0~	q\0~	q\0~	+q\0~	Gq\0~	Kq\0~	Qq\0~	pq\0~	tq\0~	xq\0~	~xsq\0~êt\0Activitysq\0~\0gÔBïq\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uN•çq\0~	út\0route1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0ó«©q\0~	út\0Route 1pt\0Descriptionsq\0~\02\0q\0~	ßsq\0~\066Ûq\0~	út\0\0t\0Limitsq\0~é\0q\0~	´sq\0~\0Y\n•∫q\0~	út\0\0q\0~\0Üsq\0~§q\0~\0Üsq\0~\0Dlø‰q\0~	út\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0vtÇOq\0~	Øt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~∞t\0Implementationsq\0~\0p„ë˛q\0~	Øt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~∂q\0~\0Üsq\0~\0|»Õ-q\0~	πt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ªt\0Nosq\0~\0]˙Œœq\0~	æt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~¬\0t\0Toolssq\0~\0NI≈q\0~	æt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~…t\0SubFlowsq\0~\0cNE≥q\0~	æt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Y’MRq\0~	Œt\0\0pq\0~“sq\0~\0\0q\0~“sq\0~\0RR|q\0~	Œq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~÷q\0~◊xt\0ActualParameterssq\0~Ÿ\0q\0~	Ÿsq\0~\0//ˇq\0~	Œt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~	”q\0~	÷q\0~	⁄xxq\0~	¬xsq\0~\0E\0\0\0w\0\0\0q\0~	æxsq\0~·t\0\rBlockActivitysq\0~\0>]¨tq\0~	Øt\0\0sq\0~\0w\0\0\0q\0~Ásq\0~\0q\0~Ásq\0~\0M…0q\0~	·t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	Êxxq\0~	≥t\0	Performersq\0~Ì\0q\0~	Ísq\0~\0bñwq\0~	út\0	requestert\0	StartModesq\0~Ú\0q\0~	Ósq\0~\0[•ËÎq\0~	út\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\0H—Áq\0~	Ôt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0iEcq\0~	Ût\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0<è˛Ωq\0~	Ût\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0>™…üq\0~	Ût\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	˜xsq\0~\0E\0\0\0w\0\0\0q\0~	Ûxt\0\nFinishModesq\0~\0q\0~\n\nsq\0~\0zû!Ÿq\0~	út\0\0sq\0~\0w\0\0\0q\0~˜sq\0~¯\0q\0~˜sq\0~\09ÛM¥q\0~\nt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~˝\0t\0XMLEmptyChoiceElementsq\0~\0:bıÃq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0≤ßüq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0$µY1q\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\nxsq\0~\0E\0\0\0w\0\0\0q\0~\nxt\0Prioritysq\0~â\0q\0~\n&sq\0~\0A¢⁄Ïq\0~	út\0\0t\0	Deadlinessq\0~5\0q\0~\n*sq\0~\0l√õÅq\0~	út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~\n0sq\0~\0h…GŸq\0~	út\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0fª˜ q\0~\n1q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\n8sq\0~\01$°q\0~\n1t\0\0t\0TimeEstimationsq\0~ùq\0~\n<sq\0~\0AvÆêq\0~\n1t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~\nAsq\0~\0c#ﬁËq\0~\n=t\0\0t\0WorkingTimesq\0~®\0q\0~\nEsq\0~\0Z7[q\0~\n=t\0\0t\0Durationsq\0~≠\0q\0~\nIsq\0~\0\"‹<ïq\0~\n=t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~\nBq\0~\nFq\0~\nJxxsq\0~\0E\0\0\0w\0\0\0q\0~\n5q\0~\n9q\0~\n=xt\0Iconsq\0~`\0q\0~\nOsq\0~\0V*pq\0~	út\0\0t\0\rDocumentationsq\0~\07\0q\0~\nSsq\0~\0+D√q\0~	út\0\0t\0TransitionRestrictionssq\0~i\0q\0~\nWsq\0~\00∫q\0~	út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ﬁ\0q\0~\n]sq\0~\0sA¶q\0~	út\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0|‚Óüq\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\04–Ê3q\0~\nct\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0rÑ÷Âq\0~\nct\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~\nhq\0~\nkxsq\0~öt\0ExtendedAttributesq\0~\0\n^Ê®q\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0a£wjq\0~\not\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0RÒÙq\0~\not\0222,15pxsq\0~\0E\0\0\0w\0\0\0q\0~\ntq\0~\nwxxpxsq\0~\0E\0\0\0w\0\0\0q\0~	°q\0~	§q\0~	®q\0~	¨q\0~	Øq\0~	Îq\0~	Ôq\0~\nq\0~\n\'q\0~\n+q\0~\n1q\0~\nPq\0~\nTq\0~\nXq\0~\n^xxt\0Transitionssr\0+org.enhydra.shark.xpdl.elements.TransitionsÌ9>‰¿/iØ\0\0xq\0~\0k\0q\0~\n|sq\0~\04	_pq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0*org.enhydra.shark.xpdl.elements.Transitiontßx∏Ö\0\0xq\0~\0©t\0\nTransitionsq\0~\0k>x£q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0%¬2q\0~\nÑt\0transition2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\\aÂ q\0~\nÑt\0\0pt\0Fromsq\0~\0q\0~\nèsq\0~\0X˚pq\0~\nÑt\0approve_proposalpt\0Tosq\0~\0q\0~\nìsq\0~\06⁄7q\0~\nÑt\0approvalpt\0	Conditionsr\0)org.enhydra.shark.xpdl.elements.Condition€‡D··Z;|\0\0xq\0~\0\0q\0~\nósq\0~\0Duoq\0~\nÑt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0Gz&◊q\0~\nôq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0	CONDITIONt\0	OTHERWISEt\0	EXCEPTIONt\0DEFAULTEXCEPTIONxxsq\0~\0E\0\0\0w\0\0\0q\0~\nùxt\0Descriptionsq\0~\02\0q\0~\n•sq\0~\0!ß1ªq\0~\nÑt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~\n©sq\0~\0rºàJq\0~\nÑt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0	ßûUq\0~\n™t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}Ôß{q\0~\nØt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\02÷0q\0~\nØt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\n¥q\0~\n∑xxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nâq\0~\nåq\0~\nêq\0~\nîq\0~\nôq\0~\n¶q\0~\n™xsq\0~\nÉt\0\nTransitionsq\0~\0*œD\\q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0A§/Ìq\0~\nºt\0transition3pq\0~\0sq\0~\0\0q\0~\0sq\0~\0i\\q\0~\nºt\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0/\"fq\0~\nºt\0approvalpq\0~\nìsq\0~\0q\0~\nìsq\0~\0˚öáq\0~\nºt\0	activity1pt\0	Conditionsq\0~\nò\0q\0~\nÕsq\0~\0^‘+q\0~\nºt\0status===\'resubmit\'sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\081Öq\0~\nŒt\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~\n“xt\0Descriptionsq\0~\02\0q\0~\n◊sq\0~\0{bª°q\0~\nºt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~\n€sq\0~\0?/ëq\0~\nºt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0E‚¯äq\0~\n‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\00\Zi˜q\0~\n·t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0#=:œq\0~\n·t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÊq\0~\nÈxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\n¡q\0~\nƒq\0~\n«q\0~\n q\0~\nŒq\0~\nÿq\0~\n‹xsq\0~\nÉt\0\nTransitionsq\0~\0M[ãq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ÿ◊≠q\0~\nÓt\0transition4pq\0~\0sq\0~\0\0q\0~\0sq\0~\06m˝’q\0~\nÓt\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0˙Ãq\0~\nÓt\0	activity1pq\0~\nìsq\0~\0q\0~\nìsq\0~\0|LK—q\0~\nÓt\0approve_proposalpt\0	Conditionsq\0~\nò\0q\0~\nˇsq\0~\0	\0*êq\0~\nÓt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0@S-4q\0~\0q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Descriptionsq\0~\02\0q\0~sq\0~\0^ﬂÙ,q\0~\nÓt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~sq\0~\09wq\0~\nÓt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0†∏q\0~\rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ê/Zq\0~t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0F¢ƒiq\0~t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\Zxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÛq\0~\nˆq\0~\n˘q\0~\n¸q\0~\0q\0~	q\0~\rxsq\0~\nÉt\0\nTransitionsq\0~\01‘]ßq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0“¯jq\0~t\0transition6pq\0~\0sq\0~\0\0q\0~\0sq\0~\0eNµ+q\0~t\0approvedpq\0~\nèsq\0~\0q\0~\nèsq\0~\0)iÆıq\0~t\0approvalpq\0~\nìsq\0~\0q\0~\nìsq\0~\05üÆ}q\0~t\0parallelpt\0	Conditionsq\0~\nò\0q\0~0sq\0~\0v‰ı@q\0~t\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0„oq\0~1t\0	OTHERWISEsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~5xt\0Descriptionsq\0~\02\0q\0~:sq\0~\0Z∫[q\0~t\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~>sq\0~\0JÕJÜq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0Z¸µÔq\0~?t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07åvq\0~Dt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0ª-˝q\0~Dt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Lxxpxsq\0~\0E\0\0\0w\0\0\0q\0~$q\0~\'q\0~*q\0~-q\0~1q\0~;q\0~?xsq\0~\nÉt\0\nTransitionsq\0~\0X≥e≈q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0k”q\0~Qt\0transition7pq\0~\0sq\0~\0\0q\0~\0sq\0~\0l<9´q\0~Qt\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0gﬂ‡Òq\0~Qt\0parallelpq\0~\nìsq\0~\0q\0~\nìsq\0~\03∑>Âq\0~Qt\0\rsend_proposalpt\0	Conditionsq\0~\nò\0q\0~bsq\0~\0/‚Ù§q\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\07\"Q¡q\0~cq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~gxt\0Descriptionsq\0~\02\0q\0~ksq\0~\0=h÷q\0~Qt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~osq\0~\00îñ±q\0~Qt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0ÈˆÏq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0.{‡q\0~ut\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\03CÊ·q\0~ut\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~zq\0~}xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Yq\0~\\q\0~_q\0~cq\0~lq\0~pxsq\0~\nÉt\0\nTransitionsq\0~\0.≈‹q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0@M&íq\0~Çt\0transition8pq\0~\0sq\0~\0\0q\0~\0sq\0~\0R$Ûq\0~Çt\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0H+√q\0~Çt\0parallelpq\0~\nìsq\0~\0q\0~\nìsq\0~\0=\n©]q\0~Çt\0tool1pt\0	Conditionsq\0~\nò\0q\0~ìsq\0~\0t7 q\0~Çt\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0drOrq\0~îq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~òxt\0Descriptionsq\0~\02\0q\0~úsq\0~\0⁄R‡q\0~Çt\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~†sq\0~\0Øö4q\0~Çt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\01ˇdiq\0~°t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0≠…(q\0~¶t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0w·ëéq\0~¶t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~´q\0~Æxxpxsq\0~\0E\0\0\0w\0\0\0q\0~áq\0~äq\0~çq\0~êq\0~îq\0~ùq\0~°xsq\0~\nÉt\0\nTransitionsq\0~\0iöRq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0]’!¶q\0~≥t\0transition5pq\0~\0sq\0~\0\0q\0~\0sq\0~\0]ÛÜGq\0~≥t\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0XˇhZq\0~≥t\0approvalpq\0~\nìsq\0~\0q\0~\nìsq\0~\0&e‰q\0~≥t\0tool2pt\0	Conditionsq\0~\nò\0q\0~ƒsq\0~\0,°q\0~≥t\0status===\'rejected\'sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0 9!q\0~≈t\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~…xt\0Descriptionsq\0~\02\0q\0~Œsq\0~\0.Íq\0~≥t\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~“sq\0~\0oî{—q\0~≥t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0\nJ˛<q\0~”t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}√q\0~ÿt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0.íı™q\0~ÿt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~›q\0~‡xxpxsq\0~\0E\0\0\0w\0\0\0q\0~∏q\0~ªq\0~æq\0~¡q\0~≈q\0~œq\0~”xsq\0~\nÉt\0\nTransitionsq\0~\0ayD?q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0zI)ºq\0~Ât\0transition1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0rj˜q\0~Ât\0\0pq\0~\nèsq\0~\0q\0~\nèsq\0~\0<˝2q\0~Ât\0route1pq\0~\nìsq\0~\0q\0~\nìsq\0~\0KÈöq\0~Ât\0approve_proposalpt\0	Conditionsq\0~\nò\0q\0~ˆsq\0~\0Yfê6q\0~Ât\0\0sq\0~\0w\0\0\0q\0~\0Üsq\0~\0\0q\0~\0Üsq\0~\0\ZSEq\0~˜q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n†q\0~\n°q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~˚xt\0Descriptionsq\0~\02\0q\0~ˇsq\0~\0NXu¨q\0~Ât\0\0t\0ExtendedAttributessq\0~\0ﬁ\0q\0~sq\0~\0CÏBq\0~Ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0N¸!¸q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`¥Q4q\0~	t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0≥∞q\0~	t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Íq\0~Ìq\0~q\0~Ûq\0~˜q\0~\0q\0~xxt\0ExtendedAttributessq\0~\0ﬁ\0q\0~sq\0~\0$5¯q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0W∫Ö§q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0hπ§!q\0~t\0%JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDERpq\0~£sq\0~\0\0q\0~£sq\0~\0ü˜Øq\0~t\0requester;approverpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$xsq\0~öt\0ExtendedAttributesq\0~\0T◊éq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0WÅˇ\rq\0~(t\0JaWE_GRAPH_START_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0rº—pq\0~(t\0ûJaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~-q\0~0xsq\0~öt\0ExtendedAttributesq\0~\0¯rq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0n+~±q\0~4t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\06äùÓq\0~4t\0õJaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~9q\0~<xsq\0~öt\0ExtendedAttributesq\0~\0\")Ìq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uñÀq\0~@t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0@}˝„q\0~@t\0•JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Eq\0~Hxsq\0~öt\0ExtendedAttributesq\0~\0\"˙mÔq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0O÷5≥q\0~Lt\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0[â$q\0~Lt\0úJaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Qq\0~Txxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~cq\0~fq\0~jq\0~qq\0~¥q\0~”q\0~Ÿq\0~wq\0~}q\0~Ñq\0~ãq\0~\n~q\0~xxt\0ExtendedAttributessq\0~\0ﬁ\0q\0~Ysq\0~\0\\‘`,q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~öt\0ExtendedAttributesq\0~\0|≈	lq\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0h ∫Íq\0~_t\0EDITING_TOOLpq\0~£sq\0~\0\0q\0~£sq\0~\0)Pˇﬂq\0~_t\0Web Workflow Designerpxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~gxsq\0~öt\0ExtendedAttributesq\0~\08˝˘+q\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0lß1q\0~kt\0EDITING_TOOL_VERSIONpq\0~£sq\0~\0\0q\0~£sq\0~\0QÛ•q\0~kt\0\r5.0-pre-alphapxsq\0~\0E\0\0\0w\0\0\0q\0~pq\0~sxxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~\0q\0~\0q\0~\0q\0~\0Iq\0~\0tq\0~\0Çq\0~\0ïq\0~\0úq\0~\0£q\0~q\0~Qq\0~Xq\0~Zx\0sq\0~\0w\0\0\0\0xt\01sr\0*org.enhydra.shark.xpdl.elements.Namespaces|ö—<.Rßñ\0\0xq\0~\0kt\0\nNamespacessq\0~\0xkNœq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.NamespaceËz¬¬_\0\0xq\0~\0t\0	Namespacesq\0~\0:∆Ãaq\0~{t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\\◊Wq\0~Çt\0xpdlpq\0~\0‘sq\0~\0q\0~\0‘sq\0~\0@˘≤q\0~Çt\0 http://www.wfmc.org/2002/XPDL1.0pxsq\0~\0E\0\0\0w\0\0\0q\0~áq\0~äxx',1000202,1,1000203,0);
+INSERT INTO `SHKXPDLData` VALUES ('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xpdl=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" Id=\"crm_community\" Name=\"CRM Community\" xsi:schemaLocation=\"http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd\">\n    <PackageHeader>\n        <XPDLVersion>1.0</XPDLVersion>\n        <Vendor/>\n        <Created/>\n    </PackageHeader>\n    <Script Type=\"text/javascript\"/>\n    <Participants>\n        <Participant Id=\"requester\" Name=\"Requester\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n        <Participant Id=\"approver\" Name=\"Approver\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n    </Participants>\n    <Applications>\n        <Application Id=\"default_application\"/>\n    </Applications>\n    <WorkflowProcesses>\n        <WorkflowProcess Id=\"process1\" Name=\"Proposal Approval Process\">\n            <ProcessHeader DurationUnit=\"h\"/>\n            <DataFields>\n                <DataField Id=\"status\" IsArray=\"FALSE\">\n                    <DataType>\n                        <BasicType Type=\"STRING\"/>\n                    </DataType>\n                </DataField>\n            </DataFields>\n            <Activities>\n                <Activity Id=\"approve_proposal\" Name=\"Approve Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Join Type=\"XOR\"/>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"189,51.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"approval\" Name=\"Approval\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"XOR\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition3\"/>\n                                    <TransitionRef Id=\"transition6\"/>\n                                    <TransitionRef Id=\"transition5\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"430,62.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"activity1\" Name=\"Resubmit Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"397,20.787493896484378\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"send_proposal\" Name=\"Send Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"669.0000534057617,92.78333282470703\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"parallel\" Name=\"Parallel\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"AND\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition7\"/>\n                                    <TransitionRef Id=\"transition8\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"588,61.599993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool1\" Name=\"Send Approval Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"735,63.974993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool2\" Name=\"Send Reject Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"394,168.39999694824218\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"route1\" Name=\"Route 1\">\n                    <Route/>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"222,15\"/>\n                    </ExtendedAttributes>\n                </Activity>\n            </Activities>\n            <Transitions>\n                <Transition From=\"approve_proposal\" Id=\"transition2\" To=\"approval\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition3\" To=\"activity1\">\n                    <Condition Type=\"CONDITION\">status===\'resubmit\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"activity1\" Id=\"transition4\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition6\" Name=\"approved\" To=\"parallel\">\n                    <Condition Type=\"OTHERWISE\"/>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition7\" To=\"send_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition8\" To=\"tool1\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition5\" To=\"tool2\">\n                    <Condition Type=\"CONDITION\">status===\'rejected\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"route1\" Id=\"transition1\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n            </Transitions>\n            <ExtendedAttributes>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER\" Value=\"requester;approver\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_START_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n            </ExtendedAttributes>\n        </WorkflowProcess>\n    </WorkflowProcesses>\n    <ExtendedAttributes>\n        <ExtendedAttribute Name=\"EDITING_TOOL\" Value=\"Web Workflow Designer\"/>\n        <ExtendedAttribute Name=\"EDITING_TOOL_VERSION\" Value=\"5.0-pre-alpha\"/>\n    </ExtendedAttributes>\n</Package>\n','ÔøΩÔøΩ\0sr\0\'org.enhydra.shark.xpdl.elements.Package~+Vm≈Ä~ÔøΩ\0Z\0isTransientL\0extPkgRefsToIdst\0.Lorg/enhydra/shark/utilities/SequencedHashMap;L\0internalVersiont\0Ljava/lang/String;L\0\nnamespacest\0,Lorg/enhydra/shark/xpdl/elements/Namespaces;xr\0(org.enhydra.shark.xpdl.XMLComplexElement>ÔøΩÔøΩÔøΩÔøΩ(ÔøΩÔøΩ\0\0xr\05org.enhydra.shark.xpdl.XMLBaseForCollectionAndComplexÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ2\0L\0\nelementMapq\0~\0L\0elementst\0Ljava/util/ArrayList;xr\0!org.enhydra.shark.xpdl.XMLElement#+BÔøΩ#ÔøΩÔøΩÔøΩ\0Z\0\nisReadOnlyZ\0\nisRequiredL\0nameq\0~\0L\0originalElementHashCodet\0Ljava/lang/Integer;L\0parentt\0#Lorg/enhydra/shark/xpdl/XMLElement;L\0valueq\0~\0xpt\0Packagesr\0java.lang.Integer‚†§ÔøΩÔøΩÔøΩ8\0I\0valuexr\0java.lang.NumberÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ\0\0xp)dpt\0\0sr\0,org.enhydra.shark.utilities.SequencedHashMap.ÔøΩ\"ÔøΩÔøΩ\"&\0\0xpw\0\0\0\rt\0Idsr\0#org.enhydra.shark.xpdl.XMLAttribute#c›ÄÔøΩÔøΩM;\0L\0choicesq\0~\0xq\0~\0q\0~\0sq\0~\0B1ÔøΩq\0~\0\nt\0\rcrm_communitypt\0Namesq\0~\0\0q\0~\0sq\0~\0ÔøΩq\0~\0\nt\0\rCRM Communitypt\0\rPackageHeadersr\0-org.enhydra.shark.xpdl.elements.PackageHeadervÔøΩ,ÔøΩÔøΩ\0\0xq\0~\0\0q\0~\0sq\0~\0}ÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0XPDLVersionsr\0+org.enhydra.shark.xpdl.elements.XPDLVersionÔøΩ\"}ÔøΩY.ÔøΩw\0\0xr\0\'org.enhydra.shark.xpdl.XMLSimpleElementÔøΩmÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0q\0~\0!sq\0~\0p1\')q\0~\0t\01.0t\0Vendorsr\0&org.enhydra.shark.xpdl.elements.Vendor tÔøΩÔøΩEÔøΩ:\0\0xq\0~\0#q\0~\0\'sq\0~\0l$fmq\0~\0t\0\0t\0Createdsr\0\'org.enhydra.shark.xpdl.elements.CreatedzÔøΩÔøΩdKÔøΩ|[\0\0xq\0~\0#q\0~\0,sq\0~\0`pÔøΩRq\0~\0t\0\0t\0Descriptionsr\0+org.enhydra.shark.xpdl.elements.Description€∞73ÔøΩ8ÔøΩ\0\0xq\0~\0#\0q\0~\01sq\0~\0\Zwyq\0~\0t\0\0t\0\rDocumentationsr\0-org.enhydra.shark.xpdl.elements.Documentation`ÔøΩ9ÔøΩÔøΩyÔøΩ\0\0xq\0~\0#\0q\0~\06sq\0~\0)ÔøΩq\0~\0t\0\0t\0PriorityUnitsr\0,org.enhydra.shark.xpdl.elements.PriorityUnitÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0#\0q\0~\0;sq\0~\0BÔøΩ`uq\0~\0t\0\0t\0CostUnitsr\0(org.enhydra.shark.xpdl.elements.CostUnit‹éÔøΩ=HÔøΩ\0\0xq\0~\0#\0q\0~\0@sq\0~\0SÔøΩQdq\0~\0t\0\0xsr\0java.util.ArrayListxÔøΩÔøΩÔøΩÔøΩaÔøΩ\0I\0sizexp\0\0\0w\0\0\0q\0~\0$q\0~\0)q\0~\0.q\0~\03q\0~\08q\0~\0=q\0~\0Bxt\0RedefinableHeadersr\01org.enhydra.shark.xpdl.elements.RedefinableHeaderÔøΩÔøΩMÔøΩœ™\'H\0\0xq\0~\0\0q\0~\0Gsq\0~\0i[|q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0PublicationStatussq\0~\0\0q\0~\0Msq\0~\0 ’óq\0~\0It\0\0sq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0UNDER_REVISIONt\0RELEASEDt\0\nUNDER_TESTxt\0Authorsr\0&org.enhydra.shark.xpdl.elements.Author5ÔøΩÔøΩf·ßÜ\0\0xq\0~\0#\0q\0~\0Usq\0~\0NÔøΩÔøΩq\0~\0It\0\0t\0Versionsr\0\'org.enhydra.shark.xpdl.elements.Version9=3ÔøΩ~ÔøΩJQ\0\0xq\0~\0#\0q\0~\0Zsq\0~\0s~cIq\0~\0It\0\0t\0Codepagesr\0(org.enhydra.shark.xpdl.elements.Codepage9$mÔøΩeÔøΩ\rG\0\0xq\0~\0#\0q\0~\0_sq\0~\0%ÔøΩÔøΩÔøΩq\0~\0It\0\0t\0\nCountrykeysr\0*org.enhydra.shark.xpdl.elements.CountrykeyÔøΩÔøΩ.ÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0#\0q\0~\0dsq\0~\0#ÔøΩÔøΩvq\0~\0It\0\0t\0Responsiblessr\0,org.enhydra.shark.xpdl.elements.Responsibles$ÔøΩÔøΩ{SÔøΩ\0\0xr\0$org.enhydra.shark.xpdl.XMLCollectionÔøΩjƒãmÔøΩ\0\0xq\0~\0\0q\0~\0isq\0~\0<ÔøΩhIq\0~\0It\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~\0Nq\0~\0Wq\0~\0\\q\0~\0aq\0~\0fq\0~\0lxt\0ConformanceClasssr\00org.enhydra.shark.xpdl.elements.ConformanceClassÔøΩÔøΩy0|kÔøΩÔøΩ\0\0xq\0~\0\0q\0~\0rsq\0~\0oÔøΩÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0GraphConformancesq\0~\0\0q\0~\0xsq\0~\0BÔøΩÔøΩÔøΩq\0~\0tq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0FULL_BLOCKEDt\0LOOP_BLOCKEDt\0NON_BLOCKEDxxsq\0~\0E\0\0\0w\0\0\0q\0~\0yxt\0Scriptsr\0&org.enhydra.shark.xpdl.elements.ScriptQÔøΩjÔøΩSÔøΩ8\0\0xq\0~\0\0q\0~\0ÔøΩsq\0~\0#GÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0Typesq\0~\0q\0~\0ÔøΩsq\0~\0*ÔøΩÔøΩq\0~\0ÔøΩt\0text/javascriptpt\0Versionsq\0~\0\0q\0~\0ÔøΩsq\0~\06T/Xq\0~\0ÔøΩt\0\0pt\0Grammarsq\0~\0\0q\0~\0ÔøΩsq\0~\0;\Z,q\0~\0ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩxt\0ExternalPackagessr\00org.enhydra.shark.xpdl.elements.ExternalPackageswÔøΩ\"+≈®ÔøΩÔøΩ\0\0xq\0~\0k\0q\0~\0ÔøΩsq\0~\0ÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0TypeDeclarationssr\00org.enhydra.shark.xpdl.elements.TypeDeclarations\rÔøΩÔøΩOx5ÔøΩ\0\0xq\0~\0k\0q\0~\0ÔøΩsq\0~\0B~ÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Participantssr\0,org.enhydra.shark.xpdl.elements.Participantsh`ÔøΩÔøΩg8J\0\0xq\0~\0k\0q\0~\0ÔøΩsq\0~\0kÔøΩ(cq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Participanto$ÔøΩÔøΩrcÔøΩÔøΩ\0\0xr\0+org.enhydra.shark.xpdl.XMLCollectionElementCÔøΩxÔøΩvÔøΩr\0\0xq\0~\0t\0Participantsq\0~\0PÔøΩHÔøΩq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0aÔøΩq\0~\0ÔøΩt\0	requesterpq\0~\0sq\0~\0\0q\0~\0sq\0~\09ÔøΩ^ÔøΩq\0~\0ÔøΩt\0	Requesterpt\0ParticipantTypesr\0/org.enhydra.shark.xpdl.elements.ParticipantType>ÔøΩnÔøΩ›ÖÔøΩÔøΩ\0\0xq\0~\0q\0~\0ÔøΩsq\0~\0ÔøΩÔøΩ	q\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0DZSÔøΩq\0~\0ÔøΩt\0ROLEsq\0~\0E\0\0\0w\0\0\0t\0RESOURCE_SETt\0RESOURCEt\0ROLEt\0ORGANIZATIONAL_UNITt\0HUMANt\0SYSTEMxxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩxt\0Descriptionsq\0~\02\0q\0~\0ÔøΩsq\0~\0fQÔøΩÔøΩq\0~\0ÔøΩt\0\0t\0ExternalReferencesr\01org.enhydra.shark.xpdl.elements.ExternalReferenceÔøΩbÔøΩÔøΩQÔøΩ\0\0xq\0~\0\0q\0~\0ÔøΩsq\0~\0MDyq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0t\0xrefsq\0~\0\0q\0~\0ÔøΩsq\0~\07E7q\0~\0ÔøΩt\0\0pt\0locationsq\0~\0q\0~\0ÔøΩsq\0~\0!⁄¨ q\0~\0ÔøΩt\0\0pt\0	namespacesq\0~\0\0q\0~\0ÔøΩsq\0~\0K7eq\0~\0ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩxt\0ExtendedAttributessr\02org.enhydra.shark.xpdl.elements.ExtendedAttributesÔøΩOÔøΩÔøΩÔøΩUF\0L\0extAttribsStringq\0~\0xq\0~\0k\0q\0~\0ÔøΩsq\0~\0tÔøΩ›òq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩxsq\0~\0ÔøΩt\0Participantsq\0~\0uÔøΩdq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0[rÔøΩÔøΩq\0~\0ÔøΩt\0approverpq\0~\0sq\0~\0\0q\0~\0sq\0~\0A$ÔøΩq\0~\0ÔøΩt\0Approverpt\0ParticipantTypesq\0~\0ÔøΩq\0~\0ÔøΩsq\0~\0_BpÔøΩq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0VÔøΩÔøΩÔøΩq\0~\0ÔøΩt\0ROLEsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩxt\0Descriptionsq\0~\02\0q\0~\0ÔøΩsq\0~\0S<Oq\0~\0ÔøΩt\0\0t\0ExternalReferencesq\0~\0ÔøΩ\0q\0~\0ÔøΩsq\0~\0_ÔøΩtÔøΩq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0ﬁõÔøΩq\0~\0ÔøΩt\0\0pq\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0c$\0bq\0~\0ÔøΩt\0\0pq\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0PÔøΩÔøΩ%q\0~\0ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~q\0~	xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~\rsq\0~\0<hq\0~\0ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~xxt\0Applicationssr\0,org.enhydra.shark.xpdl.elements.Applications¬ÄÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0k\0q\0~sq\0~\0,WÔøΩÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Applicationv	ÔøΩRÔøΩÔøΩS\0\0xq\0~\0ÔøΩt\0Applicationsq\0~\0RÔøΩl~q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0vÔøΩ>q\0~t\0default_applicationpq\0~\0sq\0~\0\0q\0~\0sq\0~\0ÔøΩM*q\0~t\0\0pt\0Descriptionsq\0~\02\0q\0~\'sq\0~\0vÔøΩq\0~t\0\0t\0Choicesr\00org.enhydra.shark.xpdl.elements.ApplicationTypesÔøΩ?ÔøΩ!ÔøΩÔøΩÔøΩ\0\0xr\0\'org.enhydra.shark.xpdl.XMLComplexChoiceÔøΩ|ÔøΩÔøΩ\"ÔøΩÔøΩ\0L\0choicesq\0~\0L\0choosenq\0~\0	xq\0~\0q\0~+sq\0~\0CÔøΩÔøΩq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sr\00org.enhydra.shark.xpdl.elements.FormalParameterspÔøΩÔøΩBÔøΩ√ÅZ\0\0xq\0~\0k\0t\0FormalParameterssq\0~\0ÔøΩÔøΩq\0~.t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0ÔøΩ\0t\0ExternalReferencesq\0~\0YiÔøΩ!q\0~.t\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0|ÔøΩSÔøΩq\0~9t\0\0pq\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0s3e^q\0~9t\0\0pq\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0fxÔøΩq\0~9t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~>q\0~Aq\0~Dxxq\0~3t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~Hsq\0~\0pÔøΩ7ÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$q\0~(q\0~.q\0~Ixxt\0\nDataFieldssr\0*org.enhydra.shark.xpdl.elements.DataFieldsÔøΩÔøΩÔøΩ ¶ÔøΩÔøΩU\0\0xq\0~\0k\0q\0~Osq\0~\0_;ÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0WorkflowProcessessr\01org.enhydra.shark.xpdl.elements.WorkflowProcessespÔøΩ_ÔøΩ0,\0\0xq\0~\0k\0q\0~Vsq\0~\0{ÔøΩuÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0/org.enhydra.shark.xpdl.elements.WorkflowProcess%ÔøΩv0ÔøΩÔøΩL\0\0xq\0~\0ÔøΩt\0WorkflowProcesssq\0~\0uÔøΩPPq\0~Xt\0\0sq\0~\0w\0\0\0\rq\0~\0sq\0~\0q\0~\0sq\0~\0P5ÔøΩq\0~^t\0process1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0@ÔøΩÔøΩq\0~^t\0Proposal Approval Processpt\0AccessLevelsq\0~\0\0q\0~isq\0~\0<\nÔøΩ+q\0~^q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0PUBLICt\0PRIVATExt\0\rProcessHeadersr\0-org.enhydra.shark.xpdl.elements.ProcessHeaderÔøΩLÔøΩÔøΩC-)ÔøΩ\0\0xq\0~\0q\0~osq\0~\0kÔøΩÔøΩCq\0~^t\0\0sq\0~\0w\0\0\0t\0DurationUnitsq\0~\0\0q\0~usq\0~\0LÔøΩÔøΩq\0~qt\0hsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0Yt\0Mt\0Dt\0ht\0mt\0sxt\0Createdsq\0~\0-\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩq\0~qt\0\0t\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0q\\ÔøΩÔøΩq\0~qt\0\0t\0Prioritysr\0(org.enhydra.shark.xpdl.elements.Priority`ÔøΩNn>b\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0]ÔøΩÔøΩ8q\0~qt\0\0t\0Limitsr\0%org.enhydra.shark.xpdl.elements.LimitÔøΩÔøΩÔøΩ1ÔøΩ”ó\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0)4UÔøΩq\0~qt\0\0t\0	ValidFromsr\0)org.enhydra.shark.xpdl.elements.ValidFromc≈Ö|ÔøΩL<\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0HÔøΩq\0~qt\0\0t\0ValidTosr\0\'org.enhydra.shark.xpdl.elements.ValidToÔøΩÔøΩÔøΩÔøΩMÔøΩ\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0#ÔøΩkq\0~qt\0\0t\0TimeEstimationsr\0.org.enhydra.shark.xpdl.elements.TimeEstimation≈ÄÔøΩ\'3\0\0xq\0~\0\0q\0~ÔøΩsq\0~\0QÔøΩ\'q\0~qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesr\0+org.enhydra.shark.xpdl.elements.WaitingTimeNÔøΩÔøΩÔøΩÔøΩ/\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0ZÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0t\0WorkingTimesr\0+org.enhydra.shark.xpdl.elements.WorkingTimeÔøΩ~ÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0gÔøΩ[ÔøΩq\0~ÔøΩt\0\0t\0Durationsr\0(org.enhydra.shark.xpdl.elements.DurationÔøΩ ÔøΩCÔøΩÔøΩÔøΩ\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0`ÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxt\0RedefinableHeadersq\0~\0H\0q\0~ÔøΩsq\0~\0`ÔøΩ\Zq\0~^t\0\0sq\0~\0w\0\0\0q\0~\0Msq\0~\0\0q\0~\0Msq\0~\0uÔøΩqÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\0Rq\0~\0Sq\0~\0Txt\0Authorsq\0~\0V\0q\0~ÔøΩsq\0~\00oÔøΩ&q\0~ÔøΩt\0\0t\0Versionsq\0~\0[\0q\0~ÔøΩsq\0~\0ÔøΩ›®q\0~ÔøΩt\0\0t\0Codepagesq\0~\0`\0q\0~ÔøΩsq\0~\0 #`q\0~ÔøΩt\0\0t\0\nCountrykeysq\0~\0e\0q\0~ÔøΩsq\0~\0F:<ÔøΩq\0~ÔøΩt\0\0t\0Responsiblessq\0~\0j\0q\0~ÔøΩsq\0~\0\nÔøΩNÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxt\0FormalParameterssq\0~2\0q\0~ÔøΩsq\0~\0bqÔøΩq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nDataFieldssq\0~P\0q\0~ÔøΩsq\0~\0ZÔøΩÔøΩÔøΩq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.DataFieldIÔøΩ3.~ÔøΩÔøΩÔøΩ\0\0xq\0~\0ÔøΩt\0	DataFieldsq\0~\0JÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ly>q\0~ÔøΩt\0statuspq\0~\0sq\0~\0\0q\0~\0sq\0~\05ÔøΩq\0~ÔøΩt\0\0pt\0IsArraysq\0~\0\0q\0~ÔøΩsq\0~\0wdÔøΩÔøΩq\0~ÔøΩt\0FALSEsq\0~\0E\0\0\0w\0\0\0t\0TRUEt\0FALSExt\0DataTypesr\0(org.enhydra.shark.xpdl.elements.DataTypeÔøΩ\'4sM\0\0xq\0~\0q\0~ÔøΩsq\0~\0&ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0t\0	DataTypessr\0)org.enhydra.shark.xpdl.elements.DataTypesÔøΩpcH,ÔøΩ!ÔøΩ\0Z\0\risInitializedxq\0~-q\0~ÔøΩsq\0~\0YÔøΩ_ÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0	w\0\0\0	sr\0)org.enhydra.shark.xpdl.elements.BasicTypeÔøΩ)ÔøΩÔøΩw1ÔøΩÔøΩ\0\0xq\0~\0t\0	BasicTypesq\0~\0	,#ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0uÔøΩq\0~ÔøΩt\0STRINGsq\0~\0E\0\0\0w\0\0\0t\0STRINGt\0FLOATt\0INTEGERt\0	REFERENCEt\0DATETIMEt\0BOOLEANt\0	PERFORMERxxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0,org.enhydra.shark.xpdl.elements.DeclaredTypedR.\\^ÔøΩ9ÔøΩ\0\0xq\0~\0t\0DeclaredTypesq\0~\0^wrÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0UÔøΩÔøΩ:q\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0*org.enhydra.shark.xpdl.elements.SchemaType&1oSHÔøΩÔøΩ\0\0xq\0~\0t\0\nSchemaTypesq\0~\0=ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0ÔøΩt\0ExternalReferencesq\0~\0›á4q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0m[ÔøΩVq\0~ t\0\0pq\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0tÔøΩÔøΩÔøΩq\0~ t\0\0pq\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0MÔøΩÔøΩq\0~ t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~%q\0~(q\0~+xsr\0*org.enhydra.shark.xpdl.elements.RecordTypeÔøΩ%ÔøΩÔøΩÔøΩÔøΩK\0\0\0xq\0~\0kt\0\nRecordTypesq\0~\0)ÔøΩFÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.UnionTypeÔøΩÔøΩÔøΩ5PÔøΩGÔøΩ\0\0xq\0~\0kt\0	UnionTypesq\0~\03]ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0/org.enhydra.shark.xpdl.elements.EnumerationTypeÔøΩÔøΩÔøΩÔøΩf3b\0\0xq\0~\0kt\0EnumerationTypesq\0~\0zaÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.ArrayTypegÔøΩ$\0ÔøΩN@\0\0xq\0~\0t\0	ArrayTypesq\0~\0+ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0t\0\nLowerIndexsq\0~\0q\0~Jsq\0~\0(LÔøΩq\0~Et\0\0pt\0\nUpperIndexsq\0~\0q\0~Nsq\0~\0\ZÔøΩÔøΩ,q\0~Et\0\0pq\0~ÔøΩsq\0~ÔøΩq\0~ÔøΩsq\0~\0dÔøΩÔøΩq\0~Et\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~Kq\0~Oq\0~Rxsr\0(org.enhydra.shark.xpdl.elements.ListTypeÔøΩ\"”ü\nÔøΩ\0\0xq\0~\0t\0ListTypesq\0~\0X%ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩq\0~ÔøΩsq\0~\0ÔøΩOÔøΩq\0~Wt\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~\\xxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0InitialValuesr\0,org.enhydra.shark.xpdl.elements.InitialValuej,zÔøΩÔøΩÔøΩR\0\0xq\0~\0#\0q\0~asq\0~\0-ÔøΩÔøΩq\0~ÔøΩt\0\0t\0Lengthsr\0&org.enhydra.shark.xpdl.elements.LengthMW+-Ã©WÔøΩ\0\0xq\0~\0#\0q\0~fsq\0~\0ÔøΩOÔøΩq\0~ÔøΩt\0\0t\0Descriptionsq\0~\02\0q\0~ksq\0~\0gÔøΩ9ÔøΩq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~osq\0~\0gÔøΩ_nq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~cq\0~hq\0~lq\0~pxxt\0Participantssq\0~\0ÔøΩ\0q\0~vsq\0~\0MÔøΩÔøΩq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Applicationssq\0~\0q\0~|sq\0~\0ÔøΩÔøΩxq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ActivitySetssr\0,org.enhydra.shark.xpdl.elements.ActivitySetsÔøΩqV[4ÔøΩÔøΩÔøΩ\0\0xq\0~\0k\0q\0~ÔøΩsq\0~\0hÔøΩ/q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nActivitiessr\0*org.enhydra.shark.xpdl.elements.Activities&G^ÔøΩlÔøΩP\0\0xq\0~\0k\0q\0~ÔøΩsq\0~\0}ÔøΩÔøΩq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0(org.enhydra.shark.xpdl.elements.ActivityÔøΩtÔøΩ45\Z9ÔøΩ\0\0xq\0~\0ÔøΩt\0Activitysq\0~\0DÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ouÔøΩq\0~ÔøΩt\0approve_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0Z<ÔøΩq\0~ÔøΩt\0Approve Proposalpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0tÔøΩÔøΩ7q\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0w;Xq\0~ÔøΩt\0\0q\0~\0ÔøΩsr\0-org.enhydra.shark.xpdl.elements.ActivityTypese≈Ω{ÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~-q\0~\0ÔøΩsq\0~\0*ÔøΩBq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sr\0%org.enhydra.shark.xpdl.elements.Route0eÔøΩ\rÔøΩGÔøΩ\0\0xq\0~\0t\0Routesq\0~\01NÔøΩ	q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0.org.enhydra.shark.xpdl.elements.ImplementationÔøΩrÔøΩÔøΩ^%ÔøΩ\0\0xq\0~\0t\0Implementationsq\0~\0y ÔøΩ5q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsr\03org.enhydra.shark.xpdl.elements.ImplementationTypes\rÔøΩÔøΩTŸ°9\0\0xq\0~-q\0~\0ÔøΩsq\0~\0VÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sr\0\"org.enhydra.shark.xpdl.elements.No{ÔøΩÔøΩÔøΩ.\0\0xq\0~\0t\0Nosq\0~\0ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0%org.enhydra.shark.xpdl.elements.ToolsCÔøΩÔøΩgÔøΩÔøΩ\0\0xq\0~\0k\0t\0Toolssq\0~\0JÔøΩƒçq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0\'org.enhydra.shark.xpdl.elements.SubFlow;OÔøΩsÔøΩ7:$\0\0xq\0~\0t\0SubFlowsq\0~\07ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0À≠ÔøΩq\0~ÔøΩt\0\0pt\0	Executionsq\0~\0\0q\0~ÔøΩsq\0~\0aÔøΩLoq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ASYNCHRt\0SYNCHRxt\0ActualParameterssr\00org.enhydra.shark.xpdl.elements.ActualParametersÔøΩÔøΩÔøΩ_ÔøΩKÔøΩ\0\0xq\0~\0k\0q\0~ÔøΩsq\0~\0\rÔøΩ<uq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsr\0-org.enhydra.shark.xpdl.elements.BlockActivityÔøΩqÔøΩcÔøΩÔøΩF\0\0xq\0~\0t\0\rBlockActivitysq\0~\0~ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0t\0BlockIdsq\0~\0q\0~ÔøΩsq\0~\05ÔøΩ*yq\0~ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxxq\0~ÔøΩt\0	Performersr\0)org.enhydra.shark.xpdl.elements.PerformerÔøΩ\"1%ÔøΩÔøΩÔøΩ\0\0xq\0~\0#\0q\0~ÔøΩsq\0~\0&›µÔøΩq\0~ÔøΩt\0approvert\0	StartModesr\0)org.enhydra.shark.xpdl.elements.StartModenhÔøΩÔøΩÔøΩÔøΩS\0\0xq\0~\0\0q\0~ÔøΩsq\0~\0:@$ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0t\0Modesr\00org.enhydra.shark.xpdl.elements.StartFinishModes~ÔøΩ6zÔøΩXÔøΩ\'\0\0xq\0~-\0q\0~ÔøΩsq\0~\0<ÔøΩVÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sr\0,org.enhydra.shark.xpdl.XMLEmptyChoiceElementÔøΩ2ÔøΩ;ÔøΩ3ÔøΩ_\0\0xq\0~\0\0t\0XMLEmptyChoiceElementsq\0~\0~ÔøΩ«åq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.AutomaticÔøΩt?ÔøΩ_ÔøΩÔøΩ\0\0xq\0~\0t\0	Automaticsq\0~\0.&U*q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0&org.enhydra.shark.xpdl.elements.ManualÔøΩvÔøΩÔøΩÔøΩ[ÿ§\0\0xq\0~\0t\0Manualsq\0~\0d÷á\nq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0\nFinishModesr\0*org.enhydra.shark.xpdl.elements.FinishModeÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ{\0\0xq\0~\0\0q\0~sq\0~\0ff>ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩy)q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0.)q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0TÔøΩÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)ÔøΩÔøΩ$q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~ÔøΩ\0q\0~0sq\0~\0l‹©ÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessr\0)org.enhydra.shark.xpdl.elements.Deadlines>ÔøΩÔøΩ…úÔøΩÔøΩ\0\0xq\0~\0k\0q\0~4sq\0~\03ÔøΩ{q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsr\05org.enhydra.shark.xpdl.elements.SimulationInformation\"ÔøΩ|IÔøΩÔøΩÔøΩ\0\0xq\0~\0\0q\0~;sq\0~\07JÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0t\0\rInstantiationsq\0~\0\0q\0~Asq\0~\0pÔøΩÔøΩÔøΩq\0~=q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ONCEt\0MULTIPLExt\0Costsr\0$org.enhydra.shark.xpdl.elements.CostÔøΩÔøΩÔøΩÔøΩÔøΩ\0\0xq\0~\0#q\0~Gsq\0~\0y@ÔøΩÔøΩq\0~=t\0\0t\0TimeEstimationsq\0~ÔøΩq\0~Lsq\0~\0rÔøΩÔøΩÔøΩq\0~=t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~Qsq\0~\0ÔøΩqq\0~Mt\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~Usq\0~\0,ÔøΩOÔøΩq\0~Mt\0\0t\0Durationsq\0~ÔøΩ\0q\0~Ysq\0~\0R~`ÔøΩq\0~Mt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Rq\0~Vq\0~Zxxsq\0~\0E\0\0\0w\0\0\0q\0~Bq\0~Iq\0~Mxt\0Iconsr\0$org.enhydra.shark.xpdl.elements.IconÔøΩTÔøΩU(ÔøΩ}6\0\0xq\0~\0#\0q\0~_sq\0~\0|ÔøΩq\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~dsq\0~\0…Éq\0~ÔøΩt\0\0t\0TransitionRestrictionssr\06org.enhydra.shark.xpdl.elements.TransitionRestrictionsC)ÔøΩ◊Äi;\0\0xq\0~\0k\0q\0~hsq\0~\0JÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\05org.enhydra.shark.xpdl.elements.TransitionRestrictionNÔøΩÔøΩÔøΩÔøΩ}ÔøΩ\0\0xq\0~\0t\0TransitionRestrictionsq\0~\0,ÔøΩJÔøΩq\0~jt\0\0sq\0~\0w\0\0\0t\0Joinsr\0$org.enhydra.shark.xpdl.elements.Join⁄ï”©x)ÔøΩ5\0\0xq\0~\0\0q\0~usq\0~\0QkThq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0ÔøΩÔøΩMq\0~wt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ANDt\0XORxxsq\0~\0E\0\0\0w\0\0\0q\0~{xt\0Splitsr\0%org.enhydra.shark.xpdl.elements.SplitÔøΩÔøΩ~—ØWS\0\0xq\0~\0\0q\0~ÔøΩsq\0~\0<FÔøΩÔøΩq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0j+QÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ÔøΩxt\0TransitionRefssr\0.org.enhydra.shark.xpdl.elements.TransitionRefsÔøΩÔøΩ—äÔøΩÔøΩÔøΩ\0\0xq\0~\0k\0q\0~ÔøΩsq\0~\0aÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~wq\0~ÔøΩxxt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0kVÔøΩ2q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\01org.enhydra.shark.xpdl.elements.ExtendedAttributeÔøΩÔøΩ\\ÔøΩÔøΩF\0\0xq\0~\0t\0ExtendedAttributesq\0~\0\Z3QÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0db8~q\0~ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpt\0Valuesq\0~\0\0q\0~ÔøΩsq\0~\0<~9q\0~ÔøΩt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0t7ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0HÔøΩÔøΩq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0aÔøΩÔøΩÔøΩq\0~ÔøΩt\0189,51.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~1q\0~6q\0~=q\0~aq\0~eq\0~jq\0~ÔøΩxsq\0~ÔøΩt\0Activitysq\0~\07ÔøΩEq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wBÔøΩÔøΩq\0~ÔøΩt\0approvalpq\0~\0sq\0~\0\0q\0~\0sq\0~\02KÔøΩÔøΩq\0~ÔøΩt\0Approvalpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0bUÔøΩÔøΩq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0dÔøΩ6Sq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0_ÔøΩÔøΩ q\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\00ÔøΩ^ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0|ÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0ÔøΩ\nÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\00ÔøΩÔøΩWq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0j+iq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0SubFlowsq\0~\0ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\03ÔøΩ%ÔøΩq\0~ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0\\ÔøΩÔøΩÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0nB>q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0JÔøΩ\\q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0^ÔøΩ5Cq\0~ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~sq\0~\0\r]9q\0~ÔøΩt\0approvert\0	StartModesq\0~ÔøΩ\0q\0~sq\0~\0xÔøΩÔøΩ5q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\02ÔøΩÔøΩVq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0ÔøΩ>ÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0AÔøΩÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=ÔøΩIhq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~#sq\0~\0gGq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0;\"ÔøΩq\0~$t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0qÔøΩÔøΩÔøΩq\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0WÔøΩÔøΩ0q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)*ÔøΩq\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~,xsq\0~\0E\0\0\0w\0\0\0q\0~(xt\0Prioritysq\0~ÔøΩ\0q\0~?sq\0~\0]ÔøΩÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~Csq\0~\0{ÔøΩÔøΩCq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Isq\0~\0!ÔøΩ}+q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0_ÔøΩjÔøΩq\0~Jq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Qsq\0~\0=%XÔøΩq\0~Jt\0\0t\0TimeEstimationsq\0~ÔøΩq\0~Usq\0~\0{6ÔøΩÔøΩq\0~Jt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~Zsq\0~\01(÷èq\0~Vt\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~^sq\0~\0EMmq\0~Vt\0\0t\0Durationsq\0~ÔøΩ\0q\0~bsq\0~\0RÔøΩÔøΩ.q\0~Vt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~[q\0~_q\0~cxxsq\0~\0E\0\0\0w\0\0\0q\0~Nq\0~Rq\0~Vxt\0Iconsq\0~`\0q\0~hsq\0~\0Hq\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~lsq\0~\0kÔøΩyÔøΩq\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~psq\0~\0FIÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0\"ÔøΩÔøΩ-q\0~qt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~{sq\0~\0LÔøΩ%q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\00ÔøΩÔøΩq\0~|q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0Splitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0$ÔøΩ/q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0nXfÔøΩq\0~ÔøΩt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ÔøΩxt\0TransitionRefssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0-org.enhydra.shark.xpdl.elements.TransitionRefÔøΩ%-ÔøΩÔøΩaÔøΩ\0\0xq\0~\0ÔøΩt\0\rTransitionRefsq\0~\0ÔøΩ1q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩSÔøΩq\0~ÔøΩt\0transition3pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rTransitionRefsq\0~\0oÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07ÔøΩi q\0~ÔøΩt\0transition6pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rTransitionRefsq\0~\0=ÔøΩÔøΩ0q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0R0ÔøΩq\0~ÔøΩt\0transition5pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxxxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~ÔøΩxxt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0A1ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0…ßÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0|ÔøΩÔøΩq\0~ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0UÔøΩÔøΩq\0~ÔøΩt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0x◊®yq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;aÔøΩMq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0U4IÔøΩq\0~ÔøΩt\0430,62.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~q\0~$q\0~@q\0~Dq\0~Jq\0~iq\0~mq\0~qq\0~ÔøΩxsq\0~ÔøΩt\0Activitysq\0~\0OÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0PyUÔøΩq\0~ÔøΩt\0	activity1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0Jwkq\0~ÔøΩt\0Resubmit Proposalpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0~ÔøΩ`ÔøΩq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0	ÔøΩÔøΩJq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0zÔøΩ4ÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0CÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\06KÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0ZÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0SÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0@	ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0SubFlowsq\0~\0nÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0x>ÔøΩhq\0~t\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0fÔøΩ\0q\0~q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~\rsq\0~\0aÔøΩÔøΩÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\nq\0~xxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0oÔøΩn^q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0aeÔøΩLq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\Zxxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~sq\0~\0_@3q\0~ÔøΩt\0	requestert\0	StartModesq\0~ÔøΩ\0q\0~\"sq\0~\0\"{WÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0>ÔøΩawq\0~#t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\03ÔøΩTq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Õõq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ÔøΩ<lq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~+xsq\0~\0E\0\0\0w\0\0\0q\0~\'xt\0\nFinishModesq\0~\0q\0~>sq\0~\0ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0UÔøΩJÔøΩq\0~?t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0\0\\ÔøΩ\0q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\ÔøΩÔøΩ-q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Oyq\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~Gxsq\0~\0E\0\0\0w\0\0\0q\0~Cxt\0Prioritysq\0~ÔøΩ\0q\0~Zsq\0~\04hÔøΩÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~^sq\0~\0SÔøΩQÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~dsq\0~\0 ÔøΩÔøΩNq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0PÔøΩÔøΩÔøΩq\0~eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~lsq\0~\0 ÔøΩÔøΩÔøΩq\0~et\0\0t\0TimeEstimationsq\0~ÔøΩq\0~psq\0~\0iÔøΩ[q\0~et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~usq\0~\0mÔøΩÔøΩÔøΩq\0~qt\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~ysq\0~\0:ÔøΩ6ÔøΩq\0~qt\0\0t\0Durationsq\0~ÔøΩ\0q\0~}sq\0~\0$ÔøΩCq\0~qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~zq\0~~xxsq\0~\0E\0\0\0w\0\0\0q\0~iq\0~mq\0~qxt\0Iconsq\0~`\0q\0~ÔøΩsq\0~\0C!ÔøΩÔøΩq\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~ÔøΩsq\0~\0r]ÔøΩÔøΩq\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩRq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩ<q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0MYÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0rÔøΩ\"q\0~ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0RJnEq\0~ÔøΩt\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0DÔøΩgq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0{ÔøΩÔøΩGq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0oÔøΩÔøΩÔøΩq\0~ÔøΩt\0397,20.787493896484378pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~#q\0~?q\0~[q\0~_q\0~eq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0Activitysq\0~\0nÔøΩÔøΩjq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0RÔøΩÔøΩq\0~ÔøΩt\0\rsend_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\"EÔøΩq\0~ÔøΩt\0\rSend Proposalpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\07wL\Zq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩIq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0}.q\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0wÔøΩ%q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0zÔøΩ _q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\023ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0ÔøΩHq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0|\\N?q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0SubFlowsq\0~\0Ob3q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`ÔøΩÔøΩUq\0~ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0ÔøΩ\'Oq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0-ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0dDPÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0rÔøΩNzq\0~ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩ?q\0~ÔøΩt\0	requestert\0	StartModesq\0~ÔøΩ\0q\0~sq\0~\0pÔøΩbÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\06ÔøΩ6ÔøΩq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0*ÔøΩ3ÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Dv\Zq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\01ÔøΩaaq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~sq\0~\0qANÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0JÔøΩ^q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0mÔøΩ0q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ÔøΩ2ÔøΩq\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ÔøΩjÔøΩq\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\'xsq\0~\0E\0\0\0w\0\0\0q\0~#xt\0Prioritysq\0~ÔøΩ\0q\0~:sq\0~\07ÔøΩÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~>sq\0~\0YsÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Dsq\0~\0tÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0xFjq\0~Eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Lsq\0~\0\\ÔøΩÔøΩq\0~Et\0\0t\0TimeEstimationsq\0~ÔøΩq\0~Psq\0~\0^@q\0~Et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~Usq\0~\0;	Õùq\0~Qt\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~Ysq\0~\0sÔøΩVÔøΩq\0~Qt\0\0t\0Durationsq\0~ÔøΩ\0q\0~]sq\0~\0`ÔøΩ2q\0~Qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Zq\0~^xxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Mq\0~Qxt\0Iconsq\0~`\0q\0~csq\0~\0kÔøΩ=q\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~gsq\0~\0{ÔøΩÔøΩHq\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~ksq\0~\0jPq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~qsq\0~\0ÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0ÔøΩÔøΩÔøΩq\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0^_ÔøΩq\0~wt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0?ÔøΩrÔøΩq\0~wt\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~xsq\0~ÔøΩt\0ExtendedAttributesq\0~\0AÔøΩÔøΩq\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\'\nq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0zÔøΩÔøΩq\0~ÔøΩt\0#669.0000534057617,92.78333282470703pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~q\0~;q\0~?q\0~Eq\0~dq\0~hq\0~lq\0~rxsq\0~ÔøΩt\0Activitysq\0~\0,NÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩq\0~ÔøΩt\0parallelpq\0~\0sq\0~\0\0q\0~\0sq\0~\0ÔøΩÔøΩcq\0~ÔøΩt\0Parallelpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0ÔøΩTq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0PÔøΩÔøΩq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0\'ÔøΩhbq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0#aÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0<ÔøΩ.ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0!ÔøΩÔøΩVq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0-ÔøΩ=sq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0ÔøΩ›∞q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0SubFlowsq\0~\0ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0yÔøΩ5q\0~ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0]ÔøΩÔøΩÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0:MÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0pÔøΩhq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0 \\ÔøΩÔøΩq\0~ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0#;{q\0~ÔøΩt\0approvert\0	StartModesq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0v6ÔøΩ]q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0\rÔøΩÔøΩUq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0\ZÔøΩbÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0M—∞ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0\nFinishModesq\0~\0q\0~ÔøΩsq\0~\0rÔøΩNq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0cÔøΩYq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0	ÔøΩÔøΩÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0bÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0ÔøΩTÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~ÔøΩ\0q\0~\Zsq\0~\0|ÔøΩÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~sq\0~\0PÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~$sq\0~\0BLÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0\0`SÔøΩq\0~%q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~,sq\0~\0bÔøΩq\0~%t\0\0t\0TimeEstimationsq\0~ÔøΩq\0~0sq\0~\0U<ÔøΩÔøΩq\0~%t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~5sq\0~\0rÔøΩ`	q\0~1t\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~9sq\0~\0pÔøΩX\"q\0~1t\0\0t\0Durationsq\0~ÔøΩ\0q\0~=sq\0~\0*ÔøΩÔøΩÔøΩq\0~1t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~6q\0~:q\0~>xxsq\0~\0E\0\0\0w\0\0\0q\0~)q\0~-q\0~1xt\0Iconsq\0~`\0q\0~Csq\0~\0\ZA”ûq\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~Gsq\0~\0;zrÔøΩq\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~Ksq\0~\0aÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0J9ÔøΩ\"q\0~Lt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~Vsq\0~\0\0ÔøΩWÔøΩq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0FÔøΩÔøΩq\0~Wq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~[xt\0Splitsq\0~ÔøΩ\0q\0~_sq\0~\05ÔøΩÔøΩq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\01ÔøΩ\\ÔøΩq\0~`t\0ANDsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ÔøΩxt\0TransitionRefssq\0~ÔøΩ\0q\0~hsq\0~\0cÔøΩ;3q\0~`t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0\rTransitionRefsq\0~\0\'‚∫âq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z/ÔøΩq\0~nt\0transition7pxsq\0~\0E\0\0\0w\0\0\0q\0~sxsq\0~ÔøΩt\0\rTransitionRefsq\0~\0,Ywq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0AÔøΩÔøΩfq\0~wt\0transition8pxsq\0~\0E\0\0\0w\0\0\0q\0~|xxxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~ixxsq\0~\0E\0\0\0w\0\0\0q\0~Wq\0~`xxt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0\\ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\07lM\nq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0OÔøΩÔøΩÔøΩq\0~ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\03ÔøΩSÔøΩq\0~ÔøΩt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0ÔøΩ=q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0HÔøΩŒâq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0`ÔøΩHÔøΩq\0~ÔøΩt\0588,61.599993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~q\0~%q\0~Dq\0~Hq\0~Lq\0~ÔøΩxsq\0~ÔøΩt\0Activitysq\0~\0yÔøΩ?q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0RÔøΩSÔøΩq\0~ÔøΩt\0tool1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0*ÔøΩÔøΩ!q\0~ÔøΩt\0\ZSend Approval Notificationpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0$ÔøΩÔøΩxq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0fÔøΩÔøΩq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\06lvÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0[\\ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0)ÔøΩ]ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0rÔøΩq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0W~ÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0	ÔøΩ\\q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0$org.enhydra.shark.xpdl.elements.Tool\\6ÔøΩ&ÔøΩ+GÔøΩ\0\0xq\0~\0ÔøΩt\0Toolsq\0~\0.\0ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0CBÔøΩÔøΩq\0~ÔøΩt\0default_applicationpq\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0}_ÔøΩÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0APPLICATIONt\0	PROCEDURExt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0rCÔøΩOq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0<7ÔøΩÔøΩq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0CcÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxsq\0~ÔøΩt\0SubFlowsq\0~\0o.ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z]ÔøΩÔøΩq\0~ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0X.ÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0	LpÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0”å$q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0>hq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\nxxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~sq\0~\0)E<q\0~ÔøΩt\0approvert\0	StartModesq\0~ÔøΩ\0q\0~sq\0~\0CfÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0IÔøΩÔøΩoq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0q2ÔøΩ;q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\ÔøΩ]q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\\…≠Aq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~.sq\0~\0ÔøΩD<q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ilq\0~/t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0XW%&q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0fÔøΩ`q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0YÔøΩ/ÔøΩq\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~7xsq\0~\0E\0\0\0w\0\0\0q\0~3xt\0Prioritysq\0~ÔøΩ\0q\0~Jsq\0~\0efWÔøΩq\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~Nsq\0~\0y0=q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Tsq\0~\0j=ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0R&ÔøΩq\0~Uq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\\sq\0~\0ÔøΩÔøΩoq\0~Ut\0\0t\0TimeEstimationsq\0~ÔøΩq\0~`sq\0~\0HÔøΩÔøΩ?q\0~Ut\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~esq\0~\0J›åq\0~at\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~isq\0~\0(,hoq\0~at\0\0t\0Durationsq\0~ÔøΩ\0q\0~msq\0~\0yÔøΩÔøΩÔøΩq\0~at\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~fq\0~jq\0~nxxsq\0~\0E\0\0\0w\0\0\0q\0~Yq\0~]q\0~axt\0Iconsq\0~`\0q\0~ssq\0~\0LÔøΩuÔøΩq\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~wsq\0~\0pÔøΩ#q\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~{sq\0~\0;ÔøΩBq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0ehÔøΩ&q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0`ÔøΩ1q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;bÔøΩq\0~ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0/ÔøΩsÔøΩq\0~ÔøΩt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\07\"|q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0K\0ÔøΩq\0~ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0g[ÔøΩÔøΩq\0~ÔøΩt\0735,63.974993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~q\0~q\0~/q\0~Kq\0~Oq\0~Uq\0~tq\0~xq\0~|q\0~ÔøΩxsq\0~ÔøΩt\0Activitysq\0~\0z1q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0tÔøΩÔøΩdq\0~ÔøΩt\0tool2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\'ÔøΩÔøΩÔøΩq\0~ÔøΩt\0Send Reject Notificationpt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\03ÔøΩÔøΩq\0~ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0=ÔøΩÔøΩq\0~ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0%_ÔøΩhq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0FÔøΩÔøΩÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0]=+ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0VXÔøΩSq\0~ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0|Yq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0*}ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Toolsq\0~\0aÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wÔøΩÔøΩ\0q\0~ÔøΩt\0default_applicationpq\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0`ÔøΩÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩ!ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0bcÿùq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0oq‹âq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxsq\0~ÔøΩt\0SubFlowsq\0~\0!|ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\01ÔøΩ<q\0~ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩÔøΩq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0HÔøΩÔøΩJq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxxq\0~ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0.M#q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0JhÔøΩq\0~	t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	xxq\0~ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~	\nsq\0~\0kÔøΩÔøΩÔøΩq\0~ÔøΩt\0approvert\0	StartModesq\0~ÔøΩ\0q\0~	sq\0~\0OÔøΩ9q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0xtÔøΩÔøΩq\0~	t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0!@ÔøΩq\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ÔøΩL8q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ÔøΩ!ÔøΩq\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	xsq\0~\0E\0\0\0w\0\0\0q\0~	xt\0\nFinishModesq\0~\0q\0~	*sq\0~\0HBÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0~.ÔøΩYq\0~	+t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0(ÔøΩÔøΩq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ÔøΩÔøΩeq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0YÔøΩ>Eq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	3xsq\0~\0E\0\0\0w\0\0\0q\0~	/xt\0Prioritysq\0~ÔøΩ\0q\0~	Fsq\0~\0s@++q\0~ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~	Jsq\0~\0-2q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~	Psq\0~\0g\'|vq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\07ÔøΩ%ÔøΩq\0~	Qq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~	Xsq\0~\0EÔøΩYoq\0~	Qt\0\0t\0TimeEstimationsq\0~ÔøΩq\0~	\\sq\0~\0h[oaq\0~	Qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~	asq\0~\04ÔøΩzÔøΩq\0~	]t\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~	esq\0~\0\"O€§q\0~	]t\0\0t\0Durationsq\0~ÔøΩ\0q\0~	isq\0~\0dÔøΩÔøΩq\0~	]t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~	bq\0~	fq\0~	jxxsq\0~\0E\0\0\0w\0\0\0q\0~	Uq\0~	Yq\0~	]xt\0Iconsq\0~`\0q\0~	osq\0~\0.wÔøΩ	q\0~ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~	ssq\0~\0ÔøΩTÔøΩq\0~ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~	wsq\0~\0]ÔøΩ=ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~	}sq\0~\0gÔøΩuzq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0ZÔøΩÔøΩq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩ`ÔøΩq\0~	ÔøΩt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0W?Y)q\0~	ÔøΩt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩq\0~	ÔøΩxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0ARÔøΩq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0$ÔøΩq\0~	ÔøΩt\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0JÔøΩÔøΩÔøΩq\0~	ÔøΩt\0394,168.39999694824218pxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩq\0~	ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~	q\0~	q\0~	+q\0~	Gq\0~	Kq\0~	Qq\0~	pq\0~	tq\0~	xq\0~	~xsq\0~ÔøΩt\0Activitysq\0~\0gÔøΩBÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uNÔøΩÔøΩq\0~	ÔøΩt\0route1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0ÔøΩ«©q\0~	ÔøΩt\0Route 1pt\0Descriptionsq\0~\02\0q\0~	ÔøΩsq\0~\066ÔøΩq\0~	ÔøΩt\0\0t\0Limitsq\0~ÔøΩ\0q\0~	ÔøΩsq\0~\0Y\nÔøΩÔøΩq\0~	ÔøΩt\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0DlÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Routesq\0~\0vtÔøΩOq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0Implementationsq\0~\0pÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~ÔøΩq\0~\0ÔøΩsq\0~\0|ÔøΩÔøΩ-q\0~	ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0Nosq\0~\0]ÔøΩÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩ\0t\0Toolssq\0~\0NIÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ÔøΩt\0SubFlowsq\0~\0cNEÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0YÔøΩMRq\0~	ÔøΩt\0\0pq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0RR|q\0~	ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ÔøΩq\0~ÔøΩxt\0ActualParameterssq\0~ÔøΩ\0q\0~	ÔøΩsq\0~\0//ÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩxxq\0~	ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩxsq\0~ÔøΩt\0\rBlockActivitysq\0~\0>]ÔøΩtq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~\0q\0~ÔøΩsq\0~\0MÔøΩ0q\0~	ÔøΩt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩxxq\0~	ÔøΩt\0	Performersq\0~ÔøΩ\0q\0~	ÔøΩsq\0~\0bÔøΩwq\0~	ÔøΩt\0	requestert\0	StartModesq\0~ÔøΩ\0q\0~	ÔøΩsq\0~\0[ÔøΩÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\0HÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0iEcq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0<ÔøΩÔøΩÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0>ÔøΩ…üq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	ÔøΩxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩxt\0\nFinishModesq\0~\0q\0~\n\nsq\0~\0zÔøΩ!ÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~ÔøΩsq\0~ÔøΩ\0q\0~ÔøΩsq\0~\09ÔøΩMÔøΩq\0~\nt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩ\0t\0XMLEmptyChoiceElementsq\0~\0:bÔøΩÔøΩq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ÔøΩÔøΩÔøΩq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0$ÔøΩY1q\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\nxsq\0~\0E\0\0\0w\0\0\0q\0~\nxt\0Prioritysq\0~ÔøΩ\0q\0~\n&sq\0~\0AÔøΩÔøΩÔøΩq\0~	ÔøΩt\0\0t\0	Deadlinessq\0~5\0q\0~\n*sq\0~\0l√õÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~\n0sq\0~\0hÔøΩGÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0fÔøΩÔøΩ q\0~\n1q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\n8sq\0~\01$ÔøΩq\0~\n1t\0\0t\0TimeEstimationsq\0~ÔøΩq\0~\n<sq\0~\0AvÔøΩÔøΩq\0~\n1t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ÔøΩ\0q\0~\nAsq\0~\0c#ÔøΩÔøΩq\0~\n=t\0\0t\0WorkingTimesq\0~ÔøΩ\0q\0~\nEsq\0~\0Z7[q\0~\n=t\0\0t\0Durationsq\0~ÔøΩ\0q\0~\nIsq\0~\0\"ÔøΩ<ÔøΩq\0~\n=t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~\nBq\0~\nFq\0~\nJxxsq\0~\0E\0\0\0w\0\0\0q\0~\n5q\0~\n9q\0~\n=xt\0Iconsq\0~`\0q\0~\nOsq\0~\0V*pq\0~	ÔøΩt\0\0t\0\rDocumentationsq\0~\07\0q\0~\nSsq\0~\0+DÔøΩq\0~	ÔøΩt\0\0t\0TransitionRestrictionssq\0~i\0q\0~\nWsq\0~\00ÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~\n]sq\0~\0sAÔøΩq\0~	ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0|ÔøΩÔøΩq\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\04ÔøΩÔøΩ3q\0~\nct\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0rÔøΩÔøΩÔøΩq\0~\nct\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~\nhq\0~\nkxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0\n^ÔøΩq\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0aÔøΩwjq\0~\not\0JaWE_GRAPH_OFFSETpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0RÔøΩÔøΩq\0~\not\0222,15pxsq\0~\0E\0\0\0w\0\0\0q\0~\ntq\0~\nwxxpxsq\0~\0E\0\0\0w\0\0\0q\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩq\0~	ÔøΩq\0~\nq\0~\n\'q\0~\n+q\0~\n1q\0~\nPq\0~\nTq\0~\nXq\0~\n^xxt\0Transitionssr\0+org.enhydra.shark.xpdl.elements.TransitionsÔøΩ9>ÔøΩÔøΩ/iÔøΩ\0\0xq\0~\0k\0q\0~\n|sq\0~\04	_pq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0*org.enhydra.shark.xpdl.elements.TransitiontÔøΩxÔøΩÔøΩ\0\0xq\0~\0ÔøΩt\0\nTransitionsq\0~\0k>xÔøΩq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0%ÔøΩ2q\0~\nÔøΩt\0transition2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\\aÔøΩ q\0~\nÔøΩt\0\0pt\0Fromsq\0~\0q\0~\nÔøΩsq\0~\0XÔøΩpq\0~\nÔøΩt\0approve_proposalpt\0Tosq\0~\0q\0~\nÔøΩsq\0~\06ÔøΩ7q\0~\nÔøΩt\0approvalpt\0	Conditionsr\0)org.enhydra.shark.xpdl.elements.ConditionÔøΩÔøΩDÔøΩÔøΩZ;|\0\0xq\0~\0\0q\0~\nÔøΩsq\0~\0Duoq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0Gz&ÔøΩq\0~\nÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0	CONDITIONt\0	OTHERWISEt\0	EXCEPTIONt\0DEFAULTEXCEPTIONxxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩxt\0Descriptionsq\0~\02\0q\0~\nÔøΩsq\0~\0!ÔøΩ1ÔøΩq\0~\nÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~\nÔøΩsq\0~\0rÔøΩÔøΩJq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0	ÔøΩÔøΩUq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}ÔøΩ{q\0~\nÔøΩt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\02ÔøΩ0q\0~\nÔøΩt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩq\0~\nÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxsq\0~\nÔøΩt\0\nTransitionsq\0~\0*ÔøΩD\\q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0AÔøΩ/ÔøΩq\0~\nÔøΩt\0transition3pq\0~\0sq\0~\0\0q\0~\0sq\0~\0i\\q\0~\nÔøΩt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0/\"fq\0~\nÔøΩt\0approvalpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0ÔøΩÔøΩÔøΩq\0~\nÔøΩt\0	activity1pt\0	Conditionsq\0~\nÔøΩ\0q\0~\nÔøΩsq\0~\0^ÔøΩ+q\0~\nÔøΩt\0status===\'resubmit\'sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\081ÔøΩq\0~\nÔøΩt\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩxt\0Descriptionsq\0~\02\0q\0~\nÔøΩsq\0~\0{bÔøΩÔøΩq\0~\nÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~\nÔøΩsq\0~\0?/ÔøΩq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0EÔøΩÔøΩÔøΩq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\00\ZiÔøΩq\0~\nÔøΩt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0#=:ÔøΩq\0~\nÔøΩt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩq\0~\nÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxsq\0~\nÔøΩt\0\nTransitionsq\0~\0M[ÔøΩq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩ◊≠q\0~\nÔøΩt\0transition4pq\0~\0sq\0~\0\0q\0~\0sq\0~\06mÔøΩÔøΩq\0~\nÔøΩt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0ÔøΩÔøΩq\0~\nÔøΩt\0	activity1pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0|LKÔøΩq\0~\nÔøΩt\0approve_proposalpt\0	Conditionsq\0~\nÔøΩ\0q\0~\nÔøΩsq\0~\0	\0*ÔøΩq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0@S-4q\0~\0q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Descriptionsq\0~\02\0q\0~sq\0~\0^ÔøΩÔøΩ,q\0~\nÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~sq\0~\09wq\0~\nÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0ÔøΩÔøΩq\0~\rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩ/Zq\0~t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0FÔøΩÔøΩiq\0~t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\Zxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\0q\0~	q\0~\rxsq\0~\nÔøΩt\0\nTransitionsq\0~\01ÔøΩ]ÔøΩq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩÔøΩjq\0~t\0transition6pq\0~\0sq\0~\0\0q\0~\0sq\0~\0eNÔøΩ+q\0~t\0approvedpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0)iÔøΩÔøΩq\0~t\0approvalpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\05ÔøΩÔøΩ}q\0~t\0parallelpt\0	Conditionsq\0~\nÔøΩ\0q\0~0sq\0~\0vÔøΩÔøΩ@q\0~t\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0ÔøΩoq\0~1t\0	OTHERWISEsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~5xt\0Descriptionsq\0~\02\0q\0~:sq\0~\0ZÔøΩ[q\0~t\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~>sq\0~\0JÔøΩJÔøΩq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0ZÔøΩÔøΩÔøΩq\0~?t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07ÔøΩvq\0~Dt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0ÔøΩ-ÔøΩq\0~Dt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Lxxpxsq\0~\0E\0\0\0w\0\0\0q\0~$q\0~\'q\0~*q\0~-q\0~1q\0~;q\0~?xsq\0~\nÔøΩt\0\nTransitionsq\0~\0XÔøΩeÔøΩq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0kÔøΩq\0~Qt\0transition7pq\0~\0sq\0~\0\0q\0~\0sq\0~\0l<9ÔøΩq\0~Qt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0gÔøΩÔøΩÔøΩq\0~Qt\0parallelpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\03ÔøΩ>ÔøΩq\0~Qt\0\rsend_proposalpt\0	Conditionsq\0~\nÔøΩ\0q\0~bsq\0~\0/ÔøΩÔøΩÔøΩq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\07\"QÔøΩq\0~cq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~gxt\0Descriptionsq\0~\02\0q\0~ksq\0~\0=hÔøΩq\0~Qt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~osq\0~\00ÔøΩÔøΩÔøΩq\0~Qt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0ÔøΩÔøΩÔøΩq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0.{ÔøΩq\0~ut\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\03CÔøΩÔøΩq\0~ut\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~zq\0~}xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Yq\0~\\q\0~_q\0~cq\0~lq\0~pxsq\0~\nÔøΩt\0\nTransitionsq\0~\0.ÔøΩÔøΩq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0@M&ÔøΩq\0~ÔøΩt\0transition8pq\0~\0sq\0~\0\0q\0~\0sq\0~\0R$ÔøΩq\0~ÔøΩt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0H+ÔøΩq\0~ÔøΩt\0parallelpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0=\nÔøΩ]q\0~ÔøΩt\0tool1pt\0	Conditionsq\0~\nÔøΩ\0q\0~ÔøΩsq\0~\0t7 q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0drOrq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0ÔøΩRÔøΩq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩ4q\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\01ÔøΩdiq\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÔøΩÔøΩ(q\0~ÔøΩt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0w·ëéq\0~ÔøΩt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxsq\0~\nÔøΩt\0\nTransitionsq\0~\0iÔøΩRq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0]ÔøΩ!ÔøΩq\0~ÔøΩt\0transition5pq\0~\0sq\0~\0\0q\0~\0sq\0~\0]ÔøΩGq\0~ÔøΩt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0XÔøΩhZq\0~ÔøΩt\0approvalpq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0&eÔøΩq\0~ÔøΩt\0tool2pt\0	Conditionsq\0~\nÔøΩ\0q\0~ÔøΩsq\0~\0,ÔøΩq\0~ÔøΩt\0status===\'rejected\'sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0 9!q\0~ÔøΩt\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0.ÔøΩq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~ÔøΩsq\0~\0oÔøΩ{ÔøΩq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0\nJÔøΩ<q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}ÔøΩÔøΩq\0~ÔøΩt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0.ÔøΩÔøΩÔøΩq\0~ÔøΩt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩxsq\0~\nÔøΩt\0\nTransitionsq\0~\0ayD?q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0zI)ÔøΩq\0~ÔøΩt\0transition1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0rjÔøΩq\0~ÔøΩt\0\0pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0<ÔøΩ2q\0~ÔøΩt\0route1pq\0~\nÔøΩsq\0~\0q\0~\nÔøΩsq\0~\0KÔøΩq\0~ÔøΩt\0approve_proposalpt\0	Conditionsq\0~\nÔøΩ\0q\0~ÔøΩsq\0~\0YfÔøΩ6q\0~ÔøΩt\0\0sq\0~\0w\0\0\0q\0~\0ÔøΩsq\0~\0\0q\0~\0ÔøΩsq\0~\0\ZSEq\0~ÔøΩq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩq\0~\nÔøΩxxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩxt\0Descriptionsq\0~\02\0q\0~ÔøΩsq\0~\0NXuÔøΩq\0~ÔøΩt\0\0t\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~sq\0~\0CÔøΩBq\0~ÔøΩt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0NÔøΩ!ÔøΩq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`ÔøΩQ4q\0~	t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩq\0~	t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~\0q\0~xxt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~sq\0~\0$5ÔøΩq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0WÔøΩÔøΩÔøΩq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0hÔøΩÔøΩ!q\0~t\0%JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDERpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0ÔøΩÔøΩÔøΩq\0~t\0requester;approverpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$xsq\0~ÔøΩt\0ExtendedAttributesq\0~\0T◊éq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0WÔøΩÔøΩ\rq\0~(t\0JaWE_GRAPH_START_OF_WORKFLOWpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0rÔøΩÔøΩpq\0~(t\0ÔøΩJaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~-q\0~0xsq\0~ÔøΩt\0ExtendedAttributesq\0~\0ÔøΩrq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0n+~ÔøΩq\0~4t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\06ÔøΩÔøΩÔøΩq\0~4t\0ÔøΩJaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~9q\0~<xsq\0~ÔøΩt\0ExtendedAttributesq\0~\0\")ÔøΩq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uÔøΩÔøΩq\0~@t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0@}ÔøΩÔøΩq\0~@t\0ÔøΩJaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Eq\0~Hxsq\0~ÔøΩt\0ExtendedAttributesq\0~\0\"ÔøΩmÔøΩq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0OÔøΩ5ÔøΩq\0~Lt\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0[ÔøΩ$q\0~Lt\0ÔøΩJaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Qq\0~Txxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~cq\0~fq\0~jq\0~qq\0~ÔøΩq\0~ÔøΩq\0~ÔøΩq\0~wq\0~}q\0~ÔøΩq\0~ÔøΩq\0~\n~q\0~xxt\0ExtendedAttributessq\0~\0ÔøΩ\0q\0~Ysq\0~\0\\ÔøΩ`,q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ÔøΩt\0ExtendedAttributesq\0~\0|ÔøΩ	lq\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0h ∫ÔøΩq\0~_t\0EDITING_TOOLpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0)PÔøΩÔøΩq\0~_t\0Web Workflow Designerpxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~gxsq\0~ÔøΩt\0ExtendedAttributesq\0~\08ÔøΩÔøΩ+q\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0lÔøΩ1q\0~kt\0EDITING_TOOL_VERSIONpq\0~ÔøΩsq\0~\0\0q\0~ÔøΩsq\0~\0QÔøΩq\0~kt\0\r5.0-pre-alphapxsq\0~\0E\0\0\0w\0\0\0q\0~pq\0~sxxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~\0q\0~\0q\0~\0q\0~\0Iq\0~\0tq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~\0ÔøΩq\0~q\0~Qq\0~Xq\0~Zx\0sq\0~\0w\0\0\0\0xt\01sr\0*org.enhydra.shark.xpdl.elements.Namespaces|ÔøΩÔøΩ<.RÔøΩÔøΩ\0\0xq\0~\0kt\0\nNamespacessq\0~\0xkNÔøΩq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.NamespaceÔøΩzÔøΩÔøΩ_\0\0xq\0~\0t\0	Namespacesq\0~\0:ÔøΩÔøΩaq\0~{t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\\ÔøΩWq\0~ÔøΩt\0xpdlpq\0~\0ÔøΩsq\0~\0q\0~\0ÔøΩsq\0~\0@ÔøΩÔøΩq\0~ÔøΩt\0 http://www.wfmc.org/2002/XPDL1.0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÔøΩq\0~ÔøΩxx',1000202,1,1000203,0);
 /*!40000 ALTER TABLE `SHKXPDLData` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1920,7 +1920,7 @@ CREATE TABLE `SHKXPDLHistory` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLHistory` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1949,7 +1949,7 @@ CREATE TABLE `SHKXPDLHistoryData` (
   UNIQUE KEY `I1_SHKXPDLHistoryData` (`CNT`),
   KEY `SHKXPDLHistoryData_XPDLHistory` (`XPDLHistory`),
   CONSTRAINT `SHKXPDLHistoryData_XPDLHistory` FOREIGN KEY (`XPDLHistory`) REFERENCES `SHKXPDLHistory` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1973,7 +1973,7 @@ CREATE TABLE `SHKXPDLParticipantPackage` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLParticipantPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2000,7 +2000,7 @@ CREATE TABLE `SHKXPDLParticipantProcess` (
   UNIQUE KEY `I1_SHKXPDLParticipantProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLParticipantProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLParticipantProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2028,7 +2028,7 @@ CREATE TABLE `SHKXPDLReferences` (
   UNIQUE KEY `I1_SHKXPDLReferences` (`ReferredXPDLId`,`ReferringXPDL`),
   KEY `SHKXPDLReferences_ReferringXPDL` (`ReferringXPDL`),
   CONSTRAINT `SHKXPDLReferences_ReferringXPDL` FOREIGN KEY (`ReferringXPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2055,7 +2055,7 @@ CREATE TABLE `SHKXPDLS` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLS` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2086,7 +2086,7 @@ CREATE TABLE `app_app` (
   `meta` longtext,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2118,7 +2118,7 @@ CREATE TABLE `app_datalist` (
   KEY `FK5E9247A6462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK5E9247A6462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2146,7 +2146,7 @@ CREATE TABLE `app_env_variable` (
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2170,7 +2170,7 @@ CREATE TABLE `app_fd` (
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2193,7 +2193,7 @@ CREATE TABLE `app_fd_appcenter` (
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2221,7 +2221,7 @@ CREATE TABLE `app_fd_crm_account` (
   `c_city` longtext,
   `c_state` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2252,7 +2252,7 @@ CREATE TABLE `app_fd_crm_contact` (
   `c_account` longtext,
   `c_addressAvailable` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2282,7 +2282,7 @@ CREATE TABLE `app_fd_crm_opportunity` (
   `c_title` longtext,
   `c_account` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2313,7 +2313,7 @@ CREATE TABLE `app_fd_crm_proposal` (
   `c_account` longtext,
   `c_status` longtext,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2345,7 +2345,7 @@ CREATE TABLE `app_form` (
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK45957822462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2375,7 +2375,7 @@ CREATE TABLE `app_form_data_audit_trail` (
   `data` longtext,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2403,7 +2403,7 @@ CREATE TABLE `app_message` (
   PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2433,7 +2433,7 @@ CREATE TABLE `app_package` (
   PRIMARY KEY (`packageId`,`packageVersion`),
   KEY `FK852EA428462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK852EA428462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2467,7 +2467,7 @@ CREATE TABLE `app_package_activity_form` (
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKA8D741D5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKA8D741D5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2497,7 +2497,7 @@ CREATE TABLE `app_package_activity_plugin` (
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2528,7 +2528,7 @@ CREATE TABLE `app_package_participant` (
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2557,7 +2557,7 @@ CREATE TABLE `app_plugin_default` (
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2583,7 +2583,7 @@ CREATE TABLE `app_report_activity` (
   PRIMARY KEY (`uuid`),
   KEY `FK5E33D79C918F93D` (`processUid`),
   CONSTRAINT `FK5E33D79C918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2622,7 +2622,7 @@ CREATE TABLE `app_report_activity_instance` (
   KEY `FK9C6ABDD8D4610A90` (`processInstanceId`),
   CONSTRAINT `FK9C6ABDD8B06E2043` FOREIGN KEY (`activityUid`) REFERENCES `app_report_activity` (`uuid`),
   CONSTRAINT `FK9C6ABDD8D4610A90` FOREIGN KEY (`processInstanceId`) REFERENCES `app_report_process_instance` (`instanceId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2646,7 +2646,7 @@ CREATE TABLE `app_report_app` (
   `appVersion` varchar(255) DEFAULT NULL,
   `appName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2673,7 +2673,7 @@ CREATE TABLE `app_report_package` (
   PRIMARY KEY (`uuid`),
   KEY `FKBD580A19E475ABC` (`appUid`),
   CONSTRAINT `FKBD580A19E475ABC` FOREIGN KEY (`appUid`) REFERENCES `app_report_app` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2699,7 +2699,7 @@ CREATE TABLE `app_report_process` (
   PRIMARY KEY (`uuid`),
   KEY `FKDAFFF442D40695DD` (`packageUid`),
   CONSTRAINT `FKDAFFF442D40695DD` FOREIGN KEY (`packageUid`) REFERENCES `app_report_package` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2730,7 +2730,7 @@ CREATE TABLE `app_report_process_instance` (
   PRIMARY KEY (`instanceId`),
   KEY `FK351D7BF2918F93D` (`processUid`),
   CONSTRAINT `FK351D7BF2918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2757,7 +2757,7 @@ CREATE TABLE `app_resource` (
   `permissionProperties` longtext,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2789,7 +2789,7 @@ CREATE TABLE `app_userview` (
   KEY `FKE411D54E462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FKE411D54E462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2822,7 +2822,7 @@ CREATE TABLE `dir_department` (
   CONSTRAINT `FKEEE8AA4418CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKEEE8AA4480DB1449` FOREIGN KEY (`hod`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FKEEE8AA44EF6BB2B7` FOREIGN KEY (`parentId`) REFERENCES `dir_department` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2860,7 +2860,7 @@ CREATE TABLE `dir_employment` (
   CONSTRAINT `FKC6620ADE18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKC6620ADE716AE35F` FOREIGN KEY (`departmentId`) REFERENCES `dir_department` (`id`),
   CONSTRAINT `FKC6620ADECE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2888,7 +2888,7 @@ CREATE TABLE `dir_employment_report_to` (
   KEY `FK536229452787E613` (`employmentId`),
   CONSTRAINT `FK536229452787E613` FOREIGN KEY (`employmentId`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FK53622945F4068416` FOREIGN KEY (`reportToId`) REFERENCES `dir_employment` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2915,7 +2915,7 @@ CREATE TABLE `dir_grade` (
   PRIMARY KEY (`id`),
   KEY `FKBC9A49A518CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A49A518CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2942,7 +2942,7 @@ CREATE TABLE `dir_group` (
   PRIMARY KEY (`id`),
   KEY `FKBC9A804D18CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A804D18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2969,7 +2969,7 @@ CREATE TABLE `dir_organization` (
   PRIMARY KEY (`id`),
   KEY `FK55A15FA5961BD498` (`parentId`),
   CONSTRAINT `FK55A15FA5961BD498` FOREIGN KEY (`parentId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2993,7 +2993,7 @@ CREATE TABLE `dir_role` (
   `name` varchar(255) DEFAULT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3023,7 +3023,7 @@ CREATE TABLE `dir_user` (
   `timeZone` varchar(255) DEFAULT NULL,
   `locale` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3053,7 +3053,7 @@ CREATE TABLE `dir_user_extra` (
   `requiredPasswordChange` bit(1) DEFAULT NULL,
   `noPasswordExpiration` bit(1) DEFAULT NULL,
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3079,7 +3079,7 @@ CREATE TABLE `dir_user_group` (
   KEY `FK2F0367FDCE539211` (`userId`),
   CONSTRAINT `FK2F0367FD159B6639` FOREIGN KEY (`groupId`) REFERENCES `dir_group` (`id`),
   CONSTRAINT `FK2F0367FDCE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3103,7 +3103,7 @@ CREATE TABLE `dir_user_meta` (
   `meta_key` varchar(255) NOT NULL,
   `meta_value` longtext,
   PRIMARY KEY (`username`,`meta_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3128,7 +3128,7 @@ CREATE TABLE `dir_user_password_history` (
   `password` varchar(255) DEFAULT NULL,
   `updatedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3155,7 +3155,7 @@ CREATE TABLE `dir_user_replacement` (
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3181,7 +3181,7 @@ CREATE TABLE `dir_user_role` (
   KEY `FK5C5FE738CE539211` (`userId`),
   CONSTRAINT `FK5C5FE738C8FE3CA7` FOREIGN KEY (`roleId`) REFERENCES `dir_role` (`id`),
   CONSTRAINT `FK5C5FE738CE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3203,7 +3203,7 @@ UNLOCK TABLES;
 CREATE TABLE `objectid` (
   `nextoid` decimal(19,0) NOT NULL,
   PRIMARY KEY (`nextoid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3232,7 +3232,7 @@ CREATE TABLE `wf_audit_trail` (
   `appId` varchar(255) DEFAULT NULL,
   `appVersion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3256,7 +3256,7 @@ CREATE TABLE `wf_process_link` (
   `parentProcessId` varchar(255) DEFAULT NULL,
   `originProcessId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`processId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3303,7 +3303,7 @@ CREATE TABLE `wf_report` (
   CONSTRAINT `FKB943CCA47A4E8F48` FOREIGN KEY (`packageId`) REFERENCES `wf_report_package` (`packageId`),
   CONSTRAINT `FKB943CCA4A39D6461` FOREIGN KEY (`processDefId`) REFERENCES `wf_report_process` (`processDefId`),
   CONSTRAINT `FKB943CCA4CB863F` FOREIGN KEY (`activityDefId`) REFERENCES `wf_report_activity` (`activityDefId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3327,7 +3327,7 @@ CREATE TABLE `wf_report_activity` (
   `description` varchar(255) DEFAULT NULL,
   `priority` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`activityDefId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3349,7 +3349,7 @@ CREATE TABLE `wf_report_package` (
   `packageId` varchar(255) NOT NULL,
   `packageName` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`packageId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3372,7 +3372,7 @@ CREATE TABLE `wf_report_process` (
   `processName` varchar(255) DEFAULT NULL,
   `version` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`processDefId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3396,7 +3396,7 @@ CREATE TABLE `wf_resource_bundle_message` (
   `locale` varchar(255) DEFAULT NULL,
   `message` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3420,7 +3420,7 @@ CREATE TABLE `wf_setup` (
   `value` text,
   `ordering` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
