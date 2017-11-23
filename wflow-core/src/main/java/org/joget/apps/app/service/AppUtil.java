@@ -518,7 +518,9 @@ public class AppUtil implements ApplicationContextAware {
                                         String hashFormat = "";
                                         if (removeFormatVar.contains("?")) {
                                             hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
-                                            removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
+                                            if (!hashFormat.contains("}")) {
+                                                removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
+                                            }
                                         }
 
                                         String value = cachedPlugin.processHashVariable(removeFormatVar);
