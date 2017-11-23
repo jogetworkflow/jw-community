@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.28, for osx10.8 (x86_64)
+-- MySQL dump 10.16  Distrib 10.2.10-MariaDB, for Win32 (AMD64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.6.28
+-- Server version	10.2.10-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -16,2077 +16,25 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `SHKActivities`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivities` (
-  `Id` varchar(100) NOT NULL,
-  `ActivitySetDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
-  `Process` decimal(19,0) NOT NULL,
-  `TheResource` decimal(19,0) DEFAULT NULL,
-  `PDefName` varchar(200) NOT NULL,
-  `ProcessId` varchar(200) NOT NULL,
-  `ResourceId` varchar(100) DEFAULT NULL,
-  `State` decimal(19,0) NOT NULL,
-  `BlockActivityId` varchar(100) DEFAULT NULL,
-  `Performer` varchar(100) DEFAULT NULL,
-  `IsPerformerAsynchronous` smallint(6) DEFAULT NULL,
-  `Priority` int(11) DEFAULT NULL,
-  `Name` varchar(254) DEFAULT NULL,
-  `Activated` bigint(20) NOT NULL,
-  `ActivatedTZO` bigint(20) NOT NULL,
-  `Accepted` bigint(20) DEFAULT NULL,
-  `AcceptedTZO` bigint(20) DEFAULT NULL,
-  `LastStateTime` bigint(20) NOT NULL,
-  `LastStateTimeTZO` bigint(20) NOT NULL,
-  `LimitTime` bigint(20) NOT NULL,
-  `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivities` (`Id`),
-  KEY `SHKActivities_TheResource` (`TheResource`),
-  KEY `SHKActivities_State` (`State`),
-  KEY `I2_SHKActivities` (`Process`,`ActivitySetDefinitionId`,`ActivityDefinitionId`),
-  KEY `I3_SHKActivities` (`Process`,`State`),
-  CONSTRAINT `SHKActivities_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`),
-  CONSTRAINT `SHKActivities_State` FOREIGN KEY (`State`) REFERENCES `SHKActivityStates` (`oid`),
-  CONSTRAINT `SHKActivities_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivities`
---
-
-LOCK TABLES `SHKActivities` WRITE;
-/*!40000 ALTER TABLE `SHKActivities` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKActivities` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKActivityData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivityData` (
-  `Activity` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` double DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `IsResult` smallint(6) NOT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivityData` (`CNT`),
-  UNIQUE KEY `I2_SHKActivityData` (`Activity`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKActivityData_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivityData`
---
-
-LOCK TABLES `SHKActivityData` WRITE;
-/*!40000 ALTER TABLE `SHKActivityData` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKActivityData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKActivityDataBLOBs`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivityDataBLOBs` (
-  `ActivityDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
-  `OrdNo` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivityDataBLOBs` (`ActivityDataWOB`,`OrdNo`),
-  CONSTRAINT `SHKActivityDataBLOBs_ActivityDataWOB` FOREIGN KEY (`ActivityDataWOB`) REFERENCES `SHKActivityDataWOB` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivityDataBLOBs`
---
-
-LOCK TABLES `SHKActivityDataBLOBs` WRITE;
-/*!40000 ALTER TABLE `SHKActivityDataBLOBs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKActivityDataBLOBs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKActivityDataWOB`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivityDataWOB` (
-  `Activity` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` double DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `IsResult` smallint(6) NOT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivityDataWOB` (`CNT`),
-  UNIQUE KEY `I2_SHKActivityDataWOB` (`Activity`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKActivityDataWOB_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivityDataWOB`
---
-
-LOCK TABLES `SHKActivityDataWOB` WRITE;
-/*!40000 ALTER TABLE `SHKActivityDataWOB` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKActivityDataWOB` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKActivityStateEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivityStateEventAudits` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivityStateEventAudits` (`KeyValue`),
-  UNIQUE KEY `I2_SHKActivityStateEventAudits` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivityStateEventAudits`
---
-
-LOCK TABLES `SHKActivityStateEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKActivityStateEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKActivityStateEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKActivityStates`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKActivityStates` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKActivityStates` (`KeyValue`),
-  UNIQUE KEY `I2_SHKActivityStates` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKActivityStates`
---
-
-LOCK TABLES `SHKActivityStates` WRITE;
-/*!40000 ALTER TABLE `SHKActivityStates` DISABLE KEYS */;
-INSERT INTO `SHKActivityStates` VALUES ('open.running','open.running',1000001,0),('open.not_running.not_started','open.not_running.not_started',1000003,0),('open.not_running.suspended','open.not_running.suspended',1000005,0),('closed.completed','closed.completed',1000007,0),('closed.terminated','closed.terminated',1000009,0),('closed.aborted','closed.aborted',1000011,0);
-/*!40000 ALTER TABLE `SHKActivityStates` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKAndJoinTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKAndJoinTable` (
-  `Process` decimal(19,0) NOT NULL,
-  `BlockActivity` decimal(19,0) DEFAULT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
-  `Activity` decimal(19,0) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKAndJoinTable` (`CNT`),
-  KEY `SHKAndJoinTable_BlockActivity` (`BlockActivity`),
-  KEY `I2_SHKAndJoinTable` (`Process`,`BlockActivity`,`ActivityDefinitionId`),
-  KEY `I3_SHKAndJoinTable` (`Activity`),
-  CONSTRAINT `SHKAndJoinTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
-  CONSTRAINT `SHKAndJoinTable_BlockActivity` FOREIGN KEY (`BlockActivity`) REFERENCES `SHKActivities` (`oid`),
-  CONSTRAINT `SHKAndJoinTable_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKAndJoinTable`
---
-
-LOCK TABLES `SHKAndJoinTable` WRITE;
-/*!40000 ALTER TABLE `SHKAndJoinTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKAndJoinTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKAssignmentEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKAssignmentEventAudits` (
-  `RecordedTime` bigint(20) NOT NULL,
-  `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
-  `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) NOT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionType` int(11) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `OldResourceUsername` varchar(100) DEFAULT NULL,
-  `OldResourceName` varchar(100) DEFAULT NULL,
-  `NewResourceUsername` varchar(100) NOT NULL,
-  `NewResourceName` varchar(100) DEFAULT NULL,
-  `IsAccepted` smallint(6) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKAssignmentEventAudits` (`CNT`),
-  KEY `SHKAssignmentEventAudits_TheType` (`TheType`),
-  CONSTRAINT `SHKAssignmentEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKAssignmentEventAudits`
---
-
-LOCK TABLES `SHKAssignmentEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKAssignmentEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKAssignmentEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKAssignmentsTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKAssignmentsTable` (
-  `Activity` decimal(19,0) NOT NULL,
-  `TheResource` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) NOT NULL,
-  `ActivityProcessId` varchar(100) NOT NULL,
-  `ActivityProcessDefName` varchar(200) NOT NULL,
-  `ResourceId` varchar(100) NOT NULL,
-  `IsAccepted` smallint(6) NOT NULL,
-  `IsValid` smallint(6) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKAssignmentsTable` (`CNT`),
-  UNIQUE KEY `I2_SHKAssignmentsTable` (`Activity`,`TheResource`),
-  KEY `I3_SHKAssignmentsTable` (`TheResource`,`IsValid`),
-  KEY `I4_SHKAssignmentsTable` (`ActivityId`),
-  KEY `I5_SHKAssignmentsTable` (`ResourceId`),
-  KEY `FK_rnb6mhntls567xpifcfvygkuu` (`ActivityProcessId`),
-  CONSTRAINT `FK_183e6adufsi558hl5p4dqkqsx` FOREIGN KEY (`ActivityId`) REFERENCES `SHKActivities` (`Id`),
-  CONSTRAINT `FK_rnb6mhntls567xpifcfvygkuu` FOREIGN KEY (`ActivityProcessId`) REFERENCES `SHKProcesses` (`Id`),
-  CONSTRAINT `SHKAssignmentsTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
-  CONSTRAINT `SHKAssignmentsTable_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKAssignmentsTable`
---
-
-LOCK TABLES `SHKAssignmentsTable` WRITE;
-/*!40000 ALTER TABLE `SHKAssignmentsTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKAssignmentsTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKCounters`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKCounters` (
-  `name` varchar(100) NOT NULL,
-  `the_number` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKCounters` (`name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKCounters`
---
-
-LOCK TABLES `SHKCounters` WRITE;
-/*!40000 ALTER TABLE `SHKCounters` DISABLE KEYS */;
-INSERT INTO `SHKCounters` VALUES ('_xpdldata_',2,1000204,0);
-/*!40000 ALTER TABLE `SHKCounters` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKCreateProcessEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKCreateProcessEventAudits` (
-  `RecordedTime` bigint(20) NOT NULL,
-  `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
-  `TheType` decimal(19,0) NOT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `PActivityId` varchar(100) DEFAULT NULL,
-  `PProcessId` varchar(100) DEFAULT NULL,
-  `PProcessName` varchar(254) DEFAULT NULL,
-  `PProcessFactoryName` varchar(200) DEFAULT NULL,
-  `PProcessFactoryVersion` varchar(20) DEFAULT NULL,
-  `PActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `PActivityDefinitionName` varchar(90) DEFAULT NULL,
-  `PProcessDefinitionId` varchar(90) DEFAULT NULL,
-  `PProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PPackageId` varchar(90) DEFAULT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKCreateProcessEventAudits` (`CNT`),
-  KEY `SHKCreateProcessEventAudits_TheType` (`TheType`),
-  CONSTRAINT `SHKCreateProcessEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKCreateProcessEventAudits`
---
-
-LOCK TABLES `SHKCreateProcessEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKCreateProcessEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKCreateProcessEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKDataEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKDataEventAudits` (
-  `RecordedTime` bigint(20) NOT NULL,
-  `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
-  `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) DEFAULT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionType` int(11) DEFAULT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKDataEventAudits` (`CNT`),
-  KEY `SHKDataEventAudits_TheType` (`TheType`),
-  CONSTRAINT `SHKDataEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKDataEventAudits`
---
-
-LOCK TABLES `SHKDataEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKDataEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKDataEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKDeadlines`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKDeadlines` (
-  `Process` decimal(19,0) NOT NULL,
-  `Activity` decimal(19,0) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `TimeLimit` bigint(20) NOT NULL,
-  `TimeLimitTZO` bigint(20) NOT NULL,
-  `ExceptionName` varchar(100) NOT NULL,
-  `IsSynchronous` smallint(6) NOT NULL,
-  `IsExecuted` smallint(6) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKDeadlines` (`CNT`),
-  KEY `I2_SHKDeadlines` (`Process`,`TimeLimit`),
-  KEY `I3_SHKDeadlines` (`Activity`,`TimeLimit`),
-  CONSTRAINT `SHKDeadlines_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
-  CONSTRAINT `SHKDeadlines_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKDeadlines`
---
-
-LOCK TABLES `SHKDeadlines` WRITE;
-/*!40000 ALTER TABLE `SHKDeadlines` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKDeadlines` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKEventTypes`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKEventTypes` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKEventTypes` (`KeyValue`),
-  UNIQUE KEY `I2_SHKEventTypes` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKEventTypes`
---
-
-LOCK TABLES `SHKEventTypes` WRITE;
-/*!40000 ALTER TABLE `SHKEventTypes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKEventTypes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKGroupGroupTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKGroupGroupTable` (
-  `sub_gid` decimal(19,0) NOT NULL,
-  `groupid` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKGroupGroupTable` (`sub_gid`,`groupid`),
-  KEY `I2_SHKGroupGroupTable` (`groupid`),
-  CONSTRAINT `SHKGroupGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
-  CONSTRAINT `SHKGroupGroupTable_sub_gid` FOREIGN KEY (`sub_gid`) REFERENCES `SHKGroupTable` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKGroupGroupTable`
---
-
-LOCK TABLES `SHKGroupGroupTable` WRITE;
-/*!40000 ALTER TABLE `SHKGroupGroupTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKGroupGroupTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKGroupTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKGroupTable` (
-  `groupid` varchar(100) NOT NULL,
-  `description` varchar(254) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKGroupTable` (`groupid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKGroupTable`
---
-
-LOCK TABLES `SHKGroupTable` WRITE;
-/*!40000 ALTER TABLE `SHKGroupTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKGroupTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKGroupUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKGroupUser` (
-  `USERNAME` varchar(100) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKGroupUser` (`USERNAME`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKGroupUser`
---
-
-LOCK TABLES `SHKGroupUser` WRITE;
-/*!40000 ALTER TABLE `SHKGroupUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKGroupUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKGroupUserPackLevelPart`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKGroupUserPackLevelPart` (
-  `PARTICIPANTOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKGroupUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
-  KEY `SHKGroupUserPackLevelPart_USEROID` (`USEROID`),
-  CONSTRAINT `SHKGroupUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
-  CONSTRAINT `SHKGroupUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKGroupUserPackLevelPart`
---
-
-LOCK TABLES `SHKGroupUserPackLevelPart` WRITE;
-/*!40000 ALTER TABLE `SHKGroupUserPackLevelPart` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKGroupUserPackLevelPart` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKGroupUserProcLevelPart`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKGroupUserProcLevelPart` (
-  `PARTICIPANTOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKGroupUserProcLevelPart` (`PARTICIPANTOID`,`USEROID`),
-  KEY `SHKGroupUserProcLevelPart_USEROID` (`USEROID`),
-  CONSTRAINT `SHKGroupUserProcLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
-  CONSTRAINT `SHKGroupUserProcLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKGroupUserProcLevelPart`
---
-
-LOCK TABLES `SHKGroupUserProcLevelPart` WRITE;
-/*!40000 ALTER TABLE `SHKGroupUserProcLevelPart` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKGroupUserProcLevelPart` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKNewEventAuditData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKNewEventAuditData` (
-  `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` float DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKNewEventAuditData` (`CNT`),
-  UNIQUE KEY `I2_SHKNewEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKNewEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKNewEventAuditData`
---
-
-LOCK TABLES `SHKNewEventAuditData` WRITE;
-/*!40000 ALTER TABLE `SHKNewEventAuditData` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKNewEventAuditData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKNewEventAuditDataBLOBs`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKNewEventAuditDataBLOBs` (
-  `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
-  `OrdNo` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKNewEventAuditDataBLOBs` (`NewEventAuditDataWOB`,`OrdNo`),
-  CONSTRAINT `SHKNewEventAuditDataBLOBs_NewEventAuditDataWOB` FOREIGN KEY (`NewEventAuditDataWOB`) REFERENCES `SHKNewEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKNewEventAuditDataBLOBs`
---
-
-LOCK TABLES `SHKNewEventAuditDataBLOBs` WRITE;
-/*!40000 ALTER TABLE `SHKNewEventAuditDataBLOBs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKNewEventAuditDataBLOBs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKNewEventAuditDataWOB`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKNewEventAuditDataWOB` (
-  `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` float DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKNewEventAuditDataWOB` (`CNT`),
-  UNIQUE KEY `I2_SHKNewEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKNewEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKNewEventAuditDataWOB`
---
-
-LOCK TABLES `SHKNewEventAuditDataWOB` WRITE;
-/*!40000 ALTER TABLE `SHKNewEventAuditDataWOB` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKNewEventAuditDataWOB` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKNextXPDLVersions`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKNextXPDLVersions` (
-  `XPDLId` varchar(90) NOT NULL,
-  `NextVersion` varchar(20) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKNextXPDLVersions` (`XPDLId`,`NextVersion`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKNextXPDLVersions`
---
-
-LOCK TABLES `SHKNextXPDLVersions` WRITE;
-/*!40000 ALTER TABLE `SHKNextXPDLVersions` DISABLE KEYS */;
-INSERT INTO `SHKNextXPDLVersions` VALUES ('crm_community','2',1000201,0);
-/*!40000 ALTER TABLE `SHKNextXPDLVersions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKNormalUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKNormalUser` (
-  `USERNAME` varchar(100) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKNormalUser` (`USERNAME`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKNormalUser`
---
-
-LOCK TABLES `SHKNormalUser` WRITE;
-/*!40000 ALTER TABLE `SHKNormalUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKNormalUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKOldEventAuditData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKOldEventAuditData` (
-  `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` float DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKOldEventAuditData` (`CNT`),
-  UNIQUE KEY `I2_SHKOldEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKOldEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKOldEventAuditData`
---
-
-LOCK TABLES `SHKOldEventAuditData` WRITE;
-/*!40000 ALTER TABLE `SHKOldEventAuditData` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKOldEventAuditData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKOldEventAuditDataBLOBs`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKOldEventAuditDataBLOBs` (
-  `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
-  `OrdNo` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKOldEventAuditDataBLOBs` (`OldEventAuditDataWOB`,`OrdNo`),
-  CONSTRAINT `SHKOldEventAuditDataBLOBs_OldEventAuditDataWOB` FOREIGN KEY (`OldEventAuditDataWOB`) REFERENCES `SHKOldEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKOldEventAuditDataBLOBs`
---
-
-LOCK TABLES `SHKOldEventAuditDataBLOBs` WRITE;
-/*!40000 ALTER TABLE `SHKOldEventAuditDataBLOBs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKOldEventAuditDataBLOBs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKOldEventAuditDataWOB`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKOldEventAuditDataWOB` (
-  `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` float DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKOldEventAuditDataWOB` (`CNT`),
-  UNIQUE KEY `I2_SHKOldEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKOldEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKOldEventAuditDataWOB`
---
-
-LOCK TABLES `SHKOldEventAuditDataWOB` WRITE;
-/*!40000 ALTER TABLE `SHKOldEventAuditDataWOB` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKOldEventAuditDataWOB` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelParticipant`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelParticipant` (
-  `PARTICIPANT_ID` varchar(90) NOT NULL,
-  `PACKAGEOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelParticipant` (`PARTICIPANT_ID`,`PACKAGEOID`),
-  KEY `SHKPackLevelParticipant_PACKAGEOID` (`PACKAGEOID`),
-  CONSTRAINT `SHKPackLevelParticipant_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelParticipant`
---
-
-LOCK TABLES `SHKPackLevelParticipant` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelParticipant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelParticipant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelXPDLApp`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelXPDLApp` (
-  `APPLICATION_ID` varchar(90) NOT NULL,
-  `PACKAGEOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelXPDLApp` (`APPLICATION_ID`,`PACKAGEOID`),
-  KEY `SHKPackLevelXPDLApp_PACKAGEOID` (`PACKAGEOID`),
-  CONSTRAINT `SHKPackLevelXPDLApp_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelXPDLApp`
---
-
-LOCK TABLES `SHKPackLevelXPDLApp` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLApp` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLApp` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelXPDLAppTAAppDetUsr`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelXPDLAppTAAppDetUsr` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelXPDLAppTAAppDetUsr`
---
-
-LOCK TABLES `SHKPackLevelXPDLAppTAAppDetUsr` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppDetUsr` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppDetUsr` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelXPDLAppTAAppDetail`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelXPDLAppTAAppDetail` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelXPDLAppTAAppDetail`
---
-
-LOCK TABLES `SHKPackLevelXPDLAppTAAppDetail` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppDetail` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppDetail` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelXPDLAppTAAppUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelXPDLAppTAAppUser` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
-  CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelXPDLAppTAAppUser`
---
-
-LOCK TABLES `SHKPackLevelXPDLAppTAAppUser` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppTAAppUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKPackLevelXPDLAppToolAgntApp`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKPackLevelXPDLAppToolAgntApp` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKPackLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
-  CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKPackLevelXPDLAppToolAgntApp`
---
-
-LOCK TABLES `SHKPackLevelXPDLAppToolAgntApp` WRITE;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppToolAgntApp` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKPackLevelXPDLAppToolAgntApp` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelParticipant`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelParticipant` (
-  `PARTICIPANT_ID` varchar(90) NOT NULL,
-  `PROCESSOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelParticipant` (`PARTICIPANT_ID`,`PROCESSOID`),
-  KEY `SHKProcLevelParticipant_PROCESSOID` (`PROCESSOID`),
-  CONSTRAINT `SHKProcLevelParticipant_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLParticipantProcess` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelParticipant`
---
-
-LOCK TABLES `SHKProcLevelParticipant` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelParticipant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelParticipant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelXPDLApp`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelXPDLApp` (
-  `APPLICATION_ID` varchar(90) NOT NULL,
-  `PROCESSOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelXPDLApp` (`APPLICATION_ID`,`PROCESSOID`),
-  KEY `SHKProcLevelXPDLApp_PROCESSOID` (`PROCESSOID`),
-  CONSTRAINT `SHKProcLevelXPDLApp_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLApplicationProcess` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelXPDLApp`
---
-
-LOCK TABLES `SHKProcLevelXPDLApp` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLApp` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLApp` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelXPDLAppTAAppDetUsr`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelXPDLAppTAAppDetUsr` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelXPDLAppTAAppDetUsr`
---
-
-LOCK TABLES `SHKProcLevelXPDLAppTAAppDetUsr` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppDetUsr` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppDetUsr` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelXPDLAppTAAppDetail`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelXPDLAppTAAppDetail` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelXPDLAppTAAppDetail`
---
-
-LOCK TABLES `SHKProcLevelXPDLAppTAAppDetail` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppDetail` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppDetail` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelXPDLAppTAAppUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelXPDLAppTAAppUser` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
-  CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelXPDLAppTAAppUser`
---
-
-LOCK TABLES `SHKProcLevelXPDLAppTAAppUser` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppTAAppUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcLevelXPDLAppToolAgntApp`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcLevelXPDLAppToolAgntApp` (
-  `XPDL_APPOID` decimal(19,0) NOT NULL,
-  `TOOLAGENTOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
-  KEY `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
-  CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
-  CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcLevelXPDLAppToolAgntApp`
---
-
-LOCK TABLES `SHKProcLevelXPDLAppToolAgntApp` WRITE;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppToolAgntApp` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcLevelXPDLAppToolAgntApp` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessData` (
-  `Process` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` double DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessData` (`CNT`),
-  UNIQUE KEY `I2_SHKProcessData` (`Process`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKProcessData_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessData`
---
-
-LOCK TABLES `SHKProcessData` WRITE;
-/*!40000 ALTER TABLE `SHKProcessData` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcessData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessDataBLOBs`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessDataBLOBs` (
-  `ProcessDataWOB` decimal(19,0) NOT NULL,
-  `VariableValue` mediumblob,
-  `OrdNo` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessDataBLOBs` (`ProcessDataWOB`,`OrdNo`),
-  CONSTRAINT `SHKProcessDataBLOBs_ProcessDataWOB` FOREIGN KEY (`ProcessDataWOB`) REFERENCES `SHKProcessDataWOB` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessDataBLOBs`
---
-
-LOCK TABLES `SHKProcessDataBLOBs` WRITE;
-/*!40000 ALTER TABLE `SHKProcessDataBLOBs` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcessDataBLOBs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessDataWOB`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessDataWOB` (
-  `Process` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
-  `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
-  `VariableValueDBL` double DEFAULT NULL,
-  `VariableValueLONG` bigint(20) DEFAULT NULL,
-  `VariableValueDATE` datetime DEFAULT NULL,
-  `VariableValueBOOL` smallint(6) DEFAULT NULL,
-  `OrdNo` int(11) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessDataWOB` (`CNT`),
-  UNIQUE KEY `I2_SHKProcessDataWOB` (`Process`,`VariableDefinitionId`,`OrdNo`),
-  CONSTRAINT `SHKProcessDataWOB_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessDataWOB`
---
-
-LOCK TABLES `SHKProcessDataWOB` WRITE;
-/*!40000 ALTER TABLE `SHKProcessDataWOB` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcessDataWOB` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessDefinitions`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessDefinitions` (
-  `Name` varchar(200) NOT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionCreated` bigint(20) NOT NULL,
-  `ProcessDefinitionVersion` varchar(20) NOT NULL,
-  `State` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessDefinitions` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessDefinitions`
---
-
-LOCK TABLES `SHKProcessDefinitions` WRITE;
-/*!40000 ALTER TABLE `SHKProcessDefinitions` DISABLE KEYS */;
-INSERT INTO `SHKProcessDefinitions` VALUES ('crm_community#1#process1','crm_community','process1',1510206763022,'1',0,1000205,0);
-/*!40000 ALTER TABLE `SHKProcessDefinitions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessRequesters`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessRequesters` (
-  `Id` varchar(100) NOT NULL,
-  `ActivityRequester` decimal(19,0) DEFAULT NULL,
-  `ResourceRequester` decimal(19,0) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessRequesters` (`Id`),
-  KEY `I2_SHKProcessRequesters` (`ActivityRequester`),
-  KEY `I3_SHKProcessRequesters` (`ResourceRequester`),
-  CONSTRAINT `SHKProcessRequesters_ActivityRequester` FOREIGN KEY (`ActivityRequester`) REFERENCES `SHKActivities` (`oid`),
-  CONSTRAINT `SHKProcessRequesters_ResourceRequester` FOREIGN KEY (`ResourceRequester`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessRequesters`
---
-
-LOCK TABLES `SHKProcessRequesters` WRITE;
-/*!40000 ALTER TABLE `SHKProcessRequesters` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcessRequesters` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessStateEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessStateEventAudits` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessStateEventAudits` (`KeyValue`),
-  UNIQUE KEY `I2_SHKProcessStateEventAudits` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessStateEventAudits`
---
-
-LOCK TABLES `SHKProcessStateEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKProcessStateEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcessStateEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcessStates`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcessStates` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcessStates` (`KeyValue`),
-  UNIQUE KEY `I2_SHKProcessStates` (`Name`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcessStates`
---
-
-LOCK TABLES `SHKProcessStates` WRITE;
-/*!40000 ALTER TABLE `SHKProcessStates` DISABLE KEYS */;
-INSERT INTO `SHKProcessStates` VALUES ('open.running','open.running',1000000,0),('open.not_running.not_started','open.not_running.not_started',1000002,0),('open.not_running.suspended','open.not_running.suspended',1000004,0),('closed.completed','closed.completed',1000006,0),('closed.terminated','closed.terminated',1000008,0),('closed.aborted','closed.aborted',1000010,0);
-/*!40000 ALTER TABLE `SHKProcessStates` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKProcesses`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKProcesses` (
-  `SyncVersion` bigint(20) NOT NULL,
-  `Id` varchar(100) NOT NULL,
-  `ProcessDefinition` decimal(19,0) NOT NULL,
-  `PDefName` varchar(200) NOT NULL,
-  `ActivityRequesterId` varchar(100) DEFAULT NULL,
-  `ActivityRequesterProcessId` varchar(100) DEFAULT NULL,
-  `ResourceRequesterId` varchar(100) NOT NULL,
-  `ExternalRequesterClassName` varchar(254) DEFAULT NULL,
-  `State` decimal(19,0) NOT NULL,
-  `Priority` int(11) DEFAULT NULL,
-  `Name` varchar(254) DEFAULT NULL,
-  `Created` bigint(20) NOT NULL,
-  `CreatedTZO` bigint(20) NOT NULL,
-  `Started` bigint(20) DEFAULT NULL,
-  `StartedTZO` bigint(20) DEFAULT NULL,
-  `LastStateTime` bigint(20) NOT NULL,
-  `LastStateTimeTZO` bigint(20) NOT NULL,
-  `LimitTime` bigint(20) NOT NULL,
-  `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKProcesses` (`Id`),
-  KEY `I2_SHKProcesses` (`ProcessDefinition`),
-  KEY `I3_SHKProcesses` (`State`),
-  KEY `I4_SHKProcesses` (`ActivityRequesterId`),
-  KEY `I5_SHKProcesses` (`ResourceRequesterId`),
-  CONSTRAINT `SHKProcesses_ProcessDefinition` FOREIGN KEY (`ProcessDefinition`) REFERENCES `SHKProcessDefinitions` (`oid`),
-  CONSTRAINT `SHKProcesses_State` FOREIGN KEY (`State`) REFERENCES `SHKProcessStates` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKProcesses`
---
-
-LOCK TABLES `SHKProcesses` WRITE;
-/*!40000 ALTER TABLE `SHKProcesses` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKProcesses` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKResourcesTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKResourcesTable` (
-  `Username` varchar(100) NOT NULL,
-  `Name` varchar(100) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKResourcesTable` (`Username`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKResourcesTable`
---
-
-LOCK TABLES `SHKResourcesTable` WRITE;
-/*!40000 ALTER TABLE `SHKResourcesTable` DISABLE KEYS */;
-INSERT INTO `SHKResourcesTable` VALUES ('roleAnonymous',NULL,1000200,0);
-/*!40000 ALTER TABLE `SHKResourcesTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKStateEventAudits`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKStateEventAudits` (
-  `RecordedTime` bigint(20) NOT NULL,
-  `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
-  `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) DEFAULT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionType` int(11) DEFAULT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `OldProcessState` decimal(19,0) DEFAULT NULL,
-  `NewProcessState` decimal(19,0) DEFAULT NULL,
-  `OldActivityState` decimal(19,0) DEFAULT NULL,
-  `NewActivityState` decimal(19,0) DEFAULT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKStateEventAudits` (`CNT`),
-  KEY `SHKStateEventAudits_TheType` (`TheType`),
-  KEY `SHKStateEventAudits_OldProcessState` (`OldProcessState`),
-  KEY `SHKStateEventAudits_NewProcessState` (`NewProcessState`),
-  KEY `SHKStateEventAudits_OldActivityState` (`OldActivityState`),
-  KEY `SHKStateEventAudits_NewActivityState` (`NewActivityState`),
-  CONSTRAINT `SHKStateEventAudits_NewActivityState` FOREIGN KEY (`NewActivityState`) REFERENCES `SHKActivityStateEventAudits` (`oid`),
-  CONSTRAINT `SHKStateEventAudits_NewProcessState` FOREIGN KEY (`NewProcessState`) REFERENCES `SHKProcessStateEventAudits` (`oid`),
-  CONSTRAINT `SHKStateEventAudits_OldActivityState` FOREIGN KEY (`OldActivityState`) REFERENCES `SHKActivityStateEventAudits` (`oid`),
-  CONSTRAINT `SHKStateEventAudits_OldProcessState` FOREIGN KEY (`OldProcessState`) REFERENCES `SHKProcessStateEventAudits` (`oid`),
-  CONSTRAINT `SHKStateEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKStateEventAudits`
---
-
-LOCK TABLES `SHKStateEventAudits` WRITE;
-/*!40000 ALTER TABLE `SHKStateEventAudits` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKStateEventAudits` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKToolAgentApp`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKToolAgentApp` (
-  `TOOL_AGENT_NAME` varchar(250) NOT NULL,
-  `APP_NAME` varchar(90) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKToolAgentApp` (`TOOL_AGENT_NAME`,`APP_NAME`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKToolAgentApp`
---
-
-LOCK TABLES `SHKToolAgentApp` WRITE;
-/*!40000 ALTER TABLE `SHKToolAgentApp` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKToolAgentApp` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKToolAgentAppDetail`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKToolAgentAppDetail` (
-  `APP_MODE` decimal(10,0) NOT NULL,
-  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKToolAgentAppDetail` (`APP_MODE`,`TOOLAGENT_APPOID`),
-  KEY `SHKToolAgentAppDetail_TOOLAGENT_APPOID` (`TOOLAGENT_APPOID`),
-  CONSTRAINT `SHKToolAgentAppDetail_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKToolAgentAppDetail`
---
-
-LOCK TABLES `SHKToolAgentAppDetail` WRITE;
-/*!40000 ALTER TABLE `SHKToolAgentAppDetail` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKToolAgentAppDetail` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKToolAgentAppDetailUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKToolAgentAppDetailUser` (
-  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKToolAgentAppDetailUser` (`TOOLAGENT_APPOID`,`USEROID`),
-  KEY `SHKToolAgentAppDetailUser_USEROID` (`USEROID`),
-  CONSTRAINT `SHKToolAgentAppDetailUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
-  CONSTRAINT `SHKToolAgentAppDetailUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKToolAgentAppDetailUser`
---
-
-LOCK TABLES `SHKToolAgentAppDetailUser` WRITE;
-/*!40000 ALTER TABLE `SHKToolAgentAppDetailUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKToolAgentAppDetailUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKToolAgentAppUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKToolAgentAppUser` (
-  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKToolAgentAppUser` (`TOOLAGENT_APPOID`,`USEROID`),
-  KEY `SHKToolAgentAppUser_USEROID` (`USEROID`),
-  CONSTRAINT `SHKToolAgentAppUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`),
-  CONSTRAINT `SHKToolAgentAppUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKToolAgentAppUser`
---
-
-LOCK TABLES `SHKToolAgentAppUser` WRITE;
-/*!40000 ALTER TABLE `SHKToolAgentAppUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKToolAgentAppUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKToolAgentUser`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKToolAgentUser` (
-  `USERNAME` varchar(100) NOT NULL,
-  `PWD` varchar(100) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKToolAgentUser` (`USERNAME`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKToolAgentUser`
---
-
-LOCK TABLES `SHKToolAgentUser` WRITE;
-/*!40000 ALTER TABLE `SHKToolAgentUser` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKToolAgentUser` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKUserGroupTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKUserGroupTable` (
-  `userid` decimal(19,0) NOT NULL,
-  `groupid` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKUserGroupTable` (`userid`,`groupid`),
-  KEY `SHKUserGroupTable_groupid` (`groupid`),
-  CONSTRAINT `SHKUserGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
-  CONSTRAINT `SHKUserGroupTable_userid` FOREIGN KEY (`userid`) REFERENCES `SHKUserTable` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKUserGroupTable`
---
-
-LOCK TABLES `SHKUserGroupTable` WRITE;
-/*!40000 ALTER TABLE `SHKUserGroupTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKUserGroupTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKUserPackLevelPart`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKUserPackLevelPart` (
-  `PARTICIPANTOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
-  KEY `SHKUserPackLevelPart_USEROID` (`USEROID`),
-  CONSTRAINT `SHKUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
-  CONSTRAINT `SHKUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKUserPackLevelPart`
---
-
-LOCK TABLES `SHKUserPackLevelPart` WRITE;
-/*!40000 ALTER TABLE `SHKUserPackLevelPart` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKUserPackLevelPart` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKUserProcLevelParticipant`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKUserProcLevelParticipant` (
-  `PARTICIPANTOID` decimal(19,0) NOT NULL,
-  `USEROID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKUserProcLevelParticipant` (`PARTICIPANTOID`,`USEROID`),
-  KEY `SHKUserProcLevelParticipant_USEROID` (`USEROID`),
-  CONSTRAINT `SHKUserProcLevelParticipant_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
-  CONSTRAINT `SHKUserProcLevelParticipant_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKUserProcLevelParticipant`
---
-
-LOCK TABLES `SHKUserProcLevelParticipant` WRITE;
-/*!40000 ALTER TABLE `SHKUserProcLevelParticipant` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKUserProcLevelParticipant` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKUserTable`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKUserTable` (
-  `userid` varchar(100) NOT NULL,
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(50) DEFAULT NULL,
-  `passwd` varchar(50) NOT NULL,
-  `email` varchar(254) DEFAULT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKUserTable` (`userid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKUserTable`
---
-
-LOCK TABLES `SHKUserTable` WRITE;
-/*!40000 ALTER TABLE `SHKUserTable` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKUserTable` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLApplicationPackage`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLApplicationPackage` (
-  `PACKAGE_ID` varchar(90) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLApplicationPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLApplicationPackage`
---
-
-LOCK TABLES `SHKXPDLApplicationPackage` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLApplicationPackage` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLApplicationPackage` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLApplicationProcess`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLApplicationProcess` (
-  `PROCESS_ID` varchar(90) NOT NULL,
-  `PACKAGEOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLApplicationProcess` (`PROCESS_ID`,`PACKAGEOID`),
-  KEY `SHKXPDLApplicationProcess_PACKAGEOID` (`PACKAGEOID`),
-  CONSTRAINT `SHKXPDLApplicationProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLApplicationProcess`
---
-
-LOCK TABLES `SHKXPDLApplicationProcess` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLApplicationProcess` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLApplicationProcess` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLData` (
-  `XPDLContent` longblob,
-  `XPDLClassContent` longblob,
-  `XPDL` decimal(19,0) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLData` (`CNT`),
-  UNIQUE KEY `I2_SHKXPDLData` (`XPDL`),
-  CONSTRAINT `SHKXPDLData_XPDL` FOREIGN KEY (`XPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLData`
---
-
-LOCK TABLES `SHKXPDLData` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLData` DISABLE KEYS */;
-INSERT INTO `SHKXPDLData` VALUES ('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Package xmlns=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xpdl=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" Id=\"crm_community\" Name=\"CRM Community\" xsi:schemaLocation=\"http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd\">\n    <PackageHeader>\n        <XPDLVersion>1.0</XPDLVersion>\n        <Vendor/>\n        <Created/>\n    </PackageHeader>\n    <Script Type=\"text/javascript\"/>\n    <Participants>\n        <Participant Id=\"requester\" Name=\"Requester\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n        <Participant Id=\"approver\" Name=\"Approver\">\n            <ParticipantType Type=\"ROLE\"/>\n        </Participant>\n    </Participants>\n    <Applications>\n        <Application Id=\"default_application\"/>\n    </Applications>\n    <WorkflowProcesses>\n        <WorkflowProcess Id=\"process1\" Name=\"Proposal Approval Process\">\n            <ProcessHeader DurationUnit=\"h\"/>\n            <DataFields>\n                <DataField Id=\"status\" IsArray=\"FALSE\">\n                    <DataType>\n                        <BasicType Type=\"STRING\"/>\n                    </DataType>\n                </DataField>\n            </DataFields>\n            <Activities>\n                <Activity Id=\"approve_proposal\" Name=\"Approve Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Join Type=\"XOR\"/>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"189,51.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"approval\" Name=\"Approval\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"XOR\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition3\"/>\n                                    <TransitionRef Id=\"transition6\"/>\n                                    <TransitionRef Id=\"transition5\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"430,62.79999084472655\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"activity1\" Name=\"Resubmit Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"397,20.787493896484378\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"send_proposal\" Name=\"Send Proposal\">\n                    <Implementation>\n                        <No/>\n                    </Implementation>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"669.0000534057617,92.78333282470703\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"parallel\" Name=\"Parallel\">\n                    <Route/>\n                    <Performer>approver</Performer>\n                    <TransitionRestrictions>\n                        <TransitionRestriction>\n                            <Split Type=\"AND\">\n                                <TransitionRefs>\n                                    <TransitionRef Id=\"transition7\"/>\n                                    <TransitionRef Id=\"transition8\"/>\n                                </TransitionRefs>\n                            </Split>\n                        </TransitionRestriction>\n                    </TransitionRestrictions>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"588,61.599993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool1\" Name=\"Send Approval Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"735,63.974993896484364\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"tool2\" Name=\"Send Reject Notification\">\n                    <Implementation>\n                        <Tool Id=\"default_application\"/>\n                    </Implementation>\n                    <Performer>approver</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"394,168.39999694824218\"/>\n                    </ExtendedAttributes>\n                </Activity>\n                <Activity Id=\"route1\" Name=\"Route 1\">\n                    <Route/>\n                    <Performer>requester</Performer>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"222,15\"/>\n                    </ExtendedAttributes>\n                </Activity>\n            </Activities>\n            <Transitions>\n                <Transition From=\"approve_proposal\" Id=\"transition2\" To=\"approval\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition3\" To=\"activity1\">\n                    <Condition Type=\"CONDITION\">status===\'resubmit\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"activity1\" Id=\"transition4\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition6\" Name=\"approved\" To=\"parallel\">\n                    <Condition Type=\"OTHERWISE\"/>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition7\" To=\"send_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"parallel\" Id=\"transition8\" To=\"tool1\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"approval\" Id=\"transition5\" To=\"tool2\">\n                    <Condition Type=\"CONDITION\">status===\'rejected\'</Condition>\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n                <Transition From=\"route1\" Id=\"transition1\" To=\"approve_proposal\">\n                    <ExtendedAttributes>\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\n                    </ExtendedAttributes>\n                </Transition>\n            </Transitions>\n            <ExtendedAttributes>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER\" Value=\"requester;approver\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_START_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\n            </ExtendedAttributes>\n        </WorkflowProcess>\n    </WorkflowProcesses>\n    <ExtendedAttributes>\n        <ExtendedAttribute Name=\"EDITING_TOOL\" Value=\"Web Workflow Designer\"/>\n        <ExtendedAttribute Name=\"EDITING_TOOL_VERSION\" Value=\"5.0-pre-alpha\"/>\n    </ExtendedAttributes>\n</Package>\n','ï¿½ï¿½\0sr\0\'org.enhydra.shark.xpdl.elements.Package~+VmÅ€~ï¿½\0Z\0isTransientL\0extPkgRefsToIdst\0.Lorg/enhydra/shark/utilities/SequencedHashMap;L\0internalVersiont\0Ljava/lang/String;L\0\nnamespacest\0,Lorg/enhydra/shark/xpdl/elements/Namespaces;xr\0(org.enhydra.shark.xpdl.XMLComplexElement>ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½\0\0xr\05org.enhydra.shark.xpdl.XMLBaseForCollectionAndComplexï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2\0L\0\nelementMapq\0~\0L\0elementst\0Ljava/util/ArrayList;xr\0!org.enhydra.shark.xpdl.XMLElement#+Bï¿½#ï¿½ï¿½ï¿½\0Z\0\nisReadOnlyZ\0\nisRequiredL\0nameq\0~\0L\0originalElementHashCodet\0Ljava/lang/Integer;L\0parentt\0#Lorg/enhydra/shark/xpdl/XMLElement;L\0valueq\0~\0xpt\0Packagesr\0java.lang.Integerâ ¤ï¿½ï¿½ï¿½8\0I\0valuexr\0java.lang.Numberï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\0\0xp)dpt\0\0sr\0,org.enhydra.shark.utilities.SequencedHashMap.ï¿½\"ï¿½ï¿½\"&\0\0xpw\0\0\0\rt\0Idsr\0#org.enhydra.shark.xpdl.XMLAttribute#cÝ€ï¿½ï¿½M;\0L\0choicesq\0~\0xq\0~\0q\0~\0sq\0~\0B1ï¿½q\0~\0\nt\0\rcrm_communitypt\0Namesq\0~\0\0q\0~\0sq\0~\0ï¿½q\0~\0\nt\0\rCRM Communitypt\0\rPackageHeadersr\0-org.enhydra.shark.xpdl.elements.PackageHeadervï¿½,ï¿½ï¿½\0\0xq\0~\0\0q\0~\0sq\0~\0}ï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0XPDLVersionsr\0+org.enhydra.shark.xpdl.elements.XPDLVersionï¿½\"}ï¿½Y.ï¿½w\0\0xr\0\'org.enhydra.shark.xpdl.XMLSimpleElementï¿½mï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0q\0~\0!sq\0~\0p1\')q\0~\0t\01.0t\0Vendorsr\0&org.enhydra.shark.xpdl.elements.Vendor tï¿½ï¿½Eï¿½:\0\0xq\0~\0#q\0~\0\'sq\0~\0l$fmq\0~\0t\0\0t\0Createdsr\0\'org.enhydra.shark.xpdl.elements.Createdzï¿½ï¿½dKï¿½|[\0\0xq\0~\0#q\0~\0,sq\0~\0`pï¿½Rq\0~\0t\0\0t\0Descriptionsr\0+org.enhydra.shark.xpdl.elements.DescriptionÛ°73ï¿½8ï¿½\0\0xq\0~\0#\0q\0~\01sq\0~\0\Zwyq\0~\0t\0\0t\0\rDocumentationsr\0-org.enhydra.shark.xpdl.elements.Documentation`ï¿½9ï¿½ï¿½yï¿½\0\0xq\0~\0#\0q\0~\06sq\0~\0)ï¿½q\0~\0t\0\0t\0PriorityUnitsr\0,org.enhydra.shark.xpdl.elements.PriorityUnitï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0#\0q\0~\0;sq\0~\0Bï¿½`uq\0~\0t\0\0t\0CostUnitsr\0(org.enhydra.shark.xpdl.elements.CostUnitÜŽï¿½=Hï¿½\0\0xq\0~\0#\0q\0~\0@sq\0~\0Sï¿½Qdq\0~\0t\0\0xsr\0java.util.ArrayListxï¿½ï¿½ï¿½ï¿½aï¿½\0I\0sizexp\0\0\0w\0\0\0q\0~\0$q\0~\0)q\0~\0.q\0~\03q\0~\08q\0~\0=q\0~\0Bxt\0RedefinableHeadersr\01org.enhydra.shark.xpdl.elements.RedefinableHeaderï¿½ï¿½Mï¿½Ïª\'H\0\0xq\0~\0\0q\0~\0Gsq\0~\0i[|q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0PublicationStatussq\0~\0\0q\0~\0Msq\0~\0 Õ—q\0~\0It\0\0sq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0UNDER_REVISIONt\0RELEASEDt\0\nUNDER_TESTxt\0Authorsr\0&org.enhydra.shark.xpdl.elements.Author5ï¿½ï¿½fá§†\0\0xq\0~\0#\0q\0~\0Usq\0~\0Nï¿½ï¿½q\0~\0It\0\0t\0Versionsr\0\'org.enhydra.shark.xpdl.elements.Version9=3ï¿½~ï¿½JQ\0\0xq\0~\0#\0q\0~\0Zsq\0~\0s~cIq\0~\0It\0\0t\0Codepagesr\0(org.enhydra.shark.xpdl.elements.Codepage9$mï¿½eï¿½\rG\0\0xq\0~\0#\0q\0~\0_sq\0~\0%ï¿½ï¿½ï¿½q\0~\0It\0\0t\0\nCountrykeysr\0*org.enhydra.shark.xpdl.elements.Countrykeyï¿½ï¿½.ï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0#\0q\0~\0dsq\0~\0#ï¿½ï¿½vq\0~\0It\0\0t\0Responsiblessr\0,org.enhydra.shark.xpdl.elements.Responsibles$ï¿½ï¿½{Sï¿½\0\0xr\0$org.enhydra.shark.xpdl.XMLCollectionï¿½jÄ‹mï¿½\0\0xq\0~\0\0q\0~\0isq\0~\0<ï¿½hIq\0~\0It\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~\0Nq\0~\0Wq\0~\0\\q\0~\0aq\0~\0fq\0~\0lxt\0ConformanceClasssr\00org.enhydra.shark.xpdl.elements.ConformanceClassï¿½ï¿½y0|kï¿½ï¿½\0\0xq\0~\0\0q\0~\0rsq\0~\0oï¿½ï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0GraphConformancesq\0~\0\0q\0~\0xsq\0~\0Bï¿½ï¿½ï¿½q\0~\0tq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0FULL_BLOCKEDt\0LOOP_BLOCKEDt\0NON_BLOCKEDxxsq\0~\0E\0\0\0w\0\0\0q\0~\0yxt\0Scriptsr\0&org.enhydra.shark.xpdl.elements.ScriptQï¿½jï¿½Sï¿½8\0\0xq\0~\0\0q\0~\0ï¿½sq\0~\0#Gï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0Typesq\0~\0q\0~\0ï¿½sq\0~\0*ï¿½ï¿½q\0~\0ï¿½t\0text/javascriptpt\0Versionsq\0~\0\0q\0~\0ï¿½sq\0~\06T/Xq\0~\0ï¿½t\0\0pt\0Grammarsq\0~\0\0q\0~\0ï¿½sq\0~\0;\Z,q\0~\0ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½xt\0ExternalPackagessr\00org.enhydra.shark.xpdl.elements.ExternalPackageswï¿½\"+Å¨ï¿½ï¿½\0\0xq\0~\0k\0q\0~\0ï¿½sq\0~\0ï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0TypeDeclarationssr\00org.enhydra.shark.xpdl.elements.TypeDeclarations\rï¿½ï¿½Ox5ï¿½\0\0xq\0~\0k\0q\0~\0ï¿½sq\0~\0B~ï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Participantssr\0,org.enhydra.shark.xpdl.elements.Participantsh`ï¿½ï¿½g8J\0\0xq\0~\0k\0q\0~\0ï¿½sq\0~\0kï¿½(cq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Participanto$ï¿½ï¿½rcï¿½ï¿½\0\0xr\0+org.enhydra.shark.xpdl.XMLCollectionElementCï¿½xï¿½vï¿½r\0\0xq\0~\0t\0Participantsq\0~\0Pï¿½Hï¿½q\0~\0ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0aï¿½q\0~\0ï¿½t\0	requesterpq\0~\0sq\0~\0\0q\0~\0sq\0~\09ï¿½^ï¿½q\0~\0ï¿½t\0	Requesterpt\0ParticipantTypesr\0/org.enhydra.shark.xpdl.elements.ParticipantType>ï¿½nï¿½Ý…ï¿½ï¿½\0\0xq\0~\0q\0~\0ï¿½sq\0~\0ï¿½ï¿½	q\0~\0ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0DZSï¿½q\0~\0ï¿½t\0ROLEsq\0~\0E\0\0\0w\0\0\0t\0RESOURCE_SETt\0RESOURCEt\0ROLEt\0ORGANIZATIONAL_UNITt\0HUMANt\0SYSTEMxxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½xt\0Descriptionsq\0~\02\0q\0~\0ï¿½sq\0~\0fQï¿½ï¿½q\0~\0ï¿½t\0\0t\0ExternalReferencesr\01org.enhydra.shark.xpdl.elements.ExternalReferenceï¿½bï¿½ï¿½Qï¿½\0\0xq\0~\0\0q\0~\0ï¿½sq\0~\0MDyq\0~\0ï¿½t\0\0sq\0~\0w\0\0\0t\0xrefsq\0~\0\0q\0~\0ï¿½sq\0~\07E7q\0~\0ï¿½t\0\0pt\0locationsq\0~\0q\0~\0ï¿½sq\0~\0!Ú¬ q\0~\0ï¿½t\0\0pt\0	namespacesq\0~\0\0q\0~\0ï¿½sq\0~\0K7eq\0~\0ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½xt\0ExtendedAttributessr\02org.enhydra.shark.xpdl.elements.ExtendedAttributesï¿½Oï¿½ï¿½ï¿½UF\0L\0extAttribsStringq\0~\0xq\0~\0k\0q\0~\0ï¿½sq\0~\0tï¿½Ý˜q\0~\0ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½xsq\0~\0ï¿½t\0Participantsq\0~\0uï¿½dq\0~\0ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0[rï¿½ï¿½q\0~\0ï¿½t\0approverpq\0~\0sq\0~\0\0q\0~\0sq\0~\0A$ï¿½q\0~\0ï¿½t\0Approverpt\0ParticipantTypesq\0~\0ï¿½q\0~\0ï¿½sq\0~\0_Bpï¿½q\0~\0ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0Vï¿½ï¿½ï¿½q\0~\0ï¿½t\0ROLEsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½xt\0Descriptionsq\0~\02\0q\0~\0ï¿½sq\0~\0S<Oq\0~\0ï¿½t\0\0t\0ExternalReferencesq\0~\0ï¿½\0q\0~\0ï¿½sq\0~\0_ï¿½tï¿½q\0~\0ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0Þ›ï¿½q\0~\0ï¿½t\0\0pq\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0c$\0bq\0~\0ï¿½t\0\0pq\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0Pï¿½ï¿½%q\0~\0ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~q\0~	xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~\rsq\0~\0<hq\0~\0ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~xxt\0Applicationssr\0,org.enhydra.shark.xpdl.elements.ApplicationsÂ€ï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0k\0q\0~sq\0~\0,Wï¿½ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Applicationv	ï¿½Rï¿½ï¿½S\0\0xq\0~\0ï¿½t\0Applicationsq\0~\0Rï¿½l~q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0vï¿½>q\0~t\0default_applicationpq\0~\0sq\0~\0\0q\0~\0sq\0~\0ï¿½M*q\0~t\0\0pt\0Descriptionsq\0~\02\0q\0~\'sq\0~\0vï¿½q\0~t\0\0t\0Choicesr\00org.enhydra.shark.xpdl.elements.ApplicationTypesï¿½?ï¿½!ï¿½ï¿½ï¿½\0\0xr\0\'org.enhydra.shark.xpdl.XMLComplexChoiceï¿½|ï¿½ï¿½\"ï¿½ï¿½\0L\0choicesq\0~\0L\0choosenq\0~\0	xq\0~\0q\0~+sq\0~\0Cï¿½ï¿½q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sr\00org.enhydra.shark.xpdl.elements.FormalParameterspï¿½ï¿½Bï¿½ÃZ\0\0xq\0~\0k\0t\0FormalParameterssq\0~\0ï¿½ï¿½q\0~.t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0ï¿½\0t\0ExternalReferencesq\0~\0Yiï¿½!q\0~.t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0|ï¿½Sï¿½q\0~9t\0\0pq\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0s3e^q\0~9t\0\0pq\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0fxï¿½q\0~9t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~>q\0~Aq\0~Dxxq\0~3t\0ExtendedAttributessq\0~\0ï¿½\0q\0~Hsq\0~\0pï¿½7ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$q\0~(q\0~.q\0~Ixxt\0\nDataFieldssr\0*org.enhydra.shark.xpdl.elements.DataFieldsï¿½ï¿½ï¿½Ê¦ï¿½ï¿½U\0\0xq\0~\0k\0q\0~Osq\0~\0_;ï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0WorkflowProcessessr\01org.enhydra.shark.xpdl.elements.WorkflowProcessespï¿½_ï¿½0,\0\0xq\0~\0k\0q\0~Vsq\0~\0{ï¿½uï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0/org.enhydra.shark.xpdl.elements.WorkflowProcess%ï¿½v0ï¿½ï¿½L\0\0xq\0~\0ï¿½t\0WorkflowProcesssq\0~\0uï¿½PPq\0~Xt\0\0sq\0~\0w\0\0\0\rq\0~\0sq\0~\0q\0~\0sq\0~\0P5ï¿½q\0~^t\0process1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0@ï¿½ï¿½q\0~^t\0Proposal Approval Processpt\0AccessLevelsq\0~\0\0q\0~isq\0~\0<\nï¿½+q\0~^q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0PUBLICt\0PRIVATExt\0\rProcessHeadersr\0-org.enhydra.shark.xpdl.elements.ProcessHeaderï¿½Lï¿½ï¿½C-)ï¿½\0\0xq\0~\0q\0~osq\0~\0kï¿½ï¿½Cq\0~^t\0\0sq\0~\0w\0\0\0t\0DurationUnitsq\0~\0\0q\0~usq\0~\0Lï¿½ï¿½q\0~qt\0hsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0Yt\0Mt\0Dt\0ht\0mt\0sxt\0Createdsq\0~\0-\0q\0~ï¿½sq\0~\0ï¿½ï¿½q\0~qt\0\0t\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0q\\ï¿½ï¿½q\0~qt\0\0t\0Prioritysr\0(org.enhydra.shark.xpdl.elements.Priority`ï¿½Nn>b\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0]ï¿½ï¿½8q\0~qt\0\0t\0Limitsr\0%org.enhydra.shark.xpdl.elements.Limitï¿½ï¿½ï¿½1ï¿½Ó—\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0)4Uï¿½q\0~qt\0\0t\0	ValidFromsr\0)org.enhydra.shark.xpdl.elements.ValidFromcÅ…|ï¿½L<\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0Hï¿½q\0~qt\0\0t\0ValidTosr\0\'org.enhydra.shark.xpdl.elements.ValidToï¿½ï¿½ï¿½ï¿½Mï¿½\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0#ï¿½kq\0~qt\0\0t\0TimeEstimationsr\0.org.enhydra.shark.xpdl.elements.TimeEstimationÅ€ï¿½\'3\0\0xq\0~\0\0q\0~ï¿½sq\0~\0Qï¿½\'q\0~qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesr\0+org.enhydra.shark.xpdl.elements.WaitingTimeNï¿½ï¿½ï¿½ï¿½/\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0Zï¿½ï¿½ï¿½q\0~ï¿½t\0\0t\0WorkingTimesr\0+org.enhydra.shark.xpdl.elements.WorkingTimeï¿½~ï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0gï¿½[ï¿½q\0~ï¿½t\0\0t\0Durationsr\0(org.enhydra.shark.xpdl.elements.Durationï¿½ ï¿½Cï¿½ï¿½ï¿½\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0`ï¿½ï¿½ï¿½q\0~ï¿½t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xt\0RedefinableHeadersq\0~\0H\0q\0~ï¿½sq\0~\0`ï¿½\Zq\0~^t\0\0sq\0~\0w\0\0\0q\0~\0Msq\0~\0\0q\0~\0Msq\0~\0uï¿½qï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\0Rq\0~\0Sq\0~\0Txt\0Authorsq\0~\0V\0q\0~ï¿½sq\0~\00oï¿½&q\0~ï¿½t\0\0t\0Versionsq\0~\0[\0q\0~ï¿½sq\0~\0ï¿½Ý¨q\0~ï¿½t\0\0t\0Codepagesq\0~\0`\0q\0~ï¿½sq\0~\0 #`q\0~ï¿½t\0\0t\0\nCountrykeysq\0~\0e\0q\0~ï¿½sq\0~\0F:<ï¿½q\0~ï¿½t\0\0t\0Responsiblessq\0~\0j\0q\0~ï¿½sq\0~\0\nï¿½Nï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xt\0FormalParameterssq\0~2\0q\0~ï¿½sq\0~\0bqï¿½q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nDataFieldssq\0~P\0q\0~ï¿½sq\0~\0Zï¿½ï¿½ï¿½q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.DataFieldIï¿½3.~ï¿½ï¿½ï¿½\0\0xq\0~\0ï¿½t\0	DataFieldsq\0~\0Jï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ly>q\0~ï¿½t\0statuspq\0~\0sq\0~\0\0q\0~\0sq\0~\05ï¿½q\0~ï¿½t\0\0pt\0IsArraysq\0~\0\0q\0~ï¿½sq\0~\0wdï¿½ï¿½q\0~ï¿½t\0FALSEsq\0~\0E\0\0\0w\0\0\0t\0TRUEt\0FALSExt\0DataTypesr\0(org.enhydra.shark.xpdl.elements.DataTypeï¿½\'4sM\0\0xq\0~\0q\0~ï¿½sq\0~\0&ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0t\0	DataTypessr\0)org.enhydra.shark.xpdl.elements.DataTypesï¿½pcH,ï¿½!ï¿½\0Z\0\risInitializedxq\0~-q\0~ï¿½sq\0~\0Yï¿½_ï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0	w\0\0\0	sr\0)org.enhydra.shark.xpdl.elements.BasicTypeï¿½)ï¿½ï¿½w1ï¿½ï¿½\0\0xq\0~\0t\0	BasicTypesq\0~\0	,#ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0uï¿½q\0~ï¿½t\0STRINGsq\0~\0E\0\0\0w\0\0\0t\0STRINGt\0FLOATt\0INTEGERt\0	REFERENCEt\0DATETIMEt\0BOOLEANt\0	PERFORMERxxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0,org.enhydra.shark.xpdl.elements.DeclaredTypedR.\\^ï¿½9ï¿½\0\0xq\0~\0t\0DeclaredTypesq\0~\0^wrï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Uï¿½ï¿½:q\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0*org.enhydra.shark.xpdl.elements.SchemaType&1oSHï¿½ï¿½\0\0xq\0~\0t\0\nSchemaTypesq\0~\0=ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0ï¿½t\0ExternalReferencesq\0~\0Ý‡4q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0m[ï¿½Vq\0~ t\0\0pq\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0tï¿½ï¿½ï¿½q\0~ t\0\0pq\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0Mï¿½ï¿½q\0~ t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~%q\0~(q\0~+xsr\0*org.enhydra.shark.xpdl.elements.RecordTypeï¿½%ï¿½ï¿½ï¿½ï¿½K\0\0\0xq\0~\0kt\0\nRecordTypesq\0~\0)ï¿½Fï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.UnionTypeï¿½ï¿½ï¿½5Pï¿½Gï¿½\0\0xq\0~\0kt\0	UnionTypesq\0~\03]ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0/org.enhydra.shark.xpdl.elements.EnumerationTypeï¿½ï¿½ï¿½ï¿½f3b\0\0xq\0~\0kt\0EnumerationTypesq\0~\0zaï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.ArrayTypegï¿½$\0ï¿½N@\0\0xq\0~\0t\0	ArrayTypesq\0~\0+ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0t\0\nLowerIndexsq\0~\0q\0~Jsq\0~\0(Lï¿½q\0~Et\0\0pt\0\nUpperIndexsq\0~\0q\0~Nsq\0~\0\Zï¿½ï¿½,q\0~Et\0\0pq\0~ï¿½sq\0~ï¿½q\0~ï¿½sq\0~\0dï¿½ï¿½q\0~Et\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~Kq\0~Oq\0~Rxsr\0(org.enhydra.shark.xpdl.elements.ListTypeï¿½\"ÓŸ\nï¿½\0\0xq\0~\0t\0ListTypesq\0~\0X%ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½q\0~ï¿½sq\0~\0ï¿½Oï¿½q\0~Wt\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~\\xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0InitialValuesr\0,org.enhydra.shark.xpdl.elements.InitialValuej,zï¿½ï¿½ï¿½R\0\0xq\0~\0#\0q\0~asq\0~\0-ï¿½ï¿½q\0~ï¿½t\0\0t\0Lengthsr\0&org.enhydra.shark.xpdl.elements.LengthMW+-Ì©Wï¿½\0\0xq\0~\0#\0q\0~fsq\0~\0ï¿½Oï¿½q\0~ï¿½t\0\0t\0Descriptionsq\0~\02\0q\0~ksq\0~\0gï¿½9ï¿½q\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~osq\0~\0gï¿½_nq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~cq\0~hq\0~lq\0~pxxt\0Participantssq\0~\0ï¿½\0q\0~vsq\0~\0Mï¿½ï¿½q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Applicationssq\0~\0q\0~|sq\0~\0ï¿½ï¿½xq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ActivitySetssr\0,org.enhydra.shark.xpdl.elements.ActivitySetsï¿½qV[4ï¿½ï¿½ï¿½\0\0xq\0~\0k\0q\0~ï¿½sq\0~\0hï¿½/q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nActivitiessr\0*org.enhydra.shark.xpdl.elements.Activities&G^ï¿½lï¿½P\0\0xq\0~\0k\0q\0~ï¿½sq\0~\0}ï¿½ï¿½q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0(org.enhydra.shark.xpdl.elements.Activityï¿½tï¿½45\Z9ï¿½\0\0xq\0~\0ï¿½t\0Activitysq\0~\0Dï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ouï¿½q\0~ï¿½t\0approve_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0Z<ï¿½q\0~ï¿½t\0Approve Proposalpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0tï¿½ï¿½7q\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0w;Xq\0~ï¿½t\0\0q\0~\0ï¿½sr\0-org.enhydra.shark.xpdl.elements.ActivityTypeseÅ½{ï¿½ï¿½ï¿½ï¿½\0\0xq\0~-q\0~\0ï¿½sq\0~\0*ï¿½Bq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0%org.enhydra.shark.xpdl.elements.Route0eï¿½\rï¿½Gï¿½\0\0xq\0~\0t\0Routesq\0~\01Nï¿½	q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0.org.enhydra.shark.xpdl.elements.Implementationï¿½rï¿½ï¿½^%ï¿½\0\0xq\0~\0t\0Implementationsq\0~\0y ï¿½5q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sr\03org.enhydra.shark.xpdl.elements.ImplementationTypes\rï¿½ï¿½TÙ¡9\0\0xq\0~-q\0~\0ï¿½sq\0~\0Vï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0\"org.enhydra.shark.xpdl.elements.No{ï¿½ï¿½ï¿½.\0\0xq\0~\0t\0Nosq\0~\0ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0%org.enhydra.shark.xpdl.elements.ToolsCï¿½ï¿½gï¿½ï¿½\0\0xq\0~\0k\0t\0Toolssq\0~\0Jï¿½Äq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0\'org.enhydra.shark.xpdl.elements.SubFlow;Oï¿½sï¿½7:$\0\0xq\0~\0t\0SubFlowsq\0~\07ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ë­ï¿½q\0~ï¿½t\0\0pt\0	Executionsq\0~\0\0q\0~ï¿½sq\0~\0aï¿½Loq\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ASYNCHRt\0SYNCHRxt\0ActualParameterssr\00org.enhydra.shark.xpdl.elements.ActualParametersï¿½ï¿½ï¿½_ï¿½Kï¿½\0\0xq\0~\0k\0q\0~ï¿½sq\0~\0\rï¿½<uq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsr\0-org.enhydra.shark.xpdl.elements.BlockActivityï¿½qï¿½cï¿½ï¿½F\0\0xq\0~\0t\0\rBlockActivitysq\0~\0~ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0t\0BlockIdsq\0~\0q\0~ï¿½sq\0~\05ï¿½*yq\0~ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xxq\0~ï¿½t\0	Performersr\0)org.enhydra.shark.xpdl.elements.Performerï¿½\"1%ï¿½ï¿½ï¿½\0\0xq\0~\0#\0q\0~ï¿½sq\0~\0&Ýµï¿½q\0~ï¿½t\0approvert\0	StartModesr\0)org.enhydra.shark.xpdl.elements.StartModenhï¿½ï¿½ï¿½ï¿½S\0\0xq\0~\0\0q\0~ï¿½sq\0~\0:@$ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0t\0Modesr\00org.enhydra.shark.xpdl.elements.StartFinishModes~ï¿½6zï¿½Xï¿½\'\0\0xq\0~-\0q\0~ï¿½sq\0~\0<ï¿½Vï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0,org.enhydra.shark.xpdl.XMLEmptyChoiceElementï¿½2ï¿½;ï¿½3ï¿½_\0\0xq\0~\0\0t\0XMLEmptyChoiceElementsq\0~\0~ï¿½ÇŒq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.Automaticï¿½t?ï¿½_ï¿½ï¿½\0\0xq\0~\0t\0	Automaticsq\0~\0.&U*q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0&org.enhydra.shark.xpdl.elements.Manualï¿½vï¿½ï¿½ï¿½[Ø¤\0\0xq\0~\0t\0Manualsq\0~\0dÖ‡\nq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0\nFinishModesr\0*org.enhydra.shark.xpdl.elements.FinishModeï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½{\0\0xq\0~\0\0q\0~sq\0~\0ff>ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0ï¿½y)q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0.)q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Tï¿½ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)ï¿½ï¿½$q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~ï¿½\0q\0~0sq\0~\0lÜ©ï¿½q\0~ï¿½t\0\0t\0	Deadlinessr\0)org.enhydra.shark.xpdl.elements.Deadlines>ï¿½ï¿½Éœï¿½ï¿½\0\0xq\0~\0k\0q\0~4sq\0~\03ï¿½{q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsr\05org.enhydra.shark.xpdl.elements.SimulationInformation\"ï¿½|Iï¿½ï¿½ï¿½\0\0xq\0~\0\0q\0~;sq\0~\07Jï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0t\0\rInstantiationsq\0~\0\0q\0~Asq\0~\0pï¿½ï¿½ï¿½q\0~=q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ONCEt\0MULTIPLExt\0Costsr\0$org.enhydra.shark.xpdl.elements.Costï¿½ï¿½ï¿½ï¿½ï¿½\0\0xq\0~\0#q\0~Gsq\0~\0y@ï¿½ï¿½q\0~=t\0\0t\0TimeEstimationsq\0~ï¿½q\0~Lsq\0~\0rï¿½ï¿½ï¿½q\0~=t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~Qsq\0~\0ï¿½qq\0~Mt\0\0t\0WorkingTimesq\0~ï¿½\0q\0~Usq\0~\0,ï¿½Oï¿½q\0~Mt\0\0t\0Durationsq\0~ï¿½\0q\0~Ysq\0~\0R~`ï¿½q\0~Mt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Rq\0~Vq\0~Zxxsq\0~\0E\0\0\0w\0\0\0q\0~Bq\0~Iq\0~Mxt\0Iconsr\0$org.enhydra.shark.xpdl.elements.Iconï¿½Tï¿½U(ï¿½}6\0\0xq\0~\0#\0q\0~_sq\0~\0|ï¿½q\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~dsq\0~\0Éƒq\0~ï¿½t\0\0t\0TransitionRestrictionssr\06org.enhydra.shark.xpdl.elements.TransitionRestrictionsC)ï¿½×€i;\0\0xq\0~\0k\0q\0~hsq\0~\0Jï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\05org.enhydra.shark.xpdl.elements.TransitionRestrictionNï¿½ï¿½ï¿½ï¿½}ï¿½\0\0xq\0~\0t\0TransitionRestrictionsq\0~\0,ï¿½Jï¿½q\0~jt\0\0sq\0~\0w\0\0\0t\0Joinsr\0$org.enhydra.shark.xpdl.elements.JoinÚ•Ó©x)ï¿½5\0\0xq\0~\0\0q\0~usq\0~\0QkThq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0ï¿½ï¿½Mq\0~wt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ANDt\0XORxxsq\0~\0E\0\0\0w\0\0\0q\0~{xt\0Splitsr\0%org.enhydra.shark.xpdl.elements.Splitï¿½ï¿½~Ñ¯WS\0\0xq\0~\0\0q\0~ï¿½sq\0~\0<Fï¿½ï¿½q\0~pt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0j+Qï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ï¿½xt\0TransitionRefssr\0.org.enhydra.shark.xpdl.elements.TransitionRefsï¿½ï¿½ÑŠï¿½ï¿½ï¿½\0\0xq\0~\0k\0q\0~ï¿½sq\0~\0aï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~wq\0~ï¿½xxt\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0kVï¿½2q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\01org.enhydra.shark.xpdl.elements.ExtendedAttributeï¿½ï¿½\\ï¿½ï¿½F\0\0xq\0~\0t\0ExtendedAttributesq\0~\0\Z3Qï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0db8~q\0~ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpt\0Valuesq\0~\0\0q\0~ï¿½sq\0~\0<~9q\0~ï¿½t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\0t7ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Hï¿½ï¿½q\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0aï¿½ï¿½ï¿½q\0~ï¿½t\0189,51.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~1q\0~6q\0~=q\0~aq\0~eq\0~jq\0~ï¿½xsq\0~ï¿½t\0Activitysq\0~\07ï¿½Eq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wBï¿½ï¿½q\0~ï¿½t\0approvalpq\0~\0sq\0~\0\0q\0~\0sq\0~\02Kï¿½ï¿½q\0~ï¿½t\0Approvalpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0bUï¿½ï¿½q\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0dï¿½6Sq\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0_ï¿½ï¿½ q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\00ï¿½^ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0|ï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0ï¿½\nï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\00ï¿½ï¿½Wq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0j+iq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0SubFlowsq\0~\0ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\03ï¿½%ï¿½q\0~ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0\\ï¿½ï¿½ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0nB>q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0Jï¿½\\q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0^ï¿½5Cq\0~ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~sq\0~\0\r]9q\0~ï¿½t\0approvert\0	StartModesq\0~ï¿½\0q\0~sq\0~\0xï¿½ï¿½5q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\02ï¿½ï¿½Vq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0ï¿½>ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Aï¿½ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=ï¿½Ihq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~#sq\0~\0gGq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0;\"ï¿½q\0~$t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0qï¿½ï¿½ï¿½q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Wï¿½ï¿½0q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0)*ï¿½q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~,xsq\0~\0E\0\0\0w\0\0\0q\0~(xt\0Prioritysq\0~ï¿½\0q\0~?sq\0~\0]ï¿½ï¿½q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~Csq\0~\0{ï¿½ï¿½Cq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Isq\0~\0!ï¿½}+q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0_ï¿½jï¿½q\0~Jq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Qsq\0~\0=%Xï¿½q\0~Jt\0\0t\0TimeEstimationsq\0~ï¿½q\0~Usq\0~\0{6ï¿½ï¿½q\0~Jt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~Zsq\0~\01(Öq\0~Vt\0\0t\0WorkingTimesq\0~ï¿½\0q\0~^sq\0~\0EMmq\0~Vt\0\0t\0Durationsq\0~ï¿½\0q\0~bsq\0~\0Rï¿½ï¿½.q\0~Vt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~[q\0~_q\0~cxxsq\0~\0E\0\0\0w\0\0\0q\0~Nq\0~Rq\0~Vxt\0Iconsq\0~`\0q\0~hsq\0~\0Hq\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~lsq\0~\0kï¿½yï¿½q\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~psq\0~\0FIï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0\"ï¿½ï¿½-q\0~qt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~{sq\0~\0Lï¿½%q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\00ï¿½ï¿½q\0~|q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0Splitsq\0~ï¿½\0q\0~ï¿½sq\0~\0$ï¿½/q\0~vt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0nXfï¿½q\0~ï¿½t\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ï¿½xt\0TransitionRefssq\0~ï¿½\0q\0~ï¿½sq\0~\0ï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0-org.enhydra.shark.xpdl.elements.TransitionRefï¿½%-ï¿½ï¿½aï¿½\0\0xq\0~\0ï¿½t\0\rTransitionRefsq\0~\0ï¿½1q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½Sï¿½q\0~ï¿½t\0transition3pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rTransitionRefsq\0~\0oï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07ï¿½i q\0~ï¿½t\0transition6pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rTransitionRefsq\0~\0=ï¿½ï¿½0q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0R0ï¿½q\0~ï¿½t\0transition5pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xxxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~ï¿½xxt\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0A1ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0É§ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0|ï¿½ï¿½q\0~ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0Uï¿½ï¿½q\0~ï¿½t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\0x×¨yq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;aï¿½Mq\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0U4Iï¿½q\0~ï¿½t\0430,62.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~q\0~$q\0~@q\0~Dq\0~Jq\0~iq\0~mq\0~qq\0~ï¿½xsq\0~ï¿½t\0Activitysq\0~\0Oï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0PyUï¿½q\0~ï¿½t\0	activity1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0Jwkq\0~ï¿½t\0Resubmit Proposalpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0~ï¿½`ï¿½q\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0	ï¿½ï¿½Jq\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0zï¿½4ï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0Cï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\06Kï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0Zï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0Sï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0@	ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0SubFlowsq\0~\0nï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0x>ï¿½hq\0~t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0fï¿½\0q\0~q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~\rsq\0~\0aï¿½ï¿½ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\nq\0~xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0oï¿½n^q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0aeï¿½Lq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\Zxxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~sq\0~\0_@3q\0~ï¿½t\0	requestert\0	StartModesq\0~ï¿½\0q\0~\"sq\0~\0\"{Wï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0>ï¿½awq\0~#t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\03ï¿½Tq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Í›q\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ï¿½<lq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~+xsq\0~\0E\0\0\0w\0\0\0q\0~\'xt\0\nFinishModesq\0~\0q\0~>sq\0~\0ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0Uï¿½Jï¿½q\0~?t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0\0\\ï¿½\0q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\ï¿½ï¿½-q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Oyq\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~Gxsq\0~\0E\0\0\0w\0\0\0q\0~Cxt\0Prioritysq\0~ï¿½\0q\0~Zsq\0~\04hï¿½ï¿½q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~^sq\0~\0Sï¿½Qï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~dsq\0~\0 ï¿½ï¿½Nq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0Pï¿½ï¿½ï¿½q\0~eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~lsq\0~\0 ï¿½ï¿½ï¿½q\0~et\0\0t\0TimeEstimationsq\0~ï¿½q\0~psq\0~\0iï¿½[q\0~et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~usq\0~\0mï¿½ï¿½ï¿½q\0~qt\0\0t\0WorkingTimesq\0~ï¿½\0q\0~ysq\0~\0:ï¿½6ï¿½q\0~qt\0\0t\0Durationsq\0~ï¿½\0q\0~}sq\0~\0$ï¿½Cq\0~qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~zq\0~~xxsq\0~\0E\0\0\0w\0\0\0q\0~iq\0~mq\0~qxt\0Iconsq\0~`\0q\0~ï¿½sq\0~\0C!ï¿½ï¿½q\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~ï¿½sq\0~\0r]ï¿½ï¿½q\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~ï¿½sq\0~\0ï¿½ï¿½Rq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0ï¿½<q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0MYï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0rï¿½\"q\0~ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0RJnEq\0~ï¿½t\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\0Dï¿½gq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0{ï¿½ï¿½Gq\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0oï¿½ï¿½ï¿½q\0~ï¿½t\0397,20.787493896484378pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~#q\0~?q\0~[q\0~_q\0~eq\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0Activitysq\0~\0nï¿½ï¿½jq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Rï¿½ï¿½q\0~ï¿½t\0\rsend_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\"Eï¿½q\0~ï¿½t\0\rSend Proposalpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\07wL\Zq\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0ï¿½ï¿½Iq\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0}.q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0wï¿½%q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0zï¿½ _q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\023ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0ï¿½Hq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0|\\N?q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0SubFlowsq\0~\0Ob3q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`ï¿½ï¿½Uq\0~ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0ï¿½\'Oq\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0-ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0dDPï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0rï¿½Nzq\0~ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~ï¿½sq\0~\0ï¿½?q\0~ï¿½t\0	requestert\0	StartModesq\0~ï¿½\0q\0~sq\0~\0pï¿½bï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\06ï¿½6ï¿½q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0*ï¿½3ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0Dv\Zq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\01ï¿½aaq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~sq\0~\0qANï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0Jï¿½^q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0mï¿½0q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ï¿½2ï¿½q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ï¿½jï¿½q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\'xsq\0~\0E\0\0\0w\0\0\0q\0~#xt\0Prioritysq\0~ï¿½\0q\0~:sq\0~\07ï¿½ï¿½q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~>sq\0~\0Ysï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Dsq\0~\0tï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0xFjq\0~Eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Lsq\0~\0\\ï¿½ï¿½q\0~Et\0\0t\0TimeEstimationsq\0~ï¿½q\0~Psq\0~\0^@q\0~Et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~Usq\0~\0;	Íq\0~Qt\0\0t\0WorkingTimesq\0~ï¿½\0q\0~Ysq\0~\0sï¿½Vï¿½q\0~Qt\0\0t\0Durationsq\0~ï¿½\0q\0~]sq\0~\0`ï¿½2q\0~Qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Zq\0~^xxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Mq\0~Qxt\0Iconsq\0~`\0q\0~csq\0~\0kï¿½=q\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~gsq\0~\0{ï¿½ï¿½Hq\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~ksq\0~\0jPq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~qsq\0~\0ï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0ï¿½ï¿½ï¿½q\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0^_ï¿½q\0~wt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0?ï¿½rï¿½q\0~wt\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~xsq\0~ï¿½t\0ExtendedAttributesq\0~\0Aï¿½ï¿½q\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\'\nq\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0zï¿½ï¿½q\0~ï¿½t\0#669.0000534057617,92.78333282470703pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~q\0~;q\0~?q\0~Eq\0~dq\0~hq\0~lq\0~rxsq\0~ï¿½t\0Activitysq\0~\0,Nï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½q\0~ï¿½t\0parallelpq\0~\0sq\0~\0\0q\0~\0sq\0~\0ï¿½ï¿½cq\0~ï¿½t\0Parallelpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0ï¿½Tq\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0Pï¿½ï¿½q\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0\'ï¿½hbq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0#aï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0<ï¿½.ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0!ï¿½ï¿½Vq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0-ï¿½=sq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0ï¿½Ý°q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0SubFlowsq\0~\0ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0yï¿½5q\0~ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0]ï¿½ï¿½ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0:Mï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0pï¿½hq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0 \\ï¿½ï¿½q\0~ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~ï¿½sq\0~\0#;{q\0~ï¿½t\0approvert\0	StartModesq\0~ï¿½\0q\0~ï¿½sq\0~\0v6ï¿½]q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0\rï¿½ï¿½Uq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0\Zï¿½bï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0MÑ°ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0=ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0\nFinishModesq\0~\0q\0~ï¿½sq\0~\0rï¿½Nq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0cï¿½Yq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0	ï¿½ï¿½ï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0bï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0ï¿½Tï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~ï¿½\0q\0~\Zsq\0~\0|ï¿½ï¿½q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~sq\0~\0Pï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~$sq\0~\0BLï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0\0`Sï¿½q\0~%q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~,sq\0~\0bï¿½q\0~%t\0\0t\0TimeEstimationsq\0~ï¿½q\0~0sq\0~\0U<ï¿½ï¿½q\0~%t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~5sq\0~\0rï¿½`	q\0~1t\0\0t\0WorkingTimesq\0~ï¿½\0q\0~9sq\0~\0pï¿½X\"q\0~1t\0\0t\0Durationsq\0~ï¿½\0q\0~=sq\0~\0*ï¿½ï¿½ï¿½q\0~1t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~6q\0~:q\0~>xxsq\0~\0E\0\0\0w\0\0\0q\0~)q\0~-q\0~1xt\0Iconsq\0~`\0q\0~Csq\0~\0\ZAÓžq\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~Gsq\0~\0;zrï¿½q\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~Ksq\0~\0aï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0J9ï¿½\"q\0~Lt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~Vsq\0~\0\0ï¿½Wï¿½q\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0Fï¿½ï¿½q\0~Wq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~[xt\0Splitsq\0~ï¿½\0q\0~_sq\0~\05ï¿½ï¿½q\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\01ï¿½\\ï¿½q\0~`t\0ANDsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~ï¿½xt\0TransitionRefssq\0~ï¿½\0q\0~hsq\0~\0cï¿½;3q\0~`t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0\rTransitionRefsq\0~\0\'âº‰q\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z/ï¿½q\0~nt\0transition7pxsq\0~\0E\0\0\0w\0\0\0q\0~sxsq\0~ï¿½t\0\rTransitionRefsq\0~\0,Ywq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Aï¿½ï¿½fq\0~wt\0transition8pxsq\0~\0E\0\0\0w\0\0\0q\0~|xxxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~ixxsq\0~\0E\0\0\0w\0\0\0q\0~Wq\0~`xxt\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0\\ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\07lM\nq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Oï¿½ï¿½ï¿½q\0~ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\03ï¿½Sï¿½q\0~ï¿½t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\0ï¿½=q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Hï¿½Î‰q\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0`ï¿½Hï¿½q\0~ï¿½t\0588,61.599993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~q\0~%q\0~Dq\0~Hq\0~Lq\0~ï¿½xsq\0~ï¿½t\0Activitysq\0~\0yï¿½?q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Rï¿½Sï¿½q\0~ï¿½t\0tool1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0*ï¿½ï¿½!q\0~ï¿½t\0\ZSend Approval Notificationpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0$ï¿½ï¿½xq\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0fï¿½ï¿½q\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\06lvï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0[\\ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0)ï¿½]ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0rï¿½q\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0W~ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0	ï¿½\\q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0$org.enhydra.shark.xpdl.elements.Tool\\6ï¿½&ï¿½+Gï¿½\0\0xq\0~\0ï¿½t\0Toolsq\0~\0.\0ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0CBï¿½ï¿½q\0~ï¿½t\0default_applicationpq\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0}_ï¿½ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0APPLICATIONt\0	PROCEDURExt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0rCï¿½Oq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0<7ï¿½ï¿½q\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0Ccï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xxsq\0~ï¿½t\0SubFlowsq\0~\0o.ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0z]ï¿½ï¿½q\0~ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0X.ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0	Lpï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0ÓŒ$q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0>hq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\nxxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~sq\0~\0)E<q\0~ï¿½t\0approvert\0	StartModesq\0~ï¿½\0q\0~sq\0~\0Cfï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0Iï¿½ï¿½oq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0q2ï¿½;q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\\ï¿½]q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\\É­Aq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~.sq\0~\0ï¿½D<q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0ilq\0~/t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0XW%&q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0fï¿½`q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Yï¿½/ï¿½q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~7xsq\0~\0E\0\0\0w\0\0\0q\0~3xt\0Prioritysq\0~ï¿½\0q\0~Jsq\0~\0efWï¿½q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~Nsq\0~\0y0=q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Tsq\0~\0j=ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0R&ï¿½q\0~Uq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\\sq\0~\0ï¿½ï¿½oq\0~Ut\0\0t\0TimeEstimationsq\0~ï¿½q\0~`sq\0~\0Hï¿½ï¿½?q\0~Ut\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~esq\0~\0JÝŒq\0~at\0\0t\0WorkingTimesq\0~ï¿½\0q\0~isq\0~\0(,hoq\0~at\0\0t\0Durationsq\0~ï¿½\0q\0~msq\0~\0yï¿½ï¿½ï¿½q\0~at\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~fq\0~jq\0~nxxsq\0~\0E\0\0\0w\0\0\0q\0~Yq\0~]q\0~axt\0Iconsq\0~`\0q\0~ssq\0~\0Lï¿½uï¿½q\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~wsq\0~\0pï¿½#q\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~{sq\0~\0;ï¿½Bq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0ehï¿½&q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0`ï¿½1q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0;bï¿½q\0~ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0/ï¿½sï¿½q\0~ï¿½t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\07\"|q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0K\0ï¿½q\0~ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0g[ï¿½ï¿½q\0~ï¿½t\0735,63.974993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~q\0~q\0~/q\0~Kq\0~Oq\0~Uq\0~tq\0~xq\0~|q\0~ï¿½xsq\0~ï¿½t\0Activitysq\0~\0z1q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0tï¿½ï¿½dq\0~ï¿½t\0tool2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\'ï¿½ï¿½ï¿½q\0~ï¿½t\0Send Reject Notificationpt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\03ï¿½ï¿½q\0~ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~ï¿½sq\0~\0=ï¿½ï¿½q\0~ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0%_ï¿½hq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0Fï¿½ï¿½ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0]=+ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0VXï¿½Sq\0~ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0|Yq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0*}ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Toolsq\0~\0aï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0wï¿½ï¿½\0q\0~ï¿½t\0default_applicationpq\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0`ï¿½ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0ï¿½!ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0bcØq\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0oqÜ‰q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xxsq\0~ï¿½t\0SubFlowsq\0~\0!|ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\01ï¿½<q\0~ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0ï¿½ï¿½ï¿½q\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~ï¿½sq\0~\0Hï¿½ï¿½Jq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½xxq\0~ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0.M#q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0Jhï¿½q\0~	t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	xxq\0~ï¿½t\0	Performersq\0~ï¿½\0q\0~	\nsq\0~\0kï¿½ï¿½ï¿½q\0~ï¿½t\0approvert\0	StartModesq\0~ï¿½\0q\0~	sq\0~\0Oï¿½9q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0xtï¿½ï¿½q\0~	t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0!@ï¿½q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ï¿½L8q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ï¿½!ï¿½q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	xsq\0~\0E\0\0\0w\0\0\0q\0~	xt\0\nFinishModesq\0~\0q\0~	*sq\0~\0HBï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0~.ï¿½Yq\0~	+t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0(ï¿½ï¿½q\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ï¿½ï¿½eq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Yï¿½>Eq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	3xsq\0~\0E\0\0\0w\0\0\0q\0~	/xt\0Prioritysq\0~ï¿½\0q\0~	Fsq\0~\0s@++q\0~ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~	Jsq\0~\0-2q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~	Psq\0~\0g\'|vq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\07ï¿½%ï¿½q\0~	Qq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~	Xsq\0~\0Eï¿½Yoq\0~	Qt\0\0t\0TimeEstimationsq\0~ï¿½q\0~	\\sq\0~\0h[oaq\0~	Qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~	asq\0~\04ï¿½zï¿½q\0~	]t\0\0t\0WorkingTimesq\0~ï¿½\0q\0~	esq\0~\0\"OÛ¤q\0~	]t\0\0t\0Durationsq\0~ï¿½\0q\0~	isq\0~\0dï¿½ï¿½q\0~	]t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~	bq\0~	fq\0~	jxxsq\0~\0E\0\0\0w\0\0\0q\0~	Uq\0~	Yq\0~	]xt\0Iconsq\0~`\0q\0~	osq\0~\0.wï¿½	q\0~ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~	ssq\0~\0ï¿½Tï¿½q\0~ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~	wsq\0~\0]ï¿½=ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~	}sq\0~\0gï¿½uzq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0Zï¿½ï¿½q\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½`ï¿½q\0~	ï¿½t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0W?Y)q\0~	ï¿½t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½q\0~	ï¿½xsq\0~ï¿½t\0ExtendedAttributesq\0~\0ARï¿½q\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0$ï¿½q\0~	ï¿½t\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0Jï¿½ï¿½ï¿½q\0~	ï¿½t\0394,168.39999694824218pxsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½q\0~	ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~	q\0~	q\0~	+q\0~	Gq\0~	Kq\0~	Qq\0~	pq\0~	tq\0~	xq\0~	~xsq\0~ï¿½t\0Activitysq\0~\0gï¿½Bï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uNï¿½ï¿½q\0~	ï¿½t\0route1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0ï¿½Ç©q\0~	ï¿½t\0Route 1pt\0Descriptionsq\0~\02\0q\0~	ï¿½sq\0~\066ï¿½q\0~	ï¿½t\0\0t\0Limitsq\0~ï¿½\0q\0~	ï¿½sq\0~\0Y\nï¿½ï¿½q\0~	ï¿½t\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0Dlï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Routesq\0~\0vtï¿½Oq\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0Implementationsq\0~\0pï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~ï¿½q\0~\0ï¿½sq\0~\0|ï¿½ï¿½-q\0~	ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0Nosq\0~\0]ï¿½ï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½\0t\0Toolssq\0~\0NIï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~ï¿½t\0SubFlowsq\0~\0cNEï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Yï¿½MRq\0~	ï¿½t\0\0pq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0RR|q\0~	ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ï¿½q\0~ï¿½xt\0ActualParameterssq\0~ï¿½\0q\0~	ï¿½sq\0~\0//ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½xxq\0~	ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½xsq\0~ï¿½t\0\rBlockActivitysq\0~\0>]ï¿½tq\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~\0q\0~ï¿½sq\0~\0Mï¿½0q\0~	ï¿½t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½xxq\0~	ï¿½t\0	Performersq\0~ï¿½\0q\0~	ï¿½sq\0~\0bï¿½wq\0~	ï¿½t\0	requestert\0	StartModesq\0~ï¿½\0q\0~	ï¿½sq\0~\0[ï¿½ï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\0Hï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0iEcq\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0<ï¿½ï¿½ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0>ï¿½ÉŸq\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	ï¿½xsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½xt\0\nFinishModesq\0~\0q\0~\n\nsq\0~\0zï¿½!ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~ï¿½sq\0~ï¿½\0q\0~ï¿½sq\0~\09ï¿½Mï¿½q\0~\nt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½\0t\0XMLEmptyChoiceElementsq\0~\0:bï¿½ï¿½q\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0ï¿½ï¿½ï¿½q\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0$ï¿½Y1q\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\nxsq\0~\0E\0\0\0w\0\0\0q\0~\nxt\0Prioritysq\0~ï¿½\0q\0~\n&sq\0~\0Aï¿½ï¿½ï¿½q\0~	ï¿½t\0\0t\0	Deadlinessq\0~5\0q\0~\n*sq\0~\0lÃ›ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~\n0sq\0~\0hï¿½Gï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0fï¿½ï¿½ q\0~\n1q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\n8sq\0~\01$ï¿½q\0~\n1t\0\0t\0TimeEstimationsq\0~ï¿½q\0~\n<sq\0~\0Avï¿½ï¿½q\0~\n1t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~ï¿½\0q\0~\nAsq\0~\0c#ï¿½ï¿½q\0~\n=t\0\0t\0WorkingTimesq\0~ï¿½\0q\0~\nEsq\0~\0Z7[q\0~\n=t\0\0t\0Durationsq\0~ï¿½\0q\0~\nIsq\0~\0\"ï¿½<ï¿½q\0~\n=t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~\nBq\0~\nFq\0~\nJxxsq\0~\0E\0\0\0w\0\0\0q\0~\n5q\0~\n9q\0~\n=xt\0Iconsq\0~`\0q\0~\nOsq\0~\0V*pq\0~	ï¿½t\0\0t\0\rDocumentationsq\0~\07\0q\0~\nSsq\0~\0+Dï¿½q\0~	ï¿½t\0\0t\0TransitionRestrictionssq\0~i\0q\0~\nWsq\0~\00ï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0ï¿½\0q\0~\n]sq\0~\0sAï¿½q\0~	ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0|ï¿½ï¿½q\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\04ï¿½ï¿½3q\0~\nct\0JaWE_GRAPH_PARTICIPANT_IDpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0rï¿½ï¿½ï¿½q\0~\nct\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~\nhq\0~\nkxsq\0~ï¿½t\0ExtendedAttributesq\0~\0\n^ï¿½q\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0aï¿½wjq\0~\not\0JaWE_GRAPH_OFFSETpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0Rï¿½ï¿½q\0~\not\0222,15pxsq\0~\0E\0\0\0w\0\0\0q\0~\ntq\0~\nwxxpxsq\0~\0E\0\0\0w\0\0\0q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½q\0~	ï¿½q\0~\nq\0~\n\'q\0~\n+q\0~\n1q\0~\nPq\0~\nTq\0~\nXq\0~\n^xxt\0Transitionssr\0+org.enhydra.shark.xpdl.elements.Transitionsï¿½9>ï¿½ï¿½/iï¿½\0\0xq\0~\0k\0q\0~\n|sq\0~\04	_pq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0*org.enhydra.shark.xpdl.elements.Transitiontï¿½xï¿½ï¿½\0\0xq\0~\0ï¿½t\0\nTransitionsq\0~\0k>xï¿½q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0%ï¿½2q\0~\nï¿½t\0transition2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\\aï¿½ q\0~\nï¿½t\0\0pt\0Fromsq\0~\0q\0~\nï¿½sq\0~\0Xï¿½pq\0~\nï¿½t\0approve_proposalpt\0Tosq\0~\0q\0~\nï¿½sq\0~\06ï¿½7q\0~\nï¿½t\0approvalpt\0	Conditionsr\0)org.enhydra.shark.xpdl.elements.Conditionï¿½ï¿½Dï¿½ï¿½Z;|\0\0xq\0~\0\0q\0~\nï¿½sq\0~\0Duoq\0~\nï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0Gz&ï¿½q\0~\nï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0	CONDITIONt\0	OTHERWISEt\0	EXCEPTIONt\0DEFAULTEXCEPTIONxxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½xt\0Descriptionsq\0~\02\0q\0~\nï¿½sq\0~\0!ï¿½1ï¿½q\0~\nï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~\nï¿½sq\0~\0rï¿½ï¿½Jq\0~\nï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0	ï¿½ï¿½Uq\0~\nï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}ï¿½{q\0~\nï¿½t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\02ï¿½0q\0~\nï¿½t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½q\0~\nï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xsq\0~\nï¿½t\0\nTransitionsq\0~\0*ï¿½D\\q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Aï¿½/ï¿½q\0~\nï¿½t\0transition3pq\0~\0sq\0~\0\0q\0~\0sq\0~\0i\\q\0~\nï¿½t\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0/\"fq\0~\nï¿½t\0approvalpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0ï¿½ï¿½ï¿½q\0~\nï¿½t\0	activity1pt\0	Conditionsq\0~\nï¿½\0q\0~\nï¿½sq\0~\0^ï¿½+q\0~\nï¿½t\0status===\'resubmit\'sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\081ï¿½q\0~\nï¿½t\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½xt\0Descriptionsq\0~\02\0q\0~\nï¿½sq\0~\0{bï¿½ï¿½q\0~\nï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~\nï¿½sq\0~\0?/ï¿½q\0~\nï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0Eï¿½ï¿½ï¿½q\0~\nï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\00\Ziï¿½q\0~\nï¿½t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0#=:ï¿½q\0~\nï¿½t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½q\0~\nï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xsq\0~\nï¿½t\0\nTransitionsq\0~\0M[ï¿½q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½×­q\0~\nï¿½t\0transition4pq\0~\0sq\0~\0\0q\0~\0sq\0~\06mï¿½ï¿½q\0~\nï¿½t\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0ï¿½ï¿½q\0~\nï¿½t\0	activity1pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0|LKï¿½q\0~\nï¿½t\0approve_proposalpt\0	Conditionsq\0~\nï¿½\0q\0~\nï¿½sq\0~\0	\0*ï¿½q\0~\nï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0@S-4q\0~\0q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Descriptionsq\0~\02\0q\0~sq\0~\0^ï¿½ï¿½,q\0~\nï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~sq\0~\09wq\0~\nï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0ï¿½ï¿½q\0~\rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½/Zq\0~t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0Fï¿½ï¿½iq\0~t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\Zxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\0q\0~	q\0~\rxsq\0~\nï¿½t\0\nTransitionsq\0~\01ï¿½]ï¿½q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½ï¿½jq\0~t\0transition6pq\0~\0sq\0~\0\0q\0~\0sq\0~\0eNï¿½+q\0~t\0approvedpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0)iï¿½ï¿½q\0~t\0approvalpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\05ï¿½ï¿½}q\0~t\0parallelpt\0	Conditionsq\0~\nï¿½\0q\0~0sq\0~\0vï¿½ï¿½@q\0~t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0ï¿½oq\0~1t\0	OTHERWISEsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~5xt\0Descriptionsq\0~\02\0q\0~:sq\0~\0Zï¿½[q\0~t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~>sq\0~\0Jï¿½Jï¿½q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0Zï¿½ï¿½ï¿½q\0~?t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\07ï¿½vq\0~Dt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0ï¿½-ï¿½q\0~Dt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Lxxpxsq\0~\0E\0\0\0w\0\0\0q\0~$q\0~\'q\0~*q\0~-q\0~1q\0~;q\0~?xsq\0~\nï¿½t\0\nTransitionsq\0~\0Xï¿½eï¿½q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0kï¿½q\0~Qt\0transition7pq\0~\0sq\0~\0\0q\0~\0sq\0~\0l<9ï¿½q\0~Qt\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0gï¿½ï¿½ï¿½q\0~Qt\0parallelpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\03ï¿½>ï¿½q\0~Qt\0\rsend_proposalpt\0	Conditionsq\0~\nï¿½\0q\0~bsq\0~\0/ï¿½ï¿½ï¿½q\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\07\"Qï¿½q\0~cq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~gxt\0Descriptionsq\0~\02\0q\0~ksq\0~\0=hï¿½q\0~Qt\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~osq\0~\00ï¿½ï¿½ï¿½q\0~Qt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0ï¿½ï¿½ï¿½q\0~pt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0.{ï¿½q\0~ut\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\03Cï¿½ï¿½q\0~ut\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~zq\0~}xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Yq\0~\\q\0~_q\0~cq\0~lq\0~pxsq\0~\nï¿½t\0\nTransitionsq\0~\0.ï¿½ï¿½q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0@M&ï¿½q\0~ï¿½t\0transition8pq\0~\0sq\0~\0\0q\0~\0sq\0~\0R$ï¿½q\0~ï¿½t\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0H+ï¿½q\0~ï¿½t\0parallelpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0=\nï¿½]q\0~ï¿½t\0tool1pt\0	Conditionsq\0~\nï¿½\0q\0~ï¿½sq\0~\0t7 q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0drOrq\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0ï¿½Rï¿½q\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0ï¿½ï¿½4q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\01ï¿½diq\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ï¿½ï¿½(q\0~ï¿½t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0wá‘Žq\0~ï¿½t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xsq\0~\nï¿½t\0\nTransitionsq\0~\0iï¿½Rq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0]ï¿½!ï¿½q\0~ï¿½t\0transition5pq\0~\0sq\0~\0\0q\0~\0sq\0~\0]ï¿½Gq\0~ï¿½t\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0Xï¿½hZq\0~ï¿½t\0approvalpq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0&eï¿½q\0~ï¿½t\0tool2pt\0	Conditionsq\0~\nï¿½\0q\0~ï¿½sq\0~\0,ï¿½q\0~ï¿½t\0status===\'rejected\'sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0 9!q\0~ï¿½t\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0.ï¿½q\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~ï¿½sq\0~\0oï¿½{ï¿½q\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0\nJï¿½<q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0}ï¿½ï¿½q\0~ï¿½t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0.ï¿½ï¿½ï¿½q\0~ï¿½t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½xsq\0~\nï¿½t\0\nTransitionsq\0~\0ayD?q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0zI)ï¿½q\0~ï¿½t\0transition1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0rjï¿½q\0~ï¿½t\0\0pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0<ï¿½2q\0~ï¿½t\0route1pq\0~\nï¿½sq\0~\0q\0~\nï¿½sq\0~\0Kï¿½q\0~ï¿½t\0approve_proposalpt\0	Conditionsq\0~\nï¿½\0q\0~ï¿½sq\0~\0Yfï¿½6q\0~ï¿½t\0\0sq\0~\0w\0\0\0q\0~\0ï¿½sq\0~\0\0q\0~\0ï¿½sq\0~\0\ZSEq\0~ï¿½q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\nï¿½q\0~\nï¿½q\0~\nï¿½q\0~\nï¿½xxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½xt\0Descriptionsq\0~\02\0q\0~ï¿½sq\0~\0NXuï¿½q\0~ï¿½t\0\0t\0ExtendedAttributessq\0~\0ï¿½\0q\0~sq\0~\0Cï¿½Bq\0~ï¿½t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0Nï¿½!ï¿½q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0`ï¿½Q4q\0~	t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0ï¿½ï¿½q\0~	t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~xxpxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~\0q\0~xxt\0ExtendedAttributessq\0~\0ï¿½\0q\0~sq\0~\0$5ï¿½q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0Wï¿½ï¿½ï¿½q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0hï¿½ï¿½!q\0~t\0%JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDERpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0ï¿½ï¿½ï¿½q\0~t\0requester;approverpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$xsq\0~ï¿½t\0ExtendedAttributesq\0~\0T×Žq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Wï¿½ï¿½\rq\0~(t\0JaWE_GRAPH_START_OF_WORKFLOWpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0rï¿½ï¿½pq\0~(t\0ï¿½JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~-q\0~0xsq\0~ï¿½t\0ExtendedAttributesq\0~\0ï¿½rq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0n+~ï¿½q\0~4t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\06ï¿½ï¿½ï¿½q\0~4t\0ï¿½JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~9q\0~<xsq\0~ï¿½t\0ExtendedAttributesq\0~\0\")ï¿½q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0uï¿½ï¿½q\0~@t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0@}ï¿½ï¿½q\0~@t\0ï¿½JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Eq\0~Hxsq\0~ï¿½t\0ExtendedAttributesq\0~\0\"ï¿½mï¿½q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Oï¿½5ï¿½q\0~Lt\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0[ï¿½$q\0~Lt\0ï¿½JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Qq\0~Txxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~cq\0~fq\0~jq\0~qq\0~ï¿½q\0~ï¿½q\0~ï¿½q\0~wq\0~}q\0~ï¿½q\0~ï¿½q\0~\n~q\0~xxt\0ExtendedAttributessq\0~\0ï¿½\0q\0~Ysq\0~\0\\ï¿½`,q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ï¿½t\0ExtendedAttributesq\0~\0|ï¿½	lq\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0hÊºï¿½q\0~_t\0EDITING_TOOLpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0)Pï¿½ï¿½q\0~_t\0Web Workflow Designerpxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~gxsq\0~ï¿½t\0ExtendedAttributesq\0~\08ï¿½ï¿½+q\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0lï¿½1q\0~kt\0EDITING_TOOL_VERSIONpq\0~ï¿½sq\0~\0\0q\0~ï¿½sq\0~\0Qï¿½q\0~kt\0\r5.0-pre-alphapxsq\0~\0E\0\0\0w\0\0\0q\0~pq\0~sxxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~\0q\0~\0q\0~\0q\0~\0Iq\0~\0tq\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~\0ï¿½q\0~q\0~Qq\0~Xq\0~Zx\0sq\0~\0w\0\0\0\0xt\01sr\0*org.enhydra.shark.xpdl.elements.Namespaces|ï¿½ï¿½<.Rï¿½ï¿½\0\0xq\0~\0kt\0\nNamespacessq\0~\0xkNï¿½q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.Namespaceï¿½zï¿½ï¿½_\0\0xq\0~\0t\0	Namespacesq\0~\0:ï¿½ï¿½aq\0~{t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\\ï¿½Wq\0~ï¿½t\0xpdlpq\0~\0ï¿½sq\0~\0q\0~\0ï¿½sq\0~\0@ï¿½ï¿½q\0~ï¿½t\0 http://www.wfmc.org/2002/XPDL1.0pxsq\0~\0E\0\0\0w\0\0\0q\0~ï¿½q\0~ï¿½xx',1000202,1,1000203,0);
-/*!40000 ALTER TABLE `SHKXPDLData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLHistory`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLHistory` (
-  `XPDLId` varchar(90) NOT NULL,
-  `XPDLVersion` varchar(20) NOT NULL,
-  `XPDLClassVersion` bigint(20) NOT NULL,
-  `XPDLUploadTime` datetime NOT NULL,
-  `XPDLHistoryUploadTime` datetime NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLHistory` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLHistory`
---
-
-LOCK TABLES `SHKXPDLHistory` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLHistory` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLHistory` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLHistoryData`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLHistoryData` (
-  `XPDLContent` mediumblob NOT NULL,
-  `XPDLClassContent` mediumblob NOT NULL,
-  `XPDLHistory` decimal(19,0) NOT NULL,
-  `CNT` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLHistoryData` (`CNT`),
-  KEY `SHKXPDLHistoryData_XPDLHistory` (`XPDLHistory`),
-  CONSTRAINT `SHKXPDLHistoryData_XPDLHistory` FOREIGN KEY (`XPDLHistory`) REFERENCES `SHKXPDLHistory` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLHistoryData`
---
-
-LOCK TABLES `SHKXPDLHistoryData` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLHistoryData` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLHistoryData` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLParticipantPackage`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLParticipantPackage` (
-  `PACKAGE_ID` varchar(90) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLParticipantPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLParticipantPackage`
---
-
-LOCK TABLES `SHKXPDLParticipantPackage` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLParticipantPackage` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLParticipantPackage` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLParticipantProcess`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLParticipantProcess` (
-  `PROCESS_ID` varchar(90) NOT NULL,
-  `PACKAGEOID` decimal(19,0) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLParticipantProcess` (`PROCESS_ID`,`PACKAGEOID`),
-  KEY `SHKXPDLParticipantProcess_PACKAGEOID` (`PACKAGEOID`),
-  CONSTRAINT `SHKXPDLParticipantProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLParticipantProcess`
---
-
-LOCK TABLES `SHKXPDLParticipantProcess` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLParticipantProcess` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLParticipantProcess` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLReferences`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLReferences` (
-  `ReferredXPDLId` varchar(90) NOT NULL,
-  `ReferringXPDL` decimal(19,0) NOT NULL,
-  `ReferredXPDLNumber` int(11) NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLReferences` (`ReferredXPDLId`,`ReferringXPDL`),
-  KEY `SHKXPDLReferences_ReferringXPDL` (`ReferringXPDL`),
-  CONSTRAINT `SHKXPDLReferences_ReferringXPDL` FOREIGN KEY (`ReferringXPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLReferences`
---
-
-LOCK TABLES `SHKXPDLReferences` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLReferences` DISABLE KEYS */;
-/*!40000 ALTER TABLE `SHKXPDLReferences` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `SHKXPDLS`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `SHKXPDLS` (
-  `XPDLId` varchar(90) NOT NULL,
-  `XPDLVersion` varchar(20) NOT NULL,
-  `XPDLClassVersion` bigint(20) NOT NULL,
-  `XPDLUploadTime` datetime NOT NULL,
-  `oid` decimal(19,0) NOT NULL,
-  `version` int(11) NOT NULL,
-  PRIMARY KEY (`oid`),
-  UNIQUE KEY `I1_SHKXPDLS` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `SHKXPDLS`
---
-
-LOCK TABLES `SHKXPDLS` WRITE;
-/*!40000 ALTER TABLE `SHKXPDLS` DISABLE KEYS */;
-INSERT INTO `SHKXPDLS` VALUES ('crm_community','1',1184650391000,'2017-11-09 05:52:43',1000202,0);
-/*!40000 ALTER TABLE `SHKXPDLS` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `app_app`
 --
 
+DROP TABLE IF EXISTS `app_app`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_app` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `published` bit(1) DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `license` text,
-  `description` longtext,
-  `meta` longtext,
+  `license` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `meta` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2095,7 +43,7 @@ CREATE TABLE `app_app` (
 
 LOCK TABLES `app_app` WRITE;
 /*!40000 ALTER TABLE `app_app` DISABLE KEYS */;
-INSERT INTO `app_app` VALUES ('appcenter',1,'App Center','','2017-11-09 13:54:46','2017-11-09 13:54:46','oRIgWuw8ed5OmS98TSZFxocskOFXU0v3VPneM0k80NqSBK2r6RhNzTNTryZkuj4W',NULL,NULL),('crm_community',1,'CRM Community','','2017-11-09 05:52:42','2017-11-09 05:52:44','Vfe6Df5AdlrGEPqFYgTt8XuGJ4XiTt2NnBLEovw3qoQ=',NULL,NULL);
+INSERT INTO `app_app` VALUES ('appcenter',1,'App Center','','2017-11-22 19:16:14','2017-11-22 19:16:14','oRIgWuw8ed5OmS98TSZFxocskOFXU0v3VPneM0k80NqSBK2r6RhNzTNTryZkuj4W',NULL,NULL),('crm_community',1,'CRM Community','','2017-11-23 03:15:36','2017-11-23 03:15:40','Vfe6Df5AdlrGEPqFYgTt8XuGJ4XiTt2NnBLEovw3qoQ=',NULL,NULL);
 /*!40000 ALTER TABLE `app_app` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2103,22 +51,23 @@ UNLOCK TABLES;
 -- Table structure for table `app_datalist`
 --
 
+DROP TABLE IF EXISTS `app_datalist`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_datalist` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` text,
-  `json` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK5E9247A6462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK5E9247A6462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2127,7 +76,7 @@ CREATE TABLE `app_datalist` (
 
 LOCK TABLES `app_datalist` WRITE;
 /*!40000 ALTER TABLE `app_datalist` DISABLE KEYS */;
-INSERT INTO `app_datalist` VALUES ('crm_community',1,'crm_account_list','Account Listing',NULL,'{\"id\":\"crm_account_list\",\"name\":\"Account Listing\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[{\"id\":\"rowAction_0\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_list\",\"target\":\"_self\",\"hrefParam\":\"d-6304176-fn_account\",\"hrefColumn\":\"id\",\"label\":\"Contacts\",\"confirmation\":\"\",\"visible\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"},{\"id\":\"rowAction_1\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"fk_account\",\"hrefColumn\":\"id\",\"label\":\"New Contact\",\"confirmation\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"}],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_account\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_0\",\"label\":\"Account Name\",\"name\":\"accountName\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_account\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"id\",\"label\":\"ID\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"ID\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_1\",\"name\":\"accountName\",\"label\":\"Account Name\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_5\",\"name\":\"country\",\"label\":\"Country\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_4\",\"name\":\"state\",\"label\":\"State\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-09 05:52:42','2017-11-09 05:52:42'),('crm_community',1,'crm_contact_list','Contact List',NULL,'{\"id\":\"crm_contact_list\",\"name\":\"Contact List\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[{\"id\":\"rowAction_0\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Edit\",\"confirmation\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"}],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_contact\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_2\",\"name\":\"account\",\"filterParamName\":\"d-6304176-fn_account\",\"label\":\"Account\",\"type\":{\"className\":\"org.joget.plugin.enterprise.SelectBoxDataListFilterType\",\"properties\":{\"multiple\":\"autocomplete\",\"size\":\"\",\"defaultValue\":\"\",\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"filter_0\",\"name\":\"fullName\",\"label\":\"First Name\",\"type\":{\"className\":\"org.joget.apps.datalist.lib.TextFieldDataListFilterType\",\"properties\":{\"defaultValue\":\"\"}}},{\"id\":\"filter_1\",\"label\":\"Last Name\",\"name\":\"lastName\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_contact\"}},\"columns\":[{\"id\":\"column_2\",\"name\":\"account\",\"label\":\"Account\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"account\",\"label\":\"Account\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"org.joget.plugin.enterprise.OptionsValueFormatter\",\"properties\":{\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"column_0\",\"name\":\"fullName\",\"label\":\"First Name\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Full Name\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_4\",\"name\":\"lastName\",\"label\":\"Last Name\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-09 05:52:42','2017-11-09 05:52:42'),('crm_community',1,'crm_opportunity_list','Opportunity List',NULL,'{\"id\":\"crm_opportunity_list\",\"name\":\"Opportunity List\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_opportunity\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_1\",\"name\":\"account\",\"label\":\"Account\",\"type\":{\"className\":\"org.joget.plugin.enterprise.SelectBoxDataListFilterType\",\"properties\":{\"multiple\":\"textfield\",\"size\":\"\",\"defaultValue\":\"\",\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"filter_0\",\"label\":\"Title\",\"name\":\"title\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_opportunity\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"title\",\"label\":\"Title\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"opportunity_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Title\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_4\",\"name\":\"account\",\"label\":\"Account\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"account\",\"label\":\"Account\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"org.joget.plugin.enterprise.OptionsValueFormatter\",\"properties\":{\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"column_2\",\"name\":\"amount\",\"label\":\"Amount\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_3\",\"name\":\"stage\",\"label\":\"Stage\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_1\",\"name\":\"dateModified\",\"label\":\"Date Modified\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-09 05:52:42','2017-11-09 05:52:42'),('crm_community',1,'Proposal','Proposal List',NULL,'{\"id\":\"Proposal\",\"name\":\"Proposal List\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"refNo\",\"showPageSizeSelector\":\"true\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"buttonPosition\":\"bottomLeft\",\"checkboxPosition\":\"left\",\"useSession\":\"\",\"hidePageSize\":\"\",\"description\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[],\"actions\":[],\"filters\":[{\"id\":\"filter_2\",\"name\":\"account\",\"label\":\"Account\"},{\"id\":\"filter_1\",\"name\":\"title\",\"label\":\"Title\"},{\"id\":\"filter_0\",\"name\":\"status\",\"label\":\"Status\"}],\"binder\":{\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_proposal_approval_form\",\"extraCondition\":\"\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"refNo\",\"label\":\"#\",\"sortable\":\"false\",\"hidden\":\"false\",\"exclude_export\":\"\",\"width\":\"\",\"style\":\"\",\"alignment\":\"\",\"headerAlignment\":\"\",\"action\":{\"className\":\"\",\"properties\":{}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_1\",\"label\":\"Account\",\"displayLabel\":\"Account\",\"name\":\"account\"},{\"id\":\"column_2\",\"datalist_type\":\"column\",\"name\":\"title\",\"label\":\"Title\",\"sortable\":\"false\",\"hidden\":\"false\",\"exclude_export\":\"\",\"width\":\"\",\"style\":\"\",\"alignment\":\"\",\"headerAlignment\":\"\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"ViewProposal\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"View\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_3\",\"label\":\"Description\",\"displayLabel\":\"Description\",\"name\":\"description\"},{\"id\":\"column_4\",\"label\":\"Status\",\"displayLabel\":\"Status\",\"name\":\"status\"},{\"id\":\"column_5\",\"label\":\"Date Modified\",\"displayLabel\":\"Date Modified\",\"name\":\"dateModified\"}]}','2017-11-09 05:52:42','2017-11-09 05:52:42');
+INSERT INTO `app_datalist` VALUES ('crm_community',1,'crm_account_list','Account Listing',NULL,'{\"id\":\"crm_account_list\",\"name\":\"Account Listing\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[{\"id\":\"rowAction_0\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_list\",\"target\":\"_self\",\"hrefParam\":\"d-6304176-fn_account\",\"hrefColumn\":\"id\",\"label\":\"Contacts\",\"confirmation\":\"\",\"visible\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"},{\"id\":\"rowAction_1\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"fk_account\",\"hrefColumn\":\"id\",\"label\":\"New Contact\",\"confirmation\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"}],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_account\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_0\",\"label\":\"Account Name\",\"name\":\"accountName\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_account\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"id\",\"label\":\"ID\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"ID\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_1\",\"name\":\"accountName\",\"label\":\"Account Name\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_5\",\"name\":\"country\",\"label\":\"Country\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_4\",\"name\":\"state\",\"label\":\"State\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-23 03:15:37','2017-11-23 03:15:37'),('crm_community',1,'crm_contact_list','Contact List',NULL,'{\"id\":\"crm_contact_list\",\"name\":\"Contact List\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[{\"id\":\"rowAction_0\",\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"type\":\"text\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Edit\",\"confirmation\":\"\"},\"name\":\"Data List Hyperlink\",\"label\":\"Hyperlink\"}],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_contact\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_2\",\"name\":\"account\",\"filterParamName\":\"d-6304176-fn_account\",\"label\":\"Account\",\"type\":{\"className\":\"org.joget.plugin.enterprise.SelectBoxDataListFilterType\",\"properties\":{\"multiple\":\"autocomplete\",\"size\":\"\",\"defaultValue\":\"\",\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"filter_0\",\"name\":\"fullName\",\"label\":\"First Name\",\"type\":{\"className\":\"org.joget.apps.datalist.lib.TextFieldDataListFilterType\",\"properties\":{\"defaultValue\":\"\"}}},{\"id\":\"filter_1\",\"label\":\"Last Name\",\"name\":\"lastName\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_contact\"}},\"columns\":[{\"id\":\"column_2\",\"name\":\"account\",\"label\":\"Account\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"account\",\"label\":\"Account\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"org.joget.plugin.enterprise.OptionsValueFormatter\",\"properties\":{\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"column_0\",\"name\":\"fullName\",\"label\":\"First Name\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"contact_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Full Name\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_4\",\"name\":\"lastName\",\"label\":\"Last Name\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-23 03:15:37','2017-11-23 03:15:37'),('crm_community',1,'crm_opportunity_list','Opportunity List',NULL,'{\"id\":\"crm_opportunity_list\",\"name\":\"Opportunity List\",\"hidePageSize\":\"\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"dateCreated\",\"description\":\"\",\"useSession\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[],\"actions\":[{\"id\":\"action_0\",\"className\":\"org.joget.apps.datalist.lib.FormRowDeleteDataListAction\",\"type\":\"text\",\"properties\":{\"formDefId\":\"crm_opportunity\"},\"name\":\"Form Row Delete\",\"label\":\"Delete Row\"}],\"filters\":[{\"id\":\"filter_1\",\"name\":\"account\",\"label\":\"Account\",\"type\":{\"className\":\"org.joget.plugin.enterprise.SelectBoxDataListFilterType\",\"properties\":{\"multiple\":\"textfield\",\"size\":\"\",\"defaultValue\":\"\",\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"filter_0\",\"label\":\"Title\",\"name\":\"title\"}],\"binder\":{\"name\":\"\",\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_opportunity\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"title\",\"label\":\"Title\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"opportunity_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"Title\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_4\",\"name\":\"account\",\"label\":\"Account\",\"sortable\":\"true\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"account_new\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"account\",\"label\":\"Account\",\"confirmation\":\"\",\"visible\":\"\"}},\"format\":{\"className\":\"org.joget.plugin.enterprise.OptionsValueFormatter\",\"properties\":{\"options\":[],\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"idColumn\":\"\",\"labelColumn\":\"accountName\",\"groupingColumn\":\"\",\"extraCondition\":\"\",\"addEmptyOption\":\"\",\"emptyLabel\":\"\",\"useAjax\":\"\"}}}}},{\"id\":\"column_2\",\"name\":\"amount\",\"label\":\"Amount\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_3\",\"name\":\"stage\",\"label\":\"Stage\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"},{\"id\":\"column_1\",\"name\":\"dateModified\",\"label\":\"Date Modified\",\"sortable\":\"true\",\"filterable\":\"true\",\"action\":\"\",\"formats\":\";\"}]}','2017-11-23 03:15:37','2017-11-23 03:15:37'),('crm_community',1,'Proposal','Proposal List',NULL,'{\"id\":\"Proposal\",\"name\":\"Proposal List\",\"pageSize\":\"0\",\"order\":\"1\",\"orderBy\":\"refNo\",\"showPageSizeSelector\":\"true\",\"pageSizeSelectorOptions\":\"10,20,30,40,50,100\",\"buttonPosition\":\"bottomLeft\",\"checkboxPosition\":\"left\",\"useSession\":\"\",\"hidePageSize\":\"\",\"description\":\"\",\"showDataWhenFilterSet\":\"\",\"rowActions\":[],\"actions\":[],\"filters\":[{\"id\":\"filter_2\",\"name\":\"account\",\"label\":\"Account\"},{\"id\":\"filter_1\",\"name\":\"title\",\"label\":\"Title\"},{\"id\":\"filter_0\",\"name\":\"status\",\"label\":\"Status\"}],\"binder\":{\"className\":\"org.joget.apps.datalist.lib.FormRowDataListBinder\",\"properties\":{\"formDefId\":\"crm_proposal_approval_form\",\"extraCondition\":\"\"}},\"columns\":[{\"id\":\"column_0\",\"name\":\"refNo\",\"label\":\"#\",\"sortable\":\"false\",\"hidden\":\"false\",\"exclude_export\":\"\",\"width\":\"\",\"style\":\"\",\"alignment\":\"\",\"headerAlignment\":\"\",\"action\":{\"className\":\"\",\"properties\":{}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_1\",\"label\":\"Account\",\"displayLabel\":\"Account\",\"name\":\"account\"},{\"id\":\"column_2\",\"datalist_type\":\"column\",\"name\":\"title\",\"label\":\"Title\",\"sortable\":\"false\",\"hidden\":\"false\",\"exclude_export\":\"\",\"width\":\"\",\"style\":\"\",\"alignment\":\"\",\"headerAlignment\":\"\",\"action\":{\"className\":\"org.joget.apps.datalist.lib.HyperlinkDataListAction\",\"properties\":{\"href\":\"ViewProposal\",\"target\":\"_self\",\"hrefParam\":\"id\",\"hrefColumn\":\"id\",\"label\":\"View\",\"confirmation\":\"\"}},\"format\":{\"className\":\"\",\"properties\":{}}},{\"id\":\"column_3\",\"label\":\"Description\",\"displayLabel\":\"Description\",\"name\":\"description\"},{\"id\":\"column_4\",\"label\":\"Status\",\"displayLabel\":\"Status\",\"name\":\"status\"},{\"id\":\"column_5\",\"label\":\"Date Modified\",\"displayLabel\":\"Date Modified\",\"name\":\"dateModified\"}]}','2017-11-23 03:15:37','2017-11-23 03:15:37');
 /*!40000 ALTER TABLE `app_datalist` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2135,18 +84,19 @@ UNLOCK TABLES;
 -- Table structure for table `app_env_variable`
 --
 
+DROP TABLE IF EXISTS `app_env_variable`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_env_variable` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `value` text,
-  `remarks` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `remarks` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2163,14 +113,15 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd`
 --
 
+DROP TABLE IF EXISTS `app_fd`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2186,14 +137,15 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd_appcenter`
 --
 
+DROP TABLE IF EXISTS `app_fd_appcenter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd_appcenter` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2209,19 +161,20 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd_crm_account`
 --
 
+DROP TABLE IF EXISTS `app_fd_crm_account`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd_crm_account` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `c_country` longtext,
-  `c_address` longtext,
-  `c_accountName` longtext,
-  `c_city` longtext,
-  `c_state` longtext,
+  `c_country` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_address` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_accountName` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_city` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_state` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2237,22 +190,23 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd_crm_contact`
 --
 
+DROP TABLE IF EXISTS `app_fd_crm_contact`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd_crm_contact` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `c_lastName` longtext,
-  `c_address` longtext,
-  `c_city` longtext,
-  `c_fullName` longtext,
-  `c_photo` longtext,
-  `c_state` longtext,
-  `c_account` longtext,
-  `c_addressAvailable` longtext,
+  `c_lastName` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_address` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_city` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_fullName` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_photo` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_state` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_account` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_addressAvailable` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2268,21 +222,22 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd_crm_opportunity`
 --
 
+DROP TABLE IF EXISTS `app_fd_crm_opportunity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd_crm_opportunity` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `c_amount` longtext,
-  `c_stage` longtext,
-  `c_description` longtext,
-  `c_source` longtext,
-  `c_newAccount` longtext,
-  `c_title` longtext,
-  `c_account` longtext,
+  `c_amount` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_stage` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_source` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_newAccount` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_title` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_account` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2298,22 +253,23 @@ UNLOCK TABLES;
 -- Table structure for table `app_fd_crm_proposal`
 --
 
+DROP TABLE IF EXISTS `app_fd_crm_proposal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd_crm_proposal` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `c_refNo` longtext,
-  `c_comments` longtext,
-  `c_notes` longtext,
-  `c_attachment` longtext,
-  `c_description` longtext,
-  `c_title` longtext,
-  `c_account` longtext,
-  `c_status` longtext,
+  `c_refNo` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_comments` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_notes` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_attachment` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_title` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_account` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `c_status` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2329,23 +285,24 @@ UNLOCK TABLES;
 -- Table structure for table `app_form`
 --
 
+DROP TABLE IF EXISTS `app_form`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_form` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `formId` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `tableName` varchar(255) DEFAULT NULL,
-  `json` longtext,
-  `description` longtext,
+  `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK45957822462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2354,7 +311,7 @@ CREATE TABLE `app_form` (
 
 LOCK TABLES `app_form` WRITE;
 /*!40000 ALTER TABLE `app_form` DISABLE KEYS */;
-INSERT INTO `app_form` VALUES ('appcenter',1,'landing','Published Apps','2017-11-09 13:54:46','2017-11-09 13:54:46','appcenter','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"landing\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"tableName\":\"appcenter\",\"description\":\"\",\"postProcessorRunOn\":\"both\",\"name\":\"Published Apps\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"postProcessor\":{\"className\":\"\",\"properties\":{}},\"permission\":{\"className\":\"\",\"properties\":{}},\"noPermissionMessage\":\"\"},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"admin_div\",\"autoPopulate\":\"\",\"value\":\"<style>\\n#appcenter_admin {\\n    text-align: center;\\n}\\n#appcenter_admin a {\\n    background: white;\\n    border: solid 1px #ddd;\\n    cursor: pointer;\\n    text-decoration: none;\\n    color: #555;\\n    margin-right: 5px;\\n    padding: 10px;\\n    box-shadow: 0 1px 1.5px 1px rgba(0,0,0,.12);\\n    border-radius: 4px;\\n    font-size: 14px;\\n    font-weight: 400;\\n    line-height: 1.42857143;\\n    display: inline-block;\\n}\\n@media (max-width:540px) {\\n    #appcenter_admin a {\\n        margin-top: -20px;\\n        margin-bottom: 20px;\\n    }\\n}\\n</style>\\n<div id=\\\"appcenter_admin\\\">\\n    <a href=\\\"#\\\" onclick=\\\"appCreate();return false\\\">#i18n.Design New App#</a>\\n    <a href=\\\"#\\\" onclick=\\\"appImport();return false\\\">#i18n.Import App#</a>\\n    <a href=\\\"#\\\" onclick=\'AdminBar.showQuickOverlay(\\\"/jw/web/desktop/marketplace/app?url=\\\" + encodeURIComponent(\\\"https://marketplace.joget.org\\\"));return false\'>#i18n.Download from Marketplace#</a>\\n</div>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"admin_section\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"permission\":{\"className\":\"org.joget.apps.userview.lib.BeanShellPermission\",\"properties\":{\"script\":\"import org.joget.workflow.util.WorkflowUtil;\\nreturn !WorkflowUtil.isCurrentUserAnonymous() && WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);\\n\"}},\"label\":\"\",\"comment\":\"\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"published_apps\",\"autoPopulate\":\"\",\"value\":\"<link rel=\\\"stylesheet\\\" href=\\\"/jw/css/appCenter.css\\\" />\\n<div id=\\\"main-action-help\\\"><i class=\\\"fa fa-info-circle\\\"></i></div>\\n<div id=\\\"search\\\"></div>\\n<div id=\\\"apps\\\"></div>\\n<p>\\n<script src=\\\"/jw/js/appCenter.js\\\"></script>\\n<script>\\nAppCenter.searchFilter($(\\\"#search\\\"), $(\\\"#apps\\\")); \\nAppCenter.loadPublishedApps(\\\"#apps\\\");\\n</script>\\n</p>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"apps_section\",\"reverse\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"regex\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"join\":\"\"}}]}',NULL),('crm_community',1,'crm_account','Account Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_account','{\n    \"className\": \"org.joget.apps.form.model.Form\",\n    \"properties\": {\n        \"id\": \"crm_account\",\n        \"loadBinder\": {\n            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\",\n            \"properties\": {}\n        },\n        \"tableName\": \"crm_account\",\n        \"description\": \"\",\n        \"name\": \"Account Form\",\n        \"storeBinder\": {\n            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\",\n            \"properties\": {}\n        }\n    },\n    \"elements\": [\n        {\n            \"elements\": [\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"id\",\n                                \"label\": \"Account ID\",\n                                \"size\": \"\",\n                                \"readonly\": \"\",\n                                \"validator\": {\n                                    \"className\": \"org.joget.apps.form.lib.DefaultValidator\",\n                                    \"properties\": {\n                                        \"mandatory\": \"true\",\n                                        \"type\": \"\"\n                                    }\n                                },\n                                \"workflowVariable\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"accountName\",\n                                \"label\": \"Account Name\",\n                                \"size\": \"\",\n                                \"readonly\": \"\",\n                                \"validator\": {\n                                    \"className\": \"org.joget.apps.form.lib.DefaultValidator\",\n                                    \"properties\": {\n                                        \"mandatory\": \"true\",\n                                        \"type\": \"\"\n                                    }\n                                },\n                                \"workflowVariable\": \"\"\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"99%\"\n                    }\n                }\n            ],\n            \"className\": \"org.joget.apps.form.model.Section\",\n            \"properties\": {\n                \"id\": \"account_details\",\n                \"loadBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"visibilityControl\": \"\",\n                \"visibilityValue\": \"\",\n                \"storeBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"label\": \"Account Details\"\n            }\n        },\n        {\n            \"elements\": [\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextArea\",\n                            \"properties\": {\n                                \"id\": \"address\",\n                                \"cols\": \"20\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"Address\",\n                                \"readonly\": \"\",\n                                \"rows\": \"5\"\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"49%\"\n                    }\n                },\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"city\",\n                                \"workflowVariable\": \"\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"City\",\n                                \"readonly\": \"\",\n                                \"size\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"state\",\n                                \"workflowVariable\": \"\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"State\",\n                                \"readonly\": \"\",\n                                \"size\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.SelectBox\",\n                            \"properties\": {\n                                \"id\": \"country\",\n                                \"workflowVariable\": \"\",\n                                \"optionsBinder\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"Country\",\n                                \"multiple\": \"\",\n                                \"readonly\": \"\",\n                                \"size\": \"\",\n                                \"options\": [\n                                    {\n                                        \"value\": \"\",\n                                        \"label\": \"\"\n                                    },\n                                    {\n                                        \"value\": \"local\",\n                                        \"label\": \"Local\"\n                                    },\n                                    {\n                                        \"value\": \"international\",\n                                        \"label\": \"International\"\n                                    }\n                                ]\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"49%\"\n                    }\n                }\n            ],\n            \"className\": \"org.joget.apps.form.model.Section\",\n            \"properties\": {\n                \"id\": \"address\",\n                \"loadBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"visibilityControl\": \"\",\n                \"visibilityValue\": \"\",\n                \"storeBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"label\": \"Address Details\"\n            }\n        }\n    ]\n}',NULL),('crm_community',1,'crm_contact','Contact Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_contact','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_contact\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_contact\",\"name\":\"Contact Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"account\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"extraCondition\":\"\",\"labelColumn\":\"accountName\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[]}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"fullName\",\"workflowVariable\":\"\",\"readonlyLabel\":\"\",\"maxlength\":\"\",\"encryption\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"message\":\"\",\"custom-regex\":\"\",\"mandatory\":\"true\",\"type\":\"\"}},\"value\":\"\",\"label\":\"First Name\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"lastName\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Last Name\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"addressAvailable\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Address Available\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"no\",\"label\":\"No\"},{\"value\":\"yes\",\"label\":\"Yes\"}]}},{\"className\":\"org.joget.apps.form.lib.FileUpload\",\"properties\":{\"id\":\"photo\",\"label\":\"Photo\",\"readonly\":\"\",\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"contact_details\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Contact Details\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"address\",\"cols\":\"20\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{}},\"label\":\"Address\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"city\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"City\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"state\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"State\",\"readonly\":\"\",\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"address_details\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"addressAvailable\",\"visibilityValue\":\"yes\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Address Details\"}}]}',NULL),('crm_community',1,'crm_opportunity','Opportunity Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_opportunity','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_opportunity\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_opportunity\",\"name\":\"Opportunity Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"title\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"mandatory\":\"true\",\"type\":\"\"}},\"label\":\"Title\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"description\",\"cols\":\"15\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Description\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"amount\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Amount\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"stage\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Stage\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"\",\"label\":\"\"},{\"value\":\"open\",\"label\":\"Open\"},{\"value\":\"won\",\"label\":\"Won\"},{\"value\":\"lost\",\"label\":\"Lost\"}]}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"source\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Source\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"\",\"label\":\"\"},{\"value\":\"direct\",\"label\":\"Direct\"},{\"value\":\"indirect\",\"label\":\"Indirect\"}]}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"opportunity\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Opportunity\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"newAccount\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{}},\"label\":\"New Account\",\"readonly\":\"\",\"multiple\":\"\",\"options\":[{\"value\":\"yes\",\"label\":\"Yes\"},{\"value\":\"no\",\"label\":\"No\"}],\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"accountChoice\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"account\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"extraCondition\":\"\",\"labelColumn\":\"accountName\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[]}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"account_existing\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"newAccount\",\"visibilityValue\":\"no\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Existing Account\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"account\",\"formDefId\":\"crm_account\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"account\",\"readonly\":\"\"}},{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"script1\",\"validator\":{\"className\":\"\",\"properties\":{}},\"value\":\"<script>\\nvar val = $(\\\"#account_crm_accountid\\\").val();\\nif (val != \'\') {\\n    $(\\\"#newAccount\\\").val(\\\"no\\\");\\n    $(\\\"#newAccount\\\").trigger(\\\"change\\\");\\n}\\n<\\/script>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"account_new\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"newAccount\",\"visibilityValue\":\"yes\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\"}}]}',NULL),('crm_community',1,'crm_proposal_approval_form','Proposal Approval Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Approval Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"proposal\",\"formDefId\":\"crm_proposal_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Approval\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"status\",\"workflowVariable\":\"status\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"mandatory\":\"true\",\"type\":\"\"}},\"label\":\"Status\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"approved\",\"label\":\"Approved\"},{\"value\":\"resubmit\",\"label\":\"Resubmit\"},{\"value\":\"rejected\",\"label\":\"Rejected\"}]}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"comments\",\"cols\":\"20\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Approver Comments\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Approver Action\"}}]}',NULL),('crm_community',1,'crm_proposal_form','Proposal Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"name\":\"Proposal Form\",\"id\":\"crm_proposal_form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\"},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.IdGeneratorField\",\"properties\":{\"hidden\":\"true\",\"format\":\"????\",\"workflowVariable\":\"\",\"envVariable\":\"refNo\",\"id\":\"refNo\",\"label\":\"Reference No\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"readonly\":\"\",\"size\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"labelColumn\":\"accountName\",\"extraCondition\":\"\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"multiple\":\"\",\"options\":[],\"workflowVariable\":\"\",\"id\":\"account\",\"label\":\"Account\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"readonly\":\"\",\"size\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"type\":\"\",\"mandatory\":\"true\"}},\"workflowVariable\":\"\",\"id\":\"title\",\"label\":\"Title\"}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"readonly\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"workflowVariable\":\"\",\"id\":\"description\",\"label\":\"Description\",\"placeholder\":\"\",\"rows\":\"5\",\"value\":\"\",\"cols\":\"60\",\"readonlyLabel\":\"\"}},{\"className\":\"org.joget.apps.form.lib.FileUpload\",\"properties\":{\"attachment\":\"true\",\"readonly\":\"\",\"size\":\"\",\"id\":\"attachment\",\"label\":\"Attachment\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"visibilityControl\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"id\":\"section1\",\"label\":\"Proposal Form\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityValue\":\"\"}}]}',NULL),('crm_community',1,'crm_proposal_resubmit_form','Proposal Resubmit Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_resubmit_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Resubmit Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"approval\",\"formDefId\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Resubmit\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"proposal\",\"formDefId\":\"crm_proposal_form\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"\"}},{\"className\":\"org.joget.apps.form.lib.HiddenField\",\"properties\":{\"id\":\"status\",\"workflowVariable\":\"status\",\"value\":\"pending\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Resubmission\"}}]}',NULL),('crm_community',1,'crm_proposal_sending_form','Proposal Sending Form','2017-11-09 05:52:42','2017-11-09 05:52:42','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_sending_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Sending Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"approval\",\"formDefId\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Sending\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"notes\",\"cols\":\"20\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Notes\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\"}}]}',NULL);
+INSERT INTO `app_form` VALUES ('appcenter',1,'landing','Published Apps','2017-11-22 19:16:14','2017-11-22 19:16:14','appcenter','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"landing\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"tableName\":\"appcenter\",\"description\":\"\",\"postProcessorRunOn\":\"both\",\"name\":\"Published Apps\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"postProcessor\":{\"className\":\"\",\"properties\":{}},\"permission\":{\"className\":\"\",\"properties\":{}},\"noPermissionMessage\":\"\"},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"admin_div\",\"autoPopulate\":\"\",\"value\":\"<style>\\n#appcenter_admin {\\n    text-align: center;\\n}\\n#appcenter_admin a {\\n    background: white;\\n    border: solid 1px #ddd;\\n    cursor: pointer;\\n    text-decoration: none;\\n    color: #555;\\n    margin-right: 5px;\\n    padding: 10px;\\n    box-shadow: 0 1px 1.5px 1px rgba(0,0,0,.12);\\n    border-radius: 4px;\\n    font-size: 14px;\\n    font-weight: 400;\\n    line-height: 1.42857143;\\n    display: inline-block;\\n}\\n@media (max-width:540px) {\\n    #appcenter_admin a {\\n        margin-top: -20px;\\n        margin-bottom: 20px;\\n    }\\n}\\n</style>\\n<div id=\\\"appcenter_admin\\\">\\n    <a href=\\\"#\\\" onclick=\\\"appCreate();return false\\\">#i18n.Design New App#</a>\\n    <a href=\\\"#\\\" onclick=\\\"appImport();return false\\\">#i18n.Import App#</a>\\n    <a href=\\\"#\\\" onclick=\'AdminBar.showQuickOverlay(\\\"/jw/web/desktop/marketplace/app?url=\\\" + encodeURIComponent(\\\"https://marketplace.joget.org\\\"));return false\'>#i18n.Download from Marketplace#</a>\\n</div>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"admin_section\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"permission\":{\"className\":\"org.joget.apps.userview.lib.BeanShellPermission\",\"properties\":{\"script\":\"import org.joget.workflow.util.WorkflowUtil;\\nreturn !WorkflowUtil.isCurrentUserAnonymous() && WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);\\n\"}},\"label\":\"\",\"comment\":\"\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"published_apps\",\"autoPopulate\":\"\",\"value\":\"<link rel=\\\"stylesheet\\\" href=\\\"/jw/css/appCenter.css\\\" />\\n<div id=\\\"main-action-help\\\"><i class=\\\"fa fa-info-circle\\\"></i></div>\\n<div id=\\\"search\\\"></div>\\n<div id=\\\"apps\\\"></div>\\n<p>\\n<script src=\\\"/jw/js/appCenter.js\\\"></script>\\n<script>\\nAppCenter.searchFilter($(\\\"#search\\\"), $(\\\"#apps\\\")); \\nAppCenter.loadPublishedApps(\\\"#apps\\\");\\n</script>\\n</p>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"apps_section\",\"reverse\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"regex\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"join\":\"\"}}]}',NULL),('crm_community',1,'crm_account','Account Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_account','{\n    \"className\": \"org.joget.apps.form.model.Form\",\n    \"properties\": {\n        \"id\": \"crm_account\",\n        \"loadBinder\": {\n            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\",\n            \"properties\": {}\n        },\n        \"tableName\": \"crm_account\",\n        \"description\": \"\",\n        \"name\": \"Account Form\",\n        \"storeBinder\": {\n            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\",\n            \"properties\": {}\n        }\n    },\n    \"elements\": [\n        {\n            \"elements\": [\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"id\",\n                                \"label\": \"Account ID\",\n                                \"size\": \"\",\n                                \"readonly\": \"\",\n                                \"validator\": {\n                                    \"className\": \"org.joget.apps.form.lib.DefaultValidator\",\n                                    \"properties\": {\n                                        \"mandatory\": \"true\",\n                                        \"type\": \"\"\n                                    }\n                                },\n                                \"workflowVariable\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"accountName\",\n                                \"label\": \"Account Name\",\n                                \"size\": \"\",\n                                \"readonly\": \"\",\n                                \"validator\": {\n                                    \"className\": \"org.joget.apps.form.lib.DefaultValidator\",\n                                    \"properties\": {\n                                        \"mandatory\": \"true\",\n                                        \"type\": \"\"\n                                    }\n                                },\n                                \"workflowVariable\": \"\"\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"99%\"\n                    }\n                }\n            ],\n            \"className\": \"org.joget.apps.form.model.Section\",\n            \"properties\": {\n                \"id\": \"account_details\",\n                \"loadBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"visibilityControl\": \"\",\n                \"visibilityValue\": \"\",\n                \"storeBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"label\": \"Account Details\"\n            }\n        },\n        {\n            \"elements\": [\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextArea\",\n                            \"properties\": {\n                                \"id\": \"address\",\n                                \"cols\": \"20\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"Address\",\n                                \"readonly\": \"\",\n                                \"rows\": \"5\"\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"49%\"\n                    }\n                },\n                {\n                    \"elements\": [\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"city\",\n                                \"workflowVariable\": \"\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"City\",\n                                \"readonly\": \"\",\n                                \"size\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.TextField\",\n                            \"properties\": {\n                                \"id\": \"state\",\n                                \"workflowVariable\": \"\",\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"State\",\n                                \"readonly\": \"\",\n                                \"size\": \"\"\n                            }\n                        },\n                        {\n                            \"className\": \"org.joget.apps.form.lib.SelectBox\",\n                            \"properties\": {\n                                \"id\": \"country\",\n                                \"workflowVariable\": \"\",\n                                \"optionsBinder\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"validator\": {\n                                    \"className\": \"\",\n                                    \"properties\": {}\n                                },\n                                \"label\": \"Country\",\n                                \"multiple\": \"\",\n                                \"readonly\": \"\",\n                                \"size\": \"\",\n                                \"options\": [\n                                    {\n                                        \"value\": \"\",\n                                        \"label\": \"\"\n                                    },\n                                    {\n                                        \"value\": \"local\",\n                                        \"label\": \"Local\"\n                                    },\n                                    {\n                                        \"value\": \"international\",\n                                        \"label\": \"International\"\n                                    }\n                                ]\n                            }\n                        }\n                    ],\n                    \"className\": \"org.joget.apps.form.model.Column\",\n                    \"properties\": {\n                        \"width\": \"49%\"\n                    }\n                }\n            ],\n            \"className\": \"org.joget.apps.form.model.Section\",\n            \"properties\": {\n                \"id\": \"address\",\n                \"loadBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"visibilityControl\": \"\",\n                \"visibilityValue\": \"\",\n                \"storeBinder\": {\n                    \"className\": \"\",\n                    \"properties\": {}\n                },\n                \"label\": \"Address Details\"\n            }\n        }\n    ]\n}',NULL),('crm_community',1,'crm_contact','Contact Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_contact','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_contact\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_contact\",\"name\":\"Contact Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"account\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"extraCondition\":\"\",\"labelColumn\":\"accountName\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[]}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"fullName\",\"workflowVariable\":\"\",\"readonlyLabel\":\"\",\"maxlength\":\"\",\"encryption\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"message\":\"\",\"custom-regex\":\"\",\"mandatory\":\"true\",\"type\":\"\"}},\"value\":\"\",\"label\":\"First Name\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"lastName\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Last Name\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"addressAvailable\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Address Available\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"no\",\"label\":\"No\"},{\"value\":\"yes\",\"label\":\"Yes\"}]}},{\"className\":\"org.joget.apps.form.lib.FileUpload\",\"properties\":{\"id\":\"photo\",\"label\":\"Photo\",\"readonly\":\"\",\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"100%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"contact_details\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Contact Details\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"address\",\"cols\":\"20\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{}},\"label\":\"Address\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"city\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"City\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"state\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"State\",\"readonly\":\"\",\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"address_details\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"addressAvailable\",\"visibilityValue\":\"yes\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Address Details\"}}]}',NULL),('crm_community',1,'crm_opportunity','Opportunity Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_opportunity','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_opportunity\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_opportunity\",\"name\":\"Opportunity Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"title\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"mandatory\":\"true\",\"type\":\"\"}},\"label\":\"Title\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"description\",\"cols\":\"15\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Description\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"id\":\"amount\",\"workflowVariable\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Amount\",\"readonly\":\"\",\"size\":\"\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"stage\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Stage\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"\",\"label\":\"\"},{\"value\":\"open\",\"label\":\"Open\"},{\"value\":\"won\",\"label\":\"Won\"},{\"value\":\"lost\",\"label\":\"Lost\"}]}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"source\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Source\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"\",\"label\":\"\"},{\"value\":\"direct\",\"label\":\"Direct\"},{\"value\":\"indirect\",\"label\":\"Indirect\"}]}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"opportunity\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Opportunity\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"newAccount\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{}},\"label\":\"New Account\",\"readonly\":\"\",\"multiple\":\"\",\"options\":[{\"value\":\"yes\",\"label\":\"Yes\"},{\"value\":\"no\",\"label\":\"No\"}],\"size\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}},{\"elements\":[],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"49%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"accountChoice\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"account\",\"workflowVariable\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"extraCondition\":\"\",\"labelColumn\":\"accountName\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[]}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"account_existing\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"newAccount\",\"visibilityValue\":\"no\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Existing Account\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"account\",\"formDefId\":\"crm_account\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"account\",\"readonly\":\"\"}},{\"className\":\"org.joget.apps.form.lib.CustomHTML\",\"properties\":{\"id\":\"script1\",\"validator\":{\"className\":\"\",\"properties\":{}},\"value\":\"<script>\\nvar val = $(\\\"#account_crm_accountid\\\").val();\\nif (val != \'\') {\\n    $(\\\"#newAccount\\\").val(\\\"no\\\");\\n    $(\\\"#newAccount\\\").trigger(\\\"change\\\");\\n}\\n<\\/script>\",\"label\":\"\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"account_new\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"newAccount\",\"visibilityValue\":\"yes\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Account\"}}]}',NULL),('crm_community',1,'crm_proposal_approval_form','Proposal Approval Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Approval Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"proposal\",\"formDefId\":\"crm_proposal_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Approval\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"id\":\"status\",\"workflowVariable\":\"status\",\"optionsBinder\":{\"className\":\"\",\"properties\":{}},\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"mandatory\":\"true\",\"type\":\"\"}},\"label\":\"Status\",\"multiple\":\"\",\"readonly\":\"\",\"size\":\"\",\"options\":[{\"value\":\"approved\",\"label\":\"Approved\"},{\"value\":\"resubmit\",\"label\":\"Resubmit\"},{\"value\":\"rejected\",\"label\":\"Rejected\"}]}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"comments\",\"cols\":\"20\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Approver Comments\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Approver Action\"}}]}',NULL),('crm_community',1,'crm_proposal_form','Proposal Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"name\":\"Proposal Form\",\"id\":\"crm_proposal_form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\"},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.IdGeneratorField\",\"properties\":{\"hidden\":\"true\",\"format\":\"????\",\"workflowVariable\":\"\",\"envVariable\":\"refNo\",\"id\":\"refNo\",\"label\":\"Reference No\"}},{\"className\":\"org.joget.apps.form.lib.SelectBox\",\"properties\":{\"readonly\":\"\",\"size\":\"\",\"optionsBinder\":{\"className\":\"org.joget.apps.form.lib.FormOptionsBinder\",\"properties\":{\"formDefId\":\"crm_account\",\"labelColumn\":\"accountName\",\"extraCondition\":\"\"}},\"validator\":{\"className\":\"\",\"properties\":{}},\"multiple\":\"\",\"options\":[],\"workflowVariable\":\"\",\"id\":\"account\",\"label\":\"Account\"}},{\"className\":\"org.joget.apps.form.lib.TextField\",\"properties\":{\"readonly\":\"\",\"size\":\"\",\"validator\":{\"className\":\"org.joget.apps.form.lib.DefaultValidator\",\"properties\":{\"type\":\"\",\"mandatory\":\"true\"}},\"workflowVariable\":\"\",\"id\":\"title\",\"label\":\"Title\"}},{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"readonly\":\"\",\"validator\":{\"className\":\"\",\"properties\":{}},\"workflowVariable\":\"\",\"id\":\"description\",\"label\":\"Description\",\"placeholder\":\"\",\"rows\":\"5\",\"value\":\"\",\"cols\":\"60\",\"readonlyLabel\":\"\"}},{\"className\":\"org.joget.apps.form.lib.FileUpload\",\"properties\":{\"attachment\":\"true\",\"readonly\":\"\",\"size\":\"\",\"id\":\"attachment\",\"label\":\"Attachment\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"visibilityControl\":\"\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"id\":\"section1\",\"label\":\"Proposal Form\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityValue\":\"\"}}]}',NULL),('crm_community',1,'crm_proposal_resubmit_form','Proposal Resubmit Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_resubmit_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Resubmit Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"approval\",\"formDefId\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Resubmit\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"proposal\",\"formDefId\":\"crm_proposal_form\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"\"}},{\"className\":\"org.joget.apps.form.lib.HiddenField\",\"properties\":{\"id\":\"status\",\"workflowVariable\":\"status\",\"value\":\"pending\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Resubmission\"}}]}',NULL),('crm_community',1,'crm_proposal_sending_form','Proposal Sending Form','2017-11-23 03:15:36','2017-11-23 03:15:36','crm_proposal','{\"className\":\"org.joget.apps.form.model.Form\",\"properties\":{\"id\":\"crm_proposal_sending_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"},\"tableName\":\"crm_proposal\",\"name\":\"Proposal Sending Form\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\"}},\"elements\":[{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.SubForm\",\"properties\":{\"id\":\"approval\",\"formDefId\":\"crm_proposal_approval_form\",\"loadBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"subFormParentId\":\"\",\"storeBinder\":{\"className\":\"org.joget.apps.form.lib.WorkflowFormBinder\",\"properties\":{}},\"label\":\"\",\"parentSubFormId\":\"\",\"readonly\":\"true\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section1\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"Proposal Sending\"}},{\"elements\":[{\"elements\":[{\"className\":\"org.joget.apps.form.lib.TextArea\",\"properties\":{\"id\":\"notes\",\"cols\":\"20\",\"validator\":{\"className\":\"\",\"properties\":{}},\"label\":\"Notes\",\"readonly\":\"\",\"rows\":\"5\"}}],\"className\":\"org.joget.apps.form.model.Column\",\"properties\":{\"width\":\"99%\"}}],\"className\":\"org.joget.apps.form.model.Section\",\"properties\":{\"id\":\"section2\",\"loadBinder\":{\"className\":\"\",\"properties\":{}},\"visibilityControl\":\"\",\"visibilityValue\":\"\",\"storeBinder\":{\"className\":\"\",\"properties\":{}},\"label\":\"\"}}]}',NULL);
 /*!40000 ALTER TABLE `app_form` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2362,20 +319,21 @@ UNLOCK TABLES;
 -- Table structure for table `app_form_data_audit_trail`
 --
 
+DROP TABLE IF EXISTS `app_form_data_audit_trail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_form_data_audit_trail` (
-  `id` varchar(255) NOT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
-  `formId` varchar(255) DEFAULT NULL,
-  `tableName` varchar(255) DEFAULT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `action` varchar(255) DEFAULT NULL,
-  `data` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `action` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `data` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2391,19 +349,20 @@ UNLOCK TABLES;
 -- Table structure for table `app_message`
 --
 
+DROP TABLE IF EXISTS `app_message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_message` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) NOT NULL,
-  `messageKey` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
-  `message` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2420,20 +379,21 @@ UNLOCK TABLES;
 -- Table structure for table `app_package`
 --
 
+DROP TABLE IF EXISTS `app_package`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package` (
-  `packageId` varchar(255) NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`packageId`,`packageVersion`),
   KEY `FK852EA428462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK852EA428462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2442,7 +402,7 @@ CREATE TABLE `app_package` (
 
 LOCK TABLES `app_package` WRITE;
 /*!40000 ALTER TABLE `app_package` DISABLE KEYS */;
-INSERT INTO `app_package` VALUES ('crm_community',1,'CRM Community','2017-11-09 05:52:44','2017-11-09 05:52:44','crm_community',1);
+INSERT INTO `app_package` VALUES ('crm_community',1,'CRM Community','2017-11-23 03:15:39','2017-11-23 03:15:39','crm_community',1);
 /*!40000 ALTER TABLE `app_package` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2450,24 +410,25 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_activity_form`
 --
 
+DROP TABLE IF EXISTS `app_package_activity_form`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_form` (
-  `processDefId` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `formId` varchar(255) DEFAULT NULL,
-  `formUrl` varchar(255) DEFAULT NULL,
-  `formIFrameStyle` varchar(255) DEFAULT NULL,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formUrl` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formIFrameStyle` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `autoContinue` bit(1) DEFAULT NULL,
   `disableSaveAsDraft` bit(1) DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKA8D741D5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKA8D741D5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2484,20 +445,21 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_activity_plugin`
 --
 
+DROP TABLE IF EXISTS `app_package_activity_plugin`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_plugin` (
-  `processDefId` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `pluginName` varchar(255) DEFAULT NULL,
-  `pluginProperties` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2514,21 +476,22 @@ UNLOCK TABLES;
 -- Table structure for table `app_package_participant`
 --
 
+DROP TABLE IF EXISTS `app_package_participant`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_participant` (
-  `processDefId` varchar(255) NOT NULL,
-  `participantId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `participantId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `value` text,
-  `pluginProperties` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2545,19 +508,20 @@ UNLOCK TABLES;
 -- Table structure for table `app_plugin_default`
 --
 
+DROP TABLE IF EXISTS `app_plugin_default`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_plugin_default` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `pluginName` varchar(255) DEFAULT NULL,
-  `pluginDescription` text,
-  `pluginProperties` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginDescription` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2573,17 +537,18 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_activity`
 --
 
+DROP TABLE IF EXISTS `app_report_activity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_activity` (
-  `uuid` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) DEFAULT NULL,
-  `activityName` varchar(255) DEFAULT NULL,
-  `processUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FK5E33D79C918F93D` (`processUid`),
   CONSTRAINT `FK5E33D79C918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2599,15 +564,16 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_activity_instance`
 --
 
+DROP TABLE IF EXISTS `app_report_activity_instance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_activity_instance` (
-  `instanceId` varchar(255) NOT NULL,
-  `performer` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
-  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
-  `assignmentUsers` text,
+  `instanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `performer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
@@ -2615,14 +581,14 @@ CREATE TABLE `app_report_activity_instance` (
   `delay` bigint(20) DEFAULT NULL,
   `timeConsumingFromCreatedTime` bigint(20) DEFAULT NULL,
   `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
-  `activityUid` varchar(255) DEFAULT NULL,
-  `processInstanceId` varchar(255) DEFAULT NULL,
+  `activityUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processInstanceId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`instanceId`),
   KEY `FK9C6ABDD8B06E2043` (`activityUid`),
   KEY `FK9C6ABDD8D4610A90` (`processInstanceId`),
   CONSTRAINT `FK9C6ABDD8B06E2043` FOREIGN KEY (`activityUid`) REFERENCES `app_report_activity` (`uuid`),
   CONSTRAINT `FK9C6ABDD8D4610A90` FOREIGN KEY (`processInstanceId`) REFERENCES `app_report_process_instance` (`instanceId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2638,15 +604,16 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_app`
 --
 
+DROP TABLE IF EXISTS `app_report_app`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_app` (
-  `uuid` varchar(255) NOT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
-  `appName` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2662,18 +629,19 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_package`
 --
 
+DROP TABLE IF EXISTS `app_report_package`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_package` (
-  `uuid` varchar(255) NOT NULL,
-  `packageId` varchar(255) DEFAULT NULL,
-  `packageName` varchar(255) DEFAULT NULL,
-  `packageVersion` varchar(255) DEFAULT NULL,
-  `appUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FKBD580A19E475ABC` (`appUid`),
   CONSTRAINT `FKBD580A19E475ABC` FOREIGN KEY (`appUid`) REFERENCES `app_report_app` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2689,17 +657,18 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_process`
 --
 
+DROP TABLE IF EXISTS `app_report_process`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_process` (
-  `uuid` varchar(255) NOT NULL,
-  `processDefId` varchar(255) DEFAULT NULL,
-  `processName` varchar(255) DEFAULT NULL,
-  `packageUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FKDAFFF442D40695DD` (`packageUid`),
   CONSTRAINT `FKDAFFF442D40695DD` FOREIGN KEY (`packageUid`) REFERENCES `app_report_package` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2715,22 +684,23 @@ UNLOCK TABLES;
 -- Table structure for table `app_report_process_instance`
 --
 
+DROP TABLE IF EXISTS `app_report_process_instance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_process_instance` (
-  `instanceId` varchar(255) NOT NULL,
-  `requester` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
+  `instanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `requester` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
   `finishTime` datetime DEFAULT NULL,
   `delay` bigint(20) DEFAULT NULL,
   `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
-  `processUid` varchar(255) DEFAULT NULL,
+  `processUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`instanceId`),
   KEY `FK351D7BF2918F93D` (`processUid`),
   CONSTRAINT `FK351D7BF2918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2746,18 +716,19 @@ UNLOCK TABLES;
 -- Table structure for table `app_resource`
 --
 
+DROP TABLE IF EXISTS `app_resource`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_resource` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `filesize` bigint(20) DEFAULT NULL,
-  `permissionClass` varchar(255) DEFAULT NULL,
-  `permissionProperties` longtext,
+  `permissionClass` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `permissionProperties` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2774,22 +745,23 @@ UNLOCK TABLES;
 -- Table structure for table `app_userview`
 --
 
+DROP TABLE IF EXISTS `app_userview`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_userview` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` text,
-  `json` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FKE411D54E462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FKE411D54E462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2798,7 +770,7 @@ CREATE TABLE `app_userview` (
 
 LOCK TABLES `app_userview` WRITE;
 /*!40000 ALTER TABLE `app_userview` DISABLE KEYS */;
-INSERT INTO `app_userview` VALUES ('appcenter',1,'v','Joget Workflow',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"v\",\"name\":\"Joget Workflow\",\"description\":\"\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"#i18n.Powered by Joget#\"},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"horizontal_inline\",\"themeScheme\":\"light\",\"primaryColor\":\"custom\",\"customPrimary\":\"#7CA6D8\",\"customPrimaryDark\":\"\",\"customPrimaryLight\":\"\",\"accentColor\":\"BLUE\",\"buttonColor\":\"GREY\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\\/jw\\/images\\/v3\\/logo.png\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"all\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"\",\"homeAttractBanner\":\"<div id=\\\"banner\\\"><h1>#i18n.App Center#<\\/h1><\\/div>\",\"css\":\"\\/* banner image and title *\\/\\n#banner {\\n    background: url(\\/jw\\/home\\/banner.jpg);\\n    background-size: cover;\\n    height: 240px;\\n    width: 100%;\\n}\\n#banner h1 {\\n    margin-top: 0px;\\n    padding-top: 20px;\\n    color: white;\\n    text-align: center;\\n}\\nbody#home ul.breadcrumb {\\n    display: none;\\n}\\n\\n\\/* admin buttons *\\/\\n#appcenter_admin {\\n    position: absolute;\\n    top: -120px;\\n    text-align: center;\\n    display: block;\\n    margin: auto;\\n    width: 100%;\\n}\\n#admin_section, #admin_section .form-column, #admin_section .form-cell, #admin_section .form-cell-value {\\n    padding: 0px;\\n    margin: 0px;\\n    height: 0px;\\n}\\n@media (max-width: 540px) {\\n    #appcenter_admin {    \\n        top: -150px;\\n    }\\n}\\n\",\"js\":\"\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"userviewDescription\":\"\",\"userview_thumbnail\":\"\",\"hideThisUserviewInAppCenter\":\"true\",\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\"}},\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-EE74E4F4426241BD9BC3BC73B1D24AC7\",\"label\":\"<i class=\'fa fa-home\'><\\/i> Home\"},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"28F7ADF73F204C8BBAAD32CF26587AE2\",\"customId\":\"home\",\"label\":\"Published Apps\",\"formId\":\"landing\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"\",\"redirectUrlOnCancel\":\"\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]}]}','2017-11-09 13:54:46','2017-11-09 13:54:46'),('crm_community',1,'crm_userview_sales','Customer Relationship Management',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"crm_userview_sales\",\"name\":\"Customer Relationship Management\",\"description\":\"\",\"welcomeMessage\":\"Sales Force Automation\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\"},\"layout\":{\"className\":\"org.joget.apps.userview.model.UserviewLayout\",\"properties\":{\"customHeader\":\"\",\"customFooter\":\"\",\"beforeMenu\":\"\",\"afterMenu\":\"\",\"theme\":{\"className\":\"org.joget.apps.userview.lib.DefaultTheme\",\"properties\":{\"css\":\"\",\"js\":\"\"}}}},\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-9BE91A55FAAC4B5098841EA9E1994BE6\",\"label\":\"Home\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.plugin.enterprise.AnonymousUserviewPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.HtmlPage\",\"properties\":{\"id\":\"welcome\",\"customId\":\"welcome\",\"label\":\"Welcome\",\"content\":\"<div id=\\\"left_content\\\">\\n<div style=\\\"float: left; width: 400px; margin-right: 10px;\\\">\\n<h4 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-size: inherit; line-height: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; font-weight: bold; color: #042c54;\\\">More Leads, More Sales, More Customers<\\/h4>\\n<h1 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font: inherit; vertical-align: baseline; color: #1f4282;\\\"><span style=\\\"font-size: large;\\\"><strong>Business&nbsp;Customer Relationship Management<\\/strong><\\/span><\\/h1>\\n<p style=\\\"margin: 0px; padding: 30px 0px 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; font-size: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; color: #363636; line-height: 15px;\\\">CRM helps your business communicate with prospects, share sales information, close deals and keep customers happy.<img src=\\\"http:\\/\\/www.joget.org\\/images\\/demo\\/phone_pad.png\\\" alt=\\\"\\\" width=\\\"382\\\" height=\\\"302\\\" \\/><\\/p>\\n<\\/div>\\n<\\/div>\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-7650DEEFC4CC4332AC25871B65BBDD48\",\"label\":\"Accounts\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"384344BD3E2946D097C6F5F17540C377\",\"customId\":\"account_list\",\"label\":\"Account List\",\"datalistId\":\"crm_account_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Account List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"account_form\",\"customId\":\"account_new\",\"label\":\"New Account\",\"formId\":\"crm_account\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"account_list\",\"redirectUrlOnCancel\":\"account_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-E77D2050680D4DB0A85A5C0C3AC1C083\",\"label\":\"Contacts\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"D86B740C970C4B08B4D5CCD3DC0E9503\",\"customId\":\"contact_list\",\"label\":\"Contact List\",\"datalistId\":\"crm_contact_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Contact List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"contact-form\",\"customId\":\"contact_new\",\"label\":\"New Contact\",\"formId\":\"crm_contact\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"contact_list\",\"redirectUrlOnCancel\":\"contact_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-A12DBDB14B4447A984E6095B77F28B42\",\"label\":\"Opportunities\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"A074397ABEA94CF78E2E8FA0843AB97B\",\"customId\":\"opportunity_list\",\"label\":\"Opportunity List\",\"datalistId\":\"crm_opportunity_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Opportunity List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"0C7E36768A2F46BB945CEC50E62E0BE8\",\"customId\":\"opportunity_new\",\"label\":\"New Opportunity\",\"formId\":\"crm_opportunity\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"opportunity_list\",\"redirectUrlOnCancel\":\"opportunity_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-78EC0B8A1E8E483A93770714BB0D6F6E\",\"label\":\"Proposal Process\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"9E98D32002434ABFAABA3649DCA300F5\",\"customId\":\"view_all_proposal\",\"label\":\"View All Proposals\",\"datalistId\":\"Proposal\",\"rowCount\":\"true\",\"buttonPosition\":\"topLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"no\",\"customHeader\":\"<h2>View All Proposals<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.InboxMenu\",\"properties\":{\"id\":\"AA1445B29D904408B3F2B1B36E469E16\",\"customId\":\"workflow_inbox\",\"label\":\"Task Inbox\",\"appFilter\":\"process\",\"processId\":\"process1\",\"rowCount\":\"true\",\"buttonPosition\":\"topLeft\",\"list-customHeader\":\"<h2>Task Inbox<\\/h2>\\nReminder to administrator for email notification to work:<br\\/>\\n<ul>\\n\\n<li>Input the admin email address in <a href=\\\"\\/jw\\/web\\/console\\/directory\\/users\\\" target=\\\"_blank\\\">Setup Users<\\/a>.<\\/li>\\n<li>Input your email SMTP credentials into the <a href=\\\"\\/jw\\/web\\/console\\/app\\/crm\\/1\\/processes\\/process1\\\" target=\\\"_blank\\\">Process Email Tool<\\/a>.<\\/li>\\n<\\/ul>\",\"list-customFooter\":\"\",\"assignment-customHeader\":\"\",\"assignment-customFooter\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.RunProcess\",\"properties\":{\"id\":\"2D27B3875F234315A7A3562BD0E35AB2\",\"customId\":\"proposal_process\",\"label\":\"Submit New Proposal\",\"processDefId\":\"process1\",\"runProcessDirectly\":\"Yes\",\"showInPopupDialog\":\"\",\"runProcessSubmitLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"view_all_proposal\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]},{\"menus\":[{\"className\":\"org.joget.apps.userview.lib.HtmlPage\",\"properties\":{\"id\":\"765269E3926049B0A21D16581EE188DF\",\"customId\":\"about\",\"label\":\"About\",\"content\":\"<div id=\\\"left_content\\\">\\n<div style=\\\"float: left; width: 400px; margin-right: 10px;\\\">\\n<h4 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-size: inherit; line-height: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; font-weight: bold; color: #042c54;\\\">More Leads, More Sales, More Customers<\\/h4>\\n<h1 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font: inherit; vertical-align: baseline; color: #1f4282;\\\"><span style=\\\"font-size: large;\\\"><strong>Business&nbsp;Customer Relationship Management<\\/strong><\\/span><\\/h1>\\n<p style=\\\"margin: 0px; padding: 30px 0px 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; font-size: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; color: #363636; line-height: 15px;\\\">CRM helps your business communicate with prospects, share sales information, close deals and keep customers happy.<img src=\\\"http:\\/\\/www.joget.org\\/images\\/demo\\/phone_pad.png\\\" alt=\\\"\\\" width=\\\"382\\\" height=\\\"302\\\" \\/><\\/p>\\n<\\/div>\\n<\\/div>\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-8739F2859D894A339404C2404CB9004E\",\"hide\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"label\":\" \"}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-1AFAC018AFA848F2970403061E49EE72\",\"label\":\"Hidden\",\"hide\":\"yes\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}},\"comment\":\"\"},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"1A2E6106918040F484C342E1BB12B2A3\",\"customId\":\"ViewProposal\",\"label\":\"View Proposal\",\"formId\":\"crm_proposal_approval_form\",\"showInPopupDialog\":\"\",\"readonly\":\"Yes\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"view_all_proposal\",\"redirectUrlOnCancel\":\"view_all_proposal\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]}],\"setting\":{\"className\":\"org.joget.apps.userview.model.UserviewSetting\",\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"true\",\"themeScheme\":\"light\",\"primaryColor\":\"DARKROYALBLUE\",\"accentColor\":\"BLUE\",\"buttonColor\":\"GREY\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"current\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"true\",\"homeAttractBanner\":\"\",\"css\":\"\",\"js\":\"\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"userviewDescription\":\"\",\"userview_thumbnail\":\"#appResource.crm_icon.jpg#\",\"hideThisUserviewInAppCenter\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\"}}}','2017-11-09 05:52:42','2017-11-09 05:52:42');
+INSERT INTO `app_userview` VALUES ('appcenter',1,'v','Joget Workflow',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"v\",\"name\":\"Joget Workflow\",\"description\":\"\",\"welcomeMessage\":\"#date.EEE, d MMM yyyy#\",\"logoutText\":\"Logout\",\"footerMessage\":\"#i18n.Powered by Joget#\"},\"setting\":{\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"horizontal_inline\",\"themeScheme\":\"light\",\"primaryColor\":\"custom\",\"customPrimary\":\"#7CA6D8\",\"customPrimaryDark\":\"\",\"customPrimaryLight\":\"\",\"accentColor\":\"BLUE\",\"buttonColor\":\"GREY\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\\/jw\\/images\\/v3\\/logo.png\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"all\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"\",\"homeAttractBanner\":\"<div id=\\\"banner\\\"><h1>#i18n.App Center#<\\/h1><\\/div>\",\"css\":\"\\/* banner image and title *\\/\\n#banner {\\n    background: url(\\/jw\\/home\\/banner.jpg);\\n    background-size: cover;\\n    height: 240px;\\n    width: 100%;\\n}\\n#banner h1 {\\n    margin-top: 0px;\\n    padding-top: 20px;\\n    color: white;\\n    text-align: center;\\n}\\nbody#home ul.breadcrumb {\\n    display: none;\\n}\\n\\n\\/* admin buttons *\\/\\n#appcenter_admin {\\n    position: absolute;\\n    top: -120px;\\n    text-align: center;\\n    display: block;\\n    margin: auto;\\n    width: 100%;\\n}\\n#admin_section, #admin_section .form-column, #admin_section .form-cell, #admin_section .form-cell-value {\\n    padding: 0px;\\n    margin: 0px;\\n    height: 0px;\\n}\\n@media (max-width: 540px) {\\n    #appcenter_admin {    \\n        top: -150px;\\n    }\\n}\\n\",\"js\":\"\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"userviewDescription\":\"\",\"userview_thumbnail\":\"\",\"hideThisUserviewInAppCenter\":\"true\",\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\"}},\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-EE74E4F4426241BD9BC3BC73B1D24AC7\",\"label\":\"<i class=\'fa fa-home\'><\\/i> Home\"},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"28F7ADF73F204C8BBAAD32CF26587AE2\",\"customId\":\"home\",\"label\":\"Published Apps\",\"formId\":\"landing\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"\",\"redirectUrlOnCancel\":\"\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]}]}','2017-11-22 19:16:14','2017-11-22 19:16:14'),('crm_community',1,'crm_userview_sales','Customer Relationship Management',NULL,'{\"className\":\"org.joget.apps.userview.model.Userview\",\"properties\":{\"id\":\"crm_userview_sales\",\"name\":\"Customer Relationship Management\",\"description\":\"\",\"welcomeMessage\":\"Sales Force Automation\",\"logoutText\":\"Logout\",\"footerMessage\":\"Powered by Joget\"},\"layout\":{\"className\":\"org.joget.apps.userview.model.UserviewLayout\",\"properties\":{\"customHeader\":\"\",\"customFooter\":\"\",\"beforeMenu\":\"\",\"afterMenu\":\"\",\"theme\":{\"className\":\"org.joget.apps.userview.lib.DefaultTheme\",\"properties\":{\"css\":\"\",\"js\":\"\"}}}},\"categories\":[{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-9BE91A55FAAC4B5098841EA9E1994BE6\",\"label\":\"Home\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.plugin.enterprise.AnonymousUserviewPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.HtmlPage\",\"properties\":{\"id\":\"welcome\",\"customId\":\"welcome\",\"label\":\"Welcome\",\"content\":\"<div id=\\\"left_content\\\">\\n<div style=\\\"float: left; width: 400px; margin-right: 10px;\\\">\\n<h4 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-size: inherit; line-height: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; font-weight: bold; color: #042c54;\\\">More Leads, More Sales, More Customers<\\/h4>\\n<h1 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font: inherit; vertical-align: baseline; color: #1f4282;\\\"><span style=\\\"font-size: large;\\\"><strong>Business&nbsp;Customer Relationship Management<\\/strong><\\/span><\\/h1>\\n<p style=\\\"margin: 0px; padding: 30px 0px 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; font-size: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; color: #363636; line-height: 15px;\\\">CRM helps your business communicate with prospects, share sales information, close deals and keep customers happy.<img src=\\\"http:\\/\\/www.joget.org\\/images\\/demo\\/phone_pad.png\\\" alt=\\\"\\\" width=\\\"382\\\" height=\\\"302\\\" \\/><\\/p>\\n<\\/div>\\n<\\/div>\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-7650DEEFC4CC4332AC25871B65BBDD48\",\"label\":\"Accounts\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"384344BD3E2946D097C6F5F17540C377\",\"customId\":\"account_list\",\"label\":\"Account List\",\"datalistId\":\"crm_account_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Account List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"account_form\",\"customId\":\"account_new\",\"label\":\"New Account\",\"formId\":\"crm_account\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"account_list\",\"redirectUrlOnCancel\":\"account_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-E77D2050680D4DB0A85A5C0C3AC1C083\",\"label\":\"Contacts\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"D86B740C970C4B08B4D5CCD3DC0E9503\",\"customId\":\"contact_list\",\"label\":\"Contact List\",\"datalistId\":\"crm_contact_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Contact List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"contact-form\",\"customId\":\"contact_new\",\"label\":\"New Contact\",\"formId\":\"crm_contact\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"contact_list\",\"redirectUrlOnCancel\":\"contact_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-A12DBDB14B4447A984E6095B77F28B42\",\"label\":\"Opportunities\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"A074397ABEA94CF78E2E8FA0843AB97B\",\"customId\":\"opportunity_list\",\"label\":\"Opportunity List\",\"datalistId\":\"crm_opportunity_list\",\"rowCount\":\"true\",\"buttonPosition\":\"bottomLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"left\",\"customHeader\":\"<h2>Opportunity List<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"0C7E36768A2F46BB945CEC50E62E0BE8\",\"customId\":\"opportunity_new\",\"label\":\"New Opportunity\",\"formId\":\"crm_opportunity\",\"showInPopupDialog\":\"\",\"readonly\":\"\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"opportunity_list\",\"redirectUrlOnCancel\":\"opportunity_list\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"permission\":{\"className\":\"org.joget.apps.userview.model.UserviewPermission\",\"properties\":{}}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-78EC0B8A1E8E483A93770714BB0D6F6E\",\"label\":\"Proposal Process\",\"hide\":\"\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}}},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.DataListMenu\",\"properties\":{\"id\":\"9E98D32002434ABFAABA3649DCA300F5\",\"customId\":\"view_all_proposal\",\"label\":\"View All Proposals\",\"datalistId\":\"Proposal\",\"rowCount\":\"true\",\"buttonPosition\":\"topLeft\",\"selectionType\":\"multiple\",\"checkboxPosition\":\"no\",\"customHeader\":\"<h2>View All Proposals<\\/h2>\",\"customFooter\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.InboxMenu\",\"properties\":{\"id\":\"AA1445B29D904408B3F2B1B36E469E16\",\"customId\":\"workflow_inbox\",\"label\":\"Task Inbox\",\"appFilter\":\"process\",\"processId\":\"process1\",\"rowCount\":\"true\",\"buttonPosition\":\"topLeft\",\"list-customHeader\":\"<h2>Task Inbox<\\/h2>\\nReminder to administrator for email notification to work:<br\\/>\\n<ul>\\n\\n<li>Input the admin email address in <a href=\\\"\\/jw\\/web\\/console\\/directory\\/users\\\" target=\\\"_blank\\\">Setup Users<\\/a>.<\\/li>\\n<li>Input your email SMTP credentials into the <a href=\\\"\\/jw\\/web\\/console\\/app\\/crm\\/1\\/processes\\/process1\\\" target=\\\"_blank\\\">Process Email Tool<\\/a>.<\\/li>\\n<\\/ul>\",\"list-customFooter\":\"\",\"assignment-customHeader\":\"\",\"assignment-customFooter\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}},{\"className\":\"org.joget.apps.userview.lib.RunProcess\",\"properties\":{\"id\":\"2D27B3875F234315A7A3562BD0E35AB2\",\"customId\":\"proposal_process\",\"label\":\"Submit New Proposal\",\"processDefId\":\"process1\",\"runProcessDirectly\":\"Yes\",\"showInPopupDialog\":\"\",\"runProcessSubmitLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"view_all_proposal\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"keyName\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]},{\"menus\":[{\"className\":\"org.joget.apps.userview.lib.HtmlPage\",\"properties\":{\"id\":\"765269E3926049B0A21D16581EE188DF\",\"customId\":\"about\",\"label\":\"About\",\"content\":\"<div id=\\\"left_content\\\">\\n<div style=\\\"float: left; width: 400px; margin-right: 10px;\\\">\\n<h4 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-size: inherit; line-height: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; font-weight: bold; color: #042c54;\\\">More Leads, More Sales, More Customers<\\/h4>\\n<h1 style=\\\"margin: 0px; padding: 0px; border-width: 0px; font: inherit; vertical-align: baseline; color: #1f4282;\\\"><span style=\\\"font-size: large;\\\"><strong>Business&nbsp;Customer Relationship Management<\\/strong><\\/span><\\/h1>\\n<p style=\\\"margin: 0px; padding: 30px 0px 0px; border-width: 0px; font-family: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; font-size: inherit; font-size-adjust: inherit; font-stretch: inherit; vertical-align: baseline; color: #363636; line-height: 15px;\\\">CRM helps your business communicate with prospects, share sales information, close deals and keep customers happy.<img src=\\\"http:\\/\\/www.joget.org\\/images\\/demo\\/phone_pad.png\\\" alt=\\\"\\\" width=\\\"382\\\" height=\\\"302\\\" \\/><\\/p>\\n<\\/div>\\n<\\/div>\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}],\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-8739F2859D894A339404C2404CB9004E\",\"hide\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"label\":\" \"}},{\"className\":\"org.joget.apps.userview.model.UserviewCategory\",\"properties\":{\"id\":\"category-1AFAC018AFA848F2970403061E49EE72\",\"label\":\"Hidden\",\"hide\":\"yes\",\"permission\":{\"className\":\"org.joget.apps.userview.lib.LoggedInUserPermission\",\"properties\":{}},\"comment\":\"\"},\"menus\":[{\"className\":\"org.joget.apps.userview.lib.FormMenu\",\"properties\":{\"id\":\"1A2E6106918040F484C342E1BB12B2A3\",\"customId\":\"ViewProposal\",\"label\":\"View Proposal\",\"formId\":\"crm_proposal_approval_form\",\"showInPopupDialog\":\"\",\"readonly\":\"Yes\",\"readonlyLabel\":\"\",\"messageShowAfterComplete\":\"\",\"redirectUrlAfterComplete\":\"view_all_proposal\",\"redirectUrlOnCancel\":\"view_all_proposal\",\"redirectTargetOnCancel\":\"top\",\"fieldPassover\":\"\",\"fieldPassoverMethod\":\"append\",\"paramName\":\"\",\"submitButtonLabel\":\"\",\"cancelButtonLabel\":\"\",\"customHeader\":\"\",\"customFooter\":\"\",\"keyName\":\"\",\"loadDataWithKey\":\"\",\"userviewCacheScope\":\"\",\"userviewCacheDuration\":\"20\"}}]}],\"setting\":{\"className\":\"org.joget.apps.userview.model.UserviewSetting\",\"properties\":{\"theme\":{\"className\":\"org.joget.plugin.enterprise.UniversalTheme\",\"properties\":{\"horizontal_menu\":\"true\",\"themeScheme\":\"light\",\"primaryColor\":\"DARKROYALBLUE\",\"accentColor\":\"BLUE\",\"buttonColor\":\"GREY\",\"buttonTextColor\":\"WHITE\",\"menuFontColor\":\"BLACK\",\"fontColor\":\"WHITE\",\"fav_icon\":\"\",\"logo\":\"\",\"profile\":\"\",\"userImage\":\"\",\"inbox\":\"current\",\"shortcutLinkLabel\":\"Shortcut\",\"shortcut\":[],\"userMenu\":[],\"enableResponsiveSwitch\":\"true\",\"removeAssignmentTitle\":\"true\",\"homeAttractBanner\":\"\",\"css\":\"\",\"js\":\"\",\"subheader\":\"\",\"subfooter\":\"\",\"disableHelpGuide\":\"\",\"loginPageTop\":\"\",\"loginPageBottom\":\"\"}},\"userviewDescription\":\"\",\"userview_thumbnail\":\"#appResource.crm_icon.jpg#\",\"hideThisUserviewInAppCenter\":\"\",\"permission\":{\"className\":\"\",\"properties\":{}},\"__\":\"\"}}}','2017-11-23 03:15:37','2017-11-23 03:15:37');
 /*!40000 ALTER TABLE `app_userview` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -2806,15 +778,16 @@ UNLOCK TABLES;
 -- Table structure for table `dir_department`
 --
 
+DROP TABLE IF EXISTS `dir_department`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_department` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
-  `hod` varchar(255) DEFAULT NULL,
-  `parentId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `hod` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKEEE8AA4418CEBAE1` (`organizationId`),
   KEY `FKEEE8AA44EF6BB2B7` (`parentId`),
@@ -2822,7 +795,7 @@ CREATE TABLE `dir_department` (
   CONSTRAINT `FKEEE8AA4418CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKEEE8AA4480DB1449` FOREIGN KEY (`hod`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FKEEE8AA44EF6BB2B7` FOREIGN KEY (`parentId`) REFERENCES `dir_department` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2839,18 +812,19 @@ UNLOCK TABLES;
 -- Table structure for table `dir_employment`
 --
 
+DROP TABLE IF EXISTS `dir_employment`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment` (
-  `id` varchar(255) NOT NULL,
-  `userId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `startDate` date DEFAULT NULL,
   `endDate` date DEFAULT NULL,
-  `employeeCode` varchar(255) DEFAULT NULL,
-  `role` varchar(255) DEFAULT NULL,
-  `gradeId` varchar(255) DEFAULT NULL,
-  `departmentId` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `employeeCode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `role` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gradeId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `departmentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKC6620ADE716AE35F` (`departmentId`),
   KEY `FKC6620ADE14CE02E9` (`gradeId`),
@@ -2860,7 +834,7 @@ CREATE TABLE `dir_employment` (
   CONSTRAINT `FKC6620ADE18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKC6620ADE716AE35F` FOREIGN KEY (`departmentId`) REFERENCES `dir_department` (`id`),
   CONSTRAINT `FKC6620ADECE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2877,18 +851,19 @@ UNLOCK TABLES;
 -- Table structure for table `dir_employment_report_to`
 --
 
+DROP TABLE IF EXISTS `dir_employment_report_to`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment_report_to` (
-  `employmentId` varchar(255) NOT NULL,
-  `reportToId` varchar(255) NOT NULL,
-  `id` varchar(255) DEFAULT NULL,
+  `employmentId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `reportToId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`employmentId`,`reportToId`),
   KEY `FK53622945F4068416` (`reportToId`),
   KEY `FK536229452787E613` (`employmentId`),
   CONSTRAINT `FK536229452787E613` FOREIGN KEY (`employmentId`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FK53622945F4068416` FOREIGN KEY (`reportToId`) REFERENCES `dir_employment` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2905,17 +880,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_grade`
 --
 
+DROP TABLE IF EXISTS `dir_grade`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_grade` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKBC9A49A518CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A49A518CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2932,17 +908,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_group`
 --
 
+DROP TABLE IF EXISTS `dir_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_group` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKBC9A804D18CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A804D18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2959,17 +936,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_organization`
 --
 
+DROP TABLE IF EXISTS `dir_organization`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_organization` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `parentId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK55A15FA5961BD498` (`parentId`),
   CONSTRAINT `FK55A15FA5961BD498` FOREIGN KEY (`parentId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2986,14 +964,15 @@ UNLOCK TABLES;
 -- Table structure for table `dir_role`
 --
 
+DROP TABLE IF EXISTS `dir_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_role` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3010,20 +989,21 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user`
 --
 
+DROP TABLE IF EXISTS `dir_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `firstName` varchar(255) DEFAULT NULL,
-  `lastName` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `active` int(11) DEFAULT NULL,
-  `timeZone` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
+  `timeZone` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3040,11 +1020,12 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_extra`
 --
 
+DROP TABLE IF EXISTS `dir_user_extra`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_extra` (
-  `username` varchar(255) NOT NULL,
-  `algorithm` varchar(255) DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `algorithm` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `loginAttempt` int(11) DEFAULT NULL,
   `failedloginAttempt` int(11) DEFAULT NULL,
   `lastLogedInDate` datetime DEFAULT NULL,
@@ -3053,7 +1034,7 @@ CREATE TABLE `dir_user_extra` (
   `requiredPasswordChange` bit(1) DEFAULT NULL,
   `noPasswordExpiration` bit(1) DEFAULT NULL,
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3069,17 +1050,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_group`
 --
 
+DROP TABLE IF EXISTS `dir_user_group`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_group` (
-  `groupId` varchar(255) NOT NULL,
-  `userId` varchar(255) NOT NULL,
+  `groupId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`userId`,`groupId`),
   KEY `FK2F0367FD159B6639` (`groupId`),
   KEY `FK2F0367FDCE539211` (`userId`),
   CONSTRAINT `FK2F0367FD159B6639` FOREIGN KEY (`groupId`) REFERENCES `dir_group` (`id`),
   CONSTRAINT `FK2F0367FDCE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3088,7 +1070,7 @@ CREATE TABLE `dir_user_group` (
 
 LOCK TABLES `dir_user_group` WRITE;
 /*!40000 ALTER TABLE `dir_user_group` DISABLE KEYS */;
-INSERT INTO `dir_user_group` VALUES ('G-001','clark'),('G-001','david'),('G-001','jack'),('G-001','roy'),('G-001','sasha'),('G-001','tina'),('G-002','terry'),('G-003','julia'),('G-003','sasha');
+INSERT INTO `dir_user_group` VALUES ('G-001','clark'),('G-001','david'),('G-001','jack'),('G-003','julia'),('G-001','roy'),('G-001','sasha'),('G-003','sasha'),('G-002','terry'),('G-001','tina');
 /*!40000 ALTER TABLE `dir_user_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3096,14 +1078,15 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_meta`
 --
 
+DROP TABLE IF EXISTS `dir_user_meta`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_meta` (
-  `username` varchar(255) NOT NULL,
-  `meta_key` varchar(255) NOT NULL,
-  `meta_value` longtext,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `meta_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `meta_value` longtext COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`username`,`meta_key`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3119,16 +1102,17 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_password_history`
 --
 
+DROP TABLE IF EXISTS `dir_user_password_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_password_history` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `salt` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `salt` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `updatedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3144,18 +1128,19 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_replacement`
 --
 
+DROP TABLE IF EXISTS `dir_user_replacement`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_replacement` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `replacementUser` varchar(255) DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `processIds` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `replacementUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processIds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3171,17 +1156,18 @@ UNLOCK TABLES;
 -- Table structure for table `dir_user_role`
 --
 
+DROP TABLE IF EXISTS `dir_user_role`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_role` (
-  `roleId` varchar(255) NOT NULL,
-  `userId` varchar(255) NOT NULL,
+  `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`userId`,`roleId`),
   KEY `FK5C5FE738C8FE3CA7` (`roleId`),
   KEY `FK5C5FE738CE539211` (`userId`),
   CONSTRAINT `FK5C5FE738C8FE3CA7` FOREIGN KEY (`roleId`) REFERENCES `dir_role` (`id`),
   CONSTRAINT `FK5C5FE738CE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3198,12 +1184,13 @@ UNLOCK TABLES;
 -- Table structure for table `objectid`
 --
 
+DROP TABLE IF EXISTS `objectid`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `objectid` (
   `nextoid` decimal(19,0) NOT NULL,
   PRIMARY KEY (`nextoid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3217,22 +1204,2143 @@ INSERT INTO `objectid` VALUES (1000400);
 UNLOCK TABLES;
 
 --
+-- Table structure for table `shkactivities`
+--
+
+DROP TABLE IF EXISTS `shkactivities`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivities` (
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivitySetDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `Process` decimal(19,0) NOT NULL,
+  `TheResource` decimal(19,0) DEFAULT NULL,
+  `PDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessId` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ResourceId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `State` decimal(19,0) NOT NULL,
+  `BlockActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Performer` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `IsPerformerAsynchronous` smallint(6) DEFAULT NULL,
+  `Priority` int(11) DEFAULT NULL,
+  `Name` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Activated` bigint(20) NOT NULL,
+  `ActivatedTZO` bigint(20) NOT NULL,
+  `Accepted` bigint(20) DEFAULT NULL,
+  `AcceptedTZO` bigint(20) DEFAULT NULL,
+  `LastStateTime` bigint(20) NOT NULL,
+  `LastStateTimeTZO` bigint(20) NOT NULL,
+  `LimitTime` bigint(20) NOT NULL,
+  `LimitTimeTZO` bigint(20) NOT NULL,
+  `Description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivities` (`Id`),
+  KEY `SHKActivities_TheResource` (`TheResource`),
+  KEY `SHKActivities_State` (`State`),
+  KEY `I2_SHKActivities` (`Process`,`ActivitySetDefinitionId`,`ActivityDefinitionId`),
+  KEY `I3_SHKActivities` (`Process`,`State`),
+  CONSTRAINT `SHKActivities_Process` FOREIGN KEY (`Process`) REFERENCES `shkprocesses` (`oid`),
+  CONSTRAINT `SHKActivities_State` FOREIGN KEY (`State`) REFERENCES `shkactivitystates` (`oid`),
+  CONSTRAINT `SHKActivities_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `shkresourcestable` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivities`
+--
+
+LOCK TABLES `shkactivities` WRITE;
+/*!40000 ALTER TABLE `shkactivities` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkactivities` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkactivitydata`
+--
+
+DROP TABLE IF EXISTS `shkactivitydata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivitydata` (
+  `Activity` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `IsResult` smallint(6) NOT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivityData` (`CNT`),
+  UNIQUE KEY `I2_SHKActivityData` (`Activity`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKActivityData_Activity` FOREIGN KEY (`Activity`) REFERENCES `shkactivities` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivitydata`
+--
+
+LOCK TABLES `shkactivitydata` WRITE;
+/*!40000 ALTER TABLE `shkactivitydata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkactivitydata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkactivitydatablobs`
+--
+
+DROP TABLE IF EXISTS `shkactivitydatablobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivitydatablobs` (
+  `ActivityDataWOB` decimal(19,0) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivityDataBLOBs` (`ActivityDataWOB`,`OrdNo`),
+  CONSTRAINT `SHKActivityDataBLOBs_ActivityDataWOB` FOREIGN KEY (`ActivityDataWOB`) REFERENCES `shkactivitydatawob` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivitydatablobs`
+--
+
+LOCK TABLES `shkactivitydatablobs` WRITE;
+/*!40000 ALTER TABLE `shkactivitydatablobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkactivitydatablobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkactivitydatawob`
+--
+
+DROP TABLE IF EXISTS `shkactivitydatawob`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivitydatawob` (
+  `Activity` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `IsResult` smallint(6) NOT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivityDataWOB` (`CNT`),
+  UNIQUE KEY `I2_SHKActivityDataWOB` (`Activity`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKActivityDataWOB_Activity` FOREIGN KEY (`Activity`) REFERENCES `shkactivities` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivitydatawob`
+--
+
+LOCK TABLES `shkactivitydatawob` WRITE;
+/*!40000 ALTER TABLE `shkactivitydatawob` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkactivitydatawob` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkactivitystateeventaudits`
+--
+
+DROP TABLE IF EXISTS `shkactivitystateeventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivitystateeventaudits` (
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivityStateEventAudits` (`KeyValue`),
+  UNIQUE KEY `I2_SHKActivityStateEventAudits` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivitystateeventaudits`
+--
+
+LOCK TABLES `shkactivitystateeventaudits` WRITE;
+/*!40000 ALTER TABLE `shkactivitystateeventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkactivitystateeventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkactivitystates`
+--
+
+DROP TABLE IF EXISTS `shkactivitystates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkactivitystates` (
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKActivityStates` (`KeyValue`),
+  UNIQUE KEY `I2_SHKActivityStates` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkactivitystates`
+--
+
+LOCK TABLES `shkactivitystates` WRITE;
+/*!40000 ALTER TABLE `shkactivitystates` DISABLE KEYS */;
+INSERT INTO `shkactivitystates` VALUES ('open.running','open.running',1000001,0),('open.not_running.not_started','open.not_running.not_started',1000003,0),('open.not_running.suspended','open.not_running.suspended',1000005,0),('closed.completed','closed.completed',1000007,0),('closed.terminated','closed.terminated',1000009,0),('closed.aborted','closed.aborted',1000011,0);
+/*!40000 ALTER TABLE `shkactivitystates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkandjointable`
+--
+
+DROP TABLE IF EXISTS `shkandjointable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkandjointable` (
+  `Process` decimal(19,0) NOT NULL,
+  `BlockActivity` decimal(19,0) DEFAULT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `Activity` decimal(19,0) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKAndJoinTable` (`CNT`),
+  KEY `SHKAndJoinTable_BlockActivity` (`BlockActivity`),
+  KEY `I2_SHKAndJoinTable` (`Process`,`BlockActivity`,`ActivityDefinitionId`),
+  KEY `I3_SHKAndJoinTable` (`Activity`),
+  CONSTRAINT `SHKAndJoinTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `shkactivities` (`oid`),
+  CONSTRAINT `SHKAndJoinTable_BlockActivity` FOREIGN KEY (`BlockActivity`) REFERENCES `shkactivities` (`oid`),
+  CONSTRAINT `SHKAndJoinTable_Process` FOREIGN KEY (`Process`) REFERENCES `shkprocesses` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkandjointable`
+--
+
+LOCK TABLES `shkandjointable` WRITE;
+/*!40000 ALTER TABLE `shkandjointable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkandjointable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkassignmenteventaudits`
+--
+
+DROP TABLE IF EXISTS `shkassignmenteventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkassignmenteventaudits` (
+  `RecordedTime` bigint(20) NOT NULL,
+  `RecordedTimeTZO` bigint(20) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `TheType` decimal(19,0) NOT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionType` int(11) NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `OldResourceUsername` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `OldResourceName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `NewResourceUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `NewResourceName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `IsAccepted` smallint(6) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKAssignmentEventAudits` (`CNT`),
+  KEY `SHKAssignmentEventAudits_TheType` (`TheType`),
+  CONSTRAINT `SHKAssignmentEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `shkeventtypes` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkassignmenteventaudits`
+--
+
+LOCK TABLES `shkassignmenteventaudits` WRITE;
+/*!40000 ALTER TABLE `shkassignmenteventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkassignmenteventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkassignmentstable`
+--
+
+DROP TABLE IF EXISTS `shkassignmentstable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkassignmentstable` (
+  `Activity` decimal(19,0) NOT NULL,
+  `TheResource` decimal(19,0) NOT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityProcessDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ResourceId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `IsAccepted` smallint(6) NOT NULL,
+  `IsValid` smallint(6) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKAssignmentsTable` (`CNT`),
+  UNIQUE KEY `I2_SHKAssignmentsTable` (`Activity`,`TheResource`),
+  KEY `I3_SHKAssignmentsTable` (`TheResource`,`IsValid`),
+  KEY `I4_SHKAssignmentsTable` (`ActivityId`),
+  KEY `I5_SHKAssignmentsTable` (`ResourceId`),
+  KEY `FK_rnb6mhntls567xpifcfvygkuu` (`ActivityProcessId`),
+  CONSTRAINT `FK_183e6adufsi558hl5p4dqkqsx` FOREIGN KEY (`ActivityId`) REFERENCES `shkactivities` (`Id`),
+  CONSTRAINT `FK_rnb6mhntls567xpifcfvygkuu` FOREIGN KEY (`ActivityProcessId`) REFERENCES `shkprocesses` (`Id`),
+  CONSTRAINT `SHKAssignmentsTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `shkactivities` (`oid`),
+  CONSTRAINT `SHKAssignmentsTable_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `shkresourcestable` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkassignmentstable`
+--
+
+LOCK TABLES `shkassignmentstable` WRITE;
+/*!40000 ALTER TABLE `shkassignmentstable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkassignmentstable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkcounters`
+--
+
+DROP TABLE IF EXISTS `shkcounters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkcounters` (
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `the_number` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKCounters` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkcounters`
+--
+
+LOCK TABLES `shkcounters` WRITE;
+/*!40000 ALTER TABLE `shkcounters` DISABLE KEYS */;
+INSERT INTO `shkcounters` VALUES ('_xpdldata_',2,1000204,0);
+/*!40000 ALTER TABLE `shkcounters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkcreateprocesseventaudits`
+--
+
+DROP TABLE IF EXISTS `shkcreateprocesseventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkcreateprocesseventaudits` (
+  `RecordedTime` bigint(20) NOT NULL,
+  `RecordedTimeTZO` bigint(20) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `TheType` decimal(19,0) NOT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PPackageId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKCreateProcessEventAudits` (`CNT`),
+  KEY `SHKCreateProcessEventAudits_TheType` (`TheType`),
+  CONSTRAINT `SHKCreateProcessEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `shkeventtypes` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkcreateprocesseventaudits`
+--
+
+LOCK TABLES `shkcreateprocesseventaudits` WRITE;
+/*!40000 ALTER TABLE `shkcreateprocesseventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkcreateprocesseventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkdataeventaudits`
+--
+
+DROP TABLE IF EXISTS `shkdataeventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkdataeventaudits` (
+  `RecordedTime` bigint(20) NOT NULL,
+  `RecordedTimeTZO` bigint(20) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `TheType` decimal(19,0) NOT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionType` int(11) DEFAULT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKDataEventAudits` (`CNT`),
+  KEY `SHKDataEventAudits_TheType` (`TheType`),
+  CONSTRAINT `SHKDataEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `shkeventtypes` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkdataeventaudits`
+--
+
+LOCK TABLES `shkdataeventaudits` WRITE;
+/*!40000 ALTER TABLE `shkdataeventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkdataeventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkdeadlines`
+--
+
+DROP TABLE IF EXISTS `shkdeadlines`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkdeadlines` (
+  `Process` decimal(19,0) NOT NULL,
+  `Activity` decimal(19,0) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `TimeLimit` bigint(20) NOT NULL,
+  `TimeLimitTZO` bigint(20) NOT NULL,
+  `ExceptionName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `IsSynchronous` smallint(6) NOT NULL,
+  `IsExecuted` smallint(6) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKDeadlines` (`CNT`),
+  KEY `I2_SHKDeadlines` (`Process`,`TimeLimit`),
+  KEY `I3_SHKDeadlines` (`Activity`,`TimeLimit`),
+  CONSTRAINT `SHKDeadlines_Activity` FOREIGN KEY (`Activity`) REFERENCES `shkactivities` (`oid`),
+  CONSTRAINT `SHKDeadlines_Process` FOREIGN KEY (`Process`) REFERENCES `shkprocesses` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkdeadlines`
+--
+
+LOCK TABLES `shkdeadlines` WRITE;
+/*!40000 ALTER TABLE `shkdeadlines` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkdeadlines` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkeventtypes`
+--
+
+DROP TABLE IF EXISTS `shkeventtypes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkeventtypes` (
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKEventTypes` (`KeyValue`),
+  UNIQUE KEY `I2_SHKEventTypes` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkeventtypes`
+--
+
+LOCK TABLES `shkeventtypes` WRITE;
+/*!40000 ALTER TABLE `shkeventtypes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkeventtypes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkgroupgrouptable`
+--
+
+DROP TABLE IF EXISTS `shkgroupgrouptable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkgroupgrouptable` (
+  `sub_gid` decimal(19,0) NOT NULL,
+  `groupid` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKGroupGroupTable` (`sub_gid`,`groupid`),
+  KEY `I2_SHKGroupGroupTable` (`groupid`),
+  CONSTRAINT `SHKGroupGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `shkgrouptable` (`oid`),
+  CONSTRAINT `SHKGroupGroupTable_sub_gid` FOREIGN KEY (`sub_gid`) REFERENCES `shkgrouptable` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkgroupgrouptable`
+--
+
+LOCK TABLES `shkgroupgrouptable` WRITE;
+/*!40000 ALTER TABLE `shkgroupgrouptable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkgroupgrouptable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkgrouptable`
+--
+
+DROP TABLE IF EXISTS `shkgrouptable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkgrouptable` (
+  `groupid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKGroupTable` (`groupid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkgrouptable`
+--
+
+LOCK TABLES `shkgrouptable` WRITE;
+/*!40000 ALTER TABLE `shkgrouptable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkgrouptable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkgroupuser`
+--
+
+DROP TABLE IF EXISTS `shkgroupuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkgroupuser` (
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKGroupUser` (`USERNAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkgroupuser`
+--
+
+LOCK TABLES `shkgroupuser` WRITE;
+/*!40000 ALTER TABLE `shkgroupuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkgroupuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkgroupuserpacklevelpart`
+--
+
+DROP TABLE IF EXISTS `shkgroupuserpacklevelpart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkgroupuserpacklevelpart` (
+  `PARTICIPANTOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKGroupUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
+  KEY `SHKGroupUserPackLevelPart_USEROID` (`USEROID`),
+  CONSTRAINT `SHKGroupUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `shkpacklevelparticipant` (`oid`),
+  CONSTRAINT `SHKGroupUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shkgroupuser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkgroupuserpacklevelpart`
+--
+
+LOCK TABLES `shkgroupuserpacklevelpart` WRITE;
+/*!40000 ALTER TABLE `shkgroupuserpacklevelpart` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkgroupuserpacklevelpart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkgroupuserproclevelpart`
+--
+
+DROP TABLE IF EXISTS `shkgroupuserproclevelpart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkgroupuserproclevelpart` (
+  `PARTICIPANTOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKGroupUserProcLevelPart` (`PARTICIPANTOID`,`USEROID`),
+  KEY `SHKGroupUserProcLevelPart_USEROID` (`USEROID`),
+  CONSTRAINT `SHKGroupUserProcLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `shkproclevelparticipant` (`oid`),
+  CONSTRAINT `SHKGroupUserProcLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shkgroupuser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkgroupuserproclevelpart`
+--
+
+LOCK TABLES `shkgroupuserproclevelpart` WRITE;
+/*!40000 ALTER TABLE `shkgroupuserproclevelpart` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkgroupuserproclevelpart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkneweventauditdata`
+--
+
+DROP TABLE IF EXISTS `shkneweventauditdata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkneweventauditdata` (
+  `DataEventAudit` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKNewEventAuditData` (`CNT`),
+  UNIQUE KEY `I2_SHKNewEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKNewEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `shkdataeventaudits` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkneweventauditdata`
+--
+
+LOCK TABLES `shkneweventauditdata` WRITE;
+/*!40000 ALTER TABLE `shkneweventauditdata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkneweventauditdata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkneweventauditdatablobs`
+--
+
+DROP TABLE IF EXISTS `shkneweventauditdatablobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkneweventauditdatablobs` (
+  `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKNewEventAuditDataBLOBs` (`NewEventAuditDataWOB`,`OrdNo`),
+  CONSTRAINT `SHKNewEventAuditDataBLOBs_NewEventAuditDataWOB` FOREIGN KEY (`NewEventAuditDataWOB`) REFERENCES `shkneweventauditdatawob` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkneweventauditdatablobs`
+--
+
+LOCK TABLES `shkneweventauditdatablobs` WRITE;
+/*!40000 ALTER TABLE `shkneweventauditdatablobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkneweventauditdatablobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkneweventauditdatawob`
+--
+
+DROP TABLE IF EXISTS `shkneweventauditdatawob`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkneweventauditdatawob` (
+  `DataEventAudit` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKNewEventAuditDataWOB` (`CNT`),
+  UNIQUE KEY `I2_SHKNewEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKNewEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `shkdataeventaudits` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkneweventauditdatawob`
+--
+
+LOCK TABLES `shkneweventauditdatawob` WRITE;
+/*!40000 ALTER TABLE `shkneweventauditdatawob` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkneweventauditdatawob` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shknextxpdlversions`
+--
+
+DROP TABLE IF EXISTS `shknextxpdlversions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shknextxpdlversions` (
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `NextVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKNextXPDLVersions` (`XPDLId`,`NextVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shknextxpdlversions`
+--
+
+LOCK TABLES `shknextxpdlversions` WRITE;
+/*!40000 ALTER TABLE `shknextxpdlversions` DISABLE KEYS */;
+INSERT INTO `shknextxpdlversions` VALUES ('crm_community','2',1000201,0);
+/*!40000 ALTER TABLE `shknextxpdlversions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shknormaluser`
+--
+
+DROP TABLE IF EXISTS `shknormaluser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shknormaluser` (
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKNormalUser` (`USERNAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shknormaluser`
+--
+
+LOCK TABLES `shknormaluser` WRITE;
+/*!40000 ALTER TABLE `shknormaluser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shknormaluser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkoldeventauditdata`
+--
+
+DROP TABLE IF EXISTS `shkoldeventauditdata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkoldeventauditdata` (
+  `DataEventAudit` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKOldEventAuditData` (`CNT`),
+  UNIQUE KEY `I2_SHKOldEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKOldEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `shkdataeventaudits` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkoldeventauditdata`
+--
+
+LOCK TABLES `shkoldeventauditdata` WRITE;
+/*!40000 ALTER TABLE `shkoldeventauditdata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkoldeventauditdata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkoldeventauditdatablobs`
+--
+
+DROP TABLE IF EXISTS `shkoldeventauditdatablobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkoldeventauditdatablobs` (
+  `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKOldEventAuditDataBLOBs` (`OldEventAuditDataWOB`,`OrdNo`),
+  CONSTRAINT `SHKOldEventAuditDataBLOBs_OldEventAuditDataWOB` FOREIGN KEY (`OldEventAuditDataWOB`) REFERENCES `shkoldeventauditdatawob` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkoldeventauditdatablobs`
+--
+
+LOCK TABLES `shkoldeventauditdatablobs` WRITE;
+/*!40000 ALTER TABLE `shkoldeventauditdatablobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkoldeventauditdatablobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkoldeventauditdatawob`
+--
+
+DROP TABLE IF EXISTS `shkoldeventauditdatawob`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkoldeventauditdatawob` (
+  `DataEventAudit` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` float DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKOldEventAuditDataWOB` (`CNT`),
+  UNIQUE KEY `I2_SHKOldEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKOldEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `shkdataeventaudits` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkoldeventauditdatawob`
+--
+
+LOCK TABLES `shkoldeventauditdatawob` WRITE;
+/*!40000 ALTER TABLE `shkoldeventauditdatawob` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkoldeventauditdatawob` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelparticipant`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelparticipant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelparticipant` (
+  `PARTICIPANT_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PACKAGEOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelParticipant` (`PARTICIPANT_ID`,`PACKAGEOID`),
+  KEY `SHKPackLevelParticipant_PACKAGEOID` (`PACKAGEOID`),
+  CONSTRAINT `SHKPackLevelParticipant_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `shkxpdlparticipantpackage` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelparticipant`
+--
+
+LOCK TABLES `shkpacklevelparticipant` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelparticipant` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelparticipant` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelxpdlapp`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelxpdlapp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelxpdlapp` (
+  `APPLICATION_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PACKAGEOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelXPDLApp` (`APPLICATION_ID`,`PACKAGEOID`),
+  KEY `SHKPackLevelXPDLApp_PACKAGEOID` (`PACKAGEOID`),
+  CONSTRAINT `SHKPackLevelXPDLApp_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `shkxpdlapplicationpackage` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelxpdlapp`
+--
+
+LOCK TABLES `shkpacklevelxpdlapp` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapp` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapp` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelxpdlapptaappdetail`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelxpdlapptaappdetail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelxpdlapptaappdetail` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappdetail` (`oid`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkpacklevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelxpdlapptaappdetail`
+--
+
+LOCK TABLES `shkpacklevelxpdlapptaappdetail` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappdetail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappdetail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelxpdlapptaappdetusr`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelxpdlapptaappdetusr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelxpdlapptaappdetusr` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappdetailuser` (`oid`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkpacklevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelxpdlapptaappdetusr`
+--
+
+LOCK TABLES `shkpacklevelxpdlapptaappdetusr` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappdetusr` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappdetusr` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelxpdlapptaappuser`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelxpdlapptaappuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelxpdlapptaappuser` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappuser` (`oid`),
+  CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkpacklevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelxpdlapptaappuser`
+--
+
+LOCK TABLES `shkpacklevelxpdlapptaappuser` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptaappuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkpacklevelxpdlapptoolagntapp`
+--
+
+DROP TABLE IF EXISTS `shkpacklevelxpdlapptoolagntapp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkpacklevelxpdlapptoolagntapp` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKPackLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentapp` (`oid`),
+  CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkpacklevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkpacklevelxpdlapptoolagntapp`
+--
+
+LOCK TABLES `shkpacklevelxpdlapptoolagntapp` WRITE;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptoolagntapp` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkpacklevelxpdlapptoolagntapp` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessdata`
+--
+
+DROP TABLE IF EXISTS `shkprocessdata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessdata` (
+  `Process` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessData` (`CNT`),
+  UNIQUE KEY `I2_SHKProcessData` (`Process`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKProcessData_Process` FOREIGN KEY (`Process`) REFERENCES `shkprocesses` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessdata`
+--
+
+LOCK TABLES `shkprocessdata` WRITE;
+/*!40000 ALTER TABLE `shkprocessdata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocessdata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessdatablobs`
+--
+
+DROP TABLE IF EXISTS `shkprocessdatablobs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessdatablobs` (
+  `ProcessDataWOB` decimal(19,0) NOT NULL,
+  `VariableValue` mediumblob DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessDataBLOBs` (`ProcessDataWOB`,`OrdNo`),
+  CONSTRAINT `SHKProcessDataBLOBs_ProcessDataWOB` FOREIGN KEY (`ProcessDataWOB`) REFERENCES `shkprocessdatawob` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessdatablobs`
+--
+
+LOCK TABLES `shkprocessdatablobs` WRITE;
+/*!40000 ALTER TABLE `shkprocessdatablobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocessdatablobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessdatawob`
+--
+
+DROP TABLE IF EXISTS `shkprocessdatawob`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessdatawob` (
+  `Process` decimal(19,0) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `VariableType` int(11) NOT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `VariableValueDBL` double DEFAULT NULL,
+  `VariableValueLONG` bigint(20) DEFAULT NULL,
+  `VariableValueDATE` datetime DEFAULT NULL,
+  `VariableValueBOOL` smallint(6) DEFAULT NULL,
+  `OrdNo` int(11) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessDataWOB` (`CNT`),
+  UNIQUE KEY `I2_SHKProcessDataWOB` (`Process`,`VariableDefinitionId`,`OrdNo`),
+  CONSTRAINT `SHKProcessDataWOB_Process` FOREIGN KEY (`Process`) REFERENCES `shkprocesses` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessdatawob`
+--
+
+LOCK TABLES `shkprocessdatawob` WRITE;
+/*!40000 ALTER TABLE `shkprocessdatawob` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocessdatawob` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessdefinitions`
+--
+
+DROP TABLE IF EXISTS `shkprocessdefinitions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessdefinitions` (
+  `Name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionCreated` bigint(20) NOT NULL,
+  `ProcessDefinitionVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `State` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessDefinitions` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessdefinitions`
+--
+
+LOCK TABLES `shkprocessdefinitions` WRITE;
+/*!40000 ALTER TABLE `shkprocessdefinitions` DISABLE KEYS */;
+INSERT INTO `shkprocessdefinitions` VALUES ('crm_community#1#process1','crm_community','process1',1511406938061,'1',0,1000205,0);
+/*!40000 ALTER TABLE `shkprocessdefinitions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocesses`
+--
+
+DROP TABLE IF EXISTS `shkprocesses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocesses` (
+  `SyncVersion` bigint(20) NOT NULL,
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinition` decimal(19,0) NOT NULL,
+  `PDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityRequesterId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityRequesterProcessId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ResourceRequesterId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ExternalRequesterClassName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `State` decimal(19,0) NOT NULL,
+  `Priority` int(11) DEFAULT NULL,
+  `Name` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Created` bigint(20) NOT NULL,
+  `CreatedTZO` bigint(20) NOT NULL,
+  `Started` bigint(20) DEFAULT NULL,
+  `StartedTZO` bigint(20) DEFAULT NULL,
+  `LastStateTime` bigint(20) NOT NULL,
+  `LastStateTimeTZO` bigint(20) NOT NULL,
+  `LimitTime` bigint(20) NOT NULL,
+  `LimitTimeTZO` bigint(20) NOT NULL,
+  `Description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcesses` (`Id`),
+  KEY `I2_SHKProcesses` (`ProcessDefinition`),
+  KEY `I3_SHKProcesses` (`State`),
+  KEY `I4_SHKProcesses` (`ActivityRequesterId`),
+  KEY `I5_SHKProcesses` (`ResourceRequesterId`),
+  CONSTRAINT `SHKProcesses_ProcessDefinition` FOREIGN KEY (`ProcessDefinition`) REFERENCES `shkprocessdefinitions` (`oid`),
+  CONSTRAINT `SHKProcesses_State` FOREIGN KEY (`State`) REFERENCES `shkprocessstates` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocesses`
+--
+
+LOCK TABLES `shkprocesses` WRITE;
+/*!40000 ALTER TABLE `shkprocesses` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocesses` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessrequesters`
+--
+
+DROP TABLE IF EXISTS `shkprocessrequesters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessrequesters` (
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityRequester` decimal(19,0) DEFAULT NULL,
+  `ResourceRequester` decimal(19,0) DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessRequesters` (`Id`),
+  KEY `I2_SHKProcessRequesters` (`ActivityRequester`),
+  KEY `I3_SHKProcessRequesters` (`ResourceRequester`),
+  CONSTRAINT `SHKProcessRequesters_ActivityRequester` FOREIGN KEY (`ActivityRequester`) REFERENCES `shkactivities` (`oid`),
+  CONSTRAINT `SHKProcessRequesters_ResourceRequester` FOREIGN KEY (`ResourceRequester`) REFERENCES `shkresourcestable` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessrequesters`
+--
+
+LOCK TABLES `shkprocessrequesters` WRITE;
+/*!40000 ALTER TABLE `shkprocessrequesters` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocessrequesters` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessstateeventaudits`
+--
+
+DROP TABLE IF EXISTS `shkprocessstateeventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessstateeventaudits` (
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessStateEventAudits` (`KeyValue`),
+  UNIQUE KEY `I2_SHKProcessStateEventAudits` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessstateeventaudits`
+--
+
+LOCK TABLES `shkprocessstateeventaudits` WRITE;
+/*!40000 ALTER TABLE `shkprocessstateeventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkprocessstateeventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkprocessstates`
+--
+
+DROP TABLE IF EXISTS `shkprocessstates`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkprocessstates` (
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcessStates` (`KeyValue`),
+  UNIQUE KEY `I2_SHKProcessStates` (`Name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkprocessstates`
+--
+
+LOCK TABLES `shkprocessstates` WRITE;
+/*!40000 ALTER TABLE `shkprocessstates` DISABLE KEYS */;
+INSERT INTO `shkprocessstates` VALUES ('open.running','open.running',1000000,0),('open.not_running.not_started','open.not_running.not_started',1000002,0),('open.not_running.suspended','open.not_running.suspended',1000004,0),('closed.completed','closed.completed',1000006,0),('closed.terminated','closed.terminated',1000008,0),('closed.aborted','closed.aborted',1000010,0);
+/*!40000 ALTER TABLE `shkprocessstates` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelparticipant`
+--
+
+DROP TABLE IF EXISTS `shkproclevelparticipant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelparticipant` (
+  `PARTICIPANT_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PROCESSOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelParticipant` (`PARTICIPANT_ID`,`PROCESSOID`),
+  KEY `SHKProcLevelParticipant_PROCESSOID` (`PROCESSOID`),
+  CONSTRAINT `SHKProcLevelParticipant_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `shkxpdlparticipantprocess` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelparticipant`
+--
+
+LOCK TABLES `shkproclevelparticipant` WRITE;
+/*!40000 ALTER TABLE `shkproclevelparticipant` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelparticipant` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelxpdlapp`
+--
+
+DROP TABLE IF EXISTS `shkproclevelxpdlapp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelxpdlapp` (
+  `APPLICATION_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PROCESSOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelXPDLApp` (`APPLICATION_ID`,`PROCESSOID`),
+  KEY `SHKProcLevelXPDLApp_PROCESSOID` (`PROCESSOID`),
+  CONSTRAINT `SHKProcLevelXPDLApp_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `shkxpdlapplicationprocess` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelxpdlapp`
+--
+
+LOCK TABLES `shkproclevelxpdlapp` WRITE;
+/*!40000 ALTER TABLE `shkproclevelxpdlapp` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelxpdlapp` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelxpdlapptaappdetail`
+--
+
+DROP TABLE IF EXISTS `shkproclevelxpdlapptaappdetail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelxpdlapptaappdetail` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetail` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappdetail` (`oid`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkproclevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelxpdlapptaappdetail`
+--
+
+LOCK TABLES `shkproclevelxpdlapptaappdetail` WRITE;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappdetail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappdetail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelxpdlapptaappdetusr`
+--
+
+DROP TABLE IF EXISTS `shkproclevelxpdlapptaappdetusr`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelxpdlapptaappdetusr` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppDetUsr` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappdetailuser` (`oid`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkproclevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelxpdlapptaappdetusr`
+--
+
+LOCK TABLES `shkproclevelxpdlapptaappdetusr` WRITE;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappdetusr` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappdetusr` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelxpdlapptaappuser`
+--
+
+DROP TABLE IF EXISTS `shkproclevelxpdlapptaappuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelxpdlapptaappuser` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelXPDLAppTAAppUser` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentappuser` (`oid`),
+  CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkproclevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelxpdlapptaappuser`
+--
+
+LOCK TABLES `shkproclevelxpdlapptaappuser` WRITE;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptaappuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkproclevelxpdlapptoolagntapp`
+--
+
+DROP TABLE IF EXISTS `shkproclevelxpdlapptoolagntapp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkproclevelxpdlapptoolagntapp` (
+  `XPDL_APPOID` decimal(19,0) NOT NULL,
+  `TOOLAGENTOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKProcLevelXPDLAppToolAgntApp` (`XPDL_APPOID`,`TOOLAGENTOID`),
+  KEY `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
+  CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `shktoolagentapp` (`oid`),
+  CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `shkproclevelxpdlapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkproclevelxpdlapptoolagntapp`
+--
+
+LOCK TABLES `shkproclevelxpdlapptoolagntapp` WRITE;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptoolagntapp` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkproclevelxpdlapptoolagntapp` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkresourcestable`
+--
+
+DROP TABLE IF EXISTS `shkresourcestable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkresourcestable` (
+  `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKResourcesTable` (`Username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkresourcestable`
+--
+
+LOCK TABLES `shkresourcestable` WRITE;
+/*!40000 ALTER TABLE `shkresourcestable` DISABLE KEYS */;
+INSERT INTO `shkresourcestable` VALUES ('roleAnonymous',NULL,1000200,0);
+/*!40000 ALTER TABLE `shkresourcestable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkstateeventaudits`
+--
+
+DROP TABLE IF EXISTS `shkstateeventaudits`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkstateeventaudits` (
+  `RecordedTime` bigint(20) NOT NULL,
+  `RecordedTimeTZO` bigint(20) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `TheType` decimal(19,0) NOT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionType` int(11) DEFAULT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `OldProcessState` decimal(19,0) DEFAULT NULL,
+  `NewProcessState` decimal(19,0) DEFAULT NULL,
+  `OldActivityState` decimal(19,0) DEFAULT NULL,
+  `NewActivityState` decimal(19,0) DEFAULT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKStateEventAudits` (`CNT`),
+  KEY `SHKStateEventAudits_TheType` (`TheType`),
+  KEY `SHKStateEventAudits_OldProcessState` (`OldProcessState`),
+  KEY `SHKStateEventAudits_NewProcessState` (`NewProcessState`),
+  KEY `SHKStateEventAudits_OldActivityState` (`OldActivityState`),
+  KEY `SHKStateEventAudits_NewActivityState` (`NewActivityState`),
+  CONSTRAINT `SHKStateEventAudits_NewActivityState` FOREIGN KEY (`NewActivityState`) REFERENCES `shkactivitystateeventaudits` (`oid`),
+  CONSTRAINT `SHKStateEventAudits_NewProcessState` FOREIGN KEY (`NewProcessState`) REFERENCES `shkprocessstateeventaudits` (`oid`),
+  CONSTRAINT `SHKStateEventAudits_OldActivityState` FOREIGN KEY (`OldActivityState`) REFERENCES `shkactivitystateeventaudits` (`oid`),
+  CONSTRAINT `SHKStateEventAudits_OldProcessState` FOREIGN KEY (`OldProcessState`) REFERENCES `shkprocessstateeventaudits` (`oid`),
+  CONSTRAINT `SHKStateEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `shkeventtypes` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkstateeventaudits`
+--
+
+LOCK TABLES `shkstateeventaudits` WRITE;
+/*!40000 ALTER TABLE `shkstateeventaudits` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkstateeventaudits` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shktoolagentapp`
+--
+
+DROP TABLE IF EXISTS `shktoolagentapp`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shktoolagentapp` (
+  `TOOL_AGENT_NAME` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `APP_NAME` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKToolAgentApp` (`TOOL_AGENT_NAME`,`APP_NAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shktoolagentapp`
+--
+
+LOCK TABLES `shktoolagentapp` WRITE;
+/*!40000 ALTER TABLE `shktoolagentapp` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shktoolagentapp` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shktoolagentappdetail`
+--
+
+DROP TABLE IF EXISTS `shktoolagentappdetail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shktoolagentappdetail` (
+  `APP_MODE` decimal(10,0) NOT NULL,
+  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKToolAgentAppDetail` (`APP_MODE`,`TOOLAGENT_APPOID`),
+  KEY `SHKToolAgentAppDetail_TOOLAGENT_APPOID` (`TOOLAGENT_APPOID`),
+  CONSTRAINT `SHKToolAgentAppDetail_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `shktoolagentapp` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shktoolagentappdetail`
+--
+
+LOCK TABLES `shktoolagentappdetail` WRITE;
+/*!40000 ALTER TABLE `shktoolagentappdetail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shktoolagentappdetail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shktoolagentappdetailuser`
+--
+
+DROP TABLE IF EXISTS `shktoolagentappdetailuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shktoolagentappdetailuser` (
+  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKToolAgentAppDetailUser` (`TOOLAGENT_APPOID`,`USEROID`),
+  KEY `SHKToolAgentAppDetailUser_USEROID` (`USEROID`),
+  CONSTRAINT `SHKToolAgentAppDetailUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `shktoolagentappdetail` (`oid`),
+  CONSTRAINT `SHKToolAgentAppDetailUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shktoolagentuser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shktoolagentappdetailuser`
+--
+
+LOCK TABLES `shktoolagentappdetailuser` WRITE;
+/*!40000 ALTER TABLE `shktoolagentappdetailuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shktoolagentappdetailuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shktoolagentappuser`
+--
+
+DROP TABLE IF EXISTS `shktoolagentappuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shktoolagentappuser` (
+  `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKToolAgentAppUser` (`TOOLAGENT_APPOID`,`USEROID`),
+  KEY `SHKToolAgentAppUser_USEROID` (`USEROID`),
+  CONSTRAINT `SHKToolAgentAppUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `shktoolagentapp` (`oid`),
+  CONSTRAINT `SHKToolAgentAppUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shktoolagentuser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shktoolagentappuser`
+--
+
+LOCK TABLES `shktoolagentappuser` WRITE;
+/*!40000 ALTER TABLE `shktoolagentappuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shktoolagentappuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shktoolagentuser`
+--
+
+DROP TABLE IF EXISTS `shktoolagentuser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shktoolagentuser` (
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `PWD` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKToolAgentUser` (`USERNAME`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shktoolagentuser`
+--
+
+LOCK TABLES `shktoolagentuser` WRITE;
+/*!40000 ALTER TABLE `shktoolagentuser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shktoolagentuser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkusergrouptable`
+--
+
+DROP TABLE IF EXISTS `shkusergrouptable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkusergrouptable` (
+  `userid` decimal(19,0) NOT NULL,
+  `groupid` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKUserGroupTable` (`userid`,`groupid`),
+  KEY `SHKUserGroupTable_groupid` (`groupid`),
+  CONSTRAINT `SHKUserGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `shkgrouptable` (`oid`),
+  CONSTRAINT `SHKUserGroupTable_userid` FOREIGN KEY (`userid`) REFERENCES `shkusertable` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkusergrouptable`
+--
+
+LOCK TABLES `shkusergrouptable` WRITE;
+/*!40000 ALTER TABLE `shkusergrouptable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkusergrouptable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkuserpacklevelpart`
+--
+
+DROP TABLE IF EXISTS `shkuserpacklevelpart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkuserpacklevelpart` (
+  `PARTICIPANTOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKUserPackLevelPart` (`PARTICIPANTOID`,`USEROID`),
+  KEY `SHKUserPackLevelPart_USEROID` (`USEROID`),
+  CONSTRAINT `SHKUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `shkpacklevelparticipant` (`oid`),
+  CONSTRAINT `SHKUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shknormaluser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkuserpacklevelpart`
+--
+
+LOCK TABLES `shkuserpacklevelpart` WRITE;
+/*!40000 ALTER TABLE `shkuserpacklevelpart` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkuserpacklevelpart` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkuserproclevelparticipant`
+--
+
+DROP TABLE IF EXISTS `shkuserproclevelparticipant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkuserproclevelparticipant` (
+  `PARTICIPANTOID` decimal(19,0) NOT NULL,
+  `USEROID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKUserProcLevelParticipant` (`PARTICIPANTOID`,`USEROID`),
+  KEY `SHKUserProcLevelParticipant_USEROID` (`USEROID`),
+  CONSTRAINT `SHKUserProcLevelParticipant_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `shkproclevelparticipant` (`oid`),
+  CONSTRAINT `SHKUserProcLevelParticipant_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `shknormaluser` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkuserproclevelparticipant`
+--
+
+LOCK TABLES `shkuserproclevelparticipant` WRITE;
+/*!40000 ALTER TABLE `shkuserproclevelparticipant` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkuserproclevelparticipant` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkusertable`
+--
+
+DROP TABLE IF EXISTS `shkusertable`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkusertable` (
+  `userid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `firstname` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastname` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `passwd` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKUserTable` (`userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkusertable`
+--
+
+LOCK TABLES `shkusertable` WRITE;
+/*!40000 ALTER TABLE `shkusertable` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkusertable` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlapplicationpackage`
+--
+
+DROP TABLE IF EXISTS `shkxpdlapplicationpackage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlapplicationpackage` (
+  `PACKAGE_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLApplicationPackage` (`PACKAGE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlapplicationpackage`
+--
+
+LOCK TABLES `shkxpdlapplicationpackage` WRITE;
+/*!40000 ALTER TABLE `shkxpdlapplicationpackage` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlapplicationpackage` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlapplicationprocess`
+--
+
+DROP TABLE IF EXISTS `shkxpdlapplicationprocess`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlapplicationprocess` (
+  `PROCESS_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PACKAGEOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLApplicationProcess` (`PROCESS_ID`,`PACKAGEOID`),
+  KEY `SHKXPDLApplicationProcess_PACKAGEOID` (`PACKAGEOID`),
+  CONSTRAINT `SHKXPDLApplicationProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `shkxpdlapplicationpackage` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlapplicationprocess`
+--
+
+LOCK TABLES `shkxpdlapplicationprocess` WRITE;
+/*!40000 ALTER TABLE `shkxpdlapplicationprocess` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlapplicationprocess` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdldata`
+--
+
+DROP TABLE IF EXISTS `shkxpdldata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdldata` (
+  `XPDLContent` longblob DEFAULT NULL,
+  `XPDLClassContent` longblob DEFAULT NULL,
+  `XPDL` decimal(19,0) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLData` (`CNT`),
+  UNIQUE KEY `I2_SHKXPDLData` (`XPDL`),
+  CONSTRAINT `SHKXPDLData_XPDL` FOREIGN KEY (`XPDL`) REFERENCES `shkxpdls` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdldata`
+--
+
+LOCK TABLES `shkxpdldata` WRITE;
+/*!40000 ALTER TABLE `shkxpdldata` DISABLE KEYS */;
+INSERT INTO `shkxpdldata` VALUES ('<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<Package xmlns=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xpdl=\"http://www.wfmc.org/2002/XPDL1.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" Id=\"crm_community\" Name=\"CRM Community\" xsi:schemaLocation=\"http://www.wfmc.org/2002/XPDL1.0 http://wfmc.org/standards/docs/TC-1025_schema_10_xpdl.xsd\">\r\n    <PackageHeader>\r\n        <XPDLVersion>1.0</XPDLVersion>\r\n        <Vendor/>\r\n        <Created/>\r\n    </PackageHeader>\r\n    <Script Type=\"text/javascript\"/>\r\n    <Participants>\r\n        <Participant Id=\"requester\" Name=\"Requester\">\r\n            <ParticipantType Type=\"ROLE\"/>\r\n        </Participant>\r\n        <Participant Id=\"approver\" Name=\"Approver\">\r\n            <ParticipantType Type=\"ROLE\"/>\r\n        </Participant>\r\n    </Participants>\r\n    <Applications>\r\n        <Application Id=\"default_application\"/>\r\n    </Applications>\r\n    <WorkflowProcesses>\r\n        <WorkflowProcess Id=\"process1\" Name=\"Proposal Approval Process\">\r\n            <ProcessHeader DurationUnit=\"h\"/>\r\n            <DataFields>\r\n                <DataField Id=\"status\" IsArray=\"FALSE\">\r\n                    <DataType>\r\n                        <BasicType Type=\"STRING\"/>\r\n                    </DataType>\r\n                </DataField>\r\n            </DataFields>\r\n            <Activities>\r\n                <Activity Id=\"approve_proposal\" Name=\"Approve Proposal\">\r\n                    <Implementation>\r\n                        <No/>\r\n                    </Implementation>\r\n                    <Performer>approver</Performer>\r\n                    <TransitionRestrictions>\r\n                        <TransitionRestriction>\r\n                            <Join Type=\"XOR\"/>\r\n                        </TransitionRestriction>\r\n                    </TransitionRestrictions>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"189,51.79999084472655\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"approval\" Name=\"Approval\">\r\n                    <Route/>\r\n                    <Performer>approver</Performer>\r\n                    <TransitionRestrictions>\r\n                        <TransitionRestriction>\r\n                            <Split Type=\"XOR\">\r\n                                <TransitionRefs>\r\n                                    <TransitionRef Id=\"transition3\"/>\r\n                                    <TransitionRef Id=\"transition6\"/>\r\n                                    <TransitionRef Id=\"transition5\"/>\r\n                                </TransitionRefs>\r\n                            </Split>\r\n                        </TransitionRestriction>\r\n                    </TransitionRestrictions>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"430,62.79999084472655\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"activity1\" Name=\"Resubmit Proposal\">\r\n                    <Implementation>\r\n                        <No/>\r\n                    </Implementation>\r\n                    <Performer>requester</Performer>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"397,20.787493896484378\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"send_proposal\" Name=\"Send Proposal\">\r\n                    <Implementation>\r\n                        <No/>\r\n                    </Implementation>\r\n                    <Performer>requester</Performer>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"669.0000534057617,92.78333282470703\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"parallel\" Name=\"Parallel\">\r\n                    <Route/>\r\n                    <Performer>approver</Performer>\r\n                    <TransitionRestrictions>\r\n                        <TransitionRestriction>\r\n                            <Split Type=\"AND\">\r\n                                <TransitionRefs>\r\n                                    <TransitionRef Id=\"transition7\"/>\r\n                                    <TransitionRef Id=\"transition8\"/>\r\n                                </TransitionRefs>\r\n                            </Split>\r\n                        </TransitionRestriction>\r\n                    </TransitionRestrictions>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"588,61.599993896484364\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"tool1\" Name=\"Send Approval Notification\">\r\n                    <Implementation>\r\n                        <Tool Id=\"default_application\"/>\r\n                    </Implementation>\r\n                    <Performer>approver</Performer>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"735,63.974993896484364\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"tool2\" Name=\"Send Reject Notification\">\r\n                    <Implementation>\r\n                        <Tool Id=\"default_application\"/>\r\n                    </Implementation>\r\n                    <Performer>approver</Performer>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"approver\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"394,168.39999694824218\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n                <Activity Id=\"route1\" Name=\"Route 1\">\r\n                    <Route/>\r\n                    <Performer>requester</Performer>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_PARTICIPANT_ID\" Value=\"requester\"/>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_OFFSET\" Value=\"222,15\"/>\r\n                    </ExtendedAttributes>\r\n                </Activity>\r\n            </Activities>\r\n            <Transitions>\r\n                <Transition From=\"approve_proposal\" Id=\"transition2\" To=\"approval\">\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"approval\" Id=\"transition3\" To=\"activity1\">\r\n                    <Condition Type=\"CONDITION\">status===\'resubmit\'</Condition>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"activity1\" Id=\"transition4\" To=\"approve_proposal\">\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"approval\" Id=\"transition6\" Name=\"approved\" To=\"parallel\">\r\n                    <Condition Type=\"OTHERWISE\"/>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"parallel\" Id=\"transition7\" To=\"send_proposal\">\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"parallel\" Id=\"transition8\" To=\"tool1\">\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"approval\" Id=\"transition5\" To=\"tool2\">\r\n                    <Condition Type=\"CONDITION\">status===\'rejected\'</Condition>\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n                <Transition From=\"route1\" Id=\"transition1\" To=\"approve_proposal\">\r\n                    <ExtendedAttributes>\r\n                        <ExtendedAttribute Name=\"JaWE_GRAPH_TRANSITION_STYLE\" Value=\"NO_ROUTING_ORTHOGONAL\"/>\r\n                    </ExtendedAttributes>\r\n                </Transition>\r\n            </Transitions>\r\n            <ExtendedAttributes>\r\n                <ExtendedAttribute Name=\"JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER\" Value=\"requester;approver\"/>\r\n                <ExtendedAttribute Name=\"JaWE_GRAPH_START_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT\"/>\r\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\r\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\r\n                <ExtendedAttribute Name=\"JaWE_GRAPH_END_OF_WORKFLOW\" Value=\"JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULT\"/>\r\n            </ExtendedAttributes>\r\n        </WorkflowProcess>\r\n    </WorkflowProcesses>\r\n    <ExtendedAttributes>\r\n        <ExtendedAttribute Name=\"EDITING_TOOL\" Value=\"Web Workflow Designer\"/>\r\n        <ExtendedAttribute Name=\"EDITING_TOOL_VERSION\" Value=\"5.0-pre-alpha\"/>\r\n    </ExtendedAttributes>\r\n</Package>\r\n','¬í\0sr\0\'org.enhydra.shark.xpdl.elements.Package~+VmÅ€~÷\0Z\0isTransientL\0extPkgRefsToIdst\0.Lorg/enhydra/shark/utilities/SequencedHashMap;L\0internalVersiont\0Ljava/lang/String;L\0\nnamespacest\0,Lorg/enhydra/shark/xpdl/elements/Namespaces;xr\0(org.enhydra.shark.xpdl.XMLComplexElement>²¾½î(ÚÌ\0\0xr\05org.enhydra.shark.xpdl.XMLBaseForCollectionAndComplexåà‡îáõ2\0L\0\nelementMapq\0~\0L\0elementst\0Ljava/util/ArrayList;xr\0!org.enhydra.shark.xpdl.XMLElement#+B¿#÷Œ¼\0Z\0\nisReadOnlyZ\0\nisRequiredL\0nameq\0~\0L\0originalElementHashCodet\0Ljava/lang/Integer;L\0parentt\0#Lorg/enhydra/shark/xpdl/XMLElement;L\0valueq\0~\0xpt\0Packagesr\0java.lang.Integerâ ¤÷‡8\0I\0valuexr\0java.lang.Number†¬•”à‹\0\0xpü‚pt\0\0sr\0,org.enhydra.shark.utilities.SequencedHashMap.ê\"“©\"&\0\0xpw\0\0\0\rt\0Idsr\0#org.enhydra.shark.xpdl.XMLAttribute#cÝ€þËM;\0L\0choicesq\0~\0xq\0~\0q\0~\0sq\0~\0\0•‡q\0~\0\nt\0\rcrm_communitypt\0Namesq\0~\0\0q\0~\0sq\0~\0Ñ5#q\0~\0\nt\0\rCRM Communitypt\0\rPackageHeadersr\0-org.enhydra.shark.xpdl.elements.PackageHeadervé’,í’ï\0\0xq\0~\0\0q\0~\0sq\0~\0\0ípq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0XPDLVersionsr\0+org.enhydra.shark.xpdl.elements.XPDLVersion÷\"}×Y.Åw\0\0xr\0\'org.enhydra.shark.xpdl.XMLSimpleElementÂmÝÀŽó\0\0xq\0~\0q\0~\0!sq\0~\0\0È¦æq\0~\0t\01.0t\0Vendorsr\0&org.enhydra.shark.xpdl.elements.Vendor tøêE³:\0\0xq\0~\0#q\0~\0\'sq\0~\0\08ó]q\0~\0t\0\0t\0Createdsr\0\'org.enhydra.shark.xpdl.elements.CreatedzÊôdK»|[\0\0xq\0~\0#q\0~\0,sq\0~\0?Æbq\0~\0t\0\0t\0Descriptionsr\0+org.enhydra.shark.xpdl.elements.DescriptionÛ°73æ8û\0\0xq\0~\0#\0q\0~\01sq\0~\0\0Ü|ƒq\0~\0t\0\0t\0\rDocumentationsr\0-org.enhydra.shark.xpdl.elements.Documentation`Ä9»×y’\0\0xq\0~\0#\0q\0~\06sq\0~\0\0ˆq\0~\0t\0\0t\0PriorityUnitsr\0,org.enhydra.shark.xpdl.elements.PriorityUnit˜³›è›øäå\0\0xq\0~\0#\0q\0~\0;sq\0~\0æ|q\0~\0t\0\0t\0CostUnitsr\0(org.enhydra.shark.xpdl.elements.CostUnitÜŽÙ=HáŒ\0\0xq\0~\0#\0q\0~\0@sq\0~\0\0	­Yq\0~\0t\0\0xsr\0java.util.ArrayListxÒ™Ça\0I\0sizexp\0\0\0w\0\0\0q\0~\0$q\0~\0)q\0~\0.q\0~\03q\0~\08q\0~\0=q\0~\0Bxt\0RedefinableHeadersr\01org.enhydra.shark.xpdl.elements.RedefinableHeader™¿MëÏª\'H\0\0xq\0~\0\0q\0~\0Gsq\0~\0\03\"q\0~\0\nt\0\0sq\0~\0w\0\0\0t\0PublicationStatussq\0~\0\0q\0~\0Msq\0~\08q\0~\0It\0\0sq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0UNDER_REVISIONt\0RELEASEDt\0\nUNDER_TESTxt\0Authorsr\0&org.enhydra.shark.xpdl.elements.Author5ÊÄfá§†\0\0xq\0~\0#\0q\0~\0Usq\0~\0\0™r|q\0~\0It\0\0t\0Versionsr\0\'org.enhydra.shark.xpdl.elements.Version9=3´~»JQ\0\0xq\0~\0#\0q\0~\0Zsq\0~\0\0ôøq\0~\0It\0\0t\0Codepagesr\0(org.enhydra.shark.xpdl.elements.Codepage9$m÷e½\rG\0\0xq\0~\0#\0q\0~\0_sq\0~\0¸âq\0~\0It\0\0t\0\nCountrykeysr\0*org.enhydra.shark.xpdl.elements.Countrykey—‹.ÐÒÑ\0\0xq\0~\0#\0q\0~\0dsq\0~\0\0Í\"ýq\0~\0It\0\0t\0Responsiblessr\0,org.enhydra.shark.xpdl.elements.Responsibles$ïê{SÆ\0\0xr\0$org.enhydra.shark.xpdl.XMLCollectionèjÄ‹mí°\0\0xq\0~\0\0q\0~\0isq\0~\0\0Ñ<Áq\0~\0It\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~\0Nq\0~\0Wq\0~\0\\q\0~\0aq\0~\0fq\0~\0lxt\0ConformanceClasssr\00org.enhydra.shark.xpdl.elements.ConformanceClass×ìy0|k«”\0\0xq\0~\0\0q\0~\0rsq\0~\0¯©Pq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0GraphConformancesq\0~\0\0q\0~\0xsq\0~\080àq\0~\0tq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0FULL_BLOCKEDt\0LOOP_BLOCKEDt\0NON_BLOCKEDxxsq\0~\0E\0\0\0w\0\0\0q\0~\0yxt\0Scriptsr\0&org.enhydra.shark.xpdl.elements.ScriptQ¦jçSã8\0\0xq\0~\0\0q\0~\0€sq\0~\0\0Å\nlq\0~\0\nt\0\0sq\0~\0w\0\0\0t\0Typesq\0~\0q\0~\0†sq\0~\0‘Áq\0~\0‚t\0text/javascriptpt\0Versionsq\0~\0\0q\0~\0Šsq\0~\0ÉŠq\0~\0‚t\0\0pt\0Grammarsq\0~\0\0q\0~\0Žsq\0~\0_Yxq\0~\0‚t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0‡q\0~\0‹q\0~\0xt\0ExternalPackagessr\00org.enhydra.shark.xpdl.elements.ExternalPackageswÀ\"+Å¨¨‰\0\0xq\0~\0k\0q\0~\0“sq\0~\0*^?q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0TypeDeclarationssr\00org.enhydra.shark.xpdl.elements.TypeDeclarations\ráÊOx5Í\0\0xq\0~\0k\0q\0~\0šsq\0~\0\0Î¤Bq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Participantssr\0,org.enhydra.shark.xpdl.elements.Participantsh`·ðg8J\0\0xq\0~\0k\0q\0~\0¡sq\0~\0\0ú®\"q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Participanto$”órc¤\0\0xr\0+org.enhydra.shark.xpdl.XMLCollectionElementC¢xÓvr\0\0xq\0~\0t\0Participantsq\0~\0Œq\0~\0£t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0„Jq\0~\0ªt\0	requesterpq\0~\0sq\0~\0\0q\0~\0sq\0~\0^í\\q\0~\0ªt\0	Requesterpt\0ParticipantTypesr\0/org.enhydra.shark.xpdl.elements.ParticipantType>ˆn¥Ý…¨÷\0\0xq\0~\0q\0~\0µsq\0~\0\0Ý±6q\0~\0ªt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0q\0~\0†sq\0~\0ë”ãq\0~\0·t\0ROLEsq\0~\0E\0\0\0w\0\0\0t\0RESOURCE_SETt\0RESOURCEt\0ROLEt\0ORGANIZATIONAL_UNITt\0HUMANt\0SYSTEMxxsq\0~\0E\0\0\0w\0\0\0q\0~\0»xt\0Descriptionsq\0~\02\0q\0~\0Æsq\0~\0\0lq\0~\0ªt\0\0t\0ExternalReferencesr\01org.enhydra.shark.xpdl.elements.ExternalReference†bè·ÁQÏ\0\0xq\0~\0\0q\0~\0Êsq\0~\0\0/=þq\0~\0ªt\0\0sq\0~\0w\0\0\0t\0xrefsq\0~\0\0q\0~\0Ðsq\0~\0¨jq\0~\0Ìt\0\0pt\0locationsq\0~\0q\0~\0Ôsq\0~\0\0³²Öq\0~\0Ìt\0\0pt\0	namespacesq\0~\0\0q\0~\0Øsq\0~\0\0UîŠq\0~\0Ìt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\0Ñq\0~\0Õq\0~\0Ùxt\0ExtendedAttributessr\02org.enhydra.shark.xpdl.elements.ExtendedAttributesò°OõŸÚUF\0L\0extAttribsStringq\0~\0xq\0~\0k\0q\0~\0Ýsq\0~\0úè3q\0~\0ªt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0¯q\0~\0²q\0~\0·q\0~\0Çq\0~\0Ìq\0~\0ßxsq\0~\0¨t\0Participantsq\0~\0\0®-.q\0~\0£t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Îaÿq\0~\0åt\0approverpq\0~\0sq\0~\0\0q\0~\0sq\0~\0|¥Oq\0~\0åt\0Approverpt\0ParticipantTypesq\0~\0¶q\0~\0ðsq\0~\0#g#q\0~\0åt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0q\0~\0†sq\0~\0\0ÐXq\0~\0ñt\0ROLEsq\0~\0E\0\0\0w\0\0\0q\0~\0¿q\0~\0Àq\0~\0Áq\0~\0Âq\0~\0Ãq\0~\0Äxxsq\0~\0E\0\0\0w\0\0\0q\0~\0õxt\0Descriptionsq\0~\02\0q\0~\0úsq\0~\0ÜÅèq\0~\0åt\0\0t\0ExternalReferencesq\0~\0Ë\0q\0~\0þsq\0~\0&Pq\0~\0åt\0\0sq\0~\0w\0\0\0q\0~\0Ðsq\0~\0\0q\0~\0Ðsq\0~\0Š>¹q\0~\0ÿt\0\0pq\0~\0Ôsq\0~\0q\0~\0Ôsq\0~\0$gYq\0~\0ÿt\0\0pq\0~\0Øsq\0~\0\0q\0~\0Øsq\0~\0\0ÂPq\0~\0ÿt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~q\0~	xt\0ExtendedAttributessq\0~\0Þ\0q\0~\rsq\0~\0	íÑq\0~\0åt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~\0êq\0~\0íq\0~\0ñq\0~\0ûq\0~\0ÿq\0~xxt\0Applicationssr\0,org.enhydra.shark.xpdl.elements.ApplicationsÂ€´Þö¼\0\0xq\0~\0k\0q\0~sq\0~\0Kt¡q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0+org.enhydra.shark.xpdl.elements.Applicationv	¢RùþS\0\0xq\0~\0©t\0Applicationsq\0~\0\0ó¥ûq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0f!£q\0~t\0default_applicationpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0¶!q\0~t\0\0pt\0Descriptionsq\0~\02\0q\0~\'sq\0~\0Ã-q\0~t\0\0t\0Choicesr\00org.enhydra.shark.xpdl.elements.ApplicationTypes?û!­®¦\0\0xr\0\'org.enhydra.shark.xpdl.XMLComplexChoice¤|±º\"ôú\0L\0choicesq\0~\0L\0choosenq\0~\0	xq\0~\0q\0~+sq\0~\0OuKq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sr\00org.enhydra.shark.xpdl.elements.FormalParameterspºÄBÇÃZ\0\0xq\0~\0k\0t\0FormalParameterssq\0~\0F¥øq\0~.t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0Ë\0t\0ExternalReferencesq\0~\0\0!–q\0~.t\0\0sq\0~\0w\0\0\0q\0~\0Ðsq\0~\0\0q\0~\0Ðsq\0~\0HÌÊq\0~9t\0\0pq\0~\0Ôsq\0~\0q\0~\0Ôsq\0~\0ËEq\0~9t\0\0pq\0~\0Øsq\0~\0\0q\0~\0Øsq\0~\0 áq\0~9t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~>q\0~Aq\0~Dxxq\0~3t\0ExtendedAttributessq\0~\0Þ\0q\0~Hsq\0~\0–±q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$q\0~(q\0~.q\0~Ixxt\0\nDataFieldssr\0*org.enhydra.shark.xpdl.elements.DataFields½µ’Ê¦ÔúU\0\0xq\0~\0k\0q\0~Osq\0~\0\0ëGÔq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0WorkflowProcessessr\01org.enhydra.shark.xpdl.elements.WorkflowProcessespŽ_¢0,\0\0xq\0~\0k\0q\0~Vsq\0~\0\0dóq\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0/org.enhydra.shark.xpdl.elements.WorkflowProcess%áv0Ò×L\0\0xq\0~\0©t\0WorkflowProcesssq\0~\0»Óëq\0~Xt\0\0sq\0~\0w\0\0\0\rq\0~\0sq\0~\0q\0~\0sq\0~\0™éq\0~^t\0process1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0°jq\0~^t\0Proposal Approval Processpt\0AccessLevelsq\0~\0\0q\0~isq\0~\0\0š´qq\0~^q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0PUBLICt\0PRIVATExt\0\rProcessHeadersr\0-org.enhydra.shark.xpdl.elements.ProcessHeaderŒL®ƒC-)¿\0\0xq\0~\0q\0~osq\0~\0\0Ð6q\0~^t\0\0sq\0~\0w\0\0\0t\0DurationUnitsq\0~\0\0q\0~usq\0~\0³q\0~qt\0hsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0Yt\0Mt\0Dt\0ht\0mt\0sxt\0Createdsq\0~\0-\0q\0~€sq\0~\0<Aäq\0~qt\0\0t\0Descriptionsq\0~\02\0q\0~„sq\0~\0\0ÚBŽq\0~qt\0\0t\0Prioritysr\0(org.enhydra.shark.xpdl.elements.Priority`öNn>b\0\0xq\0~\0#\0q\0~ˆsq\0~\0\0i7Òq\0~qt\0\0t\0Limitsr\0%org.enhydra.shark.xpdl.elements.Limitü¢è1˜Ó—\0\0xq\0~\0#\0q\0~sq\0~\0\0By€q\0~qt\0\0t\0	ValidFromsr\0)org.enhydra.shark.xpdl.elements.ValidFromcÅ…|ƒL<\0\0xq\0~\0#\0q\0~’sq\0~\0¢/Mq\0~qt\0\0t\0ValidTosr\0\'org.enhydra.shark.xpdl.elements.ValidTožÁ¶«MÉ\0\0xq\0~\0#\0q\0~—sq\0~\0PÍÅq\0~qt\0\0t\0TimeEstimationsr\0.org.enhydra.shark.xpdl.elements.TimeEstimationÅ€£\'3\0\0xq\0~\0\0q\0~œsq\0~\0\0J¤\Zq\0~qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesr\0+org.enhydra.shark.xpdl.elements.WaitingTimeNð“äÎð /\0\0xq\0~\0#\0q\0~¢sq\0~\0õSêq\0~žt\0\0t\0WorkingTimesr\0+org.enhydra.shark.xpdl.elements.WorkingTime¾~±ƒæ×\0\0xq\0~\0#\0q\0~§sq\0~\0ÍÊÞq\0~žt\0\0t\0Durationsr\0(org.enhydra.shark.xpdl.elements.Duration© ôCôëè\0\0xq\0~\0#\0q\0~¬sq\0~\0\0¸Çq\0~žt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~¤q\0~©q\0~®xxsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~q\0~…q\0~Šq\0~q\0~”q\0~™q\0~žxt\0RedefinableHeadersq\0~\0H\0q\0~³sq\0~\0‡þq\0~^t\0\0sq\0~\0w\0\0\0q\0~\0Msq\0~\0\0q\0~\0Msq\0~\0\0vvçq\0~´q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\0Rq\0~\0Sq\0~\0Txt\0Authorsq\0~\0V\0q\0~»sq\0~\0RÝq\0~´t\0\0t\0Versionsq\0~\0[\0q\0~¿sq\0~\0îq\0~´t\0\0t\0Codepagesq\0~\0`\0q\0~Ãsq\0~\0\0©E&q\0~´t\0\0t\0\nCountrykeysq\0~\0e\0q\0~Çsq\0~\0ÂZq\0~´t\0\0t\0Responsiblessq\0~\0j\0q\0~Ësq\0~\0\0LÝSq\0~´t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~¸q\0~¼q\0~Àq\0~Äq\0~Èq\0~Ìxt\0FormalParameterssq\0~2\0q\0~Òsq\0~\0Ë\rDq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nDataFieldssq\0~P\0q\0~Øsq\0~\0Gû®q\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.DataFieldIÒ3.~‘­÷\0\0xq\0~\0©t\0	DataFieldsq\0~\0\0ŸÜq\0~Ùt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0¢vVq\0~ßt\0statuspq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0	ƒÉq\0~ßt\0\0pt\0IsArraysq\0~\0\0q\0~êsq\0~\0\0Cq\0~ßt\0FALSEsq\0~\0E\0\0\0w\0\0\0t\0TRUEt\0FALSExt\0DataTypesr\0(org.enhydra.shark.xpdl.elements.DataType†\'4sM\0\0xq\0~\0q\0~ñsq\0~\0\0ìöNq\0~ßt\0\0sq\0~\0w\0\0\0t\0	DataTypessr\0)org.enhydra.shark.xpdl.elements.DataTypesµpcH,Þ!“\0Z\0\risInitializedxq\0~-q\0~÷sq\0~\0Þ¾q\0~ót\0\0sq\0~\0E\0\0\0	w\0\0\0	sr\0)org.enhydra.shark.xpdl.elements.BasicType·)¨½w1¿Ž\0\0xq\0~\0t\0	BasicTypesq\0~\0\0—–[q\0~ùt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0q\0~\0†sq\0~\0\0’sq\0~þt\0STRINGsq\0~\0E\0\0\0w\0\0\0t\0STRINGt\0FLOATt\0INTEGERt\0	REFERENCEt\0DATETIMEt\0BOOLEANt\0	PERFORMERxxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0,org.enhydra.shark.xpdl.elements.DeclaredTypedR.\\^è9’\0\0xq\0~\0t\0DeclaredTypesq\0~\0¿@;q\0~ùt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0qÖàq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~xsr\0*org.enhydra.shark.xpdl.elements.SchemaType&1oSHª…\0\0xq\0~\0t\0\nSchemaTypesq\0~\0R·›q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~\0Ët\0ExternalReferencesq\0~\0§\"Hq\0~ùt\0\0sq\0~\0w\0\0\0q\0~\0Ðsq\0~\0\0q\0~\0Ðsq\0~\0\0P_q\0~ t\0\0pq\0~\0Ôsq\0~\0q\0~\0Ôsq\0~\0Kãq\0~ t\0\0pq\0~\0Øsq\0~\0\0q\0~\0Øsq\0~\0eˆ>q\0~ t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~%q\0~(q\0~+xsr\0*org.enhydra.shark.xpdl.elements.RecordTypeõ%¨½©ëK\0\0\0xq\0~\0kt\0\nRecordTypesq\0~\0ÜS8q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.UnionType´Úï5PÎGú\0\0xq\0~\0kt\0	UnionTypesq\0~\0bæ&q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0/org.enhydra.shark.xpdl.elements.EnumerationTypeªÚðÞf3b\0\0xq\0~\0kt\0EnumerationTypesq\0~\0\0?Uìq\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.ArrayTypeg¬$\0­N@\0\0xq\0~\0t\0	ArrayTypesq\0~\0V­q\0~ùt\0\0sq\0~\0w\0\0\0t\0\nLowerIndexsq\0~\0q\0~Jsq\0~\0\0œÖ¬q\0~Et\0\0pt\0\nUpperIndexsq\0~\0q\0~Nsq\0~\0\0IFq\0~Et\0\0pq\0~÷sq\0~øq\0~÷sq\0~\0\0Kæ_q\0~Et\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~Kq\0~Oq\0~Rxsr\0(org.enhydra.shark.xpdl.elements.ListTypeŸ\"ÓŸ\n®\0\0xq\0~\0t\0ListTypesq\0~\0­îWq\0~ùt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~øq\0~÷sq\0~\0Èt8q\0~Wt\0\0ppxsq\0~\0E\0\0\0w\0\0\0q\0~\\xxq\0~þxsq\0~\0E\0\0\0w\0\0\0q\0~ùxt\0InitialValuesr\0,org.enhydra.shark.xpdl.elements.InitialValuej,zû”œR\0\0xq\0~\0#\0q\0~asq\0~\0×?ðq\0~ßt\0\0t\0Lengthsr\0&org.enhydra.shark.xpdl.elements.LengthMW+-Ì©WÜ\0\0xq\0~\0#\0q\0~fsq\0~\0\0OX‹q\0~ßt\0\0t\0Descriptionsq\0~\02\0q\0~ksq\0~\0\0ÔÍƒq\0~ßt\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~osq\0~\0\0™•q\0~ßt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~äq\0~çq\0~ëq\0~óq\0~cq\0~hq\0~lq\0~pxxt\0Participantssq\0~\0¢\0q\0~vsq\0~\0\0vÎq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Applicationssq\0~\0q\0~|sq\0~\0\0Œq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ActivitySetssr\0,org.enhydra.shark.xpdl.elements.ActivitySetsÐqV[4ªîÖ\0\0xq\0~\0k\0q\0~‚sq\0~\0ýòq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0\nActivitiessr\0*org.enhydra.shark.xpdl.elements.Activities&G^á¾lþP\0\0xq\0~\0k\0q\0~‰sq\0~\0Ièq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0(org.enhydra.shark.xpdl.elements.ActivityÃt‡45\Z9•\0\0xq\0~\0©t\0Activitysq\0~\0z™Çq\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0³scq\0~‘t\0approve_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0ü\0$q\0~‘t\0Approve Proposalpt\0Descriptionsq\0~\02\0q\0~œsq\0~\0\0C©«q\0~‘t\0\0t\0Limitsq\0~Ž\0q\0~ sq\0~\0\0äæq\0~‘t\0\0q\0~\0†sr\0-org.enhydra.shark.xpdl.elements.ActivityTypeseÅ½{öžèè\0\0xq\0~-q\0~\0†sq\0~\0Ÿ÷Åq\0~‘t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0%org.enhydra.shark.xpdl.elements.Route0eî\r²GÝ\0\0xq\0~\0t\0Routesq\0~\0®7òq\0~¥t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0.org.enhydra.shark.xpdl.elements.Implementationœr–’^%Š\0\0xq\0~\0t\0Implementationsq\0~\0\0ÓÌq\0~¥t\0\0sq\0~\0w\0\0\0q\0~\0†sr\03org.enhydra.shark.xpdl.elements.ImplementationTypes\rŸäTÙ¡9\0\0xq\0~-q\0~\0†sq\0~\0¦q\0~±t\0\0sq\0~\0E\0\0\0w\0\0\0sr\0\"org.enhydra.shark.xpdl.elements.No{•…Ú.\0\0xq\0~\0t\0Nosq\0~\02û\\q\0~·t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0%org.enhydra.shark.xpdl.elements.ToolsC¿Ög©‘\0\0xq\0~\0k\0t\0Toolssq\0~\0wE/q\0~·t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0\'org.enhydra.shark.xpdl.elements.SubFlow;Oõs‡7:$\0\0xq\0~\0t\0SubFlowsq\0~\0Ð¸q\0~·t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Œ€q\0~Êt\0\0pt\0	Executionsq\0~\0\0q\0~Òsq\0~\0\05k†q\0~Êq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ASYNCHRt\0SYNCHRxt\0ActualParameterssr\00org.enhydra.shark.xpdl.elements.ActualParametersëŒ÷µ_ìKþ\0\0xq\0~\0k\0q\0~Øsq\0~\0Äq\0~Êt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~Ïq\0~Óq\0~Úxxq\0~¼xsq\0~\0E\0\0\0w\0\0\0q\0~·xsr\0-org.enhydra.shark.xpdl.elements.BlockActivity’qÊcÄêF\0\0xq\0~\0t\0\rBlockActivitysq\0~\0\0ö„Âq\0~¥t\0\0sq\0~\0w\0\0\0t\0BlockIdsq\0~\0q\0~çsq\0~\0\0gkÐq\0~ât\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~èxxq\0~±t\0	Performersr\0)org.enhydra.shark.xpdl.elements.Performer¦\"1%èÌÄ\0\0xq\0~\0#\0q\0~ìsq\0~\0ÑJÁq\0~‘t\0approvert\0	StartModesr\0)org.enhydra.shark.xpdl.elements.StartModenh…„×óS\0\0xq\0~\0\0q\0~ñsq\0~\0\0Þ q\0~‘t\0\0sq\0~\0w\0\0\0t\0Modesr\00org.enhydra.shark.xpdl.elements.StartFinishModes~ç6zåX‹\'\0\0xq\0~-\0q\0~÷sq\0~\0\0Úsrq\0~ót\0\0sq\0~\0E\0\0\0w\0\0\0sr\0,org.enhydra.shark.xpdl.XMLEmptyChoiceElementï2Ô;Î3õ_\0\0xq\0~\0\0t\0XMLEmptyChoiceElementsq\0~\0\0`Þ=q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0)org.enhydra.shark.xpdl.elements.Automaticét?û_€\0\0xq\0~\0t\0	Automaticsq\0~\0\0¼Þ_q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsr\0&org.enhydra.shark.xpdl.elements.Manual·vª‰î[Ø¤\0\0xq\0~\0t\0Manualsq\0~\0fî‰q\0~ùt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~þxsq\0~\0E\0\0\0w\0\0\0q\0~ùxt\0\nFinishModesr\0*org.enhydra.shark.xpdl.elements.FinishModeöƒø›œ¼ó{\0\0xq\0~\0\0q\0~sq\0~\0üZ·q\0~‘t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0ãÃq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0“q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0v<ƒq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0¿HFq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~‰\0q\0~0sq\0~\0\0BÿÔq\0~‘t\0\0t\0	Deadlinessr\0)org.enhydra.shark.xpdl.elements.Deadlines>½ÉœÃÚ\0\0xq\0~\0k\0q\0~4sq\0~\0\0­\\q\0~‘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsr\05org.enhydra.shark.xpdl.elements.SimulationInformation\"“|Iª£’\0\0xq\0~\0\0q\0~;sq\0~\0\0H¹q\0~‘t\0\0sq\0~\0w\0\0\0t\0\rInstantiationsq\0~\0\0q\0~Asq\0~\0ª‡Nq\0~=q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ONCEt\0MULTIPLExt\0Costsr\0$org.enhydra.shark.xpdl.elements.CostÏùÀÞò‘ž\0\0xq\0~\0#q\0~Gsq\0~\0\0«pðq\0~=t\0\0t\0TimeEstimationsq\0~q\0~Lsq\0~\0Btq\0~=t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Qsq\0~\0arq\0~Mt\0\0t\0WorkingTimesq\0~¨\0q\0~Usq\0~\0\0njq\0~Mt\0\0t\0Durationsq\0~­\0q\0~Ysq\0~\0Ägq\0~Mt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Rq\0~Vq\0~Zxxsq\0~\0E\0\0\0w\0\0\0q\0~Bq\0~Iq\0~Mxt\0Iconsr\0$org.enhydra.shark.xpdl.elements.Icon«TÎU(ÿ}6\0\0xq\0~\0#\0q\0~_sq\0~\0\0_7q\0~‘t\0\0t\0\rDocumentationsq\0~\07\0q\0~dsq\0~\0\0!ßYq\0~‘t\0\0t\0TransitionRestrictionssr\06org.enhydra.shark.xpdl.elements.TransitionRestrictionsC)·×€i;\0\0xq\0~\0k\0q\0~hsq\0~\0\0üæeq\0~‘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\05org.enhydra.shark.xpdl.elements.TransitionRestrictionNûÄ‡¹}þ\0\0xq\0~\0t\0TransitionRestrictionsq\0~\0m§äq\0~jt\0\0sq\0~\0w\0\0\0t\0Joinsr\0$org.enhydra.shark.xpdl.elements.JoinÚ•Ó©x)ó5\0\0xq\0~\0\0q\0~usq\0~\0\0RUBq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0ñÛ\\q\0~wt\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0ANDt\0XORxxsq\0~\0E\0\0\0w\0\0\0q\0~{xt\0Splitsr\0%org.enhydra.shark.xpdl.elements.SplitÜí¯~Ñ¯WS\0\0xq\0~\0\0q\0~‚sq\0~\0\0L’Nq\0~pt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0\0ÒT$q\0~„q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~€xt\0TransitionRefssr\0.org.enhydra.shark.xpdl.elements.TransitionRefs ï³ÑŠáÄë\0\0xq\0~\0k\0q\0~‹sq\0~\0\0”ã¹q\0~„t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ˆq\0~xxsq\0~\0E\0\0\0w\0\0\0q\0~wq\0~„xxt\0ExtendedAttributessq\0~\0Þ\0q\0~”sq\0~\0c>áq\0~‘t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\01org.enhydra.shark.xpdl.elements.ExtendedAttribute»Â\\±ìF\0\0xq\0~\0t\0ExtendedAttributesq\0~\0\0#kšq\0~•t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0…ëÜq\0~›t\0JaWE_GRAPH_PARTICIPANT_IDpt\0Valuesq\0~\0\0q\0~£sq\0~\0,µäq\0~›t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~ q\0~¤xsq\0~št\0ExtendedAttributesq\0~\0\0½xŸq\0~•t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0‹¯iq\0~¨t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0\0eOq\0~¨t\0189,51.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~­q\0~°xxpxsq\0~\0E\0\0\0w\0\0\0q\0~–q\0~™q\0~q\0~¡q\0~¥q\0~îq\0~óq\0~q\0~1q\0~6q\0~=q\0~aq\0~eq\0~jq\0~•xsq\0~t\0Activitysq\0~\0\0Ör/q\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0T©q\0~µt\0approvalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0Ú‘jq\0~µt\0Approvalpt\0Descriptionsq\0~\02\0q\0~Àsq\0~\0 ’q\0~µt\0\0t\0Limitsq\0~Ž\0q\0~Äsq\0~\0\0v/ùq\0~µt\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0Piq\0~µt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0\0rþSq\0~Èt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0k­¨q\0~Èt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0\0Oq\0~Òt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0)¿¡q\0~×t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0r_Qq\0~×t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Ét\0SubFlowsq\0~\0L©ºq\0~×t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0YÑŸq\0~çt\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0\0ö´\"q\0~çq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~òsq\0~\0âzq\0~çt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~ìq\0~ïq\0~óxxq\0~Ûxsq\0~\0E\0\0\0w\0\0\0q\0~×xsq\0~át\0\rBlockActivitysq\0~\0°œ™q\0~Èt\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0\0žpq\0~út\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~ÿxxq\0~Ìt\0	Performersq\0~í\0q\0~sq\0~\02ŒÌq\0~µt\0approvert\0	StartModesq\0~ò\0q\0~sq\0~\0¼¢q\0~µt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0O«Œq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0ü\" q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Wébq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~#sq\0~\0\0ë\rq\0~µt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0LSq\0~$t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0#ø>q\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0«ýq\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0>Sëq\0~(t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~,xsq\0~\0E\0\0\0w\0\0\0q\0~(xt\0Prioritysq\0~‰\0q\0~?sq\0~\0\09Ù°q\0~µt\0\0t\0	Deadlinessq\0~5\0q\0~Csq\0~\03q\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Isq\0~\0§&q\0~µt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0\0­Š‰q\0~Jq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Qsq\0~\0\0“4õq\0~Jt\0\0t\0TimeEstimationsq\0~q\0~Usq\0~\0\0e‹q\0~Jt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Zsq\0~\0\0øÓ‚q\0~Vt\0\0t\0WorkingTimesq\0~¨\0q\0~^sq\0~\0\0ñìÖq\0~Vt\0\0t\0Durationsq\0~­\0q\0~bsq\0~\0\n^¡q\0~Vt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~[q\0~_q\0~cxxsq\0~\0E\0\0\0w\0\0\0q\0~Nq\0~Rq\0~Vxt\0Iconsq\0~`\0q\0~hsq\0~\05>q\0~µt\0\0t\0\rDocumentationsq\0~\07\0q\0~lsq\0~\0·§Ùq\0~µt\0\0t\0TransitionRestrictionssq\0~i\0q\0~psq\0~\0\0s%q\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0ló¨q\0~qt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~{sq\0~\0\0l¤Ûq\0~vt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0Þäq\0~|q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~€xxsq\0~\0E\0\0\0w\0\0\0q\0~€xt\0Splitsq\0~ƒ\0q\0~„sq\0~\0£çq\0~vt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0&Dq\0~…t\0XORsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~€xt\0TransitionRefssq\0~Œ\0q\0~sq\0~\0\0õËq\0~…t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0-org.enhydra.shark.xpdl.elements.TransitionRefƒ%-Ëñaš\0\0xq\0~\0©t\0\rTransitionRefsq\0~\0K¨q\0~Žt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Ky\'q\0~”t\0transition3pxsq\0~\0E\0\0\0w\0\0\0q\0~™xsq\0~“t\0\rTransitionRefsq\0~\0\0€åaq\0~Žt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0¹u¡q\0~t\0transition6pxsq\0~\0E\0\0\0w\0\0\0q\0~¢xsq\0~“t\0\rTransitionRefsq\0~\0Ä$q\0~Žt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0·þKq\0~¦t\0transition5pxsq\0~\0E\0\0\0w\0\0\0q\0~«xxxsq\0~\0E\0\0\0w\0\0\0q\0~‰q\0~Žxxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~…xxt\0ExtendedAttributessq\0~\0Þ\0q\0~±sq\0~\0ÍÎ]q\0~µt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0’J–q\0~²t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Õðq\0~·t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0ä–q\0~·t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~¼q\0~¿xsq\0~št\0ExtendedAttributesq\0~\0\0z0£q\0~²t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0-€q\0~Ãt\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0«q\0~Ãt\0430,62.79999084472655pxsq\0~\0E\0\0\0w\0\0\0q\0~Èq\0~Ëxxpxsq\0~\0E\0\0\0w\0\0\0q\0~ºq\0~½q\0~Áq\0~Åq\0~Èq\0~q\0~q\0~$q\0~@q\0~Dq\0~Jq\0~iq\0~mq\0~qq\0~²xsq\0~t\0Activitysq\0~\0\0-‡Õq\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0;´ q\0~Ðt\0	activity1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0AJq\0~Ðt\0Resubmit Proposalpt\0Descriptionsq\0~\02\0q\0~Ûsq\0~\0\0óO·q\0~Ðt\0\0t\0Limitsq\0~Ž\0q\0~ßsq\0~\0\0õ…}q\0~Ðt\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\0X®Ùq\0~Ðt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0-Ûq\0~ãt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0ì]{q\0~ãt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0$ë–q\0~ít\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0Ë¤\rq\0~òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0\0ù\":q\0~òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Ét\0SubFlowsq\0~\0³´q\0~òt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÕŠ q\0~t\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0\0›³Ûq\0~q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~\rsq\0~\0£\0q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\nq\0~xxq\0~öxsq\0~\0E\0\0\0w\0\0\0q\0~òxsq\0~át\0\rBlockActivitysq\0~\0yÛ”q\0~ãt\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0\0 Ø‘q\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\Zxxq\0~ít\0	Performersq\0~í\0q\0~sq\0~\0(´5q\0~Ðt\0	requestert\0	StartModesq\0~ò\0q\0~\"sq\0~\0ö\03q\0~Ðt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0ÔÖ\"q\0~#t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0ô§«q\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0d÷žq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0Žòq\0~\'t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~+xsq\0~\0E\0\0\0w\0\0\0q\0~\'xt\0\nFinishModesq\0~\0q\0~>sq\0~\0\0ãTq\0~Ðt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0s˜q\0~?t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0[í­q\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0~Çq\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0<Ãq\0~Ct\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~Gxsq\0~\0E\0\0\0w\0\0\0q\0~Cxt\0Prioritysq\0~‰\0q\0~Zsq\0~\0\0J˜@q\0~Ðt\0\0t\0	Deadlinessq\0~5\0q\0~^sq\0~\0U<¡q\0~Ðt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~dsq\0~\0Ïþ¤q\0~Ðt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0‰>úq\0~eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~lsq\0~\0ë\'q\0~et\0\0t\0TimeEstimationsq\0~q\0~psq\0~\0e·ûq\0~et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~usq\0~\0Õ@-q\0~qt\0\0t\0WorkingTimesq\0~¨\0q\0~ysq\0~\0«ÒÃq\0~qt\0\0t\0Durationsq\0~­\0q\0~}sq\0~\0‚¼šq\0~qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~vq\0~zq\0~~xxsq\0~\0E\0\0\0w\0\0\0q\0~iq\0~mq\0~qxt\0Iconsq\0~`\0q\0~ƒsq\0~\0è¾q\0~Ðt\0\0t\0\rDocumentationsq\0~\07\0q\0~‡sq\0~\0\0ãq\0~Ðt\0\0t\0TransitionRestrictionssq\0~i\0q\0~‹sq\0~\0õq\0~Ðt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0Þ\0q\0~‘sq\0~\0k×q\0~Ðt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0­ì0q\0~’t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Ã$q\0~—t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0\0Ü„q\0~—t\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~œq\0~Ÿxsq\0~št\0ExtendedAttributesq\0~\0\0”i1q\0~’t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Fßq\0~£t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0˜UÀq\0~£t\0397,20.787493896484378pxsq\0~\0E\0\0\0w\0\0\0q\0~¨q\0~«xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Õq\0~Øq\0~Üq\0~àq\0~ãq\0~q\0~#q\0~?q\0~[q\0~_q\0~eq\0~„q\0~ˆq\0~Œq\0~’xsq\0~t\0Activitysq\0~\0³Ä°q\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0LŠq\0~°t\0\rsend_proposalpq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0}ð–q\0~°t\0\rSend Proposalpt\0Descriptionsq\0~\02\0q\0~»sq\0~\0\0X`Aq\0~°t\0\0t\0Limitsq\0~Ž\0q\0~¿sq\0~\0?\Z_q\0~°t\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\0pÛq\0~°t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\02jTq\0~Ãt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0\0gG›q\0~Ãt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0ïV*q\0~Ít\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0…W q\0~Òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0‰÷Nq\0~Òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Ét\0SubFlowsq\0~\04;q\0~Òt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0©r4q\0~ât\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0è\Z–q\0~âq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~ísq\0~\0¯¢\"q\0~ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~çq\0~êq\0~îxxq\0~Öxsq\0~\0E\0\0\0w\0\0\0q\0~Òxsq\0~át\0\rBlockActivitysq\0~\0&õ\0q\0~Ãt\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0\0Kq\0~õt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~úxxq\0~Ít\0	Performersq\0~í\0q\0~þsq\0~\0Tƒwq\0~°t\0	requestert\0	StartModesq\0~ò\0q\0~sq\0~\0€…Íq\0~°t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0ùHq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0„9yq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\08Éßq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0»“âq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~sq\0~\0\0ñó©q\0~°t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0ˆ^?q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\02©§q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0ªÚÍq\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0%´`q\0~#t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\'xsq\0~\0E\0\0\0w\0\0\0q\0~#xt\0Prioritysq\0~‰\0q\0~:sq\0~\02ÿq\0~°t\0\0t\0	Deadlinessq\0~5\0q\0~>sq\0~\0±Ò(q\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Dsq\0~\0%\naq\0~°t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0}3‘q\0~Eq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~Lsq\0~\0ÔvKq\0~Et\0\0t\0TimeEstimationsq\0~q\0~Psq\0~\0\0ËÒËq\0~Et\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~Usq\0~\0Ì·qq\0~Qt\0\0t\0WorkingTimesq\0~¨\0q\0~Ysq\0~\0Cò¢q\0~Qt\0\0t\0Durationsq\0~­\0q\0~]sq\0~\07¨ïq\0~Qt\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Zq\0~^xxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Mq\0~Qxt\0Iconsq\0~`\0q\0~csq\0~\0ºoÈq\0~°t\0\0t\0\rDocumentationsq\0~\07\0q\0~gsq\0~\0W-ñq\0~°t\0\0t\0TransitionRestrictionssq\0~i\0q\0~ksq\0~\0\0›q\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0Þ\0q\0~qsq\0~\0A¨Eq\0~°t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0ÞŽq\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0“¥!q\0~wt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0¡\\q\0~wt\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~|q\0~xsq\0~št\0ExtendedAttributesq\0~\0\0#’q\0~rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Ñ«*q\0~ƒt\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0\0Ç¿üq\0~ƒt\0#669.0000534057617,92.78333282470703pxsq\0~\0E\0\0\0w\0\0\0q\0~ˆq\0~‹xxpxsq\0~\0E\0\0\0w\0\0\0q\0~µq\0~¸q\0~¼q\0~Àq\0~Ãq\0~ÿq\0~q\0~q\0~;q\0~?q\0~Eq\0~dq\0~hq\0~lq\0~rxsq\0~t\0Activitysq\0~\0·”–q\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0!?ƒq\0~t\0parallelpq\0~\0sq\0~\0\0q\0~\0sq\0~\0Ž5q\0~t\0Parallelpt\0Descriptionsq\0~\02\0q\0~›sq\0~\0\0\røq\0~t\0\0t\0Limitsq\0~Ž\0q\0~Ÿsq\0~\0¾ˆ¤q\0~t\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\0¹aq\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0Üï2q\0~£t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0\0ÆîÇq\0~£t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0ú£q\0~­t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0ŠÛüq\0~²t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0\0é`q\0~²t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Ét\0SubFlowsq\0~\0˜lq\0~²t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ž·wq\0~Ât\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0Ôq\0~Âq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~Ísq\0~\0y¸Ñq\0~Ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~Çq\0~Êq\0~Îxxq\0~¶xsq\0~\0E\0\0\0w\0\0\0q\0~²xsq\0~át\0\rBlockActivitysq\0~\0PÒ\rq\0~£t\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0íçŸq\0~Õt\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~Úxxq\0~§t\0	Performersq\0~í\0q\0~Þsq\0~\0\0u”­q\0~t\0approvert\0	StartModesq\0~ò\0q\0~âsq\0~\0\0²Âq\0~t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0nãq\0~ãt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0µìq\0~çt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0D’vq\0~çt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0~Ärq\0~çt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~ëxsq\0~\0E\0\0\0w\0\0\0q\0~çxt\0\nFinishModesq\0~\0q\0~þsq\0~\0\0òEÿq\0~t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0;˜q\0~ÿt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0…¨q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0)MŽq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0>Ø\\q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Prioritysq\0~‰\0q\0~\Zsq\0~\0\0Î§q\0~t\0\0t\0	Deadlinessq\0~5\0q\0~sq\0~\0\0ÔQuq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~$sq\0~\0<\"œq\0~t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0ôøq\0~%q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~,sq\0~\0\0½Oq\0~%t\0\0t\0TimeEstimationsq\0~q\0~0sq\0~\0\0¨‚q\0~%t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~5sq\0~\0\0–î‰q\0~1t\0\0t\0WorkingTimesq\0~¨\0q\0~9sq\0~\0\0ÆÞq\0~1t\0\0t\0Durationsq\0~­\0q\0~=sq\0~\0”ö–q\0~1t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~6q\0~:q\0~>xxsq\0~\0E\0\0\0w\0\0\0q\0~)q\0~-q\0~1xt\0Iconsq\0~`\0q\0~Csq\0~\0ZFôq\0~t\0\0t\0\rDocumentationsq\0~\07\0q\0~Gsq\0~\0\0+pq\0~t\0\0t\0TransitionRestrictionssq\0~i\0q\0~Ksq\0~\0\0kØOq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~ot\0TransitionRestrictionsq\0~\0\0?drq\0~Lt\0\0sq\0~\0w\0\0\0t\0Joinsq\0~v\0q\0~Vsq\0~\0\0îwq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0¶“®q\0~Wq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~€xxsq\0~\0E\0\0\0w\0\0\0q\0~[xt\0Splitsq\0~ƒ\0q\0~_sq\0~\0$~Nq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0\0ùƒ¬q\0~`t\0ANDsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~q\0~€xt\0TransitionRefssq\0~Œ\0q\0~hsq\0~\0\0Öí:q\0~`t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~“t\0\rTransitionRefsq\0~\0høiq\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0ø}ƒq\0~nt\0transition7pxsq\0~\0E\0\0\0w\0\0\0q\0~sxsq\0~“t\0\rTransitionRefsq\0~\0\0æ¯q\0~it\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0LIq\0~wt\0transition8pxsq\0~\0E\0\0\0w\0\0\0q\0~|xxxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~ixxsq\0~\0E\0\0\0w\0\0\0q\0~Wq\0~`xxt\0ExtendedAttributessq\0~\0Þ\0q\0~‚sq\0~\0\0²’q\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0\'{üq\0~ƒt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0ù¦»q\0~ˆt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0\0‘¤Áq\0~ˆt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~xsq\0~št\0ExtendedAttributesq\0~\0\0ŽŒq\0~ƒt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0cîþq\0~”t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0\0˜_q\0~”t\0588,61.599993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~™q\0~œxxpxsq\0~\0E\0\0\0w\0\0\0q\0~•q\0~˜q\0~œq\0~ q\0~£q\0~ßq\0~ãq\0~ÿq\0~q\0~q\0~%q\0~Dq\0~Hq\0~Lq\0~ƒxsq\0~t\0Activitysq\0~\0dA©q\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0°…Íq\0~¡t\0tool1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0òoÁq\0~¡t\0\ZSend Approval Notificationpt\0Descriptionsq\0~\02\0q\0~¬sq\0~\0àfŸq\0~¡t\0\0t\0Limitsq\0~Ž\0q\0~°sq\0~\0lâq\0~¡t\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\0Bœ^q\0~¡t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0\0@aðq\0~´t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0\0Œ,9q\0~´t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0\0`.q\0~¾t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0dôq\0~Ãt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0X\"q\0~Ãt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0$org.enhydra.shark.xpdl.elements.Tool\\6–&¶+G\0\0xq\0~\0©t\0Toolsq\0~\0\0œMñq\0~Ít\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Âgq\0~Ôt\0default_applicationpq\0~\0†sq\0~\0\0q\0~\0†sq\0~\0\0ªïõq\0~Ôq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0APPLICATIONt\0	PROCEDURExt\0ActualParameterssq\0~Ù\0q\0~ásq\0~\0\0&þ¬q\0~Ôt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~çsq\0~\0íÐ\\q\0~Ôt\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~ësq\0~\0€æÕq\0~Ôt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~Ùq\0~Üq\0~âq\0~èq\0~ìxxsq\0~Ét\0SubFlowsq\0~\0\0¼Tq\0~Ãt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0k­q\0~òt\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0\0í»=q\0~òq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~ýsq\0~\0§9\nq\0~òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~÷q\0~úq\0~þxxq\0~Íxsq\0~\0E\0\0\0w\0\0\0q\0~Ãxsq\0~át\0\rBlockActivitysq\0~\01—_q\0~´t\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0WÉWq\0~t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~\nxxq\0~¾t\0	Performersq\0~í\0q\0~sq\0~\0\0äµq\0~¡t\0approvert\0	StartModesq\0~ò\0q\0~sq\0~\0\0Å¸¬q\0~¡t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0?^„q\0~t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\05Zq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0‰ªq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0çÙŽq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~xsq\0~\0E\0\0\0w\0\0\0q\0~xt\0\nFinishModesq\0~\0q\0~.sq\0~\0Ñ›q\0~¡t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0FDÞq\0~/t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0ÑJq\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0D,q\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0bªäq\0~3t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~7xsq\0~\0E\0\0\0w\0\0\0q\0~3xt\0Prioritysq\0~‰\0q\0~Jsq\0~\0\0÷²Òq\0~¡t\0\0t\0	Deadlinessq\0~5\0q\0~Nsq\0~\0\0h+Æq\0~¡t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~Tsq\0~\0úÞœq\0~¡t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0Ës\rq\0~Uq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\\sq\0~\0\0C\"„q\0~Ut\0\0t\0TimeEstimationsq\0~q\0~`sq\0~\0¬\0q\0~Ut\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~esq\0~\0\0ã$Æq\0~at\0\0t\0WorkingTimesq\0~¨\0q\0~isq\0~\0\0xpŒq\0~at\0\0t\0Durationsq\0~­\0q\0~msq\0~\0L Eq\0~at\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~fq\0~jq\0~nxxsq\0~\0E\0\0\0w\0\0\0q\0~Yq\0~]q\0~axt\0Iconsq\0~`\0q\0~ssq\0~\0\0#\rõq\0~¡t\0\0t\0\rDocumentationsq\0~\07\0q\0~wsq\0~\0Ícq\0~¡t\0\0t\0TransitionRestrictionssq\0~i\0q\0~{sq\0~\0\0/Üq\0~¡t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0Þ\0q\0~sq\0~\0\0nzq\0~¡t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0¹q\0~‚t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0oq\0~‡t\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0·Ûøq\0~‡t\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~Œq\0~xsq\0~št\0ExtendedAttributesq\0~\0“q\0~‚t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Ð¯q\0~“t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0\0™Ãëq\0~“t\0735,63.974993896484364pxsq\0~\0E\0\0\0w\0\0\0q\0~˜q\0~›xxpxsq\0~\0E\0\0\0w\0\0\0q\0~¦q\0~©q\0~­q\0~±q\0~´q\0~q\0~q\0~/q\0~Kq\0~Oq\0~Uq\0~tq\0~xq\0~|q\0~‚xsq\0~t\0Activitysq\0~\0D¤Ûq\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0MT0q\0~ t\0tool2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0> 2q\0~ t\0Send Reject Notificationpt\0Descriptionsq\0~\02\0q\0~«sq\0~\0\0Œ*˜q\0~ t\0\0t\0Limitsq\0~Ž\0q\0~¯sq\0~\0\0b)9q\0~ t\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\06$Rq\0~ t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0>Vq\0~³t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0\0_\Zq\0~³t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0ûÔq\0~½t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0öaÌq\0~Ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0\0$\nq\0~Ât\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~Ót\0Toolsq\0~\0õ¶Rq\0~Ìt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0XE(q\0~Òt\0default_applicationpq\0~\0†sq\0~\0\0q\0~\0†sq\0~\0nPžq\0~Òq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~ßq\0~àxt\0ActualParameterssq\0~Ù\0q\0~Ýsq\0~\0\0Bºq\0~Òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0Descriptionsq\0~\02\0q\0~ãsq\0~\0F`¤q\0~Òt\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~çsq\0~\0w¸q\0~Òt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xpxsq\0~\0E\0\0\0w\0\0\0q\0~×q\0~Úq\0~Þq\0~äq\0~èxxsq\0~Ét\0SubFlowsq\0~\0\0u®\"q\0~Ât\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Y‚…q\0~ît\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0\0¢~cq\0~îq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~ùsq\0~\0\0þÌvq\0~ît\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~óq\0~öq\0~úxxq\0~Ìxsq\0~\0E\0\0\0w\0\0\0q\0~Âxsq\0~át\0\rBlockActivitysq\0~\0	gµq\0~³t\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0\0¡»q\0~	t\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	xxq\0~½t\0	Performersq\0~í\0q\0~	\nsq\0~\0É«*q\0~ t\0approvert\0	StartModesq\0~ò\0q\0~	sq\0~\0(^™q\0~ t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0.¾Æq\0~	t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0CÝq\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0Q!q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0mŸ¥q\0~	t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	xsq\0~\0E\0\0\0w\0\0\0q\0~	xt\0\nFinishModesq\0~\0q\0~	*sq\0~\0t•rq\0~ t\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0=0ªq\0~	+t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\06t¬q\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0Üåq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0óßJq\0~	/t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	3xsq\0~\0E\0\0\0w\0\0\0q\0~	/xt\0Prioritysq\0~‰\0q\0~	Fsq\0~\0SnÙq\0~ t\0\0t\0	Deadlinessq\0~5\0q\0~	Jsq\0~\0\0ÇûËq\0~ t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~	Psq\0~\0\0ÆvRq\0~ t\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0\0=õq\0~	Qq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~	Xsq\0~\0\0m·q\0~	Qt\0\0t\0TimeEstimationsq\0~q\0~	\\sq\0~\0¢Í]q\0~	Qt\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~	asq\0~\0\0ÍPÝq\0~	]t\0\0t\0WorkingTimesq\0~¨\0q\0~	esq\0~\0i@†q\0~	]t\0\0t\0Durationsq\0~­\0q\0~	isq\0~\0\0uä	q\0~	]t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~	bq\0~	fq\0~	jxxsq\0~\0E\0\0\0w\0\0\0q\0~	Uq\0~	Yq\0~	]xt\0Iconsq\0~`\0q\0~	osq\0~\0Òq\0~ t\0\0t\0\rDocumentationsq\0~\07\0q\0~	ssq\0~\0‘÷àq\0~ t\0\0t\0TransitionRestrictionssq\0~i\0q\0~	wsq\0~\0\0áàäq\0~ t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0Þ\0q\0~	}sq\0~\0+q\0~ t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0žœÞq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0²,q\0~	ƒt\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0\0º%.q\0~	ƒt\0approverpxsq\0~\0E\0\0\0w\0\0\0q\0~	ˆq\0~	‹xsq\0~št\0ExtendedAttributesq\0~\0	Ìq\0~	~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0\ZÞÅq\0~	t\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0½¯úq\0~	t\0394,168.39999694824218pxsq\0~\0E\0\0\0w\0\0\0q\0~	”q\0~	—xxpxsq\0~\0E\0\0\0w\0\0\0q\0~¥q\0~¨q\0~¬q\0~°q\0~³q\0~	q\0~	q\0~	+q\0~	Gq\0~	Kq\0~	Qq\0~	pq\0~	tq\0~	xq\0~	~xsq\0~t\0Activitysq\0~\0\0l¶q\0~‹t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0ì½¥q\0~	œt\0route1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0y\\q\0~	œt\0Route 1pt\0Descriptionsq\0~\02\0q\0~	§sq\0~\0ulMq\0~	œt\0\0t\0Limitsq\0~Ž\0q\0~	«sq\0~\0sÏ&q\0~	œt\0\0q\0~\0†sq\0~¤q\0~\0†sq\0~\0\0\ns\"q\0~	œt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~©t\0Routesq\0~\0\02fq\0~	¯t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~°t\0Implementationsq\0~\0\0^<íq\0~	¯t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~¶q\0~\0†sq\0~\0ùßq\0~	¹t\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~»t\0Nosq\0~\0\0,Áq\0~	¾t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Â\0t\0Toolssq\0~\0Ô¤§q\0~	¾t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~Ét\0SubFlowsq\0~\0\0.Mäq\0~	¾t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ýd9q\0~	Ît\0\0pq\0~Òsq\0~\0\0q\0~Òsq\0~\0\0G%cq\0~	Îq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Öq\0~×xt\0ActualParameterssq\0~Ù\0q\0~	Ùsq\0~\0\04GÐq\0~	Ît\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxsq\0~\0E\0\0\0w\0\0\0q\0~	Óq\0~	Öq\0~	Úxxq\0~	Âxsq\0~\0E\0\0\0w\0\0\0q\0~	¾xsq\0~át\0\rBlockActivitysq\0~\0\0ctŸq\0~	¯t\0\0sq\0~\0w\0\0\0q\0~çsq\0~\0q\0~çsq\0~\0\0áq\0~	át\0\0pxsq\0~\0E\0\0\0w\0\0\0q\0~	æxxq\0~	³t\0	Performersq\0~í\0q\0~	êsq\0~\0È^„q\0~	œt\0	requestert\0	StartModesq\0~ò\0q\0~	îsq\0~\0žêq\0~	œt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0ªÓ\nq\0~	ït\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0\"Æq\0~	ót\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0Ö°jq\0~	ót\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0ßSq\0~	ót\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~	÷xsq\0~\0E\0\0\0w\0\0\0q\0~	óxt\0\nFinishModesq\0~\0q\0~\n\nsq\0~\0\0Dïq\0~	œt\0\0sq\0~\0w\0\0\0q\0~÷sq\0~ø\0q\0~÷sq\0~\0\0ò˜q\0~\nt\0\0sq\0~\0E\0\0\0w\0\0\0sq\0~ý\0t\0XMLEmptyChoiceElementsq\0~\0\0ƒchq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0	Automaticsq\0~\0\0­ªq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xsq\0~t\0Manualsq\0~\0\0Ô\ZËq\0~\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xxq\0~\nxsq\0~\0E\0\0\0w\0\0\0q\0~\nxt\0Prioritysq\0~‰\0q\0~\n&sq\0~\0\0vcq\0~	œt\0\0t\0	Deadlinessq\0~5\0q\0~\n*sq\0~\0)Éq\0~	œt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0SimulationInformationsq\0~<\0q\0~\n0sq\0~\0•Mßq\0~	œt\0\0sq\0~\0w\0\0\0q\0~Asq\0~\0\0q\0~Asq\0~\0]dq\0~\n1q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~Eq\0~Fxt\0Costsq\0~Hq\0~\n8sq\0~\0\0\nÙ´q\0~\n1t\0\0t\0TimeEstimationsq\0~q\0~\n<sq\0~\0h‘Éq\0~\n1t\0\0sq\0~\0w\0\0\0t\0WaitingTimesq\0~£\0q\0~\nAsq\0~\0\0ˆ×Žq\0~\n=t\0\0t\0WorkingTimesq\0~¨\0q\0~\nEsq\0~\0a€q\0~\n=t\0\0t\0Durationsq\0~­\0q\0~\nIsq\0~\0NÆ~q\0~\n=t\0\0xsq\0~\0E\0\0\0w\0\0\0q\0~\nBq\0~\nFq\0~\nJxxsq\0~\0E\0\0\0w\0\0\0q\0~\n5q\0~\n9q\0~\n=xt\0Iconsq\0~`\0q\0~\nOsq\0~\0\0­âÇq\0~	œt\0\0t\0\rDocumentationsq\0~\07\0q\0~\nSsq\0~\0\0…jûq\0~	œt\0\0t\0TransitionRestrictionssq\0~i\0q\0~\nWsq\0~\0\06‚Šq\0~	œt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0\0w\0\0\0\0xt\0ExtendedAttributessq\0~\0Þ\0q\0~\n]sq\0~\0àÕq\0~	œt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0Vƒšq\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Bz¢q\0~\nct\0JaWE_GRAPH_PARTICIPANT_IDpq\0~£sq\0~\0\0q\0~£sq\0~\0N‰Ýq\0~\nct\0	requesterpxsq\0~\0E\0\0\0w\0\0\0q\0~\nhq\0~\nkxsq\0~št\0ExtendedAttributesq\0~\0\0âädq\0~\n^t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\01é1q\0~\not\0JaWE_GRAPH_OFFSETpq\0~£sq\0~\0\0q\0~£sq\0~\0Œ_q\0~\not\0222,15pxsq\0~\0E\0\0\0w\0\0\0q\0~\ntq\0~\nwxxpxsq\0~\0E\0\0\0w\0\0\0q\0~	¡q\0~	¤q\0~	¨q\0~	¬q\0~	¯q\0~	ëq\0~	ïq\0~\nq\0~\n\'q\0~\n+q\0~\n1q\0~\nPq\0~\nTq\0~\nXq\0~\n^xxt\0Transitionssr\0+org.enhydra.shark.xpdl.elements.Transitionsí9>äÀ/i¯\0\0xq\0~\0k\0q\0~\n|sq\0~\0\0¯Éq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0*org.enhydra.shark.xpdl.elements.Transitiont§x¸…\0\0xq\0~\0©t\0\nTransitionsq\0~\0MF\'q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0iá×q\0~\n„t\0transition2pq\0~\0sq\0~\0\0q\0~\0sq\0~\0ëq\0~\n„t\0\0pt\0Fromsq\0~\0q\0~\nsq\0~\0\0§V‘q\0~\n„t\0approve_proposalpt\0Tosq\0~\0q\0~\n“sq\0~\0\0ú*q\0~\n„t\0approvalpt\0	Conditionsr\0)org.enhydra.shark.xpdl.elements.ConditionÛàDááZ;|\0\0xq\0~\0\0q\0~\n—sq\0~\0\0\"ìöq\0~\n„t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0\0/=q\0~\n™q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pt\0	CONDITIONt\0	OTHERWISEt\0	EXCEPTIONt\0DEFAULTEXCEPTIONxxsq\0~\0E\0\0\0w\0\0\0q\0~\nxt\0Descriptionsq\0~\02\0q\0~\n¥sq\0~\0&2¬q\0~\n„t\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~\n©sq\0~\0Oçq\0~\n„t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\009ºq\0~\nªt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0Úßq\0~\n¯t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0Êu°q\0~\n¯t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\n´q\0~\n·xxpxsq\0~\0E\0\0\0w\0\0\0q\0~\n‰q\0~\nŒq\0~\nq\0~\n”q\0~\n™q\0~\n¦q\0~\nªxsq\0~\nƒt\0\nTransitionsq\0~\0\0s \"q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0¸.q\0~\n¼t\0transition3pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0.çq\0~\n¼t\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0™¾ÿq\0~\n¼t\0approvalpq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0 §&q\0~\n¼t\0	activity1pt\0	Conditionsq\0~\n˜\0q\0~\nÍsq\0~\0ºÿ5q\0~\n¼t\0status===\'resubmit\'sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0ZÝûq\0~\nÎt\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~\nÒxt\0Descriptionsq\0~\02\0q\0~\n×sq\0~\0\0šHáq\0~\n¼t\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~\nÛsq\0~\0(ƒq\0~\n¼t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0B’q\0~\nÜt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0ŒÚdq\0~\nát\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0\06ÿ¡q\0~\nát\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~\næq\0~\néxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nÁq\0~\nÄq\0~\nÇq\0~\nÊq\0~\nÎq\0~\nØq\0~\nÜxsq\0~\nƒt\0\nTransitionsq\0~\0\0ŒŠCq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0jh:q\0~\nît\0transition4pq\0~\0sq\0~\0\0q\0~\0sq\0~\0Û?sq\0~\nît\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0\08¡·q\0~\nît\0	activity1pq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0_îq\0~\nît\0approve_proposalpt\0	Conditionsq\0~\n˜\0q\0~\nÿsq\0~\0ùb™q\0~\nît\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0\0÷@ˆq\0~\0q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~xt\0Descriptionsq\0~\02\0q\0~sq\0~\0\0I¢Óq\0~\nît\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~sq\0~\0\09+q\0~\nît\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0aT=q\0~\rt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0I^q\0~t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0h;q\0~t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~\Zxxpxsq\0~\0E\0\0\0w\0\0\0q\0~\nóq\0~\nöq\0~\nùq\0~\nüq\0~\0q\0~	q\0~\rxsq\0~\nƒt\0\nTransitionsq\0~\0ìœ~q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0¾Á¿q\0~t\0transition6pq\0~\0sq\0~\0\0q\0~\0sq\0~\0¯HÍq\0~t\0approvedpq\0~\nsq\0~\0q\0~\nsq\0~\0\0UûBq\0~t\0approvalpq\0~\n“sq\0~\0q\0~\n“sq\0~\0pbq\0~t\0parallelpt\0	Conditionsq\0~\n˜\0q\0~0sq\0~\0\0;jq\0~t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0X@q\0~1t\0	OTHERWISEsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~5xt\0Descriptionsq\0~\02\0q\0~:sq\0~\0Ÿ¾±q\0~t\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~>sq\0~\0\0‰aïq\0~t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0c”Ðq\0~?t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0Qq\0~Dt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0\0pÆq\0~Dt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~Iq\0~Lxxpxsq\0~\0E\0\0\0w\0\0\0q\0~$q\0~\'q\0~*q\0~-q\0~1q\0~;q\0~?xsq\0~\nƒt\0\nTransitionsq\0~\0>Ãq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÚˆÕq\0~Qt\0transition7pq\0~\0sq\0~\0\0q\0~\0sq\0~\0¢Tq\0~Qt\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0…Î`q\0~Qt\0parallelpq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0EàÚq\0~Qt\0\rsend_proposalpt\0	Conditionsq\0~\n˜\0q\0~bsq\0~\0\0¾¥úq\0~Qt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0Ã›Cq\0~cq\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~gxt\0Descriptionsq\0~\02\0q\0~ksq\0~\0\0gÿÑq\0~Qt\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~osq\0~\0\0Žiq\0~Qt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0¦¨¸q\0~pt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÕÅq\0~ut\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0ÕÕ«q\0~ut\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~zq\0~}xxpxsq\0~\0E\0\0\0w\0\0\0q\0~Vq\0~Yq\0~\\q\0~_q\0~cq\0~lq\0~pxsq\0~\nƒt\0\nTransitionsq\0~\0~inq\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0fßq\0~‚t\0transition8pq\0~\0sq\0~\0\0q\0~\0sq\0~\0¸Æ©q\0~‚t\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0áòQq\0~‚t\0parallelpq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0“=q\0~‚t\0tool1pt\0	Conditionsq\0~\n˜\0q\0~“sq\0~\0ùî)q\0~‚t\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0~í}q\0~”q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~˜xt\0Descriptionsq\0~\02\0q\0~œsq\0~\0\0èWZq\0~‚t\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~ sq\0~\0„] q\0~‚t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0y°rq\0~¡t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0â5°q\0~¦t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0\04Û\'q\0~¦t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~«q\0~®xxpxsq\0~\0E\0\0\0w\0\0\0q\0~‡q\0~Šq\0~q\0~q\0~”q\0~q\0~¡xsq\0~\nƒt\0\nTransitionsq\0~\0\0Bb;q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0ÃÈq\0~³t\0transition5pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0 [˜q\0~³t\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0\'¾¡q\0~³t\0approvalpq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0çQ€q\0~³t\0tool2pt\0	Conditionsq\0~\n˜\0q\0~Äsq\0~\0V³q\0~³t\0status===\'rejected\'sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0Ò q\0~Åt\0	CONDITIONsq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~Éxt\0Descriptionsq\0~\02\0q\0~Îsq\0~\0gÿÓq\0~³t\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~Òsq\0~\0•Œüq\0~³t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0%õq\0~Ót\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0tXq\0~Øt\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0~4Áq\0~Øt\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~Ýq\0~àxxpxsq\0~\0E\0\0\0w\0\0\0q\0~¸q\0~»q\0~¾q\0~Áq\0~Åq\0~Ïq\0~Óxsq\0~\nƒt\0\nTransitionsq\0~\0h÷q\0~\n~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0ÃÐq\0~åt\0transition1pq\0~\0sq\0~\0\0q\0~\0sq\0~\0\0¸Ñq\0~åt\0\0pq\0~\nsq\0~\0q\0~\nsq\0~\0\0t-%q\0~åt\0route1pq\0~\n“sq\0~\0q\0~\n“sq\0~\0\0>Këq\0~åt\0approve_proposalpt\0	Conditionsq\0~\n˜\0q\0~ösq\0~\0\0L¥q\0~åt\0\0sq\0~\0w\0\0\0q\0~\0†sq\0~\0\0q\0~\0†sq\0~\0²q\0~÷q\0~\0Psq\0~\0E\0\0\0w\0\0\0q\0~\0Pq\0~\n q\0~\n¡q\0~\n¢q\0~\n£xxsq\0~\0E\0\0\0w\0\0\0q\0~ûxt\0Descriptionsq\0~\02\0q\0~ÿsq\0~\0Ÿsq\0~åt\0\0t\0ExtendedAttributessq\0~\0Þ\0q\0~sq\0~\0\0D€q\0~åt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0jÙ}q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0õ+–q\0~	t\0JaWE_GRAPH_TRANSITION_STYLEpq\0~£sq\0~\0\0q\0~£sq\0~\0\0˜Èóq\0~	t\0NO_ROUTING_ORTHOGONALpxsq\0~\0E\0\0\0w\0\0\0q\0~q\0~xxpxsq\0~\0E\0\0\0w\0\0\0q\0~êq\0~íq\0~ðq\0~óq\0~÷q\0~\0q\0~xxt\0ExtendedAttributessq\0~\0Þ\0q\0~sq\0~\0\0Þ…Þq\0~^t\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0$uq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0á¡éq\0~t\0%JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDERpq\0~£sq\0~\0\0q\0~£sq\0~\0Ô…dq\0~t\0requester;approverpxsq\0~\0E\0\0\0w\0\0\0q\0~!q\0~$xsq\0~št\0ExtendedAttributesq\0~\0óÄq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0~O¸q\0~(t\0JaWE_GRAPH_START_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0\0I—q\0~(t\0žJaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=route1,X_OFFSET=87,Y_OFFSET=28,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~-q\0~0xsq\0~št\0ExtendedAttributesq\0~\0Á\0Vq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0?Ë»q\0~4t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0ÇVËq\0~4t\0›JaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool1,X_OFFSET=901,Y_OFFSET=74,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~9q\0~<xsq\0~št\0ExtendedAttributesq\0~\0ä•q\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0t‹q\0~@t\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0\0bó6q\0~@t\0¥JaWE_GRAPH_PARTICIPANT_ID=requester,CONNECTING_ACTIVITY_ID=send_proposal,X_OFFSET=809,Y_OFFSET=104,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Eq\0~Hxsq\0~št\0ExtendedAttributesq\0~\0X‹ÿq\0~t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0@õMq\0~Lt\0\ZJaWE_GRAPH_END_OF_WORKFLOWpq\0~£sq\0~\0\0q\0~£sq\0~\0„Ø¾q\0~Lt\0œJaWE_GRAPH_PARTICIPANT_ID=approver,CONNECTING_ACTIVITY_ID=tool2,X_OFFSET=579,Y_OFFSET=180,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=END_DEFAULTpxsq\0~\0E\0\0\0w\0\0\0q\0~Qq\0~Txxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~cq\0~fq\0~jq\0~qq\0~´q\0~Óq\0~Ùq\0~wq\0~}q\0~„q\0~‹q\0~\n~q\0~xxt\0ExtendedAttributessq\0~\0Þ\0q\0~Ysq\0~\0†¢q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sq\0~št\0ExtendedAttributesq\0~\0\0‚ìq\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0x^¨q\0~_t\0EDITING_TOOLpq\0~£sq\0~\0\0q\0~£sq\0~\0\02ÕCq\0~_t\0Web Workflow Designerpxsq\0~\0E\0\0\0w\0\0\0q\0~dq\0~gxsq\0~št\0ExtendedAttributesq\0~\0\0Øj~q\0~Zt\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0\0‹­,q\0~kt\0EDITING_TOOL_VERSIONpq\0~£sq\0~\0\0q\0~£sq\0~\09.‹q\0~kt\0\r5.0-pre-alphapxsq\0~\0E\0\0\0w\0\0\0q\0~pq\0~sxxpxsq\0~\0E\0\0\0\rw\0\0\0\rq\0~\0q\0~\0q\0~\0q\0~\0Iq\0~\0tq\0~\0‚q\0~\0•q\0~\0œq\0~\0£q\0~q\0~Qq\0~Xq\0~Zx\0sq\0~\0w\0\0\0\0xt\01sr\0*org.enhydra.shark.xpdl.elements.Namespaces|šÑ<.R§–\0\0xq\0~\0kt\0\nNamespacessq\0~\0)w”q\0~\0\nt\0\0sq\0~\0w\0\0\0\0xsq\0~\0E\0\0\0w\0\0\0sr\0)org.enhydra.shark.xpdl.elements.NamespaceèzÂÂ_\0\0xq\0~\0t\0	Namespacesq\0~\0\0 ²µq\0~{t\0\0sq\0~\0w\0\0\0q\0~\0sq\0~\0q\0~\0sq\0~\0áxÔq\0~‚t\0xpdlpq\0~\0Ôsq\0~\0q\0~\0Ôsq\0~\0\0¥]q\0~‚t\0 http://www.wfmc.org/2002/XPDL1.0pxsq\0~\0E\0\0\0w\0\0\0q\0~‡q\0~Šxx',1000202,1,1000203,0);
+/*!40000 ALTER TABLE `shkxpdldata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlhistory`
+--
+
+DROP TABLE IF EXISTS `shkxpdlhistory`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlhistory` (
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLClassVersion` bigint(20) NOT NULL,
+  `XPDLUploadTime` datetime NOT NULL,
+  `XPDLHistoryUploadTime` datetime NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLHistory` (`XPDLId`,`XPDLVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlhistory`
+--
+
+LOCK TABLES `shkxpdlhistory` WRITE;
+/*!40000 ALTER TABLE `shkxpdlhistory` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlhistory` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlhistorydata`
+--
+
+DROP TABLE IF EXISTS `shkxpdlhistorydata`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlhistorydata` (
+  `XPDLContent` mediumblob NOT NULL,
+  `XPDLClassContent` mediumblob NOT NULL,
+  `XPDLHistory` decimal(19,0) NOT NULL,
+  `CNT` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLHistoryData` (`CNT`),
+  KEY `SHKXPDLHistoryData_XPDLHistory` (`XPDLHistory`),
+  CONSTRAINT `SHKXPDLHistoryData_XPDLHistory` FOREIGN KEY (`XPDLHistory`) REFERENCES `shkxpdlhistory` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlhistorydata`
+--
+
+LOCK TABLES `shkxpdlhistorydata` WRITE;
+/*!40000 ALTER TABLE `shkxpdlhistorydata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlhistorydata` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlparticipantpackage`
+--
+
+DROP TABLE IF EXISTS `shkxpdlparticipantpackage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlparticipantpackage` (
+  `PACKAGE_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLParticipantPackage` (`PACKAGE_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlparticipantpackage`
+--
+
+LOCK TABLES `shkxpdlparticipantpackage` WRITE;
+/*!40000 ALTER TABLE `shkxpdlparticipantpackage` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlparticipantpackage` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlparticipantprocess`
+--
+
+DROP TABLE IF EXISTS `shkxpdlparticipantprocess`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlparticipantprocess` (
+  `PROCESS_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PACKAGEOID` decimal(19,0) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLParticipantProcess` (`PROCESS_ID`,`PACKAGEOID`),
+  KEY `SHKXPDLParticipantProcess_PACKAGEOID` (`PACKAGEOID`),
+  CONSTRAINT `SHKXPDLParticipantProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `shkxpdlparticipantpackage` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlparticipantprocess`
+--
+
+LOCK TABLES `shkxpdlparticipantprocess` WRITE;
+/*!40000 ALTER TABLE `shkxpdlparticipantprocess` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlparticipantprocess` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdlreferences`
+--
+
+DROP TABLE IF EXISTS `shkxpdlreferences`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdlreferences` (
+  `ReferredXPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ReferringXPDL` decimal(19,0) NOT NULL,
+  `ReferredXPDLNumber` int(11) NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLReferences` (`ReferredXPDLId`,`ReferringXPDL`),
+  KEY `SHKXPDLReferences_ReferringXPDL` (`ReferringXPDL`),
+  CONSTRAINT `SHKXPDLReferences_ReferringXPDL` FOREIGN KEY (`ReferringXPDL`) REFERENCES `shkxpdls` (`oid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdlreferences`
+--
+
+LOCK TABLES `shkxpdlreferences` WRITE;
+/*!40000 ALTER TABLE `shkxpdlreferences` DISABLE KEYS */;
+/*!40000 ALTER TABLE `shkxpdlreferences` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `shkxpdls`
+--
+
+DROP TABLE IF EXISTS `shkxpdls`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `shkxpdls` (
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLClassVersion` bigint(20) NOT NULL,
+  `XPDLUploadTime` datetime NOT NULL,
+  `oid` decimal(19,0) NOT NULL,
+  `version` int(11) NOT NULL,
+  PRIMARY KEY (`oid`),
+  UNIQUE KEY `I1_SHKXPDLS` (`XPDLId`,`XPDLVersion`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `shkxpdls`
+--
+
+LOCK TABLES `shkxpdls` WRITE;
+/*!40000 ALTER TABLE `shkxpdls` DISABLE KEYS */;
+INSERT INTO `shkxpdls` VALUES ('crm_community','1',1184704391000,'2017-11-23 03:15:37',1000202,0);
+/*!40000 ALTER TABLE `shkxpdls` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `wf_audit_trail`
 --
 
+DROP TABLE IF EXISTS `wf_audit_trail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_audit_trail` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `clazz` varchar(255) DEFAULT NULL,
-  `method` varchar(255) DEFAULT NULL,
-  `message` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `clazz` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `method` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `timestamp` datetime DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3241,7 +3349,7 @@ CREATE TABLE `wf_audit_trail` (
 
 LOCK TABLES `wf_audit_trail` WRITE;
 /*!40000 ALTER TABLE `wf_audit_trail` DISABLE KEYS */;
-INSERT INTO `wf_audit_trail` VALUES ('ff8080815f9f561e015f9f566c5e0000','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=crm_community, version=1, published=false}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c680001','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_account, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c6f0002','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_contact, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c780003','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_opportunity, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c840004','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_approval_form, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c890005','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_form, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c8f0006','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_resubmit_form, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566c960007','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_sending_form, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566d870008','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_account_list, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566d8c0009','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_contact_list, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566d92000a','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_opportunity_list, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566d99000b','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=Proposal, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566da0000c','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id=crm_userview_sales, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566da5000d','roleAnonymous','org.joget.apps.app.dao.EnvironmentVariableDaoImpl','add','{id=AppName, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566daa000e','roleAnonymous','org.joget.apps.app.dao.EnvironmentVariableDaoImpl','add','{id=refNo, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f566db0000f','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id=crm_icon.jpg, appId=crm_community, appVersion=1}','2017-11-09 05:52:42',NULL,NULL),('ff8080815f9f561e015f9f5670170010','roleAnonymous','org.joget.workflow.model.service.WorkflowManagerImpl','processUpload','','2017-11-09 05:52:43','crm_community','1'),('ff8080815f9f561e015f9f5674880011','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674980012','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674a70013','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674b50014','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674c50015','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674d30016','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityPlugin','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674e30017','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityPlugin','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5674f40018','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f5675030019','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f56751d001a','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f567566001b','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=crm_community, version=1, published=true}','2017-11-09 05:52:44','crm_community','1'),('ff8080815f9f561e015f9f584ee3001c','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=false}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584ee9001d','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=landing, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f29001e','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id=v, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f2d001f','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=<i class=\'fa fa-home\'></i> Home_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f310020','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=<i class=\'fa fa-home\'></i> Home_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f340021','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=App Center_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f380022','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=App Center_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f3c0023','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Design New App_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f4e0024','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Design New App_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f580025','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Download from Marketplace_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584f970026','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Download from Marketplace_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fa40027','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Import App_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fa90028','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Import App_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fb90029','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Powered by Joget_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fc1002a','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Powered by Joget_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fcc002b','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Published Apps_zh_CN, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fd1002c','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Published Apps_zh_TW, appId=appcenter, appVersion=1}','2017-11-09 13:54:46',NULL,NULL),('ff8080815f9f561e015f9f584fed002d','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=true}','2017-11-09 13:54:46','appcenter','1');
+INSERT INTO `wf_audit_trail` VALUES ('4028b8e55fe6df4d015fe6dfa2af0000','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=crm_community, version=1, published=false}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2c80001','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_account, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2d30002','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_contact, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2e60003','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_opportunity, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2ef0004','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_approval_form, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2f30005','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_form, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa2fa0006','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_resubmit_form, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa3010007','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=crm_proposal_sending_form, appId=crm_community, appVersion=1}','2017-11-23 03:15:36',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4930008','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_account_list, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4a10009','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_contact_list, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4ac000a','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=crm_opportunity_list, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4bd000b','roleAnonymous','org.joget.apps.app.dao.DatalistDefinitionDaoImpl','add','{id=Proposal, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4c8000c','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id=crm_userview_sales, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4ce000d','roleAnonymous','org.joget.apps.app.dao.EnvironmentVariableDaoImpl','add','{id=AppName, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4d9000e','roleAnonymous','org.joget.apps.app.dao.EnvironmentVariableDaoImpl','add','{id=refNo, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa4e2000f','roleAnonymous','org.joget.apps.app.dao.AppResourceDaoImpl','add','{id=crm_icon.jpg, appId=crm_community, appVersion=1}','2017-11-23 03:15:37',NULL,NULL),('4028b8e55fe6df4d015fe6dfa7d40010','roleAnonymous','org.joget.workflow.model.service.WorkflowManagerImpl','processUpload','','2017-11-23 03:15:38','crm_community','1'),('4028b8e55fe6df4d015fe6dfae5a0011','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfae710012','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfae860013','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfae9b0014','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaeb00015','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityForm','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaec10016','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityPlugin','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaed60017','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppActivityPlugin','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaefd0018','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaf0e0019','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaf1d001a','roleAnonymous','org.joget.apps.app.dao.PackageDefinitionDaoImpl','addAppParticipant','crm_community','2017-11-23 03:15:39','crm_community','1'),('4028b8e55fe6df4d015fe6dfaf69001b','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=crm_community, version=1, published=true}','2017-11-23 03:15:40','crm_community','1'),('4028b8e55fe6df4d015fe6e03647001c','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=false}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e0365c001d','roleAnonymous','org.joget.apps.app.dao.FormDefinitionDaoImpl','add','{id=landing, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036a0001e','roleAnonymous','org.joget.apps.app.dao.UserviewDefinitionDaoImpl','add','{id=v, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036a9001f','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=<i class=\'fa fa-home\'></i> Home_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036b00020','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=<i class=\'fa fa-home\'></i> Home_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036b40021','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=App Center_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036c00022','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=App Center_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036c40023','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Design New App_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036c90024','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Design New App_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036cf0025','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Download from Marketplace_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036d40026','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Download from Marketplace_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036d80027','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Import App_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036dc0028','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Import App_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036e20029','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Powered by Joget_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036e6002a','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Powered by Joget_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036eb002b','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Published Apps_zh_CN, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e036f4002c','roleAnonymous','org.joget.apps.app.dao.MessageDaoImpl','add','{id=Published Apps_zh_TW, appId=appcenter, appVersion=1}','2017-11-22 19:16:14',NULL,NULL),('4028b8e55fe6df4d015fe6e0370c002d','roleAnonymous','org.joget.apps.app.dao.AppDefinitionDaoImpl','saveOrUpdate','{id=appcenter, version=1, published=true}','2017-11-22 19:16:14','appcenter','1');
 /*!40000 ALTER TABLE `wf_audit_trail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -3249,14 +3357,15 @@ UNLOCK TABLES;
 -- Table structure for table `wf_process_link`
 --
 
+DROP TABLE IF EXISTS `wf_process_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_process_link` (
-  `processId` varchar(255) NOT NULL,
-  `parentProcessId` varchar(255) DEFAULT NULL,
-  `originProcessId` varchar(255) DEFAULT NULL,
+  `processId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `parentProcessId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `originProcessId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3272,12 +3381,13 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report`
 --
 
+DROP TABLE IF EXISTS `wf_report`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report` (
-  `activityInstanceId` varchar(255) NOT NULL,
-  `processInstanceId` varchar(255) DEFAULT NULL,
-  `priority` varchar(255) DEFAULT NULL,
+  `activityInstanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processInstanceId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `priority` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
   `dateLimit` bigint(20) DEFAULT NULL,
@@ -3286,15 +3396,15 @@ CREATE TABLE `wf_report` (
   `finishTime` datetime DEFAULT NULL,
   `timeConsumingFromDateCreated` bigint(20) DEFAULT NULL,
   `timeConsumingFromDateStarted` bigint(20) DEFAULT NULL,
-  `performer` varchar(255) DEFAULT NULL,
-  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
-  `packageId` varchar(255) DEFAULT NULL,
-  `processDefId` varchar(255) DEFAULT NULL,
-  `activityDefId` varchar(255) DEFAULT NULL,
-  `assignmentUsers` text,
-  `appId` varchar(255) DEFAULT NULL,
+  `performer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `assignmentUsers` text COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`activityInstanceId`),
   KEY `FKB943CCA47A4E8F48` (`packageId`),
@@ -3303,7 +3413,7 @@ CREATE TABLE `wf_report` (
   CONSTRAINT `FKB943CCA47A4E8F48` FOREIGN KEY (`packageId`) REFERENCES `wf_report_package` (`packageId`),
   CONSTRAINT `FKB943CCA4A39D6461` FOREIGN KEY (`processDefId`) REFERENCES `wf_report_process` (`processDefId`),
   CONSTRAINT `FKB943CCA4CB863F` FOREIGN KEY (`activityDefId`) REFERENCES `wf_report_activity` (`activityDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3319,15 +3429,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_activity`
 --
 
+DROP TABLE IF EXISTS `wf_report_activity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_activity` (
-  `activityDefId` varchar(255) NOT NULL,
-  `activityName` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `priority` varchar(255) DEFAULT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `priority` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`activityDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3343,13 +3454,14 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_package`
 --
 
+DROP TABLE IF EXISTS `wf_report_package`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_package` (
-  `packageId` varchar(255) NOT NULL,
-  `packageName` varchar(255) DEFAULT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`packageId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3365,14 +3477,15 @@ UNLOCK TABLES;
 -- Table structure for table `wf_report_process`
 --
 
+DROP TABLE IF EXISTS `wf_report_process`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_process` (
-  `processDefId` varchar(255) NOT NULL,
-  `processName` varchar(255) DEFAULT NULL,
-  `version` varchar(255) DEFAULT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3388,15 +3501,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_resource_bundle_message`
 --
 
+DROP TABLE IF EXISTS `wf_resource_bundle_message`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_resource_bundle_message` (
-  `id` varchar(255) NOT NULL,
-  `messageKey` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
-  `message` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3412,15 +3526,16 @@ UNLOCK TABLES;
 -- Table structure for table `wf_setup`
 --
 
+DROP TABLE IF EXISTS `wf_setup`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_setup` (
-  `id` varchar(255) NOT NULL,
-  `property` varchar(255) DEFAULT NULL,
-  `value` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `property` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `ordering` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3429,7 +3544,7 @@ CREATE TABLE `wf_setup` (
 
 LOCK TABLES `wf_setup` WRITE;
 /*!40000 ALTER TABLE `wf_setup` DISABLE KEYS */;
-INSERT INTO `wf_setup` VALUES ('ff8080815f9f561e015f9f58500b002e','defaultUserview','appcenter/v',NULL);
+INSERT INTO `wf_setup` VALUES ('4028b8e55fe6df4d015fe6e03736002e','defaultUserview','appcenter/v',NULL);
 /*!40000 ALTER TABLE `wf_setup` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -3442,4 +3557,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-11-09 13:55:07
+-- Dump completed on 2017-11-22 19:17:29
