@@ -276,6 +276,8 @@ public class FormBuilderWebController {
             submitButton.setProperty(FormUtil.PROPERTY_ID, "submit");
             submitButton.setProperty("label", buttonLabel);
             columnChildren.add((Element) submitButton);
+            
+            model.addAttribute("readonly", FormUtil.isReadonly(form, formData));
         }
 
         // generate form HTML
