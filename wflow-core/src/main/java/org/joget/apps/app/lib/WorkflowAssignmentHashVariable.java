@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
-import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
 
@@ -19,10 +19,16 @@ public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
             variableKey = firstChar + variableKey.substring(1, variableKey.length());
 
             try {
-                Method method = WorkflowAssignment.class.getDeclaredMethod("get" + variableKey, new Class[]{});
-                String returnResult = (String) method.invoke(wfAssignment, new Object[]{});
-                if (returnResult != null) {
-                    return returnResult;
+                if (variableKey.equalsIgnoreCase("appId")) {
+                    return WorkflowUtil.getProcessDefPackageId(wfAssignment.getProcessDefId());
+                } else if (variableKey.equalsIgnoreCase("processDefIdWithoutVersion")) {
+                    return WorkflowUtil.getProcessDefIdWithoutVersion(wfAssignment.getProcessDefId());
+                } else {
+                    Method method = WorkflowAssignment.class.getDeclaredMethod("get" + variableKey, new Class[]{});
+                    String returnResult = (String) method.invoke(wfAssignment, new Object[]{});
+                    if (returnResult != null) {
+                        return returnResult;
+                    }
                 }
             } catch (Exception e) {
                 LogUtil.error(WorkflowAssignmentHashVariable.class.getName(), e, "Error retrieving wfAssignment attribute ");
@@ -64,12 +70,14 @@ public class WorkflowAssignmentHashVariable extends DefaultHashVariablePlugin {
         Collection<String> syntax = new ArrayList<String>();
         syntax.add("assignment.processId");
         syntax.add("assignment.processDefId");
+        syntax.add("assignment.processDefIdWithoutVersion");
         syntax.add("assignment.processName");
         syntax.add("assignment.processVersion");
         syntax.add("assignment.processRequesterId");
         syntax.add("assignment.activityId");
         syntax.add("assignment.activityName");
         syntax.add("assignment.activityDefId");
+        syntax.add("assignment.appId");
         syntax.add("assignment.assigneeId");
         
         return syntax;
