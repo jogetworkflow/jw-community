@@ -2068,10 +2068,10 @@ ProcessBuilder.Actions = {
         newProcess.startEndNodes = process.startEndNodes;
         newProcess.swimlanes = process.swimlanes;
         newProcess.transitions = process.transitions;
-
+        
         model.processes[newProcessId] = newProcess;
 
-        var xpdl = ProcessBuilder.Designer.generateXPDL();
+        var xpdl = ProcessBuilder.Designer.generateXPDL(null, newProcessId);
         ProcessBuilder.Designer.init(xpdl, newProcessId);
         ProcessBuilder.Designer.refresh();
 
@@ -3689,7 +3689,7 @@ ProcessBuilder.Designer = {
             d.close();
         })();
     },
-    generateXPDL: function(package) {
+    generateXPDL: function(package, duplicateProcessId) {
         var model = (!package) ? ProcessBuilder.Designer.model : package;
 
         // add package
@@ -3714,6 +3714,19 @@ ProcessBuilder.Designer = {
                     <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
                     </xpdl:Participant>';
         }
+        
+        if (duplicateProcessId !== undefined) {
+            var swimlaneIds = model.processes[duplicateProcessId].swimlanes.split(";");
+            for (var id in participants) {
+                if ($.inArray(id, swimlaneIds) !== -1) {
+                    var participant = participants[id];
+                    xml += '<xpdl:Participant Id="' + duplicateProcessId + "_" + participant.id + '" Name="' + ProcessBuilder.Util.encodeXML(participant.name) + '">\
+                            <xpdl:ParticipantType Type="' + ProcessBuilder.Util.preventUndefined(participant.type) + '"/>\
+                            </xpdl:Participant>';
+                }
+            }
+        }
+        
         xml += '</xpdl:Participants>';
 
         // add applications
@@ -3725,6 +3738,11 @@ ProcessBuilder.Designer = {
         xml += '<xpdl:WorkflowProcesses>';
         var processes = model.processes;
         for (var id in processes) {
+            var prefix = "";
+            if (duplicateProcessId !== undefined && duplicateProcessId === id) {
+                prefix = duplicateProcessId + "_";
+            }
+            
             var process = processes[id];
             // add process header
             xml += '<xpdl:WorkflowProcess Id="' + process.id + '" Name="' + ProcessBuilder.Util.encodeXML(process.name) + '">\
@@ -3847,7 +3865,7 @@ ProcessBuilder.Designer = {
                     xml += '<xpdl:Implementation><xpdl:No/></xpdl:Implementation>';
                 }
                 if (activity.performer) {
-                    xml += '<xpdl:Performer>' + activity.performer + '</xpdl:Performer>';
+                    xml += '<xpdl:Performer>' + prefix + activity.performer + '</xpdl:Performer>';
                 }
                 if (activity.join || activity.split) {
                     xml += '<xpdl:TransitionRestrictions><xpdl:TransitionRestriction>';
@@ -3878,7 +3896,7 @@ ProcessBuilder.Designer = {
                     xml += '</xpdl:TransitionRestriction></xpdl:TransitionRestrictions>';
                 }
                 xml += '<xpdl:ExtendedAttributes>\
-                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="' + activity.performer + '"/>\
+                        <xpdl:ExtendedAttribute Name="JaWE_GRAPH_PARTICIPANT_ID" Value="' +  prefix + activity.performer + '"/>\
                         <xpdl:ExtendedAttribute Name="JaWE_GRAPH_OFFSET" Value="' + activity.x + ',' + activity.y + '"/>\
                     </xpdl:ExtendedAttributes>';
                 xml += '</xpdl:Activity>';
@@ -3924,6 +3942,16 @@ ProcessBuilder.Designer = {
             xml += '<xpdl:ExtendedAttributes>';
 
             // add swimlanes
+            if (duplicateProcessId !== undefined) {
+                var swimlaneIds = model.processes[duplicateProcessId].swimlanes.split(";");
+                process.swimlanes = "";
+                for (var i in swimlaneIds) {
+                    if (process.swimlanes !== "") {
+                        process.swimlanes += ";";
+                    }
+                    process.swimlanes += prefix + swimlaneIds[i];
+                }
+            }
             xml += '<xpdl:ExtendedAttribute Name="JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER" Value="' + process.swimlanes + '"/>';
 
             // add start end nodes
@@ -3932,7 +3960,7 @@ ProcessBuilder.Designer = {
                 var startEndNode = startEndNodes[activityId];
                 var name = (startEndNode.type === 'start') ? "JaWE_GRAPH_START_OF_WORKFLOW" : "JaWE_GRAPH_END_OF_WORKFLOW";
                 var type = (startEndNode.type === 'start') ? 'START_DEFAULT' : 'END_DEFAULT';
-                xml += '<xpdl:ExtendedAttribute Name="' + ProcessBuilder.Util.encodeXML(name) + '" Value="JaWE_GRAPH_PARTICIPANT_ID=' + startEndNode.performer + ',CONNECTING_ACTIVITY_ID=' + startEndNode.id + ',X_OFFSET=' + parseInt(startEndNode.x) + ',Y_OFFSET=' + parseInt(startEndNode.y) + ',JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=' + type +'"/>';
+                xml += '<xpdl:ExtendedAttribute Name="' + ProcessBuilder.Util.encodeXML(name) + '" Value="JaWE_GRAPH_PARTICIPANT_ID=' + prefix + startEndNode.performer + ',CONNECTING_ACTIVITY_ID=' + startEndNode.id + ',X_OFFSET=' + parseInt(startEndNode.x) + ',Y_OFFSET=' + parseInt(startEndNode.y) + ',JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=' + type +'"/>';
             }
 
             // close extended attributes
