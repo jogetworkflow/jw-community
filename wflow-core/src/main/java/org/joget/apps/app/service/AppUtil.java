@@ -410,124 +410,144 @@ public class AppUtil implements ApplicationContextAware {
      * @return 
      */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef) {
-        content = StringUtil.decryptContent(content);
-        
-        // check for hash # to avoid unnecessary processing
-        if (!containsHashVariable(content)) {
+        if (content == null || content.isEmpty()) {
             return content;
         }
-
-        //parse content
-        if (content != null) {
-            Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
-            Matcher matcher = pattern.matcher(content);
-            Set<String> varList = new HashSet<String>();
-            while (matcher.find()) {
-                varList.add(matcher.group());
+        
+        content = StringUtil.decryptContent(content);
+        AppDefinition originalAppDef = AppUtil.getCurrentAppDefinition();
+        
+        try {
+            if (!containsHashVariable(content)) {
+                return content;
             }
+            
+            if (appDef != null) {
+                AppUtil.setCurrentAppDefinition(appDef);
+            }
+            
+            if (appDef == null && originalAppDef == null && wfAssignment != null) {
+                //retrieve appDef based on wf assignment
+                AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                appDef = appService.getAppDefinitionForWorkflowProcess(wfAssignment.getProcessId());
+            }
+            
+            //parse content
+            if (content != null) {
+                Pattern pattern = Pattern.compile("\\#([^#^\"^ ])*\\.([^#^\"])*\\#");
+                Matcher matcher = pattern.matcher(content);
+                Set<String> varList = new HashSet<String>();
+                while (matcher.find()) {
+                    varList.add(matcher.group());
+                }
 
-            try {
-                if (!varList.isEmpty()) {
-                    PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
-                    PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) appContext.getBean("pluginDefaultPropertiesDao");
-                    Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
-                    Map <String, HashVariablePlugin> hashVariablePluginCache = new HashMap<String, HashVariablePlugin>();
+                try {
+                    if (!varList.isEmpty()) {
+                        PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
+                        PluginDefaultPropertiesDao pluginDefaultPropertiesDao = (PluginDefaultPropertiesDao) appContext.getBean("pluginDefaultPropertiesDao");
+                        Collection<Plugin> pluginList = pluginManager.list(HashVariablePlugin.class);
+                        Map <String, HashVariablePlugin> hashVariablePluginCache = new HashMap<String, HashVariablePlugin>();
 
-                    for (String var : varList) {
-                        for (Plugin p : pluginList) {
-                            String tempVar = var.replaceAll("#", "");
-                            
-                            HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
-                            if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
-                                tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
+                        for (String var : varList) {
+                            for (Plugin p : pluginList) {
+                                String tempVar = var.replaceAll("#", "");
 
-                                HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
-                                if (cachedPlugin == null) {
-                                    cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
-                                    //get default plugin properties
+                                HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
+                                if (tempVar.startsWith(hashVariablePlugin.getPrefix() + ".")) {
+                                    tempVar = tempVar.replaceFirst(hashVariablePlugin.getPrefix() + ".", "");
 
-                                    if (appDef == null) {
-                                        appDef = AppUtil.getCurrentAppDefinition();
-                                    }
-                                    PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(cachedPlugin.getClassName(), appDef);
-                                    if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-                                        cachedPlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));
-                                    }
+                                    HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariablePlugin.getClassName());
+                                    if (cachedPlugin == null) {
+                                        cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariablePlugin.getClassName());
+                                        //get default plugin properties
 
-                                    //put appDef & wfAssignment to properties
-                                    cachedPlugin.setProperty("appDefinition", appDef);
-                                    cachedPlugin.setProperty("workflowAssignment", wfAssignment);
-                                    hashVariablePluginCache.put(hashVariablePlugin.getClassName(), cachedPlugin);
-                                }
-
-                                String nestedHashVar = tempVar;
-                                        
-                                //process nested hash
-                                while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
-                                    Pattern nestedPattern = Pattern.compile("\\{([^\\{^\\}])*\\}");
-                                    Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
-                                    while (nestedMatcher.find()) {
-                                        String nestedHash = nestedMatcher.group();
-                                        String nestedHashString = nestedHash.replace("{", "#");
-                                        nestedHashString = nestedHashString.replace("}", "#");
-
-                                        String processedNestedHashValue = processHashVariable(nestedHashString, wfAssignment, escapeFormat, replaceMap, appDef);
-                                        
-                                        //if being process
-                                        if (!nestedHashString.equals(processedNestedHashValue)) {
-                                            tempVar = tempVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
-                                        } 
-                                        
-                                        //remove nested hash 
-                                        nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
-                                    }
-                                }
-
-                                //unescape hash variable
-                                tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
-
-                                //get result from plugin
-                                try {
-                                    String removeFormatVar = tempVar;
-                                    String hashFormat = "";
-                                    if (removeFormatVar.contains("?")) {
-                                        hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
-                                        removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
-                                    }
-                                    
-                                    String value = cachedPlugin.processHashVariable(removeFormatVar);
-                                    
-                                    if (value != null) {
-                                        //escape based on hash variable
-                                        if (hashFormat != null & !hashFormat.isEmpty()) {
-                                            value = StringUtil.escapeString(value, hashFormat, null);
+                                        if (appDef == null) {
+                                            appDef = AppUtil.getCurrentAppDefinition();
                                         }
-                                        
-                                        // clean to prevent XSS
-                                        value = StringUtil.stripHtmlRelaxed(value);
-                                        
-                                        //escape based on api call
-                                        value = StringUtil.escapeString(value, escapeFormat, replaceMap);
-                                        
-                                        //escape regex for replaceAll
-                                        if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
-                                            value = StringUtil.escapeRegex(value);
+                                        PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(cachedPlugin.getClassName(), appDef);
+                                        if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
+                                            cachedPlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));
                                         }
 
-                                        //escape special char in HashVariable
-                                        var = cachedPlugin.escapeHashVariable(var);
-                                        
-                                        content = content.replaceAll(var, value);
-                                        break;
+                                        //put appDef & wfAssignment to properties
+                                        cachedPlugin.setProperty("appDefinition", appDef);
+                                        cachedPlugin.setProperty("workflowAssignment", wfAssignment);
+                                        hashVariablePluginCache.put(hashVariablePlugin.getClassName(), cachedPlugin);
                                     }
-                                } catch (Exception e) {}
+
+                                    String nestedHashVar = tempVar;
+
+                                    //process nested hash
+                                    while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
+                                        Pattern nestedPattern = Pattern.compile("\\{([^\\{^\\}])*\\}");
+                                        Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
+                                        while (nestedMatcher.find()) {
+                                            String nestedHash = nestedMatcher.group();
+                                            String nestedHashString = nestedHash.replace("{", "#");
+                                            nestedHashString = nestedHashString.replace("}", "#");
+
+                                            String processedNestedHashValue = processHashVariable(nestedHashString, wfAssignment, escapeFormat, replaceMap, appDef);
+
+                                            //if being process
+                                            if (!nestedHashString.equals(processedNestedHashValue)) {
+                                                tempVar = tempVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
+                                            } 
+
+                                            //remove nested hash 
+                                            nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
+                                        }
+                                    }
+
+                                    //unescape hash variable
+                                    tempVar = StringEscapeUtils.unescapeJavaScript(tempVar);
+
+                                    //get result from plugin
+                                    try {
+                                        String removeFormatVar = tempVar;
+                                        String hashFormat = "";
+                                        if (removeFormatVar.contains("?")) {
+                                            hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
+                                            if (!hashFormat.contains("}")) {
+                                                removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
+                                            }
+                                        }
+
+                                        String value = cachedPlugin.processHashVariable(removeFormatVar);
+
+                                        if (value != null) {
+                                            //escape based on hash variable
+                                            if (hashFormat != null & !hashFormat.isEmpty()) {
+                                                value = StringUtil.escapeString(value, hashFormat, null);
+                                            }
+
+                                            // clean to prevent XSS
+                                            value = StringUtil.stripHtmlRelaxed(value);
+
+                                            //escape based on api call
+                                            value = StringUtil.escapeString(value, escapeFormat, replaceMap);
+
+                                            //escape regex for replaceAll
+                                            if (!StringUtil.TYPE_REGEX.equals(escapeFormat)) {
+                                                value = StringUtil.escapeRegex(value);
+                                            }
+
+                                            //escape special char in HashVariable
+                                            var = cachedPlugin.escapeHashVariable(var);
+
+                                            content = content.replaceAll(var, value);
+                                            break;
+                                        }
+                                    } catch (Exception e) {}
+                                }
                             }
                         }
                     }
+                } catch (Exception ex) {
+                    LogUtil.error(AppUtil.class.getName(), ex, "");
                 }
-            } catch (Exception ex) {
-                LogUtil.error(AppUtil.class.getName(), ex, "");
             }
+        } finally {
+            AppUtil.setCurrentAppDefinition(originalAppDef);
         }
         return content;
     }
