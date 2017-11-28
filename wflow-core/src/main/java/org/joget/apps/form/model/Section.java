@@ -30,12 +30,29 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     public String getDescription() {
         return "Section Element";
     }
+    
+    @Override
+    public void setChildren(Collection<Element> children) {
+        super.setChildren(children);
+        
+        if ("true".equalsIgnoreCase(getPropertyString("readonly"))) {
+            FormUtil.setReadOnlyProperty(this, true, "true".equalsIgnoreCase(getPropertyString("readonlyLabel")));
+        }
+    }
 
     @Override
     public String renderTemplate(FormData formData, Map dataModel) {
-        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData)) {
+        if (((Boolean) dataModel.get("includeMetaData") == true) || isAuthorize(formData) || (!isAuthorize(formData) && "true".equalsIgnoreCase(getPropertyString("permissionReadonly")))) {
             String template = "section.ftl";
-
+            
+            boolean readonly = "true".equalsIgnoreCase(getPropertyString("readonly"));
+            if (!isAuthorize(formData) && "true".equalsIgnoreCase(getPropertyString("permissionReadonly"))) {
+                readonly = true;
+            }
+            if (readonly) {
+                FormUtil.setReadOnlyProperty(this, true, "true".equalsIgnoreCase(getPropertyString("readonlyLabel")));
+            }
+            
             if (!(dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty())) {
                 if (!getRules(formData).isEmpty()) {
                     try {
