@@ -344,6 +344,31 @@ public class StringUtil {
     }
     
     /**
+     * Encrypt the UTF-8 content with MD5 base16
+     * @param content
+     * @return 
+     */
+    public static String md5Base16Utf8(String content) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytes = md.digest(content.getBytes("UTF-8"));
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < bytes.length; i++) {
+                byte b = bytes[i];
+                String hex = Integer.toHexString((int) 0x00FF & b);
+                if (hex.length() == 1) {
+                    sb.append("0");
+                }
+                sb.append(hex);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    /**
      * Remove all HTML tags from the content
      * @param content
      * @return 
