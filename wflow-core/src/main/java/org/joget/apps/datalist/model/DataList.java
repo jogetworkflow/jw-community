@@ -3,12 +3,9 @@ package org.joget.apps.datalist.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.service.AppUtil;
@@ -75,6 +72,7 @@ public class DataList {
     private boolean filterQueryBuild = false;
     private boolean disableQuickEdit = false;
     private boolean showDataWhenFilterSet = false;
+    private Boolean considerFilterWhenGetTotal = null;
     private Map<String, String[]> requestParamMap = null;
 
     //Required when using session
@@ -488,7 +486,7 @@ public class DataList {
             try {
                 if (getBinder() != null) {
                     //force get total before get size to bypass additional filter
-                    if (!"true".equals(ResourceBundleUtil.getMessage("dbuilder.menu.counter.considerFilters"))) {
+                    if (!isConsiderFilterWhenGetTotal()) {
                         getTotal();
                     }
                     size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
@@ -508,7 +506,7 @@ public class DataList {
     }
     
     public int getTotal() {
-        if ("true".equals(ResourceBundleUtil.getMessage("dbuilder.menu.counter.considerFilters"))) {
+        if (isConsiderFilterWhenGetTotal()) {
             return getSize();
         }
         
@@ -810,6 +808,17 @@ public class DataList {
         return false;
     }
 
+    public Boolean isConsiderFilterWhenGetTotal() {
+        if (considerFilterWhenGetTotal == null) {
+            return "true".equals(ResourceBundleUtil.getMessage("dbuilder.menu.counter.considerFilters"));
+        }
+        return considerFilterWhenGetTotal;
+    }
+
+    public void setConsiderFilterWhenGetTotal(Boolean considerFilterWhenGetTotal) {
+        this.considerFilterWhenGetTotal = considerFilterWhenGetTotal;
+    }
+    
     /**
      * Retrieve current request map
      * @return 

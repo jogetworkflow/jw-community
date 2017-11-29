@@ -50,7 +50,8 @@ DatalistBuilder = {
         pageSizeSelectorOptions : '10,20,30,40,50,100',
         buttonPosition : 'bottomLeft',
         checkboxPosition : 'left',
-        useSession : 'false'
+        useSession : 'false',
+        considerFilterWhenGetTotal : ''
     },                          //datalist's properties
 
     propertyDialog: null,                       // property dialog popup object
@@ -1430,6 +1431,10 @@ DatalistBuilder = {
                   options : [{label : '', value : 'true'}]},
                 {label : get_dbuilder_msg('dbuilder.showDataWhenFilterSet'),
                   name  : 'showDataWhenFilterSet',
+                  type : 'checkbox',
+                  options : [{label : '', value : 'true'}]},
+                {label : get_dbuilder_msg('dbuilder.considerFilterWhenGetTotal'),
+                  name  : 'considerFilterWhenGetTotal',
                   type : 'checkbox',
                   options : [{label : '', value : 'true'}]}
               ]
