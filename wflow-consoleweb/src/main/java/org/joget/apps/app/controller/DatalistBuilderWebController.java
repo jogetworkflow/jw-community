@@ -387,6 +387,8 @@ public class DatalistBuilderWebController {
         }
         
         model.addAttribute("id", id);
+        model.addAttribute("appId", appDef.getAppId());
+        model.addAttribute("appVersion", appDef.getVersion().toString());
         model.addAttribute("json", escapedJson);
         model.addAttribute("buttonLabel", buttonLabel);
         model.addAttribute("dataList", dataList);

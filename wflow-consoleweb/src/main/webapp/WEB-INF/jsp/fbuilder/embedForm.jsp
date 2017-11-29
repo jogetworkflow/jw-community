@@ -1,6 +1,10 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader /> 
+        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script>
+            AdminBar.cookiePath = '${pageContext.request.contextPath}/';
+        </script>    
         <c:set var="formHtml" scope="request" value="${formHtml}"/>
         <c:set var="errorCount" scope="request" value="${errorCount}"/>
         <c:set var="submitted" scope="request" value="${submitted}"/>

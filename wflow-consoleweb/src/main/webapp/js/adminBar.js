@@ -71,7 +71,7 @@ var AdminBar = {
         $(".quickEdit").fadeIn();
         $(".analyzer-label").css("display", "inline-block");
         $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
-        $("#page").addClass("quickEditModeActive");
+        $("body").addClass("quickEditModeActive");
         $("#quickEditModeOption").buttonset("refresh");
     },
     hideQuickEdit: function() {
@@ -80,7 +80,7 @@ var AdminBar = {
         $(".quickEdit, .adminBarButton").css("display", "none");
         $(".analyzer-label, .analyzer-page").css("display", "none");
         $(".analyzer").addClass("analyzer-disabled").removeClass("analyzer");
-        $("#page").removeClass("quickEditModeActive");
+        $("body").removeClass("quickEditModeActive");
         $("#quickEditModeOption").buttonset("refresh");
     },
     initQuickEditMode: function() {

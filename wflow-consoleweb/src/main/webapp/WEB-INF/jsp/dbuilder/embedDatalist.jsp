@@ -1,6 +1,10 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader /> 
+        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script>
+            AdminBar.cookiePath = '${pageContext.request.contextPath}/';
+        </script>  
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css?build=<fmt:message key="build.number"/>" />
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
         

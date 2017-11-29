@@ -201,11 +201,11 @@ body.embeded #adminBar {
 .quickEdit:hover, #navigation .quickEdit:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, .adminBarButton:hover {
     background: lightgreen;
 }
-#page.quickEditModeActive fieldset#form-canvas, #page.quickEditModeActive fieldset#form-canvas .subform-container, #page.quickEditModeActive .dataList, #page.quickEditModeActive #category-container {
+body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container {
     border: solid 5px #e7fab6;
     padding: 1px;
 }
-#page.quickEditModeActive fieldset#form-canvas [class^="icon-"], #page.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
+body.quickEditModeActive fieldset#form-canvas [class^="icon-"], body.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
     font-family: FontAwesome;
 }
 #adminBar.adminBarActive {
