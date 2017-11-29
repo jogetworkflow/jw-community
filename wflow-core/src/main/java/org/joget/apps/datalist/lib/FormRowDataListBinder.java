@@ -108,6 +108,10 @@ public class FormRowDataListBinder extends DataListBinderDefault {
         }
 
         // add default metadata fields
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_MODIFIED_BY, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.modifiedBy"), true));
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_CREATED_BY, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.createdBy"), true));
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_MODIFIED_BY_NAME, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.modifiedByName"), true));
+        columns.add(0, new DataListColumn(FormUtil.PROPERTY_CREATED_BY_NAME, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.createdByName"), true));
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_DATE_MODIFIED, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.dateModified"), true));
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_DATE_CREATED, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.dateCreated"), true));
         columns.add(0, new DataListColumn(FormUtil.PROPERTY_ID, ResourceBundleUtil.getMessage("datalist.formrowdatalistbinder.id"), true));

@@ -1507,15 +1507,31 @@ public class AppServiceImpl implements AppService {
                 // set meta data
                 Date currentDate = new Date();
                 row.setDateModified(currentDate);
+                row.setModifiedBy(workflowUserManager.getCurrentUsername());
+                User user = workflowUserManager.getCurrentUser();
+                String name = null;
+                if (user != null) {
+                    name = user.getFirstName() + ((user.getLastName() != null)?(" "+ user.getLastName()):"");
+                }
+                row.setModifiedByName(name);
                 Date dateCreated = null;
+                String createdBy = null;
+                String createdByName = null;
                 FormRowSet loadedRow = loadFormDataWithoutTransaction(formDefId, tableName, rowPrimaryKeyValue);
                 if (loadedRow != null && loadedRow.iterator().hasNext()) {
-                    dateCreated = loadedRow.iterator().next().getDateCreated();
+                    FormRow loadedrow = loadedRow.iterator().next();
+                    dateCreated = loadedrow.getDateCreated();
+                    createdBy = loadedrow.getCreatedBy();
+                    createdByName = loadedrow.getCreatedByName();
                 }
                 if (dateCreated == null) {
                     dateCreated = currentDate;
+                    createdBy = workflowUserManager.getCurrentUsername();
+                    createdByName = name;
                 }
                 row.setDateCreated(dateCreated);
+                row.setCreatedBy(createdBy);
+                row.setCreatedByName(createdByName);
             }
 
             // update DB schema

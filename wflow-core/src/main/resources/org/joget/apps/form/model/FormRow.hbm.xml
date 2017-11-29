@@ -5,6 +5,10 @@
         <id name="id" type="string"/>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
+        <property name="createdBy" type="string"/>
+        <property name="createdByName" type="string"/>
+        <property name="modifiedBy" type="string"/>
+        <property name="modifiedByName" type="string"/>
         <dynamic-component insert="true" name="customProperties" optimistic-lock="true" unique="false" update="true"/>
     </class>
 </hibernate-mapping>

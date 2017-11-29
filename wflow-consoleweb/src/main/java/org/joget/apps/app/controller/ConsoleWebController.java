@@ -3724,6 +3724,22 @@ public class ConsoleWebController {
         md.put("value", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
         md.put("label", prefixString + FormUtil.PROPERTY_DATE_MODIFIED);
         cjsonArray.put(md);
+        Map mdb = new HashMap();
+        mdb.put("value", prefixString + FormUtil.PROPERTY_MODIFIED_BY);
+        mdb.put("label", prefixString + FormUtil.PROPERTY_MODIFIED_BY);
+        cjsonArray.put(mdb);
+        Map cdb = new HashMap();
+        cdb.put("value", prefixString + FormUtil.PROPERTY_CREATED_BY);
+        cdb.put("label", prefixString + FormUtil.PROPERTY_CREATED_BY);
+        cjsonArray.put(cdb);
+        Map mdbn = new HashMap();
+        mdbn.put("value", prefixString + FormUtil.PROPERTY_MODIFIED_BY_NAME);
+        mdbn.put("label", prefixString + FormUtil.PROPERTY_MODIFIED_BY_NAME);
+        cjsonArray.put(mdbn);
+        Map cdbn = new HashMap();
+        cdbn.put("value", prefixString + FormUtil.PROPERTY_CREATED_BY_NAME);
+        cdbn.put("label", prefixString + FormUtil.PROPERTY_CREATED_BY_NAME);
+        cjsonArray.put(cdbn);
         cjsonArray = sortJSONArray(cjsonArray, "label", false);
         try {
             for (int i = 0; i < cjsonArray.length(); i++) {

@@ -102,6 +102,70 @@ public class FormRow extends Properties {
             remove(FormUtil.PROPERTY_DATE_MODIFIED);
         }
     }
+    
+    /**
+     * Username who created the row 
+     * @return
+     */
+    public String getCreatedBy() {
+        return getProperty(FormUtil.PROPERTY_CREATED_BY);
+    }
+
+    public void setCreatedBy(String createdBy) {
+        if (createdBy != null) {
+            put(FormUtil.PROPERTY_CREATED_BY, createdBy);
+        } else {
+            remove(FormUtil.PROPERTY_CREATED_BY);
+        }
+    }
+    
+    /**
+     * Username who last modified the row 
+     * @return
+     */
+    public String getModifiedBy() {
+        return getProperty(FormUtil.PROPERTY_MODIFIED_BY);
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        if (modifiedBy != null) {
+            put(FormUtil.PROPERTY_MODIFIED_BY, modifiedBy);
+        } else {
+            remove(FormUtil.PROPERTY_MODIFIED_BY);
+        }
+    }
+    
+    /**
+     * User name who created the row 
+     * @return
+     */
+    public String getCreatedByName() {
+        return getProperty(FormUtil.PROPERTY_CREATED_BY_NAME);
+    }
+
+    public void setCreatedByName(String createdByName) {
+        if (createdByName != null) {
+            put(FormUtil.PROPERTY_CREATED_BY_NAME, createdByName);
+        } else {
+            remove(FormUtil.PROPERTY_CREATED_BY_NAME);
+        }
+    }
+    
+    /**
+     * User name who last modified the row 
+     * @return
+     */
+    public String getModifiedByName() {
+        return getProperty(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+    }
+
+    public void setModifiedByName(String modifiedByName) {
+        if (modifiedByName != null) {
+            put(FormUtil.PROPERTY_MODIFIED_BY_NAME, modifiedByName);
+        } else {
+            remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+        }
+    }
 
     @Override
     public boolean equals(Object obj) {
