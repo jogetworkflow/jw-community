@@ -208,6 +208,9 @@ public class JsonUtil {
                     DataListFilterType type = parseFilterTypeFromJsonObject(filter);
                     dataListFilter.setType(type);
                 }
+                if (filter.has(PROPERTY_HIDDEN)) {
+                    dataListFilter.setHidden("true".equalsIgnoreCase(filter.getString(PROPERTY_HIDDEN)));
+                }
                 
                 property.add(dataListFilter);
             }

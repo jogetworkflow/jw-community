@@ -151,6 +151,10 @@
     margin-bottom: 2px;
 }
 
+.dataList .filter-cell.hidden-filter {
+    display:none;
+}
+
 .dataList .actions.right{
     text-align:right;
 }

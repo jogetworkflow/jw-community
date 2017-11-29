@@ -10,6 +10,7 @@ public class DataListFilter {
     private String label;
     private DataListFilterType type;
     private String operator;
+    private boolean hidden = false;
 
     public String getName() {
         return name;
@@ -49,5 +50,13 @@ public class DataListFilter {
 
     public void setType(DataListFilterType type) {
         this.type = type;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 }

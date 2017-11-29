@@ -670,13 +670,17 @@ public class DataList {
             templates.add("<input type='hidden' id='" + getDataListEncodedParamName(TableTagParameters.PARAMETER_PAGE) + "' name='" + getDataListEncodedParamName(TableTagParameters.PARAMETER_PAGE) + "' value='1'/>");
             
             if (isShowPageSizeSelector()) {
-                templates.add(getPageSizeSelectorTemplate());
+                templates.add("<span class=\"filter-cell\">"+getPageSizeSelectorTemplate()+"</span>");
             }
 
             DataListFilter[] filterList = getFilters();
             for (int i = 0; i < filterList.length; i++) {
+                String cssClass = "";
+                if (filterList[i].isHidden()) {
+                    cssClass = "hidden-filter";
+                }
                 String label = filterList[i].getLabel();
-                templates.add(filterList[i].getType().getTemplate(this, filterList[i].getName(), label));
+                templates.add("<span class=\"filter-cell "+cssClass+"\">"+filterList[i].getType().getTemplate(this, filterList[i].getName(), label)+"</span>");
             }
             filterTemplates = (String[]) templates.toArray(new String[0]);
         }

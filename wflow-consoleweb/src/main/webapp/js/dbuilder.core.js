@@ -1274,6 +1274,12 @@ DatalistBuilder = {
                 value : 'org.joget.apps.datalist.lib.TextFieldDataListFilterType',
                 options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListFilterType',
                 url : '[CONTEXT_PATH]/web/property/json' + DatalistBuilder.appPath + '/getPropertyOptions'
+            },
+            {
+                label : get_dbuilder_msg('dbuilder.hideFilter'),
+                name  : 'hidden',
+                type : 'checkbox',
+                options : [{label : '', value : 'true'}]
             }]
         }];
     },

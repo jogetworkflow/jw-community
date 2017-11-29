@@ -106,9 +106,7 @@
                 <form name="filters_${dataListId}" id="filters_${dataListId}" action="?" method="POST">
                     <div class="filters">
                         <c:forEach items="${dataList.filterTemplates}" var="template">
-                            <span class="filter-cell">
-                                ${template}
-                            </span>
+                            ${template}
                         </c:forEach>
                          <span class="filter-cell">
                              <input type="submit" class="form-button btn button" value="<fmt:message key="general.method.label.show"/>"/>
