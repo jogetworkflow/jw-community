@@ -68,8 +68,10 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
         if (json != null && json.trim().length() > 0) {
             if (parentFormData != null && parentFormData.getProcessId() != null && !parentFormData.getProcessId().isEmpty()) {
                 formData.setProcessId(parentFormData.getProcessId());
+                String activityId = parentFormData.getActivityId();
+                formData.setActivityId(activityId);
                 WorkflowManager wm = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
-                WorkflowAssignment wfAssignment = wm.getAssignmentByProcess(parentFormData.getProcessId());
+                WorkflowAssignment wfAssignment = (activityId != null && !activityId.isEmpty()) ? wm.getAssignment(activityId) : wm.getAssignmentByProcess(parentFormData.getProcessId());
                 json = AppUtil.processHashVariable(json, wfAssignment, StringUtil.TYPE_JSON, null);
             }
             

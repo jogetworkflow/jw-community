@@ -363,6 +363,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         FormService formService = (FormService) ac.getBean("formService");
         
         formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());
+        formData.setActivityId(assignment.getActivityId());
         
         PackageActivityForm activityForm = appService.viewAssignmentForm(appDef, assignment, formData, formUrl, cancelUrl);
         return activityForm;
