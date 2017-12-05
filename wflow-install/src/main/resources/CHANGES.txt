@@ -2,6 +2,73 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0-RC
+=================
+f7a1745 Fixed: wflow-core - Ajax Cascading Options - Get request not able to passed long options binder properties. #5180 @6.0-SNAPSHOT
+008709b Fixed: wflow-core - File Upload - Not display correctly in Universal Theme dark scheme. @6.0-SNAPSHOT
+524057a Fixed: wflow-core - Text Field - Configured with numbering format fail to store in Grid. @6.0-SNAPSHOT
+e63ea93 Modified: wflow-consoleweb - Setting - Add "Upgrade" button under Version. @6.0-SNAPSHOT
+9ae3a69 Fixed: wflow-core - AppUtil - Typo on email error message
+acaddb8 Modified: wflow-commons - Added method to generate base 16 MD5 hash for UTF-8 content @6.0-SNAPSHOT
+815929b Fixed: wflow-consoleweb - Embed Form/Datalist - Does not has the quick edit link. @6.0-SNAPSHOT
+2cb927f Modified: wflow-core - Datalist Builder - Add option to consider the filter value when get record total. @6.0-SNAPSHOT
+8591f11 Modified: wflow-core - Add option to hide filter from UI. @6.0-SNAPSHOT
+d59cfc1 Fixed: wflow-core - Assignment Hash Variable - Displays wrong assignment in subform when there are several simultaneous running activities @6.0-SNAPSHOT
+da758a4 Modified: wflow-core - Form Data Dao - Added default columns "createdBy", "createdByName", "modifiedBy" and "modifiedByName". @6.0-SNAPSHOT
+4f3927a Modified: wflow-core - Section - Support setting section as readonly. @6.0-SNAPSHOT Modified: wflow-core - Section - Support setting section as readonly when no permission. @6.0-SNAPSHOT
+2180ccf Fixed: wflow-consoleweb - Universal Theme - Fixed inconsistent font. @6.0-SNAPSHOT
+6b8fa8d Added: wflow-core - Assignment Hash Variable - Added new syntax #assignment.appId# to return the appId and #assignment.processDefIdWithoutVersion# to return processDefId without version and appId. @6.0-SNAPSHOT
+cf9830b Fixed: wflow-consoleweb - Process Builder - The participant id of duplicated process is not able to change. @6.0-SNAPSHOT
+d9f83a0 Fixed: wflow-core - Hash Variable - Hash variable parse incorrectly when escape format used inside nested hash variable but did not used for outer hash variable. @6.0-SNAPSHOT
+80565d3 Fixed: wflow-consoleweb - Embed Form - "Form Submitted" is shown for readonly form. @6.0-SNAPSHOT
+4463e5b Fixed: wflow-install - Mariadb data is created in wrong collation. #5156 @6.0-SNAPSHOT
+b78fff6 Fixed: wflow-consoleweb/wflow-install - Setup - mysql tables created in wrong collation. #5156 @6.0-SNAPSHOT
+b324d93 Fixed: wflow-core - Audit Trail - Trail records shown anonymous user for the auto delete unused XPDL after deployed new design. @6.0-SNAPSHOT
+6f8cc24 Modified: wflow-core - Grid - Allow HTML in header labels @6.0-SNAPSHOT
+5dbb03c Fixed: wflow-core - Mobile - Added link to mobile view in corporati theme if viewed from mobile user agent and desktopSite cookie is true @6.0-SNAPSHOT
+454290d Fixed: wflow-core, wflow-consoleweb - Mobile - Added link to mobile view in footer if viewed from mobile user agent and desktopSite cookie is true @6.0-SNAPSHOT
+9c2e4e1 Fixed: wflow-core - Mobile - Mobile View Disabled setting in userview theme is ignored @6.0-SNAPSHOT
+f374ca4 Modified: wflow-core - Form - Use request parameter value from last field for duplicate element IDs, as per v5 behavior #5134 @6.0-SNAPSHOT
+97e6d3f Fixed: Plugin Manager - Missing label for Multi Factor Authenticator plugin.  @6.0-SNAPSHOT
+c16bdf2 Fixed: wflow-directory - Regression bug on 94fa2c and 5eeaa5 - Concurrent session control is not working.  #5131 @6.0-SNAPSHOT
+33799e2 Fixed: wflow-wfengine - Workflow Manager - Handling for null pointer exception for getServiceLevelMonitorForRunningProcess & getServiceLevelMonitorForRunningActivity. @6.0-SNAPSHOT
+6e77f7e3 Fixed: wflow-consoleweb - Process Builder - Incorrect hight of first workflow participant when editing a transition on last participant swimlane and the process has many swimlanes. #5126. @6.0-SNAPSHOT
+f35a1ee Modified: wflow-consoleweb - Import App - Added loading screen on form submission to prevent multiple imports @6.0-SNAPSHOT
+03d9a8a Fixed: wflow-consoleweb - Universal Theme - Added pipe between activity names for better readability in the Datalist Inbox @6.0-SNAPSHOT
+c756560 Fixed: wflow-install - Invalid MariaDB installation directory @6.0-SNAPSHOT
+fbd5f66 Modified: wflow-install - Upgraded to Apache Tomcat 8.5.23 @6.0-SNAPSHOT
+2ffd106 Modified: wflow-install - MariaDB - Replaced MySQL with MariaDB 10.2.10 @6.0-SNAPSHOT
+2f57015 Fixed: wflow-consoleweb - Missing label for 0be211. @6.0-SNAPSHOT
+1a28645 Modified: wflow-consoleweb - Update default app. @6.0-SNAPSHOT
+0be211d Modified: wflow-core - MfaAuthenticator - Refactor to require authentication when activating multi factor authentication in user profile. @6.0-SNAPSHOT
+2f12229 Modified: wflow-jdbc, wflow-commons - MariaDB - Replaced MySQL Connector with MariaDB JDBC Driver 1.6.5 @6.0-SNAPSHOT
+59d41db Fixed: wflow-core - Datalist Decorator - Regression of b432e2. @6.0-SNAPSHOT
+65f59b3 Modified: wflow-consoleweb - Update default app. @6.0-SNAPSHOT
+a1556a9 Modified: All - MySQL - Upgraded JDBC driver version to 5.1.44 to support MySQL 8 @6.0-SNAPSHOT
+82c80f5 Fixed: wflow-core - Process Data Collector - Assignee data should not remove when activity completed. @6.0-SNAPSHOT
+ef65696 Fixed: wflow-core - ID Generator Field - Regression bug - Added validation caused hash variable cannot use in environment name field. @6.0-SNAPSHOT
+27f21f2 Fixed: wflow-core - Datalist - Auto convert newline to <br> tag for non html string. #5103 @6.0-SNAPSHOT
+b432e2c Fixed: wflow-core/wflow-commons - Datalist - Newline is removed in exported file. @6.0-SNAPSHOT
+dd75e9b Fixed: wflow-core - Form PDF Util - Not able to wrap text for Chinese language. #5102 @6.0-SNAPSHOT
+8757570 Fixed: wflow-consoleweb - Userview Print - Remove the link & admin control button from printing.  @6.0-SNAPSHOT
+ad422d6 Fixed: wflow-consoleweb - UI - Download from marketplace dialog has redundant spacing and scrollbar.  @6.0-SNAPSHOT
+00ea08c Fixed: wflow-consoleweb - Old userview theme - Login Page Top/Bottom does not work due to refactored in d798585. #5098  @6.0-SNAPSHOT
+61f8430 Fixed: wflow-core - Universal Theme - Dark scheme is not working. @6.0-SNAPSHOT
+ce80a87 Fixed: wflow-consoleweb - Workaround for wro4j bug for Windows @6.0-SNAPSHOT
+dcc5a91 Fixed: wflow-consoleweb - Universal Theme - Theme overrides custom responsive table config for datalists @6.0-SNAPSHOT
+6ec3d10 Fixed: wflow-consoleweb - Datalist Builder - Improve drag and drop behavior. @6.0-SNAPSHOT
+94fa2c0 Fixed: wflow-consoleweb/wflow-core - Correction on 5eeaa5. @6.0-SNAPSHOT
+5eeaa5c Fixed: wflow-consoleweb/wflow-core - Concurrent session control is not working. @6.0-SNAPSHOT
+b194caa Modified: wflow-wfengine - Workflow Manager - Added getActivityByProcess method to return latest activity instance by process instance id and activity definition id . @6.0-SNAPSHOT
+47412d1 Fixed: wflow-core/wflow-consoleweb - Hash Variable - Custom app definition does not set to current app definition. @6.0-SNAPSHOT Fixed: wflow-core/wflow-consoleweb - App Center - Hash variable does not parse correctly. @6.0-SNAPSHOT
+ef1aa14 Modified: wflow-consoleweb - App Center - Added zh_CN & zh_TW messages. @6.0-SNAPSHOT
+678572e Fixed: wflow-core - Universal Theme - Favicon URL is prepended with context path. @6.0-SNAPSHOT Modified: wflow-core - Universal Theme - Change "Favicon URL" and "Logo URL" to support app resource. @6.0-SNAPSHOT
+d9adc29 Modified: wflow-consoleweb - App Resource - Show hash variable syntax in details. @6.0-SNAPSHOT
+079a050 Modified: wflow-consoleweb/wflow-core - App resource - Modified the syntax to consistent with hash variable. @6.0-SNAPSHOT
+7bf0711 Fixed: wflow-consoleweb - Datalist Builder - Responsive css does not load in preview. @6.0-SNAPSHOT
+d209b9b Modified: Universal Theme - Support shortcut link to configure to show for anonymous user. @6.0-SNAPSHOT
+b87a01e Fixed: wflow-core - Datalist - Regression from 86c680f. Parameters in redirect url is passed incorrectly. @6.0-SNAPSHOT
+
 CHANGES IN 6.0-BETA4
 ====================
 7f7455b Fixed: wflow-core - Correction of 22eea5. @5.0-SNAPSHOT
