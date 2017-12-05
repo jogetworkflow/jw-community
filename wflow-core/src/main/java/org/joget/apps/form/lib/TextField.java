@@ -79,6 +79,9 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             if (value != null) {
                 
                 if (!getPropertyString("style").isEmpty()) {
+                    if (validationValue == null) {
+                        formatDataForValidation(formData);
+                    }
                     if ("true".equalsIgnoreCase(getPropertyString("storeNumeric"))) {
                         value = validationValue;
                     } else {
