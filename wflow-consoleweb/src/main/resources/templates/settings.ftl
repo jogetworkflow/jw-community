@@ -11,5 +11,11 @@
                 @@console.footer.label.revision@@
             </span>
         </div>
+        <div id="upgradeLinkDiv" class="form-row">
+            <label for="upgradeLink">&nbsp;</label>
+            <span class="form-input">
+                <a id="upgradeLink" class="smallbutton" href="@@version.upgrade.url@@" target="_blank">@@version.upgrade@@</a>
+            </span>
+        </div>
     </span>
 </div>            
