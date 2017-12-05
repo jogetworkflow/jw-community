@@ -50,13 +50,16 @@
         var values = getValues(o.paramName);
         
         var cv = controlValues.join(";");
-        $.getJSON(o.contextPath + "/web/json/app/"+o.appId+"/"+o.appVersion+"/form/options",
-            {
+        $.ajax({
+            dataType: "json",
+            url: o.contextPath + "/web/json/app/"+o.appId+"/"+o.appVersion+"/form/options",
+            method: "POST",
+            data: {
                 _dv: cv, 
                 _n: o.nonce,
                 _bd: o.binderData
-            }, 
-            function(data){
+            },
+            success: function(data){
                 if (o.type === "selectbox") {
                     var options = "";
                     if ($(target).find("option.label").length > 0) {
@@ -91,7 +94,7 @@
                     $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
                 }
             }
-        );
+        });
     }
     
     function showHideOption(target, o){
