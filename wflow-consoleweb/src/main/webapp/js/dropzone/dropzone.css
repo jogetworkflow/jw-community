@@ -1,5 +1,5 @@
 .dropzone, .dropzone * { box-sizing: border-box; }
-.dropzone {border: 2px dotted #ccc; background: white; padding: 10px 20px !important; }
+.dropzone {border: 2px dotted #ccc; background: white; color:#000; padding: 10px 20px !important; }
 .dropzone.dz-clickable { cursor: pointer; }
 .dropzone.dz-clickable *:not(a) { cursor: default; }
 .dropzone.dz-clickable a * { cursor: pointer; }
