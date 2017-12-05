@@ -955,7 +955,7 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         if (host == null || host.isEmpty() || form == null || form.isEmpty()) {
-            LogUtil.info(AppUtil.class.getName(), "SMTP is not configure!");
+            LogUtil.info(AppUtil.class.getName(), "SMTP is not configured!");
             return null;
         }
         
