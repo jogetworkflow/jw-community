@@ -1026,7 +1026,7 @@ ProcessBuilder.ApiClient = {
                     return;
                 }
                 var xpdl = data;
-                ProcessBuilder.Designer.init(xpdl);
+                ProcessBuilder.Designer.init(xpdl, null, true);
                 $("#packageList").dialog("close");
                 ProcessBuilder.Actions.clearUndo();
                 ProcessBuilder.ApiClient.appId = appId;
@@ -2866,7 +2866,7 @@ ProcessBuilder.Designer = {
         var mod = ProcessBuilder.Designer.originalXpdl !== ProcessBuilder.Designer.xpdl;
         return mod;
     },
-    init: function(xpdl, processDefId) {
+    init: function(xpdl, processDefId, setOriginal) {
         // reset model
         ProcessBuilder.Designer.model = new Object();
 
@@ -2878,7 +2878,9 @@ ProcessBuilder.Designer = {
         ProcessBuilder.Designer.renderModel(model, processDefId);
 
         // store for comparison later
-        ProcessBuilder.Designer.originalXpdl = ProcessBuilder.Designer.xpdl;
+        if (setOriginal !== undefined && setOriginal) {
+            ProcessBuilder.Designer.originalXpdl = ProcessBuilder.Designer.xpdl;
+        }
         $(ProcessBuilder.Designer.source).val(xpdl);
         $(ProcessBuilder.Designer.source).format({method: 'xml'});
 
