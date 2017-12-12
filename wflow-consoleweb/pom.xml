@@ -150,6 +150,64 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>target/classes/advtool.properties</sourceFile>
+                                    <destinationFile>target/classes/advtool_en.properties</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>target/classes/console.properties</sourceFile>
+                                    <destinationFile>target/classes/console_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/dbuilder.properties</sourceFile>
+                                    <destinationFile>target/classes/dbuilder_en.properties</destinationFile>
+                                </fileSet>   
+                                <fileSet>
+                                    <sourceFile>target/classes/displaytag.properties</sourceFile>
+                                    <destinationFile>target/classes/displaytag_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/fbuilder.properties</sourceFile>
+                                    <destinationFile>target/classes/fbuilder_en.properties</destinationFile>
+                                </fileSet>   
+                                <fileSet>
+                                    <sourceFile>target/classes/help.properties</sourceFile>
+                                    <destinationFile>target/classes/help_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/pbuilder.properties</sourceFile>
+                                    <destinationFile>target/classes/pbuilder_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/peditor.properties</sourceFile>
+                                    <destinationFile>target/classes/peditor_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/plugin.properties</sourceFile>
+                                    <destinationFile>target/classes/plugin_en.properties</destinationFile>
+                                </fileSet>  
+                                <fileSet>
+                                    <sourceFile>target/classes/ubuilder.properties</sourceFile>
+                                    <destinationFile>target/classes/ubuilder_en.properties</destinationFile>
+                                </fileSet>                   
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
                 <version>1.1</version>
