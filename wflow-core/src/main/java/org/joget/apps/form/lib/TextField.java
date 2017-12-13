@@ -37,10 +37,18 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
-
+        
         value = SecurityUtil.decrypt(value);
         
+        if (FormUtil.isReadonly(this, formData) && "true".equalsIgnoreCase(getPropertyString("readonlyLabel"))) {
+            String valueLabel = value;
+            if (!getPropertyString("style").isEmpty() && "true".equalsIgnoreCase(getPropertyString("storeNumeric"))) {
+                valueLabel = StringUtil.numberFormat(value, getPropertyString("style"), getPropertyString("prefix"), getPropertyString("postfix"), "true".equalsIgnoreCase(getPropertyString("useThousandSeparator")), getPropertyString("numOfDecimal"));
+            }
+            dataModel.put("valueLabel", valueLabel);
+        }
         dataModel.put("value", value);
+        
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

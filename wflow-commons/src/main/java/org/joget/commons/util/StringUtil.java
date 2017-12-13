@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -577,5 +578,120 @@ public class StringUtil {
             }
         }
         return email;
+    }
+    
+    /**
+     * Method used to format number value
+     * @param value
+     * @param format
+     * @param prefix
+     * @param postfix
+     * @param useThousandSeparator
+     * @param numOfDecimal
+     * @return 
+     */
+    public static String numberFormat(String value, String format, String prefix, String postfix, boolean useThousandSeparator, String numOfDecimal) {
+        int decimal = 0;
+        if (numOfDecimal != null && !numOfDecimal.isEmpty()) {
+            try {
+                decimal = Integer.parseInt(numOfDecimal);
+            } catch (Exception e) {}
+        }
+        
+        String decimalSeperator = ".";
+        String thousandSeparator = ",";
+        if("EURO".equalsIgnoreCase(format)){
+            decimalSeperator = ",";
+            thousandSeparator = ".";
+        }
+        
+        String numberStr = removeNumberFormat(value, format, prefix, postfix);
+                
+        String exponent = "";
+        boolean isNumber = false;
+        double number = 0;
+        try {
+            number = Double.parseDouble(numberStr);
+            isNumber = true;
+        } catch (Exception e) {}
+        
+        if (!isNumber) {
+            number = 0;
+        } else {
+            int eindex = numberStr.indexOf("e");
+            if (eindex > -1){
+                exponent = numberStr.substring(eindex);
+                number = Double.parseDouble(numberStr.substring(0, eindex));
+            }
+        }
+        
+        String sign = number < 0 ? "-" : "";
+        String decimalFormat = "0";
+        if (decimal > 0) {
+            decimalFormat += ".";
+            for (int i = 0; i < decimal; i++){
+                decimalFormat += "0";
+            }
+        }
+        DecimalFormat df = new DecimalFormat(decimalFormat);
+        String integerStr = df.format(Math.abs(number));
+        
+        if(useThousandSeparator){
+            int start = integerStr.length();
+            if (integerStr.contains(".")) {
+                start = integerStr.indexOf(".");
+                if("EURO".equalsIgnoreCase(format)){
+                    integerStr = integerStr.replace(".", decimalSeperator);
+                }
+            }
+            for (int i = start - 3; i > 0; i -= 3){
+                integerStr = integerStr.substring(0 , i) + thousandSeparator + integerStr.substring(i);
+            }
+        }
+        
+        String resultString = "";
+        if(!sign.isEmpty()){
+            resultString += sign;
+        }
+        if(prefix != null && !prefix.isEmpty()){
+            resultString += prefix + ' ';
+        }
+        resultString += integerStr;
+        if(!exponent.isEmpty()){
+            resultString += ' ' + exponent;
+        }
+        if(postfix != null && !postfix.isEmpty()){
+            resultString += ' ' + postfix;
+        }
+        
+        return resultString;
+    }
+    
+    /**
+     * Method to remove number format
+     * @param value
+     * @param format
+     * @param prefix
+     * @param postfix
+     * @return 
+     */
+    public static String removeNumberFormat(String value, String format, String prefix, String postfix) {
+        String decimalSeperator = ".";
+        String thousandSeparator = ",";
+        if("EURO".equalsIgnoreCase(format)){
+            decimalSeperator = ",";
+            thousandSeparator = ".";
+        }
+        
+        String numberStr = value.replaceAll("\\s", "");
+        numberStr = numberStr.replaceAll(StringUtil.escapeRegex(thousandSeparator), "");
+        numberStr = numberStr.replaceAll(StringUtil.escapeRegex(decimalSeperator), ".");
+        if(prefix != null && !prefix.isEmpty()){
+            numberStr = numberStr.replaceAll(StringUtil.escapeRegex(prefix), "");
+        }
+        if(postfix != null && !postfix.isEmpty()){
+            numberStr = numberStr.replaceAll(StringUtil.escapeRegex(postfix), "");
+        }
+        return numberStr;
     }
 }
