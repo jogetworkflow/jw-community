@@ -208,6 +208,9 @@ body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset
 body.quickEditModeActive fieldset#form-canvas [class^="icon-"], body.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
     font-family: FontAwesome;
 }
+body.quickEditModeActive .analyzer-page {
+    display: inline-block !important;
+}
 #adminBar.adminBarActive {
     display: block;
     right: 0px;
@@ -362,4 +365,15 @@ div#category-container {
     #adminBar .adminBarButton:hover br {
         display:initial;
     }
+}
+#memWarning .warningMessage {
+    padding: 10px 0px;
+}
+#memWarning .memGauge {
+    width:100%; 
+    border:solid 1px #555;
+}
+#memWarning .memUsage {
+    background:yellow;
+    padding:2px;
 }
