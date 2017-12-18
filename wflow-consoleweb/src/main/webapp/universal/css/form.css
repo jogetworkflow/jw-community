@@ -138,9 +138,9 @@ body .editor-cell select:not([class^=ui]){
   width: 100%;
   max-width: 70%;
   margin: 0 0 15px 0;
-  padding: 0;
+  padding: 0 2px;
   box-shadow: none;
-  box-sizing: content-box;
+  box-sizing: border-box;
   transition: all 0.3s;
   background-color: transparent;
   border-bottom: 1px solid #9E9E9E;
@@ -154,7 +154,7 @@ body .editor-cell select[multiple]:not([class^=ui]){
 
 body select[multiple]:not([class^=ui]) option,
 body .editor-cell select[multiple]:not([class^=ui]) option{
-  padding: 5px 0;
+  padding: 5px 2px;
 }
 
 body .editor-cell input:not([type]),
@@ -461,13 +461,14 @@ body.rtl .filter-cell input.hasDatepicker {
 body .form-container [class*=form-cell-value] > span,
 body .form-container [class*=form-cell-value] > .readonly_label,
 body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
-    padding: 6px 10px 0 0;
+    padding: 6px 10px 0 1px;
     display: inline-block;
     font-weight: normal;
     max-width: 100%;
+    box-sizing: border-box;
 }
 body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
-    padding: 6px 10px 7px 0;
+    padding: 6px 10px 7px 1px;
     margin-bottom: 15px;
 }
 body .form-container.readonly label.label + span:not(.form-cell-value):not(.subform-cell-value),
@@ -477,10 +478,10 @@ body .form-container .readonly label.label + span:not(.form-cell-value):not(.sub
 body.rtl .form-container [class*=form-cell-value] > span,
 body.rtl .form-container [class*=form-cell-value] > .readonly_label,
 body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
-    padding: 6px 0px 0 10px;
+    padding: 6px 1px 0 10px;
 }
 body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
-    padding: 6px 0px 7px 10px;
+    padding: 6px 1px 7px 10px;
 }
 body .form-container .pq-td-div [class*=form-cell-value] > span,
 body .form-container .pq-td-div [class*=form-cell-value] > .readonly_label,
