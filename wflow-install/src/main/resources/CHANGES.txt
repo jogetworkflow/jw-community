@@ -2,6 +2,18 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.0
+================
+f7af9fc Modified: wflow-install - Update jwdb-sample.sql and mariadb data. @6.0-SNAPSHOT
+b5ece4a Modified: wflow-consoleweb - Setup - Update default app. @6.0-SNAPSHOT
+f705773 Fixed: wflow-consoleweb - Universal Theme - Selectbox options text is too close to left border. @6.0-SNAPSHOT
+fffdaca Modified: wflow-install - Startup Script - Added commented JAVA_OPTS (--add-modules java.se.ee) for java 9. @6.0-SNAPSHOT
+5faf51f Modified: wflow-consoleweb - Update admin bar css. @6.0-SNAPSHOT
+93ec47f Fixed: wflow-core - Text Field - Store as numeric value show incorrect format in PDF. @6.0-SNAPSHOT
+eada811 Fixed: wflow-install - jwdb-sample.sql - Shark tables created in wrong letter case. @6.0-SNAPSHOT
+44cdd64 Fixed: wflow-consoleweb - I18N - Not able to change locale for machine default locale in Chinese. #5191 @6.0-SNAPSHOT
+31cdcf3 Fixed: wflow-consoleweb - Process Builder - “Process not modified” alert when deploy after save properties. @6.0-SNAPSHOT
+
 CHANGES IN 6.0-RC
 =================
 f7a1745 Fixed: wflow-core - Ajax Cascading Options - Get request not able to passed long options binder properties. #5180 @6.0-SNAPSHOT
