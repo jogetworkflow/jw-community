@@ -1,6 +1,7 @@
 package org.joget.apps.form.model;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
@@ -77,6 +78,8 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
         this.dataRetriever = dataRetriever;
         this.storeBinder = storeBinder;
     }
+    
+    
 
     public FormRowSet store(Element element, FormRowSet rows, FormData formData) {
         //handle deleted row inner form/grid data
@@ -176,5 +179,40 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                 }
             }
         }
+    }
+    
+    @Override
+    public Map<String, Object> getProperties(){
+        return ((FormBinder)storeBinder).getProperties();
+    }
+    
+    @Override
+    public void setProperties(Map<String, Object> properties){
+        ((FormBinder)storeBinder).setProperties(properties);
+    }
+    
+    @Override
+    public Object getProperty(String property){
+        return ((FormBinder)storeBinder).getProperty(property);
+    }
+    
+    @Override
+    public String getPropertyString(String property){
+        return ((FormBinder)storeBinder).getPropertyString(property);
+    }
+    
+    @Override
+    public void setProperty(String property, Object value){
+        ((FormBinder)storeBinder).setProperty(property, value);
+    }
+    
+    @Override
+    public Element getElement() {
+        return ((FormBinder)storeBinder).getElement();
+    }
+
+    @Override
+    public void setElement(Element element) {
+        ((FormBinder)storeBinder).setElement(element);
     }
 }
