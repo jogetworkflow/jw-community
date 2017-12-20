@@ -391,19 +391,19 @@
         var filter = function(jsonTable, url, value){
             var tempValue = "";
             if(jsonTable == JsonGroupDataTable){
-                url = "&orgId=" + $('#JsonGroupDataTable_filterbyOrg').val();
-                url += "&name=" + $('#JsonGroupDataTable_searchCondition').val();
+                url = "&orgId=" + encodeURI($('#JsonGroupDataTable_filterbyOrg').val());
+                url += "&name=" + encodeURI($('#JsonGroupDataTable_searchCondition').val());
             }else if(jsonTable == JsonUserDataTable){
-                url = "&orgId=" + $('#JsonUserDataTable_filterbyOrg').val();
-                url += "&name=" + $('#JsonUserDataTable_searchCondition').val();
+                url = "&orgId=" + encodeURI($('#JsonUserDataTable_filterbyOrg').val());
+                url += "&name=" + encodeURI($('#JsonUserDataTable_searchCondition').val());
             }else if(jsonTable == JsonHodDataTable){
-                url = "&orgId=" + $('#JsonHodDataTable_filterbyOrg').val();
-                url += "&name=" + $('#JsonHodDataTable_searchCondition').val();
+                url = "&orgId=" + encodeURI($('#JsonHodDataTable_filterbyOrg').val());
+                url += "&name=" + encodeURI($('#JsonHodDataTable_searchCondition').val());
             }else if(jsonTable == JsonDeptDataTable){
-                url = "&orgId=" + $('#JsonDeptDataTable_filterbyOrg').val();
-                url += "&name=" + $('#JsonDeptDataTable_searchCondition').val();
+                url = "&orgId=" + encodeURI($('#JsonDeptDataTable_filterbyOrg').val());
+                url += "&name=" + encodeURI($('#JsonDeptDataTable_searchCondition').val());
             }else{
-                tempValue = value
+                tempValue = value;
             }
 
             org_filter(jsonTable, url, tempValue);

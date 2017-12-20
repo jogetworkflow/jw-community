@@ -87,9 +87,9 @@
 
         var org_filter = window.filter;
         var filter = function(jsonTable, url, value){
-            url = "&deptId=" + $('#JsonDataTable_filterbyDept').val();
-            url += "&gradeId=" + $('#JsonDataTable_filterbyGrade').val();
-            url += "&name=" + $('#JsonDataTable_searchCondition').val();
+            url = "&deptId=" + encodeURI($('#JsonDataTable_filterbyDept').val());
+            url += "&gradeId=" + encodeURI($('#JsonDataTable_filterbyGrade').val());
+            url += "&name=" + encodeURI($('#JsonDataTable_searchCondition').val());
             org_filter(jsonTable, url, '');
         };
     </script>

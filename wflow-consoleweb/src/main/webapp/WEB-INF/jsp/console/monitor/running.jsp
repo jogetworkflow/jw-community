@@ -67,7 +67,7 @@
     var filter = function(jsonTable, url, value){
         url = "&appId=" + $('#JsonDataTable_filterbyApp').val();
         if($('#JsonDataTable_searchCondition').val() != ""){
-            url += "&" + $('#JsonDataTable_searchTerm').val() +"=" + $('#JsonDataTable_searchCondition').val();
+            url += "&" + $('#JsonDataTable_searchTerm').val() +"=" + encodeURI($('#JsonDataTable_searchCondition').val());
         }
         org_filter(jsonTable, url, '');
     };

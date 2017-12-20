@@ -99,8 +99,8 @@
     var filter = function(jsonTable, url, value){
         var tempValue = "";
         if(jsonTable == JsonMessageDataTable){
-            url = "&locale=" + $('#JsonMessageDataTable_filterbyLocale').val();
-            url += "&filter=" + $('#JsonMessageDataTable_searchCondition').val();
+            url = "&locale=" + encodeURI($('#JsonMessageDataTable_filterbyLocale').val());
+            url += "&filter=" + encodeURI($('#JsonMessageDataTable_searchCondition').val());
         }else{
             tempValue = value
         }

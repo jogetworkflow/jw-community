@@ -96,8 +96,8 @@
 
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){       
-        url = "&orgId=" + $('#JsonDataTable_filterbyOrg').val(); 
-        url += "&name=" + $('#JsonDataTable_searchCondition').val();
+        url = "&orgId=" + encodeURI($('#JsonDataTable_filterbyOrg').val()); 
+        url += "&name=" + encodeURI($('#JsonDataTable_searchCondition').val());
         org_filter(jsonTable, url, '');
     };
 </script>
