@@ -1130,7 +1130,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 @Override
                 public void execute(Connection connection) throws SQLException {
                     DatabaseMetaData dbm = connection.getMetaData();
-                    ResultSet rs = dbm.getTables(null, null, entityName, null);
+                    String tableEntityName = entityName;
+                    if (dbm.storesUpperCaseIdentifiers()) {
+                        tableEntityName = entityName.toUpperCase();
+                    } else if (dbm.storesLowerCaseIdentifiers()) {
+                        tableEntityName = entityName.toLowerCase();
+                    }
+                    ResultSet rs = dbm.getTables(null, null, tableEntityName, null);
                     if (rs.next()) {
                         tableSet.add(entityName);
                     }
