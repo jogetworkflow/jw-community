@@ -560,6 +560,9 @@ public class AppWebController {
     
     protected String getFilename(String filename, String url) {
         if (!url.endsWith(".")) {
+            try {
+                url = URLDecoder.decode(url, "UTF-8");
+            } catch (UnsupportedEncodingException ex) {}
             filename = url.substring(url.indexOf(filename));
         }
         
