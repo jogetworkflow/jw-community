@@ -152,8 +152,12 @@ public class UserviewBuilderWebController {
         return processer.getPreviewView();
     }
     
-    @RequestMapping("/property/userview/json/getPropertyOptions")
-    public void getProperties(Writer writer, @RequestParam("value") String value) throws Exception {
+    @RequestMapping("/property/userview/json/(*:appId)/(~:version)/getPropertyOptions")
+    public void getProperties(Writer writer, @RequestParam("value") String value, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version) throws Exception {
+        if (appId != null && !appId.trim().isEmpty()) {
+            appService.getAppDefinition(appId, version);
+        }
+        
         String propertyOptions = "";
         PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
         if (element != null) {

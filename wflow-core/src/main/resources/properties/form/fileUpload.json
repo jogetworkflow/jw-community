@@ -90,7 +90,7 @@
         control_use_regex: 'false',
         required : 'true',
         options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
-        url:'[CONTEXT_PATH]/web/property/json/getPropertyOptions'
+        url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
     },
     {
         label : '@@form.fileupload.ui@@',
