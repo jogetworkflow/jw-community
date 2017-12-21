@@ -2290,9 +2290,11 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#"+this.id).on("change"), function() {
                 updateLabel($("#"+field.id).data("chosen"));
             };
-            $($("#"+field.id).data("chosen").container).find(".chosen-search input").on("keydown", function(){
-                setTimeout(function(){updateLabel($("#"+field.id).data("chosen"));}, 5) ;
-            });
+            setTimeout(function() {
+                $($("#"+field.id).data("chosen").container).find(".chosen-search input").on("keydown", function(){
+                    setTimeout(function(){updateLabel($("#"+field.id).data("chosen"));}, 5) ;
+                });
+            }, 1000);
             updateLabel($("#"+field.id).data("chosen"));
         }
 
