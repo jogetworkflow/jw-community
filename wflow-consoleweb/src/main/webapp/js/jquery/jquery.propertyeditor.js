@@ -4117,7 +4117,11 @@ PropertyEditor.Type.Image.prototype = {
 
         var style = imagesize;
         if (this.value !== "") {
-            var path = this.value.replace("#appResource.", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
+            var path = this.value;
+            if (path.indexOf("#appResource.") !== -1) {
+                path = path.substring(0, path.length -1);
+                path = path.replace("#appResource.", this.options.contextPath+"/web/app"+this.properties.appPath+"/resources/");
+            }
             path = path.replace("[CONTEXT_PATH]", this.options.contextPath);
             path = path.replace("[APP_PATH]", this.properties.appPath);
             style += " background-image:url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')";
@@ -4129,7 +4133,13 @@ PropertyEditor.Type.Image.prototype = {
         var thisObj = this;
         $("#"+this.id).on("change", function(){
             var value = $(this).val();
-            var path = value.replace("#appResource.", thisObj.options.contextPath+"/web/app"+thisObj.properties.appPath+"/resources/");
+            var path = value;
+            if (path.indexOf("#appResource.") !== -1) {
+                path = path.substring(0, path.length -1);
+                path = path.replace("#appResource.", thisObj.options.contextPath+"/web/app"+thisObj.properties.appPath+"/resources/");
+            }
+            path = path.replace("[CONTEXT_PATH]", thisObj.options.contextPath);
+            path = path.replace("[APP_PATH]", thisObj.properties.appPath);
             var imagePlaceholder = $(this).parent().find(".image-placeholder");
             $(imagePlaceholder).css("background-image", "url('"+PropertyEditor.Util.escapeHtmlTag(path)+"')");
         });
