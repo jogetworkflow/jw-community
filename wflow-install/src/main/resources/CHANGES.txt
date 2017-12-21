@@ -4,6 +4,14 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0.0
 ================
+718999c Fixed: wflow-consoleweb/wflow-core - Userview Setting - App id & version are not passed correctly to get theme/permission plugin properties. @6.0-SNAPSHOT Fixed: wflow-core - File Upload/Section - App id & version are not passed correctly to get permission plugin properties. @6.0-SNAPSHOT
+592cfa9 Fixed: wflow-consoleweb - Correction for eb6e0d. @6.0-SNAPSHOT
+2e55269 Fixed: wflow-consoleweb - Property Editor - Image - Preview image not showing sometime. @6.0-SNAPSHOT
+eb6e0df Fixed: wflow-consoleweb - App Resource - File name with space return 404 error. @6.0-SNAPSHOT
+9d442f0 Fixed: wflow-consoleweb - Property Editor - Infinity loading due to JS error caused by chosen selectbox initialize timing issue. @6.0-SNAPSHOT
+625582c Fixed: wflow-core - GridInnerDataStoreBinderWrapper - Not able to retrieve binder properties from wrapper. @6.0-SNAPSHOT
+c19f3b9 Fixed: wflow-consoleweb - Console UI - Listing filter cannot work in Tomcat 8 when filter value contains invalid character. @6.0-SNAPSHOT
+5fd75a7 Modified: wflow-core - Universal Theme - Fixed preloader to prevent full width when viewed offline @6.0-SNAPSHOT
 f7af9fc Modified: wflow-install - Update jwdb-sample.sql and mariadb data. @6.0-SNAPSHOT
 b5ece4a Modified: wflow-consoleweb - Setup - Update default app. @6.0-SNAPSHOT
 f705773 Fixed: wflow-consoleweb - Universal Theme - Selectbox options text is too close to left border. @6.0-SNAPSHOT
