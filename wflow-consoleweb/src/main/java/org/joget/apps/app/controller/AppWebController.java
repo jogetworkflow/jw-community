@@ -563,7 +563,7 @@ public class AppWebController {
             try {
                 url = URLDecoder.decode(url, "UTF-8");
             } catch (UnsupportedEncodingException ex) {}
-            filename = url.substring(url.indexOf(filename));
+            filename = url.substring(url.lastIndexOf(filename+"."));
         }
         
         return filename;
