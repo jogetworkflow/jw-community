@@ -102,15 +102,21 @@ public class JsonResponseFilter implements Filter {
             
             SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
             String jsonpWhitelist = setupManager.getSettingValue("jsonpWhitelist");
-            if (!"*".equals(jsonpWhitelist)) {
+            String jsonpIPWhitelist = setupManager.getSettingValue("jsonpIPWhitelist");
+            if (!("*".equals(jsonpWhitelist) || "*".equals(jsonpIPWhitelist))) {
                 String domain = SecurityUtil.getDomainName(httpRequest.getHeader("referer"));
+                String ip = httpRequest.getRemoteAddr();
                 List<String> whitelist = new ArrayList<String>();
                 whitelist.add(httpRequest.getServerName());
                 if (jsonpWhitelist != null) {
                     whitelist.addAll(Arrays.asList(jsonpWhitelist.split(";")));
                 }
-                if (!SecurityUtil.isAllowedDomain(domain, whitelist)) {
-                    LogUtil.info(JsonResponseFilter.class.getName(), "Possible CSRF attack from url("+httpRequest.getRequestURI()+") referer(" + httpRequest.getHeader("referer") + ") IP(" + httpRequest.getRemoteAddr() + ")");
+                List<String> ipWhitelist = new ArrayList<String>();
+                if (jsonpIPWhitelist != null) {
+                    ipWhitelist.addAll(Arrays.asList(jsonpIPWhitelist.split(";")));
+                }
+                if (!(SecurityUtil.isAllowedDomain(domain, whitelist) || SecurityUtil.isAllowedDomain(ip, ipWhitelist))) {
+                    LogUtil.info(JsonResponseFilter.class.getName(), "Possible CSRF attack from url("+httpRequest.getRequestURI()+") referer(" + httpRequest.getHeader("referer") + ") IP(" + ip + ")");
                     wrappedResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST, "");
                     return;
                 }
