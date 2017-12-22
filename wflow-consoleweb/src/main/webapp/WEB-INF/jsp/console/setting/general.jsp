@@ -365,6 +365,16 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="jsonpIPWhitelist"><fmt:message key="console.setting.general.label.jsonpIPWhitelist"/></label>
+                        <span class="form-input">
+                            <input id="jsonpIPWhitelist" type="text" name="jsonpIPWhitelist" value="<c:out value="${settingMap['jsonpIPWhitelist']}"/>"/>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
             </div>
