@@ -2,8 +2,12 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
-CHANGES IN 6.0.0
-================
+CHANGES IN 6.0-RC2
+==================
+1841f02 Modified: wflow-consoleweb - Added MySQL JDBC connector @6.0-SNAPSHOT
+c87627b Modified: wflow-consoleweb - General Setting - Support API whitelist by IP. @6.0-SNAPSHOT
+12ede2d Fixed: wflow-core - Forms - Form columns not automatically created on Oracle @6.0-SNAPSHOT
+6eda6b6 Modified: wflow-install - Updated CHANGES.txt @6.0-SNAPSHOT
 a7aca40 Modified: wflow-install - Updated default MariaDB data @6.0-SNAPSHOT
 2483c68 Modified: wflow-install - Update CHANGES.txt. @6.0-SNAPSHOT
 718999c Fixed: wflow-consoleweb/wflow-core - Userview Setting - App id & version are not passed correctly to get theme/permission plugin properties. @6.0-SNAPSHOT Fixed: wflow-core - File Upload/Section - App id & version are not passed correctly to get permission plugin properties. @6.0-SNAPSHOT
