@@ -636,14 +636,15 @@ public class StringUtil {
         DecimalFormat df = new DecimalFormat(decimalFormat);
         String integerStr = df.format(Math.abs(number));
         
-        if(useThousandSeparator){
-            int start = integerStr.length();
-            if (integerStr.contains(".")) {
-                start = integerStr.indexOf(".");
-                if("EURO".equalsIgnoreCase(format)){
-                    integerStr = integerStr.replace(".", decimalSeperator);
-                }
+        int start = integerStr.length();
+        if (integerStr.contains(".")) {
+            start = integerStr.indexOf(".");
+            if("EURO".equalsIgnoreCase(format)){
+                integerStr = integerStr.replace(".", decimalSeperator);
             }
+        }
+        
+        if(useThousandSeparator){
             for (int i = start - 3; i > 0; i -= 3){
                 integerStr = integerStr.substring(0 , i) + thousandSeparator + integerStr.substring(i);
             }

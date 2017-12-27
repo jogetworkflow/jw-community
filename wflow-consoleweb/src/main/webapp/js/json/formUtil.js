@@ -179,6 +179,13 @@ FormUtil = {
         if (!isFinite(number)) {
             number = 0;
         } else {
+            number = Number(number);
+            if (numOfDecimal !== null){
+                number = number.toFixed(numOfDecimal);
+            } else {
+                number = number.toFixed(0);
+            }
+            
             var numberstr = number.toString();
             var eindex = numberstr.indexOf("e");
             if (eindex > -1){
