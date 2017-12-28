@@ -1476,5 +1476,11 @@ FormBuilder = {
             tempArray.push(temp);
         }
         return tempArray;
+    },
+    
+    refreshAppDesign: function() {
+        if (window.opener && window.opener.refreshNavigator) {
+            window.opener.location.reload(true);
+        }
     }
 }
