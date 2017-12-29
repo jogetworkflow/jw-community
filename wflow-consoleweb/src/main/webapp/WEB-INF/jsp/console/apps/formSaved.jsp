@@ -45,7 +45,7 @@
                 }
 
                 function launchFormBuilder() {
-                    var formBuilder = window.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>");
+                    var formBuilder = window.parent.open("${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appDefinition.version}/form/builder/<c:out value="${formId}"/>");
                     if (formBuilder) {
                         closeDialog();
                     }
