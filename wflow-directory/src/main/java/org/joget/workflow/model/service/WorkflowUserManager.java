@@ -145,6 +145,9 @@ public class WorkflowUserManager {
         }
         
         Object userObj = auth.getDetails();
+        if (userObj == null) {
+            userObj = auth.getPrincipal();
+        }
         if (userObj instanceof String) {
             setCurrentThreadUser((String) userObj);
             return getCurrentUser();
@@ -157,10 +160,8 @@ public class WorkflowUserManager {
             User user = (User) userObj;
             setCurrentThreadUser(user);
             return user;
-        } else {
-            setCurrentThreadUser((String) auth.getPrincipal());
-            return getCurrentUser();
         }
+        return null;
     }
 
     /**
@@ -189,8 +190,16 @@ public class WorkflowUserManager {
 
             if (auth != null) {
                 Object userObj = auth.getDetails();
+                if (userObj == null) {
+                    userObj = auth.getPrincipal();
+                }
                 if (userObj instanceof UserDetails) {
                     Collection<? extends GrantedAuthority> authorities = ((UserDetails)userObj).getAuthorities();
+                    for (GrantedAuthority ga: authorities) {
+                        results.add(ga.getAuthority());
+                    }
+                } else {
+                    Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
                     for (GrantedAuthority ga: authorities) {
                         results.add(ga.getAuthority());
                     }
