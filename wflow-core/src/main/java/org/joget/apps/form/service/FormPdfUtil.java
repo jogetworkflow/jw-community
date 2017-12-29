@@ -363,6 +363,7 @@ public class FormPdfUtil {
         style += ".subform-title{background: #efefef;position:relative;top:-12px;}";
         style += ".form-fileupload {float: left;}";
         style += ".form-cell-value, .subform-cell-value {float: left;width: 60%;}";
+        style += ".form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}";
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
         style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
