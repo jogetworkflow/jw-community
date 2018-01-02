@@ -3,6 +3,10 @@
         dynamicOptions : function(o){
             var target = this;
             if($(target)){
+                if ($(target).attr("name") === o.controlField) {
+                    return;
+                }
+                
                 $('[name='+o.controlField+']').addClass("control-field");
                 
                 var showHideChange = function() {
