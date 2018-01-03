@@ -325,21 +325,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     
     @Override
     protected Object evaluate(String propertyName) {
-        if (propertyName != null && !propertyName.isEmpty()) {
-            try {
-                Object value = super.evaluate(propertyName);
-
-                //handle for lowercase propertyName
-                if (value == null) {
-                    value = super.evaluate(propertyName.toLowerCase());
-                }
-                if (value != null && value instanceof Date) {
-                    value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
-                }
-                return value;
-            } catch (Exception e) {}
-        }
-        return null;
+        return DataListService.evaluateColumnValueFromRow(getCurrentRowObject(), propertyName);
     }
     
     protected boolean isRowActionVisible(DataListAction rowAction) {

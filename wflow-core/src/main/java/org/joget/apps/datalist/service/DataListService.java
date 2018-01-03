@@ -9,6 +9,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumnFormat;
+import org.joget.apps.form.model.FormRow;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -121,11 +122,23 @@ public class DataListService {
         if (propertyName != null && !propertyName.isEmpty()) {
             try {
                 Object value = LookupUtil.getBeanProperty(row, propertyName);
-
+                
                 //handle for lowercase propertyName
                 if (value == null) {
                     value = LookupUtil.getBeanProperty(row, propertyName.toLowerCase());
                 }
+                
+                //handle for numeric field name
+                if (value == null && row instanceof FormRow && Character.isDigit(propertyName.charAt(0))) {
+                    propertyName = "t__" + propertyName;
+                    value = LookupUtil.getBeanProperty(row, propertyName);
+                    
+                    //handle for lowercase propertyName
+                    if (value == null) {
+                        value = LookupUtil.getBeanProperty(row, propertyName.toLowerCase());
+                    }
+                }
+                
                 if (value != null && value instanceof Date) {
                     value = TimeZoneUtil.convertToTimeZone((Date) value, null, AppUtil.getAppDateFormat());
                 }

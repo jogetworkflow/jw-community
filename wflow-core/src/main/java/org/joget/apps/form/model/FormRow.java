@@ -279,10 +279,20 @@ public class FormRow extends Properties {
     
     @Override
     public String getProperty(String key) {
+        if (key == null) {
+            return null;
+        }
+        
         Object oval = super.get(key);
-       
+        
         if (oval != null && oval instanceof Date) {
             return TimeZoneUtil.convertToTimeZone((Date) oval, null, AppUtil.getAppDateFormat());
+        } else if (!key.isEmpty() && Character.isDigit(key.charAt(0))) {
+            if (super.containsKey("t__" + key)) {
+                return super.getProperty("t__" + key);
+            } else {
+                return super.getProperty(key);
+            }
         } else {
             return super.getProperty(key);
         }

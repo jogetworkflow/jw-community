@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -50,6 +52,7 @@ import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.StringUtil;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 import org.w3c.dom.Document;
@@ -302,7 +305,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     query += " DESC";
                 }
             }
-            Query q = session.createQuery(query);
+            Query q = session.createQuery(processQuery(query));
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -374,7 +377,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // get hibernate template
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
-            Query q = session.createQuery("SELECT COUNT(*) FROM " + tableName + " e " + condition);
+            Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + condition));
 
             if (params != null) {
                 int i = 0;
@@ -435,7 +438,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         try {
             String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?";
 
-            Query q = session.createQuery(query);
+            Query q = session.createQuery(processQuery(query));
 
             q.setFirstResult(0);
             q.setMaxResults(1);
@@ -851,7 +854,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                                 Property property = (Property) i.next();
                                 String propertyName = property.getName();
                                 found = formFields.contains(propertyName);
-                                if (!found) {
+                                if (!found || Character.isDigit(propertyName.charAt(0))) {
                                     // property not found, fields changed
                                     changes = true;
                                     break;
@@ -1002,6 +1005,9 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             String columnName = FORM_PREFIX_COLUMN + field;
             if (propName != null && !propName.isEmpty()) {
                 String propType = "text";
+                if (actionType == ACTION_TYPE_LOAD && Character.isDigit(propName.charAt(0))) {
+                    propName = "t__" + propName;
+                }
                 element.setAttribute("name", propName);
                 element.setAttribute("column", columnName);
                 element.setAttribute("type", propType);
@@ -1452,7 +1458,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                     query += " DESC";
                 }
             }
-            Query q = session.createQuery(query);
+            Query q = session.createQuery(processQuery(query));
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -1556,7 +1562,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             
             String query = "SELECT COUNT("+selectField+") FROM " + tableName + " e " + joinQuery + conditionQuery + groupByQuery;
             
-            Query q = session.createQuery(query);
+            Query q = session.createQuery(processQuery(query));
 
             int i = 0;
             if (params != null) {
@@ -1580,5 +1586,18 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         } finally {
             closeSession(session);
         }
+    }
+    
+    protected String processQuery(String query) {
+        try {
+            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
+            Matcher matcher = pattern.matcher(query);
+            while (matcher.find()) {
+                query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));
+            }
+        } catch (Exception e) {
+            LogUtil.error(query, e, query);
+        }
+        return query;
     }
 }
