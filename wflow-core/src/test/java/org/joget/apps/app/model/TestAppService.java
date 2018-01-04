@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import org.joget.apps.form.dao.FormDataDao;
 import org.springframework.transaction.annotation.Propagation;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import junit.framework.Assert;
@@ -21,6 +22,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcessResult;
@@ -62,6 +64,16 @@ public class TestAppService {
     private FormDataDao formDataDao;
 
     public TestAppService() {
+        //remove mapping files in wflow/app_forms folder
+        File appForms = new File(SetupManager.getBaseDirectory() + File.separator + "app_forms");
+        if (appForms.exists()) {
+            File[] files = appForms.listFiles();
+            if (files != null && files.length > 0) {
+                for (File f : files) {
+                    f.delete();
+                }
+            }
+        }
     }
 
     @Test
