@@ -2,6 +2,20 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.19
+=================
+f51a445 Modified: wflow-core - Test care - Remove existing hibernate mapping files before test. @5.0-SNAPSHOT
+0aaefb3 Fixed: wflow-core - Form Pdf Util - Custom HTML - Width is wrong for custom html without a label. #5239 @5.0-SNAPSHOT
+5a7c0a0 Fixed: wflow-directory - WorkflowUserManager - Fixes for concurrent session control does not considered for backward compatible. @5.0-SNAPSHOT
+466675e Fixed: wflow-core - Ajax Cascading Options - Get request not able to passed long options binder properties. #5180 @5.0-SNAPSHOT
+76a7ba3 Fixed: wflow-core - Assignment Hash Variable - Displays wrong assignment in subform when there are several simultaneous running activities @5.0-SNAPSHOT
+052a1a3 Fixed: wflow-core - User Notification - Environment hash variable is not working. #5159. @5.0-SNAPSHOT Fixed: wflow-core - Hash Variable - Escape format does not work correctly for nested hash variable sometime. @5.0-SNAPSHOT
+db43d3d Modified: wflow-core - Grid - Allow HTML in header labels @5.0-SNAPSHOT
+e01acfc Fixed: wflow-directory - Regression bug on 93d338 and 58a39e - Concurrent session control is not working.  #5131 @5.0-SNAPSHOT
+2c75150 Added: wflow-commons - Hash Variable - Support nl2br escape type. @5.0-SNAPSHOT
+a64bdfc Fixed: wflow-core - Datalist - Auto convert newline to <br> tag for non html string. #5103 @5.0-SNAPSHOT
+fa9cf1a Fixed: wflow-core/wflow-commons - Datalist - Newline is removed in exported file. @5.0-SNAPSHOT
+
 CHANGES IN 5.0.18
 =================
 93d3388 Fixed: wflow-consoleweb/wflow-core - Concurrent session control is not working. @5.0-SNAPSHOT
