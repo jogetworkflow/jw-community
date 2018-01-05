@@ -1,6 +1,7 @@
 package org.joget.apps.userview.service;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -623,7 +624,7 @@ public class UserviewThemeProcesser {
                 alertMessage = menuAlertMessage;
             }
         } else if (menuRedirectUrl != null && !menuRedirectUrl.isEmpty()) {
-            if (!menuRedirectUrl.toLowerCase().startsWith("http") && !menuRedirectUrl.toLowerCase().startsWith("/") && !menuRedirectUrl.startsWith(request.getContextPath())) {
+            if (!menuRedirectUrl.toLowerCase(Locale.ENGLISH).startsWith("http") && !menuRedirectUrl.toLowerCase(Locale.ENGLISH).startsWith("/") && !menuRedirectUrl.startsWith(request.getContextPath())) {
                 redirectUrl = "/web/";
                 if ("true".equalsIgnoreCase(userview.getParamString("embed"))) {
                     redirectUrl += "embed/";
