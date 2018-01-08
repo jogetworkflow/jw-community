@@ -137,12 +137,14 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String text = formatColumn(column, row, columnValue);
 
         // strip tags if media type is not HTML
-        if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
-            text = StringUtil.stripAllHtmlTag(text, false);
-            text = StringEscapeUtils.unescapeHtml(text);
-        } else {
-            if (text.equals(StringUtil.stripAllHtmlTag(text, false))) { //check it is not html text
-                text = StringUtil.escapeString(text, StringUtil.TYPE_NL2BR, null);
+        if (text != null) {
+            if (!MediaTypeEnum.HTML.equals(tableModel.getMedia())) {
+                text = StringUtil.stripAllHtmlTag(text, false);
+                text = StringEscapeUtils.unescapeHtml(text);
+            } else {
+                if (text.equals(StringUtil.stripAllHtmlTag(text, false))) { //check it is not html text
+                    text = StringUtil.escapeString(text, StringUtil.TYPE_NL2BR, null);
+                }
             }
         }
 
