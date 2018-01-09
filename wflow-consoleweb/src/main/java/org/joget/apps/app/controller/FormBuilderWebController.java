@@ -213,6 +213,7 @@ public class FormBuilderWebController {
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
+        formData = formService.retrieveFormDataFromRequest(formData, request);
         String decryptedJson = SecurityUtil.decrypt(json);
         Form form = formService.loadFormFromJson(decryptedJson, formData);
         
@@ -284,7 +285,6 @@ public class FormBuilderWebController {
         String formHtml = null;
 
         if("submit".equals(action)){
-            formData = formService.retrieveFormDataFromRequest(formData, request);
             formData = formService.executeFormActions(form, formData);
 
             // check for validation errors
