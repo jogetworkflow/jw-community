@@ -270,6 +270,15 @@ UserviewBuilder = {
         }else{
             this.data = json;
             this.data.properties.id = id;
+            
+            //handle for v5 app on property migration
+            if (this.data.setting.properties['loginPageTop'] !== undefined) {
+                this.data.setting.properties['theme']['properties']['loginPageTop'] = this.data.setting.properties['loginPageTop'];
+                this.data.setting.properties['theme']['properties']['loginPageBottom'] = this.data.setting.properties['loginPageBottom'];
+                delete this.data.setting.properties['loginPageTop'];
+                delete this.data.setting.properties['loginPageBottom'];
+            }
+            
             UserviewBuilder.adjustJson();
         }
 
