@@ -422,6 +422,8 @@ public class AppWebController {
         
         if (!isAuthorize) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
+            response.setHeader("Cache-Control", "no-cache, no-store");
             return;
         }
         
@@ -435,6 +437,8 @@ public class AppWebController {
         File file = FileUtil.getFile(decodedFileName, form, primaryKeyValue);
         if (file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
+            response.setHeader("Cache-Control", "no-cache, no-store");
             return;
         }
         DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -522,6 +526,8 @@ public class AppWebController {
         
         if (!isAuthorize) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
+            response.setHeader("Cache-Control", "no-cache, no-store");
             return;
         }
         
@@ -529,6 +535,8 @@ public class AppWebController {
         File file = AppResourceUtil.getFile(appId, version, decodedFileName);
         if (file == null || file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
+            response.setHeader("Cache-Control", "no-cache, no-store");
             return;
         }
         DataInputStream in = new DataInputStream(new FileInputStream(file));
