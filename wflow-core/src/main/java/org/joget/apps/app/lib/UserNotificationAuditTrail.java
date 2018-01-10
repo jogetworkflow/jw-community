@@ -203,10 +203,22 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             } else {
                                                 tempLink = "<a href=\"" + link + "\">" + link + "</a>";
                                             }
-                                            msg = AppUtil.processHashVariable(emailMessage + "<br/><br/><br/>" + tempLink, wfAssignment, null, replace);
+                                            String tempEmailMessage = emailMessage;
+                                            if (emailMessage.contains("#assignment.link#")) {
+                                                tempEmailMessage = tempEmailMessage.replaceAll(StringUtil.escapeRegex("#assignment.link#"), StringUtil.escapeRegex(tempLink));
+                                            } else {
+                                                tempEmailMessage = emailMessage + "<br/><br/><br/>" + tempLink;
+                                            }
+                                            msg = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
                                             email.setHtmlMsg(msg);
                                         } else {
-                                            msg = AppUtil.processHashVariable(emailMessage + "\n\n\n" + tempLink, wfAssignment, null, replace);
+                                            String tempEmailMessage = emailMessage;
+                                            if (emailMessage.contains("#assignment.link#")) {
+                                                tempEmailMessage = tempEmailMessage.replaceAll(StringUtil.escapeRegex("#assignment.link#"), StringUtil.escapeRegex(tempLink));
+                                            } else {
+                                                tempEmailMessage = emailMessage + "\n\n\n" + tempLink;
+                                            }
+                                            msg = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
                                             email.setMsg(msg);
                                         }
                                     }
