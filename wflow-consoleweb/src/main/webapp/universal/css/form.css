@@ -147,6 +147,24 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
+body .mce-form input:not([type]),
+body .mce-form input[type=text],
+body .mce-form input[type=password],
+body .mce-form input[type=email],
+body .mce-form input[type=url],
+body .mce-form input[type=time],
+body .mce-form input[type=date],
+body .mce-form input[type=datetime],
+body .mce-form input[type=datetime-local],
+body .mce-form input[type=tel],
+body .mce-form input[type=number],
+body .mce-form input[type=search],
+body .mce-form textarea,
+body .mce-form select:not([class^=ui]) {
+    width: auto;
+    max-width: inherit;
+}
+
 body select[multiple]:not([class^=ui]),
 body .editor-cell select[multiple]:not([class^=ui]){
   height: auto;
