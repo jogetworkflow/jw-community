@@ -648,8 +648,12 @@ body .chosen-container-single .chosen-single {
     border-bottom: 1px solid #B6B6B6;
     background-color: transparent;
     background: transparent;
-    margin-bottom: 15px;
     color: inherit;
+}
+
+body .chosen-container-multi,
+body .chosen-container-single{
+    margin-bottom: 15px;
 }
 
 body .chosen-container-multi .chosen-choices{
