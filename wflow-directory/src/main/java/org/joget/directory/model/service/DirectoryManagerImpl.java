@@ -340,7 +340,7 @@ public class DirectoryManagerImpl implements ExtDirectoryManager {
 
     public Collection<User> getUserDepartmentUser(String username) {
         User user = getUserDao().getUser(username);
-        if (user != null && user.getEmployments() != null) {
+        if (user != null && user.getEmployments() != null && !user.getEmployments().isEmpty()) {
             Collection<Employment> employments = user.getEmployments();
             //get only 1st employment record, currently only support 1 employment per user
             Employment employment = employments.iterator().next();
