@@ -2,7 +2,7 @@
     <label class="label">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <div class="form-fileupload">
     <#if element.properties.readonly! != 'true'>
-        <input id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
+        <input id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if> <#if element.properties.fileType?? > accept="${element.properties.fileType!?replace(";", ",")}"</#if>/>
     </#if>
     <#if tempFilePaths?? || filePaths??>
         <style>

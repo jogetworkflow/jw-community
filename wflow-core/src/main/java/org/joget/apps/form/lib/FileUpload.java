@@ -245,31 +245,33 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         Boolean valid = true;
         String error = "";
         try {
-            String value = FormUtil.getElementPropertyValue(this, formData);
+            String[] values = FormUtil.getElementPropertyValues(this, formData);
 
-            File file = FileManager.getFileByPath(value);
-            if (file != null) {
-                if(getPropertyString("maxSize") != null && !getPropertyString("maxSize").isEmpty()) {
-                    long maxSize = Long.parseLong(getPropertyString("maxSize")) * 1024;
-                    
-                    if (file.length() > maxSize) {
-                        valid = false;
-                        error += getPropertyString("maxSizeMsg") + " ";
-                        
-                    }
-                }
-                if(getPropertyString("fileType") != null && !getPropertyString("fileType").isEmpty()) {
-                    String[] fileType = getPropertyString("fileType").split(";");
-                    String filename = file.getName().toUpperCase();
-                    Boolean found = false;
-                    for (String type : fileType) {
-                        if (filename.endsWith(type.toUpperCase())) {
-                            found = true;
+            for (String value : values) {
+                File file = FileManager.getFileByPath(value);
+                if (file != null) {
+                    if(getPropertyString("maxSize") != null && !getPropertyString("maxSize").isEmpty()) {
+                        long maxSize = Long.parseLong(getPropertyString("maxSize")) * 1024;
+
+                        if (file.length() > maxSize) {
+                            valid = false;
+                            error += getPropertyString("maxSizeMsg") + " ";
+
                         }
                     }
-                    if (!found) {
-                        valid = false;
-                        error += getPropertyString("fileTypeMsg");
+                    if(getPropertyString("fileType") != null && !getPropertyString("fileType").isEmpty()) {
+                        String[] fileType = getPropertyString("fileType").split(";");
+                        String filename = file.getName().toUpperCase();
+                        Boolean found = false;
+                        for (String type : fileType) {
+                            if (filename.endsWith(type.toUpperCase())) {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            valid = false;
+                            error += getPropertyString("fileTypeMsg");
+                        }
                     }
                 }
             }
