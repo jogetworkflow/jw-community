@@ -60,6 +60,7 @@
                     $(file.previewElement).find(".remove").show();
                     $(file.previewElement).find("input").remove();
                     $(file.previewElement).find(".name").css("color" , "red");
+                    $(file.previewElement).find("img").remove();
                 });
                 
                 $(target).on("click", ".remove", function(){
