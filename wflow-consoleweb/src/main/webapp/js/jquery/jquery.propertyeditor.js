@@ -278,6 +278,10 @@ PropertyEditor.Util = {
                         page.editorObject.pages[pageId].buttonPanel.refresh();
                     }
                 }
+                if (element.hasClass("page-button-custom") && page.editorObject.isSinglePageDisplay()) {
+                    $(field.editor).find('.property-editor-buttons').html('');
+                    $(field.editor).find('.property-editor-buttons').append($(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true));
+                }
             });
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
         }
