@@ -292,6 +292,8 @@ DatalistBuilder = {
             var c = DatalistBuilder.availableColumns[column.name];
             if (c !== undefined && c.label === column.label && c.label !== c.displayLabel) {
                 DatalistBuilder.renderColumn(e);
+            } else if (c === undefined) {
+                $(this).remove();
             }
         });
 
@@ -303,6 +305,8 @@ DatalistBuilder = {
             var c = DatalistBuilder.availableColumns[filter.name];
             if (c !== undefined && filter.label === c.label && c.label !== c.displayLabel) {
                 DatalistBuilder.renderFilter(e);
+            } else if (c === undefined) {
+                $(this).remove();
             }
         });
         
