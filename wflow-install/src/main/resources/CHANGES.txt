@@ -2,6 +2,32 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.0
+================
+8edaf09 Fixed: wflow-core - Image Upload - When uploaded image size large than max size, the warning appear with a broken image icon. @6.0-SNAPSHOT
+3a0bb06 Fixed: wflow-consoleweb - Datalist builder - Update binder setting does not remove the unavailable column from the design. @6.0-SNAPSHOT
+862f629 Fixed: wflow-consoleweb - Property Editor - Dynamic page button does not update based on field change when it is in single page mode. @6.0-SNAPSHOT
+4cf8b37 Fixed: wflow-core - File Upload - Validation does not work for multiple files. #5280 @6.0-SNAPSHOT
+7cbb538 Modified: wflow-consoleweb - Plugin - Update help link. @6.0-SNAPSHOT
+ac7b2d8 Fixed: wflow-consoleweb - Universal Theme - Multi Selectbox element display incorrectly when set to single select. @6.0-SNAPSHOT
+03e430a Fixed: wflow-directory - Directory Manager - getUserDepartmentUser throw NPE when user is not assign to a department. #5278 @6.0-SNAPSHOT
+ee8038c Fixed: wflow-consoleweb - Monitoring - Filter value with space in running/completed processes list causing the list not able to load list data. #5275 @6.0-SNAPSHOT
+3282cd8 Fixed: wflow-consoleweb - Userview Theme - Custom HTML for login page does not work properly due to the property moved under theme. #5267 @6.0-SNAPSHOT
+d64d323 Fixed: wflow-consoleweb - Form Upload/App Resources - Expires header should not added for not found/no permission web resource. @6.0-SNAPSHOT
+6c978fa Fixed: wflow-consoleweb - Universal Theme - Style of popup form of the rich text field is affected by the theme style.  @6.0-SNAPSHOT
+4cd0cb9 Modified: wflow-core - User Notification - Added #assignment.link# for populate assignment link in email content. #5266 @6.0-SNAPSHOT
+c24dc2b Fixed: wflow-consoleweb - Embed Form - URL parameters are not available during form load. #5261 @6.0-SNAPSHOT
+6e6ab3f Fixed: wflow-consoleweb - Custom HTML - Not able to type Chinese character. Updated ACE editor to version 1.2.9. #5258 @6.0-SNAPSHOT
+2050f09 Fixed: wflow-core - Userview Theme Processer - Locale dependent comparison. @6.0-SNAPSHOT
+ab34f4f Fixed: wflow-core - FormDataDao - Field name starts with numeric character throws unexpected token exception. @6.0-SNAPSHOT
+06fa76e Fixed: wflow-core - Dynamic Options Field - Hit max call stack error when dependency field set to the field itself. @6.0-SNAPSHOT
+109981c Fixed: wflow-core - Form Pdf Util - Custom HTML - Width is wrong for custom html without a label. #5239 @6.0-SNAPSHOT
+43362c6 Fixed: wflow-consoleweb - App Design - Builder losing window.opener object due to the builder is launch from a popup window. @6.0-SNAPSHOT
+d20290a Fixed: wflow-directory - WorkflowUserManager - Fixes for concurrent session control does not considered for backward compatible. @6.0-SNAPSHOT
+de10233 Modified: wflow-consoleweb - Form Builder - Add method to refresh App Design page. @6.0-SNAPSHOT
+a29185c Fixed: wflow-commons/wflow-consoleweb - formUtil.js/StringUtil - Better handling for decimal number format. @6.0-SNAPSHOT
+fea6d5f Fixed: wflow-install - SQL should not have DROP TABLE commands. @6.0-SNAPSHOT
+
 CHANGES IN 6.0-RC2
 ==================
 1841f02 Modified: wflow-consoleweb - Added MySQL JDBC connector @6.0-SNAPSHOT
