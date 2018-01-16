@@ -4,6 +4,10 @@ For more information, please refer to the knowledge base at http://dev.joget.org
 
 CHANGES IN 6.0.0
 ================
+e9582e8 Fixed: wflow-consoleweb - Setup - MySQL script does not set CHARSET. @6.0-SNAPSHOT
+c3f122d Fixed: wflow-install - jwdb-empty.sql does not set CHARSET. @6.0-SNAPSHOT
+f4884eb Fixed: wflow-consoleweb - Mobile - Datalist paging buttons are missing. #5299 @6.0-SNAPSHOT
+058ca19 Fixed: wflow-consoleweb - Unable to run setup on Ubuntu due to missing JDBC driver @6.0-SNAPSHOT
 8edaf09 Fixed: wflow-core - Image Upload - When uploaded image size large than max size, the warning appear with a broken image icon. @6.0-SNAPSHOT
 3a0bb06 Fixed: wflow-consoleweb - Datalist builder - Update binder setting does not remove the unavailable column from the design. @6.0-SNAPSHOT
 862f629 Fixed: wflow-consoleweb - Property Editor - Dynamic page button does not update based on field change when it is in single page mode. @6.0-SNAPSHOT
