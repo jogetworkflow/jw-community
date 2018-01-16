@@ -122,9 +122,9 @@
                 </c:if>
                 <c:set var="previousPage" value="${currentPage - 1}"/>
                 <c:set var="nextPage" value="${currentPage + 1}"/>
-                <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="0" value="${(dataList.size / dataList.pageSize)}" /></c:set>
-                <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>               
-
+                <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="2" value="${(dataList.size / dataList.pageSize)}" /></c:set>
+                <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>       
+                
                 <%-- Display datalist --%>
                 <c:catch var="dataListBinderException">
                     <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
