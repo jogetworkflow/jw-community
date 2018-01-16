@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.28, for osx10.8 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.24, for osx10.8 (x86_64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	5.6.28
+-- Server version	5.6.24
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -22,20 +22,20 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivities` (
-  `Id` varchar(100) NOT NULL,
-  `ActivitySetDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivitySetDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `Process` decimal(19,0) NOT NULL,
   `TheResource` decimal(19,0) DEFAULT NULL,
-  `PDefName` varchar(200) NOT NULL,
-  `ProcessId` varchar(200) NOT NULL,
-  `ResourceId` varchar(100) DEFAULT NULL,
+  `PDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessId` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ResourceId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `State` decimal(19,0) NOT NULL,
-  `BlockActivityId` varchar(100) DEFAULT NULL,
-  `Performer` varchar(100) DEFAULT NULL,
+  `BlockActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `Performer` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IsPerformerAsynchronous` smallint(6) DEFAULT NULL,
   `Priority` int(11) DEFAULT NULL,
-  `Name` varchar(254) DEFAULT NULL,
+  `Name` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Activated` bigint(20) NOT NULL,
   `ActivatedTZO` bigint(20) NOT NULL,
   `Accepted` bigint(20) DEFAULT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE `SHKActivities` (
   `LastStateTimeTZO` bigint(20) NOT NULL,
   `LimitTime` bigint(20) NOT NULL,
   `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) DEFAULT NULL,
+  `Description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
@@ -56,7 +56,7 @@ CREATE TABLE `SHKActivities` (
   CONSTRAINT `SHKActivities_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`),
   CONSTRAINT `SHKActivities_State` FOREIGN KEY (`State`) REFERENCES `SHKActivityStates` (`oid`),
   CONSTRAINT `SHKActivities_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,11 +76,11 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityData` (
   `Activity` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE `SHKActivityData` (
   UNIQUE KEY `I1_SHKActivityData` (`CNT`),
   UNIQUE KEY `I2_SHKActivityData` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityData_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -121,7 +121,7 @@ CREATE TABLE `SHKActivityDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityDataBLOBs` (`ActivityDataWOB`,`OrdNo`),
   CONSTRAINT `SHKActivityDataBLOBs_ActivityDataWOB` FOREIGN KEY (`ActivityDataWOB`) REFERENCES `SHKActivityDataWOB` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -141,10 +141,10 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityDataWOB` (
   `Activity` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE `SHKActivityDataWOB` (
   UNIQUE KEY `I1_SHKActivityDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKActivityDataWOB` (`Activity`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKActivityDataWOB_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -177,14 +177,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityStateEventAudits` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStateEventAudits` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -203,14 +203,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKActivityStates` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKActivityStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKActivityStates` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +232,7 @@ UNLOCK TABLES;
 CREATE TABLE `SHKAndJoinTable` (
   `Process` decimal(19,0) NOT NULL,
   `BlockActivity` decimal(19,0) DEFAULT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `Activity` decimal(19,0) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -245,7 +245,7 @@ CREATE TABLE `SHKAndJoinTable` (
   CONSTRAINT `SHKAndJoinTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAndJoinTable_BlockActivity` FOREIGN KEY (`BlockActivity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAndJoinTable_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -266,24 +266,24 @@ UNLOCK TABLES;
 CREATE TABLE `SHKAssignmentEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) NOT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) NOT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ActivityDefinitionType` int(11) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `OldResourceUsername` varchar(100) DEFAULT NULL,
-  `OldResourceName` varchar(100) DEFAULT NULL,
-  `NewResourceUsername` varchar(100) NOT NULL,
-  `NewResourceName` varchar(100) DEFAULT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `OldResourceUsername` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `OldResourceName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `NewResourceUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `NewResourceName` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IsAccepted` smallint(6) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -292,7 +292,7 @@ CREATE TABLE `SHKAssignmentEventAudits` (
   UNIQUE KEY `I1_SHKAssignmentEventAudits` (`CNT`),
   KEY `SHKAssignmentEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKAssignmentEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -313,10 +313,10 @@ UNLOCK TABLES;
 CREATE TABLE `SHKAssignmentsTable` (
   `Activity` decimal(19,0) NOT NULL,
   `TheResource` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) NOT NULL,
-  `ActivityProcessId` varchar(100) NOT NULL,
-  `ActivityProcessDefName` varchar(200) NOT NULL,
-  `ResourceId` varchar(100) NOT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityProcessDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ResourceId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `IsAccepted` smallint(6) NOT NULL,
   `IsValid` smallint(6) NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
@@ -333,7 +333,7 @@ CREATE TABLE `SHKAssignmentsTable` (
   CONSTRAINT `FK_rnb6mhntls567xpifcfvygkuu` FOREIGN KEY (`ActivityProcessId`) REFERENCES `SHKProcesses` (`Id`),
   CONSTRAINT `SHKAssignmentsTable_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKAssignmentsTable_TheResource` FOREIGN KEY (`TheResource`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -352,13 +352,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKCounters` (
-  `name` varchar(100) NOT NULL,
+  `name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `the_number` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKCounters` (`name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -379,25 +379,25 @@ UNLOCK TABLES;
 CREATE TABLE `SHKCreateProcessEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `PActivityId` varchar(100) DEFAULT NULL,
-  `PProcessId` varchar(100) DEFAULT NULL,
-  `PProcessName` varchar(254) DEFAULT NULL,
-  `PProcessFactoryName` varchar(200) DEFAULT NULL,
-  `PProcessFactoryVersion` varchar(20) DEFAULT NULL,
-  `PActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `PActivityDefinitionName` varchar(90) DEFAULT NULL,
-  `PProcessDefinitionId` varchar(90) DEFAULT NULL,
-  `PProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PPackageId` varchar(90) DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `PActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PPackageId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -405,7 +405,7 @@ CREATE TABLE `SHKCreateProcessEventAudits` (
   UNIQUE KEY `I1_SHKCreateProcessEventAudits` (`CNT`),
   KEY `SHKCreateProcessEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKCreateProcessEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -426,20 +426,20 @@ UNLOCK TABLES;
 CREATE TABLE `SHKDataEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) DEFAULT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ActivityDefinitionType` int(11) DEFAULT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `CNT` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -447,7 +447,7 @@ CREATE TABLE `SHKDataEventAudits` (
   UNIQUE KEY `I1_SHKDataEventAudits` (`CNT`),
   KEY `SHKDataEventAudits_TheType` (`TheType`),
   CONSTRAINT `SHKDataEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -471,7 +471,7 @@ CREATE TABLE `SHKDeadlines` (
   `CNT` decimal(19,0) NOT NULL,
   `TimeLimit` bigint(20) NOT NULL,
   `TimeLimitTZO` bigint(20) NOT NULL,
-  `ExceptionName` varchar(100) NOT NULL,
+  `ExceptionName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `IsSynchronous` smallint(6) NOT NULL,
   `IsExecuted` smallint(6) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -482,7 +482,7 @@ CREATE TABLE `SHKDeadlines` (
   KEY `I3_SHKDeadlines` (`Activity`,`TimeLimit`),
   CONSTRAINT `SHKDeadlines_Activity` FOREIGN KEY (`Activity`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKDeadlines_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -501,14 +501,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKEventTypes` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKEventTypes` (`KeyValue`),
   UNIQUE KEY `I2_SHKEventTypes` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -536,7 +536,7 @@ CREATE TABLE `SHKGroupGroupTable` (
   KEY `I2_SHKGroupGroupTable` (`groupid`),
   CONSTRAINT `SHKGroupGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKGroupGroupTable_sub_gid` FOREIGN KEY (`sub_gid`) REFERENCES `SHKGroupTable` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -555,13 +555,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupTable` (
-  `groupid` varchar(100) NOT NULL,
-  `description` varchar(254) DEFAULT NULL,
+  `groupid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupTable` (`groupid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -580,12 +580,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKGroupUser` (
-  `USERNAME` varchar(100) NOT NULL,
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKGroupUser` (`USERNAME`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -613,7 +613,7 @@ CREATE TABLE `SHKGroupUserPackLevelPart` (
   KEY `SHKGroupUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -641,7 +641,7 @@ CREATE TABLE `SHKGroupUserProcLevelPart` (
   KEY `SHKGroupUserProcLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKGroupUserProcLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKGroupUserProcLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKGroupUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -661,11 +661,11 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -678,7 +678,7 @@ CREATE TABLE `SHKNewEventAuditData` (
   UNIQUE KEY `I1_SHKNewEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -705,7 +705,7 @@ CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNewEventAuditDataBLOBs` (`NewEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataBLOBs_NewEventAuditDataWOB` FOREIGN KEY (`NewEventAuditDataWOB`) REFERENCES `SHKNewEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -725,10 +725,10 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNewEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -741,7 +741,7 @@ CREATE TABLE `SHKNewEventAuditDataWOB` (
   UNIQUE KEY `I1_SHKNewEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKNewEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKNewEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -760,13 +760,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNextXPDLVersions` (
-  `XPDLId` varchar(90) NOT NULL,
-  `NextVersion` varchar(20) NOT NULL,
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `NextVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNextXPDLVersions` (`XPDLId`,`NextVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -785,12 +785,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKNormalUser` (
-  `USERNAME` varchar(100) NOT NULL,
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKNormalUser` (`USERNAME`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -810,11 +810,11 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -827,7 +827,7 @@ CREATE TABLE `SHKOldEventAuditData` (
   UNIQUE KEY `I1_SHKOldEventAuditData` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditData` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditData_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -854,7 +854,7 @@ CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKOldEventAuditDataBLOBs` (`OldEventAuditDataWOB`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataBLOBs_OldEventAuditDataWOB` FOREIGN KEY (`OldEventAuditDataWOB`) REFERENCES `SHKOldEventAuditDataWOB` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -874,10 +874,10 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKOldEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` float DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -890,7 +890,7 @@ CREATE TABLE `SHKOldEventAuditDataWOB` (
   UNIQUE KEY `I1_SHKOldEventAuditDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKOldEventAuditDataWOB` (`DataEventAudit`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKOldEventAuditDataWOB_DataEventAudit` FOREIGN KEY (`DataEventAudit`) REFERENCES `SHKDataEventAudits` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -909,7 +909,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelParticipant` (
-  `PARTICIPANT_ID` varchar(90) NOT NULL,
+  `PARTICIPANT_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -917,7 +917,7 @@ CREATE TABLE `SHKPackLevelParticipant` (
   UNIQUE KEY `I1_SHKPackLevelParticipant` (`PARTICIPANT_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelParticipant_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelParticipant_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -936,7 +936,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKPackLevelXPDLApp` (
-  `APPLICATION_ID` varchar(90) NOT NULL,
+  `APPLICATION_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -944,7 +944,7 @@ CREATE TABLE `SHKPackLevelXPDLApp` (
   UNIQUE KEY `I1_SHKPackLevelXPDLApp` (`APPLICATION_ID`,`PACKAGEOID`),
   KEY `SHKPackLevelXPDLApp_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKPackLevelXPDLApp_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -972,7 +972,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppDetUsr` (
   KEY `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1000,7 +1000,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppDetail` (
   KEY `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1028,7 +1028,7 @@ CREATE TABLE `SHKPackLevelXPDLAppTAAppUser` (
   KEY `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1056,7 +1056,7 @@ CREATE TABLE `SHKPackLevelXPDLAppToolAgntApp` (
   KEY `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKPackLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKPackLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1075,7 +1075,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelParticipant` (
-  `PARTICIPANT_ID` varchar(90) NOT NULL,
+  `PARTICIPANT_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1083,7 +1083,7 @@ CREATE TABLE `SHKProcLevelParticipant` (
   UNIQUE KEY `I1_SHKProcLevelParticipant` (`PARTICIPANT_ID`,`PROCESSOID`),
   KEY `SHKProcLevelParticipant_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelParticipant_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLParticipantProcess` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1102,7 +1102,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcLevelXPDLApp` (
-  `APPLICATION_ID` varchar(90) NOT NULL,
+  `APPLICATION_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1110,7 +1110,7 @@ CREATE TABLE `SHKProcLevelXPDLApp` (
   UNIQUE KEY `I1_SHKProcLevelXPDLApp` (`APPLICATION_ID`,`PROCESSOID`),
   KEY `SHKProcLevelXPDLApp_PROCESSOID` (`PROCESSOID`),
   CONSTRAINT `SHKProcLevelXPDLApp_PROCESSOID` FOREIGN KEY (`PROCESSOID`) REFERENCES `SHKXPDLApplicationProcess` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1138,7 +1138,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppDetUsr` (
   KEY `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetailUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetUsr_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1166,7 +1166,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppDetail` (
   KEY `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppDetail_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1194,7 +1194,7 @@ CREATE TABLE `SHKProcLevelXPDLAppTAAppUser` (
   KEY `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentAppUser` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppTAAppUser_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1222,7 +1222,7 @@ CREATE TABLE `SHKProcLevelXPDLAppToolAgntApp` (
   KEY `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` (`TOOLAGENTOID`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_TOOLAGENTOID` FOREIGN KEY (`TOOLAGENTOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKProcLevelXPDLAppToolAgntApp_XPDL_APPOID` FOREIGN KEY (`XPDL_APPOID`) REFERENCES `SHKProcLevelXPDLApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1242,11 +1242,11 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessData` (
   `Process` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
   `VariableValue` mediumblob,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -1259,7 +1259,7 @@ CREATE TABLE `SHKProcessData` (
   UNIQUE KEY `I1_SHKProcessData` (`CNT`),
   UNIQUE KEY `I2_SHKProcessData` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessData_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1286,7 +1286,7 @@ CREATE TABLE `SHKProcessDataBLOBs` (
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDataBLOBs` (`ProcessDataWOB`,`OrdNo`),
   CONSTRAINT `SHKProcessDataBLOBs_ProcessDataWOB` FOREIGN KEY (`ProcessDataWOB`) REFERENCES `SHKProcessDataWOB` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1306,10 +1306,10 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDataWOB` (
   `Process` decimal(19,0) NOT NULL,
-  `VariableDefinitionId` varchar(100) NOT NULL,
+  `VariableDefinitionId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `VariableType` int(11) NOT NULL,
-  `VariableValueXML` text,
-  `VariableValueVCHAR` varchar(4000) DEFAULT NULL,
+  `VariableValueXML` text COLLATE utf8_unicode_ci,
+  `VariableValueVCHAR` varchar(4000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `VariableValueDBL` double DEFAULT NULL,
   `VariableValueLONG` bigint(20) DEFAULT NULL,
   `VariableValueDATE` datetime DEFAULT NULL,
@@ -1322,7 +1322,7 @@ CREATE TABLE `SHKProcessDataWOB` (
   UNIQUE KEY `I1_SHKProcessDataWOB` (`CNT`),
   UNIQUE KEY `I2_SHKProcessDataWOB` (`Process`,`VariableDefinitionId`,`OrdNo`),
   CONSTRAINT `SHKProcessDataWOB_Process` FOREIGN KEY (`Process`) REFERENCES `SHKProcesses` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1341,17 +1341,17 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessDefinitions` (
-  `Name` varchar(200) NOT NULL,
-  `PackageId` varchar(90) NOT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
+  `Name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `ProcessDefinitionCreated` bigint(20) NOT NULL,
-  `ProcessDefinitionVersion` varchar(20) NOT NULL,
+  `ProcessDefinitionVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `State` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessDefinitions` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1370,7 +1370,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessRequesters` (
-  `Id` varchar(100) NOT NULL,
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `ActivityRequester` decimal(19,0) DEFAULT NULL,
   `ResourceRequester` decimal(19,0) DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -1381,7 +1381,7 @@ CREATE TABLE `SHKProcessRequesters` (
   KEY `I3_SHKProcessRequesters` (`ResourceRequester`),
   CONSTRAINT `SHKProcessRequesters_ActivityRequester` FOREIGN KEY (`ActivityRequester`) REFERENCES `SHKActivities` (`oid`),
   CONSTRAINT `SHKProcessRequesters_ResourceRequester` FOREIGN KEY (`ResourceRequester`) REFERENCES `SHKResourcesTable` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1400,14 +1400,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessStateEventAudits` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStateEventAudits` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStateEventAudits` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1426,14 +1426,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcessStates` (
-  `KeyValue` varchar(30) NOT NULL,
-  `Name` varchar(50) NOT NULL,
+  `KeyValue` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKProcessStates` (`KeyValue`),
   UNIQUE KEY `I2_SHKProcessStates` (`Name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1454,16 +1454,16 @@ UNLOCK TABLES;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKProcesses` (
   `SyncVersion` bigint(20) NOT NULL,
-  `Id` varchar(100) NOT NULL,
+  `Id` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `ProcessDefinition` decimal(19,0) NOT NULL,
-  `PDefName` varchar(200) NOT NULL,
-  `ActivityRequesterId` varchar(100) DEFAULT NULL,
-  `ActivityRequesterProcessId` varchar(100) DEFAULT NULL,
-  `ResourceRequesterId` varchar(100) NOT NULL,
-  `ExternalRequesterClassName` varchar(254) DEFAULT NULL,
+  `PDefName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityRequesterId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityRequesterProcessId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ResourceRequesterId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ExternalRequesterClassName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `State` decimal(19,0) NOT NULL,
   `Priority` int(11) DEFAULT NULL,
-  `Name` varchar(254) DEFAULT NULL,
+  `Name` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Created` bigint(20) NOT NULL,
   `CreatedTZO` bigint(20) NOT NULL,
   `Started` bigint(20) DEFAULT NULL,
@@ -1472,7 +1472,7 @@ CREATE TABLE `SHKProcesses` (
   `LastStateTimeTZO` bigint(20) NOT NULL,
   `LimitTime` bigint(20) NOT NULL,
   `LimitTimeTZO` bigint(20) NOT NULL,
-  `Description` varchar(254) DEFAULT NULL,
+  `Description` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
@@ -1483,7 +1483,7 @@ CREATE TABLE `SHKProcesses` (
   KEY `I5_SHKProcesses` (`ResourceRequesterId`),
   CONSTRAINT `SHKProcesses_ProcessDefinition` FOREIGN KEY (`ProcessDefinition`) REFERENCES `SHKProcessDefinitions` (`oid`),
   CONSTRAINT `SHKProcesses_State` FOREIGN KEY (`State`) REFERENCES `SHKProcessStates` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1502,13 +1502,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKResourcesTable` (
-  `Username` varchar(100) NOT NULL,
-  `Name` varchar(100) DEFAULT NULL,
+  `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Name` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKResourcesTable` (`Username`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1529,20 +1529,20 @@ UNLOCK TABLES;
 CREATE TABLE `SHKStateEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
-  `TheUsername` varchar(100) NOT NULL,
+  `TheUsername` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `TheType` decimal(19,0) NOT NULL,
-  `ActivityId` varchar(100) DEFAULT NULL,
-  `ActivityName` varchar(254) DEFAULT NULL,
-  `ProcessId` varchar(100) NOT NULL,
-  `ProcessName` varchar(254) DEFAULT NULL,
-  `ProcessFactoryName` varchar(200) NOT NULL,
-  `ProcessFactoryVersion` varchar(20) NOT NULL,
-  `ActivityDefinitionId` varchar(90) DEFAULT NULL,
-  `ActivityDefinitionName` varchar(90) DEFAULT NULL,
+  `ActivityId` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessId` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessName` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ProcessFactoryName` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessFactoryVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `ActivityDefinitionId` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `ActivityDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
   `ActivityDefinitionType` int(11) DEFAULT NULL,
-  `ProcessDefinitionId` varchar(90) NOT NULL,
-  `ProcessDefinitionName` varchar(90) DEFAULT NULL,
-  `PackageId` varchar(90) NOT NULL,
+  `ProcessDefinitionId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `ProcessDefinitionName` varchar(90) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `PackageId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `OldProcessState` decimal(19,0) DEFAULT NULL,
   `NewProcessState` decimal(19,0) DEFAULT NULL,
   `OldActivityState` decimal(19,0) DEFAULT NULL,
@@ -1562,7 +1562,7 @@ CREATE TABLE `SHKStateEventAudits` (
   CONSTRAINT `SHKStateEventAudits_OldActivityState` FOREIGN KEY (`OldActivityState`) REFERENCES `SHKActivityStateEventAudits` (`oid`),
   CONSTRAINT `SHKStateEventAudits_OldProcessState` FOREIGN KEY (`OldProcessState`) REFERENCES `SHKProcessStateEventAudits` (`oid`),
   CONSTRAINT `SHKStateEventAudits_TheType` FOREIGN KEY (`TheType`) REFERENCES `SHKEventTypes` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1581,13 +1581,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentApp` (
-  `TOOL_AGENT_NAME` varchar(250) NOT NULL,
-  `APP_NAME` varchar(90) NOT NULL,
+  `TOOL_AGENT_NAME` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
+  `APP_NAME` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentApp` (`TOOL_AGENT_NAME`,`APP_NAME`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1614,7 +1614,7 @@ CREATE TABLE `SHKToolAgentAppDetail` (
   UNIQUE KEY `I1_SHKToolAgentAppDetail` (`APP_MODE`,`TOOLAGENT_APPOID`),
   KEY `SHKToolAgentAppDetail_TOOLAGENT_APPOID` (`TOOLAGENT_APPOID`),
   CONSTRAINT `SHKToolAgentAppDetail_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1642,7 +1642,7 @@ CREATE TABLE `SHKToolAgentAppDetailUser` (
   KEY `SHKToolAgentAppDetailUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppDetailUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentAppDetail` (`oid`),
   CONSTRAINT `SHKToolAgentAppDetailUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1670,7 +1670,7 @@ CREATE TABLE `SHKToolAgentAppUser` (
   KEY `SHKToolAgentAppUser_USEROID` (`USEROID`),
   CONSTRAINT `SHKToolAgentAppUser_TOOLAGENT_APPOID` FOREIGN KEY (`TOOLAGENT_APPOID`) REFERENCES `SHKToolAgentApp` (`oid`),
   CONSTRAINT `SHKToolAgentAppUser_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKToolAgentUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1689,13 +1689,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKToolAgentUser` (
-  `USERNAME` varchar(100) NOT NULL,
-  `PWD` varchar(100) DEFAULT NULL,
+  `USERNAME` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `PWD` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKToolAgentUser` (`USERNAME`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1723,7 +1723,7 @@ CREATE TABLE `SHKUserGroupTable` (
   KEY `SHKUserGroupTable_groupid` (`groupid`),
   CONSTRAINT `SHKUserGroupTable_groupid` FOREIGN KEY (`groupid`) REFERENCES `SHKGroupTable` (`oid`),
   CONSTRAINT `SHKUserGroupTable_userid` FOREIGN KEY (`userid`) REFERENCES `SHKUserTable` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1751,7 +1751,7 @@ CREATE TABLE `SHKUserPackLevelPart` (
   KEY `SHKUserPackLevelPart_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserPackLevelPart_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKPackLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserPackLevelPart_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1779,7 +1779,7 @@ CREATE TABLE `SHKUserProcLevelParticipant` (
   KEY `SHKUserProcLevelParticipant_USEROID` (`USEROID`),
   CONSTRAINT `SHKUserProcLevelParticipant_PARTICIPANTOID` FOREIGN KEY (`PARTICIPANTOID`) REFERENCES `SHKProcLevelParticipant` (`oid`),
   CONSTRAINT `SHKUserProcLevelParticipant_USEROID` FOREIGN KEY (`USEROID`) REFERENCES `SHKNormalUser` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1798,16 +1798,16 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKUserTable` (
-  `userid` varchar(100) NOT NULL,
-  `firstname` varchar(50) DEFAULT NULL,
-  `lastname` varchar(50) DEFAULT NULL,
-  `passwd` varchar(50) NOT NULL,
-  `email` varchar(254) DEFAULT NULL,
+  `userid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `firstname` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastname` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `passwd` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `email` varchar(254) COLLATE utf8_unicode_ci DEFAULT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKUserTable` (`userid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1826,12 +1826,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLApplicationPackage` (
-  `PACKAGE_ID` varchar(90) NOT NULL,
+  `PACKAGE_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLApplicationPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1850,7 +1850,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLApplicationProcess` (
-  `PROCESS_ID` varchar(90) NOT NULL,
+  `PROCESS_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1858,7 +1858,7 @@ CREATE TABLE `SHKXPDLApplicationProcess` (
   UNIQUE KEY `I1_SHKXPDLApplicationProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLApplicationProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLApplicationProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLApplicationPackage` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1887,7 +1887,7 @@ CREATE TABLE `SHKXPDLData` (
   UNIQUE KEY `I1_SHKXPDLData` (`CNT`),
   UNIQUE KEY `I2_SHKXPDLData` (`XPDL`),
   CONSTRAINT `SHKXPDLData_XPDL` FOREIGN KEY (`XPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1906,8 +1906,8 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLHistory` (
-  `XPDLId` varchar(90) NOT NULL,
-  `XPDLVersion` varchar(20) NOT NULL,
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `XPDLClassVersion` bigint(20) NOT NULL,
   `XPDLUploadTime` datetime NOT NULL,
   `XPDLHistoryUploadTime` datetime NOT NULL,
@@ -1915,7 +1915,7 @@ CREATE TABLE `SHKXPDLHistory` (
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLHistory` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1944,7 +1944,7 @@ CREATE TABLE `SHKXPDLHistoryData` (
   UNIQUE KEY `I1_SHKXPDLHistoryData` (`CNT`),
   KEY `SHKXPDLHistoryData_XPDLHistory` (`XPDLHistory`),
   CONSTRAINT `SHKXPDLHistoryData_XPDLHistory` FOREIGN KEY (`XPDLHistory`) REFERENCES `SHKXPDLHistory` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1963,12 +1963,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLParticipantPackage` (
-  `PACKAGE_ID` varchar(90) NOT NULL,
+  `PACKAGE_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLParticipantPackage` (`PACKAGE_ID`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1987,7 +1987,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLParticipantProcess` (
-  `PROCESS_ID` varchar(90) NOT NULL,
+  `PROCESS_ID` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
@@ -1995,7 +1995,7 @@ CREATE TABLE `SHKXPDLParticipantProcess` (
   UNIQUE KEY `I1_SHKXPDLParticipantProcess` (`PROCESS_ID`,`PACKAGEOID`),
   KEY `SHKXPDLParticipantProcess_PACKAGEOID` (`PACKAGEOID`),
   CONSTRAINT `SHKXPDLParticipantProcess_PACKAGEOID` FOREIGN KEY (`PACKAGEOID`) REFERENCES `SHKXPDLParticipantPackage` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2014,7 +2014,7 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLReferences` (
-  `ReferredXPDLId` varchar(90) NOT NULL,
+  `ReferredXPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
   `ReferringXPDL` decimal(19,0) NOT NULL,
   `ReferredXPDLNumber` int(11) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -2023,7 +2023,7 @@ CREATE TABLE `SHKXPDLReferences` (
   UNIQUE KEY `I1_SHKXPDLReferences` (`ReferredXPDLId`,`ReferringXPDL`),
   KEY `SHKXPDLReferences_ReferringXPDL` (`ReferringXPDL`),
   CONSTRAINT `SHKXPDLReferences_ReferringXPDL` FOREIGN KEY (`ReferringXPDL`) REFERENCES `SHKXPDLS` (`oid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2042,15 +2042,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHKXPDLS` (
-  `XPDLId` varchar(90) NOT NULL,
-  `XPDLVersion` varchar(20) NOT NULL,
+  `XPDLId` varchar(90) COLLATE utf8_unicode_ci NOT NULL,
+  `XPDLVersion` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `XPDLClassVersion` bigint(20) NOT NULL,
   `XPDLUploadTime` datetime NOT NULL,
   `oid` decimal(19,0) NOT NULL,
   `version` int(11) NOT NULL,
   PRIMARY KEY (`oid`),
   UNIQUE KEY `I1_SHKXPDLS` (`XPDLId`,`XPDLVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2069,18 +2069,18 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_app` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `published` bit(1) DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `license` text,
-  `description` longtext,
-  `meta` longtext,
+  `license` text COLLATE utf8_unicode_ci,
+  `description` longtext COLLATE utf8_unicode_ci,
+  `meta` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2099,19 +2099,19 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_datalist` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` text,
-  `json` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci,
+  `json` longtext COLLATE utf8_unicode_ci,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK5E9247A6462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK5E9247A6462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2130,15 +2130,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_env_variable` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `value` text,
-  `remarks` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `value` text COLLATE utf8_unicode_ci,
+  `remarks` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK740A62EC462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK740A62EC462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2157,11 +2157,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_fd` (
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2180,20 +2180,20 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_form` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `formId` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `tableName` varchar(255) DEFAULT NULL,
-  `json` longtext,
-  `description` longtext,
+  `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `json` longtext COLLATE utf8_unicode_ci,
+  `description` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FK45957822462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2212,17 +2212,17 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_form_data_audit_trail` (
-  `id` varchar(255) NOT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
-  `formId` varchar(255) DEFAULT NULL,
-  `tableName` varchar(255) DEFAULT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `action` varchar(255) DEFAULT NULL,
-  `data` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `tableName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `action` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `data` longtext COLLATE utf8_unicode_ci,
   `datetime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2241,16 +2241,16 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_message` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) NOT NULL,
-  `messageKey` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
-  `message` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`,`ouid`),
   KEY `FKEE346FE9462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FKEE346FE9462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2269,17 +2269,17 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package` (
-  `packageId` varchar(255) NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`packageId`,`packageVersion`),
   KEY `FK852EA428462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK852EA428462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2298,21 +2298,21 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_form` (
-  `processDefId` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `formId` varchar(255) DEFAULT NULL,
-  `formUrl` varchar(255) DEFAULT NULL,
-  `formIFrameStyle` varchar(255) DEFAULT NULL,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formUrl` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `formIFrameStyle` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `autoContinue` bit(1) DEFAULT NULL,
   `disableSaveAsDraft` bit(1) DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKA8D741D5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKA8D741D5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2331,17 +2331,17 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_activity_plugin` (
-  `processDefId` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `pluginName` varchar(255) DEFAULT NULL,
-  `pluginProperties` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginProperties` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2360,18 +2360,18 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_package_participant` (
-  `processDefId` varchar(255) NOT NULL,
-  `participantId` varchar(255) NOT NULL,
-  `packageId` varchar(255) NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `participantId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
-  `ouid` varchar(255) DEFAULT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `value` text,
-  `pluginProperties` text,
+  `ouid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` text COLLATE utf8_unicode_ci,
+  `pluginProperties` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2390,16 +2390,16 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_plugin_default` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `pluginName` varchar(255) DEFAULT NULL,
-  `pluginDescription` text,
-  `pluginProperties` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `pluginName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `pluginDescription` text COLLATE utf8_unicode_ci,
+  `pluginProperties` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2418,14 +2418,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_activity` (
-  `uuid` varchar(255) NOT NULL,
-  `activityDefId` varchar(255) DEFAULT NULL,
-  `activityName` varchar(255) DEFAULT NULL,
-  `processUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FK5E33D79C918F93D` (`processUid`),
   CONSTRAINT `FK5E33D79C918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2444,12 +2444,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_activity_instance` (
-  `instanceId` varchar(255) NOT NULL,
-  `performer` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
-  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
-  `assignmentUsers` text,
+  `instanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `performer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `assignmentUsers` text COLLATE utf8_unicode_ci,
   `due` datetime DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
@@ -2457,14 +2457,14 @@ CREATE TABLE `app_report_activity_instance` (
   `delay` bigint(20) DEFAULT NULL,
   `timeConsumingFromCreatedTime` bigint(20) DEFAULT NULL,
   `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
-  `activityUid` varchar(255) DEFAULT NULL,
-  `processInstanceId` varchar(255) DEFAULT NULL,
+  `activityUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processInstanceId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`instanceId`),
   KEY `FK9C6ABDD8B06E2043` (`activityUid`),
   KEY `FK9C6ABDD8D4610A90` (`processInstanceId`),
   CONSTRAINT `FK9C6ABDD8B06E2043` FOREIGN KEY (`activityUid`) REFERENCES `app_report_activity` (`uuid`),
   CONSTRAINT `FK9C6ABDD8D4610A90` FOREIGN KEY (`processInstanceId`) REFERENCES `app_report_process_instance` (`instanceId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2483,12 +2483,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_app` (
-  `uuid` varchar(255) NOT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
-  `appName` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2507,15 +2507,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_package` (
-  `uuid` varchar(255) NOT NULL,
-  `packageId` varchar(255) DEFAULT NULL,
-  `packageName` varchar(255) DEFAULT NULL,
-  `packageVersion` varchar(255) DEFAULT NULL,
-  `appUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FKBD580A19E475ABC` (`appUid`),
   CONSTRAINT `FKBD580A19E475ABC` FOREIGN KEY (`appUid`) REFERENCES `app_report_app` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2534,14 +2534,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_process` (
-  `uuid` varchar(255) NOT NULL,
-  `processDefId` varchar(255) DEFAULT NULL,
-  `processName` varchar(255) DEFAULT NULL,
-  `packageUid` varchar(255) DEFAULT NULL,
+  `uuid` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`uuid`),
   KEY `FKDAFFF442D40695DD` (`packageUid`),
   CONSTRAINT `FKDAFFF442D40695DD` FOREIGN KEY (`packageUid`) REFERENCES `app_report_package` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2560,19 +2560,19 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_report_process_instance` (
-  `instanceId` varchar(255) NOT NULL,
-  `requester` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
+  `instanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `requester` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
   `finishTime` datetime DEFAULT NULL,
   `delay` bigint(20) DEFAULT NULL,
   `timeConsumingFromStartedTime` bigint(20) DEFAULT NULL,
-  `processUid` varchar(255) DEFAULT NULL,
+  `processUid` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`instanceId`),
   KEY `FK351D7BF2918F93D` (`processUid`),
   CONSTRAINT `FK351D7BF2918F93D` FOREIGN KEY (`processUid`) REFERENCES `app_report_process` (`uuid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2591,15 +2591,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_resource` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `filesize` bigint(20) DEFAULT NULL,
-  `permissionClass` varchar(255) DEFAULT NULL,
-  `permissionProperties` longtext,
+  `permissionClass` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `permissionProperties` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   CONSTRAINT `FK_nnvkg0h6yy8o3f4yjhd20ury0` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2618,19 +2618,19 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `app_userview` (
-  `appId` varchar(255) NOT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `appVersion` bigint(20) NOT NULL,
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` text,
-  `json` longtext,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8_unicode_ci,
+  `json` longtext COLLATE utf8_unicode_ci,
   `dateCreated` datetime DEFAULT NULL,
   `dateModified` datetime DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FKE411D54E462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
   CONSTRAINT `FKE411D54E462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2649,12 +2649,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_department` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
-  `hod` varchar(255) DEFAULT NULL,
-  `parentId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `hod` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKEEE8AA4418CEBAE1` (`organizationId`),
   KEY `FKEEE8AA44EF6BB2B7` (`parentId`),
@@ -2662,7 +2662,7 @@ CREATE TABLE `dir_department` (
   CONSTRAINT `FKEEE8AA4418CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKEEE8AA4480DB1449` FOREIGN KEY (`hod`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FKEEE8AA44EF6BB2B7` FOREIGN KEY (`parentId`) REFERENCES `dir_department` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2681,15 +2681,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment` (
-  `id` varchar(255) NOT NULL,
-  `userId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `startDate` date DEFAULT NULL,
   `endDate` date DEFAULT NULL,
-  `employeeCode` varchar(255) DEFAULT NULL,
-  `role` varchar(255) DEFAULT NULL,
-  `gradeId` varchar(255) DEFAULT NULL,
-  `departmentId` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `employeeCode` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `role` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gradeId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `departmentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKC6620ADE716AE35F` (`departmentId`),
   KEY `FKC6620ADE14CE02E9` (`gradeId`),
@@ -2699,7 +2699,7 @@ CREATE TABLE `dir_employment` (
   CONSTRAINT `FKC6620ADE18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`),
   CONSTRAINT `FKC6620ADE716AE35F` FOREIGN KEY (`departmentId`) REFERENCES `dir_department` (`id`),
   CONSTRAINT `FKC6620ADECE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2718,15 +2718,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_employment_report_to` (
-  `employmentId` varchar(255) NOT NULL,
-  `reportToId` varchar(255) NOT NULL,
-  `id` varchar(255) DEFAULT NULL,
+  `employmentId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `reportToId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`employmentId`,`reportToId`),
   KEY `FK53622945F4068416` (`reportToId`),
   KEY `FK536229452787E613` (`employmentId`),
   CONSTRAINT `FK536229452787E613` FOREIGN KEY (`employmentId`) REFERENCES `dir_employment` (`id`),
   CONSTRAINT `FK53622945F4068416` FOREIGN KEY (`reportToId`) REFERENCES `dir_employment` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2745,14 +2745,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_grade` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKBC9A49A518CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A49A518CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2771,14 +2771,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_group` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `organizationId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `organizationId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FKBC9A804D18CEBAE1` (`organizationId`),
   CONSTRAINT `FKBC9A804D18CEBAE1` FOREIGN KEY (`organizationId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2797,14 +2797,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_organization` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `parentId` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `parentId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK55A15FA5961BD498` (`parentId`),
   CONSTRAINT `FK55A15FA5961BD498` FOREIGN KEY (`parentId`) REFERENCES `dir_organization` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2823,11 +2823,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_role` (
-  `id` varchar(255) NOT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2847,17 +2847,17 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `firstName` varchar(255) DEFAULT NULL,
-  `lastName` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `active` int(11) DEFAULT NULL,
-  `timeZone` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
+  `timeZone` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2877,8 +2877,8 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_extra` (
-  `username` varchar(255) NOT NULL,
-  `algorithm` varchar(255) DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `algorithm` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `loginAttempt` int(11) DEFAULT NULL,
   `failedloginAttempt` int(11) DEFAULT NULL,
   `lastLogedInDate` datetime DEFAULT NULL,
@@ -2887,7 +2887,7 @@ CREATE TABLE `dir_user_extra` (
   `requiredPasswordChange` bit(1) DEFAULT NULL,
   `noPasswordExpiration` bit(1) DEFAULT NULL,
   PRIMARY KEY (`username`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2906,14 +2906,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_group` (
-  `groupId` varchar(255) NOT NULL,
-  `userId` varchar(255) NOT NULL,
+  `groupId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`userId`,`groupId`),
   KEY `FK2F0367FD159B6639` (`groupId`),
   KEY `FK2F0367FDCE539211` (`userId`),
   CONSTRAINT `FK2F0367FD159B6639` FOREIGN KEY (`groupId`) REFERENCES `dir_group` (`id`),
   CONSTRAINT `FK2F0367FDCE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2932,11 +2932,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_meta` (
-  `username` varchar(255) NOT NULL,
-  `meta_key` varchar(255) NOT NULL,
-  `meta_value` longtext,
+  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `meta_key` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `meta_value` longtext COLLATE utf8_unicode_ci,
   PRIMARY KEY (`username`,`meta_key`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2955,13 +2955,13 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_password_history` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `salt` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `salt` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `password` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `updatedDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -2980,15 +2980,15 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_replacement` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `replacementUser` varchar(255) DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `processIds` varchar(255) DEFAULT NULL,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `replacementUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processIds` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3007,14 +3007,14 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dir_user_role` (
-  `roleId` varchar(255) NOT NULL,
-  `userId` varchar(255) NOT NULL,
+  `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`userId`,`roleId`),
   KEY `FK5C5FE738C8FE3CA7` (`roleId`),
   KEY `FK5C5FE738CE539211` (`userId`),
   CONSTRAINT `FK5C5FE738C8FE3CA7` FOREIGN KEY (`roleId`) REFERENCES `dir_role` (`id`),
   CONSTRAINT `FK5C5FE738CE539211` FOREIGN KEY (`userId`) REFERENCES `dir_user` (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3036,7 +3036,7 @@ UNLOCK TABLES;
 CREATE TABLE `objectid` (
   `nextoid` decimal(19,0) NOT NULL,
   PRIMARY KEY (`nextoid`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3056,16 +3056,16 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_audit_trail` (
-  `id` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
-  `clazz` varchar(255) DEFAULT NULL,
-  `method` varchar(255) DEFAULT NULL,
-  `message` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `clazz` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `method` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci,
   `timestamp` datetime DEFAULT NULL,
-  `appId` varchar(255) DEFAULT NULL,
-  `appVersion` varchar(255) DEFAULT NULL,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `appVersion` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3084,11 +3084,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_process_link` (
-  `processId` varchar(255) NOT NULL,
-  `parentProcessId` varchar(255) DEFAULT NULL,
-  `originProcessId` varchar(255) DEFAULT NULL,
+  `processId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `parentProcessId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `originProcessId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3107,9 +3107,9 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report` (
-  `activityInstanceId` varchar(255) NOT NULL,
-  `processInstanceId` varchar(255) DEFAULT NULL,
-  `priority` varchar(255) DEFAULT NULL,
+  `activityInstanceId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processInstanceId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `priority` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `createdTime` datetime DEFAULT NULL,
   `startedTime` datetime DEFAULT NULL,
   `dateLimit` bigint(20) DEFAULT NULL,
@@ -3118,15 +3118,15 @@ CREATE TABLE `wf_report` (
   `finishTime` datetime DEFAULT NULL,
   `timeConsumingFromDateCreated` bigint(20) DEFAULT NULL,
   `timeConsumingFromDateStarted` bigint(20) DEFAULT NULL,
-  `performer` varchar(255) DEFAULT NULL,
-  `nameOfAcceptedUser` varchar(255) DEFAULT NULL,
-  `status` varchar(255) DEFAULT NULL,
-  `state` varchar(255) DEFAULT NULL,
-  `packageId` varchar(255) DEFAULT NULL,
-  `processDefId` varchar(255) DEFAULT NULL,
-  `activityDefId` varchar(255) DEFAULT NULL,
-  `assignmentUsers` text,
-  `appId` varchar(255) DEFAULT NULL,
+  `performer` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `nameOfAcceptedUser` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `state` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `assignmentUsers` text COLLATE utf8_unicode_ci,
+  `appId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   `appVersion` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`activityInstanceId`),
   KEY `FKB943CCA47A4E8F48` (`packageId`),
@@ -3135,7 +3135,7 @@ CREATE TABLE `wf_report` (
   CONSTRAINT `FKB943CCA47A4E8F48` FOREIGN KEY (`packageId`) REFERENCES `wf_report_package` (`packageId`),
   CONSTRAINT `FKB943CCA4A39D6461` FOREIGN KEY (`processDefId`) REFERENCES `wf_report_process` (`processDefId`),
   CONSTRAINT `FKB943CCA4CB863F` FOREIGN KEY (`activityDefId`) REFERENCES `wf_report_activity` (`activityDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3154,12 +3154,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_activity` (
-  `activityDefId` varchar(255) NOT NULL,
-  `activityName` varchar(255) DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `priority` varchar(255) DEFAULT NULL,
+  `activityDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `activityName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `priority` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`activityDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3178,10 +3178,10 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_package` (
-  `packageId` varchar(255) NOT NULL,
-  `packageName` varchar(255) DEFAULT NULL,
+  `packageId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `packageName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`packageId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3200,11 +3200,11 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_report_process` (
-  `processDefId` varchar(255) NOT NULL,
-  `processName` varchar(255) DEFAULT NULL,
-  `version` varchar(255) DEFAULT NULL,
+  `processDefId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `processName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3223,12 +3223,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_resource_bundle_message` (
-  `id` varchar(255) NOT NULL,
-  `messageKey` varchar(255) DEFAULT NULL,
-  `locale` varchar(255) DEFAULT NULL,
-  `message` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `messageKey` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `locale` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `message` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3247,12 +3247,12 @@ UNLOCK TABLES;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `wf_setup` (
-  `id` varchar(255) NOT NULL,
-  `property` varchar(255) DEFAULT NULL,
-  `value` text,
+  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `property` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `value` text COLLATE utf8_unicode_ci,
   `ordering` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -3273,4 +3273,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-12 17:10:05
+-- Dump completed on 2018-01-16 16:52:11
