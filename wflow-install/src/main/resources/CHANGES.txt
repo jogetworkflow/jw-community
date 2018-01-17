@@ -2,7 +2,7 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
-CHANGES IN 6.0.0
+CHANGES IN 6.0.1
 ================
 e9582e8 Fixed: wflow-consoleweb - Setup - MySQL script does not set CHARSET. @6.0-SNAPSHOT
 c3f122d Fixed: wflow-install - jwdb-empty.sql does not set CHARSET. @6.0-SNAPSHOT
