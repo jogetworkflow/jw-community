@@ -43,13 +43,19 @@ public class UserReplacementDaoImpl extends AbstractSpringDao implements UserRep
     public List<UserReplacement> getUserTodayReplacedBy(String username, String appId, String processId) {
         String pId = appId + ":" +processId;
         Collection<Object> params = new ArrayList<Object>();
-        String condition = " where e.username = ? and ? between e.startDate and e.endDate and (e.processIds like ? or e.processIds like ? or e.processIds like ? or e.processIds = ?)";
+        String condition = " where e.username = ? and ? between e.startDate and e.endDate ";
+        condition += "and ((e.processIds like ? or e.processIds like ? or e.processIds like ? or e.processIds = ?) ";
+        condition += "or (e.processIds = '' and (e.appId like ? or e.appId like ? or e.appId like ? or e.appId = ?)))";
         params.add(username);
         params.add(new Date());
         params.add(pId + ";%");
         params.add("%;"+pId);
         params.add("%;"+pId+";%");
         params.add(pId);
+        params.add(appId + ";%");
+        params.add("%;"+appId);
+        params.add("%;"+appId+";%");
+        params.add(appId);
         
         return (List<UserReplacement>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, null, null);
     }
