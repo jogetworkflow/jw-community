@@ -75,7 +75,7 @@
                                 <a onclick="showLoading('${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}')" href="${pageContext.request.contextPath}/web/mobile/${appDefinition.id}/${userviewDefinition.id}/${key}/landing" rel="external">
                                     <img src="${pageContext.request.contextPath}/web/userview/screenshot/${appDefinition.id}/${userviewDefinition.id}" width="150" border="0" />
                                     <p><b><c:out value="${appDefinition.name}"/></b></p>
-                                    <h4><ui:stripTag html="${userviewDefinition.name}" processHashVariable="true"/></h4>
+                                    <h4><ui:stripTag html="${userviewDefinition.name}" processHashVariable="true" appDef="${appDefinition}"/></h4>
                                     <p>
                                         <ui:stripTag html="${userviewDefinition.description}"/>
                                         <br>
