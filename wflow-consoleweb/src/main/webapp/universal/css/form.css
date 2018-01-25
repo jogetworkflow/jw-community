@@ -509,7 +509,7 @@ body .form-container .pq-td-div label.label + span:not(.form-cell-value):not(.su
 
 body .form-column, body .subform-column {
     max-width: 99%;
-    margin: 0.5%;
+    margin: 0 0.5%;
     color: inherit;
     min-width: inherit;
 }
@@ -587,7 +587,7 @@ body #form-canvas .form-section, body #form-canvas .subform-section {
     margin-top: 0;
 }
 
-body #form-canvas .form-section + .form-section, body #form-canvas .subform-section + .subform-section {
+body #form-canvas .form-section + .form-section:not(.no_label), body #form-canvas .subform-section + .subform-section:not(.no_label) {
     margin-top: 15px ;
 }
 
