@@ -1,10 +1,17 @@
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
+<c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
+<c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
+
 <commons:popupHeader /> 
+    <c:if test="${isQuickEditEnabled && isAdmin}">    
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  
+    </c:if>    
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalistBuilderView.css?build=<fmt:message key="build.number"/>" />
         <script src="${pageContext.request.contextPath}/js/json2.js"></script>
         
