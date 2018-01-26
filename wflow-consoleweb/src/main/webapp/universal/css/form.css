@@ -304,6 +304,12 @@ body .form-container .subform-fileupload{
     margin-bottom: 15px;
 }
 
+body .form-container .customHtml.no_label .form-cell-value,
+body .form-container .customHtml.no_label .subform-cell-value{
+    min-height: 0px;
+    margin-bottom: 0px;
+}
+
 body .form-container.readonly .form-cell-value,
 body .form-container .readonly .subform-cell-value,
 body .form-container.readonly .form-fileupload,
