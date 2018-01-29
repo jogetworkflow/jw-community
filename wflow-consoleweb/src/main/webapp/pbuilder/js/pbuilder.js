@@ -3944,7 +3944,7 @@ ProcessBuilder.Designer = {
             xml += '<xpdl:ExtendedAttributes>';
 
             // add swimlanes
-            if (duplicateProcessId !== undefined) {
+            if (duplicateProcessId !== undefined && duplicateProcessId === process.id) {
                 var swimlaneIds = model.processes[duplicateProcessId].swimlanes.split(";");
                 process.swimlanes = "";
                 for (var i in swimlaneIds) {
