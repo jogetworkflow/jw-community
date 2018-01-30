@@ -2,6 +2,16 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.2
+================
+c2bddd7 Fixed: wflow-consoleweb - Process Builder - Duplicate process causing other process participants not display correctly. #5344 @6.0-SNAPSHOT
+7dd0a4f Fixed: wflow-consoleweb - Embed Form/Datalist - Quick editing style is showing for normal user. #5336 @6.0-SNAPSHOT
+a4085a1 Fixed: wflow-consoleweb - Universal Theme - Custom HTML - Default should not have a height and margin. #5327 @6.0-SNAPSHOT
+d3da483 Fixed: wflow-consoleweb - Universal Theme - Gap too large between the 2 form sections which purposely removed the title to show it as 1 section. @6.0-SNAPSHOT
+c754ab7 Fixed: wflow-consoleweb - Mobile - Hash Variable in userview name cannot parse correctly. #5326 @6.0-SNAPSHOT
+bedc91a Fixed: wflow-consoleweb - Date Picker - Popup dialog covered by Spreadsheet element. #5325 @6.0-SNAPSHOT
+3f63c02 Fixed: wflow-core - User Notification Tool - Delegated user cannot receive the email when task delegation set to all processes in selected apps. #5318 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.1
 ================
 e9582e8 Fixed: wflow-consoleweb - Setup - MySQL script does not set CHARSET. @6.0-SNAPSHOT
