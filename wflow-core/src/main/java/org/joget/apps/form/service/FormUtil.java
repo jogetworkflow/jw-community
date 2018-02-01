@@ -2031,8 +2031,17 @@ public class FormUtil implements ApplicationContextAware {
                     ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);
                     delete = true;
                 } else if (loadBinder instanceof FormDataDeletableBinder) {
+                    String formId = ((FormDataDeletableBinder)loadBinder).getFormId();
+                    String tableName = ((FormDataDeletableBinder)loadBinder).getTableName();
                     FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-                    formDataDao.delete(((FormDataDeletableBinder)loadBinder).getFormId(), ((FormDataDeletableBinder)loadBinder).getTableName(), rows);
+                    formDataDao.delete(formId, tableName, rows);
+                    
+                    if (deleteFiles) {
+                        for (FormRow r : rows) {
+                            FileUtil.deleteFiles(tableName, r.getId());
+                        }
+                    }
+                    
                     delete = true;
                 }
 
