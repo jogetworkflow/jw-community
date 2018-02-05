@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1488,6 +1489,13 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 Object[] arr = (o instanceof String) ? new Object[] { o } : (Object[]) o;
                 Map<String, Object> r = new HashMap<String, Object>();
                 for (int j = 0; j < alias.length; j++) {
+                    Object tempValue = arr[j];
+                    if (tempValue == null) {
+                        tempValue = "";
+                    } else if (!(tempValue instanceof Date)) {
+                        tempValue = tempValue.toString();
+                    }
+                    
                     if (alias[j].contains(".")) {
                         String prefix = alias[j].substring(0, alias[j].indexOf("."));
                         String name = alias[j].substring(alias[j].indexOf(".") + 1);
@@ -1496,10 +1504,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                         if (sub == null) {
                             sub = new HashMap<String, Object>();
                         }
-                        sub.put(name, arr[j].toString());
+                        sub.put(name, tempValue);
                         r.put(prefix, sub);
                     }
-                    r.put(alias[j], (arr[j] != null)?arr[j].toString():"");
+                    r.put(alias[j], tempValue);
                 }
                 rowSet.add(r);
             }
