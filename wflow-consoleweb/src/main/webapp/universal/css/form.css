@@ -964,3 +964,6 @@ body .grid-action-header, body td.grid-action-cell {
     width: 135px;
     text-align: center;
 }
+.multiPagedForm {
+    margin-bottom: 15px;
+}
