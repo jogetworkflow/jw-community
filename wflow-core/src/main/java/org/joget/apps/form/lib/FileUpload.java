@@ -10,8 +10,8 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,8 +75,8 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         }
         
         
-        Map<String, String> tempFilePaths = new HashMap<String, String>();
-        Map<String, String> filePaths = new HashMap<String, String>();
+        Map<String, String> tempFilePaths = new LinkedHashMap<String, String>();
+        Map<String, String> filePaths = new LinkedHashMap<String, String>();
         
         String primaryKeyValue = getPrimaryKeyValue(formData);
         String formDefId = "";
