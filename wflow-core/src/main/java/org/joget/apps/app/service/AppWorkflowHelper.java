@@ -234,7 +234,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             String[] users = participant.getValue().replaceAll(";", ",").split(",");
             for (String userId : users) {
                 User user = directoryManager.getUserById(userId);
-                if (user != null && user.getActive() == User.ACTIVE) {
+                if (user != null) {
                     resultList.add(user.getUsername());
                 }
             }
@@ -256,7 +256,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             for (String groupId : groups) {
                 Collection<User> users = directoryManager.getUserByGroupId(groupId);
                 for (User user : users) {
-                    if (user != null && user.getActive() == User.ACTIVE) {
+                    if (user != null) {
                         resultList.add(user.getUsername());
                     }
                 }
@@ -284,7 +284,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         if (requesterUsername != null && requesterUsername.trim().length() > 0) {
             User user = directoryManager.getUserByUsername(requesterUsername);
-            if (user != null && user.getActive() == User.ACTIVE) {
+            if (user != null) {
                 resultList.add(user.getUsername());
             }
         }
@@ -309,7 +309,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         Collection<User> users = directoryManager.getUserHod(requesterUsername);
         for (User user : users) {
-            if (user != null && user.getActive() == User.ACTIVE) {
+            if (user != null) {
                 resultList.add(user.getUsername());
             }
         }
@@ -359,7 +359,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
         Collection<User> users = directoryManager.getUserSubordinate(requesterUsername);
         for (User user : users) {
-            if (user != null && user.getActive() == User.ACTIVE) {
+            if (user != null) {
                 resultList.add(user.getUsername());
             }
         }
@@ -384,7 +384,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         Collection<User> users = directoryManager.getUserDepartmentUser(requesterUsername);
         for (User user : users) {
-            if (user != null && user.getActive() == User.ACTIVE) {
+            if (user != null) {
                 resultList.add(user.getUsername());
             }
         }
@@ -404,7 +404,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         String departmentId = participant.getValue();
         Collection<User> users = directoryManager.getUserByDepartmentId(departmentId);
         for (User user : users) {
-            if (user != null && user.getActive() == User.ACTIVE) {
+            if (user != null) {
                 resultList.add(user.getUsername());
             }
         }
@@ -422,7 +422,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         DirectoryManager directoryManager = (DirectoryManager) appContext.getBean("directoryManager");
         String departmentId = participant.getValue();
         User user = directoryManager.getDepartmentHod(departmentId);
-        if (user != null && user.getActive() == User.ACTIVE) {
+        if (user != null) {
             resultList.add(user.getUsername());
         }
         return resultList;
@@ -480,7 +480,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     }
                 }
                 for (User user : users) {
-                    if (user != null && user.getActive() == User.ACTIVE) {
+                    if (user != null) {
                         resultList.add(user.getUsername());
                     }
                 }
