@@ -412,7 +412,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                       + "    </a>\n";
 
                 html += "<ul class=\"dropdown-menu\">\n";
-                if (!"true".equals(getPropertyString("profile"))) {
+                if (!"true".equals(getPropertyString("profile")) && !user.getReadonly()) {
                     html += "    <li><a href=\"" + data.get("base_link") + PROFILE +"\"><i class=\"fa fa-user\"></i> " + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>\n";
                 }
                 
@@ -493,7 +493,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                   + "    </a>\n";
             
             html += "<ul>\n";
-            if (!"true".equals(getPropertyString("profile"))) {
+            if (!"true".equals(getPropertyString("profile")) && !user.getReadonly()) {
                 String activeCss = "";
                 if (PROFILE.equals(userview.getParamString("menuId"))) {
                     activeCss = " class=\"active\"";

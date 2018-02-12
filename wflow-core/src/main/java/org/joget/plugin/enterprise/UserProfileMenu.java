@@ -134,6 +134,9 @@ public class UserProfileMenu extends UserviewMenu {
         if (user == null) {
             user = userDao.getUser(workflowUserManager.getCurrentUsername());
         }
+        if (user != null && user.getReadonly()) {
+            return;
+        }
         setProperty("user", user);
         setProperty("timezones", TimeZoneUtil.getList());
         
