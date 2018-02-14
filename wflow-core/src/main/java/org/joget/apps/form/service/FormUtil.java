@@ -2008,7 +2008,7 @@ public class FormUtil implements ApplicationContextAware {
         }
     }
     
-    private static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
+    public static void recursiveExecuteFormDeleteBinders(Element element, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
         if (FormUtil.isReadonly(element, formData)) {
             return;
         }
@@ -2025,7 +2025,7 @@ public class FormUtil implements ApplicationContextAware {
             }
 
 
-            if ((isGrid && deleteGrid) || (!isGrid && deleteSubform)) {
+            if (element.getParent() == null || (isGrid && deleteGrid) || (!isGrid && deleteSubform)) {
                 boolean delete = false;
                 if (storeBinder instanceof FormDeleteBinder) {
                     ((FormDeleteBinder) storeBinder).delete(element, rows, formData, deleteGrid, deleteSubform, abortProcess, deleteFiles);

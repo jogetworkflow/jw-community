@@ -4,20 +4,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListActionResult;
-import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.model.Form;
-import org.joget.apps.form.service.FileUtil;
+import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
-import org.springframework.orm.hibernate4.HibernateObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 public class FormRowDeleteDataListAction extends DataListActionDefault {
@@ -84,41 +80,20 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
             
         if (rowKeys != null && rowKeys.length > 0) {
             String formDefId = getPropertyString("formDefId");
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            Form form = getForm(appDef, formDefId);
             
-            if ("true".equalsIgnoreCase(getPropertyString("deleteSubformData")) || "true".equalsIgnoreCase(getPropertyString("deleteGridData"))) {
-                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                Form form = getForm(appDef, formDefId);
+            for (String id : rowKeys) {
+                FormData formData = new FormData();
+                formData.setPrimaryKeyValue(id);
+                formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, FormUtil.FORM_RESULT_LOAD_ALL_DATA); //for Multipage form
                 
-                if (form != null) {
-                    try {
-                        FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-                        for (String id : rowKeys) {
-                            deleteData(formDataDao, form, id);
-                        }
-                    } catch (Exception e) {
-                        result.setMessage(ResourceBundleUtil.getMessage("datalist.formrowdeletedatalistaction.error.delete"));
-                    }
-                } else {
-                    result.setMessage(ResourceBundleUtil.getMessage("datalist.formrowdeletedatalistaction.noform"));
-                }
-            } else {
-                String tableName = getSelectedFormTableName(formDefId);
-                if (tableName != null) {
-                    FormDataDao formDataDao = (FormDataDao) FormUtil.getApplicationContext().getBean("formDataDao");
-                    formDataDao.delete(formDefId, tableName, rowKeys);
-                    
-                    if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")) || "true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
-                        for (String id : rowKeys) {
-                            if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
-                                FormUtil.abortRunningProcessForRecord(id);
-                            }
-                            
-                            if ("true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
-                                FileUtil.deleteFiles(tableName, id);
-                            }
-                        }
-                    }
-                }
+                formData = FormUtil.executeLoadBinders(form, formData);
+                FormUtil.recursiveExecuteFormDeleteBinders(form, formData, 
+                        "true".equalsIgnoreCase(getPropertyString("deleteGridData")),
+                        "true".equalsIgnoreCase(getPropertyString("deleteSubformData")),
+                        "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")),
+                        "true".equalsIgnoreCase(getPropertyString("deleteFiles")));
             }
         }
 
@@ -138,16 +113,6 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
         String json = AppUtil.readPluginResource(getClass().getName(), "/properties/datalist/formRowDeleteDataListAction.json", arguments, true, "message/datalist/formRowDeleteDataListAction");
         return json;
     }
-
-    protected String getSelectedFormTableName(String formDefId) {
-        String tableName = null;
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        if (formDefId != null) {
-            tableName = appService.getFormTableName(appDef, formDefId);
-        }
-        return tableName;
-    }
     
     protected Form getForm(AppDefinition appDef, String formDefId) {
         FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
@@ -164,25 +129,6 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
         
         return form;
     } 
-    
-    protected void deleteData(FormDataDao formDataDao, Form form, String primaryKey) {
-        try {
-            if ("true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses"))) {
-                FormUtil.abortRunningProcessForRecord(primaryKey);
-            }
-            formDataDao.delete(form.getPropertyString(FormUtil.PROPERTY_ID), form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME), new String[]{primaryKey});
-            
-            if ("true".equalsIgnoreCase(getPropertyString("deleteFiles"))) {
-                FileUtil.deleteFiles(form, primaryKey);
-            }
-        } catch (HibernateObjectRetrievalFailureException e) {
-            //ignore
-        }
-        
-        if ("true".equalsIgnoreCase(getPropertyString("deleteGridData")) || "true".equalsIgnoreCase(getPropertyString("deleteSubformData"))) {
-            FormUtil.recursiveDeleteChildFormData(form, primaryKey, "true".equalsIgnoreCase(getPropertyString("deleteGridData")), "true".equalsIgnoreCase(getPropertyString("deleteSubformData")), "true".equalsIgnoreCase(getPropertyString("abortRelatedRunningProcesses")), "true".equalsIgnoreCase(getPropertyString("deleteFiles")));
-        }
-    }
 
     public String getClassName() {
         return this.getClass().getName();
