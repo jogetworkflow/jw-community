@@ -44,40 +44,39 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         Collection<String> existIds = new ArrayList<String>();
         
         if (ids.size() > 0) {
-            String conditions = "where (";
+            String conditions = "";
+            Collection<WorkflowProcessLink> links = null;
+            Collection<String> values = null;
             
             int i = 0;
             for (String id : ids) {
                 if (i % 1000 == 0) {
-                    if (i > 0) {
-                        conditions += " OR ";
-                    }
-                    conditions += "e.processId in (";
+                    values = new ArrayList<String>();
+                    conditions = "where e.processId in (";
                 }
                 
                 conditions += "?,";
+                values.add(id);
                 
                 if (i % 1000 == 999 || i == ids.size() -1) {
                     conditions = conditions.substring(0, conditions.length() - 1) + ")";
+                    links = super.find(ENTITY_NAME, conditions, values.toArray(new String[0]), null, null, null, null);
+                    
+                    for (WorkflowProcessLink link : links) {
+                        String orgId = link.getOriginProcessId();
+                        String pid = link.getProcessId();
+
+                        Collection<String> pIds = originalIds.get(orgId);
+                        if (pIds == null) {
+                            pIds = new ArrayList<String>();
+                        }
+                        pIds.add(pid);
+                        existIds.add(pid);
+
+                        originalIds.put(orgId, pIds);
+                    }
                 }
                 i++;
-            }
-            conditions += ")";
-            
-            Collection<WorkflowProcessLink> links = super.find(ENTITY_NAME, conditions, ids.toArray(new String[0]), null, null, null, null);
-            
-            for (WorkflowProcessLink link : links) {
-                String orgId = link.getOriginProcessId();
-                String id = link.getProcessId();
-                
-                Collection<String> pIds = originalIds.get(orgId);
-                if (pIds == null) {
-                    pIds = new ArrayList<String>();
-                }
-                pIds.add(id);
-                existIds.add(id);
-                
-                originalIds.put(orgId, pIds);
             }
             
             // for those does not has link
