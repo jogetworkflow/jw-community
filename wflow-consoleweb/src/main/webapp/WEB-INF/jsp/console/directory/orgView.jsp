@@ -42,7 +42,7 @@
         </fieldset>
         <div class="view">
             <div class="main-body-content-subheader"><span><fmt:message key="console.directory.org.view.label.departmentList"/><span></div>
-            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/dept/list?orgId=${organization.id}&${pageContext.request.queryString}"
+            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/dept/list?orgId=${orgId}&${pageContext.request.queryString}"
                        var="JsonDeptDataTable"
                        divToUpdate="departmentList"
                        jsonData="data"
@@ -74,7 +74,7 @@
         </div>
         <div class="view">
             <div class="main-body-content-subheader"><span><fmt:message key="console.directory.org.view.label.gradeList"/><span></div>
-            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/grade/list?orgId=${organization.id}&${pageContext.request.queryString}"
+            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/grade/list?orgId=${orgId}&${pageContext.request.queryString}"
                        var="JsonGradeDataTable"
                        divToUpdate="gradeList"
                        jsonData="data"
@@ -126,7 +126,7 @@
                 </select>
                 </form>
             </div>
-            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/employment/list?orgId=${organization.id}&${pageContext.request.queryString}"
+            <ui:jsontable url="${pageContext.request.contextPath}/web/json/directory/admin/employment/list?orgId=${orgId}&${pageContext.request.queryString}"
                        var="JsonUserDataTable"
                        divToUpdate="userList"
                        jsonData="data"

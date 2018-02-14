@@ -251,6 +251,11 @@ public class ConsoleWebController {
         model.addAttribute("departments", departments);
         model.addAttribute("grades", grades);
         model.addAttribute("isCustomDirectoryManager", DirectoryUtil.isCustomDirectoryManager());
+        
+        try{
+            model.addAttribute("orgId", URLEncoder.encode(id, "UTF-8"));
+        } catch (Exception e) {
+        }
         return "console/directory/orgView";
     }
 
