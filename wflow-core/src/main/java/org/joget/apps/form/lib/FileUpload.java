@@ -363,6 +363,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                         if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
                             String path = FileManager.storeFile(file);
                             obj.put("path", path);
+                            obj.put("filename", file.getOriginalFilename());
                         }
 
                         Collection<String> errorList = FileStore.getFileErrorList();

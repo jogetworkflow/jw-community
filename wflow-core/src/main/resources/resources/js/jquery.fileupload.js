@@ -50,6 +50,13 @@
                             }
                         });
                     }
+                    if (o.removeFile === "true") {
+                        $(target).find("li").each(function() {
+                            if (!$(this).is($(file.previewElement)) && $(this).find("input[name$='_path']").val() === resp.filename) {
+                                $(this).remove();
+                            }
+                        });
+                    }
                     $(file.previewElement).find(".progress").remove();
                     $(file.previewElement).find(".remove").show();
                     $(file.previewElement).find("input").val(resp.path);

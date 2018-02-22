@@ -69,7 +69,8 @@
                     maxSizeMsg : "${element.properties.maxSizeMsg!}",
                     fileType : "${element.properties.fileType!}",
                     fileTypeMsg : "${element.properties.fileTypeMsg!}",
-                    padding : "${element.properties.padding!}"
+                    padding : "${element.properties.padding!}",
+                    removeFile : "${element.properties.removeFile!}"
                 });
             });
         </script>
