@@ -105,7 +105,10 @@ var Mobile = {
         $("span.rowCount").each(function(index, el) {
             $(el).attr("class", "ui-li-count");
             var count = $(el).text();
-            var newContent = count.substr(1, count.length - 2);
+            var newContent = count;
+            if (newContent.indexOf("(") !== -1) {
+                newContent = newContent.substr(1, newContent.length - 2);
+            }
             $(el).text(newContent);
         });
         $("a.menu-link").each(function(index, el) {
