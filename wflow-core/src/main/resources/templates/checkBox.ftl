@@ -11,6 +11,9 @@
             </#if>
         <#else>
             <label tabindex="0" >
+                <#if element.properties.readonly! == 'true' && values?? && values?seq_contains(option.value!)>
+                    <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!?html}" />
+                </#if>
                 <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}" name="${elementParamName!}"</#if> type="checkbox" value="${option.value!?html}" <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
                 <i></i>
                 ${option.label!?html}
