@@ -57,7 +57,7 @@
                 <#list rows as row>
                     <tr class="grid-row">
                     <#list headers?keys as header>
-                        <td><span id="${elementParamName!}_${header?html}" name="${elementParamName!}_${header?html}" class="grid-cell">${row[header]?html}</span> <input name="${elementParamName!}_${header?html}_${row_index}" class="grid-input" type="hidden" value="${row[header]!?html}" /></td>
+                        <td><span id="${elementParamName!}_${header?html}" name="${elementParamName!}_${header?html}" class="grid-cell">${row[header]!?html}</span> <input name="${elementParamName!}_${header?html}_${row_index}" class="grid-input" type="hidden" value="${row[header]!?html}" /></td>
                     </#list>
                     </tr>
                 </#list>
