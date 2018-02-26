@@ -278,6 +278,32 @@ UserviewBuilder = {
                 delete this.data.setting.properties['loginPageTop'];
                 delete this.data.setting.properties['loginPageBottom'];
             }
+            if (this.data.setting.properties['mobileViewDisabled'] !== undefined) {
+                this.data.setting.properties['theme']['properties']['mobileViewDisabled'] = this.data.setting.properties['mobileViewDisabled'];
+                this.data.setting.properties['theme']['properties']['mobileCacheEnabled'] = this.data.setting.properties['mobileCacheEnabled'];
+                this.data.setting.properties['theme']['properties']['mobileLoginRequired'] = this.data.setting.properties['mobileLoginRequired'];
+                this.data.setting.properties['theme']['properties']['mobileViewBackgroundUrl'] = this.data.setting.properties['mobileViewBackgroundUrl'];
+                this.data.setting.properties['theme']['properties']['mobileViewBackgroundColor'] = this.data.setting.properties['mobileViewBackgroundColor'];
+                this.data.setting.properties['theme']['properties']['mobileViewBackgroundStyle'] = this.data.setting.properties['mobileViewBackgroundStyle'];
+                this.data.setting.properties['theme']['properties']['mobileViewTranslucent'] = this.data.setting.properties['mobileViewTranslucent'];
+                this.data.setting.properties['theme']['properties']['mobileViewLogoUrl'] = this.data.setting.properties['mobileViewLogoUrl'];
+                this.data.setting.properties['theme']['properties']['mobileViewLogoWidth'] = this.data.setting.properties['mobileViewLogoWidth'];
+                this.data.setting.properties['theme']['properties']['mobileViewLogoHeight'] = this.data.setting.properties['mobileViewLogoHeight'];
+                this.data.setting.properties['theme']['properties']['mobileViewLogoAlign'] = this.data.setting.properties['mobileViewLogoAlign'];
+                this.data.setting.properties['theme']['properties']['mobileViewCustomCss'] = this.data.setting.properties['mobileViewCustomCss'];
+                delete this.data.setting.properties['mobileViewDisabled'];
+                delete this.data.setting.properties['mobileCacheEnabled'];
+                delete this.data.setting.properties['mobileLoginRequired'];
+                delete this.data.setting.properties['mobileViewBackgroundUrl'];
+                delete this.data.setting.properties['mobileViewBackgroundColor'];
+                delete this.data.setting.properties['mobileViewBackgroundStyle'];
+                delete this.data.setting.properties['mobileViewTranslucent'];
+                delete this.data.setting.properties['mobileViewLogoUrl'];
+                delete this.data.setting.properties['mobileViewLogoWidth'];
+                delete this.data.setting.properties['mobileViewLogoHeight'];
+                delete this.data.setting.properties['mobileViewLogoAlign'];
+                delete this.data.setting.properties['mobileViewCustomCss'];
+            }
             
             UserviewBuilder.adjustJson();
         }

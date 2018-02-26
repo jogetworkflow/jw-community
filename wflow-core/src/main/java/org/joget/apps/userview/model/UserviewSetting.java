@@ -36,4 +36,20 @@ public class UserviewSetting extends Element {
         String settingOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewSetting.json", null, true, "message/userview/userviewSetting");
         return settingOptions;
     }
+
+    @Override
+    public Object getProperty(String property) {
+        if (property.startsWith("mobile") && getTheme().getProperties().containsKey(property)) {
+            return getTheme().getProperty(property);
+        }
+        return super.getProperty(property);
+    }
+
+    @Override
+    public String getPropertyString(String property) {
+        if (property.startsWith("mobile") && getTheme().getProperties().containsKey(property)) {
+            return getTheme().getPropertyString(property);
+        }
+        return super.getPropertyString(property);
+    }
 }
