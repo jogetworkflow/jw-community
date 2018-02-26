@@ -46,6 +46,7 @@ import org.joget.apps.form.model.FormReferenceDataRetriever;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
+import org.joget.apps.form.model.GridInnerDataStoreBinderWrapper;
 import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.model.Validator;
@@ -2020,7 +2021,9 @@ public class FormUtil implements ApplicationContextAware {
         if (rows != null && !rows.isEmpty()) {
             boolean isGrid = false;
             if (((loadBinder != null && loadBinder instanceof FormLoadMultiRowElementBinder) 
-                    || (storeBinder != null && storeBinder instanceof FormLoadMultiRowElementBinder))) {
+                    || (storeBinder != null && storeBinder instanceof FormLoadMultiRowElementBinder))
+                    || (storeBinder != null && storeBinder instanceof GridInnerDataStoreBinderWrapper)
+                    || rows.isMultiRow()) {
                 isGrid = true;
             }
 
