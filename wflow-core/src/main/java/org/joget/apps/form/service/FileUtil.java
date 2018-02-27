@@ -200,9 +200,9 @@ public class FileUtil implements ApplicationContextAware {
                     for (String path : paths) {
                         if (!path.isEmpty()) {
                             try {
-                                File file = FileUtil.getFile(path, tableName, primaryKeyValue);
+                                File file = FileUtil.getFile(path, tableName, id);
                                 if (file != null) {
-                                    File thumb = FileUtil.getFile(path + FileManager.THUMBNAIL_EXT, tableName, primaryKeyValue);
+                                    File thumb = FileUtil.getFile(path + FileManager.THUMBNAIL_EXT, tableName, id);
                                     if (thumb != null) {
                                         thumb.delete();
                                     }

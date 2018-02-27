@@ -309,6 +309,10 @@ public class FormBuilderWebController {
                     if (tempFilePathMap != null && !tempFilePathMap.isEmpty()) {
                         jsonResult.put(FormUtil.PROPERTY_TEMP_FILE_PATH, tempFilePathMap);
                     }
+                    Map<String, String[]> deleteFilePathMap = row.getDeleteFilePathMap();
+                    if (deleteFilePathMap != null && !deleteFilePathMap.isEmpty()) {
+                        jsonResult.put(FormUtil.PROPERTY_DELETE_FILE_PATH, deleteFilePathMap);
+                    }
                 }
                 
                 Map<String, String[]> requestParams = formData.getRequestParams();
