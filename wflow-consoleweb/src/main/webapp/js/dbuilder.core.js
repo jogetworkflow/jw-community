@@ -310,6 +310,14 @@ DatalistBuilder = {
             }
         });
         
+        var oderBy = DatalistBuilder.datalistProperties['orderBy'];
+        if (oderBy !== undefined && oderBy !== "") {
+            var c = DatalistBuilder.availableColumns[filter.name];
+            if (c === undefined) {
+                DatalistBuilder.datalistProperties['orderBy'] = "";
+            }
+        }
+        
         //change to designer's tab
         $("#builder-steps-designer").trigger("click");
     },
