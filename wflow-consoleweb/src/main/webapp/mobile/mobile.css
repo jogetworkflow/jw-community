@@ -204,6 +204,10 @@ iframe.boxy-content {
 .subform-cell  .tablesaw-stack tbody tr {
     border-bottom: 0;
 }
+.form-cell .close-icon, .subform-cell .close-icon{
+    position: relative;
+    top: -11px;
+}
 @media (max-width: 39.9375em) {
     .form-cell table.tablesaw td, .form-cell table.tablesaw th, .subform-cell table.tablesaw td, .subform-cell table.tablesaw th {
         border:0;
