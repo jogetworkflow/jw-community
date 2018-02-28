@@ -2,6 +2,32 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.3
+================
+503f930 Fixed: wflow-consoleweb - Mobile - Date Picker icon position is wrong. @6.0-SNAPSHOT
+052de4b Fixed: wflow-consoleweb - Datalist Builder - Change binder does not remove order by property which caused unknown column exception. @6.0-SNAPSHOT
+77a2914 Fixed: wflow-consoleweb - Console Web Controller - Anonymous user is not handle correctly. @6.0-SNAPSHOT
+4fc2cf9 Modified: wflow-consoleweb - Setup - Removed lock table commands in the SQL schema to support MySQL for Cloud Foundry @6.0-SNAPSHOT
+c7cd9b9 Fixed: wflow-core - File Upload - Not able to delete actual file when use in a form grid. @6.0-SNAPSHOT
+0e618ca Fixed: wflow-core - Grid - Template error when cell value is null. #5418 @6.0-SNAPSHOT
+dd753e8 Fixed: wflow-core - FormUtil - recursiveExecuteFormDeleteBinders cannot identify grid data correctly. @6.0-SNAPSHOT
+7371d06 Fixed: wflow-core/wflow-consoleweb - Userview Theme - Mobile option is not backward compatible. @6.0-SNAPSHOT
+db4ba8f Fixed: wflow-core - File Upload - "Delete actual file during overwrite or remove?" option does not remove the overridden value when multiple upload is enable. @6.0-SNAPSHOT
+f51a643 Fixed: wflow-consoleweb - Universal Theme - Subform with frame does not have space at the bottom. @6.0-SNAPSHOT
+856bee1 Fixed: wflow-consoleweb - Mobile - Menu count is display incorrectly. @6.0-SNAPSHOT
+54edea0 Fixed: wflow-core - Checkbox - Not able to get readyonly value due to regression bug from 652f8f. @6.0-SNAPSHOT
+27926e7 Fixed: wflow-wfengine - WorkflowProcessLinkDao - MSSQL throws exception when record more than 2100. #5408 @6.0-SNAPSHOT
+083ff6a Fixed: wflow-consoleweb - Setup Organization - Not able to retrieve department, grade & employment list when organization id contains invalid URL character. @6.0-SNAPSHOT
+c36077d Fixed: wflow-core - Delete Datalist Action - Not able to delete for form using binder which implemented FormDeleteBinder @6.0-SNAPSHOT
+040049e Fixed: wflow-core - AppWorkflowHelper - Assignment assigned to inactive user will go to the performer in previous activity. #5397 @6.0-SNAPSHOT
+0ea2094 Fixed: wflow-core - Universal Theme - Profile link is shown for readonly user. #5396 @6.0-SNAPSHOT Fixed: wflow-core - User Profile Menu - Readonly user is allowed to edit profile. #5396 @6.0-SNAPSHOT
+d76bba8 Fixed: wflow-core - File Upload - The sequence of files are changing every time the form is view. #5261 @6.0-SNAPSHOT
+8d7da9a Fixed: wflow-consoleweb - Universal Theme - Multipage form element does not have bottom margin @6.0-SNAPSHOT
+5cac7aa Fixed: wflow-core - Password Field - Default value is not masked. #5373 @6.0-SNAPSHOT
+daee4d7 Fixed: wflow-core - FormDataDao - Find custom query does not return created/modified date in data object. @6.0-SNAPSHOT
+3c81cc6 Fixed: wflow-core - Delete datalist action - Not able to delete subform's files when "Delete Associated Child Form Data?" and "Delete Files?" are checked. @6.0-SNAPSHOT
+
+
 CHANGES IN 6.0.2
 ================
 c2bddd7 Fixed: wflow-consoleweb - Process Builder - Duplicate process causing other process participants not display correctly. #5344 @6.0-SNAPSHOT
