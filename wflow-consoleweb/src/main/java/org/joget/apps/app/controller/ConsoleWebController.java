@@ -1696,7 +1696,7 @@ public class ConsoleWebController {
 
         //for launching workflow designer
         User user = workflowUserManager.getCurrentUser();
-        map.addAttribute("username", user.getUsername());
+        map.addAttribute("username", (user != null)?user.getUsername():WorkflowUserManager.ROLE_ANONYMOUS);
 
         WorkflowProcess process = null;
         boolean processFound = false;
