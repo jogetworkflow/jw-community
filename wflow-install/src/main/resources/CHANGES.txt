@@ -2,6 +2,11 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.4
+================
+f4fd695 Fixed: wflow-core - Section - Visibility control not working correctly. Regression from 00d220. @6.0-SNAPSHOT
+3823949 Fixed: wflow-consoleweb - Datalist Builder - Regression for 052de4. #5434 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.3
 ================
 503f930 Fixed: wflow-consoleweb - Mobile - Date Picker icon position is wrong. @6.0-SNAPSHOT
