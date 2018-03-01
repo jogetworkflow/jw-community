@@ -310,13 +310,14 @@ DatalistBuilder = {
             }
         });
         
-        var oderBy = DatalistBuilder.datalistProperties['orderBy'];
-        if (oderBy !== undefined && oderBy !== "") {
-            var c = DatalistBuilder.availableColumns[filter.name];
+        var orderBy = DatalistBuilder.datalistProperties['orderBy'];
+        if (orderBy !== undefined && orderBy !== "") {
+            var c = DatalistBuilder.availableColumns[orderBy];
             if (c === undefined) {
                 DatalistBuilder.datalistProperties['orderBy'] = "";
             }
         }
+        DatalistBuilder.adjustCanvas();
         
         //change to designer's tab
         $("#builder-steps-designer").trigger("click");
