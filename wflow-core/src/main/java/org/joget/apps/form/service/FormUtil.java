@@ -28,6 +28,7 @@ import org.joget.apps.form.lib.FormOptionsBinder;
 import org.joget.apps.datalist.lib.FormRowDataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.lib.SelectBox;
 import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -590,8 +591,28 @@ public class FormUtil implements ApplicationContextAware {
                     formData = FormUtil.executeElementFormatDataForValidation(child, formData);
                 }
             }
+        } else {
+            formData = FormUtil.executeHiddenElementFormatDataForValidation(element, formData);
         }
         
+        return formData;
+    }
+    
+    protected static FormData executeHiddenElementFormatDataForValidation(Element element, FormData formData) {
+        
+        //fix for selextbox/checkbox/radio value issue when hiddden
+        if (element instanceof SelectBox) {
+            String paramName = FormUtil.getElementParameterName(element);
+            formData.addRequestParameterValues(paramName, new String[]{""});
+        }
+        
+        // recurse into children
+        Collection<Element> children = element.getChildren(formData);
+        if (children != null) {
+            for (Element child : children) {
+                formData = FormUtil.executeHiddenElementFormatDataForValidation(child, formData);
+            }
+        }
         return formData;
     }
 
