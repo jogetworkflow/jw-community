@@ -2,6 +2,10 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.5
+================
+0d8defd Fixed: wflow-core - Section - Visibility control not working correctly. Regression from f4fd69. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.4
 ================
 f4fd695 Fixed: wflow-core - Section - Visibility control not working correctly. Regression from 00d220. @6.0-SNAPSHOT
