@@ -603,7 +603,9 @@ public class FormUtil implements ApplicationContextAware {
         //fix for selextbox/checkbox/radio value issue when hiddden
         if (element instanceof SelectBox) {
             String paramName = FormUtil.getElementParameterName(element);
-            formData.addRequestParameterValues(paramName, new String[]{""});
+            if (formData.getRequestParameterValues(paramName) == null && FormUtil.isFormSubmitted(element, formData)) {
+                formData.addRequestParameterValues(paramName, new String[]{""});
+            }
         }
         
         // recurse into children
