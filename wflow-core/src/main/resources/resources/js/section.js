@@ -149,6 +149,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                 names.push(n);
             }
         }
+        $(this).trigger("jsection:hide");
     });
     thisObject.triggerChange(targetEl, names);
 };
@@ -181,6 +182,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                 names.push(n);
             }
         }
+        $(this).trigger("jsection:show");
     });
     
     thisObject.triggerChange(targetEl, names);
