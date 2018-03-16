@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.export.TextExportView;
 import org.displaytag.model.Column;
@@ -148,7 +149,7 @@ public class CustomCsvViewer implements TextExportView {
             writer.createNewRow();
             while (iterator.hasNext()) {
                 headerCell = (HeaderCell) iterator.next();
-                columnHeader = headerCell.getTitle();
+                columnHeader = StringEscapeUtils.unescapeHtml(headerCell.getTitle());
 
                 if (columnHeader == null) {
                     columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());

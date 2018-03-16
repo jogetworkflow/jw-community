@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -137,7 +138,7 @@ public class CustomExcelHssfView implements BinaryExportView {
                 while (iterator.hasNext()) {
                     headerCell = (HeaderCell) iterator.next();
 
-                    columnHeader = headerCell.getTitle();
+                    columnHeader = StringEscapeUtils.unescapeHtml(headerCell.getTitle());
 
                     if (columnHeader == null) {
                         columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());

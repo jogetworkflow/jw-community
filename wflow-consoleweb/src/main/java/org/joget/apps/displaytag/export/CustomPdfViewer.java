@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.jsp.PageContext;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.model.TableModelWrapper;
 import org.displaytag.util.TagConstants;
 import org.joget.apps.datalist.model.DataList;
@@ -198,7 +199,7 @@ public class CustomPdfViewer implements BinaryExportView {
 
         while (iterator.hasNext()) {
             HeaderCell headerCell = iterator.next();
-            String columnHeader = headerCell.getTitle();
+            String columnHeader = StringEscapeUtils.unescapeHtml(headerCell.getTitle());
             if (columnHeader == null) {
                 columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());
             }
