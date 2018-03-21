@@ -729,6 +729,9 @@ public class DataList {
     }
 
     public String getDataListEncodedParamName(String name) {
+        if (name != null && name.contains(" ")) {
+            name = name.replaceAll(" ", "__");
+        }
         if (!TableTagParameters.PARAMETER_EXPORTING.equals(name)) {
             return new ParamEncoder(getId()).encodeParameterName(name);
         } else {
