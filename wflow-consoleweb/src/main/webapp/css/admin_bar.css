@@ -347,9 +347,6 @@ body.quickEditModeActive .analyzer-page {
 }
 #adminControl.active {
 }
-div#category-container {
-    display: inline-block;
-}
 @media screen and (max-height:680px) {
     #adminBar .adminBarButton {
         padding:5px;
