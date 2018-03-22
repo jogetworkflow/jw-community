@@ -29,14 +29,34 @@
             $(document).ready(function () {
 
                 $('.menu-link.default, .category-label a').click(function(){
+                    $.blockUI({ css: { 
+                        border: 'none', 
+                        padding: '15px', 
+                        backgroundColor: '#000', 
+                        '-webkit-border-radius': '10px', 
+                        '-moz-border-radius': '10px', 
+                        opacity: .3, 
+                        color: '#fff' 
+                    }, message : "<h1><fmt:message key="form.form.message.wait"/></h1>" }); 
+                
                     var action = $(this).attr('href');
                     $('#preview').attr('action', action);
                     $('#preview').submit();
-
+                    
                     return false;
                 });
 
                 $('#header-link').click(function(){
+                    $.blockUI({ css: { 
+                        border: 'none', 
+                        padding: '15px', 
+                        backgroundColor: '#000', 
+                        '-webkit-border-radius': '10px', 
+                        '-moz-border-radius': '10px', 
+                        opacity: .3, 
+                        color: '#fff' 
+                    }, message : "<h1><fmt:message key="form.form.message.wait"/></h1>" }); 
+                
                     var action = $(this).attr('href');
                     $('#preview').attr('action', action);
                     $('#preview').submit();
