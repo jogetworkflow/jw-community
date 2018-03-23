@@ -90,7 +90,8 @@
     validators : [{  
         type : 'AJAX',
         url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.EmailTool/service?action=validate',
-        default_error_message : '@@app.emailtool.error.smtp@@'
+        default_error_message : '@@app.emailtool.error.smtp@@',
+        method : 'POST'
     }],
     buttons : [{
         name : 'testmail',    

@@ -1629,11 +1629,17 @@ PropertyEditor.Validator.Ajax.prototype = {
                 }
             }
         }
+        
+        var method = "GET";
+        if (thisObject.properties.method !== undefined && thisObject.properties.method !== "") {
+            method = thisObject.properties.method;
+        }
 
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, thisObject.options.contextPath),
             data : $.param( temp ),
             dataType : "text",
+            method : method.toUpperCase(),
             success: function(response) {
                 var r = $.parseJSON(response);
                 var errorsHtml = "";
