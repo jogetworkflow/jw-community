@@ -178,6 +178,7 @@
     background: white;
     min-height: 50px;
     margin-bottom: 20px;
+    overflow: visible;
 }
 .form-section-title, .subform-section-title {
     min-height: 30px;
