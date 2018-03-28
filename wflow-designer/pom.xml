@@ -4,14 +4,14 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-designer</artifactId>
     <packaging>jar</packaging>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0.21</version>
     <name>wflow-designer</name>
     <url>http://www.joget.org</url>
     <scm>
         <connection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org/opt/git/jw-community</developerConnection>
         <url>ssh://git@repo.joget.org/opt/git/jw-community</url>
-      <tag>HEAD</tag>
+      <tag>5.0.21</tag>
   </scm>
     <build>
         <resources>
