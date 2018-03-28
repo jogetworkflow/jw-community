@@ -2,6 +2,18 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.21
+=================
+e1c4d34 Fixed: wflow-consoleweb - Security - Able to click back after logout. #5449 @5.0-SNAPSHOT
+98cc666 Fixed: wflow-core - Datalist filter - Space char in filter name causing filter not work correctly. #5484 @5.0-SNAPSHOT
+0de68c4 Fixed: wflow-core - Grid - Template error when cell value is null. #5418 @5.0-SNAPSHOT
+5a8bf10 Fixed: wflow-wfengine - WorkflowProcessLinkDao - MSSQL throws exception when record more than 2100. #5408 @5.0-SNAPSHOT
+24a165e Fixed: wflow-core - Password Field - Default value is not masked. #5373 @5.0-SNAPSHOT
+43fad2c Fixed: wflow-consoleweb - Mobile - Hash Variable in userview name cannot parse correctly. #5326 @5.0-SNAPSHOT
+1c2ff21 Fixed: wflow-consoleweb - Mobile - Datalist paging buttons are missing. #5299 @5.0-SNAPSHOT
+cdde5e0 Fixed: wflow-core - Userview v5 Theme - Regression bug from e38439cb. @5.0-SNAPSHOT
+dcd7f2a Fixed: wflow-core - File Upload - Validation does not work for multiple files. #5280 @5.0-SNAPSHOT
+
 CHANGES IN 5.0.20
 =================
 0c151f3 Fixed: wflow-core - Datalist - Regression bug from a64bdfc. @5.0-SNAPSHOT
