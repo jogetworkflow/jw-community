@@ -519,7 +519,7 @@ public class FormUtil implements ApplicationContextAware {
                     }
                 } else {
                     //if the store binder of this element is null, store as single row in json format
-                    if (element.getStoreBinder() == null) {
+                    if (element.getStoreBinder() == null && element.getProperty(FormBinder.FORM_STORE_BINDER) == null) {
                         try {
                             // create json object
                             JSONArray jsonArray = new JSONArray();
@@ -553,7 +553,7 @@ public class FormUtil implements ApplicationContextAware {
                         } catch (JSONException ex) {
                             LogUtil.error(FormUtil.class.getName(), ex, "");
                         }
-                    } else {
+                    } else if (element.getStoreBinder() != null) {
                         // multiple row result, append all to rowset
                         rowSet.addAll(elementResult);
                         rowSet.setMultiRow(true);
