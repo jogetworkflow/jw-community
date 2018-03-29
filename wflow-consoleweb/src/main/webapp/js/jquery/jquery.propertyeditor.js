@@ -2933,6 +2933,9 @@ PropertyEditor.Type.Grid.prototype = {
                         $(this).closest("tr").find("[name]").each(function(){
                             var name = $(this).attr("name");
                             var val = $(this).val();
+                            if (val === null) {
+                                val = $(this).data("value");
+                            }
                             tempFilter = tempFilter.replace("${"+name+"}", val);
                         });
                         var regex = new RegExp(tempFilter);
@@ -3065,6 +3068,9 @@ PropertyEditor.Type.Grid.prototype = {
                 $(this).closest("tr").find("[name]").each(function(){
                     var name = $(this).attr("name");
                     var val = $(this).val();
+                    if (val === null) {
+                        val = $(this).data("value");
+                    }
                     tempFilter = tempFilter.replace("${"+name+"}", val);
                 });
                 var regex = new RegExp(tempFilter);
