@@ -23,7 +23,7 @@
                 </c:choose>
                 </h1>
                 <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right"> 
-                    <a href="${pageContext.request.contextPath}/web/mobile" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
+                    <a href="${pageContext.request.contextPath}/web/mobile" rel="external" target="_self" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
                 </div>
             </div>
             <div id="logo"></div>

@@ -182,7 +182,7 @@
                     <c:choose>
                         <c:when test="${showDesktopButton ne 'false' && showAllAppsButton eq 'true'}">
                             <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right"> 
-                                <a href="${pageContext.request.contextPath}/web/mobile" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
+                                <a href="${pageContext.request.contextPath}/web/mobile" rel="external" target="_self" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
                                 <a href="#" onclick="return desktopSite()" id="desktop-site" data-role="button" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                             </div>
                         </c:when>
@@ -190,7 +190,7 @@
                             <a href="#" onclick="return desktopSite()" id="desktop-site" data-role="button" data-icon="home" rel="external"><fmt:message key="mobile.apps.desktop"/></a>
                         </c:when>
                         <c:when test="${showAllAppsButton eq 'true'}">
-                            <a href="${pageContext.request.contextPath}/web/mobile/apps" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
+                            <a href="${pageContext.request.contextPath}/web/mobile" rel="external" target="_self" id="all-apps" data-role="button" data-icon="grid"><fmt:message key="mobile.apps.allApps"/></a>
                         </c:when>
                     </c:choose>
                 </c:if>
