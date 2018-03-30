@@ -1,5 +1,6 @@
 package org.joget.apps.app.controller;
 
+import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -10,6 +11,8 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
+import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -38,6 +41,16 @@ public class LoginWebController {
             savedUrl = savedRequest.getRedirectUrl();
         } else if (request.getHeader("referer") != null) { //for userview logout
             savedUrl = request.getHeader("referer");
+        }
+        
+        if (savedUrl.contains("/web/client/app/assignment/")) {
+            UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
+            if (UserviewUtil.checkUserviewInboxEnabled(defaultUserview)) {
+                String activityId = savedUrl.substring(savedUrl.lastIndexOf("/")+1);
+                // redirect to app center userview
+                String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" +  defaultUserview.getId() + "/_/_ja_inbox?_mode=assignment&activityId=" + URLEncoder.encode(activityId, "UTF-8");
+                return path;
+            }
         }
 
         if (savedUrl.contains("/web/userview") || savedUrl.contains("/web/embed/userview")) {
@@ -116,6 +129,13 @@ public class LoginWebController {
                 if (urlKey.length > 3) {
                     menuId = urlKey[3];
                 }
+            }
+            
+            if (menuId != null && menuId.contains("?")) {
+                String queryString = menuId.substring(menuId.indexOf("?")+1);
+                map.addAttribute("queryString", StringUtil.encodeUrlParam(queryString));
+                
+                menuId = menuId.substring(0, menuId.indexOf("?"));
             }
 
             // retrieve app and userview

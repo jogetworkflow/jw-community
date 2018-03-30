@@ -19,6 +19,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
+import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -33,6 +34,8 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.lib.RunProcess;
 import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.FileManager;
@@ -72,6 +75,8 @@ public class AppWebController {
     PluginManager pluginManager;
     @Autowired
     private WorkflowUserManager workflowUserManager;
+    @Autowired
+    UserviewService userviewService;
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
     public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
@@ -228,10 +233,19 @@ public class AppWebController {
     }
 
     @RequestMapping("/client/app/(~:appId)/(~:version)/assignment/(*:activityId)")
-    public String clientAssignmentView(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) {
+    public String clientAssignmentView(HttpServletRequest request, ModelMap model, @RequestParam(required = false) String appId, @RequestParam(required = false) String version, @RequestParam("activityId") String activityId) throws UnsupportedEncodingException {
         // check assignment
         appId = SecurityUtil.validateStringInput(appId);
         activityId = SecurityUtil.validateStringInput(activityId);
+        
+        //redirect to default userview if inbox is available in default userview
+        UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
+        if (UserviewUtil.checkUserviewInboxEnabled(defaultUserview)) {
+            // redirect to app center userview
+            String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" +  defaultUserview.getId() + "/_/_ja_inbox?_mode=assignment&activityId=" + URLEncoder.encode(activityId, "UTF-8");
+            return path;
+        }
+        
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             return "client/app/assignmentUnavailable";

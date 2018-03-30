@@ -10,12 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
+import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -161,5 +164,24 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             propertyOptions = propertyOptions.substring(0, propertyOptions.lastIndexOf("]")) + "," + additionalProperties + "]"; 
         }
         return propertyOptions;
+    }
+    
+    public static boolean checkUserviewInboxEnabled(UserviewDefinition userviewDef) {
+        boolean inboxEnabled = false;
+        if (userviewDef != null) {
+            try {
+                String json = userviewDef.getJson();
+                JSONObject userviewObj = new JSONObject(json);
+                JSONObject settingObj = userviewObj.getJSONObject("setting");
+                JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
+                String inboxSetting = themeObj.getJSONObject("properties").getString("inbox");
+                if (inboxSetting != null) {
+                    inboxEnabled = !"".equals(inboxSetting);
+                }
+            } catch (JSONException ex) {
+                //ignore
+            }
+        }
+        return inboxEnabled;
     }
 }
