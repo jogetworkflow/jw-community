@@ -794,4 +794,9 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     public boolean isMobileViewDisabled() {
         return true;
     }
+    
+    @Override
+    public String[] themeDefinedMenusId() {
+        return new String[] {PROFILE, INBOX};
+    }
 }

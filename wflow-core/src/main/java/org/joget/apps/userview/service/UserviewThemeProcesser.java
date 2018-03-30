@@ -13,6 +13,7 @@ import org.joget.apps.userview.lib.DefaultV5EmptyTheme;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -245,6 +246,20 @@ public class UserviewThemeProcesser {
                     }
                     if (isExist) {
                         break;
+                    }
+                }
+                if (!isExist) {
+                    UserviewTheme temp = userview.getSetting().getTheme();
+                    if (temp != null && temp instanceof UserviewV5Theme) {
+                        String[] themeDefinedMenus = ((UserviewV5Theme) temp).themeDefinedMenusId();
+                        if (themeDefinedMenus != null) {
+                            for (String dm : themeDefinedMenus) {
+                                if (dm.equals(menuId)) {
+                                    isExist = true;
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }

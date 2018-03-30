@@ -246,4 +246,13 @@ public abstract class UserviewV5Theme extends UserviewTheme {
     public String decorateCategoryLabel(UserviewCategory category) {
         return StringUtil.stripHtmlRelaxed(category.getPropertyString("label"));
     }
+    
+    /**
+     * Return theme defined menus id
+     * 
+     * @return 
+     */
+    public String[] themeDefinedMenusId() {
+        return null;
+    }
 }
