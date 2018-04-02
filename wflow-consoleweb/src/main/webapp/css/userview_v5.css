@@ -154,3 +154,4 @@ a {
     img[src]:after { content: none !important; }
     #adminControl {display:none !important;}
 }
+#jqueryDialogDiv {overflow: hidden;}
