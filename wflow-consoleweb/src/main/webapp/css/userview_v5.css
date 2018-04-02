@@ -103,3 +103,4 @@ input[type="button"], input[type="submit"], input[type="reset"] {
 a {
     cursor: pointer;
 }
+#jqueryDialogDiv {overflow: hidden;}

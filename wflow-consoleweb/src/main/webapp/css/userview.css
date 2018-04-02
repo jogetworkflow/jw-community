@@ -227,3 +227,4 @@ body .ui-widget-overlay {
 input[type="button"], input[type="submit"], input[type="reset"] {
   -webkit-appearance: button;
 }
+#jqueryDialogDiv {overflow: hidden;}
