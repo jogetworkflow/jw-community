@@ -299,7 +299,9 @@ body .form-container .form-cell-value,
 body .form-container .subform-cell-value,
 body .form-container .selector_element,
 body .form-container .form-fileupload,
-body .form-container .subform-fileupload{
+body .form-container .subform-fileupload,
+body .form-container .grid,
+body .form-container .spreadsheet_container{
     min-height: 31px;
     margin-bottom: 15px;
 }
