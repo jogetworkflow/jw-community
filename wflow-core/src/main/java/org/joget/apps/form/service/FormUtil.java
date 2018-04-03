@@ -392,18 +392,20 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
-        if (binder != null && !isAjaxOptionsSupported(element, formData)) {
-            String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-            FormRowSet data = binder.load(element, primaryKeyValue, formData);
-            if (data != null) {
-                formData.setOptionsBinderData(binder, data);
+        if (element.isAuthorize(formData)) {
+            FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
+            if (binder != null && !isAjaxOptionsSupported(element, formData)) {
+                String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
+                FormRowSet data = binder.load(element, primaryKeyValue, formData);
+                if (data != null) {
+                    formData.setOptionsBinderData(binder, data);
+                }
             }
-        }
-        Collection<Element> children = element.getChildren(formData);
-        if (children != null) {
-            for (Element child : children) {
-                FormUtil.executeOptionBinders(child, formData);
+            Collection<Element> children = element.getChildren(formData);
+            if (children != null) {
+                for (Element child : children) {
+                    FormUtil.executeOptionBinders(child, formData);
+                }
             }
         }
         return formData;
@@ -419,18 +421,20 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
-        if (!(element instanceof AbstractSubForm) && binder != null) {
-            String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-            FormRowSet data = binder.load(element, primaryKeyValue, formData);
-            if (data != null) {
-                formData.setLoadBinderData(binder, data);
+        if (element.isAuthorize(formData)) {
+            FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
+            if (!(element instanceof AbstractSubForm) && binder != null) {
+                String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
+                FormRowSet data = binder.load(element, primaryKeyValue, formData);
+                if (data != null) {
+                    formData.setLoadBinderData(binder, data);
+                }
             }
-        }
-        Collection<Element> children = element.getChildren(formData);
-        if (children != null) {
-            for (Element child : children) {
-                FormUtil.executeLoadBinders(child, formData);
+            Collection<Element> children = element.getChildren(formData);
+            if (children != null) {
+                for (Element child : children) {
+                    FormUtil.executeLoadBinders(child, formData);
+                }
             }
         }
         return formData;
