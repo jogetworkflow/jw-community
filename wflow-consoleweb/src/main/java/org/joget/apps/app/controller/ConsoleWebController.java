@@ -2769,8 +2769,12 @@ public class ConsoleWebController {
         // validation
         validator.validate(message, result);
         message.setAppDefinition(appDef);
-
+        
         boolean invalid = result.hasErrors();
+        if (invalid && result.getErrorCount() == 1 && result.hasFieldErrors("id")) {
+            invalid = false;
+        }
+        
         if (!invalid) {
             // check error
             Collection<String> errors = new ArrayList<String>();
