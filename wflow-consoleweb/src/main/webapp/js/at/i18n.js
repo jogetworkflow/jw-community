@@ -52,7 +52,7 @@ I18nEditor = {
                 if (l % 2 === 0) {
                     css = "even";
                 }
-                $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(labels[l])+'</span><input name="i18n_key_'+l+'" type="hidden" value="'+UI.escapeHTML(labels[l])+'"></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(labels[l])+'</span><textarea name="i18n_key_'+l+'" style="display:none">'+labels[l]+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
             }
             
             if (I18nEditor.languages === undefined) {
@@ -98,8 +98,9 @@ I18nEditor = {
             $(container).find("td."+id).html("");
         } else {
             $(container).find("tbody tr").each(function(i, tr){
-                var key = $(tr).find("td.label input").val() + "_" + locale;
-                $(tr).find("td."+id).html('<textarea rel="'+key+'"></textarea>');
+                var key = $(tr).find("td.label textarea").val() + "_" + locale;
+                $(tr).find("td."+id).html('<textarea></textarea>');
+                $(tr).find("td."+id+" textarea").attr("rel", key);
             });
             $.ajax({
                 url: options.contextPath + '/web/json/console/app/'+options.appId+'/'+options.appVersion+'/message/list',
@@ -111,9 +112,9 @@ I18nEditor = {
                     if (response.total > 0) {
                         for (var i in response.data) {
                             var message = response.data[i];
-                            var mid = message.id.replace(new RegExp('"', 'g'), "'");
+                            var mid = message.id.replace(new RegExp('"', 'g'), "\\\"");
                             var field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
-                            if ($(field).attr("rel") === mid) {
+                            if ($(field).attr("rel") === message.id) {
                                 $(field).val(message.message);
                             }
                         }
@@ -128,7 +129,7 @@ I18nEditor = {
         var data = [];
         $(container).find('td.'+id+' textarea').each(function(){
             var id = $(this).attr("rel");
-            var key = $(this).closest("tr").find("td.label input").val();
+            var key = $(this).closest("tr").find("td.label textarea").val();
             var val = $(this).val();
             data.push({
                 id : id,
