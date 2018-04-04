@@ -145,6 +145,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
         try {
             // get data list
             DataList dataList = getDataList();
+            dataList.setDisableQuickEdit(true);
             dataList.setCheckboxPosition(DataList.CHECKBOX_POSITION_NO);
             dataList.setSize(getDataTotalRowCount());
             dataList.setRows(getRows(dataList));
