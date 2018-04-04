@@ -2,6 +2,34 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.6
+================
+5dd10cb Fixed: wflow-core - Inbox/Universal Inbox - Click on quick edit link lead to NPE page. @6.0-SNAPSHOT
+8792b8a Fixed: wflow-core - Form - Form Load/Options Binder get executed in no permission section. #5487 @6.0-SNAPSHOT
+8792b8a Fixed: wflow-core - Form - Form Load/Options Binder get executed in no permission section. #5487 @6.0-SNAPSHOT
+1256295 Fixed: wflow-consoleweb - Universal Theme - No margin after grid field. @6.0-SNAPSHOT
+0473956 Fixed: wflow-consoleweb - App Properties - Message - Not able to create or edit message for userview label that contains Font Awesome icon. @6.0-SNAPSHOT
+bbe7e2d Fixed: wflow-consoleweb - Builder - Advanced Tool - I18N not able to store when message key contains double quote. #5512 @6.0-SNAPSHOT
+dbc60fe Fixed: wflow-consoleweb - Userview pre v6 theme - Popup Dialog show double scrollbar sometime. @6.0-SNAPSHOT
+23e7eae Fixed: wflow-consoleweb - Mobile - All App buttons in old mobile view show blank page after click. @6.0-SNAPSHOT
+690df8f Fixed: wflow-consoleweb - Mobile - Assignment link should use default userview inbox to display if inbox is available. @6.0-SNAPSHOT
+bdb808e Fixed: wflow-consoleweb/wflow-core - Universal Theme - Theme inbox/assignment link does not get redirect correctly after login. @6.0-SNAPSHOT
+0ee0514 Fixed: wflow-consoleweb - Property Editor - Grid row regex filter does not populate the options sometime. @6.0-SNAPSHOT
+59b14cc Fixed: wflow-core - FormUtil - Spreadsheet element in form grid store data in JSON format in parent table even thought multirow was specified. #5499 @6.0-SNAPSHOT
+13a5d20 Fixed: wflow-core - File Upload - Not able to upload file in mobile app when File Type limit is set. @6.0-SNAPSHOT
+b8a3b2a Fixed: wflow-consoleweb - Form Builder - Regression of 782ee56. "Add section" button is not appear. @5.0-SNAPSHOT
+c2059dd Fixed: wflow-consoleweb/wflow-core - Email Tool - Validation fail due to the AJAX request is using GET method. #5491 @6.0-SNAPSHOT
+3d4012d Fixed: wflow-consoleweb - Userview Builder - Click any link in preview mode twice will hit security error and invalidate the token in the builder. @6.0-SNAPSHOT
+b26ffbb Fixed: wflow-consoleweb - Pre v5 themes - Admin bar css affected the width of side menu. @6.0-SNAPSHOT
+2bd2bd4 Fixed: wflow-consoleweb - Security - Able to click back after logout. #5449 @6.0-SNAPSHOT
+d60256f Fixed: wflow-core - Datalist filter - Space char in filter name causing filter not work correctly. #5484 @6.0-SNAPSHOT
+782ee56 Fixed: wflow-core - Form - Regression bug from d493f6c. This changes caused section with custom height limit in old theme does not work correctly (Eg. Simple Invoicing). Move it to apply to only Universal Theme. @6.0-SNAPSHOT
+512eca8 Fixed: wflow-core - Form - Regression bug from eb901d7. The changed grid css selector is too high precedence causing custom styling in old app (etc. simple invoicing) does not show correctly. @6.0-SNAPSHOT
+a733b0d Fixed: wflow-core - JSON Tool - UTF-8 encoding is not supported correctly. @6.0-SNAPSHOT
+096c146 Fixed: wflow-consoleweb - Datalist Export - Special characters in header is escaped twice. #5469 @6.0-SNAPSHOT
+008f49a Fixed: wflow-consoleweb - Date Picker - Popup dialog covered by Spreadsheet columns if the Spreadsheet property field "Number of columns to fixed on left" is set #5454 @6.0-SNAPSHOT
+0fb9752 Fixed: wflow-core - Section - Section visibility does not trigger any event to none control field during show/hide. #5441 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.5
 ================
 0d8defd Fixed: wflow-core - Section - Visibility control not working correctly. Regression from f4fd69. @6.0-SNAPSHOT
