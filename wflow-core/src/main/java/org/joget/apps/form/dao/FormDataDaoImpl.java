@@ -1212,7 +1212,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                          && !FormUtil.PROPERTY_CREATED_BY.equals(columnName) && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(columnName)
                          && !FormUtil.PROPERTY_MODIFIED_BY.equals(columnName) && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(columnName)) {
                     String lowerCasePropName = columnName.toLowerCase();
-                    if (!lowerCaseColumnSet.contains(lowerCasePropName)) {
+                    if (!lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
                         columnList.add(columnName);
                         lowerCaseColumnSet.add(lowerCasePropName);
                     }
