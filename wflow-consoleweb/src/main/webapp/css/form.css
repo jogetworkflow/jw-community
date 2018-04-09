@@ -27,7 +27,6 @@
     border: none 2px #cccccc;
     background: transparent;
     margin-top: 15px;
-    overflow: hidden; 
 }
 .form-section.no_label, .subform-section.no_label {
     margin-top: 0px;

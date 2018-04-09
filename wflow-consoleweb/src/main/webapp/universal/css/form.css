@@ -974,6 +974,3 @@ body .grid-action-header, body td.grid-action-cell {
 .multiPagedForm {
     margin-bottom: 15px;
 }
-body .form-section, body .subform-section {
-    overflow:visible;
-}
