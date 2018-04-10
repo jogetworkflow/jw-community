@@ -152,12 +152,12 @@
             $(this).append(sub);
         });
         $(".nv-link-name").addClass("nv-link-hilite");
-        $("#toggleInfo i").attr("class", "icon-list-ul");
+        $("#toggleInfo i").attr("class", "fa fa-list-ul");
     }
     function hideInfo() {
         $(".nv-subinfo").remove();
         $(".nv-link-name").removeClass("nv-link-hilite");
-        $("#toggleInfo i").attr("class", "icon-th-list");
+        $("#toggleInfo i").attr("class", "fa fa-th-list");
     }
     function toggleInfo() {
         if ($(".nv-subinfo").length === 0) {
