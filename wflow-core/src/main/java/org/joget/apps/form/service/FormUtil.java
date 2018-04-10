@@ -522,8 +522,11 @@ public class FormUtil implements ApplicationContextAware {
                         currentRow.putAll(elementRow);
                     }
                 } else {
+                    Map storeBinderProp = (Map) element.getProperty(FormBinder.FORM_STORE_BINDER);
+                    
                     //if the store binder of this element is null, store as single row in json format
-                    if (element.getStoreBinder() == null && element.getProperty(FormBinder.FORM_STORE_BINDER) == null) {
+                    if (element.getStoreBinder() == null && (storeBinderProp == null 
+                            || "".equals(storeBinderProp.get(FormUtil.PROPERTY_CLASS_NAME)))) {
                         try {
                             // create json object
                             JSONArray jsonArray = new JSONArray();
