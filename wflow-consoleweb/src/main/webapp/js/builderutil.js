@@ -36,7 +36,7 @@ DiffMerge = {
             $(html2).html(diff2);
             outputElement.append(html2);
         }
-        var mergedJson = JSON.stringify(merged);
+        var mergedJson = JSON.encode(merged);
         return mergedJson;
     }
 }
