@@ -893,7 +893,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static String replaceAppMessage(String label) {
         String result = label;
-        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
+        Map<String, String> appMessages = getAppMessageFromStore();
         if (appMessages != null) {
             String text = StringUtil.stripAllHtmlTag(label);
             String messageKey = text; //text.replace(" ", "_");
@@ -912,7 +912,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String replaceAppMessages(String content, String escapeType) {
-        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
+        Map<String, String> appMessages = getAppMessageFromStore();
         if (appMessages != null) {
             for (String key : appMessages.keySet()) {
                 String translated = appMessages.get(key);
@@ -927,15 +927,38 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     private static final ThreadLocal threadLocalAppMessages = new ThreadLocal();
-
+    
+    public static Map<String, String> getAppMessageFromStore() {
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        Map<String, Map<String, String>> appMessageStore = (Map<String, Map<String, String>>) threadLocalAppMessages.get();
+        if (appMessageStore != null && appMessageStore.containsKey(appDef.getAppId()+":"+appDef.getVersion())) {
+            return appMessageStore.get(appDef.getAppId()+":"+appDef.getVersion());
+        }
+        return null;
+    }
+    
     public static void initAppMessages(AppDefinition appDef) {
+        if (appDef == null) {
+            return;
+        }
+        
+        Map<String, Map<String, String>> appMessageStore = (Map<String, Map<String, String>>) threadLocalAppMessages.get();
+        if (appMessageStore == null) {
+            appMessageStore = new HashMap<String, Map<String, String>>();
+        }
+        
         Map<String, String> appMessages = AppUtil.getAppMessages(appDef);
-        threadLocalAppMessages.set(appMessages);
+        appMessageStore.put(appDef.getAppId()+":"+appDef.getVersion(), appMessages);
+                
+        threadLocalAppMessages.set(appMessageStore);
     }
 
     public static boolean isAppMessagesSet() {
-        Map<String, String> appMessages = (Map<String, String>) threadLocalAppMessages.get();
-        return (appMessages != null);
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        
+        Map<String, Map<String, String>> appMessagesStore = (Map<String, Map<String, String>>) threadLocalAppMessages.get();
+        
+        return appDef != null && appMessagesStore != null && appMessagesStore.containsKey(appDef.getAppId()+":"+appDef.getVersion());
     }
 
     public static void clearAppMessages() {
