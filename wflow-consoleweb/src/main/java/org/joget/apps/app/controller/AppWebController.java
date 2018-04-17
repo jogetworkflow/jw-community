@@ -41,6 +41,7 @@ import org.joget.apps.workflow.lib.AssignmentWithdrawButton;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -77,6 +78,9 @@ public class AppWebController {
     private WorkflowUserManager workflowUserManager;
     @Autowired
     UserviewService userviewService;
+    
+    protected static String ORIGIN_FROM_PARAM = "_orifrom";
+    protected static String ORIGIN_FROM_RUNPROCESS = "runProcess";
 
     @RequestMapping("/client/app/(*:appId)/(~:version)/process/(*:processDefId)")
     public String clientProcessView(HttpServletRequest request, ModelMap model, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam(required = false) String recordId, @RequestParam(required = false) String start) {
@@ -225,6 +229,7 @@ public class AppWebController {
             if (activities != null && !activities.isEmpty()) {
                 WorkflowActivity nextActivity = activities.iterator().next();
                 String assignmentUrl = "/web/client/app/" + appDef.getId() + "/" + appDef.getVersion() + "/assignment/" + nextActivity.getId() + "?" + request.getQueryString();
+                assignmentUrl = StringUtil.addParamsToUrl(assignmentUrl, ORIGIN_FROM_PARAM, ORIGIN_FROM_RUNPROCESS);
                 return "redirect:" + assignmentUrl;
             }
         }
@@ -238,12 +243,14 @@ public class AppWebController {
         appId = SecurityUtil.validateStringInput(appId);
         activityId = SecurityUtil.validateStringInput(activityId);
         
-        //redirect to default userview if inbox is available in default userview
-        UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
-        if (UserviewUtil.checkUserviewInboxEnabled(defaultUserview)) {
-            // redirect to app center userview
-            String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" +  defaultUserview.getId() + "/_/_ja_inbox?_mode=assignment&activityId=" + URLEncoder.encode(activityId, "UTF-8");
-            return path;
+        if (request.getParameterValues(ORIGIN_FROM_PARAM) == null) {
+            //redirect to default userview if inbox is available in default userview
+            UserviewDefinition defaultUserview = userviewService.getDefaultUserview();
+            if (UserviewUtil.checkUserviewInboxEnabled(defaultUserview)) {
+                // redirect to app center userview
+                String path = "redirect:/web/userview/" + defaultUserview.getAppId() + "/" +  defaultUserview.getId() + "/_/_ja_inbox?_mode=assignment&activityId=" + URLEncoder.encode(activityId, "UTF-8");
+                return path;
+            }
         }
         
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
@@ -272,6 +279,9 @@ public class AppWebController {
             // get form
             String appVersion = (appDef != null) ? appDef.getVersion().toString() : "";
             String formUrl = AppUtil.getRequestContextPath() + "/web/client/app/" + appDef.getId() + "/" + appVersion + "/assignment/" + activityId + "/submit";
+            if (request.getParameterValues(ORIGIN_FROM_PARAM) != null) {
+                formUrl = StringUtil.addParamsToUrl(formUrl, ORIGIN_FROM_PARAM, request.getParameterValues(ORIGIN_FROM_PARAM)[0]);
+            }
             PackageActivityForm activityForm = appService.viewAssignmentForm(appDef.getId(), appVersion.toString(), activityId, formData, formUrl);
             Form form = activityForm.getForm();
 
@@ -343,6 +353,9 @@ public class AppWebController {
                 WorkflowAssignment nextActivity = workflowManager.getAssignmentByProcess(processId);
                 if (nextActivity != null) {
                     String assignmentUrl = "/web/client/app/" + appDef.getId() + "/" + appVersion + "/assignment/" + nextActivity.getActivityId();
+                    if (request.getParameterValues(ORIGIN_FROM_PARAM) != null) {
+                        assignmentUrl = StringUtil.addParamsToUrl(assignmentUrl, ORIGIN_FROM_PARAM, request.getParameterValues(ORIGIN_FROM_PARAM)[0]);
+                    }
                     return "redirect:" + assignmentUrl;
                 }
             }
