@@ -930,9 +930,11 @@ public class AppUtil implements ApplicationContextAware {
     
     public static Map<String, String> getAppMessageFromStore() {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-        Map<String, Map<String, String>> appMessageStore = (Map<String, Map<String, String>>) threadLocalAppMessages.get();
-        if (appMessageStore != null && appMessageStore.containsKey(appDef.getAppId()+":"+appDef.getVersion())) {
-            return appMessageStore.get(appDef.getAppId()+":"+appDef.getVersion());
+        if (appDef != null) {
+            Map<String, Map<String, String>> appMessageStore = (Map<String, Map<String, String>>) threadLocalAppMessages.get();
+            if (appMessageStore != null && appMessageStore.containsKey(appDef.getAppId()+":"+appDef.getVersion())) {
+                return appMessageStore.get(appDef.getAppId()+":"+appDef.getVersion());
+            }
         }
         return null;
     }
