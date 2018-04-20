@@ -795,7 +795,7 @@ public class AppServiceImpl implements AppService {
 
         // get form
         Form form = loadFormByFormDefId(appDef.getId(), appDef.getVersion().toString(), formDefId, formData, null);
-        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, null, formData, formUrl, cancelUrl);
+        return viewDataForm(form, saveButtonLabel, submitButtonLabel, cancelButtonLabel, cancelButtonTarget, formData, formUrl, cancelUrl);
     }
     
     /**
