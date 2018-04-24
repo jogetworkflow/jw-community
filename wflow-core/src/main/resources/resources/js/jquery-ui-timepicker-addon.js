@@ -581,7 +581,7 @@
 		* min/max date range
 		*/
 		_limitMinMaxDateTime: function (dp_inst, adjustSliders) {
-			var o = this._defaults,
+                        var o = this._defaults,
 				dp_date = new Date(dp_inst.selectedYear, dp_inst.selectedMonth, dp_inst.selectedDay);
 
 			if (!this._defaults.showTimepicker) {
@@ -702,6 +702,7 @@
 
 			if (dp_inst.settings.minTime!==null) {
 				var tempMinTime=new Date("01/01/1970 " + dp_inst.settings.minTime);
+                                this._defaults.hourMin=tempMinTime.getHours();
 				if (this.hour<tempMinTime.getHours()) {
 					this.hour=this._defaults.hourMin=tempMinTime.getHours();
 					this.minute=this._defaults.minuteMin=tempMinTime.getMinutes();
@@ -712,15 +713,16 @@
 						this._defaults.hourMin=tempMinTime.getHours();
 						this._defaults.minuteMin=tempMinTime.getMinutes();
 					} else if (this._defaults.hourMin===tempMinTime.getHours()===this.hour && this._defaults.minuteMin<tempMinTime.getMinutes()) {
-						this._defaults.minuteMin=tempMinTime.getMinutes();
+                                            	this._defaults.minuteMin=tempMinTime.getMinutes();
 					} else {
-						this._defaults.minuteMin=0;
+                                           	this._defaults.minuteMin=0;
 					}
 				}
 			}
 
 			if (dp_inst.settings.maxTime!==null) {
 				var tempMaxTime=new Date("01/01/1970 " + dp_inst.settings.maxTime);
+                                this._defaults.hourMax=tempMaxTime.getHours();
 				if (this.hour>tempMaxTime.getHours()) {
 					this.hour=this._defaults.hourMax=tempMaxTime.getHours();
 					this.minute=this._defaults.minuteMax=tempMaxTime.getMinutes();
@@ -746,6 +748,8 @@
 					microsecMax = parseInt((this._defaults.microsecMax - ((this._defaults.microsecMax - this._defaults.microsecMin) % this._defaults.stepMicrosec)), 10);
 
 				if (this.hour_slider) {
+                                    console.log(this._defaults.hourMin);
+                                    console.log(hourMax);
 					this.control.options(this, this.hour_slider, 'hour', { min: this._defaults.hourMin, max: hourMax, step: this._defaults.stepHour });
 					this.control.value(this, this.hour_slider, 'hour', this.hour - (this.hour % this._defaults.stepHour));
 				}
