@@ -1730,7 +1730,20 @@
 		if (tp_inst) {
 			// if it hasn't yet been defined, grab from field
 			if (inst.lastVal === undefined) {
+                            if (inst.settings.timeOnly) {
+                                inst.lastVal = inst.input.val();
+                                var n = this._getDefaultDate(inst);
+                                inst.selectedDay = n.getDate();
+                                inst.drawMonth = inst.selectedMonth = n.getMonth();
+                                inst.drawYear = inst.selectedYear = n.getFullYear();
+                                inst.currentDay = n.getDate();
+                                inst.currentMonth = n.getMonth();
+                                inst.currentYear = n.getFullYear();
+                                this._adjustInstDate(inst);
+                                tp_inst.formattedTime = inst.lastVal;
+                            } else {
 				this._setDateFromField(inst, noDefault);
+                            }
 			}
 
 			var date = this._getDate(inst);
