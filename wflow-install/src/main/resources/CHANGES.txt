@@ -2,6 +2,21 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.7
+================
+c3fa057 Fixed: wflow-core - Date picker - When using as time only and start/end date limit is set, the start date value become blank during edit. @6.0-SNAPSHOT
+49a7095 Fixed: wflow-core - Date Picker - Correction for 3e3eaaf. Removed unnecessary debugging code. @6.0-SNAPSHOT
+3e3eaaf Fixed: wflow-core - Date Picker - Start/End date limit does not work correctly when the picker type is set to "Time only" @6.0-SNAPSHOT
+710c648 Fixed: wflow-core - App Util - Cancel button target is not pass correctly causing the CRUD in popup dialog redirected to top window when cancel button is pressed. 5547 @6.0-SNAPSHOT
+6f32623 Fixed: wflow-core - AppUtil - NPE is not handled for facf203. @6.0-SNAPSHOT
+8cff6a6 Fixed: wflow-consoleweb - Design App - Run Process - Regression of 690df8f which caused the next assignment is shown in different style. @6.0-SNAPSHOT
+facf203 Fixed: wflow-core - App Center - App messages in userview titles does not parse correctly. @6.0-SNAPSHOT
+01a3bdb Fixed: wflow-consoleweb - Form Builder - JSON definition does not escape html correctly after diff merging. #5512 @6.0-SNAPSHOT
+6a08837 Fixed: wflow-core - Form - Regression of 59b14cc. Grid without binder cannot store. @6.0-SNAPSHOT
+1eaa898 Fixed: wflow-consoleweb - Design App - View detail icon disappears after clicking. @6.0-SNAPSHOT
+06bbcb0 Fixed: wflow-consoleweb - Form - Revert changes on 782ee56. Causing multi selectbox not working in old themes. #5520 @6.0-SNAPSHOT
+2ee69eb Fixed: wflow-core - Form Data Dao - Check to prevent duplicate columns are keep added with prefix during storing when the JDBC/custom load binder is in used. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.6
 ================
 5dd10cb Fixed: wflow-core - Inbox/Universal Inbox - Click on quick edit link lead to NPE page. @6.0-SNAPSHOT
