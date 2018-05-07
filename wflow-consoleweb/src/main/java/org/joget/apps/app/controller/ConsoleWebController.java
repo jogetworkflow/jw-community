@@ -1433,8 +1433,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/version/new", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppCreate(@RequestParam(value = "appId") String appId) {
-        AppDefinition appDef = appService.createNewAppDefinitionVersion(appId);
+    public String consoleAppCreate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) Long version) {
+        AppDefinition appDef = appService.createNewAppDefinitionVersion(appId, version);
         return "console/apps/dialogClose";
     }
 

@@ -51,7 +51,7 @@
                     parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>//forms';
                 }
             }
-            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new', callback, '');
+            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new?version='+version, callback, '');
         }
     }
 

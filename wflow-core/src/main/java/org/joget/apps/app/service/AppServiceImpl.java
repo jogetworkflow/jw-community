@@ -1030,20 +1030,33 @@ public class AppServiceImpl implements AppService {
 
         return errors;
     }
-
+    
     /**
      * Create a new version of an app from an existing latest version
+     * @param appId
+     * @return
+     */
+    @Override
+    @Transactional
+    public AppDefinition createNewAppDefinitionVersion(String appId) {
+        return createNewAppDefinitionVersion(appId, null);
+    }
+
+    /**
+     * Create a new version of an app from an existing version
      * @param appId
      * @param version
      * @return
      */
     @Override
     @Transactional
-    public AppDefinition createNewAppDefinitionVersion(String appId) {
+    public AppDefinition createNewAppDefinitionVersion(String appId, Long version) {
         TimeZone current = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("GMT 0"));
         
-        Long version = appDefinitionDao.getLatestVersion(appId);
+        if (version == null) {
+            version = appDefinitionDao.getLatestVersion(appId);
+        }
         AppDefinition appDef = appDefinitionDao.loadVersion(appId, version);
 
         Serializer serializer = new Persister();
@@ -1074,7 +1087,7 @@ public class AppServiceImpl implements AppService {
                 xpdl = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
             }
 
-            Long newAppVersion = newAppDef.getVersion() + 1;
+            Long newAppVersion = appDefinitionDao.getLatestVersion(appId) + 1;
             newAppDef = importAppDefinition(newAppDef, newAppVersion, xpdl);
             
             AppResourceUtil.copyAppResources(appId, version.toString(), appId, newAppDef.getVersion().toString());

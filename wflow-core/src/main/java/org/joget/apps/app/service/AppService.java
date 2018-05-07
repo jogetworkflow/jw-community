@@ -46,10 +46,17 @@ public interface AppService {
     /**
      * Create a new version of an app from an existing latest version
      * @param appId
-     * @param version
      * @return
      */
     AppDefinition createNewAppDefinitionVersion(String appId);
+    
+    /**
+     * Create a new version of an app from an existing version
+     * @param appId
+     * @param version
+     * @return
+     */
+    AppDefinition createNewAppDefinitionVersion(String appId, Long version);
 
     /**
      * Returns the total number of form data rows for a process based on criteria
