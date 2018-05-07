@@ -120,7 +120,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
                 }
                 
                 String menu = "<a onclick=\"menu_" + escapedId + "_postForm();return false;\" class=\"menu-link\"><span>" + label + "</span></a>";
-                menu += "<form id=\"menu_" + escapedId + "_form\" method=\"POST\" action=\"" + url + "?_action=run" + "\" style=\"display:none\"></form>\n";
+                if (!"true".equals(getRequestParameter("isPreview"))) {
+                    menu += "<form id=\"menu_" + escapedId + "_form\" method=\"POST\" action=\"" + url + "?_action=run" + "\" style=\"display:none\"></form>\n";
+                }
                 menu += "<script>"
                         + "function menu_" + escapedId + "_postForm() {";
                 if ("true".equals(getRequestParameter("isPreview"))) {
