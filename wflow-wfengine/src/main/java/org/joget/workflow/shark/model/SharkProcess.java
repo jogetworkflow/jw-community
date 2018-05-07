@@ -4,7 +4,7 @@ public class SharkProcess {
     private String processId;
     private String processName;
     private String processRequesterId;
-    private String processVersion;
+    private String version;
     private String processDefId;
 
     public String getProcessId() {
@@ -32,11 +32,15 @@ public class SharkProcess {
     }
 
     public String getProcessVersion() {
-        return processVersion;
+        return processDefId.split("#")[1];
+    }
+    
+    public String getVersion() {
+        return version;
     }
 
-    public void setProcessVersion(String processVersion) {
-        this.processVersion = processVersion;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public String getProcessDefId() {
