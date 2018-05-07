@@ -60,5 +60,11 @@ public class WorkflowDODSPersistentManager extends DODSPersistentManager {
             throw new PersistenceException(t);
         }
     }
+    
+    @Override
+    public void synchronizeProcess(WMSessionHandle shandle, String procId)
+            throws PersistenceException {
+        //ignore
+    }
 }
 
