@@ -521,7 +521,7 @@ public class AppWebController {
         
         try {
             if (appId != null && !appId.isEmpty()) {
-                if (version == null) {
+                if (version == null || version.isEmpty()) {
                     Long appVersion = appService.getPublishedVersion(appId);
                     if (appVersion != null) {
                         version = appVersion.toString();
