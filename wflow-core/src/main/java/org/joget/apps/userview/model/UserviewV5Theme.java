@@ -1,8 +1,9 @@
 package org.joget.apps.userview.model;
 
 import java.util.Map;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 
 /**
@@ -89,7 +90,10 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String handleContentError(Exception e, Map<String, Object> data) {
-        return StringEscapeUtils.escapeHtml(e.getMessage());
+        LogUtil.error(getClassName(), e, "Error rendering content.");
+        data.put("exception", e);
+        data.put("date", AppUtil.processHashVariable("#date.d MMM yyyy HH:mm:ss#", null, null, null));
+        return UserviewUtil.getTemplate(this, data, "/templates/userview/error.ftl");
     }
 
     /**
