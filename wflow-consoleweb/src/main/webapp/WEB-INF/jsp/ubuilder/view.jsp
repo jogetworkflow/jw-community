@@ -5,6 +5,7 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ page import="org.joget.apps.userview.model.Userview"%>
 <%@ page contentType="text/html" pageEncoding="utf-8"%>
 
@@ -336,7 +337,29 @@ if (!MobileUtil.isMobileDisabled() && MobileUtil.isMobileUserAgent(request)) {
                                 ${userview.setting.theme.beforeContent}
                             </c:if>
                             ${bodyContent}
-                            <c:if test="${!empty bodyError}"><c:out value="${bodyError}" escapeXml="true"/></c:if>
+                            <c:if test="${!empty bodyError}">
+                                <c:out value="${bodyError}" escapeXml="true"/>
+                                
+                                <h1 id="title">
+                                    <fmt:message key="general.error.error500"/>
+                                </h1>
+                                <div id="error_content" style="font-size:13px">
+                                    <br><br>
+                                    <fmt:message key="general.error.error500Description"/>
+                                    <br><br>
+                                    <ul style="text-align:left; display:inline-block">
+                                        <li><fmt:message key="console.footer.label.revision"/></li>
+                                        <li><fmt:message key="general.error.url"/>: ${pageContext.errorData.requestURI}</li>
+                                        <li><fmt:message key="general.error.date"/>: <fmt:formatDate pattern="d MMM yyyy HH:mm:ss" value="<%= new java.util.Date() %>"/></li>
+                                        <fmt:message key="general.error.errorDetails"/>
+                                    </ul>
+                                    <p>&nbsp;</p>
+                                </div>
+                                <%
+                                Throwable t =(Throwable)pageContext.findAttribute("bodyError");  
+                                LogUtil.error("/jsp/ubuilder/view.jsp", t, "Error rendering userview menu");
+                                %>
+                            </c:if>
                             <c:if test="${!empty userview.setting.theme.pageBottom}">
                                 ${userview.setting.theme.pageBottom}
                             </c:if>

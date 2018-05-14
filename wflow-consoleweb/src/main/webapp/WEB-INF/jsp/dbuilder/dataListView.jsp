@@ -1,5 +1,6 @@
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.commons.util.LogUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
@@ -206,14 +207,26 @@
         </c:if>    
     </c:catch>
 
-    ${dataListException}
     <c:if test="${!empty dataListException}">
-<pre>        
+        <h1 id="title">
+            <fmt:message key="general.error.error500"/>
+        </h1>
+        <div id="error_content" style="font-size:13px">
+            <br><br>
+            <fmt:message key="general.error.error500Description"/>
+            <br><br>
+            <ul style="text-align:left; display:inline-block">
+                <li><fmt:message key="console.footer.label.revision"/></li>
+                <li><fmt:message key="general.error.url"/>: ${pageContext.errorData.requestURI}</li>
+                <li><fmt:message key="general.error.date"/>: <fmt:formatDate pattern="d MMM yyyy HH:mm:ss" value="<%= new java.util.Date() %>"/></li>
+                <fmt:message key="general.error.errorDetails"/>
+            </ul>
+            <p>&nbsp;</p>
+        </div>
 <%
-Throwable t =(Throwable)pageContext.findAttribute("dataListException");      
-t.printStackTrace(new java.io.PrintWriter(out));
-%>                
-</pre>
+Throwable t =(Throwable)pageContext.findAttribute("dataListException");  
+LogUtil.error("/jsp/dbuilder/dataListView.jsp", t, "Error rendering datalist");
+%>
     </c:if>
     
 </div>

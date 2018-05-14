@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@page import="org.joget.apps.userview.model.UserviewMenu"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
+<%@ page import="org.joget.commons.util.LogUtil"%>
 <%@page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
 
@@ -220,13 +221,27 @@
                     <c:otherwise>
                         ${bodyContent}
                         <c:if test="${!empty bodyError}">
-                            ${bodyError}
-                            <pre>
+                            <c:out value="${bodyError}" escapeXml="true"/>
+
+                            <h1 id="title">
+                                <fmt:message key="general.error.error500"/>
+                            </h1>
+                            <div id="error_content" style="font-size:13px">
+                                <br><br>
+                                <fmt:message key="general.error.error500Description"/>
+                                <br><br>
+                                <ul style="text-align:left; display:inline-block">
+                                    <li><fmt:message key="console.footer.label.revision"/></li>
+                                    <li><fmt:message key="general.error.url"/>: ${pageContext.errorData.requestURI}</li>
+                                    <li><fmt:message key="general.error.date"/>: <fmt:formatDate pattern="d MMM yyyy HH:mm:ss" value="<%= new java.util.Date() %>"/></li>
+                                    <fmt:message key="general.error.errorDetails"/>
+                                </ul>
+                                <p>&nbsp;</p>
+                            </div>
                             <%
-                                Exception e = (Exception)pageContext.findAttribute("bodyError");
-                                e.printStackTrace(new java.io.PrintWriter(out));
+                            Throwable t =(Throwable)pageContext.findAttribute("bodyError");  
+                            LogUtil.error("/jsp/mobile/mView.jsp", t, "Error rendering mobile userview menu");
                             %>
-                            </pre>
                         </c:if>
                     </c:otherwise>
                 </c:choose>
