@@ -2,6 +2,13 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.22
+=================
+f33fd89 Fixed: wflow-consoleweb - Userview - Error should not shown to enduser. #5566 @5.0-SNAPSHOT
+f1aa0dd Fixed: wflow-wfengine - Workflow Engine - Correction on 43cd45d - Process stuck when the activities before "and" route are completed at same time. #5562 @5.0-SNAPSHOT
+43cd45d Fixed: wflow-wfengine - WorkflowDODSPersistentManager - Process stuck when the activities before "and" route are completed at same time. #5562 @5.0-SNAPSHOT
+1cc98db Fixed: wflow-consoleweb - Userview - Popup Dialog show double scrollbar sometime. @5.0-SNAPSHOT
+
 CHANGES IN 5.0.21
 =================
 e1c4d34 Fixed: wflow-consoleweb - Security - Able to click back after logout. #5449 @5.0-SNAPSHOT
