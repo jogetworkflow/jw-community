@@ -274,6 +274,9 @@ header.navbar .dropdown-menu a {
 header.navbar .dropdown-menu a span.header, header.navbar .dropdown-menu a span.message {
     padding-right: 80px;
     width: 280px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 header.navbar .dropdown-menu a span.header {
