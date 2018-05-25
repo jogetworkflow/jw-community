@@ -44,6 +44,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
         properties.put("element", element);
         properties.put("primaryKey", primaryKey);
         properties.put("formData", formData);
+        properties.put("values", new String[]{});
         return executeScript(getPropertyString("script"), properties, false);
     }
 
