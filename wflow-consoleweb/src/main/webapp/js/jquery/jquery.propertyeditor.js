@@ -5,8 +5,6 @@ PropertyEditor.Validator = {};
 
 /* Utility Functions */
 PropertyEditor.Util = {
-    ajaxLoading: 0,
-    ajaxLoadingTimeoutConter: 0,
     resources: {},
     ajaxCalls: {},
     prevAjaxCalls: {},
@@ -417,7 +415,7 @@ PropertyEditor.Util = {
                 method = "GET";
             }
 
-            PropertyEditor.Util.showAjaxLoading(field.editor);
+            PropertyEditor.Util.showAjaxLoading(field.editor, field, reference);
             $.ajax({
                 url: ajaxUrl,
                 dataType: "text",
@@ -469,10 +467,10 @@ PropertyEditor.Util = {
                             }
 
                             calls[i].field.handleAjaxOptions(tempOptions, calls[i].reference);
+                            PropertyEditor.Util.removeAjaxLoading(calls[i].field.editor, calls[i].field, calls[i].reference);
                             calls[i].field.isDataReady = true;
                         }
                         delete PropertyEditor.Util.ajaxCalls[ajaxUrl];
-                        PropertyEditor.Util.removeAjaxLoading(calls[i].field.editor);
                     }
                 }
             });
@@ -622,31 +620,25 @@ PropertyEditor.Util = {
             }
         }
     },
-    setAjaxLoadingTimeout: function(editor) {
-        setTimeout(function() {
-            PropertyEditor.Util.ajaxLoadingTimeoutConter++;
-            if ($(editor).find(".ajaxLoader").is(":visible")) {
-                if (PropertyEditor.Util.ajaxLoadingTimeoutConter > 10 || PropertyEditor.Util.ajaxLoading === 0) {
-                    PropertyEditor.Util.ajaxLoading = 0;
-                    PropertyEditor.Util.ajaxLoadingTimeoutConter = 0;
-                    $(editor).find(".ajaxLoader").hide();
-                } else {
-                    PropertyEditor.Util.setAjaxLoadingTimeout(editor);
-                }
-            }
-        }, 500);
-    },
-    showAjaxLoading: function(editor) {
-        if (PropertyEditor.Util.ajaxLoading === 0) {
-            PropertyEditor.Util.setAjaxLoadingTimeout(editor);
+    showAjaxLoading: function(editor, field, reference) {
+        var container = $("#" + field.id + "_input");
+        if (reference == "CONTAINER") {
+            container = $(container).parent();
+        } else if (reference !== undefined) {
+            container = $(container).find(".grid_model [name='" + reference + "']");
         }
-        PropertyEditor.Util.ajaxLoading++;
+        $(container).addClass("ajaxLoading");
         $(editor).find(".ajaxLoader").show();
     },
-    removeAjaxLoading: function(editor) {
-        PropertyEditor.Util.ajaxLoading--;
-        if (PropertyEditor.Util.ajaxLoading === 0) {
-            PropertyEditor.Util.ajaxLoadingTimeoutConter = 0;
+    removeAjaxLoading: function(editor, field, reference) {
+        var container = $("#" + field.id + "_input");
+        if (reference == "CONTAINER") {
+            container = $(container).parent();
+        } else if (reference !== undefined) {
+            container = $(container).find(".grid_model [name='" + reference + "']");
+        }
+        $(container).removeClass("ajaxLoading");
+        if ($(editor).find(".ajaxLoading").length === 0) {
             $(editor).find(".ajaxLoader").hide();
         }
     },
@@ -3883,7 +3875,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             var deferreds = [];
 
             PropertyEditor.Util.prevAjaxCalls = {};
-            PropertyEditor.Util.showAjaxLoading(thisObj.editor);
+            PropertyEditor.Util.showAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
 
             deferreds.push(this.getElementProperties(value));
             deferreds.push(this.getElementDefaultProperties(value));
@@ -3927,7 +3919,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     $(childFirstPage).find('.property-editor-page-title').prepend(parentTitle);
                 }
                 thisObj.editorObject.refresh();
-                PropertyEditor.Util.removeAjaxLoading(thisObj.editor);
+                PropertyEditor.Util.removeAjaxLoading(thisObj.editor, thisObj, "CONTAINER");
             });
         }
     },
