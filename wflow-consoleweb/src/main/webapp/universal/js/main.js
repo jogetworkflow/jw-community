@@ -7,27 +7,27 @@ if ((typeof _customFooTableArgs) === "undefined") {
     };
 }
 
-!function ($) {
+! function($) {
     var bsButton = $.fn.button.noConflict(); // reverts $.fn.button to jqueryui btn
     $.fn.bsButton = bsButton;
-    
+
     //override event to use new method name
     $(document).off('click.button.data-api', '[data-toggle^=button]');
-    $(document).on('click.button.data-api', '[data-toggle^=button]', function (e) {
+    $(document).on('click.button.data-api', '[data-toggle^=button]', function(e) {
         var $btn = $(e.target)
         if (!$btn.hasClass('btn')) $btn = $btn.closest('.btn')
         $btn.bsButton('toggle')
     })
-    
+
     $(document).ready(function() {
-        $(".rowCount").each(function(){
+        $(".rowCount").each(function() {
             var count = $(this).text().replace("(", "").replace(")", "");
             $(this).text(count);
             $(this).addClass("pull-right badge");
         });
-        
-        $("body").swipe( {
-            swipeRight:function(event, direction, distance, duration, fingerCount, fingerData) {
+
+        $("body").swipe({
+            swipeRight: function(event, direction, distance, duration, fingerCount, fingerData) {
                 if (!$("body").hasClass("rtl")) {
                     var posx = fingerData[0]['start']['x'];
                     if ($(".hi-trigger").is(":visible") && !$("body").hasClass("sidebar-toggled") && posx < 20) {
@@ -39,7 +39,7 @@ if ((typeof _customFooTableArgs) === "undefined") {
                     }
                 }
             },
-            swipeLeft:function(event, direction, distance, duration, fingerCount, fingerData) {
+            swipeLeft: function(event, direction, distance, duration, fingerCount, fingerData) {
                 if (!$("body").hasClass("rtl")) {
                     if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
                         $(".ma-backdrop").trigger("click");
@@ -68,35 +68,35 @@ if ((typeof _customFooTableArgs) === "undefined") {
                 }
             });
 
-            $("#sidebar a.dropdown").on("click", function(e){
+            $("#sidebar a.dropdown").on("click", function(e) {
                 toogleMenu(this);
                 e.preventDefault();
                 e.stopPropagation();
             });
         };
         initMenu();
-        
+
         //open menu
         var originalHash = '';
-        $("#sidebar-trigger").on("click", function(){
-            originalHash = location.hash.replace('#','');
-            
+        $("#sidebar-trigger").on("click", function() {
+            originalHash = location.hash.replace('#', '');
+
             //close menu on back
-            $(window).bind('hashchange.menu',function(event){
-                var hash = location.hash.replace('#','');
-                
-                if(hash !== 'menu' && $(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
+            $(window).bind('hashchange.menu', function(event) {
+                var hash = location.hash.replace('#', '');
+
+                if (hash !== 'menu' && $(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled")) {
                     $(".ma-backdrop").trigger("click");
                 }
             });
-            
+
             //close menu on touch any place other than menu
             $("body").on("click.sidebar-toggled", function(e) {
                 var container = $("#sidebar");
-                
-                if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") 
-                        && !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 
-                        && !container.is(e.target) && container.has(e.target).length === 0) {
+
+                if ($(".ma-backdrop").is(":visible") && $("body").hasClass("sidebar-toggled") &&
+                    !$("#sidebar-trigger").is(e.target) && $("#sidebar-trigger").has(e.target).length === 0 &&
+                    !container.is(e.target) && container.has(e.target).length === 0) {
                     $("body").removeClass("sidebar-toggled");
                     $(".ma-backdrop").remove();
                     $("#sidebar, #sidebar-trigger").removeClass("toggled");
@@ -106,7 +106,7 @@ if ((typeof _customFooTableArgs) === "undefined") {
                     return false;
                 }
             });
-            
+
             var backdrop = '<div class="ma-backdrop" />';
             $("body").addClass("sidebar-toggled");
             $("header.navbar").append(backdrop);
@@ -142,127 +142,127 @@ if ((typeof _customFooTableArgs) === "undefined") {
         }
 
         //add button effect to responsive table
-        $(".dataList table").on("footable_row_detail_updated", function (event) {
+        $(".dataList table").on("footable_row_detail_updated", function(event) {
             attachButtonEffect();
         });
-        
+
         //remove pagination if only 1 page
-        if($(".dataList .pagelinks a").length === 0) {
+        if ($(".dataList .pagelinks a").length === 0) {
             $(".dataList .pagelinks").hide();
         }
-        
-        $(".filter-cell select").on("change", function(){
-            if($(this).val() === "") {
+
+        $(".filter-cell select").on("change", function() {
+            if ($(this).val() === "") {
                 $(this).addClass("emptyValue");
             } else {
                 $(this).removeClass("emptyValue");
             }
         });
-        $(".filter-cell select").each(function(){
-            if($(this).val() === "") {
+        $(".filter-cell select").each(function() {
+            if ($(this).val() === "") {
                 $(this).addClass("emptyValue");
             } else {
                 $(this).removeClass("emptyValue");
             }
         });
-        
+
         initTextareaAutoHeight();
-        
+
         // hide responsive switch if within IFRAME
         if (window.self !== window.top) {
             $("#responsiveSwitch").hide();
         }
     });
-    
+
     $(window).on("load", function() {
         setTimeout(function() {
             loadInbox();
         }, 0);
     });
-    
+
     function onFormChange() {
-        $(document).on("change", "form *", function(){
+        $(document).on("change", "form *", function() {
             attachButtonEffect();
             initTextareaAutoHeight();
         });
     }
-    
+
     function initTextareaAutoHeight() {
-        $("textarea").each(function(){
+        $("textarea").each(function() {
             textareaAutoHeight(this);
         });
         $(document).off("input keydown keyup", "textarea");
-        $(document).on("input keydown keyup", "textarea", function(){
+        $(document).on("input keydown keyup", "textarea", function() {
             textareaAutoHeight(this);
         });
     }
-    
+
     function textareaAutoHeight(e) {
         var scrollLeft = window.pageXOffset ||
             (document.documentElement || document.body.parentNode || document.body).scrollLeft;
 
-        var scrollTop  = window.pageYOffset ||
+        var scrollTop = window.pageYOffset ||
             (document.documentElement || document.body.parentNode || document.body).scrollTop;
 
         var rows = $(e).attr("rows");
         var rowHeight = 22;
-        $(e).attr("rows", 1).css({'height':'auto','overflow-y':'hidden'});
+        $(e).attr("rows", 1).css({ 'height': 'auto', 'overflow-y': 'hidden' });
         var minTextAreaHeight = (rows * rowHeight);
-        var newHeight = e.scrollHeight + (e.scrollHeight > 30?6:0);
+        var newHeight = e.scrollHeight + (e.scrollHeight > 30 ? 6 : 0);
         if (newHeight < minTextAreaHeight) {
             newHeight = minTextAreaHeight;
         }
-        $(e).attr("rows", rows).css({'height':'auto','overflow-y':'hidden'}).height(newHeight);
-        
+        $(e).attr("rows", rows).css({ 'height': 'auto', 'overflow-y': 'hidden' }).height(newHeight);
+
         window.scrollTo(scrollLeft, scrollTop);
     }
-    
+
     function attachButtonEffect() {
         setTimeout(function() {
             Waves.attach('.btn:not(.waves-button), .form-button:not(.waves-button), button:not(.waves-button), input[type=button]:not(.waves-button), input[type=reset]:not(.waves-button), input[type=submit]:not(.waves-button)', ['btn', 'waves-button', 'waves-float']);
         }, 0);
     }
-    
+
     /* ---------- Inbox ------------------------- */
     function loadInbox() {
         if ($(".inbox-notification").length === 1) {
             loadInboxData();
-            $(".inbox-notification .refresh").on("click", function(e){
+            $(".inbox-notification .refresh").on("click", function(e) {
                 e.preventDefault();
                 loadInboxData();
                 return false;
             });
         }
     }
-    
+
     function loadInboxData() {
         $(".inbox-notification .loading").show();
         var url = $(".inbox-notification").data("url");
-        $.getJSON(url, {}, 
-            function (data) {
+        $.getJSON(url, {},
+            function(data) {
                 var count = 0;
                 if (data.count !== undefined) {
                     count = data.count;
                 }
                 $(".inbox-notification > a > .badge").text(count);
                 $(".inbox-notification .dropdown-menu-title .count").text(count);
-                
+
                 $(".inbox-notification > ul > li.task").remove();
                 if (data.data) {
                     var footer = $(".inbox-notification > ul .dropdown-menu-sub-footer").parent();
                     var link = $(".inbox-notification > ul .dropdown-menu-sub-footer").attr("href");
-                    $.each(data.data, function(i, d){
-                        var html = "<li class=\"task\"><a href=\""+link+"?_mode=assignment&activityId="+d.activityId+"\">";
-                        html += "<span class=\"header\">"+d.activityName+"</span>";
-                        html += "<span class=\"message\">"+d.processName+"</span><span class=\"time\">"+d.dateCreated+"</span>";
+                    $.each(data.data, function(i, d) {
+                        var html = "<li class=\"task\"><a href=\"" + link + "?_mode=assignment&activityId=" + d.activityId + "\">";
+                        html += "<span class=\"header\">" + d.activityName + "</span>";
+                        html += "<span class=\"message\">" + d.processName + "</span><span class=\"time\">" + d.dateCreated + "</span>";
                         html += "</a></li>";
                         footer.before($(html));
                     });
                 }
-                
+
                 $(".inbox-notification .loading").hide();
             }
         );
     }
-    
+
 }(window.jQuery);
