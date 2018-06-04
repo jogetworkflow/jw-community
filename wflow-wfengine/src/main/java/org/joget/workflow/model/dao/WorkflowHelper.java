@@ -89,4 +89,11 @@ public interface WorkflowHelper {
      * @return
      */
     Map<String, Collection<String>> getReplacementUsers(String username);
+    
+    /**
+     * Get all package id and version 
+     * @return
+     */
+    Map<String, String> getPublichedPackageVersions();
+    
 }

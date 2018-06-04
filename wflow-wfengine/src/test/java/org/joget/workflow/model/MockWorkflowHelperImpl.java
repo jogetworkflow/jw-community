@@ -3,6 +3,7 @@ package org.joget.workflow.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -39,5 +40,9 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
 
     public Map<String, Collection<String>> getReplacementUsers(String username) {
         return null;
+    }
+    
+    public Map<String, String> getPublichedPackageVersions() {
+        return new HashMap<String, String>();
     }
 }

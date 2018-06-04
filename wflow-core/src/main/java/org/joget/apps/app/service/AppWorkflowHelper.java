@@ -13,6 +13,7 @@ import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -723,5 +724,21 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         
         return replacements;
+    }
+    
+    @Override
+    public Map<String, String> getPublichedPackageVersions() {
+        AppDefinitionDao appDefinitionDao = (AppDefinitionDao) WorkflowUtil.getApplicationContext().getBean("appDefinitionDao");
+        Collection<AppDefinition> list = appDefinitionDao.findPublishedApps(null, null, null, null);
+        Map<String, String> map = new HashMap<String, String>();
+        
+        for (AppDefinition appDef : list) {
+            PackageDefinition packageDefiniton = appDef.getPackageDefinition();
+            if (packageDefiniton != null) {
+                map.put(packageDefiniton.getAppId(), packageDefiniton.getVersion().toString());
+            }
+        }
+        
+        return map;
     }
 }
