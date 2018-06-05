@@ -42,7 +42,7 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
         return null;
     }
     
-    public Map<String, String> getPublichedPackageVersions() {
+    public Map<String, String> getPublishedPackageVersions() {
         return new HashMap<String, String>();
     }
 }

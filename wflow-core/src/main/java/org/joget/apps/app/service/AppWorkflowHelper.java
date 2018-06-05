@@ -727,7 +727,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
     }
     
     @Override
-    public Map<String, String> getPublichedPackageVersions() {
+    public Map<String, String> getPublishedPackageVersions() {
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao) WorkflowUtil.getApplicationContext().getBean("appDefinitionDao");
         Collection<AppDefinition> list = appDefinitionDao.findPublishedApps(null, null, null, null);
         Map<String, String> map = new HashMap<String, String>();

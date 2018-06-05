@@ -94,6 +94,6 @@ public interface WorkflowHelper {
      * Get all package id and version 
      * @return
      */
-    Map<String, String> getPublichedPackageVersions();
+    Map<String, String> getPublishedPackageVersions();
     
 }

@@ -142,11 +142,11 @@ public class SharkUtilitiesAspect {
         
         Set<String> reposPkgIdsWithVersion = new HashSet<String>(); // latest version of each app version
         WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
-        Map<String, String> allPublichedPackageVersions = workflowMapper.getPublichedPackageVersions();
-        for (String s : allPublichedPackageVersions.keySet()) {
-            reposPkgIdsWithVersion.add(createPkgIdWithVersion(s, allPublichedPackageVersions.get(s)));
+        Map<String, String> allPublishedPackageVersions = workflowMapper.getPublishedPackageVersions();
+        for (String s : allPublishedPackageVersions.keySet()) {
+            reposPkgIdsWithVersion.add(createPkgIdWithVersion(s, allPublishedPackageVersions.get(s)));
         }
-        newCurrentVersions = allPublichedPackageVersions;
+        newCurrentVersions = allPublishedPackageVersions;
 
         Set<String> pkgsToLoad = new HashSet<String>(reposPkgIdsWithVersion);
         pkgsToLoad.removeAll(enginePkgIdsWithVersion);
