@@ -2,6 +2,26 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.8
+================
+02836b1 Fixed: wflow-core/wflow-wfengine - Shark Engine - Correction of 7ee8b5e. @6.0-SNAPSHOT
+7ee8b5e Fixed: wflow-core/wflow-wfengine/wflow-install - Shark Engine - Memory issue on XPDL caching. @6.0-SNAPSHOT
+8fbeec8 Fixed: wflow-core - Grid - Change label to reduce confusion. @6.0-SNAPSHOT
+b1adcae Fixed: wflow-consoleweb - Universal Theme - Inbox notification at header not working in IE @6.0-SNAPSHOT
+fc830bd Modified: wflow-consoleweb - Universal Theme - Formatting js code. @6.0-SNAPSHOT
+aae4c0c Fixed: wflow-consoleweb - Property Editor - Screen blocked by loading spinner even all ajax calls are done in very slow network.  @6.0-SNAPSHOT
+21b213c Modified: wflow-consoleweb - Property Ediotr - Formatting code to better reading. @6.0-SNAPSHOT
+77ff645 Fixed: wflow-core - BeanShell Form Binder - Script for ajax options does not work when populate options for Form Grid. #5607 @6.0-SNAPSHOT
+0e45454 Modifed: wflow-consoleweb - Universal Theme - Task title in inbox notification does not have word wrapping. @6.0-SNAPSHOT
+b77adc2 Fixed: wflow-wfengine - Reduce unnecessary db call of shark engine. @6.0-SNAPSHOT
+2ce106c Fixed: wflow-consoleweb - Userview - Error should not shown to enduser. #5566 @6.0-SNAPSHOT
+5a727f7 Fixed: wflow-wfengine - Workflow Engine - Correction on 20aadea - Process stuck when the activities before "and" route are completed at same time. #5562 @6.0-SNAPSHOT
+d0e721f Fixed: wflow-core - Run Process Menu - Causing CSRF error in userview builder preview mode. @6.0-SNAPSHOT
+1a15cba Fixed: wflow-consoleweb - App Resource - App resource retrieved from latest version instead of published version when no version is defined in URL. @6.0-SNAPSHOT
+25262d9 Fixed: wflow-core/wflow-consoleweb - App Version - Not able to create new version based on selected version. @6.0-SNAPSHOT
+b85019e Fixed: wflow-wfengine - WorkflowAsignmentDao - Retrieved process version is wrong. @6.0-SNAPSHOT
+20aadea Fixed: wflow-wfengine - WorkflowDODSPersistentManager - Process stuck when the activities before "and" route are completed at same time. #5562 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.7
 ================
 c3fa057 Fixed: wflow-core - Date picker - When using as time only and start/end date limit is set, the start date value become blank during edit. @6.0-SNAPSHOT
