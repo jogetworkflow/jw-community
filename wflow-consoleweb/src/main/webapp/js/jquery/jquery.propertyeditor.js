@@ -391,7 +391,7 @@ PropertyEditor.Util = {
                     targetValue = "";
                 }
 
-                ajaxUrl += param + "=" + escape(targetValue);
+                ajaxUrl += param + "=" + encodeURIComponent(targetValue);
             }
         }
         var prevAjaxUrl = PropertyEditor.Util.prevAjaxCalls[field.id + "::" + reference];
@@ -3929,7 +3929,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
 
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
-            data: "value=" + escape(value),
+            data: "value=" + encodeURIComponent(value),
             dataType: "text",
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
@@ -3952,7 +3952,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             this.properties.default_property_values_url !== "") {
             $.ajax({
                 url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
-                data: "value=" + escape(value),
+                data: "value=" + encodeURIComponent(value),
                 dataType: "text",
                 success: function(response) {
                     if (response !== null && response !== undefined && response !== "") {
