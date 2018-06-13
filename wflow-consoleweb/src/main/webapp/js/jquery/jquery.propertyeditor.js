@@ -180,7 +180,7 @@ PropertyEditor.Util = {
                     targetValue = "";
                 }
             }
-            ajaxUrl += targetName + "=" + escape(targetValue);
+            ajaxUrl += targetName + "=" + encodeURIComponent(targetValue);
         }
         $.ajax({
             url: ajaxUrl,
@@ -2544,7 +2544,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         
         $.ajax({
             url: PropertyEditor.Util.replaceContextPath(this.properties.url, this.options.contextPath),
-            data : "value="+escape(value),
+            data : "value="+encodeURIComponent(value),
             dataType : "text",
             success: function(response) {
                 if(response !== null && response !== undefined && response !== ""){
@@ -2567,7 +2567,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 && this.properties.default_property_values_url !== "") {
             $.ajax({
                 url: PropertyEditor.Util.replaceContextPath(this.properties.default_property_values_url, this.options.contextPath),
-                data : "value="+escape(value),
+                data : "value="+encodeURIComponent(value),
                 dataType : "text",
                 success: function(response) {
                     if(response !== null && response !== undefined && response !== ""){

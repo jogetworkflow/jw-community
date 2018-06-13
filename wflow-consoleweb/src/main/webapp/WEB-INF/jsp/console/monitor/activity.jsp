@@ -155,10 +155,10 @@
     }
 
     function setVariable(variable){
-        var url = "${pageContext.request.contextPath}/web/json/monitoring/activity/variable/${activity.id}/" + escape(variable);
+        var url = "${pageContext.request.contextPath}/web/json/monitoring/activity/variable/${activity.id}/" + encodeURIComponent(variable);
         var value = $('#' + variable).attr('value');
 
-        ConnectionManager.post(url, callback, "value=" + escape(value));
+        ConnectionManager.post(url, callback, "value=" + encodeURIComponent(value));
 
     }
 
@@ -207,7 +207,7 @@
         var url = "${pageContext.request.contextPath}/web/json/monitoring/user/reevaluate";
         var value = $('#reevaluateUser').val();
 
-        ConnectionManager.post(url, callback, "username=" + escape(value));
+        ConnectionManager.post(url, callback, "username=" + encodeURIComponent(value));
     }
 
     Template.init("#menu-monitor", "#nav-monitor-<c:out value="${processStatus}"/>");
