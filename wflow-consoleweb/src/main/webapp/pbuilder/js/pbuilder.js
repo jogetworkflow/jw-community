@@ -3411,14 +3411,16 @@ ProcessBuilder.Designer = {
             var connection = info.connection;
             var source = info.source;
             var target = info.target;
+            var viewportTop = $("#viewport").scrollTop();
+            var viewportLeft = $("#viewport").scrollLeft();
             if ($(target).attr("id").indexOf("jsPlumb") >= 0) {
                 $("#node_dialog").remove();
-                var offsetLeft = (target.offsetLeft);
-                var offsetTop = $(target).offset().top;
+                var offsetLeft = $(target).offset().left + viewportLeft;
+                var offsetTop = $(target).offset().top + viewportTop;
                 var swimlane;
                 // determine swimlane
                 $(".participant").each(function(index, participant) {
-                    var participantTop = $(participant).offset().top; // * ProcessBuilder.Designer.zoom;
+                    var participantTop = $(participant).offset().top + viewportTop; // * ProcessBuilder.Designer.zoom;
                     var participantHeight = $(participant).height() * ProcessBuilder.Designer.zoom;
                     if (offsetTop >= participantTop && offsetTop <= (participantTop + participantHeight)) {
                         target = participant;
@@ -3439,15 +3441,16 @@ ProcessBuilder.Designer = {
                     }
                 }
                 // display dialog to choose node type
-                var nodeTop = connection.endpoints[1].endpoint.y + 100;
+                var nodeTop = connection.endpoints[1].endpoint.y + 100 - viewportTop;
+                var nodeLeft = connection.endpoints[1].endpoint.x - viewportLeft;
                 var $nodeDialog = $('<div id="node_dialog"><ul><li type="activity">' + get_pbuilder_msg("pbuilder.label.activity") + '</li><li type="tool">' + get_pbuilder_msg("pbuilder.label.tool") + '</li><li type="route">' + get_pbuilder_msg("pbuilder.label.route") + '</li><li type="subflow">' + get_pbuilder_msg("pbuilder.label.subflow") + '</li><li type="end">' + get_pbuilder_msg("pbuilder.label.end") + '</li><ul></div>');
                 $nodeDialog.dialog({
                     autoOpen: true,
                     modal: true,
                     width: 100,
                     open: function(event, ui) {
-                        var dialogTop = (nodeTop - 50) * ProcessBuilder.Designer.zoom;
-                        var dialogLeft = (offsetLeft + 50) * ProcessBuilder.Designer.zoom;
+                        var dialogTop = (nodeTop - 50 ) * ProcessBuilder.Designer.zoom;
+                        var dialogLeft = (nodeLeft + 50) * ProcessBuilder.Designer.zoom;
                         $nodeDialog.dialog("option", { position: [dialogLeft, dialogTop] });
                     }
                 });
@@ -3467,7 +3470,7 @@ ProcessBuilder.Designer = {
                     var zoom = ProcessBuilder.Designer.zoom;
                     ProcessBuilder.Designer.setZoom(1);
                     var $newNode = $('<div id="newNode" class="node ' + nodeType + '"><div class="node_label">' + nodeLabel + '</div></div>');
-                    $newNode.offset({left: offsetLeft});
+                    $newNode.offset({left: nodeLeft + viewportLeft});
                     $newNode.offset({top: nodeTop});
                     ProcessBuilder.Designer.setZoom(zoom);
                     ProcessBuilder.Actions.execute(function() {
