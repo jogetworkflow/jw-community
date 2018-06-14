@@ -6,10 +6,16 @@
                 $('[name='+o.controlField+']').addClass("control-field");
                 
                 var showHideChange = function() {
+                    if ($(target).hasClass("section-visibility-disabled")) {
+                        return;
+                    }
                     showHideOption(target, o);
                 };
                 
                 var ajaxChange = function() {
+                    if ($(target).hasClass("section-visibility-disabled")) {
+                        return;
+                    }
                     ajaxOptions(target, o);
                 };
                 
