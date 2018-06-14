@@ -8,6 +8,10 @@ import org.joget.commons.util.SetupManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,6 +31,7 @@ import org.hibernate.Session;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
+import org.hibernate.jdbc.Work;
 import org.hibernate.mapping.Component;
 import org.hibernate.mapping.PersistentClass;
 import org.hibernate.mapping.Property;
@@ -931,26 +936,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory created");
 
         // update schema
-        boolean requiresNewTransaction = false;
-        try {
-            Object dialect = org.apache.commons.beanutils.PropertyUtils.getProperty(sf, "dialect");
-            requiresNewTransaction = (dialect.getClass().getName().startsWith("org.hibernate.dialect.SQLServer") || dialect.getClass().getName().startsWith("org.hibernate.dialect.PostgreSQL"));
-        } catch (Exception ex) {
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Error retrieving hibernate dialect " + ex.toString());
-        }
-        if (requiresNewTransaction) {
-            TransactionTemplate transactionTemplate = (TransactionTemplate) AppUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
-            transactionTemplate.execute(new TransactionCallback<Object>() {
-                public Object doInTransaction(TransactionStatus ts) {
-                    internalUpdateSchema(sr, configuration);
-                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " schema updated in new transaction");
-                    return null;
-                }
-            });
-        } else {
-            internalUpdateSchema(sr, configuration);
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " schema updated");
-        }
+        internalUpdateSchema(sf, sr, configuration, entityName);
         
         if (actionType == ACTION_TYPE_LOAD) {
             PersistentClass pc = configuration.getClassMapping(entityName);
@@ -969,21 +955,59 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     /**
      * Trigger actual Hibernate schema update
+     * @param sf
      * @param sr
      * @param configuration
+     * @param entityName
      * @throws HibernateException 
      */
-    protected void internalUpdateSchema(ServiceRegistry sr, Configuration configuration) throws HibernateException {
-        try {
-            new SchemaExport(sr, configuration).setImportSqlCommandExtractor(sr.getService(ImportSqlCommandExtractor.class)).execute(false, true, false, true);
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error creating schema");
+    protected void internalUpdateSchema(final SessionFactory sf, final ServiceRegistry sr, final Configuration configuration, final String entityName) throws HibernateException {
+        // check table exists
+        final Set tableSet = new HashSet();
+        if (!entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME)) {
+            tableSet.add(entityName);
         }
+        Session session = null;
         try {
-            new SchemaUpdate(sr, configuration).execute(false, true);
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error updating schema");
+            session = sf.openSession();
+            session.doWork(new Work() {
+                @Override
+                public void execute(Connection connection) throws SQLException {
+                    DatabaseMetaData dbm = connection.getMetaData();
+                    String tableEntityName = entityName;
+                    if (dbm.storesUpperCaseIdentifiers()) {
+                        tableEntityName = entityName.toUpperCase();
+                    } else if (dbm.storesLowerCaseIdentifiers()) {
+                        tableEntityName = entityName.toLowerCase();
+                    }
+                    ResultSet rs = dbm.getTables(null, null, tableEntityName, null);
+                    if (rs.next()) {
+                        tableSet.add(entityName);
+                    }
+                }
+            });            
+        } finally {
+            if (session != null) {
+                session.close();
+            }
         }
+        if (tableSet.isEmpty()) {
+            // table does not exist, create it
+            try {
+                new SchemaExport(sr, configuration).setImportSqlCommandExtractor(sr.getService(ImportSqlCommandExtractor.class)).execute(false, true, false, true);
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema created");
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error creating schema");
+            }
+        } else {
+            // table exists, update it
+            try {
+                new SchemaUpdate(sr, configuration).execute(false, true);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error updating schema");
+            }
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema updated");                
+        } 
     }
     
     /**
