@@ -124,7 +124,7 @@ public class CustomDODSRepositoryPersistenceManager extends DODSRepositoryPersis
             query.setQueryXPDLId(xpdlId);
             
             if (xpdlVersion == null) {
-                query.getQueryBuilder().addOrderByColumn("SHKXPDLS.XPDLUploadTime", "DESC");
+                query.getQueryBuilder().addOrderByColumn("SHKXPDLS.oid", "DESC");
             } else {
                 query.setQueryXPDLVersion(xpdlVersion);
             }
@@ -168,7 +168,7 @@ public class CustomDODSRepositoryPersistenceManager extends DODSRepositoryPersis
             CustomXPDLQuery query = new CustomXPDLQuery(dbt);
             query.getQueryBuilder().setSelectClause("SHKXPDLS.XPDLVersion");
             query.setQueryXPDLId(xpdlId);
-            query.getQueryBuilder().addOrderByColumn("SHKXPDLS.XPDLUploadTime", "DESC");
+            query.getQueryBuilder().addOrderByColumn("SHKXPDLS.oid", "DESC");
             query.setMaxRows(1);
             
             dbQuery = XPDLDO.createQuery(dbt);
