@@ -2472,8 +2472,18 @@ public class AppServiceImpl implements AppService {
                 } else if (line.startsWith("msgid \"") && !line.equals("msgid \"\"")) {
                     key = line.substring(7, line.length() - 1);
                     translated = null;
-                } else if (line.startsWith("msgstr \"")) {
+                } else if (line.startsWith("msgstr \"") && line.endsWith("\"")) {
                     translated = line.substring(8, line.length() - 1);
+                } else if (line.startsWith("msgstr \"")) {
+                    translated = line.substring(8, line.length());
+                    while ((line = bufferedReader.readLine()) != null) {
+                        if (line.endsWith("\"")) {
+                            translated += "\n" + line.substring(0, line.length() - 1);
+                            break;
+                        } else {
+                            translated += "\n" + line;
+                        }
+                    }
                 }
                 
                 if (key != null && translated != null) {
