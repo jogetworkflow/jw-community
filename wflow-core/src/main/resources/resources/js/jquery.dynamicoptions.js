@@ -10,14 +10,14 @@
                 $('[name='+o.controlField+']').addClass("control-field");
                 
                 var showHideChange = function() {
-                    if ($(target).hasClass("section-visibility-disabled")) {
+                    if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
                         return;
                     }
                     showHideOption(target, o);
                 };
                 
                 var ajaxChange = function() {
-                    if ($(target).hasClass("section-visibility-disabled")) {
+                    if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
                         return;
                     }
                     ajaxOptions(target, o);
