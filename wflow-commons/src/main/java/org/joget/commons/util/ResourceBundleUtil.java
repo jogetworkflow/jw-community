@@ -115,15 +115,29 @@ public class ResourceBundleUtil implements ApplicationContextAware {
 
                 } else if (line.length() > 9 && locale != null && key != null && original != null && line.substring(0, 8).equalsIgnoreCase("msgstr \"")) {
                     //this is the translated string
-                    translated = line.substring(8, line.length() - 1);
-
+                    if (line.endsWith("\"")) {
+                        translated = line.substring(8, line.length() - 1);
+                    } else {
+                        translated = line.substring(8, line.length());
+                        while ((line = bufferedReader.readLine()) != null) {
+                            if (line.endsWith("\"")) {
+                                translated += "\n" + line.substring(0, line.length() - 1);
+                                break;
+                            } else {
+                                translated += "\n" + line;
+                            }
+                        }
+                    }
                 }
 
                 if (key != null && original != null && translated != null) {
                     //if this is a entry, insert into the list
-                    resourceBundleMessage = new ResourceBundleMessage();
-                    resourceBundleMessage.setKey(key);
-                    resourceBundleMessage.setLocale(locale);
+                    resourceBundleMessage = getResourceBundleMessageDao().getMessage(key, locale);
+                    if (resourceBundleMessage == null) {
+                        resourceBundleMessage = new ResourceBundleMessage();
+                        resourceBundleMessage.setKey(key);
+                        resourceBundleMessage.setLocale(locale);
+                    }   
                     resourceBundleMessage.setMessage(translated);
                     resourceBundleMessageList.add(resourceBundleMessage);
                     key = null;
