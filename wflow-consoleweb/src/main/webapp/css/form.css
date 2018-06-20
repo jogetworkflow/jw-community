@@ -75,6 +75,11 @@
     clear: left;
     padding: 5px 0px;
 }
+.form-cell:after, .subform-cell:after {
+    clear: both;
+    content: "";
+    display: block;
+}
 .form-column > .subform-cell {
     padding: 0;
 }
