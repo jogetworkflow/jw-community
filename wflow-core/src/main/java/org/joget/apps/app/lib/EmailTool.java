@@ -414,12 +414,12 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             }
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.accumulate("message", message);
+                jsonObject.put("message", message);
                 jsonObject.write(response.getWriter());
             } catch (Exception e) {
                 //ignore
             }
-        } if ("validate".equals(action)) {
+        } else if ("validate".equals(action)) {
             boolean error = false;
             
             String smtpHost = request.getParameter("host");
