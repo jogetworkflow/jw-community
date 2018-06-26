@@ -6,10 +6,12 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.search.Query;
 import net.sf.ehcache.search.Result;
 import net.sf.ehcache.search.Results;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -105,6 +107,8 @@ public class UserviewCache {
     }
 
     public static String getCacheKey(UserviewMenu userviewMenu, String type, String scope) {
+        String profile = DynamicDataSourceManager.getCurrentProfile();
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         UserviewService userviewService = (UserviewService) AppUtil.getApplicationContext().getBean("userviewService");
         Userview userview = userviewMenu.getUserview();
         String userviewKey = userview.getPropertyString(Userview.USERVIEW_KEY_VALUE);
@@ -120,7 +124,7 @@ public class UserviewCache {
                 params = (String)request.getAttribute("javax.servlet.forward.query_string");
             }
         }
-        return CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":" + userviewKey + ":" + type + ":" + params;
+        return CACHE_KEY_PREFIX + ":" + profile + ":" + appDef.getAppId() + ":" + userviewId + ":" + menuId + ":" + scope + ":" + userviewKey + ":" + type + ":" + params;
     }
     
 }
