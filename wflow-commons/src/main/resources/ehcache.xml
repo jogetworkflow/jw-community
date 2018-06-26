@@ -86,6 +86,17 @@
         <searchable />
     </cache>
     
+    <!-- Cache for UserviewMenu content -->
+    <cache name="org.joget.cache.FORM_OPTIONS_CACHE"
+            maxElementsInMemory="1000"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            diskPersistent="false">
+        <searchable />
+    </cache>
+    
     <!-- Cache for LESS -->
     <cache name="org.joget.cache.CSS_CACHE"
             maxElementsInMemory="1000"
