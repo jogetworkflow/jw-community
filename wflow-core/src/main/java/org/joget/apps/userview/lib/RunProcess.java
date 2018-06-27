@@ -8,7 +8,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.service.AppService;
@@ -112,6 +114,14 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
             ApplicationContext ac = AppUtil.getApplicationContext();
             AppService appService = (AppService) ac.getBean("appService");
             PackageActivityForm startFormDef = appService.retrieveMappedForm(getRequestParameterString("appId"), getRequestParameterString("appVersion"), getPropertyString("processDefId"), WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+            if (startFormDef != null && startFormDef.getFormId() != null) {
+                FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                FormDefinition formDef = formDefinitionDao.loadById(startFormDef.getFormId(), appDef);
+                if (formDef == null) {
+                    startFormDef = null;
+                }
+            }
             if (startFormDef == null || startFormDef.getFormId() == null) {
                 String url = getUrl();
                 
