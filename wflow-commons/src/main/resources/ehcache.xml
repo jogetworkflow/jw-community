@@ -91,8 +91,8 @@
             maxElementsInMemory="1000"
             eternal="false"
             overflowToDisk="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
+            timeToIdleSeconds="20"
+            timeToLiveSeconds="20"
             diskPersistent="false">
         <searchable />
     </cache>
