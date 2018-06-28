@@ -242,7 +242,13 @@ public class PropertyUtil {
             json = "[]";
         }
         if (helpLink != null && !helpLink.isEmpty()) {
-            json = json.replaceFirst("title", "helplink:'"+StringUtil.escapeString(helpLink, StringUtil.TYPE_JSON, null)+"', title");
+            try {
+                JSONArray jarr = new JSONArray(json);
+                if (jarr.length() > 0) {
+                    jarr.getJSONObject(0).put("helplink", helpLink);
+                }
+                json = jarr.toString(4);
+            } catch (Exception e) {}
         }
         return json;
     }
