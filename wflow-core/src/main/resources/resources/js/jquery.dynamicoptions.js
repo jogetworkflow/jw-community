@@ -7,7 +7,7 @@
                     return;
                 }
                 
-                $('[name='+o.controlField+']').addClass("control-field");
+                $('[name='+o.controlField+']:not(form)').addClass("control-field");
                 
                 var showHideChange = function() {
                     if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
@@ -24,12 +24,12 @@
                 };
                 
                 if (o.nonce === '') {
-                    $('body').off("change", '[name='+o.controlField+']', showHideChange);
-                    $('body').on("change", '[name='+o.controlField+']', showHideChange);
+                    $('body').off("change", '[name='+o.controlField+']:not(form)', showHideChange);
+                    $('body').on("change", '[name='+o.controlField+']:not(form)', showHideChange);
                     showHideOption(target, o);
                 } else {
-                    $('body').off("change", '[name='+o.controlField+']', ajaxChange);
-                    $('body').on("change", '[name='+o.controlField+']', ajaxChange);
+                    $('body').off("change", '[name='+o.controlField+']:not(form)', ajaxChange);
+                    $('body').on("change", '[name='+o.controlField+']:not(form)', ajaxChange);
                     ajaxOptions(target, o);
                 }
             }
@@ -39,7 +39,7 @@
     
     function getValues(name) {
         //get enabled input field oni
-        var el = $('[name='+name+']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var el = $('[name='+name+'].control-field').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var values = new Array();
         
         if ($(el).is("select")) {
@@ -101,7 +101,7 @@
                     }
                 }
                 if (!$(target).is(".section-visibility-disabled")) {
-                    $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+                    $('[name='+o.paramName+']:not(form):not(.section-visibility-disabled)').trigger("change");
                 }
             }
         });
@@ -144,7 +144,7 @@
             });
         }
         if (!$(target).is(".section-visibility-disabled")) {
-            $('[name='+o.paramName+']:not(.section-visibility-disabled)').trigger("change");
+            $('[name='+o.paramName+']:not(form):not(.section-visibility-disabled)').trigger("change");
         }
     }
 })(jQuery);

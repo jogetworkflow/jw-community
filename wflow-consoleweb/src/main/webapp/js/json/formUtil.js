@@ -37,9 +37,9 @@ FormUtil = {
     },
     
     getField : function(fieldId){
-        var field = $("[name="+fieldId+"]");
+        var field = $("[name="+fieldId+"]:not(form)");
         if ($(field).length == 0) {
-            field = $("[name$=_"+fieldId+"]");
+            field = $("[name$=_"+fieldId+"]:not(form)");
         }
         
         //filter those in hidden section
@@ -55,7 +55,7 @@ FormUtil = {
                 if ($(this).attr("name").length < fieldname.length) {
                     fieldname = $(this).attr("name");
                 }
-                field = $("[name="+fieldname+"]");
+                field = $("[name="+fieldname+"]:not(form)");
             });
         }
         

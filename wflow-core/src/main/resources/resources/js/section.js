@@ -18,7 +18,7 @@ VisibilityMonitor.prototype.init = function() {
     for (var i in thisObject.rules) {
         var field = thisObject.rules[i].field;
         if (field !== "(" && field !== ")") {
-            var controlEl = $("[name=" + field + "]");
+            var controlEl = $("[name=" + field + "]:not(form)");
             var parent = $(controlEl).closest(".subform-section");
             if (parent.length === 0) {
                 parent = $(controlEl).closest(".form-section");
@@ -27,7 +27,7 @@ VisibilityMonitor.prototype.init = function() {
                 $(controlEl).addClass("control-field");
             }
             $('body').off("change."+id+"_"+field);
-            $('body').on("change."+id+"_"+field, "[name=" + field + "]", changeEvent);
+            $('body').on("change."+id+"_"+field, "[name=" + field + "]:not(form)", changeEvent);
         }
     }
     
@@ -63,7 +63,7 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
             if (field === "(" || field === ")" ) {
                 rule += field;
             } else {
-                var controlEl = $("[name=" + field + "]");
+                var controlEl = $("[name=" + field + "]:not(form)");
                 rule += thisObject.checkValue(thisObject, controlEl, value, regex);
             }
         }
@@ -191,13 +191,13 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
 VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
     $.each(names, function(i){
         var temp = false;
-        var newObject = $("[name=" + names[i] + "]");
+        var newObject = $("[name=" + names[i] + "].control-field");
         if (newObject.length === 0) {
             newObject = $('<input name="'+names[i]+'" class="control-field" style="display:none;" />');
             $(targetEl).append(newObject);
             temp = true;
         }
-        $("[name=" + names[i] + "]").trigger("change");
+        $("[name=" + names[i] + "].control-field").trigger("change");
         if (temp) {
             $(newObject).remove();
         }
