@@ -1,6 +1,8 @@
 package org.joget.apps.form.service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -15,6 +17,7 @@ import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -27,11 +30,7 @@ public class FormOptionsCacheAspect {
     public static final String CACHE_KEY_PREFIX = "FORMOPTIONS";
     public static final String LAST_ACTIVE_CACHE_KEY_PREFIX = "LAST_ACTIVE_";
     public static final int BUFFER_SECONDS = 5;
-    private static final ThreadLocal<Boolean> callInProgress = new ThreadLocal<Boolean>() {
-        @Override protected Boolean initialValue() {
-           return false;
-        }
-    };
+    private static final ThreadLocal callInProgress = new ThreadLocal();
     
     @Pointcut("execution(* org.joget.plugin.base.ExtDefaultPlugin.setProperties(..))")
     private void setPropertiesMethod() {
@@ -41,11 +40,19 @@ public class FormOptionsCacheAspect {
     public Object setProperties(ProceedingJoinPoint pjp) throws Throwable {
         Object obj = pjp.proceed();
         
-        if (!callInProgress.get()) {
-            Object thisObj = pjp.getThis();
-            if (thisObj instanceof FormLoadOptionsBinder && !((FormBinder)thisObj).getPropertyString("cacheInterval").isEmpty()) {
-                String cacheKey = getCacheKey((FormBinder) thisObj);
-                startSyncCache(cacheKey, ((FormBinder)thisObj).getPropertyString("cacheInterval"), ((FormBinder)thisObj).getPropertyString("cacheIdlePause"));
+        Object thisObj = pjp.getThis();
+        if (thisObj instanceof FormLoadOptionsBinder && !((FormBinder)thisObj).getPropertyString("cacheInterval").isEmpty()) {
+            final String cacheKey = getCacheKey((FormBinder) thisObj);
+            if (!isInProgress(cacheKey)) {
+                final String cacheInterval = ((FormBinder)thisObj).getPropertyString("cacheInterval");
+                final String cacheIdlePause = ((FormBinder)thisObj).getPropertyString("cacheIdlePause");
+                Thread startThread = new PluginThread(new Runnable() {
+                    public void run() {
+                        startSyncCache(cacheKey, cacheInterval, cacheIdlePause);
+                    }
+                });
+                startThread.setDaemon(true);
+                startThread.start();
             }
         }
         
@@ -58,10 +65,10 @@ public class FormOptionsCacheAspect {
 
     @Around("org.joget.apps.form.service.FormOptionsCacheAspect.loadMethod()")
     public Object load(ProceedingJoinPoint pjp) throws Throwable {
-        if (!callInProgress.get()) {
-            FormBinder thisObj = (FormBinder) pjp.getThis();
-            if (thisObj instanceof FormLoadOptionsBinder && !thisObj.getPropertyString("cacheInterval").isEmpty()) {
-                String cacheKey = getCacheKey(thisObj);
+        FormBinder thisObj = (FormBinder) pjp.getThis();
+        if (thisObj instanceof FormLoadOptionsBinder && !thisObj.getPropertyString("cacheInterval").isEmpty()) {
+            String cacheKey = getCacheKey(thisObj);
+            if (!isInProgress(cacheKey)) {
                 return getCachedOptions(cacheKey, thisObj.getPropertyString("cacheIdlePause"));
             }
         }
@@ -154,7 +161,7 @@ public class FormOptionsCacheAspect {
         }
     }
     
-    public static synchronized void updateLastActive(String cacheKey, String idleStr) {
+    public static void updateLastActive(String cacheKey, String idleStr) {
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
         if (cache != null) {
             Integer duration = 0;
@@ -195,7 +202,7 @@ public class FormOptionsCacheAspect {
             FormBinder optionBinder = (FormBinder) pluginManager.getPlugin(className);
 
             if (optionBinder != null) {
-                callInProgress.set(true);
+                setInProgress(cacheKey, true);
                 optionBinder.setProperties(PropertyUtil.getPropertiesValueFromJson(json));
                 try {
                     FormRowSet rowset = ((FormLoadBinder) optionBinder).load(null, null, null);
@@ -219,7 +226,7 @@ public class FormOptionsCacheAspect {
                     }
                 } catch (Exception e) {
                 } finally {
-                    callInProgress.set(false);
+                    setInProgress(cacheKey, false);
                 }
             }
         }
@@ -232,5 +239,23 @@ public class FormOptionsCacheAspect {
             json = new JSONObject(binder.getProperties()).toString();
         } catch (Exception e) {}
         return CACHE_KEY_PREFIX + "::" + profile + "::" + binder.getClassName() + "::" + json;
+    }
+    
+    protected static boolean isInProgress(String cacheKey) {
+        Map<String, Boolean> flags = (Map<String, Boolean>) callInProgress.get();
+        return flags != null && flags.containsKey(cacheKey);
+    }
+    
+    protected static void setInProgress(String cacheKey, boolean inProgress) {
+        Map<String, Boolean> flags = (Map<String, Boolean>) callInProgress.get();
+        if (flags == null) {
+            flags = new HashMap<String, Boolean>();
+        }
+        if (inProgress) {
+            flags.put(cacheKey, true);
+        } else {
+            flags.remove(cacheKey);
+        }
+        callInProgress.set(flags);
     }
 }
