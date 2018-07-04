@@ -10,6 +10,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormLoadBinder;
@@ -46,9 +47,10 @@ public class FormOptionsCacheAspect {
             if (!isInProgress(cacheKey)) {
                 final String cacheInterval = ((FormBinder)thisObj).getPropertyString("cacheInterval");
                 final String cacheIdlePause = ((FormBinder)thisObj).getPropertyString("cacheIdlePause");
+                final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
                 Thread startThread = new PluginThread(new Runnable() {
                     public void run() {
-                        startSyncCache(cacheKey, cacheInterval, cacheIdlePause);
+                        startSyncCache(cacheKey, cacheInterval, cacheIdlePause, appDef);
                     }
                 });
                 startThread.setDaemon(true);
@@ -140,7 +142,7 @@ public class FormOptionsCacheAspect {
         return rowset;
     }
     
-    public static synchronized void startSyncCache(String cacheKey, String durationStr, String idleStr) {
+    public static synchronized void startSyncCache(String cacheKey, String durationStr, String idleStr, AppDefinition appDef) {
         if (syncPaused(cacheKey)) {
             Integer duration = 0;
             if (durationStr != null && !durationStr.isEmpty()) {
@@ -154,7 +156,7 @@ public class FormOptionsCacheAspect {
                 
                 ThreadPoolTaskScheduler scheduler = (ThreadPoolTaskScheduler) AppUtil.getApplicationContext().getBean("formOptionsCacheExecutor");
                 String profile = DynamicDataSourceManager.getCurrentProfile();
-                FormOptionsCacheTask task = new FormOptionsCacheTask(profile, cacheKey, AppUtil.getCurrentAppDefinition());
+                FormOptionsCacheTask task = new FormOptionsCacheTask(profile, cacheKey, appDef);
                 ScheduledFuture scheduledFuture = scheduler.scheduleAtFixedRate(task, duration * 1000);
                 task.setScheduledFuture(scheduledFuture);
             }   
