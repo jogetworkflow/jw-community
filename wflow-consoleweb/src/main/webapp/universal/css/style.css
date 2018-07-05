@@ -24,6 +24,7 @@ body:not(.embeded) {
     overflow-y: auto;
     height: calc(100% - 65px);
     margin-top: 65px;
+    -webkit-overflow-scrolling: touch;
 }
 
 body.popupBody:not(.embeded) {
