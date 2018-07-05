@@ -1185,7 +1185,7 @@ FormBuilder = {
             var id = property.id;
             var count = 0;
             var newId = id;
-            while ($("[element-id="+newId+"]").length > 1) {
+            while ($("[element-id="+newId+"]").length > 0) {
                 count++;
                 newId = id + "_" + count;
             }
