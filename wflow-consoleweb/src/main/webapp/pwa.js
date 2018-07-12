@@ -4,36 +4,10 @@ PwaUtil = {
 
     serviceWorkerPath: "/jw/sw.js",
 
-    registerServiceWorker: function () {
+    registerAndSubscribe: function () {
         return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
                 .then(function (registration) {
                     console.log('Service worker successfully registered.');
-                    return registration;
-                })
-                .catch(function (err) {
-                    console.error('Unable to register service worker.', err);
-                });
-    },
-
-    requestPushPermission: function () {
-        return new Promise(function (resolve, reject) {
-            const permissionResult = Notification.requestPermission(function (result) {
-                resolve(result);
-            });
-            if (permissionResult) {
-                permissionResult.then(resolve, reject);
-            }
-        })
-                .then(function (permissionResult) {
-                    if (permissionResult !== 'granted') {
-                        throw new Error('No push permission.');
-                    }
-                })
-    },
-
-    subscribeUserToPush: function () {
-        return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
-                .then(function (registration) {
                     const subscribeOptions = {
                         userVisibleOnly: true,
                         applicationServerKey: PwaUtil.urlBase64ToUint8Array(PwaUtil.applicationServerPublicKey)
@@ -64,11 +38,6 @@ PwaUtil = {
 
 }
 
-PwaUtil.registerServiceWorker()
-        .then(
-                PwaUtil.requestPushPermission()
-                .then(
-                        PwaUtil.subscribeUserToPush()
-                        )
-                );
-        
+$(function () {
+    PwaUtil.registerAndSubscribe();
+});

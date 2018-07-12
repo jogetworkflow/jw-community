@@ -69,21 +69,38 @@ self.addEventListener('push', function (event) {
     var text;
     var title;
     var url;
+    var icon;
+    var badge;
 
     try {
         var json = event.data.json(); // {"title":"Title", "text":"Text", "url":"/jw/web/userview/appcenter/v/_/home"}
         text = json.text;
         title = json.title;
         url = json.url;
-    } catch(e) {
+        icon = json.icon;
+        badge = json.badge;
+    } catch (e) {
         text = (event && event.data) ? event.data.text() : "Push notification received."
+    }
+    if (!text || typeof text === "undefined") {
+        text = 'Push notification received.';
+    }
+    if (typeof title === "undefined") {
         title = 'Push Notification';
-        url = "/jw";
+    }
+    if (typeof url === "undefined") {
+        url = '/jw/';
+    }
+    if (typeof icon === "undefined") {
+        icon = '/jw/images/v3/logo.png';
+    }
+    if (typeof badge === "undefined") {
+        badge = '/jw/images/v3/logo.png';
     }
     var options = {
         body: text,
-        icon: '/jw/images/v3/logo.png',
-        badge: '/jw/images/v3/logo.png',
+        icon: icon,
+        badge: badge,
         data: {
             url: url
         }
