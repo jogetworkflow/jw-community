@@ -956,6 +956,73 @@
         control_value: 'custom',
         control_use_regex: 'false',
         required : 'true'
+    }],
+},
+{
+    title : '@@pwa.settings@@',
+    properties : [
+    {
+        name: 'disablePwa',
+        label: '@@pwa.disablePwa@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    },
+    {
+        name: 'disablePush',
+        label: '@@push.disablePush@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }],
+    buttons : [{
+        name : 'testpush',    
+        label : '@@push.sendTestPush@@',
+        ajax_url : '[CONTEXT_PATH]/web/json/push/message',
+        ajax_method : 'POST',
+        addition_fields : [
+        {
+            name : 'username',
+            label : '@@push.username@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'title',
+            label : '@@push.title@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'text',
+            label : '@@push.text@@',
+            type : 'textfield',
+            required : 'True'
+        },
+        {
+            name : 'url',
+            label : '@@push.url@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'icon',
+            label : '@@push.icon@@',
+            type : 'textfield',
+            required : 'False'
+        },
+        {
+            name : 'badge',
+            label : '@@push.badge@@',
+            type : 'textfield',
+            required : 'False'
+        }]
     }]
 },
 {

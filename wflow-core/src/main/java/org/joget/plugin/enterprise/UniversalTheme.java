@@ -39,6 +39,7 @@ import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 
@@ -243,8 +244,17 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
         
         // PWA: register service worker
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        jsCssLink += "<script src=\"" + request.getContextPath() + "/pwa.js\"></script>";
+        if (!"true".equals(getPropertyString("disablePwa"))) {
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+            boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
+            jsCssLink += "<script>$(function() {"
+                    + "PwaUtil.serviceWorkerPath = '" + data.get("context_path") + "/sw.js';"
+                    + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
+                    + "PwaUtil.pushEnabled = " + pushEnabled + ";"
+                    + "PwaUtil.register();"
+                    + "});</script>";
+        }
             
         return jsCssLink;
     }

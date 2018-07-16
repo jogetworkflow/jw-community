@@ -4,13 +4,17 @@ PwaUtil = {
 
     serviceWorkerPath: "/jw/sw.js",
 
-    subscriptionApiPath: "/jw/web/profile/subscription",
+    subscriptionApiPath: "/jw/web/console/profile/subscription",
+    
+    pushEnabled: true,
 
     register: function () {
         return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
                 .then(function (registration) {
                     console.log('Service worker successfully registered.');
-                    PwaUtil.subscribe(registration);
+                    if (PwaUtil.pushEnabled) {
+                        PwaUtil.subscribe(registration);
+                    }
                 });
     },
 
@@ -56,17 +60,17 @@ PwaUtil = {
 
     storeSubscription: function (pushSubscription) {
         console.log('Storing PushSubscription: ', JSON.stringify(pushSubscription));
-        return fetch(PwaUtil.subscriptionApiPath, {
+        let formData = new FormData();
+        formData.append('subscription', JSON.stringify(pushSubscription));
+        return fetch(PwaUtil.subscriptionApiPath + "?" + ConnectionManager.tokenName + "=" + ConnectionManager.tokenValue, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(pushSubscription)
+            credentials: "same-origin",
+            body: formData,
         });
     },
 
 }
 
-$(function () {
-    PwaUtil.register();
-});
+//$(function () {
+//    PwaUtil.register();
+//});
