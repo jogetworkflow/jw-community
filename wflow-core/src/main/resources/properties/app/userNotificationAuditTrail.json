@@ -141,6 +141,19 @@
     }]
 },
 {
+    title : '@@push.settings@@',
+    properties : [{
+        name: 'disablePush',
+        label: '@@push.disablePush@@',
+        type: 'checkbox',
+        value: 'false',
+        options: [{
+            value: 'true',
+            label: ''
+        }]
+    }]
+},    
+{
     title : '@@app.usernotificationaudittrail.advanced@@',
     properties : [{
         name : 'exclusion',

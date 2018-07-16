@@ -14,6 +14,7 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.UserReplacement;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
@@ -190,12 +191,14 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         emailToOutput += address + ", ";
                                     }
 
+                                    String formattedSubject = "";
                                     if (subject != null && subject.length() != 0) {
-                                        email.setSubject(WorkflowUtil.processVariable(subject, null, wfAssignment));
+                                        formattedSubject = WorkflowUtil.processVariable(subject, null, wfAssignment);
+                                        email.setSubject(formattedSubject);
                                     }
+                                    String formattedMessage = "";
                                     if (emailMessage != null && emailMessage.length() != 0) {
 
-                                        String msg;
                                         String tempLink = link;
                                         if ("true".equalsIgnoreCase(isHtml)) {
                                             if (urlName != null && urlName.length() != 0) {
@@ -209,8 +212,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             } else {
                                                 tempEmailMessage = emailMessage + "<br/><br/><br/>" + tempLink;
                                             }
-                                            msg = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
-                                            email.setHtmlMsg(msg);
+                                            formattedMessage = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
+                                            email.setHtmlMsg(formattedMessage);
                                         } else {
                                             String tempEmailMessage = emailMessage;
                                             if (emailMessage.contains("#assignment.link#")) {
@@ -218,8 +221,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                             } else {
                                                 tempEmailMessage = emailMessage + "\n\n\n" + tempLink;
                                             }
-                                            msg = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
-                                            email.setMsg(msg);
+                                            formattedMessage = AppUtil.processHashVariable(tempEmailMessage, wfAssignment, null, replace);
+                                            email.setMsg(formattedMessage);
                                         }
                                     }
                                     email.setCharset("UTF-8");
@@ -230,6 +233,10 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email completed for subject=" + email.getSubject());
                                     } catch (EmailException ex) {
                                         LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Error sending email");
+                                    }
+                                    
+                                    if (!"true".equals(props.get("disablePush"))) {
+                                        PushServiceUtil.sendUserPushNotification(username, formattedSubject, formattedMessage, link, "", "", true);
                                     }
                                 } else {
                                     LogUtil.debug(UserNotificationAuditTrail.class.getName(), "Fail to retrieve assignment for " + username);
