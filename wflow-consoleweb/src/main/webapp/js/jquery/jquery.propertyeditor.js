@@ -279,7 +279,9 @@ PropertyEditor.Util = {
                 }
                 if (element.hasClass("page-button-custom") && page.editorObject.isSinglePageDisplay()) {
                     $(field.editor).find('.property-editor-buttons').html('');
-                    $(field.editor).find('.property-editor-buttons').append($(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true));
+                    var buttonPanel = $(field.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true);
+                    $(buttonPanel).find(".button_form").remove();
+                    $(field.editor).find('.property-editor-buttons').append(buttonPanel);
                 }
             });
             $(field.editor).find("[name=\"" + field.id + "\"]").trigger("change");
