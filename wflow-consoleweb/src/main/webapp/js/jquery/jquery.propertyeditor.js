@@ -1586,7 +1586,9 @@ PropertyEditor.Model.ButtonPanel.prototype = {
 
         if (this.page.editorObject.isSinglePageDisplay()) {
             $(this.editor).find('.property-editor-buttons').html('');
-            $(this.editor).find('.property-editor-buttons').append($(this.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true));
+            var buttonPanel = $(this.editor).find('.property-page-show.current .property-editor-page-button-panel').clone(true);
+            $(buttonPanel).find(".button_form").remove();
+            $(this.editor).find('.property-editor-buttons').append(buttonPanel);
         }
     }
 };
