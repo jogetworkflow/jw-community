@@ -11,12 +11,13 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.displaytag.Messages;
 import org.displaytag.exception.BaseNestableJspTagException;
@@ -70,68 +71,85 @@ public class CustomExcelHssfView implements BinaryExportView {
     }
 
     public void doExport(OutputStream out) throws JspException {
+        XSSFWorkbook wb_template = null;
+        SXSSFWorkbook wb = null;
         try {
-            XSSFWorkbook wb = new XSSFWorkbook();
-            XSSFSheet sheet = wb.createSheet("-");
+            wb_template = new XSSFWorkbook();
+            wb = new SXSSFWorkbook(wb_template, 100, true); 
+            SXSSFSheet sheet = (SXSSFSheet) wb.createSheet("-");
+            sheet.setRandomAccessWindowSize(100);
+            sheet.trackAllColumnsForAutoSizing();
 
             int rowNum = 0;
             int colNum = 0;
 
+            SXSSFRow xlsRow = null;
+            CellStyle style = null;
+            Font font = null;
+            Iterator iterator = null;
+            HeaderCell headerCell = null;
+            String columnHeader = null;
+            Cell cell = null;
             if (this.header) {
                 // Create an header row
-                XSSFRow xlsRow = sheet.createRow(rowNum++);
+                xlsRow = (SXSSFRow) sheet.createRow(rowNum++);
 
-                XSSFCellStyle headerStyle = wb.createCellStyle();
-                headerStyle.setFillPattern(XSSFCellStyle.FINE_DOTS);
-                headerStyle.setFillBackgroundColor(HSSFColor.BLUE_GREY.index);
-                XSSFFont bold = wb.createFont();
-                bold.setBoldweight(XSSFFont.BOLDWEIGHT_BOLD);
-                bold.setColor(HSSFColor.WHITE.index);
-                headerStyle.setFont(bold);
+                style = wb.createCellStyle();
+                style.setFillPattern(CellStyle.FINE_DOTS);
+                style.setFillBackgroundColor(HSSFColor.BLUE_GREY.index);
+                font = wb.createFont();
+                font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+                font.setColor(HSSFColor.WHITE.index);
+                style.setFont(font);
 
-                Iterator iterator = this.model.getHeaderCellList().iterator();
+                iterator = this.model.getHeaderCellList().iterator();
 
                 while (iterator.hasNext()) {
-                    HeaderCell headerCell = (HeaderCell) iterator.next();
+                    headerCell = (HeaderCell) iterator.next();
 
-                    String columnHeader = headerCell.getTitle();
+                    columnHeader = headerCell.getTitle();
 
                     if (columnHeader == null) {
                         columnHeader = StringUtils.capitalize(headerCell.getBeanPropertyName());
                     }
 
-                    XSSFCell cell = xlsRow.createCell(colNum++);
+                    cell = xlsRow.createCell(colNum++);
                     cell.setCellValue(new XSSFRichTextString(columnHeader));
-                    cell.setCellStyle(headerStyle);
+                    cell.setCellStyle(style);
                 }
             }
 
             // get the correct iterator (full or partial list according to the exportFull field)
             RowIterator rowIterator = this.model.getRowIterator(this.exportFull);
             // iterator on rows
-
+            
+            Row row = null;
+            ColumnIterator columnIterator = null;
+            Column column = null;
+            Object value = null;
+            int colCount = 0;
             while (rowIterator.hasNext()) {
-                Row row = rowIterator.next();
-                XSSFRow xlsRow = sheet.createRow(rowNum++);
+                row = rowIterator.next();
+                xlsRow = (SXSSFRow) sheet.createRow(rowNum++);
                 colNum = 0;
 
                 // iterator on columns
-                ColumnIterator columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
+                columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
 
                 while (columnIterator.hasNext()) {
-                    Column column = columnIterator.nextColumn();
+                    column = columnIterator.nextColumn();
 
                     // Get the value to be displayed for the column
-                    Object value = column.getValue(this.decorated);
+                    value = column.getValue(this.decorated);
 
-                    XSSFCell cell = xlsRow.createCell(colNum++);
+                    cell = xlsRow.createCell(colNum++);
 
                     writeCell(value, cell);
                 }
             }
 
             // adjust the column widths
-            int colCount = 0;
+            colCount = 0;
             while (colCount <= colNum) {
                 sheet.autoSizeColumn((short) colCount++);
             }
@@ -140,6 +158,17 @@ public class CustomExcelHssfView implements BinaryExportView {
         } catch (Exception e) {
             LogUtil.error(CustomExcelHssfView.class.getName(), e, "");
             throw new RuntimeException(e.getLocalizedMessage());
+        } finally {
+            if (wb_template != null) {
+                try {
+                    wb_template.close();
+                } catch (Exception e) {}
+            }
+            if (wb != null) {
+                try {
+                    wb.close();
+                } catch (Exception e) {}
+            }
         }
     }
 
@@ -148,10 +177,9 @@ public class CustomExcelHssfView implements BinaryExportView {
      * @param value the value of the cell
      * @param cell the cell to write it to
      */
-    protected void writeCell(Object value, XSSFCell cell) {
+    protected void writeCell(Object value, Cell cell) {
         if (value instanceof Number) {
-            Number num = (Number) value;
-            cell.setCellValue(num.doubleValue());
+            cell.setCellValue(((Number) value).doubleValue());
         } else if (value instanceof Date) {
             cell.setCellValue((Date) value);
         } else if (value instanceof Calendar) {
