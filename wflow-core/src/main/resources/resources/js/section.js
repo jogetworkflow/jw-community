@@ -15,27 +15,27 @@ VisibilityMonitor.prototype.isRegex = null; // the flag decide control value is 
 
 VisibilityMonitor.prototype.init = function() {
     var thisObject = this;
-    
+
     var targetEl = $(this.target);
     var controlEl = $("[name=" + this.control + "]");
     var controlVal = this.controlValue;
     var isRegex = this.isRegex;
-    
+
     $(controlEl).addClass("control-field");
-    
-    thisObject.handleChange(targetEl, controlEl, controlVal, isRegex);
-    
+
+    thisObject.handleChange(targetEl, thisObject.control, controlVal, isRegex);
+
     var changeEvent = function() {
-        thisObject.handleChange(targetEl, controlEl, controlVal, isRegex);
+        thisObject.handleChange(targetEl, thisObject.control, controlVal, isRegex);
     };
-    
+
     $('body').off("change", "[name=" + this.control + "]", changeEvent);
     $('body').on("change", "[name=" + this.control + "]", changeEvent);
 }
 
-VisibilityMonitor.prototype.handleChange = function(targetEl, controlEl, controlVal, isRegex) {
+VisibilityMonitor.prototype.handleChange = function(targetEl, control, controlVal, isRegex) {
     var thisObject = this;
-    
+    var controlEl = $("[name=" + control + "]:not(form)");
     var match  = thisObject.checkValue(thisObject, controlEl, controlVal, isRegex);
     if (match) {
         targetEl.css("display", "block");
@@ -52,7 +52,7 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
     //get enabled input field oni
     controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
     controlEl = $(controlEl).filter(":not(.section-visibility-disabled)"); //must put in newline to avoid conflict with above condition
-    
+
     var match = false;
     if ($(controlEl).length > 0) {
         if ($(controlEl).attr("type") == "checkbox" || $(controlEl).attr("type") == "radio") {
@@ -60,7 +60,7 @@ VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, control
         } else if ($(controlEl).is("select")) {
             controlEl = $(controlEl).find("option:selected");
         }
-        
+
         if ($(controlEl).length > 0) {
             $(controlEl).each(function() {
                 match = thisObject.isMatch($(this).val(), controlValue, isRegex);
@@ -88,17 +88,17 @@ VisibilityMonitor.prototype.isMatch = function(value, controlValue, isRegex) {
 }
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var thisObject = this;
-    
+
     var names = new Array();
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
-            
+
             var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
-            
+
             //mobile
-            if ($(this).is(mobileSelector) 
-                    || $(this).parent().is(mobileSelector) 
+            if ($(this).is(mobileSelector)
+                    || $(this).parent().is(mobileSelector)
                     || $(this).parent().parent().is(mobileSelector)) {
                 if ($(this).is("[type='checkbox'], [type='radio']")) {
                     $(this).checkboxradio("disable");
@@ -108,7 +108,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                     $(this).textinput("disable");
                 }
             }
-        } 
+        }
         if ($(this).is("[name].control-field")) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {
@@ -120,17 +120,17 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
 }
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var thisObject = this;
-    
+
     var names = new Array();
     $(targetEl).find('input, select, textarea, .form-element').each(function(){
         if($(this).is(".section-visibility-disabled")){
             $(this).removeClass("section-visibility-disabled").removeAttr("disabled");
-            
+
             var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
-            
+
             //mobile
-            if ($(this).is(mobileSelector) 
-                    || $(this).parent().is(mobileSelector) 
+            if ($(this).is(mobileSelector)
+                    || $(this).parent().is(mobileSelector)
                     || $(this).parent().parent().is(mobileSelector)) {
                 if ($(this).is("[type='checkbox'], [type='radio']")) {
                     $(this).checkboxradio("enable");
@@ -140,7 +140,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                     $(this).textinput("enable");
                 }
             }
-        } 
+        }
         if ($(this).is("[name].control-field")) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n != "") {
@@ -148,7 +148,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
             }
         }
     });
-    
+
     thisObject.triggerChange(targetEl, names);
     $(window).trigger("resize");
 }
