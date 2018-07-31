@@ -650,6 +650,7 @@ FormBuilder = {
                 // set ID
                 dom.properties.id = newId;
                 $(element).attr("element-id", newId);
+                $(element).attr("element-property", JSON.encode(dom.properties));
             }
         }
     },
