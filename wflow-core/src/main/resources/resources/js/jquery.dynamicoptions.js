@@ -37,9 +37,13 @@
         }
     });
     
-    function getValues(name) {
+    function getValues(name, isControl) {
+        var controlClass = "";
+        if (isControl) {
+            controlClass = ".control-field";
+        }
         //get enabled input field oni
-        var el = $('[name='+name+'].control-field').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var el = $('[name=' + name + ']'+controlClass).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var values = new Array();
         
         if ($(el).is("select")) {
@@ -56,7 +60,7 @@
     }
     
     function ajaxOptions(target, o){
-        var controlValues = getValues(o.controlField);
+        var controlValues = getValues(o.controlField, true);
         var values = getValues(o.paramName);
         
         var cv = controlValues.join(";");
@@ -108,7 +112,7 @@
     }
     
     function showHideOption(target, o){
-        var controlValues = getValues(o.controlField);
+        var controlValues = getValues(o.controlField, true);
         var values = getValues(o.paramName);
         
         if ($(target).is("select")) {
