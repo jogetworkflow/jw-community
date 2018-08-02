@@ -19,17 +19,17 @@
 <div class="dataList">
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/footable.min.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>"></script>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/js/footable/footable.core.min.css?build=<fmt:message key="build.number"/>" />    
-    
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/js/footable/footable.core.min.css?build=<fmt:message key="build.number"/>" />
+
     <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
     <c:if test="${isQuickEditEnabled}">
     <div class="quickEdit" style="display: none">
         <a href="<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}"/>" target="_blank"><i class="icon-edit"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
     </div>
     </c:if>
-    
+
     <c:catch var="dataListException">
-        
+
         <c:set var="actionResult" value="${dataList.actionResult}" />
         <c:set var="redirected" value="false" />
         <c:if test="${!empty actionResult}">
@@ -51,8 +51,8 @@
                         location.href = "<c:out value="${actionResult.url}"/>";
                     </script>
                 </c:when>
-                <c:otherwise>   
-                        
+                <c:otherwise>
+
                 </c:otherwise>
             </c:choose>
         </c:if>
@@ -93,9 +93,9 @@
             </c:if>
             <c:if test="${!empty dataList.binder && !empty dataList.binder.properties.errorMsg}">
                 <div class="datalist-error"><c:out value="${dataList.binder.properties.errorMsg}"/></div>
-            </c:if>   
+            </c:if>
 
-            <!-- Display Filters -->        
+            <!-- Display Filters -->
             <c:if test="${fn:length(dataList.filterTemplates) gt 1}">
                 <form name="filters_${dataListId}" id="filters_${dataListId}" action="?" method="POST">
                     <div class="filters">
@@ -131,7 +131,7 @@
                     <button class="expandAll"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
                     <button class="collapseAll"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
                     <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>
-                </div>    
+                </div>
                 <display:table id="${dataListId}" uid="${dataListId}" name="dataListRows" pagesize="${dataListPageSize}" class="xrounded_shadowed" export="true" decorator="decorator" excludedParams="${dataList.binder.primaryKeyColumnName}" requestURI="?" sort="external" partialList="true" size="dataListSize">
                     <c:if test="${checkboxPosition eq 'left' || checkboxPosition eq 'both'}">
                         <c:choose>
@@ -147,7 +147,7 @@
                         <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
                         <c:set var="columnHiddenCss" value=""/>
                         <c:set var="columnMedia" value="all"/>
-                        <c:choose> 
+                        <c:choose>
                             <c:when test="${column.hidden}">
                                 <c:set var="columnHiddenCss" value=" column-hidden"/>
                                 <c:if test="${column.properties.include_export ne 'true'}">
@@ -204,7 +204,7 @@
                     </div>
                 </c:if>
             </form>
-        </c:if>    
+        </c:if>
     </c:catch>
 
     <c:if test="${!empty dataListException}">
@@ -224,16 +224,16 @@
             <p>&nbsp;</p>
         </div>
 <%
-Throwable t =(Throwable)pageContext.findAttribute("dataListException");  
+Throwable t =(Throwable)pageContext.findAttribute("dataListException");
 LogUtil.error("/jsp/dbuilder/dataListView.jsp", t, "Error rendering datalist");
 %>
     </c:if>
-    
+
 </div>
 
 <script>
     var popupActionDialog = null;
-    
+
     DataListUtil = {
         submitForm: function(form) {
             var params = $(form).serialize();
@@ -285,7 +285,7 @@ LogUtil.error("/jsp/dbuilder/dataListView.jsp", t, "Error rendering datalist");
             $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
             $(element).closest("form").attr("action", $(element).attr("href"));
             $(element).closest("form").submit();
-            
+
             //reset the action
             $(element).closest("form").attr("action", orgAction);
         }
@@ -293,7 +293,7 @@ LogUtil.error("/jsp/dbuilder/dataListView.jsp", t, "Error rendering datalist");
     }
     function showConfirm(element, message) {
         var table = $(element).parent().parent().find('table');
-        if ($(table).find("input[type=checkbox][name|=d]:checked", "input[type=radio][name|=d]:checked").length > 0) {
+        if ($(table).find("input[type=checkbox][name|=d]:checked, input[type=radio][name|=d]:checked").length > 0) {
             return confirm(message);
         } else {
             alert("<fmt:message key="dbuilder.alert.noRecordSelected"/>");
