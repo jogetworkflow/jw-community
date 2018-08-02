@@ -1,6 +1,7 @@
 package org.joget.commons.util;
 
 import java.net.URI;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
@@ -303,4 +304,12 @@ public class SecurityUtil implements ApplicationContextAware {
         return input;
     }
 
+    public static String normalizedFileName(String filename) {
+        // validate input
+        String normalizedFileName = Normalizer.normalize(filename, Normalizer.Form.NFKC);
+        if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+            throw new SecurityException("Invalid filename " + normalizedFileName);
+        }
+        return normalizedFileName;
+    }
 }

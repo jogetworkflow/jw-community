@@ -50,6 +50,7 @@ import java.util.Comparator;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -466,6 +467,9 @@ public class PluginManager implements ApplicationContextAware {
     public boolean upload(String filename, InputStream in) {
         String location = null;
         File outputFile = null;
+        
+        filename = SecurityUtil.normalizedFileName(filename);
+        
         try {
             // check filename
             if (filename == null || filename.trim().length() == 0) {
