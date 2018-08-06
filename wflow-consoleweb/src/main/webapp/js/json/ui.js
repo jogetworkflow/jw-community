@@ -69,7 +69,7 @@ UI = {
        }
        var windowWidth = $(window).width();
        var minWidth = 668;
-       var maxWidth = windowWidth - 100;
+       var maxWidth = windowWidth - 50;
            
        if (isNaN(width) && width.indexOf("%") !== -1) {
            var tempWidth = parseFloat(width.replace("%", ""));
@@ -78,10 +78,8 @@ UI = {
        
        if (width > maxWidth) {
            width = maxWidth;
-       }
-       
-       if (width < minWidth) {
-           width = windowWidth;
+       } else if (width < minWidth) {
+           width = minWidth;
        }
        
        return width;
