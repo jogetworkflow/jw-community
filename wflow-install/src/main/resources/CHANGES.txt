@@ -2,6 +2,13 @@ v5 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv5
 
+CHANGES IN 5.0.24
+=================
+ff6a337 Fixed: wflow-commons/wflow-plugin-base - Security - Prevent Path Manipulation: Zip Entry Overwrite. @5.0-SNAPSHOT
+f04cb4c Fixed: wflow-consoleweb - datalist - not able to delete record when selector switch to radio button. #5780 @5.0-SNAPSHOT
+ba866d8 Fixed: wflow-core - Section - Visibility control does not work for Popup Select Box. #5675 @5.0-SNAPSHOT
+2b37495 Fixed: wflow-core - Update poi library to 3.15 for 7e86ef1. @6.0-SNAPSHOT
+
 CHANGES IN 5.0.23
 =================
 99c9f08 Fixed: wflow-core - Dynamic options field - Correction of 9421459. Previous field value is lost when switched from hidden to visible. @5.0-SNAPSHOT
