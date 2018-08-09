@@ -142,7 +142,7 @@ var AppCenter = {
     },
     showHints: function() {
         if ($("#main-action-help").length > 0) {
-            if ($("#adminControl:visible").length > 0) {
+            if ($("#adminControl").length > 0) {
                 HelpGuide.key="help.web.adminBar";
             } else {
                 HelpGuide.key="help.web.appcenter";
