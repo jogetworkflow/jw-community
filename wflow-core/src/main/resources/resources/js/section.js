@@ -24,7 +24,7 @@ VisibilityMonitor.prototype.init = function() {
                 parent = $(controlEl).closest(".form-section");
             }
             if (!$(parent).is(targetEl)) { // prevent it keep trigger itself
-                $(controlEl).addClass("control-field");
+                FormUtil.setControlField(field);
             }
             $('body').off("change."+id+"_"+field);
             $('body').on("change."+id+"_"+field, "[name=" + field + "]:not(form)", changeEvent);
@@ -143,7 +143,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name].control-field")) {
+        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"))) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n !== "") {
                 names.push(n);
@@ -176,7 +176,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name].control-field")) {
+        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"))) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n !== "") {
                 names.push(n);
@@ -191,13 +191,13 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
 VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
     $.each(names, function(i){
         var temp = false;
-        var newObject = $("[name=" + names[i] + "].control-field");
+        var newObject = $("[name=" + names[i] + "]:not(form)");
         if (newObject.length === 0) {
-            newObject = $('<input name="'+names[i]+'" class="control-field" style="display:none;" />');
+            newObject = $('<input name="'+names[i]+'" style="display:none;" />');
             $(targetEl).append(newObject);
             temp = true;
         }
-        $("[name=" + names[i] + "].control-field").trigger("change");
+        $("[name=" + names[i] + "]:not(form)").trigger("change");
         if (temp) {
             $(newObject).remove();
         }

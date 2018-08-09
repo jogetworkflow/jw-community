@@ -1,4 +1,5 @@
 FormUtil = {
+    controlFields : [],
     getValue : function(fieldId){
         var value = "";
         var field = FormUtil.getField(fieldId);
@@ -124,6 +125,16 @@ FormUtil = {
         }
         
         return values;
+    },
+    
+    setControlField : function(fieldId) {
+        if (FormUtil.controlFields.indexOf(fieldId) === -1) {
+            FormUtil.controlFields.push(fieldId);
+        }
+    },
+    
+    isControlField : function(fieldId) {
+        return FormUtil.controlFields.indexOf(fieldId) !== -1;
     },
     
     getFieldsAsUrlQueryString : function(fields) {

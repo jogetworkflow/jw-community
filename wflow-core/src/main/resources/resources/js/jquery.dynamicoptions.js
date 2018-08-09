@@ -7,7 +7,7 @@
                     return;
                 }
                 
-                $('[name='+o.controlField+']:not(form)').addClass("control-field");
+                FormUtil.setControlField(o.controlField);
                 
                 var showHideChange = function() {
                     if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
@@ -37,13 +37,9 @@
         }
     });
     
-    function getValues(name, isControl) {
-        var controlClass = "";
-        if (isControl) {
-            controlClass = ".control-field";
-        }
+    function getValues(name) {
         //get enabled input field oni
-        var el = $('[name=' + name + ']'+controlClass).filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var el = $('[name=' + name + ']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var values = new Array();
         
         if ($(el).is("select")) {
@@ -60,7 +56,7 @@
     }
     
     function ajaxOptions(target, o){
-        var controlValues = getValues(o.controlField, true);
+        var controlValues = getValues(o.controlField);
         var values = getValues(o.paramName);
         
         var cv = controlValues.join(";");
@@ -112,7 +108,7 @@
     }
     
     function showHideOption(target, o){
-        var controlValues = getValues(o.controlField, true);
+        var controlValues = getValues(o.controlField);
         var values = getValues(o.paramName);
         
         if ($(target).is("select")) {
