@@ -142,7 +142,7 @@ var AppCenter = {
     },
     showHints: function() {
         if ($("#main-action-help").length > 0) {
-            if ($("#adminControl").length > 0) {
+            if ($("#adminControl:visible").length > 0) {
                 HelpGuide.key="help.web.adminBar";
             } else {
                 HelpGuide.key="help.web.appcenter";
@@ -156,7 +156,9 @@ var AppCenter = {
 $(function() {
     if (window.self === window.top) {
         // show hints if not within IFRAME
-        AppCenter.showHints();
+        setTimeout(function(){
+            AppCenter.showHints();
+        }, 500);
     } else {
         $("#main-action-help").hide();
     }
