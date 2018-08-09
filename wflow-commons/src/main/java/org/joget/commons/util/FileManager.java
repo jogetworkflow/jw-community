@@ -36,7 +36,11 @@ public class FileManager {
             String path =  id + File.separator;
             String filename = path;
             try {
-                filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                try {
+                    filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                } catch (Exception e) {
+                    filename += file.getOriginalFilename().replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
+                }
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
@@ -61,7 +65,12 @@ public class FileManager {
     public static File getFileByPath(String path) {
         if (path != null) {
             try {
-                File file = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
+                try {
+                    path = URLDecoder.decode(path, "UTF-8");
+                } catch (Exception ex) {
+                    path = path.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
+                }
+                File file = new File(getBaseDirectory(), path);
                 if (file.exists() && !file.isDirectory()) {
                     return file;
                 }
@@ -121,7 +130,12 @@ public class FileManager {
         BufferedOutputStream out = null;
 
         try{
-            File imageFile = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
+            try {
+                path = URLDecoder.decode(path, "UTF-8");
+            } catch (Exception e) {
+                path = path.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
+            }
+            File imageFile = new File(getBaseDirectory(), path);
             Image image = Toolkit.getDefaultToolkit().getImage(imageFile.getAbsolutePath());
             MediaTracker mediaTracker = new MediaTracker(new Container());
             mediaTracker.addImage(image, 0);
