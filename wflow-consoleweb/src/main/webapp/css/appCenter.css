@@ -32,6 +32,7 @@
     box-shadow: #555 0px 0px 1px 0px;
     background-size: cover;
     background-repeat: no-repeat;
+    background-position: center;
 }
 #apps img {
     width: 100%;
