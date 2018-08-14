@@ -127,14 +127,29 @@ FormUtil = {
         return values;
     },
     
-    setControlField : function(fieldId) {
+    setControlField : function(fieldId, selector) {
+        if (selector !== undefined) {
+            $(selector).addClass("control-field");
+        } else {
+            $("[name='"+fieldId+"']:not(form)").addClass("control-field");
+        }
         if (FormUtil.controlFields.indexOf(fieldId) === -1) {
             FormUtil.controlFields.push(fieldId);
         }
     },
     
-    isControlField : function(fieldId) {
-        return FormUtil.controlFields.indexOf(fieldId) !== -1;
+    isControlField : function(fieldId, field) {
+        if (FormUtil.controlFields.indexOf(fieldId) !== -1 || $(field).hasClass("control-field")) {
+            return true;
+        } else {
+            //handle for subform
+            for (var i = 0; i < FormUtil.controlFields.length; i++) {
+                if (FormUtil.controlFields[i].startsWith("_") && fieldId.endsWith(FormUtil.controlFields[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
     },
     
     getFieldsAsUrlQueryString : function(fields) {

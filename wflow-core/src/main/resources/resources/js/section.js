@@ -143,7 +143,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"))) {
+        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"), $(this))) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n !== "") {
                 names.push(n);
@@ -176,7 +176,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
                 }
             }
         } 
-        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"))) {
+        if ($(this).is("[name]") && FormUtil.isControlField($(this).attr("name"), $(this))) {
             var n = $(this).attr("name");
             if ($.inArray(n, names) < 0 && n !== "") {
                 names.push(n);
