@@ -117,7 +117,8 @@
             </c:if>
 
             <!-- Display Main Table -->
-            <form name="form_${dataListId}" action="?<c:out value="${queryString}" escapeXml="true"/>" method="POST">
+            <c:set var="qs"><ui:decodeurl value="${queryString}"/></c:set>
+            <form name="form_${dataListId}" action="?<c:out value="${qs}" escapeXml="true"/>" method="POST">
                 <!-- Display Buttons -->
                 <c:if test="${buttonPosition eq 'topLeft' || buttonPosition eq 'topRight' || buttonPosition eq 'bothLeft' || buttonPosition eq 'bothRight'}">
                     <div class="actions top ${buttonFloat}">
