@@ -2854,7 +2854,7 @@ PropertyEditor.Type.Grid.prototype = {
         $(table).find("input.autocomplete").each(function() {
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source: grid.options_sources[key],
+                source: grid.options_sources[grid.id + ":" + key],
                 minLength: 0,
                 open: function() {
                     $(this).autocomplete('widget').css('z-index', 99999);
@@ -2901,7 +2901,7 @@ PropertyEditor.Type.Grid.prototype = {
     handleAjaxOptions: function(options, reference) {
         var grid = this;
         if (options !== null && options !== undefined) {
-            if (this.options_sources[reference] !== undefined) {
+            if (this.options_sources[grid.id + ":" + reference] !== undefined) {
                 this.updateSource(reference, options);
             } else {
                 var filter = null;
@@ -2977,7 +2977,7 @@ PropertyEditor.Type.Grid.prototype = {
         $(row).find("input.autocomplete").each(function() {
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source: grid.options_sources[key],
+                source: grid.options_sources[grid.id + ":" + key],
                 minLength: 0,
                 open: function() {
                     $(this).autocomplete('widget').css('z-index', 99999);
@@ -3036,15 +3036,16 @@ PropertyEditor.Type.Grid.prototype = {
     },
     updateSource: function(key, options) {
         var thisObj = this;
-        this.options_sources[key] = [];
+        var skey = thisObj.id + ":" + key;
+        this.options_sources[skey] = [];
         if (options !== undefined) {
             $.each(options, function(i, option) {
-                if (option['value'] !== "" && $.inArray(option['value'], thisObj.options_sources[key]) === -1) {
-                    thisObj.options_sources[key].push(option['value']);
+                if (option['value'] !== "" && $.inArray(option['value'], thisObj.options_sources[skey]) === -1) {
+                    thisObj.options_sources[skey].push(option['value']);
                 }
             });
         }
-        this.options_sources[key].sort();
+        this.options_sources[skey].sort();
 
         var table = $("#" + this.id);
 
@@ -3056,7 +3057,7 @@ PropertyEditor.Type.Grid.prototype = {
         });
 
         $(table).find("input[name='" + key + "'].ui-autocomplete-input").each(function() {
-            var source = thisObj.options_sources[key];
+            var source = thisObj.options_sources[skey];
 
             if (filter !== null) {
                 var tempFilter = filter;
@@ -3554,7 +3555,7 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         $(table).find("input.autocomplete").each(function() {
             var key = $(this).attr("name");
             $(this).autocomplete({
-                source: grid.options_sources[key],
+                source: grid.options_sources[grid.id + ":" + key],
                 minLength: 0,
                 open: function() {
                     $(this).autocomplete('widget').css('z-index', 99999);
