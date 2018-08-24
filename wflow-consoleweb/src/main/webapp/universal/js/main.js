@@ -20,6 +20,23 @@ if ((typeof _customFooTableArgs) === "undefined") {
     })
 
     $(document).ready(function() {
+        //fix tinymce position
+        if ($(".tinymce").length > 0) {
+            function overrideTinymce() {
+                if (window["tinymce"] !== undefined) {
+                  tinymce.ui.Control.prototype.getContainerElm = function() {
+                      return document.getElementById("form-canvas");
+                  };
+                  tinymce.Env.container = document.getElementById("form-canvas").offsetParent;
+                } else {
+                    setTimeout(function(){
+                        overrideTinymce();
+                    }, 100);
+                }
+            }
+            overrideTinymce();
+        }
+        
         $(".rowCount").each(function() {
             var count = $(this).text().replace("(", "").replace(")", "");
             $(this).text(count);
