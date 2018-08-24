@@ -149,7 +149,7 @@
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/server.xml" file="src/main/resources/server.xml" overwrite="true" />
                                 <copy tofile="target/apache-tomcat-${tomcat.version}/conf/context.xml" file="src/main/resources/context.xml" overwrite="true" />
                                 <copy todir="target/mariadb-${mariadb.version}-win32/" file="src/main/resources/my.ini" />
-                                <copy todir="target/mariadb-${mariadb.version}-win32/data/">
+                                <copy todir="target/mariadb-${mariadb.version}-win32/data/" overwrite="true">
                                     <fileset dir="src/main/resources/mariadb-data" />
                                 </copy>
 
