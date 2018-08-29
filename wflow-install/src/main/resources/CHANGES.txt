@@ -2,6 +2,21 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.10
+=================
+005e996 Fixed: wflow-consoleweb - Universal Theme - Position of rich text field dropdown menu is incorrect when scrolling the page. #5845 @6.0-SNAPSHOT
+37985f5 Modified: wflow-install - DB - Upgraded MariaDB to 10.3.9 to fix occasional hanging during shutdown @6.0-SNAPSHOT
+8bd4a0d Fixed: wflow-consoleweb - Property Editor - Grid type - Ajax options for same column id in different field getting mess up. #5832 @6.0-SNAPSHOT
+2e9b06f Fixed: wflow-consoleweb - Datalist - Filter value contains space causing datalist action fail to pass value correctly. #5828 @6.0-SNAPSHOT
+1b58df3 Fixed: wflow-consoleweb - Make app center app icon position consistent with the userview builder's icon preview
+a85abe6 Fixed: wflow-consoleweb - Universal Theme - Regression of cb17306 causing header is missing in IOS. @6.0-SNAPSHOT
+a356c4b Fixed: wflow-consoleweb - Dynamic Option - Regression of 9c7ba92 & c8ee017. #5811 @6.0-SNAPSHOT
+d40d353 Fixed: wflow-consoleweb - Help guide - Help guide is missing for admin bar after login. @6.0-SNAPSHOT
+664aa37 Fixed: wflow-commons - FileManager - Filename contains % causing file cannot store. #5804 @6.0-SNAPSHOT
+ca4a7c8 Fixed: wflow-consoleweb - UI - Popup dialog does not work correctly for width < 668. #5790 @6.0-SNAPSHOT
+1eb5bd1 Modified: wflow-consoleweb - Add chinese helplinks
+7e96a18 Fixed: wflow-commons/ wflow-plugin-base/ wflow-core - Security - Prevent Path Manipulation: Zip Entry Overwrite. @6.0-SNAPSHOT
+
 CHANGES IN 6.0.9
 ================
 5fc3dec Fixed: wflow-core - AbstractSubForm - Not able to detect recursive subform correctly. #5777 @6.0-SNAPSHOT
