@@ -4006,8 +4006,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
     /**
      * Accept an assignment (for the current user) based on the activity instance ID.
      * 
-     * @deprecated Since v3, the concept of accept & withdraw assignment is removed  
-     * 
      * @param activityId
      */
     public void assignmentAccept(String activityId) {
