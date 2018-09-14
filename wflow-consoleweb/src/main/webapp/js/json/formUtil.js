@@ -144,7 +144,7 @@ FormUtil = {
         } else {
             //handle for subform
             for (var i = 0; i < FormUtil.controlFields.length; i++) {
-                if (FormUtil.controlFields[i].startsWith("_") && fieldId.endsWith(FormUtil.controlFields[i])) {
+                if (FormUtil.controlFields[i].indexOf("_") === 0 && (fieldId.length >= FormUtil.controlFields[i].length && fieldId.substring(fieldId.length - FormUtil.controlFields[i].length) === FormUtil.controlFields[i])) {
                     return true;
                 }
             }
