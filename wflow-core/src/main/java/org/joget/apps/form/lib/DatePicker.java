@@ -15,6 +15,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.DateUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -260,8 +261,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
             
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
-                SimpleDateFormat display = new SimpleDateFormat(displayFormat);
-                String formattedCompare = display.format(new Date());
+                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
                 String start, end;
                 if ("minDate".equals(type)) {
                     start = formattedCompare;
