@@ -1,5 +1,7 @@
 package org.joget.apps.form.lib;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -152,6 +154,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                     String groupingColumn = (String) getProperty("groupingColumn");
 
                     // loop thru results to set value and label
+                    Set<String> exists = new HashSet<String>();
                     for (FormRow row : results) {
                         FormRow newRow = new FormRow();
                         String id = row.getProperty(idColumn);
@@ -161,12 +164,13 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                             grouping = row.getProperty(groupingColumn);
                         }
 
-                        if (id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
+                        if (!exists.contains(id+":"+label+":"+grouping) && id != null && !id.isEmpty() && label != null && !label.isEmpty()) {
                             newRow.setProperty(FormUtil.PROPERTY_VALUE, id);
                             newRow.setProperty(FormUtil.PROPERTY_LABEL, label);
                             newRow.setProperty(FormUtil.PROPERTY_GROUPING, grouping);
 
                             filtered.add(newRow);
+                            exists.add(id+":"+label+":"+grouping);
                         }
                     }
                 }
