@@ -23,13 +23,20 @@
                     ajaxOptions(target, o);
                 };
                 
+                var parentSection = $(this).closest(".subform-section");
+                if ($(parentSection).length === 0) {
+                    parentSection = $(this).closest(".form-section");
+                }
+                
                 if (o.nonce === '') {
                     $('body').off("change", '[name='+o.controlField+']:not(form)', showHideChange);
                     $('body').on("change", '[name='+o.controlField+']:not(form)', showHideChange);
+                    $(parentSection).on("jsection:show", showHideChange);
                     showHideOption(target, o);
                 } else {
                     $('body').off("change", '[name='+o.controlField+']:not(form)', ajaxChange);
                     $('body').on("change", '[name='+o.controlField+']:not(form)', ajaxChange);
+                    $(parentSection).on("jsection:show", ajaxChange);
                     ajaxOptions(target, o);
                 }
             }
