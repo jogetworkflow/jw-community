@@ -101,4 +101,12 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param participantId
      */
     void removeAppParticipant(String appId, Long appVersion, String processDefId, String participantId);
+    
+    /**
+     * Get AppDefinition by package id and version
+     * @param packageId
+     * @param packageVersion
+     * @return
+     */
+    AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion);
 }

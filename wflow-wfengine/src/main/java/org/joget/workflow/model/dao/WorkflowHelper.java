@@ -81,4 +81,12 @@ public interface WorkflowHelper {
      * @return
      */
     String getPublishedPackageVersion(String packageId);
+    
+    /**
+     * Update current app definition based on process instance
+     * @param processId
+     * @param packageId
+     * @param packageVersion
+     */
+    void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion);
 }

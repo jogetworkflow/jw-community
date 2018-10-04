@@ -17,6 +17,7 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.Department;
@@ -45,6 +46,8 @@ import org.springframework.util.ClassUtils;
 
 @Service("workflowHelper")
 public class AppWorkflowHelper implements WorkflowHelper {
+    
+    protected Map<String, AppDefinition> deadlineAppDefinitionCache = new HashMap<String, AppDefinition>();
     
     @Override
     public boolean executeTool(WorkflowAssignment assignment) {
@@ -609,5 +612,15 @@ public class AppWorkflowHelper implements WorkflowHelper {
             return packageDef.getVersion().toString();
         }
         return null;
+    }
+
+    public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
+        AppDefinition appDef = deadlineAppDefinitionCache.get(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
+        if (appDef == null) {
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
+            appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, Long.parseLong(packageVersion));
+            deadlineAppDefinitionCache.put(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion, appDef);
+        }
+        AppUtil.setCurrentAppDefinition(appDef);
     }
 }

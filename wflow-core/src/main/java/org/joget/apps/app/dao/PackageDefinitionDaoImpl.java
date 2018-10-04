@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
@@ -283,5 +285,20 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         packageDef.removePackageParticipant(processDefId, participantId);
         saveOrUpdate(packageDef);
+    }
+    
+    public AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion) {
+        Session session = findSession();
+        String query = "SELECT e.appDefinition FROM " + getEntityName() + " e  WHERE e.id=? AND e.version=?";
+
+        Query q = session.createQuery(query);
+        q.setParameter(0, packageId);
+        q.setParameter(1, packageVersion);
+
+        Collection list = q.list();
+        if (list != null && !list.isEmpty()) {
+            return (AppDefinition) list.iterator().next();
+        }
+        return null;
     }
 }

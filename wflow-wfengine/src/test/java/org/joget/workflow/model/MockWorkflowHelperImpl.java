@@ -35,4 +35,8 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public String getPublishedPackageVersion(String packageId){
         return null;
     }
+
+    public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
+        
+    }
 }

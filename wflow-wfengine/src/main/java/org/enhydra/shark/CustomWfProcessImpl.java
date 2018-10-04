@@ -13,7 +13,10 @@ import org.enhydra.shark.api.internal.toolagent.ToolAgentGeneralException;
 import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfProcessMgrInternal;
 import org.enhydra.shark.api.internal.working.WfRequesterInternal;
+import org.enhydra.shark.utilities.MiscUtilities;
 import org.enhydra.shark.xpdl.elements.Activity;
+import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfProcessImpl extends WfProcessImpl {
     
@@ -157,5 +160,12 @@ public class CustomWfProcessImpl extends WfProcessImpl {
             throws Exception, ToolAgentGeneralException {
         removeActiveActivity(fromActivity.activity_definition_id(shandle));
         super.queueNext(shandle, fromActivity);
+    }
+    
+    @Override
+    public WfActivityInternal[] checkDeadlines(WMSessionHandle shandle) throws Exception {
+        WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+        workflowMapper.updateAppDefinitionForDeadline(key, MiscUtilities.getProcessMgrPkgId(managerName), mgrVer);
+        return super.checkDeadlines(shandle);
     }
 }
