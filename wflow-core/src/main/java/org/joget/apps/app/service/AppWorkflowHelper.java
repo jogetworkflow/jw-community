@@ -53,6 +53,8 @@ import org.springframework.util.ClassUtils;
 @Service("workflowHelper")
 public class AppWorkflowHelper implements WorkflowHelper {
     
+    protected Map<String, AppDefinition> deadlineAppDefinitionCache = new HashMap<String, AppDefinition>();
+    
     @Override
     public boolean executeTool(WorkflowAssignment assignment) {
         ApplicationContext appContext = AppUtil.getApplicationContext();
@@ -740,5 +742,15 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         
         return map;
+    }
+
+    public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
+        AppDefinition appDef = deadlineAppDefinitionCache.get(packageId + ":" + packageVersion);
+        if (appDef == null) {
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) WorkflowUtil.getApplicationContext().getBean("packageDefinitionDao");
+            appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, Long.parseLong(packageVersion));
+        }
+        AppUtil.setCurrentAppDefinition(appDef);
+        System.out.println(">" + processId + " ("+appDef.getAppId()+":"+appDef.getVersion()+")");
     }
 }

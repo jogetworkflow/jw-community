@@ -109,4 +109,12 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @return
      */
     Collection<Long> getPackageVersions(String packageId);
+    
+    /**
+     * Get AppDefinition by package id and version
+     * @param packageId
+     * @param packageVersion
+     * @return
+     */
+    AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion);
 }
