@@ -9,6 +9,9 @@ import java.util.Properties;
 public class DatasourceProfilePropertyManager {
 
     private String propertyClass = null;
+
+    public DatasourceProfilePropertyManager() {
+    }
     
     public Properties newInstance() {
         try {
