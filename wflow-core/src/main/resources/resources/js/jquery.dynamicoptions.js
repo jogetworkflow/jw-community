@@ -7,7 +7,7 @@
                     return;
                 }
                 
-                $('[name='+o.controlField+']:not(form)').addClass("control-field");
+                FormUtil.setControlField(o.controlField);
                 
                 var showHideChange = function() {
                     if ($(target).hasClass("section-visibility-disabled") || $(target).find("input.section-visibility-disabled").length > 0) {
@@ -23,13 +23,20 @@
                     ajaxOptions(target, o);
                 };
                 
+                var parentSection = $(this).closest(".subform-section");
+                if ($(parentSection).length === 0) {
+                    parentSection = $(this).closest(".form-section");
+                }
+                
                 if (o.nonce === '') {
                     $('body').off("change", '[name='+o.controlField+']:not(form)', showHideChange);
                     $('body').on("change", '[name='+o.controlField+']:not(form)', showHideChange);
+                    $(parentSection).on("jsection:show", showHideChange);
                     showHideOption(target, o);
                 } else {
                     $('body').off("change", '[name='+o.controlField+']:not(form)', ajaxChange);
                     $('body').on("change", '[name='+o.controlField+']:not(form)', ajaxChange);
+                    $(parentSection).on("jsection:show", ajaxChange);
                     ajaxOptions(target, o);
                 }
             }
@@ -39,7 +46,7 @@
     
     function getValues(name) {
         //get enabled input field oni
-        var el = $('[name='+name+'].control-field').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
+        var el = $('[name=' + name + ']').filter("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]");
         var values = new Array();
         
         if ($(el).is("select")) {

@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import org.mozilla.javascript.Scriptable;
 
 public class Section extends Element implements FormBuilderEditable, FormContainer {
-    private Boolean continueValidation = null;
+    protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
     private Collection<Map<String, String>> rules = null;
     private Map<String, Element> elements = new HashMap<String, Element>();
 
@@ -79,6 +79,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
 
     @Override
     public boolean continueValidation(FormData formData) {
+        Boolean continueValidation = continueValidations.get(formData);
         if (continueValidation == null) {
             if (isAuthorize(formData)) {
                 // get the control element (where value changes the target)
@@ -92,6 +93,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             } else {
                 continueValidation = false;
             }
+            continueValidations.put(formData, continueValidation);
         }
         return continueValidation;
     }

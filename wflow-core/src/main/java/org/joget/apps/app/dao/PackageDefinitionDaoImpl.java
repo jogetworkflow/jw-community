@@ -296,4 +296,19 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
         return (Collection<Long>) q.list();
     }
+    
+    public AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion) {
+        Session session = findSession();
+        String query = "SELECT e.appDefinition FROM " + getEntityName() + " e  WHERE e.id=? AND e.version=?";
+
+        Query q = session.createQuery(query);
+        q.setParameter(0, packageId);
+        q.setParameter(1, packageVersion);
+
+        Collection list = q.list();
+        if (list != null && !list.isEmpty()) {
+            return (AppDefinition) list.iterator().next();
+        }
+        return null;
+    }
 }

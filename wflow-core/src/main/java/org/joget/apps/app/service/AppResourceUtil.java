@@ -13,6 +13,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -153,6 +154,8 @@ public class AppResourceUtil {
                     FileOutputStream out = null;
                     String filename = entry.getName().replaceFirst("resources/", "");
                     try {
+                        filename = SecurityUtil.normalizedFileName(filename);
+                        
                         File folder = new File(getBaseDirectory(), URLDecoder.decode(path, "UTF-8"));
                         if (!folder.exists()) {
                             folder.mkdirs();

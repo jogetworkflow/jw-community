@@ -354,7 +354,7 @@ public class FormPdfUtil {
         style += "*{font-size:12px;font-family:Arial, \"Droid Sans\";}";
         style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
         style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
-        style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;min-width: 250px;}";
+        style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";
         style += ".form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px;}";
         style += ".form-cell > .label, .subform-cell > .label {width: 40%;display: block;float: left;font-weight:bold;}";
         style += "table {clear:both;}";

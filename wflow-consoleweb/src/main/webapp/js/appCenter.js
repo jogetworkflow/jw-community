@@ -156,7 +156,9 @@ var AppCenter = {
 $(function() {
     if (window.self === window.top) {
         // show hints if not within IFRAME
-        AppCenter.showHints();
+        setTimeout(function(){
+            AppCenter.showHints();
+        }, 500);
     } else {
         $("#main-action-help").hide();
     }

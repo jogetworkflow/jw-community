@@ -24,12 +24,24 @@ body:not(.embeded) {
     overflow-y: auto;
     height: calc(100% - 65px);
     margin-top: 65px;
-    -webkit-overflow-scrolling: touch;
 }
 
 body.popupBody:not(.embeded) {
     height: 100%;
     margin-top: 0px;
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+    body:not(.embeded) {
+        margin-top: 0px;
+        height: 100%;
+        box-sizing: border-box;
+        padding-top:65px;
+        -webkit-overflow-scrolling: touch;
+    }
+    body.popupBody:not(.embeded) {
+        padding-top:0px;
+    }
 }
 
 .inline-block {

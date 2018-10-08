@@ -1,4 +1,5 @@
 FormUtil = {
+    controlFields : [],
     getValue : function(fieldId){
         var value = "";
         var field = FormUtil.getField(fieldId);
@@ -124,6 +125,31 @@ FormUtil = {
         }
         
         return values;
+    },
+    
+    setControlField : function(fieldId, selector) {
+        if (selector !== undefined) {
+            $(selector).addClass("control-field");
+        } else {
+            $("[name='"+fieldId+"']:not(form)").addClass("control-field");
+        }
+        if (FormUtil.controlFields.indexOf(fieldId) === -1) {
+            FormUtil.controlFields.push(fieldId);
+        }
+    },
+    
+    isControlField : function(fieldId, field) {
+        if (FormUtil.controlFields.indexOf(fieldId) !== -1 || $(field).hasClass("control-field")) {
+            return true;
+        } else {
+            //handle for subform
+            for (var i = 0; i < FormUtil.controlFields.length; i++) {
+                if (FormUtil.controlFields[i].indexOf("_") === 0 && (fieldId.length >= FormUtil.controlFields[i].length && fieldId.substring(fieldId.length - FormUtil.controlFields[i].length) === FormUtil.controlFields[i])) {
+                    return true;
+                }
+            }
+            return false;
+        }
     },
     
     getFieldsAsUrlQueryString : function(fields) {

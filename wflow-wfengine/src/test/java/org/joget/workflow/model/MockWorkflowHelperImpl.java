@@ -45,4 +45,8 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public Map<String, String> getPublishedPackageVersions() {
         return new HashMap<String, String>();
     }
+
+    public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
+        
+    }
 }

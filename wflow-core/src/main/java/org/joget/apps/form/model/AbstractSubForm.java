@@ -31,7 +31,7 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
             // override getChildren to return the subform
             if (checkForRecursiveForm(this, getPropertyString("formDefId"))) {
                 Form subForm = loadSubForm(formData);
-
+                
                 if (subForm != null) {
                     children = new ArrayList<Element>();
                     children.add(subForm);
@@ -360,8 +360,8 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
             String formId = form.getPropertyString(FormUtil.PROPERTY_ID);
             if (id.equals(formId)) {
                 return false;
-            } else {
-                return checkForRecursiveForm(form, id);
+            } else if (form.getParent() != null) {
+                return checkForRecursiveForm(form.getParent(), id);
             }
         }
         return true;

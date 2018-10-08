@@ -2,6 +2,57 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.11
+=================
+943bd57 Fixed: wflow-core - Default Form Options Binder - Duplicate value-label options existed when both retrieved from same field id and has duplicate value. #5834 @6.0-SNAPSHOT
+45e40f2 Fixed: wflow-core - DataPicker - Validation error when set current datetime as max datetime in different timezone. #5918 @6.0-SNAPSHOT
+dbe4da3 Fixed: wflow-consoleweb - FormUtil.js - startWith/endsWith not working in IE. #5917  @6.0-SNAPSHOT
+e272f21 Fixed: wflow-wfengine - WorkflowManagerImpl - assignmentAccept is wrongly marked as deprecated. The method is not deprecated, only in terms of UI functionality since v3. #5912 @6.0-SNAPSHOT
+b67df92 Fixed: wflow-core - FormPdfUtil - Column cannot display correctly when width less than 30%. #5885 @6.0-SNAPSHOT
+
+CHANGES IN 6.0.10
+=================
+005e996 Fixed: wflow-consoleweb - Universal Theme - Position of rich text field dropdown menu is incorrect when scrolling the page. #5845 @6.0-SNAPSHOT
+37985f5 Modified: wflow-install - DB - Upgraded MariaDB to 10.3.9 to fix occasional hanging during shutdown @6.0-SNAPSHOT
+8bd4a0d Fixed: wflow-consoleweb - Property Editor - Grid type - Ajax options for same column id in different field getting mess up. #5832 @6.0-SNAPSHOT
+2e9b06f Fixed: wflow-consoleweb - Datalist - Filter value contains space causing datalist action fail to pass value correctly. #5828 @6.0-SNAPSHOT
+1b58df3 Fixed: wflow-consoleweb - Make app center app icon position consistent with the userview builder's icon preview
+a85abe6 Fixed: wflow-consoleweb - Universal Theme - Regression of cb17306 causing header is missing in IOS. @6.0-SNAPSHOT
+a356c4b Fixed: wflow-consoleweb - Dynamic Option - Regression of 9c7ba92 & c8ee017. #5811 @6.0-SNAPSHOT
+d40d353 Fixed: wflow-consoleweb - Help guide - Help guide is missing for admin bar after login. @6.0-SNAPSHOT
+664aa37 Fixed: wflow-commons - FileManager - Filename contains % causing file cannot store. #5804 @6.0-SNAPSHOT
+ca4a7c8 Fixed: wflow-consoleweb - UI - Popup dialog does not work correctly for width < 668. #5790 @6.0-SNAPSHOT
+1eb5bd1 Modified: wflow-consoleweb - Add chinese helplinks
+7e96a18 Fixed: wflow-commons/ wflow-plugin-base/ wflow-core - Security - Prevent Path Manipulation: Zip Entry Overwrite. @6.0-SNAPSHOT
+
+CHANGES IN 6.0.9
+================
+5fc3dec Fixed: wflow-core - AbstractSubForm - Not able to detect recursive subform correctly. #5777 @6.0-SNAPSHOT
+185df0c Fixed: wflow-consoleweb - Form Builder - Copy & paste new added (unedited) field causing pasted field id is wrong. @6.0-SNAPSHOT
+6e18bec Modified: wflow-core - pluginhelp - Add more helplinks
+5a5a65f Fixed: wflow-core - Section - "Show as readonly when no permission?" causing options field cannot display value correctly. @6.0-SNAPSHOT
+6f70290 Fixed: wflow-consoleweb - Property Editor - Correction for a9cf1a. Page button which has popup dialog not working in single page mode. #5727 @6.0-SNAPSHOT
+a9cf1a0 Fixed: wflow-consoleweb - Property Editor - Page button which has popup dialog not working in single page mode. #5727 @6.0-SNAPSHOT
+33ad5cf Fixed: wflow-core - Section - Visibility control does not handle inner grid correctly in Form Grid. #5712 @6.0-SNAPSHOT
+2adc254 Fixed: wflow-consoleweb - Form Builder - Correction on 438b19. Pasting the copied element second time will has the same field id with first time. @6.0-SNAPSHOT
+85d4148 Fixed: wflow-core - Text Field - Numbering format not working when multiple text field in different section having same field id. @6.0-SNAPSHOT
+438b190 Fixed: wflow-consoleweb - Form Builder - Pasting the copied element second time will has the same field id with first time. @6.0-SNAPSHOT
+cb17306 Fixed: wflow-consoleweb - Universal Theme - Form is hard to scroll in Iphone. @6.0-SNAPSHOT
+5e05827 Fixed: wflow-core - Property Util - Regression of a0bd73. Help link injection causing the form option binder property title display wrongly. @6.0-SNAPSHOT
+9c7ba92 Fixed: wflow-core - Dynamic options field/section visibility control - When form id same with control field id, change event does not work correctly. @6.0-SNAPSHOT Fixed: wflow-consoleweb - formUtil.js - getField method returned form element when form id same with field id. @6.0-SNAPSHOT
+a0bd731 Modified: wflow-core - Form Options Binder - Add caching implementation. #5676 @6.0-SNAPSHOT
+a73b044 Fixed: wflow-core - Run Process - Run process directly does not work when "Run Process" activity mapped to a deleted form. @6.0-SNAPSHOT
+c095352 Fixed: wflow-core - Caching - Add caching implementation for datalist options formatter. @6.0-SNAPSHOT
+dd3a0c9 Modified: wflow-core - Userview Cache is not cache according to profile and app Id. @6.0-SNAPSHOT
+da0a5b6 Fixed: wflow-core - Email Tool - Does not give response after send test email. @6.0-SNAPSHOT
+54e469c Fixed: wflow-consoleweb - Form - In RTL display, element float position causing file upload does not work correctly. @6.0-SNAPSHOT
+a3c5fa1 Fixed: wflow-core - App Messages - Not able to import po message with newline char. #5668 @6.0-SNAPSHOT Fixed: wflow-commons - Manage Messages - Not able to import po message with newline char. #5668 @6.0-SNAPSHOT Fixed: wflow-commons - Manage Messages - Import po file not able to replace existing message. @6.0-SNAPSHOT
+2133a62 Fixed: wflow-core - Dynamic options field - Correction of 942145. Previous field value is lost when switched from hidden to visible. @6.0-SNAPSHOT
+0e2b06e Fixed: wflow-wfengine - App Version - Fail to create new version based on old version after update process flow in old version. @6.0-SNAPSHOT
+526eb98 Fixed: wflow-core - Dynamic options field - Previous field value is lost when switched from hidden to visible. @6.0-SNAPSHOT
+7d4451d Fixed: wflow-consoleweb - Web - Value does not encode correctly for post request. #5655 @6.0-SNAPSHOT
+c6696cf Fixed: wflow-consoleweb - Process Builder - Drag to draw activity has position issue when participant is out of viewport @6.0-SNAPSHOT
+
 CHANGES IN 6.0.8
 ================
 02836b1 Fixed: wflow-core/wflow-wfengine - Shark Engine - Correction of 7ee8b5e. @6.0-SNAPSHOT
