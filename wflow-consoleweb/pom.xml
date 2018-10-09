@@ -94,6 +94,12 @@
             <artifactId>cache-api</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>1.9.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>jw</finalName>
