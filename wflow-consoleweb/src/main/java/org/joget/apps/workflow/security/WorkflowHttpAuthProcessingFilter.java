@@ -196,6 +196,11 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
 
                 if ((masterLoginUsername != null && masterLoginUsername.trim().length() > 0) &&
                         (masterLoginPassword != null && masterLoginPassword.length() > 0)) {
+                    
+                    // Prevent DoS attacks by refusing to hash large passwords
+                    if (password != null && password.length() > WorkflowAuthenticationProvider.PASSWORD_MAX_LENGTH) {
+                        throw new BadCredentialsException("");
+                    }
 
                     User master = new User();
                     master.setUsername(masterLoginUsername.trim());
@@ -225,6 +230,11 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                     password = loginHash.trim();
                 }
                 if (password != null) {
+                    // Prevent DoS attacks by refusing to hash large passwords
+                    if (password.length() > WorkflowAuthenticationProvider.PASSWORD_MAX_LENGTH) {
+                        throw new BadCredentialsException("");
+                    }
+                    
                     // use existing authentication manager
                     try {
                         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username.trim(), password);
