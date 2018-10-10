@@ -29,6 +29,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class WorkflowAuthenticationProvider implements AuthenticationProvider, MessageSourceAware {
 
+    public static final int PASSWORD_MAX_LENGTH = 512;
+    
     transient
     @Autowired
     @Qualifier("main")
@@ -60,7 +62,11 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         // check credentials
         boolean validLogin = false;
         try {
-            validLogin = directoryManager.authenticate(username, password);
+            // Prevent DoS attacks by refusing to hash large passwords
+            if (password.length() <= PASSWORD_MAX_LENGTH) {
+                // authenticate
+                validLogin = directoryManager.authenticate(username, password);
+            }
         } catch (Exception e) {
             throw new BadCredentialsException(e.getMessage());
         }
