@@ -2099,6 +2099,7 @@ public class ConsoleWebController {
                 map.addAttribute("propertyEditable", (PropertyEditable) plugin);
             }
 
+            map.addAttribute("appDef", appDef);
             map.addAttribute("plugin", plugin);
 
             String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/activity/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
@@ -2380,6 +2381,7 @@ public class ConsoleWebController {
 
             String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
 
+            map.addAttribute("appDef", appDef);
             map.addAttribute("plugin", plugin);
             map.addAttribute("actionUrl", url);
         }
@@ -3329,6 +3331,7 @@ public class ConsoleWebController {
         }
         url += "?param_id=" + ClassUtils.getUserClass(plugin).getName();
 
+        map.addAttribute("appDef", appDef);
         map.addAttribute("plugin", plugin);
         map.addAttribute("skipValidation", false);
         map.addAttribute("actionUrl", url);

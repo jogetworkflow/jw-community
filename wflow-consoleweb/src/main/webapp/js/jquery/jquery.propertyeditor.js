@@ -2232,6 +2232,35 @@ PropertyEditor.Type.SelectBox.prototype = {
             });
         }
         html += '</select>';
+        
+        if (thisObj.options.appPath !== undefined && thisObj.options.appPath !== "") {
+            html += thisObj.builderLink();
+        }
+        
+        return html;
+    },
+    builderLink : function() {
+        var thisObj = this;
+        var html = "";
+        var builder = "";
+        
+        var lname = thisObj.properties.name.toLowerCase();
+        
+        if (lname.indexOf("formid") !== -1 || lname.indexOf("formdefid") !== -1) {
+            builder = "form";
+        } else if (lname.indexOf("listid") !== -1 || lname.indexOf("listdefid") !== -1 ||
+                   lname.indexOf("datalistid") !== -1 || lname.indexOf("datalistdefid") !== -1) {
+            builder = "datalist";
+        } else if (lname.indexOf("userviewid") !== -1 || lname.indexOf("userviewdefid") !== -1) {
+            builder = "userview";
+        } else if (lname.indexOf("processid") !== -1 || lname.indexOf("processdefid") !== -1) {
+            builder = "process";
+        }
+        
+        if (builder !== "") {
+            html += " <a href=\"\" target=\"_blank\" class=\"openbuilder\" data-type=\""+builder+"\" style=\"display:none;\"><i class=\"fa fa-external-link\"></i></i></a>";
+        }
+        
         return html;
     },
     renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault,
@@ -2295,10 +2324,9 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#" + this.id).on("chosen:updated", function(evt) {
                 updateLabel($("#" + field.id).data("chosen"));
             });
-            $("#" + this.id).on("change"),
-                function() {
-                    updateLabel($("#" + field.id).data("chosen"));
-                };
+            $("#" + this.id).on("change", function() {
+                updateLabel($("#" + field.id).data("chosen"));
+            });
             setTimeout(function() {
                 $($("#" + field.id).data("chosen").container).find(".chosen-search input").on("keydown", function() {
                     setTimeout(function() { updateLabel($("#" + field.id).data("chosen")); }, 5);
@@ -2307,6 +2335,31 @@ PropertyEditor.Type.SelectBox.prototype = {
             updateLabel($("#" + field.id).data("chosen"));
         }
         
+        if ($("#" + field.id + "_input a.openbuilder").length > 0) {
+            var updateLink = function() {
+                var value = $("#" + field.id).val();
+                if (value !== "" && value !== undefined && value !== null) {
+                    var builder = $("#" + field.id + "_input a.openbuilder").data("type");
+                    var url = field.options.contextPath + "/web/console/app" + field.options.appPath + "/" + builder + "/builder";
+                    
+                    if (builder === "process") {
+                        url += "?processId=" + value;
+                    } else {
+                        url += "/" + value;
+                    }
+                    
+                    $("#" + field.id + "_input a.openbuilder").attr("href", url);
+                    $("#" + field.id + "_input a.openbuilder").show();
+                } else {
+                    $("#" + field.id + "_input a.openbuilder").hide();
+                }
+            };
+            $("#" + field.id).on("change", function() {
+                updateLink();
+            });
+            updateLink();
+        }
+
         PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function() {
@@ -4207,6 +4260,7 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
     $.fn.extend({
         propertyEditor: function(options) {
             var defaults = {
+                appPath: '',
                 contextPath: '',
                 saveCallback: null,
                 cancelCallback: null,

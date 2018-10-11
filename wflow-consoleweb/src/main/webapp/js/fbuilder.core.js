@@ -684,6 +684,7 @@ FormBuilder = {
 
         // show property dialog
         var options = {
+            appPath: "/" + FormBuilder.appId + "/" + FormBuilder.appVersion,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition : elementOptions,
             propertyValues : elementProperty,
@@ -1011,6 +1012,7 @@ FormBuilder = {
         $("#form-properties").html("");
         var formProperties = form.dom.properties;
         var options = {
+            appPath: "/" + FormBuilder.appId + "/" + FormBuilder.appVersion,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition: formOptions,
             propertyValues: formProperties,
@@ -1042,6 +1044,7 @@ FormBuilder = {
         
         // show property dialog
         var options = {
+            appPath: "/" + FormBuilder.appId + "/" + FormBuilder.appVersion,
             contextPath: FormBuilder.contextPath,
             propertiesDefinition: formOptions,
             propertyValues: formProperties,

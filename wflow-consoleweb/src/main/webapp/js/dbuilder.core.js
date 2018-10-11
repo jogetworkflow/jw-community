@@ -197,6 +197,7 @@ DatalistBuilder = {
         propertyValues['binder'] = DatalistBuilder.binderProperties;
         
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1215,6 +1216,7 @@ DatalistBuilder = {
         var propertyValues = DatalistBuilder.chosenColumns[columnId];
 
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1305,6 +1307,7 @@ DatalistBuilder = {
         propertyValues['filterParamName'] = DatalistBuilder.filterParam + propertyValues['name'];
         
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1461,6 +1464,8 @@ DatalistBuilder = {
         var propertyValues = DatalistBuilder.datalistProperties;
 
         var options = {
+            appPath: DatalistBuilder.appPath,
+            contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             showCancelButton : true,
             propertyValues : propertyValues,
@@ -1479,6 +1484,7 @@ DatalistBuilder = {
         var propertyValues = DatalistBuilder.datalistProperties;
 
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1509,6 +1515,7 @@ DatalistBuilder = {
         propertyValues['binder'] = DatalistBuilder.binderProperties;
         
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1585,6 +1592,7 @@ DatalistBuilder = {
         var propertyValues = action.properties;
 
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
@@ -1739,6 +1747,7 @@ DatalistBuilder = {
         var propertyValues = action.properties;
 
         var options = {
+            appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,

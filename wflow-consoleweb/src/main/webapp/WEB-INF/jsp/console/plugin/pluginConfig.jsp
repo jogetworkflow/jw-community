@@ -186,6 +186,9 @@
             $(document).ready(function(){
                 var options = {
                     contextPath: '${pageContext.request.contextPath}',
+                    <c:if test="${!empty appDef}">
+                        appPath: '/${appDef.appId}/${appDef.version}',
+                    </c:if>
                     <c:if test="${!empty propertyEditable.propertyOptions}">
                         propertiesDefinition : ${PropertyUtil.injectHelpLink(plugin.helpLink, propertyEditable.propertyOptions)},
                     </c:if>

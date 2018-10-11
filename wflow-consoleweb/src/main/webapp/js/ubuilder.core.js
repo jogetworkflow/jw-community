@@ -140,6 +140,7 @@ UserviewBuilder = {
         $("#step-setting").on("click", function(){
             $("#step-setting-container").html("");
             var options = {
+                appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
                 contextPath: UserviewBuilder.contextPath,
                 propertiesDefinition : UserviewBuilder.settingPropertyOptions,
                 propertyValues : UserviewBuilder.data.setting.properties,
@@ -242,6 +243,7 @@ UserviewBuilder = {
     
     ShowPopupUserviewSetting : function () {
         var options = {
+            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
             contextPath: UserviewBuilder.contextPath,
             propertiesDefinition : UserviewBuilder.settingPropertyOptions,
             propertyValues : UserviewBuilder.data.setting.properties,
@@ -466,6 +468,7 @@ UserviewBuilder = {
 
         var thisObject = this;
         var options = {
+            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
             contextPath: UserviewBuilder.contextPath,
             propertiesDefinition : thisObject.menuTypes[menu.className].propertyOptions,
             propertyValues : menu.properties,
@@ -523,6 +526,7 @@ UserviewBuilder = {
 
         var thisObject = this;
         var options = {
+            appPath: "/" + UserviewBuilder.appId + "/" + UserviewBuilder.appVersion,
             contextPath: UserviewBuilder.contextPath,
             propertiesDefinition : UserviewBuilder.categoryPropertyOptions,
             propertyValues : category.properties,
