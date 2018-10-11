@@ -598,3 +598,126 @@ td.error .chosen-container, td.error input {
 .cp-color-picker {
     z-index: 90000;
 }
+.repeater-rows-container {
+    margin-bottom: 5px;
+    background:#f6f9fa;
+    border: 1px solid #acc1cb;
+}
+.repeater-row {
+    position: relative; 
+    padding:0 !important; 
+    border-bottom: 1px solid #acc1cb;
+}
+.repeater-row:last-child {
+    border-bottom: 0;
+}
+.repeater-row a {
+    cursor: pointer;
+}
+.repeater-row .inputs {
+    padding:0px 30px 0px 60px; 
+    box-sizing: border-box;
+}
+.repeater-row .inputs .property-editor-property{
+    display:inline-block;
+}
+.repeater-row.compress .inputs .property-editor-property.default-hidden{
+    display: none;
+}
+.repeater-row .inputs .property-editor-property {
+    padding: 5px;
+    margin-bottom: 0px;
+    width: 45%;
+    min-width: 300px;
+    display: inline-block;
+    vertical-align: top;
+}
+.repeater-row .inputs .property-label-container {
+    width: 30%;
+}
+.repeater-row .inputs .property-input {
+    width: 70%;
+}
+.repeater-row .inputs .property-editor-property:nth-child(odd) {
+    margin-right: 5%;
+}
+.repeater-row .inputs .default-hidden .property-label{
+    color:#999;
+}
+.repeater-row.compress .inputs .inputs-container {
+    position: relative;
+}
+.repeater-row.compress:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left:0;
+    right: 0;
+    height: 10px;
+    background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 72%, rgba(255,255,255,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 72%,rgba(255,255,255,1) 100%); 
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 72%,rgba(255,255,255,1) 100%); 
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); 
+}
+.repeater-row .inputs .property-editor-property input,
+.repeater-row .inputs .property-editor-property select,
+.repeater-row .inputs .property-editor-property textarea{
+    max-width: 100%;
+}
+.repeater-row .actions {
+    padding:5px; 
+    width: 30px; 
+    position: absolute; 
+    box-sizing: border-box; 
+    border-right: 1px solid #acc1cb; 
+    text-align: center; 
+    vertical-align: middle;
+    top:0;
+    bottom: 0;
+}
+.repeater-row .actions > a, .repeater-row .actions > i {
+    position: absolute; 
+    top:50%;
+    transform: translate(-50%, -50%);
+    color: #888;
+}
+.repeater-row .actions:last-child {
+    border-right: 0; 
+    border-left: 1px solid #acc1cb;
+}
+.repeater-row .actions.expand-compress {
+    left: 0;
+}
+.repeater-row .actions.sort {
+    left: 30px;
+    cursor: move;
+    background: #f2f2f2;
+}
+.repeater-row .actions.rowbuttons {
+    right: 0;
+    background: #f2f2f2;
+}
+.repeater-row .actions.rowbuttons .addrow {
+    top:0;
+    display: none;
+}
+.repeater-row .actions.rowbuttons:hover .addrow {
+    left: 50%;
+    display: block;
+}
+.repeater-row.error {
+    border: 1px solid red;
+}
+.btn.pebutton {
+    display: inline-block;
+    background: #f3f3f3;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    float: left;
+}
+.pebutton {
+    margin-bottom:3px; 
+    display:inline-block; 
+    cursor:pointer;
+}

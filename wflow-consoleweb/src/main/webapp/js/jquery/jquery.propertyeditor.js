@@ -3633,6 +3633,272 @@ PropertyEditor.Type.GridFixedRow.prototype = {
 };
 PropertyEditor.Type.GridFixedRow = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.GridFixedRow.prototype);
 
+PropertyEditor.Type.Repeater = function() {};
+PropertyEditor.Type.Repeater.prototype = {
+    shortname: "repeater",
+    addOnValidation: function(data, errors, checkEncryption) {
+        var thisObj = this;
+        
+        var value = data[this.properties.name];
+        if (value !== null && value !== undefined && value.length > 0) {
+            //remove previous error message
+            $("#" + thisObj.id + "_input .error").removeClass("error");
+            $("#" + thisObj.id + "_input .property-input-error").remove();
+
+            $("#" + thisObj.id + "_input .repeater-row").each(function(i){
+                thisObj.validateRow($(this), value[i], errors, checkEncryption);
+            });
+        }
+    },
+    validateRow: function(row, data, errors, checkEncryption) {
+        var fields = $(row).data("fields");
+        
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                var type = property.propertyEditorObject;
+                if (!type.isHidden()) {
+                    type.validate(data, errors, checkEncryption);
+                }
+            });
+        }
+        
+        if ($(row).find(".property-input-error").length > 0) {
+            $(row).addClass("error");
+        }
+    },
+    getData: function(useDefault) {
+        var field = this;
+        var data = new Object();
+
+        if (this.isDataReady) {
+            var rows = [];
+            if (!field.isHidden()) {
+                $("#" + field.id + "_input .repeater-row").each(function(){
+                    rows.push(field.getRow($(this)));
+                });
+                
+                data[this.properties.name] = rows;
+            }
+        } else {
+            data[this.properties.name] = this.value;
+        }
+        return data;
+    },
+    getRow: function(row) {
+        var fields = $(row).data("fields");
+        
+        var properties = new Object();
+        if (fields !== undefined) {
+            $.each(fields, function(i, property) {
+                var type = property.propertyEditorObject;
+
+                if (!type.isHidden()) {
+                    var data = type.getData(false);
+
+                    //handle Hash Field
+                    if (data !== null && data['HASH_FIELD'] !== null && data['HASH_FIELD'] !== undefined) {
+                        if (properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] === undefined) {
+                            properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] = data['HASH_FIELD'];
+                        } else {
+                            properties['PROPERTIES_EDITOR_METAS_HASH_FIELD'] += ";" + data['HASH_FIELD'];
+                        }
+                        delete data['HASH_FIELD'];
+                    }
+
+                    if (data !== null) {
+                        properties = $.extend(properties, data);
+                    }
+                }
+            });
+        }
+        return properties;
+    },
+    renderField : function() {
+        var thisObj = this;
+        
+        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container"></div><div style="text-align:right; margin-bottom: 10px;"><a class="pebutton btn collapseAll"><i class="fa fa-compress"></i> '+get_peditor_msg('peditor.collapseAllRows')+'</a> <a class="pebutton btn expandAll"><i class="fa fa-expand"></i> '+get_peditor_msg('peditor.expandAllRows')+'</a> <a class="pebutton addrow"><i class="fa fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        
+        return html;
+    },
+    initScripting : function() {
+        var thisObj = this;
+        
+        thisObj.loadValues();
+        
+        $("#" + thisObj.id + "_input").on("click", ".addrow", function(){
+            thisObj.addRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", ".deleterow", function(){
+            thisObj.deleteRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", "a.expand", function(){
+            thisObj.expandRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", "a.compress", function(){
+            thisObj.compressRow(this);
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", "a.expandAll", function(){
+            $("#" + thisObj.id + "_input .repeater-row a.expand").each(function() {
+                thisObj.expandRow(this);
+            });
+        });
+        
+        $("#" + thisObj.id + "_input").on("click", "a.collapseAll", function(){
+            $("#" + thisObj.id + "_input .repeater-row a.compress").each(function() {
+                thisObj.compressRow(this);
+            });
+        });
+        
+        $("#" + thisObj.id + "_input .repeater-rows-container").sortable({
+            opacity: 0.8,
+            axis: 'y',
+            handle: '.sort',
+            tolerance: 'intersect'
+        });
+        thisObj.updateBtn();
+    },
+    loadValues : function() {
+        var thisObj = this;
+        
+        if (thisObj.value !== undefined && thisObj.value !== null && thisObj.value.length > 0) {
+            $.each(thisObj.value, function(i, v) {
+                thisObj.addRow(null, v);
+            });
+        }
+    },
+    addRow : function(before, value) {
+        var thisObj = this;
+        
+        var row = $('<div class="repeater-row compress"><div class="actions expand-compress"><a class="expand"><i class="fa fa-expand"></i></a></div><div class="actions sort"><i class="fa fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fa fa-plus-circle"></i></a><a class="deleterow"><i class="fa fa-trash"></i></a></div></div>');
+        
+        var fields = $.extend(true, {}, thisObj.properties.fields);
+        
+        var html = "";
+        var cId = thisObj.id + "-" + ((new Date()).getTime());
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                html += thisObj.renderProperty(i, cId, property, value);
+            });
+        }
+        $(row).find(".inputs .inputs-container").append(html);
+        
+        var defaultField = 2;
+        if (thisObj.properties.defaultField !== undefined && !isNaN(thisObj.properties.defaultField)) {
+            defaultField = thisObj.properties.defaultField;
+        }
+        var c = 0;
+        $(row).find(".inputs .inputs-container .property-editor-property").each(function(i){
+            if (c >= defaultField) {
+                $(this).addClass("default-hidden");
+            }
+            c++;
+        });
+        
+        $(row).data("fields", fields);
+        
+        if (before !== null && before !== undefined && !$(before).hasClass("pebutton")) {
+            $(before).closest(".repeater-row").before(row);
+        } else {
+            $("#" + thisObj.id + "_input").find(".repeater-rows-container").append(row);
+        }
+        
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                var type = property.propertyEditorObject;
+                type.initScripting();
+                type.initDefaultScripting();
+            });
+        }
+        
+        $(row.editor).find(".property-label-description").each(function(){
+            if (!$(this).hasClass("tooltipstered")) {
+                $(this).tooltipster({
+                    contentCloning: false,
+                    side : 'right',
+                    interactive : true
+                });
+            }
+        });
+        
+        thisObj.updateBtn();
+    },
+    renderProperty: function(i, prefix, property, values) {
+        var type = property.propertyEditorObject;
+
+        if (type === undefined) {
+            var value = null;
+            if (values !== null && values !== undefined && values[property.name] !== undefined) {
+                value = values[property.name];
+            } else if (property.value !== undefined && property.value !== null) {
+                value = property.value;
+            }
+
+            type = PropertyEditor.Util.getTypeObject(this, i, prefix, property, value, null);
+            property.propertyEditorObject = type;
+
+            if (prefix === "" || prefix === null || prefix === undefined) {
+                this.editorObject.fields[property.name] = type;
+            }
+        }
+
+        if (type !== null) {
+            return type.render();
+        }
+        return "";
+    },
+    expandRow : function(button) {
+        var thisObj = this;
+        $(button).addClass("compress");
+        $(button).find("i").addClass("fa-compress");
+        $(button).closest(".repeater-row").addClass("expand");
+        $(button).removeClass("expand");
+        $(button).find("i").removeClass("fa-expand");
+        $(button).closest(".repeater-row").removeClass("compress");
+        
+        var row = $(button).closest(".repeater-row");
+        var fields = $(row).data("fields");
+        
+        if (fields !== null && fields !== undefined) {
+            $.each(fields, function(i, property) {
+                var type = property.propertyEditorObject;
+                type.pageShown();
+            });
+        }
+        thisObj.updateBtn();
+    },
+    compressRow : function(button) {
+        var thisObj = this;
+        $(button).addClass("expand");
+        $(button).find("i").addClass("fa-expand");
+        $(button).closest(".repeater-row").addClass("compress");
+        $(button).removeClass("compress");
+        $(button).find("i").removeClass("fa-compress");
+        $(button).closest(".repeater-row").removeClass("expand");
+        thisObj.updateBtn();
+    },
+    deleteRow : function(button) {
+        var thisObj = this;
+        $(button).closest(".repeater-row").remove();
+        thisObj.updateBtn();
+    },
+    updateBtn : function() {
+        var thisObj = this;
+        
+        if ($("#" + thisObj.id + "_input").find(".repeater-row.expand").length > 0) {
+            $("#" + thisObj.id + "_input a.collapseAll").show();
+            $("#" + thisObj.id + "_input a.expandAll").hide();
+        } else {
+            $("#" + thisObj.id + "_input a.collapseAll").hide();
+            $("#" + thisObj.id + "_input a.expandAll").show();
+        }
+    }
+};
+PropertyEditor.Type.Repeater = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Repeater.prototype);
+
 PropertyEditor.Type.HtmlEditor = function() {};
 PropertyEditor.Type.HtmlEditor.prototype = {
     shortname: "htmleditor",
