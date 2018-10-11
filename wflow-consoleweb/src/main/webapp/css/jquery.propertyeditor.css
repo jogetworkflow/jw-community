@@ -211,20 +211,16 @@
 }
 
 .property-label-container{
-    width:30%;
+    width:20%;
     float:left;
 }
 
-.property-description{
+.property-label-container .property-description{
     display:none;
-    color:#0000ff;
-    font-size:10px;
-    padding-right:10px;
 }
 
-.property-type-readonly .property-description,
-.property-type-label .property-description {
-    display:block !important;
+.property-description {
+    max-width: 500px;
 }
 
 .property-label{
@@ -232,8 +228,12 @@
     color: #535353;
 }
 
+.property-label-description {
+    color: #0000ff;
+}
+
 .property-input{
-    width:70%;
+    width:80%;
     float:right;
     position: relative;
 }

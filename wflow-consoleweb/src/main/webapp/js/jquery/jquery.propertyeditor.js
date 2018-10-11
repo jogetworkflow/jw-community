@@ -1417,10 +1417,15 @@ PropertyEditor.Model.Page.prototype = {
     },
     attachDescriptionEvent: function() {
         var thisObj = this;
-        $(this.editor).find("#" + this.id).on("focus", "input, select, textarea", function() {
-            $(thisObj.editor).find(".property-description").hide();
-            var property = $(this).parentsUntil(".property-editor-property-container", ".property-editor-property");
-            $(property).find(".property-description").show();
+        
+        $(this.editor).find(".property-label-description").each(function(){
+            if (!$(this).hasClass("tooltipstered")) {
+                $(this).tooltipster({
+                    contentCloning: false,
+                    side : 'right',
+                    interactive : true
+                });
+            }
         });
     },
     attachHashVariableAssistant: function() {
@@ -1837,16 +1842,15 @@ PropertyEditor.Model.Type.prototype = {
             }
 
             var toolTip = '';
-            if (this.options.showDescriptionAsToolTip) {
-                toolTip = ' title="' + description + '"';
+            var toolTipId = '';
+            if (description !== "") {
+                toolTipId = this.properties.name + (new Date()).getTime();
+                toolTip = ' <i class="property-label-description fa fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
             }
 
             html += '<div class="property-label-container">';
-            html += '<div class="property-label"' + toolTip + '>' + this.properties.label + required + '</div>';
-
-            if (!this.options.showDescriptionAsToolTip) {
-                html += '<div class="property-description">' + description + '</div>';
-            }
+            html += '<div class="property-label">' + this.properties.label + required + toolTip + '</div>';
+            html += '<div id="'+toolTipId+'" class="property-description">' + description + '</div>';
             html += '</div>';
         }
         return html;
