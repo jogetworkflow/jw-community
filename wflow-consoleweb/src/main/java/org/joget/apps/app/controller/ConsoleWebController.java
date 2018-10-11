@@ -1744,15 +1744,6 @@ public class ConsoleWebController {
         runProcessActivity.setType("normal");
         activityList.add(runProcessActivity);
 
-        //remove route
-        Iterator iterator = activityList.iterator();
-        while (iterator.hasNext()) {
-            WorkflowActivity activity = (WorkflowActivity) iterator.next();
-            if (activity.getType().equals(WorkflowActivity.TYPE_ROUTE)) {
-                iterator.remove();
-            }
-        }
-
         //get activity plugin mapping
         Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
         Map<String, PackageActivityPlugin> activityPluginMap = (packageDefinition != null) ? packageDefinition.getPackageActivityPluginMap() : new HashMap<String, PackageActivityPlugin>();
@@ -1796,6 +1787,7 @@ public class ConsoleWebController {
         Map<String, Plugin> participantPluginMap = pluginManager.loadPluginMap(ParticipantPlugin.class);
 
         String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        map.addAttribute("processList", processList);
         map.addAttribute("processIdWithoutVersion", processIdWithoutVersion);
         map.addAttribute("process", process);
         map.addAttribute("activityList", activityList);
@@ -2016,6 +2008,22 @@ public class ConsoleWebController {
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
         return "console/apps/activityPluginAdd";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/route/(*:activityDefId)/plugin")
+    public String consoleRoutePlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        WorkflowProcess process = workflowManager.getProcess(processDefId);
+        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
+        map.addAttribute("process", process);
+        map.addAttribute("activity", activity);
+        map.addAttribute("activityDefId", activityDefId);
+        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        return "console/apps/routePluginAdd";
+    }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
     public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
@@ -2024,15 +2032,9 @@ public class ConsoleWebController {
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
-        PackageActivityPlugin activityPlugin = new PackageActivityPlugin();
-        activityPlugin.setProcessDefId(processDefId);
-        activityPlugin.setActivityDefId(activityDefId);
-        activityPlugin.setPluginName(pluginName);
-
-        packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
-
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        map.addAttribute("pluginName", URLEncoder.encode(pluginName, "UTF-8"));
         return "console/apps/activityPluginAddSuccess";
     }
 
@@ -2046,16 +2048,25 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/configure")
-    public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws IOException {
+    public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
+        tab = SecurityUtil.validateStringInput(tab);
 
         if (packageDef != null) {
             activityDefId = SecurityUtil.validateStringInput(activityDefId);
             processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
             PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefId, activityDefId);
+            
+            if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
+                activityPlugin = new PackageActivityPlugin();
+                activityPlugin.setProcessDefId(processDefId);
+                activityPlugin.setActivityDefId(activityDefId);
+                activityPlugin.setPluginName(pluginName);
+            }
+            
             Plugin plugin = pluginManager.getPlugin(activityPlugin.getPluginName());
-
+          
             if (activityPlugin.getPluginProperties() != null && activityPlugin.getPluginProperties().trim().length() > 0) {
                 if (!(plugin instanceof PropertyEditable)) {
                     Map propertyMap = new HashMap();
@@ -2090,7 +2101,10 @@ public class ConsoleWebController {
 
             map.addAttribute("plugin", plugin);
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/activity/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid();
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/activity/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
+            if (pluginName != null) {
+                url += "&pluginname="+URLEncoder.encode(pluginName, "UTF-8");
+            }
             map.addAttribute("actionUrl", url);
         }
 
@@ -2099,12 +2113,23 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
     @Transactional
-    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) throws IOException {
+    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         processDefId = SecurityUtil.validateStringInput(processDefId);
         activityDefId = SecurityUtil.validateStringInput(activityDefId);
+        tab = SecurityUtil.validateStringInput(tab);
         PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefId, activityDefId);
+        
+        if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
+            activityPlugin = new PackageActivityPlugin();
+            activityPlugin.setProcessDefId(processDefId);
+            activityPlugin.setActivityDefId(activityDefId);
+            activityPlugin.setPluginName(pluginName);
+                
+            packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
+        }
+        
         if (activityPlugin != null) {
             if (pluginProperties == null) {
                 //request params
@@ -2144,6 +2169,8 @@ public class ConsoleWebController {
 
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        
+        map.addAttribute("tab", tab);
 
         return "console/apps/activityPluginConfigSuccess";
     }
@@ -2709,7 +2736,7 @@ public class ConsoleWebController {
         }
         AppUtil.writeJson(writer, jsonArray, callback);
     }
-
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/properties")
     public String consoleProperties(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(map, appId, version);
@@ -5202,7 +5229,7 @@ public class ConsoleWebController {
         String datalistJson = datalistDef.getJson();
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(datalistJson));
     }
-
+    
     @RequestMapping("/json/console/locales")
     public void consoleJsonLocaleList(Writer writer) throws JSONException {
         JSONObject jsonObject = new JSONObject();

@@ -15,6 +15,10 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public boolean executeTool(WorkflowAssignment assignment) {
         return true;
     }
+    
+    public DecisionResult executeDecisionPlugin(String processDefId, String processId, String routeId, String routeActId, Map<String, String> variables) {
+        return null;
+    }
 
     public List<String> getAssignmentUsers(String packageId, String procDefId, String procId, String version, String actId, String requesterUsername, String participantId) {
         return new ArrayList<String>();

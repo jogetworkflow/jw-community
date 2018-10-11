@@ -60,6 +60,7 @@
                     <li class="selected"><a href="#participantList"><span><fmt:message key="console.process.config.label.mapParticipants"/></span></a></li>
                     <li><a href="#activityList"><span><fmt:message key="console.process.config.label.mapActivities"/></span></a></li>
                     <li><a href="#toolList"><span><fmt:message key="console.process.config.label.mapTools"/></span></a></li>
+                    <li><a href="#routeList"><span><fmt:message key="console.process.config.label.mapRoutes"/></span></a></li>
                     <li><a href="#variableList"><span><fmt:message key="console.process.config.label.variableList"/></span></a></li>
                 </ul>
                 <br><br>
@@ -350,6 +351,59 @@
                             </c:if>
                         </c:forEach>
                     </div>
+                        
+                    <div id="routeList" style="height_: 300px; overflow-y_: scroll">
+                        <div class="tabSummary"><fmt:message key="console.process.config.label.mapRoutes.description"/></div>
+                        <c:forEach var="activity" items="${activityList}" varStatus="rowCounter">
+                            <c:set var="activityUid" value="${processIdWithoutVersion}::${activity.id}"/>
+                            <c:if test="${activity.type == 'route'}">
+                                <c:choose>
+                                    <c:when test="${rowCounter.count % 2 == 0}">
+                                        <c:set var="rowStyle" scope="page" value="even"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="rowStyle" scope="page" value="odd"/>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <div class="main-body-row ${rowStyle}" style="min-height: 50px">
+                                    <span class="row-content" helpTitle="|||<fmt:message key="console.process.config.label.id"/>: <c:out value="${activity.id}"/>">
+                                        <c:set var="activityDisplayName" value="${activity.name}"/>
+                                        <c:if test="${empty activity.name}">
+                                            <c:set var="activityDisplayName" value="${activity.id}"/>
+                                        </c:if>
+                                        <c:out value="${activityDisplayName}"/>
+                                    </span>
+                                    <span class="row-content id">
+                                        <font class="ftl_label"><fmt:message key="console.process.config.label.id"/> :</font> <c:out value="${activity.id}"/>
+                                    </span>
+                                    <span class="row-button">
+                                        <input type="button" value="<fmt:message key="console.process.config.label.mapTools.addEditMapping"/>" onclick="addEditRoute('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"/>
+                                    </span>
+                                    <div style="clear: both; padding-left: 1em; padding-top: 0.5em;">
+                                        <div id="activityForm_${activity.id}" style="padding-left: 1em; padding-top: 0.5em;">
+                                            <c:set var="plugin" value="${pluginMap[activityUid]}"/>
+                                            <c:if test="${plugin ne null}">
+                                                <dl>
+                                                    <dt><fmt:message key="console.plugin.label.name"/></dt>
+                                                    <dd>${plugin.i18nLabel}&nbsp;</dd>
+                                                    <dt><fmt:message key="console.plugin.label.version"/></dt>
+                                                    <dd>${plugin.version}&nbsp;</dd>
+                                                    <dt>&nbsp;</dt>
+                                                    <dd>
+                                                        <div>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="console.process.config.label.mapTools.removePlugin"/>" onclick="activityRemovePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>')"/>
+                                                            <input type="button" class="smallbutton" value="<fmt:message key="general.method.label.configPlugin"/>" onclick="routeConfigurePlugin('<ui:escape value="${activity.id}" format="html;javascript"/>', '<ui:escape value="${activityDisplayName}" format="html;javascript"/>')"/>
+                                                        </div>
+                                                    </dd>
+                                                </dl>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:if>
+                        </c:forEach>
+                    </div>    
 
                     <div id="variableList">
                         <div class="tabSummary"><fmt:message key="console.process.config.label.variableList.description"/></div>
@@ -547,6 +601,11 @@
                     popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
                     popupDialog.init();
                 }
+                
+                function addEditRoute(activityId, activityName){
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/route/" + escape(activityId) + "/plugin?activityName=" + encodeURIComponent(activityName);
+                    popupDialog.init();
+                }
 
                 function addEditParticipant(participantId, participantName){
                     popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/" + participantId + "?participantName=" + encodeURIComponent(participantName);
@@ -569,7 +628,13 @@
 
                 function activityConfigurePlugin(activityId, activityName){
                     var title = " - " + activityName + " (" + activityId + ")";
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title);
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=toolList";
+                    popupDialog.init();
+                }
+                
+                function routeConfigurePlugin(activityId, activityName){
+                    var title = " - " + activityName + " (" + activityId + ")";
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=routeList";
                     popupDialog.init();
                 }
 

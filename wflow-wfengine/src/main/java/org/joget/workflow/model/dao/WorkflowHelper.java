@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.joget.workflow.model.DecisionResult;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowDeadline;
 
@@ -19,6 +20,17 @@ public interface WorkflowHelper {
      * @return
      */
     boolean executeTool(WorkflowAssignment assignment);
+
+    /**
+     * Execute a decision plugin
+     * @param processDefId
+     * @param processId
+     * @param routeId
+     * @param routeActId
+     * @param variables
+     * @return
+     */
+    DecisionResult executeDecisionPlugin(String processDefId, String processId, String routeId, String routeActId, Map<String, String> variables);
 
     /**
      * Retrieve a list of assignees for a participant in a process.
