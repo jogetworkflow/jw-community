@@ -2302,7 +2302,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             }, 1000);
             updateLabel($("#" + field.id).data("chosen"));
         }
-
+        
         PropertyEditor.Util.supportHashField(this);
     },
     pageShown: function() {
@@ -4171,6 +4171,33 @@ PropertyEditor.Type.Image.prototype = {
     }
 };
 PropertyEditor.Type.Image = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Image.prototype);
+
+PropertyEditor.Type.Custom = function() {};
+PropertyEditor.Type.Custom.prototype = {
+    shortname: "custom",
+    initialize: function() {
+        var thisObj = this;
+        $.ajax({
+            dataType: "text",
+            url: PropertyEditor.Util.replaceContextPath(thisObj.properties.script_url, thisObj.options.contextPath),
+            success: function(customObjScript) {
+                if (customObjScript !== undefined && customObjScript !== "") {
+                    try {
+                        var customObj = eval("[" + customObjScript + "]" )[0];
+                        $.extend(thisObj, customObj);
+                        if (customObj['initialize'] !== undefined) {
+                            thisObj.initialize.apply(thisObj);
+                        }
+                        $("#" + thisObj.id + "_input").replaceWith($(thisObj.renderFieldWrapper()));
+                        
+                        thisObj.initScripting();
+                    } catch (err) {}
+                }
+            }
+        });
+    }
+};
+PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Custom.prototype);
 
 (function($) {
     $.fn.extend({
