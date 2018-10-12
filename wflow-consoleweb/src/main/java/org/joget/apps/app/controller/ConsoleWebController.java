@@ -1721,7 +1721,7 @@ public class ConsoleWebController {
         checkAppPublishedVersion(appDef);
         if (!processFound) {
             // specific process not found, get list of processes
-            if (processList != null && processList.size() == 1) {
+            if (processList != null && processList.size() > 0) {
                 // remove attributes to prevent passing over as url parameters
                 map.clear();
                 // redirect to the only process

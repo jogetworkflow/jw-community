@@ -29,7 +29,15 @@
         </ul>
     </div>
     <div id="main-body">
-        <p><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp; <strong><c:out value="${process.name}"/>&nbsp;</strong></p>
+        <div class="process-name"><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp;
+            <ul id="processes-list">
+                <c:forEach items="${processList}" var="process">
+                    <li>
+                        <a class="<c:if test="${process.idWithoutVersion eq processIdWithoutVersion}">active</c:if>" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.idWithoutVersion}"><c:out value="${process.name}"/></a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </div>
 
         <div id="main-body-content">
 

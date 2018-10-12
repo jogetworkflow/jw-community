@@ -839,4 +839,20 @@ body.quickOverlayFrame div#adminWelcome {
 body:not(.quickOverlayFrame) div#adminWelcome {
     display:none;
 }
+.process-name  {
+    margin-bottom: 15px;
+}
+#processes-list {
+    display: inline;
+}
+#processes-list li {
+    display: inline;
+    margin-right: 8px;
+    font-size: 16px;
+}
+#processes-list li a.active {
+    color:#75af12;
+    text-decoration: none;
+    font-weight: bold;
+}
 
