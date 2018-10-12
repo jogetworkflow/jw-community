@@ -1,0 +1,10 @@
+[{
+    "title" : "@@app.rulesdecision.config@@",
+    "properties" : [{
+        "name" : "rules",
+        "label" : "@@app.rulesdecision.rules@@",
+        "type" : "custom",
+        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.app.lib.RulesDecisionPlugin/service?processId=%s&actId=%s",
+        "required" : "True"
+    }]
+}]

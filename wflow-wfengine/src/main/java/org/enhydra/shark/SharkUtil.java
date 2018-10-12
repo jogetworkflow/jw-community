@@ -2,8 +2,10 @@ package org.enhydra.shark;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.WfProcess;
@@ -24,6 +26,28 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class SharkUtil {
+    
+    public static Map<String, String> getNonExceptionalOutgoingTransitions(WMSessionHandle shandle, String processDefId, String actDefId) {
+        Map<String, String> list = new HashMap<String, String>();
+        
+        try {
+            WorkflowProcess process = getWorkflowProcess(shandle, processDefId);
+            Activity activity = process.getActivity(actDefId);
+            
+            Collection<Transition> transitions = activity.getNonExceptionalOutgoingTransitions();
+            for (Transition t : transitions) {
+                if (t.getName() != null && !t.getName().isEmpty()) {
+                    list.put(t.getId(), t.getName());
+                } else {
+                    Activity toActivity = process.getActivity(t.getTo());
+                    list.put(t.getId(), t.getId() + " ("+toActivity.getName()+")");
+                }
+            }
+            
+        } catch (Exception e) {}
+        
+        return list;
+    }
     
     public static WorkflowProcess getWorkflowProcess(WMSessionHandle shandle, String processDefId) {
         try {
@@ -225,5 +249,5 @@ public class SharkUtil {
         if (sConn != null) {
             sConn.disconnect();
         }
-    }    
+    } 
 }

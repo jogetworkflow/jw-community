@@ -189,9 +189,14 @@
                     <c:if test="${!empty appDef}">
                         appPath: '/${appDef.appId}/${appDef.version}',
                     </c:if>
-                    <c:if test="${!empty propertyEditable.propertyOptions}">
-                        propertiesDefinition : ${PropertyUtil.injectHelpLink(plugin.helpLink, propertyEditable.propertyOptions)},
-                    </c:if>
+                    <c:choose>
+                        <c:when test="${!empty propertiesDefinition}">
+                            propertiesDefinition : ${propertiesDefinition},
+                        </c:when>
+                        <c:when test="${!empty propertyEditable.propertyOptions}">
+                            propertiesDefinition : ${PropertyUtil.injectHelpLink(plugin.helpLink, propertyEditable.propertyOptions)},
+                        </c:when>
+                    </c:choose>
                     <c:choose>
                         <c:when test="${!empty properties && fn:substring(properties, 0, 1) eq '{'}">
                             propertyValues : ${properties},

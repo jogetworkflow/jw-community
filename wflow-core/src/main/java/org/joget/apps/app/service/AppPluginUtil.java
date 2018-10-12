@@ -3,16 +3,22 @@ package org.joget.apps.app.service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.WorkflowVariable;
+import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -159,5 +165,48 @@ public class AppPluginUtil implements ApplicationContextAware {
     public static String getMessage(String key, String pluginName, String translationPath){
         PluginManager pluginManager = (PluginManager) appContext.getBean("pluginManager");
         return pluginManager.getMessage(key, pluginName, translationPath);
+    }
+    
+    /**
+     * Method to get rule editor script
+     * @param plugin
+     * @param request
+     * @param response
+     * @return 
+     */
+    public static String getRuleEditorScript(Plugin plugin, HttpServletRequest request, HttpServletResponse response) {
+        String variables = "";
+        String transitions = "";
+        
+        String processId = SecurityUtil.validateStringInput(request.getParameter("processId"));
+        if (!processId.isEmpty()) {
+            String actId = SecurityUtil.validateStringInput(request.getParameter("actId"));
+            
+            WorkflowManager workflowManager = (WorkflowManager) WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            
+            //get variable list
+            Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processId);
+            if (variableList != null && !variableList.isEmpty()) {
+                for (WorkflowVariable v : variableList) {
+                    if (!variables.isEmpty()) {
+                        variables += ",";
+                    }
+                    variables += "\"" + v.getId() + "\"";
+                }
+            }
+            
+            //get transision list
+            Map<String, String> transitionsList = workflowManager.getNonExceptionalOutgoingTransitions(processId, actId);
+            if (transitionsList != null && !transitionsList.isEmpty()) {
+                for (String t : transitionsList.keySet()) {
+                    if (!transitions.isEmpty()) {
+                        transitions += ",";
+                    }
+                    transitions += "{\"value\":\"" + t + "\", \"label\":\"" + StringUtil.escapeString(transitionsList.get(t), StringUtil.TYPE_JSON, null) + "\"}";
+                }
+            }
+        }
+        
+        return AppUtil.readPluginResource(plugin.getClass().getName(), "/properties/app/rulesEditor.js", new String[]{variables, transitions}, false, null);
     }
 }

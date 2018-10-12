@@ -62,6 +62,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import org.enhydra.shark.CustomWfActivityWrapper;
 import org.enhydra.shark.CustomWfResourceImpl;
+import org.enhydra.shark.SharkEngineManager;
 import org.enhydra.shark.SharkUtil;
 import org.enhydra.shark.api.client.wfmodel.WfAssignmentIterator;
 import org.enhydra.shark.api.client.wfservice.PackageInvalid;
@@ -69,7 +70,9 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessQuery;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
+import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLUtil;
+import org.enhydra.shark.xpdl.elements.Activity;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.PagedList;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -4742,6 +4745,28 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return resourceIds;
+    }
+    
+    @Override
+    public Map<String, String> getNonExceptionalOutgoingTransitions(String processDefId, String actDefId) {
+        Map<String, String> transitions = new HashMap<String, String>();
+        SharkConnection sc = null;
+        try {
+            sc = connect();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            transitions = SharkUtil.getNonExceptionalOutgoingTransitions(sessionHandle, processDefId, actDefId);
+
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return transitions;
     }
 
     protected SharkConnection connect() throws Exception {

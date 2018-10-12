@@ -721,3 +721,87 @@ td.error .chosen-container, td.error input {
     display:inline-block; 
     cursor:pointer;
 }
+.pewrapper{
+    background:#f6f9fa;
+    border: 1px solid #eaeef0;
+}
+.pewrapper > div{
+    padding:5px;
+}
+.pewrapper > .peheader {
+    font-weight:bold; 
+    border-top: 1px solid #eaeef0; 
+    border-bottom: 1px solid #eaeef0;
+}
+.pewrapper > .peheader .buttons {
+    float:right; 
+    color:#ccc;
+}
+.pewrapper > .peheader .buttons a {
+    padding:0 5px;
+}
+.pewrapper .buttons {
+    text-align:right;
+}
+.pewrapper a {
+    cursor:pointer; 
+    position:relative;
+}
+.pewrapper a ul {
+    display:none; 
+    position: absolute; 
+    right: 0; 
+    background: #fff; 
+    list-style: none; 
+    z-index: 1; 
+    border: 1px solid #eaeef0; 
+    border-bottom:0;
+}
+.pewrapper a ul li {
+    padding: 5px 10px; 
+    border-bottom: 1px solid #eaeef0;
+}
+.pewrapper a:hover ul {
+    display:block;
+}
+.perow {
+    padding:5px; 
+    background:#f2f2f2; 
+    border:1px solid #d7d9da; 
+    border-radius:3px; 
+    margin-top: 5px; 
+    position:relative;
+}
+.pewrapper table tr td{
+    border:0;
+}
+.pewrapper .aligncenter {
+    text-align:center;
+}
+.pewrapper .alignright{
+    text-align:right; 
+    width: 15px;
+}
+.pewrapper .perow td .input, .pewrapper .perow td select {
+    width:98%; 
+    margin-right:0px;
+}
+.pewrapper .row-title {
+    margin-bottom: 5px;
+}
+.pewrapper input, .pewrapper select {
+    margin-right:5px;
+}
+.pewrapper .small {
+    width:15%; 
+    min-width:80px;
+}
+.pewrapper .half {
+    width:40%;
+}
+.pewrapper .full {
+    width:80%;
+}
+.pewrapper .error {
+    border:1px solid red;
+}

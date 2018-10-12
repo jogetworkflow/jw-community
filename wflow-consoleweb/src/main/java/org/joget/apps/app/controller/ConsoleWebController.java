@@ -2096,7 +2096,9 @@ public class ConsoleWebController {
             }
 
             if (plugin instanceof PropertyEditable) {
-                map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+                PropertyEditable pe = (PropertyEditable) plugin;
+                map.addAttribute("propertyEditable", pe);
+                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
             }
 
             map.addAttribute("appDef", appDef);
@@ -2376,7 +2378,9 @@ public class ConsoleWebController {
                 }
             }
             if (plugin instanceof PropertyEditable) {
-                map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+                PropertyEditable pe = (PropertyEditable) plugin;
+                map.addAttribute("propertyEditable", pe);
+                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
             }
 
             String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
@@ -3320,7 +3324,9 @@ public class ConsoleWebController {
         }
 
         if (plugin instanceof PropertyEditable) {
-            map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+            PropertyEditable pe = (PropertyEditable) plugin;
+            map.addAttribute("propertyEditable", pe);
+            map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
         }
 
         String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/pluginDefault/submit/";
@@ -4215,7 +4221,9 @@ public class ConsoleWebController {
             }
 
             if (plugin instanceof PropertyEditable) {
-                map.addAttribute("propertyEditable", (PropertyEditable) plugin);
+                PropertyEditable pe = (PropertyEditable) plugin;
+                map.addAttribute("propertyEditable", pe);
+                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
             }
 
             map.addAttribute("plugin", plugin);

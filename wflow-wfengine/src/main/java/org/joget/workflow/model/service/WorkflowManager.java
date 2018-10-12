@@ -896,4 +896,11 @@ public interface WorkflowManager {
      */
     public Collection<WorkflowActivity> getNextActivities(String activityId, boolean includeTools);
 
+    /**
+     * Gets outgoing transitions name/id of an activity
+     * @param processDefId
+     * @param actDefId
+     * @return 
+     */
+    public Map<String, String> getNonExceptionalOutgoingTransitions(String processDefId, String actDefId);
 }
