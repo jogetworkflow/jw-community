@@ -4250,14 +4250,16 @@ ProcessBuilder.Mapper = {
                 }
             }
             
-            var cssClass = "type_"+type;
-            if ((mapping !== null && mapping !== undefined) || type === "activity") {
-                cssClass += " hasmapping";
+            if (type !== "") {
+                var cssClass = "type_"+type;
+                if ((mapping !== null && mapping !== undefined) || type === "activity") {
+                    cssClass += " hasmapping";
+                }
+
+                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
+                $(this).find(".edit_mapping").data("mapping", mapping);
+                $(this).removeAttr("title");
             }
-            
-            $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
-            $(this).find(".edit_mapping").data("mapping", mapping);
-            $(this).removeAttr("title");
         });
         
         $(".participant").each(function(){
@@ -4282,6 +4284,26 @@ ProcessBuilder.Mapper = {
         $(".start").find(".edit_mapping").data("mapping", mapping);
         
         ProcessBuilder.Mapper.attachEvents();
+        
+        $(".showallcontrol li").off("click");
+        $(".showallcontrol li").on("click", function(){
+            if ($(".tooltipstered").length > 0) {
+                $(".tooltipstered").tooltipster("close");
+            }
+            var selector = "";
+            if ($(this).hasClass("showParticipant")) {
+                selector = ".header_process.tooltipstered, .participant_handle.tooltipstered";
+            } else if ($(this).hasClass("showActivity")) {
+                selector = ".start.tooltipstered, .activity.tooltipstered";
+            } else if ($(this).hasClass("showTool")) {
+                selector = ".tool.tooltipstered";
+            } else if ($(this).hasClass("showRoute")) {
+                selector = ".route.tooltipstered";
+            }
+            if (selector !== "" && $(selector).length > 0) {
+                $(selector).tooltipster("open");
+            }
+        });
     },
     attachEvents : function() {
         $(".edit_mapping").each(function(){

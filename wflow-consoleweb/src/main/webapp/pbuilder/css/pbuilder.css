@@ -798,10 +798,11 @@ body.adminBarShown #config {
     cursor: default;
     color: #666;
 }
-.pmapper .endpoint, .pmapper ._jsPlumb_hover, .pmapper .transition_edit, .pmapper .node_copy{
+.pmapper .endpoint, .pmapper ._jsPlumb_hover, .pmapper .transition_edit, 
+.pmapper .node_copy, .pmapper .subflow, .pmapper .subflow .node_label{
     cursor: default !important;
 }
-.pmapper .activity, .pmapper .tool, .pmapper .route, .pmapper .subflow,
+.pmapper .activity, .pmapper .tool, .pmapper .route,
 .pmapper #node_dialog li, .pmapper .node_edit,
 .pmapper .node_label, .pmapper .participant_handle, .mapping_editable {
     cursor: pointer !important;
@@ -901,4 +902,30 @@ body.adminBarShown #config {
 }
 .ui-dialog-content.ui-widget-content {
     overflow : hidden;
+}
+.pmapper #controls {
+    right: 15px;
+    text-align: right;
+}
+.showallcontrol {
+    cursor: pointer;
+}
+.showallcontrol ul {
+    display: none;
+    margin: 0;
+    position: absolute;
+    top: 13px;
+    list-style: none;
+    padding: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-bottom: 0
+}
+.showallcontrol ul li {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+.showallcontrol:hover ul {
+    display: block;
 }
