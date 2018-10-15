@@ -271,7 +271,7 @@ public class WorkflowUtil implements ApplicationContextAware {
      */
     public static String getProcessDefIdWithoutVersion(String processDefId) {
         String result = processDefId;
-        if (processDefId != null) {
+        if (processDefId != null && processDefId.contains("#")) {
             processDefId = SecurityUtil.validateStringInput(processDefId);
             StringTokenizer st = new StringTokenizer(processDefId, "#");
             if (st.countTokens() > 2) {

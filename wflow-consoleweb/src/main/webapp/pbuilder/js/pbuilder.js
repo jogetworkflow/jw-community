@@ -1026,12 +1026,12 @@ ProcessBuilder.ApiClient = {
                     return;
                 }
                 var xpdl = data;
-                ProcessBuilder.Designer.init(xpdl, null, true);
-                $("#packageList").dialog("close");
-                ProcessBuilder.Actions.clearUndo();
                 ProcessBuilder.ApiClient.appId = appId;
                 ProcessBuilder.ApiClient.appVersion = (version) ? version: "";
                 ProcessBuilder.ApiClient.appName = null;
+                ProcessBuilder.Designer.init(xpdl, null, true);
+                $("#packageList").dialog("close");
+                ProcessBuilder.Actions.clearUndo();
                 // set title
                 document.title = document.title.substring(0, document.title.indexOf(":")) + ": " + UI.escapeHTML(ProcessBuilder.Designer.model.packageName);
                 // callback
@@ -1211,6 +1211,42 @@ ProcessBuilder.ApiClient = {
             }
         };
         ProcessBuilder.ApiClient.httpPost(loginUrl, loginCallback, params);
+    },
+    loadProcessMapping : function(callback) {
+        if (ProcessBuilder.ApiClient.appId === "") {
+            return;
+        }
+        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/mapping?_=" + jQuery.now();
+        var loadCallback = {
+            success: function(data) {
+                // callback
+                if (callback) {
+                    callback(data);
+                }
+            },
+            error: function(e) {
+                alert(get_pbuilder_msg("pbuilder.label.error") + ": " + e);
+            }
+        };
+        ProcessBuilder.ApiClient.httpGet(loadUrl, loadCallback);
+    },
+    reloadNodeMapping : function(processDefId, type, id, callback) {
+        if (ProcessBuilder.ApiClient.appId === "") {
+            return;
+        }
+        var loadUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/" + ProcessBuilder.ApiClient.appVersion + "/process/"+escape(processDefId)+"/mapping/"+escape(type)+"/"+escape(id)+"?_=" + jQuery.now();
+        var loadCallback = {
+            success: function(data) {
+                // callback
+                if (callback) {
+                    callback(data);
+                }
+            },
+            error: function(e) {
+                alert(get_pbuilder_msg("pbuilder.label.error") + ": " + e);
+            }
+        };
+        ProcessBuilder.ApiClient.httpGet(loadUrl, loadCallback);
     }
 };
 
@@ -1287,7 +1323,9 @@ ProcessBuilder.Actions = {
             delete process.startEndNodes[prevStartId];
             process.startEndNodes[newStartId] = prevStartNode;
             connection.setPaintStyle({strokeStyle: "#000", lineWidth: 1});
-            connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
+            if (ProcessBuilder.Designer.editable) {
+                connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
+            }
         } else if ($target.hasClass("end")) {
             var endId = sourceId;
             var prevEndId = $target.attr("id");
@@ -1298,7 +1336,9 @@ ProcessBuilder.Actions = {
             delete process.startEndNodes[prevEndId];
             process.startEndNodes[newEndId] = prevEndNode;
             connection.setPaintStyle({strokeStyle: "#000", lineWidth: 1});
-            connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
+            if (ProcessBuilder.Designer.editable) {
+                connection.setHoverPaintStyle({strokeStyle: "#000", lineWidth: 4});
+            }
         } else {
             // add transition
             var prevTransition;
@@ -2199,6 +2239,7 @@ ProcessBuilder.Actions = {
 /* Designer settings and functions */
 ProcessBuilder.Designer = {
     source: "#xpdl",
+    isMapper: false,
     editable: true,
     autoValidate: true,
     participantLabelVertical: true,
@@ -2611,6 +2652,9 @@ ProcessBuilder.Designer = {
             }
             var $processLi = $("<li id='" + subprocess.id + "' class='header_process'>" + processName + "</li>");
             $processLi.on("click", function() {
+                if ($(this).hasClass("subheader_selected")) {
+                    return;
+                }
                 var selectedProcessId = $(this).attr("id");
                 ProcessBuilder.Actions.execute(function() {
                     ProcessBuilder.Actions.viewProcess(selectedProcessId);
@@ -2695,7 +2739,7 @@ ProcessBuilder.Designer = {
             Endpoint: ["Dot", {radius: 5}],
             Connector: ["StateMachine", {curviness:0.1}],
             PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-            HoverPaintStyle: {lineWidth: 4},
+            HoverPaintStyle: {lineWidth: (ProcessBuilder.Designer.editable?4:1)},
             ConnectionOverlays: [
                 ["Arrow", {
                         location: 0.99,
@@ -2751,7 +2795,9 @@ ProcessBuilder.Designer = {
                     color = "#E37F96";
                 }
                 var transitionId = "transition_" + transition.id;
-                label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
+                if (ProcessBuilder.Designer.editable) {
+                    label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
+                }
                 var connector = (transition.style === 'orthogonal') ?
                         ["Flowchart", {cornerRadius: 5, gap: 0}] :
                         ["StateMachine", {curviness:0.1}];
@@ -2860,6 +2906,9 @@ ProcessBuilder.Designer = {
             // init palette
             ProcessBuilder.Designer.initPalette();
 
+        }
+        if (ProcessBuilder.Designer.isMapper) {
+            ProcessBuilder.Mapper.load(processDefId);
         }
     },
     isModified: function() {
@@ -4147,5 +4196,366 @@ ProcessBuilder.Designer = {
             }
         }
         return conditions;
+    }
+};
+
+/* Mapper settings and functions */
+ProcessBuilder.Mapper = {
+    mappingData : null,
+    popupDialog : new PopupDialog("", " "),
+    load : function(processDefId) {
+        if (processDefId === null) {
+            processDefId = $("#subheader_list li:first").attr("id");
+        }
+        if (ProcessBuilder.Mapper.mappingData === null) {
+            ProcessBuilder.ApiClient.loadProcessMapping(function(data){
+                ProcessBuilder.Mapper.mappingData = eval("["+data+"]")[0];
+                ProcessBuilder.Mapper.init(processDefId);
+            });
+        } else {
+            ProcessBuilder.Mapper.init(processDefId);
+        }
+    },
+    init : function(processDefId) {
+        if ($("#subheader_list").find("#"+processDefId + " .edit_mapping").length > 0) {
+            return;
+        } else {
+            $("#subheader_list").find(".edit_mapping").remove();
+        }
+        
+        var wlId= "processStartWhiteList";
+        var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
+        
+        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="fa fa-pencil-square-o"></i></a>');
+        $("#subheader_list li#"+processDefId).find(".edit_mapping").data("mapping", wlmapping);
+        
+        $(".node").each(function(){
+            var actId = $(this).attr("id").substring(5);
+            var type = "";
+            var mapping = null;
+            if ($(this).hasClass("activity")) {
+                type = "activity";
+                if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId] !== undefined) {
+                    mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
+                }
+            } else if ($(this).hasClass("tool")) {
+                type = "tool";
+                if (ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
+                    mapping = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
+                }
+            } else if ($(this).hasClass("route")) {
+                type = "route";
+                if (ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId] !== undefined) {
+                    mapping = ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+actId];
+                }
+            }
+            
+            var cssClass = "type_"+type;
+            if ((mapping !== null && mapping !== undefined) || type === "activity") {
+                cssClass += " hasmapping";
+            }
+            
+            $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
+            $(this).find(".edit_mapping").data("mapping", mapping);
+            $(this).removeAttr("title");
+        });
+        
+        $(".participant").each(function(){
+            var pId = $(this).attr("id").substring(12);
+            var type = "participant";
+            var mapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+pId];
+            var cssClass = "type_"+type;
+            if (mapping !== null && mapping !== undefined) {
+                cssClass += " hasmapping";
+            }
+            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="fa fa-pencil-square-o"></i></a>');
+            $(this).find(".participant_handle .edit_mapping").data("mapping", mapping);
+            $(this).removeAttr("title");
+        });
+        
+        var actId= "runProcess";
+        var type = "start";
+        var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
+
+        var cssClass = "type_"+type;
+        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
+        $(".start").find(".edit_mapping").data("mapping", mapping);
+        
+        ProcessBuilder.Mapper.attachEvents();
+    },
+    attachEvents : function() {
+        $(".edit_mapping").each(function(){
+            $(this).parent().addClass("mapping_editable");
+            if ($(this).hasClass("hasmapping")) {
+                ProcessBuilder.Mapper.attachDetail($(this).parent());
+            }
+        });
+        
+        $("body").off("click", ".mapping_editable");
+        $("body").on("click", ".mapping_editable", function(){
+            var type = $(this).find(".edit_mapping").attr("type");
+            var mapping = $(this).find(".edit_mapping").data("mapping");
+            ProcessBuilder.Mapper.editMapping($(this), type, mapping);
+        });
+        
+        $("body").off("click", ".mapping_detail .clickable")
+        $("body").on("click", ".mapping_detail .clickable", function(){
+            ProcessBuilder.Mapper.toggleCheckbox($(this).closest(".mapping_detail").data("parent"), $(this));
+        });
+        
+        $("body").off("click", ".mapping_detail .remove");
+        $("body").on("click", ".mapping_detail .remove", function(){
+            ProcessBuilder.Mapper.removeMapping($(this).closest(".mapping_detail").data("parent"));
+        });
+        
+        $("body").off("click", ".mapping_detail .remove_single");
+        $("body").on("click", ".mapping_detail .remove_single", function(){
+            ProcessBuilder.Mapper.removeSingleMapping($(this).closest(".mapping_detail").data("parent"), $(this));
+        });
+    },
+    attachDetail : function (node) {
+        var type = $(node).find(".edit_mapping").attr("type");
+        var mapping = $(node).find(".edit_mapping").data("mapping");
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        if (type === "whitelist" && (mapping === undefined || mapping === null)) {
+            mapping = {
+                'typeLabel' : get_pbuilder_msg("pbuilder.label.type.role"),
+                'htmlValue' : get_pbuilder_msg("pbuilder.label.type.role.everyone"),
+                'remove' : false
+            };
+        }
+
+        $(node).find(".mapping_detail_div").remove();
+        if ($(node).hasClass("tooltipstered")) {
+            try {
+                $(node).tooltipster("destroy");
+            } catch (err) {}
+        }
+        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fa fa-times-circle"></i></a><dl></dl></div></div>');
+        $(node).find(".mapping_detail").data("parent",  $(node));
+
+        if (type === "participant" || type === "whitelist") {
+            ProcessBuilder.Mapper.attachParticipantDetail($(node), mapping);
+        } else if (type === "start" || type === "activity") {
+            ProcessBuilder.Mapper.attachFormDetail($(node), mapping);
+        } else {
+            ProcessBuilder.Mapper.attachPluginDetail($(node), mapping);
+        }
+
+        $(node).attr("data-tooltip-content", "#"+id+"_detail");
+        $(node).tooltipster({
+            contentCloning: false,
+            side : 'right',
+            interactive : true
+        });
+    },
+    attachParticipantDetail : function(node, mapping) {
+        $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.type")+"</dt><dd>"+mapping['typeLabel']+"</dd>");
+        if (mapping['htmlValue']  !== undefined) {
+            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['htmlValue']+"</dd>");
+        } else {
+            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['value']+"</dd>");
+        }
+        if (mapping['remove'] !== undefined && !mapping['remove']) {
+            $(node).find(".mapping_detail .remove").remove();
+            $(node).find(".edit_mapping").removeClass("hasmapping");
+        }
+    },
+    attachFormDetail : function(node, mapping) {
+        if (mapping !== null && mapping['type'] !== "EXTERNAL") {
+            if (mapping['formId'] !== undefined) {
+                var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/form/builder/' + mapping['formId'];
+                $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.formName")+"</dd><dd><a href=\""+url+"\" target=\"_blank\">"+mapping['formName']+"</a></dd>");
+                if ($(node).find(".edit_mapping").attr("type") !== "start") {
+                    var tick = "fa fa-square-o";
+                    if (mapping['disableSaveAsDraft']) {
+                        tick = "fa fa-check-square-o";
+                    }
+                    $(node).find(".mapping_detail").append("<p class=\"removesave\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.removeSaveAsDraftButton")+"</p>");
+                }
+            } else {
+                $(node).find(".mapping_detail .remove").remove();
+                $(node).find(".edit_mapping").removeClass("hasmapping");
+            }
+        } else if (mapping !== null && mapping['type'] === "EXTERNAL") {
+            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.externalForm")+"</dt><dd>"+mapping['formUrl']+"</dd>");
+        } else if (mapping === null) {
+            $(node).find(".mapping_detail .remove").remove();
+            $(node).find(".edit_mapping").removeClass("hasmapping");
+        }
+        var tick = "fa fa-square-o";
+        if (mapping !== null && mapping['autoContinue']) {
+            tick = "fa fa-check-square-o";
+        }
+        $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
+    },
+    attachPluginDetail : function(node, mapping) {
+        $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>");
+    },
+    editMapping : function(node, type, mapping) {
+        $(".currentedit").removeClass("currentedit");
+        $(node).find(".edit_mapping").addClass("currentedit");
+        
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        var processDefId = ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + $(node).find(".edit_mapping").attr("processdefid");
+        var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(processDefId);
+        
+        if (type === "start" || type === "activity") {
+            var title = get_pbuilder_msg("pbuilder.label.runProcess");
+            if (type === "activity") {
+                title = $(node).find(".node_label").text();
+            }
+            url += "/activity/" + escape(id) + "/form?activityName=" + encodeURIComponent(title);
+        } else if (type === "participant" || type === "whitelist") {
+            var title = get_pbuilder_msg("pbuilder.label.processStartWhiteList");
+            if (type === "whitelist") {
+                title = $(node).find(".participant_label").text();
+            }
+            if (mapping !== undefined && mapping !== null && mapping['type'] === "plugin") {
+                url += "/participant/" + escape(id) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=";
+            } else {
+                url += "/participant/" + escape(id) + "?participantName=" + encodeURIComponent(title);
+            }
+        } else {
+            var mode = "activity";
+            if (type !== "tool") {
+                mode = "route";
+            }
+            var title = $(node).find(".node_label").text();
+            if (mapping !== undefined && mapping !== null) {
+                url += "/activity/" + escape(id) + "/plugin/configure?participantName=" + encodeURIComponent(title) + "&param_tab=";
+            } else {
+                url += "/" + mode + "/" + escape(id) + "/plugin?activityName=" + encodeURIComponent(title);
+            }
+        }
+        
+        ProcessBuilder.Mapper.popupDialog.src = url;
+        ProcessBuilder.Mapper.popupDialog.init();
+    },
+    removeMapping : function(node) {
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
+        var type = $(node).find(".edit_mapping").attr("type");
+        var url = ProcessBuilder.Designer.contextPath + "/web/console/app/"+ ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion +"/processes/"+escape(ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + processDefId);
+        
+        if (type === "start" || type === "activity") {
+            url +=  "/activity/" + escape(id) + "/form/remove";
+        } else if (type === "participant" || type === "whitelist") {
+            url +=  "/participant/" + escape(id) + "/remove";
+        } else {
+            url +=  "/activity/" + escape(id) + "/plugin/remove";
+        }
+        
+        var reload = {
+            success : function(resp) {
+                $(node).find(".edit_mapping").removeClass("hasmapping");
+                
+                if (type === "start" || type === "activity") {
+                    $("#"+id+"_detail").find(".remove, dl, .removesave").remove();
+                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formId'];
+                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formLabel'];
+                    delete ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id]['formUrl'];
+                } else {
+                    $(node).find('.mapping_detail_div').remove();
+                    $(node).tooltipster("destroy");
+                    $(node).find(".edit_mapping").data("mapping", null);
+                    
+                    if (type === "participant" || type === "whitelist") {
+                        delete ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+id];
+                    } else {
+                        delete ProcessBuilder.Mapper.mappingData["activityPlugins"][processDefId+"::"+id];
+                    }
+                }
+            }
+        };
+       
+        ProcessBuilder.ApiClient.httpPost(url, reload);
+    },
+    removeSingleMapping : function (node, valueRemoveLink) {
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
+        var mapping = $(node).find(".edit_mapping").data("mapping");
+        var value = $(valueRemoveLink).attr("value");
+        
+        var removeItem = {
+            success : function(response) {
+                $(valueRemoveLink).closest(".single_value").remove();
+            }
+        };
+        var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/processes/' + escape(ProcessBuilder.ApiClient.appId + "#" + ProcessBuilder.Mapper.mappingData["packageVersion"] + "#" + processDefId) + '/participant/' + id + '/remove';
+        ProcessBuilder.ApiClient.httpPost(url, removeItem, 'type='+encodeURIComponent(mapping['type'])+'&value='+encodeURIComponent(value));
+    },
+    toggleCheckbox : function (node, checkbox) {
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
+        
+        var checked = false;
+        if ($(checkbox).hasClass("fa-square-o")) {
+            checked = true;
+        }
+        
+        var params = "="+checked;
+        var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/processes/' + escape(processDefId) + '/activity/' + id + '/';
+        var key = "";
+        if ($(checkbox).parent().hasClass("removesave")) {
+            params = "disable" + params;
+            url += "draft";
+            key = "disableSaveAsDraft";
+        } else {
+            params = "auto" + params;
+            url += "continue";
+            key = "autoContinue";
+        }
+        
+        var response = {
+            success : function() {
+                if ($(checkbox).hasClass("fa-square-o")) {
+                    $(checkbox).removeClass("fa-square-o");
+                    $(checkbox).addClass("fa-check-square-o");
+                } else {
+                    $(checkbox).removeClass("fa-check-square-o");
+                    $(checkbox).addClass("fa-square-o");
+                }
+                
+                if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id] === undefined) {
+                    ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id] = {
+                        processDefId : processDefId,
+                        activityDefId : id
+                    };
+                }
+                ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id][key] = checked; 
+            }
+        };
+        
+        ProcessBuilder.ApiClient.httpPost(url, response, params);
+    },
+    reload : function () {
+        ProcessBuilder.Mapper.popupDialog.close();
+        var node = $(".edit_mapping.currentedit").parent();
+        var id = $(node).find(".edit_mapping").attr("nodeid");
+        var processDefId = $(node).find(".edit_mapping").attr("processdefid");
+        var type = $(node).find(".edit_mapping").attr("type");
+        ProcessBuilder.ApiClient.reloadNodeMapping(processDefId, type, id, function(data){
+            var key = "activityPlugins";
+            if (type === "participant" || type === "whitelist") {
+                key = "participants";
+            } else if (type === "start" || type === "activity") {
+                key = "activityForms";
+            }
+            
+            var mapping = eval("["+data+"]")[0];
+            
+            if (Object.keys(mapping).length === 0) {
+                delete ProcessBuilder.Mapper.mappingData[key][processDefId+"::"+id];
+                $(node).find(".edit_mapping").data("mapping", null);
+                $(node).find(".edit_mapping").removeClass("hasmapping");
+            } else {
+                ProcessBuilder.Mapper.mappingData[key][processDefId+"::"+id] = mapping;
+                $(node).find(".edit_mapping").data("mapping", mapping);
+                $(node).find(".edit_mapping").addClass("hasmapping");
+            }
+            
+            ProcessBuilder.Mapper.attachDetail($(node));
+        });
     }
 };

@@ -62,7 +62,7 @@
                 <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="general.method.label.showAdditionalInfo"/></a>
                 <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="general.method.label.hideAdditionalInfo"/></a>
             </div>
-
+            <div class="form-buttons"><a class="smallbutton" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/process/mapper?processId=<ui:escape value="${process.idWithoutVersion}" format="u"/>" target="_blank"><fmt:message key="console.process.config.label.mapFromFlow"/></a></div>
             <div id="processTabView" style="min-height: 200px">
                 <ul>
                     <li class="selected"><a href="#participantList"><span><fmt:message key="console.process.config.label.mapParticipants"/></span></a></li>

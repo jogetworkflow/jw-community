@@ -780,3 +780,125 @@ body.adminBarShown #controls {
 body.adminBarShown #config {
     right: 102px;
 }
+.pmapper #designer-container #header{
+    padding-left: 0;
+}
+.pmapper #viewport {
+    margin-left: 0px;
+    width: 99%;
+}
+.pmapper #canvas {
+    background: #fff;
+}
+.pmapper .participant {
+    background: #f9f9f9;
+}
+.pmapper ._jsPlumb_hover {
+    font-weight: normal;
+    cursor: default;
+    color: #666;
+}
+.pmapper .endpoint, .pmapper ._jsPlumb_hover, .pmapper .transition_edit, .pmapper .node_copy{
+    cursor: default !important;
+}
+.pmapper .activity, .pmapper .tool, .pmapper .route, .pmapper .subflow,
+.pmapper #node_dialog li, .pmapper .node_edit,
+.pmapper .node_label, .pmapper .participant_handle, .mapping_editable {
+    cursor: pointer !important;
+}
+.edit_mapping {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    color:gray;
+}
+.edit_mapping.hasmapping {
+    color:#0288d1;
+}
+.edit_mapping.hasmapping.partial{
+    color:#000;
+}
+.edit_mapping.type_route {
+    right: 18px;
+    bottom: 10px;
+}
+.edit_mapping.type_participant {
+    right: 15px;
+    bottom:15px;
+    transform: rotate(90deg);
+}
+.edit_mapping.type_start {
+    right: 7px;
+    bottom: 8px;
+}
+.edit_mapping .mapping_detail_div {
+    display:none;
+}
+.mapping_detail {
+    color:#000;
+}
+.mapping_detail a{
+    color: #333;
+}
+.mapping_detail dl {
+    width: 300px;
+}
+.mapping_detail dt{
+    font-weight: bold;
+    max-width: 100px;
+}
+.mapping_detail dd{
+    display: table;
+    margin-left: 100px;
+    margin-top: -18px;
+}
+.mapping_detail .unavailable{
+    color:gray;
+}
+.mapping_detail .remove {
+    color:red;
+    position: absolute;
+    right: 8px;
+    top:8px;
+    cursor: pointer;
+}
+.mapping_detail .remove_single {
+    color:red;
+    display: inline-block;
+    margin-left: 3px;
+    cursor: pointer;
+}
+.mapping_detail .single_value {
+    display: inline-block;
+}
+.mapping_detail .single_value:after {
+    content: ", ";
+    margin-right: 3px;
+}
+.mapping_detail .single_value:last-child:after {
+    display:none;
+}
+.mapping_detail .clickable {
+    cursor: pointer;
+}
+.tooltipster-sidetip .tooltipster-box{
+    background: #fff;
+}
+.ui-dialog .ui-dialog-titlebar {
+    background: transparent;
+    border: 0 none;
+    display: inline;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: auto;
+    z-index: 200;
+    padding: 0px;
+}
+.ui-dialog .ui-dialog-titlebar-close {
+    top: 70%;
+    right: 15px;
+}
+.ui-dialog-content.ui-widget-content {
+    overflow : hidden;
+}

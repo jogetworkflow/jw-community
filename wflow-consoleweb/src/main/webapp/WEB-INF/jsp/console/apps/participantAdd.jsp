@@ -359,7 +359,11 @@
                     if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                         var callback = {
                             success : function(response) {
-                                 parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=${participantId}"/>';
+                                if (parent.ProcessBuilder !== undefined) {
+                                    parent.ProcessBuilder.Mapper.reload();
+                                } else {
+                                    parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}?tab=participantList&participantId=${participantId}"/>';
+                                }
                             }
                         }
                         var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/remove"/>', callback, null);
@@ -379,7 +383,11 @@
             if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
                 var callback = {
                     success : function(response) {
-                        parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}"/>?tab=participantList&participantId=' + response;
+                        if (parent.ProcessBuilder !== undefined) {
+                            parent.ProcessBuilder.Mapper.reload();
+                        } else {
+                            parent.location.href = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}"/>?tab=participantList&participantId=' + response;
+                        }
                     }
                 }
                 var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/submit/"/>'+type, callback, params);

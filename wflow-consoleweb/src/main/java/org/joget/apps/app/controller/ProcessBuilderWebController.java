@@ -9,13 +9,24 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.model.PackageActivityForm;
+import org.joget.apps.app.model.PackageActivityPlugin;
+import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
@@ -23,10 +34,17 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.directory.model.Department;
+import org.joget.directory.model.Group;
+import org.joget.directory.model.service.DirectoryUtil;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.XpdlImageUtil;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,6 +65,9 @@ public class ProcessBuilderWebController {
     @Autowired
     PluginManager pluginManager;
     
+    @Resource
+    FormDefinitionDao formDefinitionDao;
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/process/builder")
     public String processBuilder(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         // verify app version
@@ -65,6 +86,231 @@ public class ProcessBuilderWebController {
         model.addAttribute("version", appDef.getVersion());
         model.addAttribute("appDefinition", appDef);
         return "pbuilder/pbuilder";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/process/mapper")
+    public String processMapper(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
+        // verify app version
+        ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
+        String page = consoleWebPlugin.verifyAppVersion(appId, version);
+        if (page != null) {
+            return page;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        model.addAttribute("appId", appDef.getId());
+        model.addAttribute("version", appDef.getVersion());
+        model.addAttribute("appDefinition", appDef);
+        return "pbuilder/pmapper";
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/process/mapping")
+    public void processMapping(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONObject jsonObject = new JSONObject();
+        
+        Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
+        Map<String, String> formsMap = new HashMap<String, String>();
+        Map<String, Group> groupMaps = new HashMap<String, Group>();
+        Map<String, Department> deptMaps = new HashMap<String, Department>();
+        
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        PackageDefinition packageDefinition = appDef.getPackageDefinition();
+        if (packageDefinition != null) {
+            Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+            JSONObject activityForms = new JSONObject();
+            if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                for (String k : activityFormMap.keySet()) {
+                    JSONObject o = new JSONObject();
+                    PackageActivityForm f = activityFormMap.get(k);
+                    
+                    populateActivityForm(o, f, appDef, formsMap);
+                    activityForms.put(k, o);
+                }
+            }
+            jsonObject.put("activityForms", activityForms);
+            
+            Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+            JSONObject activityPlugins = new JSONObject();
+            if (activityMap != null && !activityMap.isEmpty()) {
+                for (String k : activityMap.keySet()) {
+                    JSONObject o = new JSONObject();
+                    PackageActivityPlugin p = activityMap.get(k);
+                    
+                    populateActivityPlugin(o, p, pluginsMap);
+                    activityPlugins.put(k, o);
+                }
+            }
+            jsonObject.put("activityPlugins", activityPlugins);
+            
+            Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+            JSONObject participants = new JSONObject();
+            if (participantMap != null && !participantMap.isEmpty()) {
+                for (String k : participantMap.keySet()) {
+                    JSONObject o = new JSONObject();
+                    PackageParticipant p = participantMap.get(k);
+                    
+                    populateParticipant(request, o, p, pluginsMap, groupMaps, deptMaps);
+                    participants.put(k, o);
+                }
+            }
+            jsonObject.put("participants", participants);
+            jsonObject.put("packageVersion", packageDefinition.getVersion().toString());
+        }
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/process/(*:processDefId)/mapping/(*:type)/(*:id)")
+    public void activityMapping(Writer writer, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("processDefId") String processDefId, @RequestParam("type") String type, @RequestParam("id") String id, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONObject jsonObject = new JSONObject();
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        PackageDefinition packageDefinition = appDef.getPackageDefinition();
+        
+        if (packageDefinition != null) {
+            if ("participant".equals(type) || "whitelist".equals(type)) {
+                Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();        
+                Map<String, Group> groupMaps = new HashMap<String, Group>();
+                Map<String, Department> deptMaps = new HashMap<String, Department>();
+                PackageParticipant participant = packageDefinition.getPackageParticipant(processDefId, id);
+                if (participant != null) {
+                    populateParticipant(request, jsonObject, participant, pluginsMap, groupMaps, deptMaps);
+                }
+            } else if ("start".equals(type) || "activity".equals(type)) {
+                Map<String, String> formsMap = new HashMap<String, String>();
+                PackageActivityForm form = packageDefinition.getPackageActivityForm(processDefId, id);
+                if (form != null) {
+                    populateActivityForm(jsonObject, form, appDef, formsMap);
+                }
+            } else {
+                Map<String, Plugin> pluginsMap = new HashMap<String, Plugin>();
+                PackageActivityPlugin plugin = packageDefinition.getPackageActivityPlugin(processDefId, id);
+                if (plugin != null) {
+                    populateActivityPlugin(jsonObject, plugin, pluginsMap);
+                }
+            }
+        }
+                    
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    protected void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef, Map<String, String> formsMap) throws JSONException {
+        o.put("activityDefId", f.getActivityDefId());
+        o.put("processDefId", f.getProcessDefId());
+        o.put("formId", f.getFormId());
+        o.put("formUrl", f.getFormUrl());
+        o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
+        o.put("autoContinue", f.isAutoContinue());
+        o.put("type", f.getType());
+
+        if (f.getFormId() != null && !f.getFormId().isEmpty()) {
+            if (!formsMap.containsKey(f.getFormId())) {
+                FormDefinition formDefinition = formDefinitionDao.loadById(f.getFormId(), appDef);
+                if (formDefinition != null) {
+                    formsMap.put(f.getFormId(), formDefinition.getName());
+                }
+            }
+            o.put("formName", formsMap.get(f.getFormId()));
+        }
+    }
+    
+    protected void populateActivityPlugin(JSONObject o, PackageActivityPlugin p, Map<String, Plugin> pluginsMap) throws JSONException {
+        o.put("activityDefId", p.getActivityDefId());
+        o.put("processDefId", p.getProcessDefId());
+        o.put("pluginClassName", p.getPluginName());
+
+        if (!pluginsMap.containsKey(p.getPluginName())) {
+            Plugin plugin = pluginManager.getPlugin(p.getPluginName());
+            pluginsMap.put(p.getPluginName(), plugin);
+        }
+        if (pluginsMap.containsKey(p.getPluginName())) {
+            o.put("pluginLabel", pluginsMap.get(p.getPluginName()).getI18nLabel());
+            o.put("pluginVersion", pluginsMap.get(p.getPluginName()).getVersion());
+        } else {
+            o.put("pluginLabel", p.getPluginName());
+            o.put("pluginVersion", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable"));
+        }
+    }
+    
+    protected void populateParticipant(HttpServletRequest request, JSONObject o, PackageParticipant p, Map<String, Plugin> pluginsMap, Map<String, Group> groupMaps, Map<String, Department> deptMaps) throws JSONException {
+        o.put("participantId", p.getParticipantId());
+        o.put("processDefId", p.getProcessDefId());
+        o.put("type", p.getType());
+        o.put("typeLabel", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.type."+p.getType()));
+
+        if ("plugin".equals(p.getType())) {
+            if (!pluginsMap.containsKey(p.getValue())) {
+                Plugin plugin = pluginManager.getPlugin(p.getValue());
+                pluginsMap.put(p.getValue(), plugin);
+            }
+            if (pluginsMap.containsKey(p.getValue())) {
+                String htmlValue = pluginsMap.get(p.getValue()).getI18nLabel() + " (" + ResourceBundleUtil.getMessage("console.plugin.label.version") + " " +pluginsMap.get(p.getValue()).getVersion()+")";
+                o.put("htmlValue", htmlValue);
+            } else {
+                String htmlValue = p.getValue() + " (" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + " " +pluginsMap.get(p.getValue()).getVersion()+")";
+                o.put("htmlValue", htmlValue);
+            }
+        } else if ("group".equals(p.getType())) {
+            if (groupMaps.isEmpty()) {
+                groupMaps.putAll(DirectoryUtil.getGroupsMap());
+            }
+            String htmlValue = "";
+            String values = p.getValue();
+            values = values.replaceAll(";", ",");
+            for (String v : values.split(",")) {
+                if (groupMaps.containsKey(v)) {
+                    if (DirectoryUtil.isExtDirectoryManager()) {
+                        htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/group/view/"+v+"\" target=\"_blank\">"+groupMaps.get(v).getName()+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                    } else {
+                        htmlValue += "<div class=\"single_value\">" + groupMaps.get(v).getName() + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                    }
+                } else {
+                    htmlValue += "<div class=\"single_value\"><span class=\"unavailable\">"+v+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                }
+            }
+            o.put("htmlValue", htmlValue);
+        } else if ("hod".equals(p.getType()) || "department".equals(p.getType())) {
+            if (deptMaps.isEmpty()) {
+                deptMaps.putAll(DirectoryUtil.getDepartmentsMap());
+            }
+            String htmlValue = "";
+            if (deptMaps.containsKey(p.getValue())) {
+                if (DirectoryUtil.isExtDirectoryManager()) {
+                    htmlValue += "<a href=\""+request.getContextPath()+"/web/console/directory/dept/view/"+p.getValue()+".\" target=\"_blank\">"+deptMaps.get(p.getValue()).getName()+"</a>";
+                } else {
+                    htmlValue += deptMaps.get(p.getValue()).getName();
+                }
+            } else {
+                htmlValue += "<span class=\"unavailable\">"+p.getValue()+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span>";
+            }
+            o.put("htmlValue", htmlValue);
+        } else if ("user".equals(p.getType())) {
+            String htmlValue = "";
+            String values = p.getValue();
+            values = values.replaceAll(";", ",");
+            for (String v : values.split(",")) {
+                if (DirectoryUtil.isExtDirectoryManager()) {
+                    htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/user/view/"+v+".\" target=\"_blank\">"+v+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                } else {
+                    htmlValue += "<div class=\"single_value\">" + v + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                }
+            }
+            o.put("htmlValue", htmlValue);
+        } else if ("workflowVariable".endsWith(p.getType())) {
+            String[] values = p.getValue().split(",");
+            String htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.app.process.common.label.variableId") + " :</font> " + values[0] + "<br/>"+ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.variable."+values[1]);
+            o.put("htmlValue", htmlValue);
+        } else if (p.getType().startsWith("requester")) {
+            String htmlValue = ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.previousActivity");
+            if (!p.getValue().isEmpty()) {        
+                htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.app.process.common.label.definitionId") + " :</font> " + p.getValue();
+            }
+            o.put("htmlValue", htmlValue);
+        } else if ("role".equals(p.getType())) {
+            o.put("htmlValue", ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.role."+p.getValue()));
+        }
     }
 
     @RequestMapping(value="/console/app/(*:appId)/(~:version)/process/screenshot/(*:processDefId)")
