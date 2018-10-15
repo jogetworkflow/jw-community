@@ -258,6 +258,30 @@ FormUtil = {
         }
         
         return  resultString;
+    },
+    
+    populateTooltip : function(tooltips) {
+        if (tooltips !== undefined && tooltips !== null) {
+            $.each(tooltips, function(key, tooltip) {
+                var label = null;
+                var key = key.substring(8);
+                var selector = key.replace(".", "_");
+                if ($("[name$=_" + selector + "]:not(form)").length > 0) {
+                    label = $("[name$=_" + selector + "]:not(form)").closest(".subform-cell").find("label.label");
+                } else {
+                    selector = key.substring(key.indexOf(".") + 1);
+                    label = $("[name=" + selector + "]:not(form)").closest(".form-cell").find("label.label");
+                }
+                if (label !== null && label.find("i.tooltipstered").length === 0) {
+                    $(label).append(" <i class=\"fieldtooltip fa fa-info-circle\"></i>");
+                    $(label).find("i").tooltipster({
+                        content: $("<div>" + tooltip + "</div>"),
+                        side: 'right',
+                        interactive: true
+                    });
+                }
+            });
+        }
     }
 }
 

@@ -162,4 +162,21 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
         }
         this.actions.add(action);
     }
+    
+    public String getTooltips() {
+        String tips = "{}";
+        Map<String, String> messages = AppUtil.getAppMessageFromStore();
+        try {
+            JSONObject obj = new JSONObject();
+            for (String key : messages.keySet()) {
+                if (key.startsWith("tooltip." + getPropertyString(FormUtil.PROPERTY_ID) + ".")) {
+                    obj.put(key, messages.get(key));
+                }
+            }
+            
+            tips = obj.toString();
+        } catch (Exception e) {}
+        
+        return tips;
+    }
 }

@@ -20,6 +20,11 @@
             <#list element.children as e>
                 ${e.render(formData, includeMetaData!false)}
             </#list>
+            <script>
+                $(function(){
+                    FormUtil.populateTooltip(${element.tooltips!});
+                });
+            </script>
         <#if !element.parent??>
         </form>
         <script>

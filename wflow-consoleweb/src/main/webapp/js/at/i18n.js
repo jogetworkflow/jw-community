@@ -4,10 +4,29 @@ I18nEditor = {
         for (var key in jsonObj) {
             if ($.inArray(key, keywords) !== -1) {
                 if ($.inArray(jsonObj[key], labels) === -1) {
-                    labels.push(jsonObj[key]);
-                }
+                        labels.push(jsonObj[key]);
+                    }
             } else if ($.type(jsonObj[key]) === "object" || $.type(jsonObj[key]) === "array") {
                 I18nEditor.retrieveLabels(labels, jsonObj[key], keywords);
+            }
+        }
+    },
+    retrieveTooltipLabels : function(labels, jsonObj) {
+        if (jsonObj.className !== "" &&
+                jsonObj.className !== "org.joget.apps.form.model.Form" &&
+                jsonObj.className !== "org.joget.apps.form.model.Section" && 
+                jsonObj.className !== "org.joget.apps.form.model.Column") {
+            if (jsonObj.properties.id !== "" && jsonObj.properties.id !== undefined 
+                    && jsonObj.properties.label !== "" && jsonObj.properties.label !== undefined) {
+                labels.push({
+                    id : jsonObj.properties.id,
+                    label : jsonObj.properties.label
+                });
+            }
+        }
+        if (jsonObj.elements !== undefined) {
+            for (var i in jsonObj.elements) {
+                I18nEditor.retrieveTooltipLabels(labels, jsonObj.elements[i]);
             }
         }
     },
@@ -39,20 +58,42 @@ I18nEditor = {
         
         I18nEditor.renderTable(container, labels.sort(), options);
     },
+    initTooltip : function (container, json, options) {
+        var jsonObj = JSON.parse(json);
+        
+        var labels = [];
+        I18nEditor.retrieveTooltipLabels(labels, jsonObj);
+        
+        options.isTooltip = true;
+        options.formDefId = (jsonObj.properties !== undefined)?jsonObj.properties.id:"";
+        
+        I18nEditor.renderTable(container, labels, options);
+    },
     renderTable : function (container, labels, options) {
         if (labels.length > 0) {
             $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th>&nbsp;</th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
             var $table = $(container).find(".i18n_table");
             
+            var i = 0;
             for (var l in labels) {
-                if (UI.escapeHTML(labels[l]) === "") {
-                    continue;
-                }
+                var key = "";
+                var label = "";
                 var css = "odd";
-                if (l % 2 === 0) {
+                if (options.isTooltip) {
+                    label = labels[l].label + " (" + labels[l].id + ")";
+                    key = "tooltip." + options.formDefId + "." + labels[l].id;
+                } else {
+                    if (UI.escapeHTML(labels[l]) === "") {
+                        continue;
+                    }
+                    label = labels[l];
+                    key = labels[l];
+                }
+                if (i % 2 === 0) {
                     css = "even";
                 }
-                $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(labels[l])+'</span><textarea name="i18n_key_'+l+'" style="display:none">'+labels[l]+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(label)+'</span><textarea name="i18n_key_'+l+'" style="display:none">'+key+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                i++;
             }
             
             if (I18nEditor.languages === undefined) {

@@ -18,6 +18,9 @@ var AdvancedTools = {
             AdvancedTools.initTable();
         }
         AdvancedTools.initI18n();
+        if (window['FormBuilder'] !== undefined) {
+            AdvancedTools.initToolTip();
+        }
         AdvancedTools.initDiffChecker();
         AdvancedTools.initDefinitionTab();
         
@@ -256,6 +259,25 @@ var AdvancedTools = {
         
         $(AdvancedTools.jsonForm).find('textarea[name="json"]').on("change", function() {
             $("#tab-i18n").html("");
+        });
+    },
+    initToolTip: function () {
+        var tab = '<li><a href="#tab-tooltip" id="tooltip"><i class="fa fa-info-circle"></i><span>'+get_advtool_msg('adv.tool.tooltip')+'</span></a></li>';
+        
+        $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-tooltip" class="tab-content"></div>');
+        
+        $("a#tooltip").on("click", function() {
+            if ($("#tab-tooltip .i18n_table").length === 0) {
+                $("#tab-tooltip").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                I18nEditor.initTooltip($("#tab-tooltip"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
+                $("#tab-tooltip .dt-loading").remove();
+            }
+            I18nEditor.refresh($("#tab-tooltip"));
+        });
+        
+        $(AdvancedTools.jsonForm).find('textarea[name="json"]').on("change", function() {
+            $("#tab-tooltip").html("");
         });
     },
     showQuickOverlay: function() {
