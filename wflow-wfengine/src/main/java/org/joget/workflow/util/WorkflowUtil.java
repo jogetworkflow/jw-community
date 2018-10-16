@@ -382,4 +382,20 @@ public class WorkflowUtil implements ApplicationContextAware {
         }
         return null;
     }
+    
+    /**
+     * translate process name & activity name
+     * @param processId
+     * @param processDefId
+     * @param activityDefId
+     * @param defaultLabel
+     * @return 
+     */
+    public static String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel) {
+        try {
+            WorkflowHelper workflowMapper = (WorkflowHelper) appContext.getBean("workflowHelper");
+            return workflowMapper.translateProcessLabel(processId, processDefId, activityDefId, defaultLabel);
+        } catch (Exception e) {}
+        return defaultLabel;
+    }
 }

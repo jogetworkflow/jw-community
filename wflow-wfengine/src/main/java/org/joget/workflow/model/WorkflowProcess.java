@@ -52,7 +52,7 @@ public class WorkflowProcess implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return WorkflowUtil.translateProcessLabel(instanceId, id, null, name);
     }
 
     public String getVersion() {

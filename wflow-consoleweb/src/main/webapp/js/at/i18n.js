@@ -69,6 +69,30 @@ I18nEditor = {
         
         I18nEditor.renderTable(container, labels, options);
     },
+    initProcess : function (container, options) {
+        var labels = [];
+        if (ProcessBuilder !== undefined) {
+            for (var id in ProcessBuilder.Designer.model.processes) {
+                var process = ProcessBuilder.Designer.model.processes[id];
+                labels.push({
+                    label : process.name + " ("+id+")",
+                    key : "plabel." + id
+                });
+                
+                for (var act in process.activities) {
+                    var activity = process.activities[act];
+                    if (activity.type === "activity") {
+                        labels.push({
+                            label : activity.name + " ("+id+":"+act+")",
+                            key : "plabel." + id + "." + act
+                        });
+                    }
+                }
+            }
+        }
+        options.isKeyValue = true;
+        I18nEditor.renderTable(container, labels, options);
+    },
     renderTable : function (container, labels, options) {
         if (labels.length > 0) {
             $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th>&nbsp;</th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
@@ -82,6 +106,9 @@ I18nEditor = {
                 if (options.isTooltip) {
                     label = labels[l].label + " (" + labels[l].id + ")";
                     key = "tooltip." + options.formDefId + "." + labels[l].id;
+                } else if (options.isKeyValue) {
+                    label = labels[l].label;
+                    key = labels[l].key;
                 } else {
                     if (UI.escapeHTML(labels[l]) === "") {
                         continue;
@@ -104,11 +131,19 @@ I18nEditor = {
                         I18nEditor.languages = response.data;
                         I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1", options);
                         I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2", options);
+                        
+                        if (options.isTooltip || options.isKeyValue) {
+                            $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
+                        }
                     }
                 });
             } else {
                 I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang1 div"), "lang1",  options);
                 I18nEditor.renderLocaleSelector($(container), $(container).find("th.lang2 div"), "lang2",  options);
+                
+                if (options.isTooltip || options.isKeyValue) {
+                    $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
+                }
             }
         } else {
             $(container).append('<h3>'+get_advtool_msg('i18n.editor.no.label')+'</h3>');

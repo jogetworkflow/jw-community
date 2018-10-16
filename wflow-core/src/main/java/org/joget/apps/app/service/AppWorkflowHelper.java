@@ -834,4 +834,30 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         AppUtil.setCurrentAppDefinition(appDef);
     }
+
+    @Override
+    public String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel) {
+        AppDefinition orgAppDef = AppUtil.getCurrentAppDefinition();
+        try {
+            String key = "plabel." + WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+            if (activityDefId != null) {
+                key = key + "." + activityDefId;
+            }
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            if (appDef == null || (appDef != null && !processDefId.startsWith(appDef.getAppId() + "#"))) {
+                appDef = AppUtil.getAppDefinitionByProcess(processDefId);
+                AppUtil.setCurrentAppDefinition(appDef);
+            }
+            Map<String, String> labels = AppUtil.getAppMessages(appDef);
+            if (labels != null && !labels.isEmpty() && labels.containsKey(key)) {
+                WorkflowAssignment ass = new WorkflowAssignment();
+                ass.setProcessId(processId);
+                return AppUtil.processHashVariable(labels.get(key), ass, null, null, appDef);
+            }
+        } catch (Exception e) {
+        } finally {
+            AppUtil.setCurrentAppDefinition(orgAppDef);
+        }
+        return defaultLabel;
+    }
 }

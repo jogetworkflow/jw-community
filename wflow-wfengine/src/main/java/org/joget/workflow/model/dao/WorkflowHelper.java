@@ -116,4 +116,13 @@ public interface WorkflowHelper {
      */
     void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion);
     
+    /**
+     * translate process name & activity name
+     * @param processId
+     * @param processDefId
+     * @param activityDefId
+     * @param defaultLabel
+     * @return 
+     */
+    String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel);
 }

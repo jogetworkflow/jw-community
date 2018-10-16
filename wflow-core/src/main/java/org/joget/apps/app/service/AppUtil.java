@@ -62,6 +62,7 @@ public class AppUtil implements ApplicationContextAware {
     static ApplicationContext appContext;
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
+    static ThreadLocal processAppDefinition = new ThreadLocal();
     static String designerContextPath = "/jwdesigner";
 
     /**
@@ -861,6 +862,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void clearRequest() {
         AppUtil.clearAppMessages();
+        processAppDefinition.remove();
     }
 
     /**
@@ -1010,5 +1012,22 @@ public class AppUtil implements ApplicationContextAware {
         email.setFrom(StringUtil.encodeEmail(form));
         
         return email;
+    }
+    
+    public static AppDefinition getAppDefinitionByProcess(String processDefId) {
+        AppDefinition appDef = null;
+        Map<String, AppDefinition> processAppDefMap = (Map<String, AppDefinition>) processAppDefinition.get();
+        if (processAppDefMap == null) {
+            processAppDefMap = new HashMap<String, AppDefinition>();
+        }
+        if (processAppDefMap.containsKey(processDefId)) {
+            appDef = processAppDefMap.get(processDefId);
+        } else {
+            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+            appDef = appService.getAppDefinitionWithProcessDefId(processDefId);
+            processAppDefMap.put(processDefId, appDef);
+            processAppDefinition.set(processAppDefMap);
+        }
+        return appDef;
     }
 }

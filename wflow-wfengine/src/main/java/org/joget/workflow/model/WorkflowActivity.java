@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
+import org.joget.workflow.util.WorkflowUtil;
 
 public class WorkflowActivity implements Serializable {
 
@@ -62,7 +63,7 @@ public class WorkflowActivity implements Serializable {
     }
 
     public String getName() {
-        return name;
+        return WorkflowUtil.translateProcessLabel(processId, processDefId, activityDefId, name);
     }
 
     public void setName(String name) {
@@ -254,7 +255,7 @@ public class WorkflowActivity implements Serializable {
     }
 
     public String getProcessName() {
-        return processName;
+        return WorkflowUtil.translateProcessLabel(processId, processDefId, null, processName);
     }
 
     public void setProcessName(String processName) {

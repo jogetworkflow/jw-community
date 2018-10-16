@@ -53,4 +53,9 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
         
     }
+
+    @Override
+    public String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel) {
+        return defaultLabel;
+    }
 }

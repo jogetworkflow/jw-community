@@ -109,6 +109,18 @@
         
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
         
+        <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/wro/advancedTool.js?build=<fmt:message key="build.number"/>"></script>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/advancedTool.css?build=<fmt:message key="build.number"/>">
+        <script type="text/javascript">
+            $(document).ready(function(){
+                AdvancedTools.initProcess({
+                    contextPath : '${pageContext.request.contextPath}',
+                    appId : '<c:out value="${appId}"/>',
+                    appVersion : '<c:out value="${appDefinition.version}"/>'
+                });
+            });
+        </script>   
         <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
             <jsp:param name="appId" value="${appId}"/>
             <jsp:param name="appVersion" value="${appDefinition.version}"/>

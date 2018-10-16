@@ -34,6 +34,24 @@ var AdvancedTools = {
         });
         
     },
+    initProcess: function (options) {
+        AdvancedTools.options = options;
+        
+        var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fa fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
+        $(document.body).append(overlayContainer);
+        
+        AdvancedTools.initProcessI18n();
+        
+        $(".builder_tool_tabs_container").tabs();
+        
+        $("#panel #controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fa fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
+        $("#advanced_tool").click(function(){
+            AdvancedTools.showQuickOverlay();     
+            setTimeout(function(){
+                $("a#i18n").trigger("click");
+            }, 100);
+        });
+    },
     initDefinitionTab: function () {
         var tab = '<li><a href="#tab-definition" id="definition"><i class="fa fa-code"></i><span>'+get_advtool_msg('adv.tool.JSON.Definition')+'</span></a></li>';
         
@@ -280,6 +298,21 @@ var AdvancedTools = {
             $("#tab-tooltip").html("");
         });
     },
+    initProcessI18n: function () {
+        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fa fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
+        
+        $(".builder_tool_tabs").append(tab);
+        $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
+        
+        $("a#i18n").on("click", function() {
+            if ($("#tab-i18n .i18n_table").length === 0) {
+                $("#tab-i18n").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                I18nEditor.initProcess($("#tab-i18n"), AdvancedTools.options);
+                $("#tab-i18n .dt-loading").remove();
+            }
+            I18nEditor.refresh($("#tab-i18n"));
+        });
+    },
     showQuickOverlay: function() {
         $("#advancedToolsOverlayContainer").show();
         $(document.body).addClass("stop-scrolling");
@@ -291,22 +324,26 @@ var AdvancedTools = {
         $(".tab-content").height(height);
         $(".sticky-buttons").css("top", $(".builder_tool_tabs").offset().top + $(".builder_tool_tabs").height() + 25);
         
-        AdvancedTools.json = $(AdvancedTools.jsonForm).find('textarea[name="json"]').val();
-        AdvancedTools.isChange = false;
-        AdvancedTools.editor.resize(true);
+        if (AdvancedTools.editor !== undefined && AdvancedTools.editor !== null) {
+            AdvancedTools.json = $(AdvancedTools.jsonForm).find('textarea[name="json"]').val();
+            AdvancedTools.isChange = false;
+            AdvancedTools.editor.resize(true);
+        }
         return false;
     },
     hideQuickOverlay: function() {
         if ($("#advancedToolsOverlayContainer").is(":visible")) {
-            //reset the json textarea if does not submit to update
-            if (!AdvancedTools.isChange) {
-                AdvancedTools.silentChange = true;
-                $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(AdvancedTools.json).trigger("change");
-                AdvancedTools.silentChange = false;
-            }
+            if (AdvancedTools.editor !== undefined && AdvancedTools.editor !== null) {
+                //reset the json textarea if does not submit to update
+                if (!AdvancedTools.isChange) {
+                    AdvancedTools.silentChange = true;
+                    $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(AdvancedTools.json).trigger("change");
+                    AdvancedTools.silentChange = false;
+                }
 
-            //calling tree viewer hide to clean extra elements created during generate image
-            AdvancedTools.treeViewer.hide();
+                //calling tree viewer hide to clean extra elements created during generate image
+                AdvancedTools.treeViewer.hide();
+            }
 
             $(".quickOverlayButton, #advancedToolsFrame").fadeOut();
             $("#advancedToolsOverlayContainer").hide();
