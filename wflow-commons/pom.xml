@@ -41,27 +41,27 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.aspectj</groupId>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>4.3.3.RELEASE</version>
+            <version>4.3.19.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springmodules</groupId>
@@ -128,17 +128,17 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>4.1.2.RELEASE</version>
+            <version>4.1.5.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>4.1.2.RELEASE</version>
+            <version>4.1.5.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>4.1.2.RELEASE</version>
+            <version>4.1.5.RELEASE</version>
         </dependency>        
         <dependency>
             <groupId>javax.servlet</groupId>
