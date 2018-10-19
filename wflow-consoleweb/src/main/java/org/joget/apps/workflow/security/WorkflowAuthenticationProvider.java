@@ -95,8 +95,9 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
         // return result
         User user = directoryManager.getUserByUsername(username);
         UserDetails details = new WorkflowUserDetails(user);
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(username, password, gaList);
-        result.setDetails(details);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, gaList);
+        token.setDetails(details);
+        Authentication result = new AuthenticationTokenWrapper(token);
         return result;
     }
 

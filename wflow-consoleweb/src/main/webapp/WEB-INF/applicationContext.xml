@@ -97,7 +97,15 @@
         <security:form-login login-page="/web/login" username-parameter="j_username" password-parameter="j_password" login-processing-url="/j_spring_security_check" default-target-url="/index.jsp" authentication-failure-url="/web/login?login_error=1" />
         <security:logout logout-url="/j_spring_security_logout" logout-success-url="/web/login"/>
         <security:anonymous username="roleAnonymous"/>
-        
+
+        <!-- Web Console system admin paths -->
+        <security:intercept-url pattern="/web/console/directory/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/console/monitor/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/console/setting/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/console/directory/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/console/monitor/**" access="ROLE_SYSADMIN"/>
+        <security:intercept-url pattern="/web/json/console/setting/**" access="ROLE_SYSADMIN"/>
+                
         <!-- Secure by default -->
         <security:intercept-url pattern="/web/json/**" access="ROLE_ADMIN" />
         <security:intercept-url pattern="/web/console/**" access="ROLE_ADMIN"/>
@@ -116,10 +124,13 @@
         <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" /> 
     </security:http>
         
+    <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager">
+    </bean>                
+
     <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
         <property name="directoryManager" ref="directoryManager"/>
     </bean>
-
+                                                                                                
     <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="workflowUserManager" ref="workflowUserManager"/>

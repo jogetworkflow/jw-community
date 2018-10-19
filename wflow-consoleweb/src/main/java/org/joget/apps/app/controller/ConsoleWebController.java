@@ -50,6 +50,7 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -63,6 +64,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.generator.service.GeneratorUtil;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
@@ -1400,8 +1402,20 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/versioning")
-    public String consoleAppVersioning(ModelMap model, @RequestParam(value = "appId") String appId) {
-        model.addAttribute("appId", appId);
+    public String consoleAppVersioning(ModelMap map, @RequestParam(value = "appId") String appId) throws JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, null);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+
+        Properties props = AppDevUtil.getAppDevProperties(appDef);
+        String properties = "{}";
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
+        jsonObject.accumulate(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+        jsonObject.accumulate("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
+        properties = jsonObject.toString(4);
+        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         return "console/apps/appVersion";
     }
 
@@ -5284,4 +5298,30 @@ public class ConsoleWebController {
         }
         return jsonArr;
     }
+    
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
+    public String consoleDevSubmit(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String properties) throws JSONException, IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        
+        String oldProperties = "{}";        
+        properties = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, properties);
+        Properties appProps = new Properties();
+        JSONObject jsonObject = new JSONObject(properties);
+        if (!jsonObject.isNull(WorkflowUserManager.ROLE_ADMIN)) {
+            appProps.setProperty(WorkflowUserManager.ROLE_ADMIN, jsonObject.getString(WorkflowUserManager.ROLE_ADMIN));
+        }
+        if (!jsonObject.isNull(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP)) {
+            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, jsonObject.getString(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
+        }
+        if (!jsonObject.isNull("orgId")) {
+            appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.getString("orgId"));
+        }
+        AppDevUtil.setAppDevProperties(appDef, appProps);
+        
+        return "console/dialogClose";
+    }    
+    
 }

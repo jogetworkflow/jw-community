@@ -299,7 +299,7 @@
                     </dependency>                         
                 </dependencies>                
                 <configuration>
-                    <complianceLevel>1.6</complianceLevel>
+                    <complianceLevel>1.7</complianceLevel>
                     <weaveDependencies>
                         <weaveDependency>
                             <groupId>org.joget</groupId>
