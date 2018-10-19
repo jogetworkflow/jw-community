@@ -2178,12 +2178,29 @@ public class FormUtil implements ApplicationContextAware {
                                         row.putTempFilePath(fileFieldName, paths.toArray(new String[]{}));
                                     }
                                 }
+                            } else if (fieldName.equals(FormUtil.PROPERTY_DELETE_FILE_PATH)) {
+                                JSONObject deleteFilePathMap = jsonRow.getJSONObject(FormUtil.PROPERTY_DELETE_FILE_PATH);
+                                JSONArray deleteFilePaths = deleteFilePathMap.names();
+                                if (deleteFilePaths != null && deleteFilePaths.length() > 0) {
+                                    for (int l = 0; l < deleteFilePaths.length(); l++) {                        
+                                        List<String> pathValues = new ArrayList<String>();
+                                        String deleteFilePathFieldId = deleteFilePaths.getString(l);
+                                        JSONArray paths = deleteFilePathMap.getJSONArray(deleteFilePathFieldId);
+                                        if (paths != null && paths.length() > 0) {
+                                            for (int m = 0; m < paths.length(); m++) {
+                                                pathValues.add(paths.getString(m));
+                                            }
+                                        }
+                                        row.putDeleteFilePath(deleteFilePathFieldId, pathValues.toArray(new String[]{}));
+                                    }
+                                }
                             } else {
                                 String value = jsonRow.getString(fieldName);
                                 row.setProperty(fieldName, value);
                             }
                         }
                     }
+                    
                     row.setProperty("jsonrow", jsonRow.toString());
                     rowSet.add(row);
                 }
