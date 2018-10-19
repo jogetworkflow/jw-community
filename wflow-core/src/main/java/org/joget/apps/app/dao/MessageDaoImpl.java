@@ -9,14 +9,20 @@ import net.sf.ehcache.Element;
 import org.hibernate.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.Message;
+import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> implements MessageDao {
 
     public static final String ENTITY_NAME = "Message";
     private Cache cache;
 
+    @Autowired
+    AppService appService;
+    
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
@@ -133,6 +139,13 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
                 // delete obj
                 super.delete(getEntityName(), obj);
                 result = true;
+                
+                // save and commit app definition
+                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                String filename = "appDefinition.xml";
+                String xml = AppDevUtil.getAppDefinitionXml(appDef);
+                String commitMessage = "Update app definition " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -144,6 +157,30 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public boolean update(Message object) {
         String key = getCacheKey(object.getMessageKey(), object.getLocale(), object.getAppId(), object.getAppVersion().toString());
         cache.remove(key);
-        return super.update(object);
+        boolean result = super.update(object);
+        
+        // save and commit app definition
+        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+        String filename = "appDefinition.xml";
+        String xml = AppDevUtil.getAppDefinitionXml(appDef);
+        String commitMessage = "Update app definition " + appDef.getId();
+        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        
+        return result;
     }
+    
+    @Override
+    public boolean add(Message object) {
+        boolean result = super.add(object);
+        
+        // save and commit app definition
+        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+        String filename = "appDefinition.xml";
+        String xml = AppDevUtil.getAppDefinitionXml(appDef);
+        String commitMessage = "Update app definition " + appDef.getId();
+        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+        return result;
+    }    
+    
 }

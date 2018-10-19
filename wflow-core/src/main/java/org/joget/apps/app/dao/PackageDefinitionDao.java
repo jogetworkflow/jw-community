@@ -117,4 +117,11 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @return
      */
     AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion);
+
+    /**
+     * Merge an existing package definition
+     * @param packageDef 
+     */
+    public void merge(PackageDefinition packageDef);    
+
 }

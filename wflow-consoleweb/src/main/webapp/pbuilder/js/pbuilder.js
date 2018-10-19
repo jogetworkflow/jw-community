@@ -1131,7 +1131,10 @@ ProcessBuilder.ApiClient = {
         }
         var packageId = ProcessBuilder.Designer.model.packageId;
         var deployUrl = ProcessBuilder.ApiClient.baseUrl + "/web/json/console/app/" + ProcessBuilder.ApiClient.appId + "/"+ProcessBuilder.ApiClient.appVersion+"/package/deploy";
-        var xpdl = new Blob([ProcessBuilder.Designer.xpdl], {type : 'text/xml'});
+        $(ProcessBuilder.Designer.source).val(ProcessBuilder.Designer.xpdl);
+        $(ProcessBuilder.Designer.source).format({method: 'xml'});
+        var xpdlSrc = $(ProcessBuilder.Designer.source).val();
+        var xpdl = new Blob([xpdlSrc], {type : 'text/xml'});
         var params = new FormData();
         params.append("packageXpdl", xpdl);
         var loginCallback = function() {

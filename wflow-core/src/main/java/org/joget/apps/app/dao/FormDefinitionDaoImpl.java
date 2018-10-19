@@ -10,6 +10,7 @@ import net.sf.ehcache.Element;
 import org.hibernate.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.form.model.FormColumnCache;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -118,22 +119,46 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     
     @Override
     public boolean add(FormDefinition object) {
+        boolean result = super.add(object);
+
+        // save json
+        String filename = "forms/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Add form " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        
+        // clear cache
         formColumnCache.remove(object.getTableName());
         
+        // save in db
         object.setDateCreated(new Date());
         object.setDateModified(new Date());
-        return super.add(object);
+        return result;
     }
 
     @Override
     public boolean update(FormDefinition object) {
+        boolean result = super.update(object);
+
+        // save json
+        String filename = "forms/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Update form " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+
         // clear from cache
         formColumnCache.remove(object.getTableName());
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
         // update object
         object.setDateModified(new Date());
-        return super.update(object);
+        return result;
     }
 
     @Override
@@ -162,6 +187,14 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
                 // clear from cache
                 formColumnCache.remove(obj.getTableName());
                 cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                
+                // delete json
+                String filename = "forms/" + id + ".json";
+                String commitMessage = "Delete form " + id;
+                AppDevUtil.fileDelete(appDef, filename, commitMessage);
+
+                // sync app plugins
+                AppDevUtil.dirSyncAppPlugins(appDef);                
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

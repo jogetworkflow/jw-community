@@ -232,6 +232,21 @@ public class TestAppDao {
         formDef.setId(formId);
         formDef.setAppDefinition(appDef);
         formDef.setName(formId);
+        String json = "{\n" +
+            "    \"className\": \"org.joget.apps.form.model.Form\",\n" +
+            "    \"properties\": {\n" +
+            "        \"id\": \"" + formId + "\",\n" +
+            "        \"loadBinder\": {\n" +
+            "            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\"\n" +
+            "        },\n" +
+            "        \"name\": \"Test Form 1\",\n" +
+            "        \"storeBinder\": {\n" +
+            "            \"className\": \"org.joget.apps.form.lib.WorkflowFormBinder\"\n" +
+            "        },\n" +
+            "        \"tableName\": \"\"\n" +
+            "    }\n" +
+            "}";
+        formDef.setJson(json);
 
         // save test form
         formDefinitionDao.add(formDef);

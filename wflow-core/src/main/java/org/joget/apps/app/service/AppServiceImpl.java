@@ -3,12 +3,14 @@ package org.joget.apps.app.service;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,6 +29,7 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
@@ -933,6 +936,21 @@ public class AppServiceImpl implements AppService {
                 // TODO: handle exception
             }
         }
+        try {
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            boolean gitSyncAppDone = request != null && "true".equals(request.getAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId));
+            if (!gitSyncAppDone) {
+                AppDefinition newAppDef = AppDevUtil.dirSyncApp(appId, versionLong);
+                if (newAppDef != null) {
+                    appDef = newAppDef;
+                }
+                if (request != null) {
+                    request.setAttribute(AppDevUtil.ATTRIBUTE_GIT_SYNC_APP + appId, "true");
+                }
+            }
+        } catch (IOException | GitAPIException | URISyntaxException e) {
+            LogUtil.error(getClass().getName(), e, "Error sync app " + appDef);
+        }
 
         // set into thread
         AppUtil.setCurrentAppDefinition(appDef);
@@ -1091,6 +1109,9 @@ public class AppServiceImpl implements AppService {
             newAppDef = importAppDefinition(newAppDef, newAppVersion, xpdl);
             
             AppResourceUtil.copyAppResources(appId, version.toString(), appId, newAppDef.getVersion().toString());
+
+            // save app def
+            appDefinitionDao.saveOrUpdate(newAppDef);
             
             return newAppDef;
         } catch (Exception e) {
@@ -1175,6 +1196,14 @@ public class AppServiceImpl implements AppService {
             String packageIdToUpload = (versionStr != null && !versionStr.isEmpty()) ? packageId : null;
             workflowManager.processUpload(packageIdToUpload, packageXpdl);
 
+            // save to xpdl file for git commit
+            if (appDef != null) {
+                String xpdl = new String(packageXpdl, "UTF-8");
+                String filename = "package.xpdl";
+                String commitMessage = "Update xpdl " + appDef.getId();
+                AppDevUtil.fileSave(appDef, filename, xpdl, commitMessage);
+            }
+        
             // load package
             versionStr = workflowManager.getCurrentPackageVersion(packageId);
             WorkflowPackage workflowPackage = workflowManager.getPackage(packageId, versionStr);
@@ -2160,6 +2189,9 @@ public class AppServiceImpl implements AppService {
                                 packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
                             }
                         }
+                        
+                        // update app definition
+                        appDefinitionDao.saveOrUpdate(newAppDef);
                     }
                 }
             }

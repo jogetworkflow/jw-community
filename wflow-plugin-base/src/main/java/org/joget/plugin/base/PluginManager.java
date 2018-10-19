@@ -1244,4 +1244,22 @@ public class PluginManager implements ApplicationContextAware {
     public boolean isOsgi(String classname) {
         return osgiPluginClassCache.containsKey(classname);
     }
+    
+    public String getOsgiPluginPath(String className) {
+        String path = null;
+        BundleContext context = felix.getBundleContext();
+        ServiceReference sr = context.getServiceReference(className);
+        if (sr != null) {
+            try {
+                Bundle bundle = sr.getBundle();
+                String location = bundle.getLocation();            
+                File file = new File(new URI(location));
+                path = file.getAbsolutePath();
+             } catch (Exception ex) {
+                LogUtil.error(PluginManager.class.getName(), ex, ex.getMessage());
+            }
+        }
+        return path;
+    }
+    
 }

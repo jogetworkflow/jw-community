@@ -12,6 +12,7 @@ import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
@@ -42,6 +43,20 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     }
 
     @Override
+    public void saveOrUpdate(PackageDefinition packageDef) {        
+        super.saveOrUpdate(packageDef);
+
+        AppDefinition appDef = packageDef.getAppDefinition();
+        String filename = "appDefinition.xml";
+        String xml = AppDevUtil.getAppDefinitionXml(appDef);
+        String commitMessage = "Update package " + appDef.getId();
+        AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(appDef);
+    }    
+    
+    @Override
     public void delete(PackageDefinition obj) {
         AppDefinition appDef = obj.getAppDefinition();
         if (appDef != null) {
@@ -57,6 +72,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
         // delete package definition
         super.delete(getEntityName(), obj);
+        
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(appDef);
     }
 
     /**
@@ -176,21 +194,27 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             }
 
             Map<String, PackageActivityForm> activityForms = packageDef.getPackageActivityFormMap();
-            for (String key : activityForms.keySet()) {
-                if (activityIds.contains(key)) {
-                    packageActivityFormMap.put(key, activityForms.get(key));
+            if (activityForms != null) {
+                for (String key : activityForms.keySet()) {
+                    if (activityIds.contains(key)) {
+                        packageActivityFormMap.put(key, activityForms.get(key));
+                    }
                 }
             }
             Map<String, PackageActivityPlugin> activityPluginMap = packageDef.getPackageActivityPluginMap();
-            for (String key : activityPluginMap.keySet()) {
-                if (toolIds.contains(key)) {
-                    packageActivityPluginMap.put(key, activityPluginMap.get(key));
+            if (activityPluginMap != null) {
+                for (String key : activityPluginMap.keySet()) {
+                    if (toolIds.contains(key)) {
+                        packageActivityPluginMap.put(key, activityPluginMap.get(key));
+                    }
                 }
             }
             Map<String, PackageParticipant> participantMap = packageDef.getPackageParticipantMap();
-            for (String key : participantMap.keySet()) {
-                if (participantIds.contains(key)) {
-                    packageParticipantMap.put(key, participantMap.get(key));
+            if (participantMap != null) {
+                for (String key : participantMap.keySet()) {
+                    if (participantIds.contains(key)) {
+                        packageParticipantMap.put(key, participantMap.get(key));
+                    }
                 }
             }
         } catch (Exception e) {
@@ -202,6 +226,11 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         packageDef.setPackageParticipantMap(packageParticipantMap);
 
         // save app and package definition
+        AppDefinition appDef = packageDef.getAppDefinition();
+        if (appDef.getPackageDefinition() == null) {
+            appDef.getPackageDefinitionList().add(packageDef);
+        }
+//        appDefinitionDao.merge(appDef);
         saveOrUpdate(packageDef);
         return packageDef;
     }
@@ -311,4 +340,16 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
         return null;
     }
+    
+    /**
+     * Merge an existing package definition
+     * @param packageDef 
+     */
+    @Override
+    public void merge(PackageDefinition packageDef) {
+        Session session = findSession();
+        session.merge(getEntityName(), packageDef);
+        session.flush();
+    }
+    
 }

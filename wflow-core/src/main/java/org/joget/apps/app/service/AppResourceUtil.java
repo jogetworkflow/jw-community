@@ -11,6 +11,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -52,6 +53,11 @@ public class AppResourceUtil {
                     out = new FileOutputStream(uploadFile);
                     out.write(file.getBytes());
                 }
+                
+                // sync app resources
+                AppDefinitionDao appDefinitionDao = (AppDefinitionDao)AppUtil.getApplicationContext().getBean("appDefinitionDao");
+                appDefinitionDao.saveOrUpdate(appId, Long.parseLong(appVersion), false);
+                
             } catch (Exception ex) {
                 LogUtil.error(FileManager.class.getName(), ex, "");
             } finally {

@@ -9,6 +9,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
@@ -85,17 +86,41 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
 
     @Override
     public boolean add(UserviewDefinition object) {
+        boolean result = super.add(object);
+
+        // save json
+        String filename = "userviews/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Add userview " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        
+        // save in db
         object.setDateCreated(new Date());
         object.setDateModified(new Date());
-        return super.add(object);
+        return result;
     }
 
     @Override
     public boolean update(UserviewDefinition object) {
+        boolean result = super.update(object);
+
+        // save json
+        String filename = "userviews/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Update userview " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        
+        // remove from cache and save in db
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
         object.setDateModified(new Date());
-        return super.update(object);
+        return result;
     }
 
     @Override
@@ -120,6 +145,14 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
                 result = true;
                 
                 cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                
+                // delete json
+                String filename = "userviews/" + id + ".json";
+                String commitMessage = "Delete userview " + id;
+                AppDevUtil.fileDelete(appDef, filename, commitMessage);
+
+                // sync app plugins
+                AppDevUtil.dirSyncAppPlugins(appDef);                
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

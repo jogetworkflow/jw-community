@@ -13,6 +13,7 @@
         <ul>
             <li class="selected"><a href="#appVersionDiv"><span><fmt:message key="console.app.version.label.title"/></span></a></li>
             <li><a href="#appDevSettings"><span><fmt:message key="console.app.dev.admin.settings"/></span></a></li>
+            <li><a href="#appGitSettings"><span><fmt:message key="console.app.dev.git.configuration"/></span></a></li>
         </ul>
         <br><br>
         <div>
@@ -212,6 +213,99 @@
                     });
                 </script>
 
+            </div>
+            <div id="appGitSettings" style="position: relative; top:-5px; overflow-y:hidden">        
+
+                <c:if test="${upload}">
+                    <div class="form-message form-success"><fmt:message key="console.app.dev.updated" /></div>
+                </c:if>
+                <c:if test="${!empty errors}">
+                    <span class="form-errors" style="display:block">
+                        <c:forEach items="${errors}" var="error">
+                            <fmt:message key="${error}"/>
+                        </c:forEach>
+                    </span>
+                </c:if>
+
+                <div id="propertyEditorGit" class="pluginConfig menu-wizard-container-git">
+
+                </div>
+                <form id="propertiesFormGit" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit" class="form" method="POST" style="display:none">
+                    <input id="propertiesGit" name="properties" type="hidden" value=""/>
+                    <input id="id" name="id" type="hidden" value="${appResource.id}"/>
+                </form>
+                <script>
+                    function savePropertiesGit(container, properties) {
+                        $("#propertiesGit").val(JSON.encode(properties));
+                        $("#propertiesFormGit").submit();
+                    }
+
+                    $(document).ready(function () {
+                        var prop = ${properties};
+
+                        var options = {
+                            contextPath: '${pageContext.request.contextPath}',
+                            propertiesDefinition: [{
+                                    title: '<fmt:message key="console.app.dev.git.configuration"/>',
+                                    properties: [{
+                                            name: 'gitUri',
+                                            label: '<fmt:message key="console.app.dev.git.uri"/>',
+                                            type: 'textfield'
+                                        },
+                                        {
+                                            name: 'gitUsername',
+                                            label: '<fmt:message key="console.app.dev.git.username"/>',
+                                            type: 'textfield'
+                                        },
+                                        {
+                                            name: 'gitPassword',
+                                            label: '<fmt:message key="console.app.dev.git.password"/>',
+                                            type: 'password'
+                                        },
+                                        {
+                                            label: '<fmt:message key="console.app.dev.git.deployment"/>',
+                                            type: 'header'
+                                        },
+                                        {
+                                            name: 'gitConfigExcludeCommit',
+                                            label: '<fmt:message key="console.app.dev.git.configExcludeCommit"/>',
+                                            type: 'checkbox',
+                                            options: [{
+                                                    value: 'true',
+                                                    label: ''
+                                                }]
+                                        },
+                                        {
+                                            name: 'gitConfigPull',
+                                            label: '<fmt:message key="console.app.dev.git.configPull"/>',
+                                            type: 'checkbox',
+                                            options: [{
+                                                    value: 'true',
+                                                    label: ''
+                                                }]
+                                        },
+                                        {
+                                            name : 'gitConfigAutoSync',
+                                            label : '<fmt:message key="console.app.dev.git.configAutoSync"/>',
+                                            type : 'checkbox',
+                                            options : [{
+                                                value : 'true',
+                                                label : ''
+                                            }]
+                                        }]
+                                }],
+                            propertyValues: prop,
+                            cancelCallback: cancel,
+                            showCancelButton: true,
+                            saveCallback: savePropertiesGit,
+                            saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
+                            cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
+                            closeAfterSaved: false,
+                            validationFailedCallback: savePropertiesFailed
+                        }
+                        $('.menu-wizard-container-git').propertyEditor(options);
+                    });
+                </script>
             </div>
         </div>                    
     </div>

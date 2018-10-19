@@ -9,6 +9,7 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
@@ -85,17 +86,42 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
 
     @Override
     public boolean add(DatalistDefinition object) {
+        boolean result = super.add(object);
+        
+        // save json
+        String filename = "lists/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Add list " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        
+        // save in db
         object.setDateCreated(new Date());
         object.setDateModified(new Date());
-        return super.add(object);
+        return result;
     }
 
     @Override
     public boolean update(DatalistDefinition object) {
+        boolean result = super.update(object);
+
+        // save json
+        String filename = "lists/" + object.getId() + ".json";
+        String json = AppDevUtil.formatJson(object.getJson());
+        String commitMessage = "Update list " + object.getId();
+        AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+
+        // sync app plugins
+        AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
+        
+        // remove from cache
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()));
         
+        // save in db
         object.setDateModified(new Date());
-        return super.update(object);
+        return result;
     }
 
     @Override
@@ -120,6 +146,14 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
                 result = true;
                 
                 cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()));
+                
+                // remove json
+                String filename = "lists/" + id + ".json";
+                String commitMessage = "Delete list " + id;
+                AppDevUtil.fileDelete(appDef, filename, commitMessage);
+
+                // sync app plugins
+                AppDevUtil.dirSyncAppPlugins(appDef);
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

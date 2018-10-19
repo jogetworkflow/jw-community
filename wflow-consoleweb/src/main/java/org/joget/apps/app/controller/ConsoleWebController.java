@@ -1414,6 +1414,12 @@ public class ConsoleWebController {
         jsonObject.accumulate(WorkflowUserManager.ROLE_ADMIN, props.getProperty(WorkflowUserManager.ROLE_ADMIN));
         jsonObject.accumulate(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP, props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP));
         jsonObject.accumulate("orgId", props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_URI, props.getProperty(AppDevUtil.PROPERTY_GIT_URI));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_USERNAME, props.getProperty(AppDevUtil.PROPERTY_GIT_USERNAME));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_PASSWORD, props.getProperty(AppDevUtil.PROPERTY_GIT_PASSWORD));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
+        jsonObject.accumulate(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, props.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
         properties = jsonObject.toString(4);
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         return "console/apps/appVersion";
@@ -1421,12 +1427,53 @@ public class ConsoleWebController {
 
     @RequestMapping("/json/console/app/(*:appId)/version/list")
     public void consoleAppVersionListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
-        Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, sort, desc, start, rows);
-        Long count = appDefinitionDao.countVersions(appId);
+        Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, sort, desc, null, null);
 
+        TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
+        if (!appDefList.isEmpty()) {
+            for (AppDefinition appDef: appDefList) {
+                appDefMap.put(appDef.getVersion(), appDef);
+            }            
+            
+            // get app versions from Git
+            try {
+                AppDefinition appDef = appDefList.iterator().next();
+                List<String> branches = AppDevUtil.getAppGitBranches(appDef);
+                for (String branch: branches) {
+                    StringTokenizer st = new StringTokenizer(branch, "_");
+                    String version = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                    if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
+                        AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
+                        tempAppDef.setDescription("Git: " + branch);
+                        appDefMap.put(tempAppDef.getVersion(), tempAppDef);
+                    }
+                }            
+            } catch(Exception e) {
+                LogUtil.error(getClass().getName(), e, e.getMessage());
+            }
+        }
+        // reverse sort versions
+        List<AppDefinition> newAppDefList = new ArrayList<>(appDefMap.values());
+        Collections.sort(newAppDefList, new Comparator<AppDefinition>() {
+            @Override
+            public int compare(AppDefinition a1, AppDefinition a2) {
+                return a2.getVersion().compareTo(a1.getVersion());
+            }
+        });
+        // handle paging
+        int count = newAppDefList.size();
+        if (start != null && start >= 0 && rows != null && rows > 0) {
+            int end = start + rows;
+            if (end > count) {
+                end = count;
+            }
+            newAppDefList = newAppDefList.subList(start, end);
+        }        
+        
+        // generate JSON output
         JSONObject jsonObject = new JSONObject();
-        if (appDefList != null && appDefList.size() > 0) {
-            for (AppDefinition appDef : appDefList) {
+        if (newAppDefList != null && newAppDefList.size() > 0) {
+            for (AppDefinition appDef : newAppDefList) {
                 Map data = new HashMap();
                 data.put("version", appDef.getVersion().toString());
                 data.put("published", (appDef.isPublished()) ? "<div class=\"tick\"></div>" : "");
@@ -1466,7 +1513,7 @@ public class ConsoleWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             appDef.setName(name);
-            appDefinitionDao.saveOrUpdate(appDef);
+            appDefinitionDao.merge(appDef);
         }
 
         return "console/apps/dialogClose";
@@ -1479,7 +1526,7 @@ public class ConsoleWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef != null) {
             appDef.setDescription(description);
-            appDefinitionDao.saveOrUpdate(appDef);
+            appDefinitionDao.merge(appDef);
         }
 
         return "redirect:/web/console/app/"+appId+"/"+version+"/properties";
@@ -2182,7 +2229,7 @@ public class ConsoleWebController {
         }
 
         // update and save
-        packageDefinitionDao.saveOrUpdate(packageDef);
+        packageDefinitionDao.merge(packageDef);
 
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
@@ -5318,6 +5365,14 @@ public class ConsoleWebController {
         }
         if (!jsonObject.isNull("orgId")) {
             appProps.setProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_ORG, jsonObject.getString("orgId"));
+        }
+        if (!jsonObject.isNull(AppDevUtil.PROPERTY_GIT_URI)) {
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_URI, jsonObject.getString(AppDevUtil.PROPERTY_GIT_URI));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_USERNAME, jsonObject.getString(AppDevUtil.PROPERTY_GIT_USERNAME));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_PASSWORD, jsonObject.getString(AppDevUtil.PROPERTY_GIT_PASSWORD));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_PULL, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_PULL));
+            appProps.setProperty(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC, jsonObject.getString(AppDevUtil.PROPERTY_GIT_CONFIG_AUTO_SYNC));
         }
         AppDevUtil.setAppDevProperties(appDef, appProps);
         

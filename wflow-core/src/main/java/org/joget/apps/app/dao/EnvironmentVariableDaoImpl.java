@@ -3,14 +3,21 @@ package org.joget.apps.app.dao;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
+import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<EnvironmentVariable> implements EnvironmentVariableDao {
 
     public static final String ENTITY_NAME = "EnvironmentVariable";
 
+    @Autowired
+    AppService appService;
+    
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
@@ -47,6 +54,44 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     }
 
     @Override
+    public boolean add(EnvironmentVariable object) {
+        boolean result = super.add(object);
+        
+        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+        String filename = "appConfig.xml";
+        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+        if (commitConfig) {
+            String xml = AppDevUtil.getAppConfigXml(appDef);
+            String commitMessage =  "Update app config " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        } else {
+            AppDevUtil.fileDelete(appDef, filename, null);
+        }
+
+        return result;
+    }
+    
+    @Override
+    public boolean update(EnvironmentVariable object) {
+        boolean result = super.update(object);
+        
+        AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
+        Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+        String filename = "appConfig.xml";
+        boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+        if (commitConfig) {
+            String xml = AppDevUtil.getAppConfigXml(appDef);
+            String commitMessage =  "Update app config " + appDef.getId();
+            AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+        } else {
+            AppDevUtil.fileDelete(appDef, filename, null);
+        }
+
+        return result;
+    }
+    
+    @Override
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
@@ -66,6 +111,19 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
                 // delete obj
                 super.delete(getEntityName(), obj);
                 result = true;
+
+                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+                String filename = "appConfig.xml";
+                boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+                if (commitConfig) {
+                    String xml = AppDevUtil.getAppConfigXml(appDef);
+                    String commitMessage =  "Update app config " + appDef.getId();
+                    AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                } else {
+                    AppDevUtil.fileDelete(appDef, filename, null);
+                }        
+                
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");

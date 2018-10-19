@@ -7,11 +7,15 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.commons.util.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResource> implements AppResourceDao {
 
     public static final String ENTITY_NAME = "AppResource";
 
+    @Autowired
+    AppDefinitionDao appDefinitionDao;
+    
     @Override
     public String getEntityName() {
         return ENTITY_NAME;
@@ -63,6 +67,10 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
 
                 // delete obj
                 super.delete(getEntityName(), obj);
+                
+                // update app def
+                appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), false);
+                
                 result = true;
             }
         } catch (Exception e) {
