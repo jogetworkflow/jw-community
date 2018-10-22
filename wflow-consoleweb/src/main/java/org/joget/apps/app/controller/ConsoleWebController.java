@@ -54,6 +54,7 @@ import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
@@ -100,6 +101,7 @@ import org.joget.directory.dao.GroupDao;
 import org.joget.directory.dao.OrganizationDao;
 import org.joget.directory.dao.RoleDao;
 import org.joget.directory.dao.UserDao;
+import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.Grade;
 import org.joget.directory.model.Organization;
 import org.joget.directory.model.service.DirectoryManagerPlugin;
@@ -194,6 +196,8 @@ public class ConsoleWebController {
     FormDataDao formDataDao;
     @Autowired
     LocaleResolver localeResolver;
+    @Autowired
+    UserMetaDataDao userMetaDataDao;
 
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
@@ -5378,5 +5382,41 @@ public class ConsoleWebController {
         
         return "console/dialogClose";
     }    
-    
+
+    @RequestMapping(value = "/console/profile/subscription", method = RequestMethod.POST)
+    public void profileSubscription(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "subscription") String subscription) throws IOException {
+        // get current user
+        User currentUser = userDao.getUser(workflowUserManager.getCurrentUsername());
+        if (currentUser == null || workflowUserManager.isCurrentUserAnonymous()) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        // save subscription json to user metadata
+        Boolean result = PushServiceUtil.storeUserPushSubscription(currentUser.getUsername(), subscription);
+        if (result) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+        }
+    }
+
+    @RequestMapping(value = "/json/push/message", method = RequestMethod.POST)
+    public void sendPushMessage(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "username") String username, @RequestParam(value = "title", required = false) String title, @RequestParam(value = "text", required = false) String text, @RequestParam(value = "url", required = false) String url, @RequestParam(value = "icon", required = false) String icon, @RequestParam(value = "badge", required = false) String badge) throws IOException, JSONException {
+        // get  user
+        User user = userDao.getUser(username);
+        if (user == null || workflowUserManager.isCurrentUserAnonymous()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        // send test message
+        String message;
+        int result = PushServiceUtil.sendUserPushNotification(username, title, text, url, icon, badge, false);
+        message = ResourceBundleUtil.getMessage("push.messagesSent") + ": " + result;
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("message", message);
+        jsonObject.write(response.getWriter());
+    }
+
 }

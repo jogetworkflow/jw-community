@@ -89,6 +89,7 @@
         <security:intercept-url pattern="/web/console/run/apps" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/profile" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/profile/submit" access="ROLE_ADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/console/profile/subscription" access="ROLE_ADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_USER"/>
 
         <!-- Login, logout and app center -->

@@ -5,6 +5,7 @@ import de.bripkens.gravatar.DefaultImage;
 import de.bripkens.gravatar.Gravatar;
 import de.bripkens.gravatar.Rating;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -16,12 +17,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.InboxMenu;
+import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
+import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -31,6 +39,8 @@ import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginWebSupport;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 
 public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport {
@@ -129,7 +139,76 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String meta = super.getMetas(data) + "\n";
         meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
+        
+        // PWA: set address bar theme color
+        Userview userview = (Userview)data.get("userview");
+        String primary = getPrimaryColor(userview.getSetting().getTheme());
+        meta += "<meta name=\"theme-color\" content=\"" + primary + "\"/>\n";
+
+        // PWA: set manifest URL
+        String appId = userview.getParamString("appId");
+        String userviewId = userview.getPropertyString("id");
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String manifestUrl = request.getContextPath() + "/web/json/plugin/" + getClassName() + "/service?_a=manifest&appId=" + appId + "&userviewId=" + userviewId;
+        meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
+
         return meta;
+    }
+
+    protected String getPrimaryColor(UserviewTheme theme) {
+        String primary = "#FFFFFF";
+        if ("custom".equals(theme.getPropertyString("primaryColor"))) {
+            primary = getPropertyString("customPrimary");
+        } else {
+            Color p = Color.valueOf(theme.getPropertyString("primaryColor")); 
+            if (p != null) {
+                primary = p.color;
+            }
+        }
+        return primary;
+    }
+        
+    public String getManifest(String appId, String userviewId) {
+        String userviewName = "";
+        UserviewTheme theme = null;
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (appDef != null && request != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            String json = userviewDef.getJson();
+            userviewName = userviewService.getUserviewName(json);
+            theme = userviewService.getUserviewTheme(appId, userviewId);
+        }
+        String icon = request.getContextPath() + "/images/v3/logo.png";
+        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
+        String primaryColor = getPrimaryColor(theme);
+        String backgroundColor = "#FFFFFF";
+        String scope = request.getContextPath();
+        String manifest = "{\n" +
+            "  \"short_name\": \"" + userviewName + "\",\n" +
+            "  \"name\": \"" + userviewName + "\",\n" +
+            "  \"icons\": [\n" +
+            "    {\n" +
+            "      \"src\": \"" + icon + "\",\n" +
+            "      \"type\": \"image/png\",\n" +
+            "      \"sizes\": \"192x192\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"src\": \"" + icon + "\",\n" +
+            "      \"type\": \"image/png\",\n" +
+            "      \"sizes\": \"512x512\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"start_url\": \"" + startUrl + "\",\n" +
+            "  \"background_color\": \"" + backgroundColor + "\",\n" +
+            "  \"display\": \"standalone\",\n" +
+            "  \"scope\": \"" + scope + "\",\n" +
+            "  \"theme_color\": \"" + primaryColor + "\"\n" +
+            "}";
+        return manifest;
     }
     
     @Override
@@ -164,6 +243,19 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         }        
         jsCssLink += "<script>var _enableResponsiveTable = true;</script>\n";
         
+        // PWA: register service worker
+        if (!"true".equals(getPropertyString("disablePwa"))) {
+            WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
+            boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
+            jsCssLink += "<script>$(function() {"
+                    + "PwaUtil.serviceWorkerPath = '" + data.get("context_path") + "/sw.js';"
+                    + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
+                    + "PwaUtil.pushEnabled = " + pushEnabled + ";"
+                    + "PwaUtil.register();"
+                    + "});</script>";
+        }
+            
         return jsCssLink;
     }
 
@@ -775,6 +867,12 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 LogUtil.error(this.getClass().getName(), ex, "Get assignment error!");
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
+        } else if ("manifest".equals(action)) {
+            String appId = request.getParameter("appId");
+            String userviewId = request.getParameter("userviewId");
+            String manifest = getManifest(appId, userviewId);
+            PrintWriter writer = response.getWriter();
+            writer.println(manifest);
         } else {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
@@ -798,5 +896,5 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     @Override
     public String[] themeDefinedMenusId() {
         return new String[] {PROFILE, INBOX};
-    }
+    }    
 }

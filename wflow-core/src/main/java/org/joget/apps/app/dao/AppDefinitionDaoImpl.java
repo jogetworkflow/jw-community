@@ -554,7 +554,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                         try {
                             pluginManager.upload(pluginFile.getName(), new FileInputStream(pluginFile));
                         } catch(Exception e) {
-                            LogUtil.error(getClass().getName(), ex, ex.getMessage());
+                            LogUtil.error(getClass().getName(), e, e.getMessage());
                         }
                     }
                     pluginManager.refresh();
