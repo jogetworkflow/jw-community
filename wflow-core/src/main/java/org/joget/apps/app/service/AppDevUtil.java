@@ -1152,6 +1152,11 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
                 newObj.setDateModified(new Date(attr.lastModifiedTime().toMillis()));
                 newObj.setAppDefinition(appDefinition);
                 newObj.setJson(json);
+                if (newObj instanceof FormDefinition) {
+                    ((FormDefinition) newObj).setTableName((String)propMap.get("tableName"));
+                } else if (newObj instanceof UserviewDefinition) {
+                    ((UserviewDefinition) newObj).setThumbnail((String)propMap.get("thumbnail"));
+                }
             }
         }
         return newObj;
