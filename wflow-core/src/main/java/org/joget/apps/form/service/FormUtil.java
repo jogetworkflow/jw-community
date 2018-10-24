@@ -49,6 +49,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.ApplicationPlugin;
+import org.joget.plugin.base.MockRequest;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -1277,7 +1278,7 @@ public class FormUtil implements ApplicationContextAware {
                 request.setAttribute(element.getClassName() + readonly, true);
                 request.setAttribute(element.getClassName(), true);
             }
-        } catch (NoClassDefFoundError e) {
+        } catch (Exception e) {
             // ignore if servlet request is not available
         }
         
@@ -1320,12 +1321,10 @@ public class FormUtil implements ApplicationContextAware {
                 if (request != null) {
                     dataModel.put("request", request);
                 } else {
-                    Map<String, String> r = new HashMap<String, String>();
-                    r.put("contextPath", "/jw");
-                    dataModel.put("request", r);
+                    dataModel.put("request", new MockRequest());
                 }
-            } catch (NoClassDefFoundError e) {
-                // ignore if servlet request is not available
+            } catch (Exception e) {
+                dataModel.put("request", new MockRequest());
             }
         }
         
