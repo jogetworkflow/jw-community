@@ -918,12 +918,11 @@ public class PluginManager implements ApplicationContextAware {
                 if (request != null) {
                     data.put("request", request);
                 } else {
-                    Map<String, String> r = new HashMap<String, String>();
-                    r.put("contextPath", "/jw");
-                    data.put("request", r);
+                    data.put("request", new MockRequest());
                 }
-            } catch (NoClassDefFoundError e) {
+            } catch (Exception e) {
                 // ignore if servlet request is not available
+                data.put("request", new MockRequest());
             }
         }
         
