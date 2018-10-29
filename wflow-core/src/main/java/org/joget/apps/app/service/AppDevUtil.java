@@ -917,6 +917,11 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
     }      
 
     public static void dirSyncAppResources(AppDefinition appDef) {
+        GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+        gitCommitHelper.setSyncResources(true);
+    }
+    
+    public static void syncAppResources(AppDefinition appDef) {
         String commitMessage =  "Update app resources " + appDef.getId();
         String sourcePath = AppResourceUtil.getBaseDirectory() + File.separator + appDef.getAppId()  + File.separator + appDef.getVersion() + File.separator;
         String targetDirName =  "resources";
@@ -924,6 +929,11 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
     }    
 
     public static void dirSyncAppPlugins(AppDefinition appDef) {
+        GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+        gitCommitHelper.setSyncPlugins(true);
+    }
+    
+    public static void syncAppPlugins(AppDefinition appDef) {
         // get osgi plugins
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);

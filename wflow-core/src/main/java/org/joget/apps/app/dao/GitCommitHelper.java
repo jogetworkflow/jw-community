@@ -9,6 +9,8 @@ public class GitCommitHelper {
     AppDefinition appDefinition;
     Git git;
     String commitMessage;
+    boolean syncPlugins;
+    boolean syncResources;
 
     public GitCommitHelper() {
         commitMessage = "";
@@ -61,6 +63,22 @@ public class GitCommitHelper {
             return false;
         }
         return true;
+    }
+
+    public boolean isSyncPlugins() {
+        return syncPlugins;
+    }
+
+    public void setSyncPlugins(boolean syncPlugins) {
+        this.syncPlugins = syncPlugins;
+    }
+
+    public boolean isSyncResources() {
+        return syncResources;
+    }
+
+    public void setSyncResources(boolean syncResources) {
+        this.syncResources = syncResources;
     }
     
 }
