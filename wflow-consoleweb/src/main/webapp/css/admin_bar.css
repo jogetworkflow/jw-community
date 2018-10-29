@@ -1,130 +1,122 @@
+html.adminBarShown {
+    padding-bottom: 30px;
+}        
+#adminControl {
+    display: none;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: #009688;
+    color: white;
+    padding: 10px;
+    box-shadow: #666 1px 1px 2px 1px;
+    border-radius: 50%;
+    z-index: 100000050;
+    cursor: pointer;
+    width: 20px;
+    text-align: center;
+    box-sizing: content-box;
+}
+#adminControl i {
+    font-size: 20px;
+}        
 #adminBar {
     display: block;
     position: fixed;
     right: 0px;
-    top: -3px;
-    padding: 2px 0px 10px 2px;
-    width: 80px;
-    background-image: none;
-    background: #F4F4F4;
+    bottom: 0;
+    width: 100%;
+    background: #37474F;
     border-radius: 0px;
     z-index: 100000010;
-    box-shadow: #888 0px -1px 4px 1px;
-    opacity: 0.9;
-    height: 100%;
+    opacity: 1;
+    height: 30px;
     -webkit-font-smoothing: antialiased;
-    box-sizing: content-box;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
 }
 body.embeded #adminBar {
     display: none;
 }
-#appcenter #adminBar {
-    background-image: none;
-}
-#appcenter #adminBar #adminBarButtons {
-    margin-top: 0px;
-}
-#adminBar #quickEditModeOption {
-    margin: 15px 0px;
-    display: none;
-}
-#adminBar #quickEditModeOption input {
-    display: none;
-}
-#adminBar #quickEditModeOption .ui-state-active {
-    border: solid 1px lightgreen;
-}
-#adminBar #quickEditModeOption .ui-corner-left {
-    border-radius: 4px 4px 0px 0px;
-    -webkit-border-radius: 4px 4px 0px 0px;
-    -moz-border-radius: 4px 4px 0px 0px;
-}
-#adminBar #quickEditModeOption .ui-corner-right {
-    border-radius: 0px 0px 4px 4px;
-    -webkit-border-radius: 0px 0px 4px 4px;
-    -moz-border-radius: 0px 0px 4px 4px;
-}
-#adminBar #quickEditModeOption label {
-    margin-bottom: 0px;
-    display: none;
-    font-family: PT Sans,Arial,serif;
-    font-size: 9px;
-    text-align: center;
-    font-weight: normal;
-    border: 1px solid #aaaaaa;
-    color: #212121;
-    opacity: 0.5;
-}
-#adminBar #quickEditModeOption label.ui-state-active {
-    border: solid 1px lightblue;
-    opacity: 1;
-}
-#adminBar #quickEditModeOnLabel {
-    border-radius: 4px 4px 0px 0px;
-    -webkit-border-radius: 4px 4px 0px 0px;
-    -moz-border-radius: 4px 4px 0px 0px;
-    background: #ffffff;
-}
-#adminBar #quickEditModeOffLabel {
-    border-radius: 0px 0px 4px 4px;
-    -webkit-border-radius: 0px 0px 4px 4px;
-    -moz-border-radius: 0px 0px 4px 4px;
-    background: #ffffff;
-}
-#adminBar .ui-buttonset .ui-button {
-    margin-left: 0;
-    margin-right: -.3em;
-    width: 40px;
-    height: 20px;
-}
-#adminBar .ui-button-text-only .ui-button-text {
-    padding: 4px;
-    font-size: 9px;
+#adminBar.adminBarInactive {
+    width: 0px;
 }
 #adminBar #appCenter {
-    display: inline-block;
-    height: 42px;
-    width: 100%;
-    background: #37C8A9 url(/jw/images/v3/builder/logo.png) no-repeat 0px 3px;
-}
-#adminBar .separator h5 {
-    margin: 0;
-    text-align: center;
-    background: #ccc;
-    padding: 8px 0;
-    text-transform: uppercase;
-}
-#adminBar #adminBarButtons {
-    margin-top: -4px;
-    padding-top: 0px;
-    overflow-y: auto;
-    height: 75vh;
-}
-#adminBar .adminBarButton {
+    position: absolute;
     display: block;
-    background: transparent;
-    color: #555;
-    font-size: 13.5px;
-    font-weight: 500;
-    font-family: sans-serif;
-    line-height: 16px;
-    text-align: center;
+    background: #37474F url(/jw/images/v3/builder/logo.png) no-repeat -1px 2px;
+    bottom: 0px;
+    left: 10px;
+    width: 41px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-size: auto 125%;
+}
+#adminBarButtons {
+    vertical-align: top;
+    margin-left: 55px;
+    display: inline-block;
+}
+#quickEditModeOption > div,
+#adminBarButtons > div {
+    display: inline-block;
+}
+#quickEditModeOption > div > a,
+#adminBarButtons > div > a {
+    display: block;
+    color: #CFD8DC;
+    padding: 8px 6px;
     text-decoration: none;
-    text-transform: none;
-    cursor: pointer;
-    margin: 0px .3px;
-    padding: 15px 5px;
-    border-radius: 0px;
-    border-top: none;
-    border-bottom: solid 1px #CCC;
+    font-size: 13px;
+    line-height: 14px;
+    height: 30px;
+    box-sizing: border-box;
 }
-#adminBar .adminBarButton:hover {
-    background: #37C8A9;
-    color: white;
+#quickEditModeOption > div > a > i,
+#adminBarButtons > div > a > i {
+    margin-right: 5px;
 }
-#adminBar .adminBarButton i {
-    font-size: 20px;
-    padding: 5px;
+#quickEditModeOption > div > a:not(.off),
+#adminBarButtons > div > a.current,
+#adminBarButtons > div > a:hover {
+    color: #fff;
+    background: #37474F;
+    border-bottom: 2px solid #fff;
+}
+#quickEditModeOption > div > a > .off {
+    display: none;
+}
+#quickEditModeOption > div > a.off > .on {
+    display: none;
+}
+#quickEditModeOption > div > a.off > .off {
+    display: inline-block;
+}
+#adminBarButtons .separator {
+    position: relative;
+    margin: 0 8px;
+}
+#adminBarButtons .separator h5 {
+    display: none;
+}
+div#quickEditModeOption {
+    position: relative;
+    margin-left: 6px;
+    padding-left: 10px;
+}
+div#quickEditModeOption:before,
+#adminBarButtons .separator:after {
+    content: "";
+    position: absolute;
+    top:-13px;
+    height: 18px;
+    border-left: 1px solid #CFD8DC;
+    display: block;
+}
+div#quickEditModeOption:before {
+    top: 6px;
+    left: 0px;
 }
 .quickOverlay { 
     height: 100%; 
@@ -133,40 +125,130 @@ body.embeded #adminBar {
     top: 0px; 
     background: black; 
     z-index: 2000; 
-    opacity: 0.5 
+    opacity: 0.5;
+    cursor: pointer;    
 }
 .quickOverlayButton {
     position: fixed;
-    top: 0px;
-    right: 6%;
+    top: 5px;
+    right: 5px;
     z-index: 15000;
-    padding: 3px 6px;
-    background: white;
-    opacity: 0.9;
-    border-radius: 50px;
-    font-size: 20px;
-    color: #888;
-    border: solid 1px #888;
-    box-shadow: #333 1px 1px 1px;
+}
+.quickOverlayButton a i { 
+    padding-top:4px;
 }
 .quickOverlayButton a { 
     text-decoration: none;
+    display: block;
+    width: 35px;
+    height: 35px;
+    background: #202124;
+    color: #CFD8DC;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 24px;
+    box-shadow: #666 1px 1px 2px 1px;
+    box-sizing: border-box;
 }
-.quickOverlayButton i { 
-    font-size: 30px;
+.quickOverlayButton a:hover {
+    color: #fff;
 }
 #quickOverlayFrame {
     position: fixed;
-    height: 100%;
-    width: 91%;
-    top: 0px;
-    left: 1%;
+    height: calc(100% - 35px);
+    width: calc(100% - 50px);
+    bottom: 30px;
+    right: 25px;
     z-index: 3000;
     border: none;
-    box-shadow: #555 0px 0px 2px 2px;
-    min-height: 500px;
+    box-shadow: #666 1px 1px 2px 1px;
     min-width: 780px;
     background: white;
+    transition: all 0.2s ease-in-out;
+    transform-origin: bottom right;
+}
+#quickOverlayContainer.minimize #quickOverlayFrame {
+    transform: scale(0.6);
+}
+#quickOverlayContainer.minimize .quickOverlay {
+    opacity: 0.2;
+}
+#quickEditModeOption {
+    display:inline-block;
+}
+@media screen and (max-width:1000px) {
+    #quickEditModeOption > div > a,
+    #adminBarButtons > div > a {
+        text-align: center;
+    }
+    #quickEditModeOption > div > a > span,
+    #adminBarButtons > div > a > span {
+        display:none;
+    }
+    #quickEditModeOption > div > a > i, 
+    #adminBarButtons > div > a > i {
+        margin-right: 0px;
+    } 
+    #quickEditModeOption > div > a.off > .off {
+        display: none;
+    }
+}
+@media screen and (max-width:680px) {
+    html.adminBarShown {
+        padding-bottom: 45px;
+    }
+    #adminBar {
+        height: 45px;
+    }
+    #adminBarButtons {
+        margin-left: 45px;
+    }
+    #quickEditModeOption > div > a,
+    #adminBarButtons > div > a {
+        height: 45px;
+        overflow: hidden;
+        font-size: 24px;
+        width: 32px;
+        padding: 10px 5px;
+    }
+    #quickEditModeOption > div > a:hover,
+    #adminBarButtons > div > a:hover {
+        padding: 10px 5px 0px;
+    }
+    #quickEditModeOption > div > a > span,
+    #adminBarButtons > div > a > span {
+        display:none;
+    }
+    #adminBar #appCenter {
+        left: 2px;
+        bottom: 2px;
+    }
+    #adminBarButtons .separator {
+        margin: 0px 2px;
+    }
+    #adminBarButtons .separator:after {
+        top: -32px;
+    }
+    div#quickEditModeOption:before {
+        top: 14px;
+    }
+    #adminControl {
+        bottom: 7px;
+        right: 5px;
+        width: 20px;
+        height: 20px;
+        padding: 6px;
+    }
+    div#quickEditModeOption {
+        padding-left: 7px;
+    }
+    #quickOverlayFrame {
+        height: calc(100% - 90px);
+        min-width: unset;
+        right: 2px;
+        width: calc(100% - 4px);
+        bottom: 46px;
+    }
 }
 .quickEdit, #form-canvas .quickEdit {
     display: none;
@@ -211,33 +293,6 @@ body.quickEditModeActive fieldset#form-canvas [class^="icon-"], body.quickEditMo
 body.quickEditModeActive .analyzer-page {
     display: inline-block !important;
 }
-#adminBar.adminBarActive {
-    display: block;
-    right: 0px;
-    transition: right 0.2s ease-in-out;
-}
-#adminBar.adminBarInactive {
-    right: -99px;
-    transition: right 0.2s ease-in-out;
-}
-
-/*-- Light theme admin bar --*/
-/*
-#adminBar {
-    background: #ececec url(../images/v3/logo_mono.png) no-repeat 8px 7px;
-    box-shadow: silver -1px -1px 1px 1px;
-}
-#adminBar .adminBarButton {
-    background: transparent;
-    color: #000;
-    border-top: solid 1px white;
-    border-bottom: solid 1px #ccc;
-}
-#adminBar .adminBarButton:hover {
-    background: white;
-}
-*/
-
 /*-- Performance Analyzer --*/
 #analyzerJson { 
     display: none 
@@ -255,6 +310,17 @@ body.quickEditModeActive .analyzer-page {
     z-index: 500; 
     border: solid 1px orange; 
     background: lightgoldenrodyellow; 
+}
+#adminBar .analyzer-page{
+    margin: 4px 10px;
+    background: #CFD8DC;
+    border: 1px solid #CFD8DC;
+    padding: 2px 10px;
+    display: inline-block !important;
+}
+#adminBar .analyzer-page span{
+    color: #37474F;
+    font-size: 10px;
 }
 .analyzer-label { 
     display: none;
@@ -326,43 +392,6 @@ body.quickEditModeActive .analyzer-page {
 .embeded .hasAnalyzer .analyzer-page {
     top:0;
 }
-#adminControl {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    right: 10px;
-    background: #009688;
-    color: white;
-    padding: 20px;
-    box-shadow: #666 1px 1px 2px 1px;
-    border-radius: 40px;
-    z-index: 100000050;
-    cursor: pointer;
-    width: 20px;
-    text-align: center;
-    box-sizing: content-box;
-}
-#adminControl i {
-    font-size: 20px;
-}
-#adminControl.active {
-}
-@media screen and (max-height:680px) {
-    #adminBar .adminBarButton {
-        padding:5px;
-        font-size:0px;
-        transition: all 0.2s ease-in-out;
-    }
-    #adminBar .adminBarButton br {
-        display:none;
-    }
-    #adminBar .adminBarButton:hover {
-        font-size:12px;
-    }
-    #adminBar .adminBarButton:hover br {
-        display:initial;
-    }
-}
 #memWarning .warningMessage {
     padding: 10px 0px;
 }
@@ -373,4 +402,14 @@ body.quickEditModeActive .analyzer-page {
 #memWarning .memUsage {
     background:yellow;
     padding:2px;
+}
+@media screen and (min-width:681px) { 
+    #page .analyzer-page {
+        display: none !important;
+    }
+}
+@media screen and (max-width:680px) { 
+    #adminBar .analyzer-page {
+        display: none !important;
+    }
 }

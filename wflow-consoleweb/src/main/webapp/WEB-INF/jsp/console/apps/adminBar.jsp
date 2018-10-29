@@ -13,10 +13,6 @@
         </script>
         <div id="adminBar" class="adminBarInactive">
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<fmt:message key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"></a>
-            <div id="quickEditModeOption">
-                <input type="radio" id="quickEditModeOn" name="quickEditModeOptionRadio" /><label id="quickEditModeOnLabel" for="quickEditModeOn"><fmt:message key='adminBar.label.on'/></label>
-                <input type="radio" id="quickEditModeOff" name="quickEditModeOptionRadio" /><label id="quickEditModeOffLabel" for="quickEditModeOff"><fmt:message key='adminBar.label.off'/></label>
-            </div>
             <div id="adminBarButtons">
             <c:if test="${!empty param.appId || !empty param.webConsole}">
                 <c:set var="key" value="1" />
@@ -26,13 +22,13 @@
                         <h5><fmt:message key='adminBar.label.app'/></h5>
                     </div>    
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key="console.header.submenu.label.formsAndUi"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms')"><i class="fa fa-edit"></i><br><fmt:message key="console.header.submenu.label.formsAndUi"/></a>
+                        <a class="adminBarButton" title="CTRL-1: <fmt:message key="console.header.submenu.label.formsAndUi"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms')"><i class="fa fa-edit"></i><span><fmt:message key="console.header.submenu.label.formsAndUi"/></span></a>
                     </div>
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-2: <fmt:message key="console.header.submenu.label.processes"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes')"><i class="fa fa-list"></i><br><fmt:message key="console.header.submenu.label.processes"/></a>
+                        <a class="adminBarButton" title="CTRL-2: <fmt:message key="console.header.submenu.label.processes"/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/processes')"><i class="fa fa-list"></i><span><fmt:message key="console.header.submenu.label.processes"/></span></a>
                     </div>
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-3: <fmt:message key='adminBar.label.app.properties'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties')"><i class="fa fa-cog"></i><br><fmt:message key='adminBar.label.app.properties'/></a>
+                        <a class="adminBarButton" title="CTRL-3: <fmt:message key='adminBar.label.app.properties'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/properties')"><i class="fa fa-cog"></i><span><fmt:message key='adminBar.label.app.properties'/></span></a>
                     </div>
                     <div class="separator">
                         <h5><fmt:message key='adminBar.label.system'/></h5>
@@ -40,24 +36,30 @@
                 </c:if>
                 <c:if test="${!empty param.appControls || isDefaultUserview}">
                     <div>
-                        <a class="adminBarButton" style="display:none" title="CTRL-1: <fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fa fa-wrench"></i><br><fmt:message key='adminBar.label.allApps'/></a>
+                        <a class="adminBarButton" title="CTRL-1: <fmt:message key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fa fa-wrench"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
                     </div>
                 </c:if>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="CTRL-<c:out value="${key + 1}"/>: <fmt:message key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fa fa-user"></i><br><fmt:message key='adminBar.label.users'/></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 1}"/>: <fmt:message key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fa fa-user"></i><span><fmt:message key='adminBar.label.users'/></span></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="CTRL-<c:out value="${key + 2}"/>: <fmt:message key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fa fa-dashboard"></i><br><fmt:message key='adminBar.label.monitor'/></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 2}"/>: <fmt:message key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fa fa-dashboard"></i><span><fmt:message key='adminBar.label.monitor'/></span></a>
                 </div>
                 <div>
-                    <a class="adminBarButton" style="display:none" title="CTRL-<c:out value="${key + 3}"/>: <fmt:message key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fa fa-cogs"></i><br><fmt:message key='adminBar.label.settings'/></a>
+                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 3}"/>: <fmt:message key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fa fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
                 </div>
             </c:if>
             </div>
+            <div id="quickEditModeOption">
+                <div>
+                    <a id="quickEditMode" title="CTRL-0: <fmt:message key='adminBar.label.quickedit'/>"><i class="fa fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/> : </span><span class="on"><fmt:message key='adminBar.label.on'/></span><span class="off"><fmt:message key='adminBar.label.off'/></span></a>
+                </div>
+            </div>
+            
         </div>
             
         <div id="adminControl">
-            <i class="fa fa-edit"></i>
+            <i class="fa fa-pencil"></i>
         </div>    
             
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>

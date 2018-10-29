@@ -30,10 +30,24 @@ var AdminBar = {
         $quickOverlayFrame.on("load", function() {
             AdminBar.currentPageTitle = document.title;
             document.title = $quickOverlayFrame[0].contentDocument.title;
+            $("#quickOverlayContainer").removeClass("minimize");
         });
+        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
+        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").on( "mouseleave", function() {
+            $("#quickOverlayContainer").addClass("minimize");
+        })
+        .on( "mouseenter", function() {
+            $("#quickOverlayContainer").removeClass("minimize");
+        });
+        $("#quickOverlay").off("click");
+        $("#quickOverlay").on("click", function() {
+            AdminBar.hideQuickOverlay();
+        });
+        
         return false;
     },
     hideQuickOverlay: function() {
+        $("#adminBarButtons a").removeClass("current");
         $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeOut();
         $("#quickOverlayContainer").remove();
         $(document.body).removeClass("stop-scrolling");
@@ -60,57 +74,52 @@ var AdminBar = {
         var quickEditModeActive =  $.cookie("quickEditModeActive");
         return quickEditModeActive === "true";
     },
+    isAdminBarHide: function() {
+        var adminBarModeHide =  $.cookie("adminBarModeHide");
+        return adminBarModeHide === "true";
+    },
     showQuickEdit: function() {
-        $(".adminBarButton").fadeIn();
         $(".analyzer-page").css("display", "inline-block");
         if (AdminBar.isDefaultUserview) {
             return;
         }
-        $("#quickEditModeOn").attr("checked", "checked");
-        $("#quickEditModeOff").removeAttr("checked");
+        $("#quickEditMode").removeClass("off");
         $(".quickEdit").fadeIn();
         $(".analyzer-label").css("display", "inline-block");
         $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
         $("body").addClass("quickEditModeActive");
-        $("#quickEditModeOption").buttonset("refresh");
     },
     hideQuickEdit: function() {
-        $("#quickEditModeOff").attr("checked", "checked");
-        $("#quickEditModeOn").removeAttr("checked");
-        $(".quickEdit, .adminBarButton").css("display", "none");
+        $("#quickEditMode").addClass("off");
+        $(".quickEdit").css("display", "none");
         $(".analyzer-label, .analyzer-page").css("display", "none");
         $(".analyzer").addClass("analyzer-disabled").removeClass("analyzer");
         $("body").removeClass("quickEditModeActive");
-        $("#quickEditModeOption").buttonset("refresh");
     },
     initQuickEditMode: function() {
-        $("#quickEditModeOption").buttonset();
-        $("#adminBar #quickEditModeOption label").css("display", "block");
         var quickEditModeActive = AdminBar.isQuickEditMode();
         if (quickEditModeActive) {
             AdminBar.showQuickEdit();
-            AdminBar.showAdminBar();
         } else {
             AdminBar.hideQuickEdit();
         }
     },
     initAdminBar: function() {
-        $("#quickEditModeOn").on('click', AdminBar.enableQuickEditMode);
-        $("#quickEditModeOff").on('click', AdminBar.disableQuickEditMode);
-        $("#adminBar label.ui-button").on('click', function() {
-            var input = $('#' + $(this).attr('for'));
-            if(input) {
-                input.trigger('click'); 
+        $("#quickEditMode").on('click', function() {
+            if ($("#quickEditMode").hasClass("off")) {
+                AdminBar.enableQuickEditMode();
+            } else {
+                AdminBar.disableQuickEditMode();
             }
-            return true;
+            return false;
         });
-        $("#adminBar #quickEditModeOption label").show();
-        if (!AdminBar.webConsole || AdminBar.builderMode) {
-            AdminBar.hideAdminBar();
-        }
-        if (AdminBar.webConsole) {
+        if (AdminBar.webConsole || AdminBar.isDefaultUserview) {
             $("#quickEditModeOption").hide();
-            $(".adminBarButton").show();
+        }
+        if (AdminBar.isAdminBarHide()) {
+            AdminBar.hideAdminBar();
+        } else {
+            AdminBar.showAdminBar();
         }
         // shortcut keys
         $(document).keyup(function (e) {
@@ -130,13 +139,11 @@ var AdminBar = {
                 AdminBar.isAltKeyPressed = true;
             }
             if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+0
-                if ($("#quickEditModeOffLabel").hasClass("ui-state-active")) {
-                    $("#quickEditModeOn").trigger('click');
+                if ($("#quickEditMode").hasClass("off")) {
                     AdminBar.showAdminBar();
+                    AdminBar.enableQuickEditMode();
                 } else {
-                    $("#quickEditModeOff").trigger('click');
-                    AdminBar.hideAdminBar();
-                    AdminBar.hideQuickOverlay();
+                    AdminBar.disableQuickEditMode();
                 }
                 return false;
             }  
@@ -173,31 +180,43 @@ var AdminBar = {
         });        
         $("#adminControl").on('click', function() {
             if (AdminBar.isAdminBarOpen()) {
-                AdminBar.disableQuickEditMode();
                 AdminBar.hideAdminBar();
             } else {
-                AdminBar.enableQuickEditMode();
                 AdminBar.showAdminBar();
             }
+        });
+        $("#adminBarButtons a").on('click', function() {
+            $("#adminBarButtons a").removeClass("current");
+            $(this).addClass("current");
         });
         if (window === parent) {
             $("#adminControl").fadeIn();
         }
     },
     showAdminBar: function() {
-        $("body").addClass("adminBarShown");
+        $("body, html").addClass("adminBarShown");
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
         $("#adminControl").find("i").attr("class", "fa fa-angle-double-right");
-        AdminBar.showQuickEdit();
+        var path = AdminBar.cookiePath;
+        $.cookie("adminBarModeHide", "false", {
+            path: path
+        });
+        AdminBar.initQuickEditMode();
     },
     hideAdminBar: function() {
-        $("body").removeClass("adminBarShown");
+        $("body, html").removeClass("adminBarShown");
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");
         $("#adminControl").find("i").attr("class", "fa fa-pencil");
+        var path = AdminBar.cookiePath;
+        $.cookie("adminBarModeHide", "true", {
+            path: path
+        });
+        AdminBar.hideQuickOverlay();
+        AdminBar.hideQuickEdit();
     },
     isAdminBarOpen: function() {
         return ($("#adminBar").hasClass("adminBarActive"));
@@ -206,7 +225,6 @@ var AdminBar = {
 $(window).on("load", function() {
     setTimeout(function () {
         AdminBar.initAdminBar();
-        AdminBar.initQuickEditMode();
     }, 0);
 });
 
