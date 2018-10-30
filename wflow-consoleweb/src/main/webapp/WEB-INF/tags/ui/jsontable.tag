@@ -278,7 +278,11 @@
 
         function toggleCheckboxes(checkbox, divToUpdate){
             $.each($("." + divToUpdate + "-checkbox-list"), function(i, v){
-                $(v).attr("checked", $(checkbox).attr("checked"));
+                if ($(checkbox).is(":checked")) {
+                    $(v).attr("checked", "checked");
+                } else {
+                    $(v).removeAttr("checked");
+                }
 
                 var tr = $(v).parent().parent().parent();
                 if($(checkbox).attr("checked")){
