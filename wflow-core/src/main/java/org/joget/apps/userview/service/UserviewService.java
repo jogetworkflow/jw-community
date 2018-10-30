@@ -315,7 +315,7 @@ public class UserviewService {
                                 }
 
                                 //set Current, if current menu id is empty, search the 1st valid menu
-                                if ((("".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())
+                                if ((("".equals(menuId) || "index".equals(menuId) || menuId == null) && userview.getCurrent() == null && menu.isHomePageSupported())
                                         || (menuId != null && menuId.equals(mId))) {
                                     userview.setCurrent(menu);
                                     userview.setCurrentCategory(category);

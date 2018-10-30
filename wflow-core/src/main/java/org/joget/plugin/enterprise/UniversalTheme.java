@@ -27,6 +27,7 @@ import org.joget.apps.userview.lib.InboxMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
@@ -176,26 +177,27 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
         AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String icon = request.getContextPath() + "/images/logo_512x512.png";
         if (appDef != null && request != null) {
             UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
             String json = userviewDef.getJson();
             userviewName = userviewService.getUserviewName(json);
-            theme = userviewService.getUserviewTheme(appId, userviewId);
+            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+            theme = userviewSetting.getTheme();
+            if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
+                icon = userviewSetting.getPropertyString("userview_thumbnail");
+            }
         }
-        String icon = request.getContextPath() + "/images/v3/logo.png";
-        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
+        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/index";
         String primaryColor = getPrimaryColor(theme);
         String backgroundColor = "#FFFFFF";
         String scope = request.getContextPath();
+        userviewName = StringUtil.stripAllHtmlTag(userviewName);
+        String shortName = (userviewName.length() > 12) ? userviewName.substring(0, 10) + ".." : userviewName;
         String manifest = "{\n" +
-            "  \"short_name\": \"" + userviewName + "\",\n" +
+            "  \"short_name\": \"" + shortName + "\",\n" +
             "  \"name\": \"" + userviewName + "\",\n" +
             "  \"icons\": [\n" +
-            "    {\n" +
-            "      \"src\": \"" + icon + "\",\n" +
-            "      \"type\": \"image/png\",\n" +
-            "      \"sizes\": \"192x192\"\n" +
-            "    },\n" +
             "    {\n" +
             "      \"src\": \"" + icon + "\",\n" +
             "      \"type\": \"image/png\",\n" +
