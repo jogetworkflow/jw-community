@@ -551,9 +551,3 @@ a.reload {
     z-index: 9;
     cursor: pointer;
 }
-body.adminBarShown #builder-bar .highlight-button {
-    right: 82px;
-}
-body.adminBarShown #builder-bar .controls {
-    margin-right: 280px;
-}

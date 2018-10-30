@@ -771,15 +771,6 @@ body#pviewer {
     background: yellow;
     border: solid 3px #555;
 }
-body.adminBarShown #deploy-button {
-    right: 82px;
-}
-body.adminBarShown #controls {
-    right: 222px
-}
-body.adminBarShown #config {
-    right: 102px;
-}
 .pmapper #designer-container #header{
     padding-left: 0;
 }
