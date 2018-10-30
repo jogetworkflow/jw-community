@@ -9,13 +9,15 @@ PwaUtil = {
     pushEnabled: true,
 
     register: function () {
-        return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
-                .then(function (registration) {
-                    console.log('Service worker successfully registered.');
-                    if (PwaUtil.pushEnabled) {
-                        PwaUtil.subscribe(registration);
-                    }
-                });
+        if (navigator.serviceWorker) {
+            return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
+                    .then(function (registration) {
+                        console.log('Service worker successfully registered.');
+                        if (PwaUtil.pushEnabled) {
+                            PwaUtil.subscribe(registration);
+                        }
+                    });
+        }
     },
 
     subscribe: function (registration) {
