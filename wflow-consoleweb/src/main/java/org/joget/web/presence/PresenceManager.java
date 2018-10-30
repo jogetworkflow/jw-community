@@ -147,6 +147,7 @@ public class PresenceManager {
             Gson gson = new Gson();
             Map<String, Map<String, UserEntry>> pathMapFromJson = gson.fromJson(presenceJson, new TypeToken<Map<String, Map<String, UserEntry>>>(){}.getType());
 //            LogUtil.debug(PresenceManager.class.getName(), "pathMapFromJson: " + pathMapFromJson);
+            pathMap = pathMapFromJson;
             profilePathMap.put(profile, pathMapFromJson);
         } catch (Exception e) {
             LogUtil.debug(PresenceManager.class.getName(), "Error reading presence file: " + e.getMessage());
@@ -215,8 +216,8 @@ public class PresenceManager {
         userEntry.setUsername(user.getUsername());
         userEntry.setEmail(user.getEmail());
         sessionMap.put(sessionId, userEntry);
-        resumeNotifier();
         savePathMap(pathMap);
+        resumeNotifier();
         LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
     }
 
@@ -238,8 +239,8 @@ public class PresenceManager {
                 }
             }
         }
-        resumeNotifier();
         savePathMap(pathMap);
+        resumeNotifier();
         LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
     }
 

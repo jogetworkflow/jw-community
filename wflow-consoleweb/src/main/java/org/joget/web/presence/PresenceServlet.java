@@ -32,8 +32,7 @@ public class PresenceServlet extends HttpServlet {
             PresenceManager.registerRequest(request);
 
         } else {
-            Writer out = response.getWriter();
-            out.write("Presence SSE");        
+            response.sendRedirect(request.getContextPath());
         }
     }
     
