@@ -1,0 +1,345 @@
+@escapedColor: escape(@defaultFontColor);
+
+body:not(.popupBody) {
+    color: fade(@defaultFontColor, 80%);
+    background-color: @lightPrimary;
+}
+body.embeded {
+    background-color: @primary;
+}
+header.navbar {
+    background-color: @darkPrimary;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+}
+header.navbar .header-nav {
+    background-color: @darkPrimary;
+}
+main .reset_position,
+main .grid-stack-item-header-action,
+a {
+    color: @accent;
+}
+a:focus, a:hover {
+    color: @lightAccent;
+}
+header.navbar a {
+    color: @defaultFontColor;
+}
+#header-name a {
+    padding: 7px 10px;
+    color: @defaultFontColor;
+}
+.hi-trigger:before {
+    background: @primary;
+}
+.line-wrap .line {
+    background-color: @defaultFontColor;
+}
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover,
+header.navbar .header-nav .nav>li>a.btn:focus, header.navbar .header-nav .nav>li>a.btn:hover {
+    background-color: fade(@defaultFontColor, 40%);
+    color: #D8DADA;
+    border-color:fade(@defaultFontColor, 40%); 
+}
+header.navbar .header-nav .nav>li>a .badge{
+    background: #C13228;
+}
+header.navbar .dropdown-menu a{ 
+    color: #000;
+}
+header.navbar .dropdown-menu .dropdown-menu-sub-footer {
+    color: #828282;
+}
+header.navbar .dropdown-menu a span.message, header.navbar .dropdown-menu a span.time {
+    color: #4C4C4C;
+}
+li.dropdown-menu-title {
+    border-bottom: 1px solid #F0F0F0;
+    color: #4C4C4C;
+}
+#sidebar {
+    background: @primary;
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+#page > footer {
+    color: fade(@defaultFontColor, 65%);
+}
+@media (max-width:1279px) {
+    #sidebar {
+        box-shadow: 0 0px 10px #0E1215
+    }
+}
+body#login #main > div {
+    background: @primary;
+}
+.breadcrumb,
+.breadcrumb a {
+    color: fade(@defaultFontColor, 65%);
+}
+.breadcrumb a:last-child {
+    color: @defaultFontColor;
+}
+#sidebar li ul li.active a, #sidebar li ul li.active a,
+#sidebar li ul a:focus, #sidebar li ul a:hover,
+.main-menu.nav>li>a:focus, .main-menu.nav>li>a:hover,
+.main-menu.nav-tabs>li.active>a, .main-menu.nav-tabs>li.active>a:focus, .main-menu.nav-tabs>li.active>a:hover,
+.main-menu.nav-tabs .active>a, .main-menu.nav-tabs a.active, .main-menu.nav-tabs a:hover {
+    color: @defaultFontColor;
+}
+.main-menu.nav-tabs>li>a {
+    color: fade(@defaultFontColor, 65%);
+}
+.main-menu.nav>li>a:focus, .main-menu.nav>li>a:hover,
+.main-menu.nav-tabs>li.active>a, .main-menu.nav-tabs>li>a:hover {
+    background-color: fade(@defaultFontColor, 40%);
+}
+.main-menu.nav-tabs > li.mm-profile a img {
+    box-shadow: 0 0 0 2px fade(@defaultFontColor, 13%);
+}
+.main-menu.nav-tabs > li.mm-profile a small{
+    color: fade(@defaultFontColor, 70%);
+}
+.main-menu.nav-tabs > li.mm-profile a small.login_link{
+    color:@accent;
+}
+.main-menu.nav-tabs > li.mm-profile a:focus small.login_link, .main-menu.nav-tabs > li.mm-profile a:hover small.login_link {
+    color: @lightAccent;
+}
+#sidebar li ul a {
+    color: fade(@defaultFontColor, 70%);
+}
+@media (min-width:768px) {
+    body.horizontal_menu.inline_menu #sidebar {
+        background: @darkPrimary;
+    }
+    body.horizontal_menu #sidebar .nav>li ul{
+        background: @primary;
+    }
+    body.horizontal_menu.inline_menu #sidebar .nav>li ul{
+        background: @darkPrimary;
+    }
+    body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs>li.active>a{
+        box-shadow: 0 2px 0 0 @defaultFontColor;
+    }
+    body.horizontal_menu.inline_menu header.navbar .header-nav .nav>li.user-link img {
+        border: 2px solid fade(@defaultFontColor, 13%);
+    }
+}
+body:not(#login) #content > main > div:not(.quickEdit),
+body:not(#login) #content > main > table{
+    background: @primary;
+}
+.page-loader {
+    background: @darkPrimary;
+}
+.page-loader .preloader p {
+    color: fade(@defaultFontColor, 70%);
+}
+.preloader .plc-path, .plc-path {
+    stroke: @defaultFontColor;
+}
+.btn, .btn.focus, .btn:focus, .btn:hover, .btn:active {
+    color: @buttonText;
+    background-color: @button;
+}
+.btn.waves-input-wrapper{
+    color: @buttonText !important;
+    background-color: @button !important;
+}
+main .dataList table {
+    border-bottom: 2px solid @darkPrimary;
+}
+main .footable.breakpoint>tbody>tr>td>span.footable-toggle,
+main .dataList th a:hover,
+main .dataList th a{
+    color: fade(@defaultFontColor, 70%);
+}
+main .dataList th.sortable:hover {
+    background-color: lighten(@darkPrimary , 1%);
+}
+main .dataList thead tr {
+    background-color: @darkPrimary;
+}
+main .dataList tr.odd, 
+main .dataList tr.odd + tr.footable-row-detail{
+    background-color: fade(@defaultFontColor, 5%);
+}
+main .dataList tr.tableRowEven, main .dataList tr.even,
+main .dataList tr.tableRowEven + tr.footable-row-detail, main .dataList tr.even + tr.footable-row-detail{
+    background-color: transparent;
+}
+main .dataList span.pagelinks a, main .dataList span.pagelinks strong, main .dataList span.pagelinks > span {
+    color: #D8DADA;
+    background-color: fade(@defaultFontColor, 10%);
+}
+main .dataList span.pagelinks strong {
+    color: #313C42;
+    background-color: @defaultFontColor;
+}
+main .dataList .pagelinks .pc.first-disabled,
+main .dataList .pagelinks .pc.prev-disabled,
+main .dataList .pagelinks .pc.next-disabled,
+main .dataList .pagelinks .pc.last-disabled{
+    color: fade(@defaultFontColor, 50%);
+    background-color: fade(@defaultFontColor, 10%);
+}
+body main .dataList th, body main .footable.breakpoint>tbody>tr>td>span.footable-toggle, body main .dataList th a:hover, body main .dataList th a {
+    color: fade(@defaultFontColor, 70%);
+}
+div[class*="-body-content"] div[class*="-body-header"] {
+    color: @defaultFontColor;
+}
+main .jqplot-highlighter-tooltip, main .jqplot-canvasOverlay-tooltip {
+    color: #000;
+}
+main ::-webkit-input-placeholder{
+    color: fade(@defaultFontColor, 40%);
+}
+main :-moz-placeholder{
+    color: fade(@defaultFontColor, 40%);
+}
+main ::-moz-placeholder{
+    color: fade(@defaultFontColor, 40%);
+}
+main :-ms-input-placeholder{
+    color: fade(@defaultFontColor, 40%);
+}
+main .filter-cell select.emptyValue {
+    color: fade(@defaultFontColor, 40%) !important;
+}
+main input:not([type]),
+main input[type=text],
+main input[type=password],
+main input[type=email],
+main input[type=url],
+main input[type=time],
+main input[type=date],
+main input[type=datetime],
+main input[type=datetime-local],
+main input[type=tel],
+main input[type=number],
+main input[type=search],
+main textarea,
+main select:not([class^=ui]){
+  background-color: transparent;
+  border-bottom: 1px solid fade(@defaultFontColor, 70%);
+  color: fade(@defaultFontColor, 70%);
+}
+main input:not([type]):focus:not([readonly]),
+main input[type=text]:focus:not([readonly]),
+main input[type=password]:focus:not([readonly]),
+main input[type=email]:focus:not([readonly]),
+main input[type=url]:focus:not([readonly]),
+main input[type=time]:focus:not([readonly]),
+main input[type=date]:focus:not([readonly]),
+main input[type=datetime]:focus:not([readonly]),
+main input[type=datetime-local]:focus:not([readonly]),
+main input[type=tel]:focus:not([readonly]),
+main input[type=number]:focus:not([readonly]),
+main input[type=search]:focus:not([readonly]),
+main textarea:focus:not([readonly]),
+main select:focus:not([readonly]):not([class^=ui]),
+main input.focus {
+  border-bottom: 1px solid @defaultFontColor;
+  box-shadow: 0 1px 0 0 @defaultFontColor;
+}
+main textarea {
+  background-color: transparent;
+}
+main select:not([class^="ui-"]) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='@{escapedColor}' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
+}
+main input:-webkit-autofill, main textarea:-webkit-autofill, main select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px @primary inset;
+    -webkit-text-fill-color: fade(@defaultFontColor, 70%) !important;
+}
+main input:focus:-webkit-autofill, main textarea:focus:-webkit-autofill, main select:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 1px 0 0 @defaultFontColor, 0 0 0px 1000px @primary inset !important;
+}
+main #form-canvas .label {
+    color: fade(@defaultFontColor, 70%);
+}
+legend,
+main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {
+    background: @darkPrimary;
+    color:@defaultFontColor;
+}
+main .subform-container.has-frame .subform-title {
+    background: @primary;
+}
+main .subform-container {
+    border: 2px solid fade(@defaultFontColor, 70%);
+}
+main .chosen-container-multi .chosen-choices,
+main .chosen-container-single .chosen-single {
+    border-bottom: 1px solid fade(@defaultFontColor, 70%);
+    background-color: transparent;
+    background: transparent;
+    color: inherit;
+}
+main .chosen-container-single.chosen-with-drop .chosen-single {
+    color: #000;
+}
+main .chosen-container-multi.chosen-container-active .chosen-choices,
+main .chosen-container-active .chosen-single {
+    border-bottom: 1px solid @defaultFontColor;
+    box-shadow: 0 1px 0 0 @defaultFontColor;
+}
+main .multiPagedForm.wizard .page-nav-panel ul,
+main .multiPagedForm.tab .page-nav-panel ul {
+    box-shadow: inset 0 -2px 0 0 fade(@defaultFontColor, 50%);
+}
+main .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
+main .multiPagedForm.wizard .page-nav-panel .nav_item button,
+main .multiPagedForm.tab .page-nav-panel .nav_item.current button,
+main .multiPagedForm.tab .page-nav-panel .nav_item button {
+    color: fade(@defaultFontColor, 50%);
+}
+main .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled, main .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled, main .multiPagedForm.wizard .page-nav-panel .nav_item.current button, main .multiPagedForm.tab .page-nav-panel .nav_item.current button {
+    color: @defaultFontColor;
+}
+main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multiPagedForm.tab .page-nav-panel .nav_item.current:after {
+    background: fade(@defaultFontColor, 80%);
+}
+@media (max-width: 767px){
+    main .multiPagedForm.wizard .page-nav-panel .nav_item button, main .multiPagedForm.tab .page-nav-panel .nav_item button {
+        background: none;
+        border: fade(@defaultFontColor, 30%) solid 2px;
+    }
+    main .multiPagedForm.wizard .page-nav-panel .nav_item.current, main .multiPagedForm.tab .page-nav-panel .nav_item.current {
+        border: 2px solid fade(@defaultFontColor, 80%);
+    }
+    main .multiPagedForm .page-container {
+        border: 2px solid fade(@defaultFontColor, 80%);
+    }
+}
+main .form-cell .grid thead tr, main .subform-cell .grid thead tr {
+    background: @darkPrimary;
+}
+main .form-cell .grid thead tr, main .subform-cell .grid thead tr {
+    background: screen(@darkPrimary, #333);
+}
+main .form-cell .grid tbody tr:nth-child(even), main .subform-cell .grid tbody tr:nth-child(even) {
+    background: fade(@defaultFontColor, 5%);
+}
+main .form-cell .grid tbody tr:nth-child(odd), main .subform-cell .grid tbody tr:nth-child(odd) {
+    background: transparent;
+}
+main .form-cell .grid table.tablesaw, main .subform-cell .grid table.tablesaw{
+    border-bottom: 2px solid screen(@darkPrimary, #333);
+}
+main .grid-stack-item .grid-stack-item-header {
+    background: @darkPrimary;
+}
+main .grid-stack-item .grid-stack-item-header h4{
+    color: @defaultFontColor;
+}
+main .grid-stack-item .grid-stack-item-content {
+    border-color: @primary;
+}
+main .grid-stack>.grid-stack-item>.ui-resizable-se, main .grid-stack>.grid-stack-item>.ui-resizable-sw {
+    color: @defaultFontColor;
+}
+.popupBody #main-body-header {
+    color: @darkPrimary;
+}

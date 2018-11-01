@@ -1,0 +1,976 @@
+body button,
+body input,
+body optgroup,
+body select,
+body textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+body button {
+  overflow: visible;
+}
+
+body button,
+body select {
+  text-transform: none;
+}
+
+body button,
+body html input[type="button"],
+body input[type="reset"],
+body input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+
+body button[disabled],
+body html input[disabled] {
+  cursor: default;
+}
+
+body button::-moz-focus-inner,
+body input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+body input {
+  line-height: normal;
+}
+
+body input[type="number"]::-webkit-inner-spin-button,
+body input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+body input[type="search"] {
+  -webkit-appearance: textfield;
+  box-sizing: content-box;
+}
+
+body input[type="search"]::-webkit-search-cancel-button,
+body input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+body fieldset {
+  border: 0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+
+body legend {
+  border: 0;
+  padding: 0;
+}
+
+body textarea {
+  overflow: auto;
+}
+
+body optgroup {
+  font-weight: bold;
+}
+
+body .no-select, body input[type=range],
+body input[type=range] + .thumb {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Text Inputs + Textarea
+   ========================================================================== */
+body ::-webkit-input-placeholder{
+    color: #B6B6B6;
+}
+body :-moz-placeholder{
+    color: #B6B6B6;
+}
+body ::-moz-placeholder{
+    color: #B6B6B6;
+}
+body :-ms-input-placeholder{
+    color: #B6B6B6;
+}
+body .filter-cell select.emptyValue {
+    color: #B6B6B6 !important;
+}
+
+/* Text inputs */
+body input:not([type]),
+body input[type=text],
+body input[type=password],
+body input[type=email],
+body input[type=url],
+body input[type=time],
+body input[type=date],
+body input[type=datetime],
+body input[type=datetime-local],
+body input[type=tel],
+body input[type=number],
+body input[type=search],
+body textarea,
+body select:not([class^=ui]),
+body .editor-cell input:not([type]),
+body .editor-cell input[type=text],
+body .editor-cell input[type=password],
+body .editor-cell input[type=email],
+body .editor-cell input[type=url],
+body .editor-cell input[type=time],
+body .editor-cell input[type=date],
+body .editor-cell input[type=datetime],
+body .editor-cell input[type=datetime-local],
+body .editor-cell input[type=tel],
+body .editor-cell input[type=number],
+body .editor-cell input[type=search],
+body .editor-cell textarea,
+body .editor-cell select:not([class^=ui]){
+  border: none;
+  border-radius: 0;
+  outline: none;
+  height: 30px;
+  min-height: 30px;
+  width: 100%;
+  max-width: 70%;
+  margin: 0 0 15px 0;
+  padding: 0 2px;
+  box-shadow: none;
+  box-sizing: border-box;
+  transition: all 0.3s;
+  background-color: transparent;
+  border-bottom: 1px solid #9E9E9E;
+  color: inherit;
+}
+
+body .mce-form input:not([type]),
+body .mce-form input[type=text],
+body .mce-form input[type=password],
+body .mce-form input[type=email],
+body .mce-form input[type=url],
+body .mce-form input[type=time],
+body .mce-form input[type=date],
+body .mce-form input[type=datetime],
+body .mce-form input[type=datetime-local],
+body .mce-form input[type=tel],
+body .mce-form input[type=number],
+body .mce-form input[type=search],
+body .mce-form textarea,
+body .mce-form select:not([class^=ui]) {
+    width: auto;
+    max-width: inherit;
+}
+
+body select[multiple]:not([class^=ui]),
+body .editor-cell select[multiple]:not([class^=ui]){
+  height: auto;
+}
+
+body select[multiple]:not([class^=ui]) option,
+body .editor-cell select[multiple]:not([class^=ui]) option{
+  padding: 5px 2px;
+}
+
+body .editor-cell input:not([type]),
+body .editor-cell input[type=text],
+body .editor-cell input[type=password],
+body .editor-cell input[type=email],
+body .editor-cell input[type=url],
+body .editor-cell input[type=time],
+body .editor-cell input[type=date],
+body .editor-cell input[type=datetime],
+body .editor-cell input[type=datetime-local],
+body .editor-cell input[type=tel],
+body .editor-cell input[type=number],
+body .editor-cell input[type=search],
+body .editor-cell textarea,
+body .editor-cell select:not([class^=ui]){
+    color: #212121;
+}
+
+body input:not([type]):focus:not([readonly]),
+body input[type=text]:focus:not([readonly]),
+body input[type=password]:focus:not([readonly]),
+body input[type=email]:focus:not([readonly]),
+body input[type=url]:focus:not([readonly]),
+body input[type=time]:focus:not([readonly]),
+body input[type=date]:focus:not([readonly]),
+body input[type=datetime]:focus:not([readonly]),
+body input[type=datetime-local]:focus:not([readonly]),
+body input[type=tel]:focus:not([readonly]),
+body input[type=number]:focus:not([readonly]),
+body input[type=search]:focus:not([readonly]),
+body textarea:focus:not([readonly]),
+body select:focus:not([readonly]):not([class^=ui]),
+body input.focus,
+body .editor-cell input:not([type]):focus:not([readonly]),
+body .editor-cell input[type=text]:focus:not([readonly]),
+body .editor-cell input[type=password]:focus:not([readonly]),
+body .editor-cell input[type=email]:focus:not([readonly]),
+body .editor-cell input[type=url]:focus:not([readonly]),
+body .editor-cell input[type=time]:focus:not([readonly]),
+body .editor-cell input[type=date]:focus:not([readonly]),
+body .editor-cell input[type=datetime]:focus:not([readonly]),
+body .editor-cell input[type=datetime-local]:focus:not([readonly]),
+body .editor-cell input[type=tel]:focus:not([readonly]),
+body .editor-cell input[type=number]:focus:not([readonly]),
+body .editor-cell input[type=search]:focus:not([readonly]),
+body .editor-cell textarea:focus:not([readonly]),
+body .editor-cell select:focus:not([readonly]):not([class^=ui]),
+body .editor-cell input.focus,{
+  border-bottom: 1px solid #727272;
+  box-shadow: 0 1px 0 0 #727272;
+}
+
+body .filter-cell input:not([type]),
+body .filter-cell input[type=text],
+body .filter-cell input[type=password],
+body .filter-cell input[type=email],
+body .filter-cell input[type=url],
+body .filter-cell input[type=time],
+body .filter-cell input[type=date],
+body .filter-cell input[type=datetime],
+body .filter-cell input[type=datetime-local],
+body .filter-cell input[type=tel],
+body .filter-cell input[type=number],
+body .filter-cell input[type=search],
+body .filter-cell textarea,
+body .filter-cell select:not([class^=ui]){
+    width: auto;
+    max-width: none;
+}
+
+@media screen and (max-width: 767px) {
+    body .form-container input:not([type]),
+    body .form-container input[type=text],
+    body .form-container input[type=password],
+    body .form-container input[type=email],
+    body .form-container input[type=url],
+    body .form-container input[type=time],
+    body .form-container input[type=date],
+    body .form-container input[type=datetime],
+    body .form-container input[type=datetime-local],
+    body .form-container input[type=tel],
+    body .form-container input[type=number],
+    body .form-container input[type=search],
+    body .form-container textarea, 
+    body .form-container select:not([class^=ui]),
+    body .form-container .form-cell-value,
+    body .form-container .subform-cell-value,
+    body .form-container .chosen-container{
+        max-width: 70%;
+    }
+    body .form-container textarea[cols] {
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body .form-container input:not([type]),
+    body .form-container input[type=text],
+    body .form-container input[type=password],
+    body .form-container input[type=email],
+    body .form-container input[type=url],
+    body .form-container input[type=time],
+    body .form-container input[type=date],
+    body .form-container input[type=datetime],
+    body .form-container input[type=datetime-local],
+    body .form-container input[type=tel],
+    body .form-container input[type=number],
+    body .form-container input[type=search],
+    body .form-container textarea, 
+    body .form-container select:not([class^=ui]),
+    body .form-container .form-cell-value,
+    body .form-container .subform-cell-value,
+    body .form-container .chosen-container{
+        max-width: 100%;
+        width: 100%;
+    }
+    body .form-container textarea[cols] {
+        width: 100%;
+    }
+}
+
+body .form-container .form-cell-value,
+body .form-container .subform-cell-value,
+body .form-container .selector_element,
+body .form-container .form-fileupload,
+body .form-container .subform-fileupload,
+body .form-container .grid,
+body .form-container .spreadsheet_container{
+    min-height: 31px;
+    margin-bottom: 15px;
+}
+
+body .form-container .customHtml.no_label .form-cell-value,
+body .form-container .customHtml.no_label .subform-cell-value{
+    min-height: 0px;
+    margin-bottom: 0px;
+}
+
+body .form-container.readonly .form-cell-value,
+body .form-container .readonly .subform-cell-value,
+body .form-container.readonly .form-fileupload,
+body .form-container .readonly .subform-fileupload{
+    margin-bottom: 5px;
+}
+
+body .form-container .pq-td-div .form-cell-value,
+body .form-container .pq-td-div .subform-cell-value {
+    min-height: auto;
+    margin-bottom: 0;
+}
+
+body input:-webkit-autofill, body textarea:-webkit-autofill, body select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+    -webkit-text-fill-color: initial !important;
+}
+body input:focus:-webkit-autofill, body textarea:focus:-webkit-autofill, body select:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 1px 0 0 #727272, 0 0 0px 1000px #fff inset !important;
+}
+
+/* Textarea */
+body textarea {
+  overflow-y: hidden;
+  resize: none;
+}
+
+/* Radio Buttons
+   ========================================================================== */
+body .select_radio label, body .select_checkbox label {
+    margin-bottom: 0;
+}
+body .select_radio label > input[type="radio"]:not(:checked),
+body .select_radio label > input[type="radio"]:checked,
+body label > [type="radio"]:not(:checked),
+body label > [type="radio"]:checked {
+    display:none;
+}
+
+body .select_radio label > input[type="radio"] + i:after,
+body label > input[type="radio"] + i:after {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 25px;
+    content: "\f1db";
+    display:inline-block;
+    width: 30px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+body .select_radio label > input[type="radio"]:checked + i:after,
+body label > input[type="radio"]:checked + i:after {
+    content: "\f192";
+}
+
+body .select_radio label > input[type="radio"]:disabled + i:after,
+body label > input[type="radio"]:disabled + i:after {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Checkboxes
+   ========================================================================== */
+/* CUSTOM CSS CHECKBOXES */
+/* Remove default checkbox */
+
+body .select_checkbox label > [type="checkbox"]:not(:checked),
+body .select_checkbox label > [type="checkbox"]:checked,
+body label > [type="checkbox"]:not(:checked),
+body label > [type="checkbox"]:checked {
+    display:none;
+}
+
+body .select_checkbox label > [type="checkbox"] + i:after,
+body label > input[type=checkbox] + i:after {
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 25px;
+    content: "\f096";
+    display:inline-block;
+    width: 30px;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+body .select_checkbox label > [type="checkbox"]:checked + i:after,
+body label > input[type=checkbox]:checked + i:after {
+    content: "\f046";
+}
+
+body .select_checkbox label > [type="checkbox"]:disabled + i:after,
+body label > input[type=checkbox]:disabled + i:after {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Select Field
+   ========================================================================== */
+body select:not([class^="ui-"]),
+body .editor-cell select:not([class^="ui-"]) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9E9E' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
+  background-position: 100% 50%;
+  background-repeat: no-repeat;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+}
+body select:not([class^="ui-"])::-ms-expand,
+body .editor-cell select:not([class^="ui-"])::-ms-expand {
+    display: none;
+}
+body.rtl select:not([class^="ui-"]),
+body.rtl .editor-cell select:not([class^="ui-"]) {
+  background-position: 0% 50%;
+}
+
+body select:not([class^="ui-"]) option,
+body .editor-cell select:not([class^="ui-"]) option {
+    color: #000;
+    background: #fff;
+}
+
+body .filter-cell select:not([class^="ui-"]){
+  padding-right: 30px;
+}
+body.rtl .filter-cell select:not([class^="ui-"]){
+  padding-left: 30px;
+  padding-right: 0;
+}
+  
+body select:not([class^="ui-"]):disabled {
+  background-image: none;
+}
+
+body select:not([class^="ui-"]):focus,
+body .editor-cell select:not([class^="ui-"]):focus{
+    -webkit-box-shadow: 0 1px 0 0 #727272;
+}
+
+body .close-icon:after {
+    right: 35px;
+}
+
+body .hasDatepicker + a, body .hasDatepicker + img {
+    position: absolute;
+    padding: 8px 5px;
+    right: 0;
+    display: inline-block;
+}
+body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + img {
+    left: 0;
+    right: auto;
+}
+
+body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
+    right: auto;
+    margin-left: -21px;
+}
+body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker + img {
+    left: auto;
+    margin-left: auto;
+    margin-right: -21px;
+}
+body .filter-cell input.hasDatepicker {
+    padding-right: 25px;
+}
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 25px;
+    padding-right: auto;
+}
+
+body .form-container [class*=form-cell-value] > span,
+body .form-container [class*=form-cell-value] > .readonly_label,
+body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 10px 0 1px;
+    display: inline-block;
+    font-weight: normal;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+body .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 10px 7px 1px;
+    margin-bottom: 15px;
+}
+body .form-container.readonly label.label + span:not(.form-cell-value):not(.subform-cell-value),
+body .form-container .readonly label.label + span:not(.form-cell-value):not(.subform-cell-value){
+    margin-bottom: 5px;
+}
+body.rtl .form-container [class*=form-cell-value] > span,
+body.rtl .form-container [class*=form-cell-value] > .readonly_label,
+body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 1px 0 10px;
+}
+body.rtl .form-container label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 6px 1px 7px 10px;
+}
+body .form-container .pq-td-div [class*=form-cell-value] > span,
+body .form-container .pq-td-div [class*=form-cell-value] > .readonly_label,
+body .form-container .pq-td-div label.label + span:not(.form-cell-value):not(.subform-cell-value) {
+    padding: 0;
+}
+
+body .form-column, body .subform-column {
+    max-width: 99%;
+    margin: 0 0.5%;
+    color: inherit;
+    min-width: inherit;
+}
+
+body .form-cell, body .subform-cell {
+    color: inherit;
+    padding: 0;
+}
+
+body .subform-cell-validator, body .form-cell-validator {
+    color: red;
+    font-size: smaller;
+    position: absolute;
+    top: 8px;
+    right: 4px;
+}
+body.rtl .subform-cell-validator, body.rtl .form-cell-validator {
+    left: 4px;
+    right: auto;
+}
+
+@media screen and (max-width: 480px) {
+    body .subform-cell-validator, body .form-cell-validator {
+        position: relative;
+        top: initial;
+        right: initial;
+        left: initial;
+    }
+}
+
+body #form-canvas {
+    margin: 0;
+}
+
+body #form-canvas .h1,
+body #form-canvas h1 {
+    font-size: 27px
+}
+
+body #form-canvas .h2,
+body #form-canvas h2 {
+    font-size: 22px
+}
+
+body #form-canvas .h3,
+body #form-canvas h3 {
+    font-size: 18px
+}
+
+body #form-canvas .h4,
+body #form-canvas h4 {
+    font-size: 16px
+}
+
+body #form-canvas .h5,
+body #form-canvas h5 {
+    font-size: 13px
+}
+
+body #form-canvas .h6,
+body #form-canvas h6 {
+    font-size: 12px
+}
+
+body #form-canvas .label {
+    padding: 8px 10px 0 0;
+    white-space: normal;
+    position: relative;
+}
+body.rtl #form-canvas .label {
+    padding: 8px 0px 0 10px;
+}
+
+body #form-canvas .form-section, body #form-canvas .subform-section {
+    margin-top: 0;
+}
+
+body #form-canvas .form-section + .form-section:not(.no_label), body #form-canvas .subform-section + .subform-section:not(.no_label) {
+    margin-top: 15px ;
+}
+
+legend,
+body #form-canvas .form-section-title span, body #form-canvas .subform-section-title span {
+    text-shadow: none;
+    margin-bottom: 10px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    font-weight: bold;
+    font-size: 16px;
+    display: block;
+}
+
+h3.form-column-label, h3.subform-column-label {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+body .form fieldset {
+    border:0;
+    margin: 0;
+    padding: 5px;
+}
+
+body .subform-container, body .subform-section {
+    background: transparent;
+}
+
+body .subform-container.has-frame {
+    margin-top: 0;
+}
+
+body .subform-cell .subform-container.has-frame {
+    margin-bottom: 15px;
+}
+
+body .form-column > .subform-cell {
+    margin-left: -0.5%;
+    margin-right: -0.5%;
+}
+
+body .subform-container.has-frame .subform-title {
+    position: absolute;
+    top: -17px;
+    padding: 0 10px;
+}
+
+body .form-fileupload {
+    padding-top:6px;
+}
+
+body .form-fileupload-value {
+    padding: 0;
+}
+
+body .chosen-container-multi .chosen-choices,
+body .chosen-container-single .chosen-single {
+    border:0;
+    padding: 3px 0 27px;
+    box-shadow:none;
+    border-radius: 0;
+    border-bottom: 1px solid #B6B6B6;
+    background-color: transparent;
+    background: transparent;
+    color: inherit;
+}
+
+body .chosen-container-multi,
+body .chosen-container-single{
+    margin-bottom: 15px;
+}
+
+body .chosen-container-multi .chosen-choices{
+    padding: 0px;
+}
+
+body .chosen-container-multi .chosen-choices li.search-choice {
+    margin: 0px 5px 5px 0;
+}
+
+body .chosen-container-single .chosen-single abbr {
+    top:10px;
+}
+
+body .chosen-container-single .chosen-single div {
+    top:4px;
+}
+
+body .chosen-container-single.chosen-with-drop .chosen-single {
+    padding-left: 5px;
+    color: #000;
+}
+body.rtl .chosen-container-single.chosen-with-drop .chosen-single {
+    padding-right: 5px;
+    padding-left:auto;
+}
+
+body .chosen-container-multi.chosen-container-active .chosen-choices,
+body .chosen-container-active .chosen-single {
+    border:0;
+    border-bottom: 1px solid #727272;
+    box-shadow: 0 1px 0 0 #727272;
+}
+
+body .chosen-container-single .chosen-search input[type="text"] {
+    color: initial;
+}
+
+body .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+    color: inherit !important;
+    margin: 0;
+}
+
+body .chosen-disabled {
+    opacity: 1 !important;
+}
+
+body .chosen-disabled.chosen-container-single .chosen-single abbr,
+body .chosen-disabled.chosen-container-single .chosen-single div{
+    display:none;
+}
+
+body .form-container .chosen-container {
+    width: 100% !important;
+    max-width: 70%;
+}
+
+body .form-container .selector_item {
+    border: 0;
+    display: block;
+    float: none;
+    padding-left: 0;
+}
+body.rtl .form-container .selector_item {
+    padding-right: 0;
+}
+
+body .form-container .selector_item .selector_remove {
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    color:transparent;
+    display: inline-block;
+    vertical-align: top;
+    margin: 2px 5px 2px 0;
+    position: relative;
+}
+body.rtl .form-container .selector_item .selector_remove {
+    margin: 2px 0px 2px 5px;
+}
+
+body .form-container .selector_item .selector_remove:hover {
+    color: transparent;
+    opacity: 0.7;
+}
+
+body .form-container .selector_item .selector_remove:after {
+    font: normal normal normal 14px/1 FontAwesome;
+    content: "\f00d";
+    display: block;
+    color: #fff;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 11px;
+}
+body.rtl .form-container .selector_item .selector_remove:after {
+    right: 3px;
+    left:auto;
+}
+
+body .multiPagedForm.wizard .page-nav-panel,
+body .multiPagedForm.tab .page-nav-panel {
+    border-bottom: 0; 
+    margin-bottom: 10px; 
+}
+
+body .multiPagedForm.wizard .page-nav-panel ul,
+body .multiPagedForm.tab .page-nav-panel ul {
+    list-style: none;
+    padding: 0;
+    white-space: nowrap;
+    margin: 0;
+    overflow: auto;
+    box-shadow: inset 0 -2px 0 0 #9E9E9E;
+    width: 100%;
+}
+
+body .multiPagedForm.wizard .page-nav-panel ul li.nav_item,
+body .multiPagedForm.tab .page-nav-panel ul li.nav_item {
+    position: relative;
+    margin-right: 15px;
+}
+
+body .multiPagedForm.wizard .page-nav-panel ul li.nav_item.current,
+body .multiPagedForm.tab .page-nav-panel ul li.nav_item.current {
+    border-bottom: solid 2px;
+}
+
+body .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
+body .multiPagedForm.wizard .page-nav-panel .nav_item button,
+body .multiPagedForm.tab .page-nav-panel .nav_item.current button,
+body .multiPagedForm.tab .page-nav-panel .nav_item button {
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+    box-shadow: none;
+    color: #9E9E9E;
+}
+
+body .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.wizard .page-nav-panel .nav_item.current button, body .multiPagedForm.tab .page-nav-panel .nav_item.current button {
+    opacity: 1;
+    color: #727272;
+}
+
+body .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multiPagedForm.tab .page-nav-panel .nav_item.current:after {
+    content: "";
+    height: 2px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    background: #727272;
+}
+body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .multiPagedForm.tab .page-nav-panel .nav_item.current:after {
+    right: 0;
+    left:auto;
+}
+
+@media (min-width: 768px){
+    body .multiPagedForm.wizard .page-nav-panel .nav_item {
+        background: none;
+        position: relative;
+        padding-right: 0;    
+        margin-right: 7px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+        padding-right: auto;    
+        margin-right: auto;
+        padding-left: 0;    
+        margin-left: 7px;
+    }
+    body .multiPagedForm.wizard .page-nav-panel .nav_item:before {
+        font: normal normal normal 14px/1 FontAwesome;
+        content: "\f105";
+        display: block;
+        color: inherit;
+        position: absolute;
+        top: 5px;
+        left: -6px;
+        font-size: 18px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item:before {
+        right: -6px;
+        left:auto;
+    }
+}
+
+@media (max-width: 767px){
+    body .multiPagedForm.wizard .page-nav-panel .nav_item button, body .multiPagedForm.tab .page-nav-panel .nav_item button {
+        background: none;
+        border-bottom:0;
+        padding: 8px;
+        margin: 0;
+        margin-bottom: 0px;
+        -moz-border-radius: 0;
+        -webkit-border-radius: 0;
+        -khtml-border-radius: 0;
+        border-radius: 0;
+        border: #9E9E9E solid 2px;
+    }
+    body .multiPagedForm.wizard .page-nav-panel .nav_item.current, body .multiPagedForm.tab .page-nav-panel .nav_item.current {
+        border-bottom: 0;
+        border: 2px solid #727272;
+    }
+    body .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.wizard .page-nav-panel .nav_item.current button, body .multiPagedForm.tab .page-nav-panel .nav_item.current button {
+        background: none;
+    }
+    body .multiPagedForm .page-container {
+        border-radius: 0;
+        margin-bottom: -2px;
+        border-top: 0;
+        border: 2px solid #727272;
+    }
+}
+
+body #form-canvas .form-error-message {
+    font-weight: normal;
+}
+
+body .form-cell .tablesaw thead tr:first-child th, body .subform-cell .tablesaw thead tr:first-child th,
+body .form-cell .grid td, body .form-cell .grid th, body .subform-cell .grid td, body .subform-cell .grid th {
+    border:0;
+    padding:8px;
+}
+body .form-cell .grid thead tr {
+    background: #9E9E9E;
+}
+
+body .form-cell .grid tbody tr:nth-child(odd) {
+    background-color: rgba(0,0,0,.1);
+}
+
+body .adgrid .editor-cell .actions-buttons button {
+    color: #000;
+}
+
+.popupBody #main-body-header {
+    background: transparent;
+    font-weight: bold;
+    text-transform: uppercase;
+    height: auto;
+}
+.popupBody form fieldset legend {
+    padding: 10px;
+}
+body .grid.readonly a.grid-action-edit,
+body .grid-action-edit, body .grid-action-delete, body .grid-action-moveup, body .grid-action-moveup.disabled,
+body .grid-action-movedown, body .grid-action-movedown.disabled, body .grid-action-add{
+    background: none !important;
+    position: relative;
+    height: 25px;
+    width: 25px;
+    margin: 2px;
+    padding: 0;
+}
+body .grid.readonly a.grid-action-edit:after,
+body .grid-action-edit:after, body .grid-action-delete:after, body .grid-action-moveup:after, body .grid-action-moveup.disabled:after,
+body .grid-action-movedown:after, body .grid-action-movedown.disabled:after, body .grid-action-add:after{
+    height: 25px;
+    width: 25px;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 20px;
+    color: #FFFFFF;
+    margin-right: 0px;
+    margin-top: 0px;
+    text-align: center;
+    border-radius: 50%;
+    line-height: 25px;
+    position: absolute;
+    top:0;
+    left: 0;
+}
+body .grid-action-edit:after{
+    content: '\f040';
+    color: #2e8bd3;
+}
+body .grid-action-delete:after{
+    content: '\f00d';
+    color: #F43530;
+}
+body .grid-action-moveup:after{
+    content: '\f077';
+    color: #ffbb0e;
+}
+body .grid-action-movedown:after{
+    content: '\f078';
+    color: #ffbb0e;
+}
+body .grid-action-add:after {
+    content: '\f055';
+    color: #4caf50;
+}
+body .grid-action-moveup.disabled:after, body .grid-action-movedown.disabled:after{
+    color: #999999;
+}
+body .grid.readonly a.grid-action-edit:after {
+    content: '\f0f6';
+    color: #2e8bd3;
+}
+body .grid-action-header, body td.grid-action-cell {
+    width: 135px;
+    text-align: center;
+}
+.multiPagedForm {
+    margin-bottom: 15px;
+}

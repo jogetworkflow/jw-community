@@ -105,4 +105,22 @@
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/universal/js/main.js</js>
     </group>
+    <group name="progressive.preload.min">
+        <css>/js/bootstrap3/css/bootstrap.min.css</css>
+        <css>/css/userview_v5.css</css>
+        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
+        <css>/progressive/css/form.css</css>
+        <css>/progressive/css/style.css</css>
+        <js>/progressive/js/preload.js</js>
+    </group>    
+    <group name="progressive.min">
+        <css>/js/font-awesome4/css/font-awesome.min.css</css>
+        <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
+        <css>/universal/lib/waves/waves.min.css</css>
+        <js>/js/bootstrap3/js/bootstrap.min.js</js>
+        <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
+        <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
+        <js>/universal/lib/waves/waves.min.js</js>
+        <js>/progressive/js/main.js</js>
+    </group>
 </groups> 
