@@ -114,7 +114,7 @@
                         content += '<li>';
                         <c:if test="${isAdmin}">
                             if (!isMarketplace) {
-                                content += '<a href="${pageContext.request.contextPath}/web/console/app/' + app.id + '//forms" onclick="return AdminBar.showQuickOverlay(\'${pageContext.request.contextPath}/web/console/app/' + app.id + '//forms\')" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='adminBar.label.designApp'/></a>';
+                                content += '<a href="${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms" onclick="return AdminBar.showQuickOverlay(\'${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms\')" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='adminBar.label.designApp'/></a>';
                             }
                         </c:if>
                         var userviewUrl = uv.url;
