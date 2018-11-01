@@ -48,7 +48,7 @@
         if (confirm('<fmt:message key="console.app.version.label.newVersion.confirm"/>')) {
             var callback = {
                 success : function() {
-                    parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>//forms';
+                    parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/_/forms';
                 }
             }
             ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new?version='+version, callback, '');

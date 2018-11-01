@@ -104,7 +104,7 @@ public class LoginWebController {
             }
 
             if (savedRequest == null) { //for userview logout
-                String redirectUrl = (userviewId != null) ? "redirect:/web/" + embedPrefix + "mobile/" + appId + "/" + userviewId + "//landing?_=" + System.currentTimeMillis() : "redirect:/web/mobile/apps?_=" + System.currentTimeMillis();
+                String redirectUrl = (userviewId != null) ? "redirect:/web/" + embedPrefix + "mobile/" + appId + "/" + userviewId + "/_/landing?_=" + System.currentTimeMillis() : "redirect:/web/mobile/apps?_=" + System.currentTimeMillis();
                 return redirectUrl;
             }
         } else if (savedUrl.contains("/web/ulogin") || savedUrl.contains("/web/embed/ulogin")) {

@@ -1063,7 +1063,7 @@ UserviewBuilder = {
                             var img = $("<span class='screenshot'><a target='_blank' href='" + path + "'><div class='screenshot_label'>" + title + "</div><img src='" + imgData + "' width='" + width + "'></a></span>");
                             $(container).append(img);
 
-                            var saveUrl = UserviewBuilder.contextPath + '/web/console/app/' + appId + '//userview/' + userviewId + '/screenshot/submit';
+                            var saveUrl = UserviewBuilder.contextPath + '/web/console/app/' + appId + '/_/userview/' + userviewId + '/screenshot/submit';
                             $.ajax({ 
                                 type: "POST", 
                                 url: saveUrl,
