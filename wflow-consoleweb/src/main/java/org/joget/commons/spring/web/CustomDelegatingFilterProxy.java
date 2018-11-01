@@ -40,7 +40,7 @@ public class CustomDelegatingFilterProxy extends DelegatingFilterProxy {
                 throw ise;
             }
         } catch(NoSuchBeanDefinitionException nbe) {
-            if (nbe.getMessage().startsWith("No bean named 'springSecurityFilterChain' is defined")) {
+            if (nbe.getMessage().startsWith("No bean named 'springSecurityFilterChain' ")) {
                 LogUtil.info(getClass().getName(), "No WebApplicationContext found, redirecting to error page");
                 ((HttpServletResponse)response).sendRedirect(url);
             } else {
