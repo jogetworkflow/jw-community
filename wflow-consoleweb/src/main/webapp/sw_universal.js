@@ -1,5 +1,5 @@
-var version = "0.0.1";
-var cacheName = "jw-sw-demo";
+var version = "7.0.0";
+var cacheName = "jw-cache";
 var cache = cacheName + "-" + version;
 var urlsToCache = [
     './',

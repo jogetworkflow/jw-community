@@ -129,9 +129,13 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         return getClass().getName();
     }
 
+    public String getPathName() {
+        return "universal";
+    }
+    
     @Override
     public String getPropertyOptions() {
-        return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/universalTheme.json", null, true, null);
+        return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/" + getPathName() + "Theme.json", null, true, null);
     }
     
     @Override
@@ -229,16 +233,16 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     
     @Override
     public String getJsCssLib(Map<String, Object> data) {
-        String path = data.get("context_path") + "/universal";
+        String path = data.get("context_path") + "/" + getPathName();
 
         String jsCssLink = "";
-        jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/universal.preload.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/wro/universal.min.css" + "\")</script>\n";
+        jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.css" + "\" rel=\"stylesheet\" />\n";
+        jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.css" + "\")</script>\n";
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
 
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.preload.min.js\"></script>\n";
-        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/universal.min.js\" async></script>\n";
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.js\"></script>\n";
+        jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.js\" async></script>\n";
         
         if (enableResponsiveSwitch()) {
             jsCssLink += "<script src=\"" + path + "/lib/responsive-switch.min.js\" defer></script>\n";
@@ -251,7 +255,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
             jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
             jsCssLink += "<script>$(function() {"
-                    + "PwaUtil.serviceWorkerPath = '" + data.get("context_path") + "/sw.js';"
+                    + "PwaUtil.serviceWorkerPath = '" + data.get("context_path") + "/sw_" + getPathName() + ".js';"
                     + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
                     + "PwaUtil.pushEnabled = " + pushEnabled + ";"
                     + "PwaUtil.register();"
@@ -351,7 +355,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         }
         
         // process LESS
-        String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/universal/" + getPropertyString("themeScheme") + ".less");
+        String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/" + getPropertyString("themeScheme") + ".less");
         less = lessVariables + "\n" + less;
         // read CSS from cache
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
@@ -387,9 +391,9 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     @Override
     public String getHeader(Map<String, Object> data) {
         if ("true".equals(getPropertyString("horizontal_menu"))) {
-            data.put("header_after", UserviewUtil.getTemplate(this, data, "/templates/universalTheme_horizontalMenu.ftl"));
+            data.put("header_after", UserviewUtil.getTemplate(this, data, "/templates/" + getPathName() + "Theme_horizontalMenu.ftl"));
         } else if ("horizontal_inline".equals(getPropertyString("horizontal_menu"))) {
-            data.put("header_name_inner_after", UserviewUtil.getTemplate(this, data, "/templates/universalTheme_horizontalMenu.ftl"));
+            data.put("header_name_inner_after", UserviewUtil.getTemplate(this, data, "/templates/" + getPathName() + "Theme_horizontalMenu.ftl"));
         }
         
         data.put("header_classes", "navbar");
@@ -494,7 +498,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                     String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
-                        url = data.get("context_path") + "/universal/user.png";
+                        url = data.get("context_path") + "/" + getPathName() + "/user.png";
                     }
                     profileImageTag = "<img src=\""+url+"\" /> ";
                 }
@@ -574,7 +578,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
-                    url = data.get("context_path") + "/universal/user.png";
+                    url = data.get("context_path") + "/" + getPathName() + "/user.png";
                 }
                 profileImageTag = "<img src=\""+url+"\" /> ";
             }
@@ -622,7 +626,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         } else {
             String profileImageTag = "";
             if (getPropertyString("userImage").isEmpty() || "hashVariable".equals(getPropertyString("userImage"))) {
-                String url = data.get("context_path") + "/universal/user.png";
+                String url = data.get("context_path") + "/" + getPathName() + "/user.png";
                 profileImageTag = "<img src=\""+url+"\" /> ";
             }
             
@@ -675,7 +679,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String html = "";
         
         if (!getPropertyString("inbox").isEmpty()) {
-            String url = data.get("context_path") + "/web/json/plugin/org.joget.plugin.enterprise.UniversalTheme/service?_a=getAssignment";
+            String url = data.get("context_path") + "/web/json/plugin/" + getClassName() + "/service?_a=getAssignment";
             if ("current".equals(getPropertyString("inbox"))) {
                 try {
                     url += "&appId=" + URLEncoder.encode(userview.getParamString("appId"), "UTF-8");
