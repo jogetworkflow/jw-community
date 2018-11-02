@@ -29,7 +29,10 @@ var AdminBar = {
         $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeIn();
         $quickOverlayFrame.on("load", function() {
             AdminBar.currentPageTitle = document.title;
-            document.title = $quickOverlayFrame[0].contentDocument.title;
+            var frameTitle = $quickOverlayFrame[0].contentDocument.title;
+            if (frameTitle !== "") {
+                document.title = frameTitle;
+            }
             $("#quickOverlayContainer").removeClass("minimize");
         });
         $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
@@ -51,7 +54,9 @@ var AdminBar = {
         $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeOut();
         $("#quickOverlayContainer").remove();
         $(document.body).removeClass("stop-scrolling");
-        document.title = AdminBar.currentPageTitle;
+        if (AdminBar.currentPageTitle !== "") {
+            document.title = AdminBar.currentPageTitle;
+        }
     },
     enableQuickEditMode: function() {
         if (AdminBar.isDefaultUserview) {
