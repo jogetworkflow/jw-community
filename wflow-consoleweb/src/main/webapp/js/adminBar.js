@@ -148,6 +148,7 @@ var AdminBar = {
                     AdminBar.showAdminBar();
                     AdminBar.enableQuickEditMode();
                 } else {
+                    AdminBar.hideAdminBar()();
                     AdminBar.disableQuickEditMode();
                 }
                 return false;
