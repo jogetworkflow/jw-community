@@ -788,7 +788,7 @@ body .multiPagedForm.tab .page-nav-panel ul {
 body .multiPagedForm.wizard .page-nav-panel ul li.nav_item,
 body .multiPagedForm.tab .page-nav-panel ul li.nav_item {
     position: relative;
-    margin-right: 15px;
+    margin-right: 0px;
 }
 
 body .multiPagedForm.wizard .page-nav-panel ul li.nav_item.current,
@@ -878,6 +878,7 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
     body .multiPagedForm .page-container {
         border-radius: 0;
         margin-bottom: -2px;
+        margin-top: -12px;
         border-top: 0;
         border: 2px solid #727272;
     }

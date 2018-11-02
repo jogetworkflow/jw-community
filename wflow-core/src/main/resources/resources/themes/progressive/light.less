@@ -328,13 +328,14 @@ main .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, main .multi
 @media (max-width: 767px){
     main .multiPagedForm.wizard .page-nav-panel .nav_item button, main .multiPagedForm.tab .page-nav-panel .nav_item button {
         background: none;
-        border: screen(@primary, #555555) solid 2px;
+        border: screen(@primary, #555555) solid 1px;
     }
     main .multiPagedForm.wizard .page-nav-panel .nav_item.current, main .multiPagedForm.tab .page-nav-panel .nav_item.current {
-        border: 2px solid @darkPrimary;
+        border: 1px solid @darkPrimary;
+        margin-right: 0px;
     }
     main .multiPagedForm .page-container {
-        border: 2px solid @darkPrimary;
+        border: 1px solid @darkPrimary;
     }
 }
 main .form-cell .grid thead tr, main .subform-cell .grid thead tr {
@@ -345,7 +346,7 @@ main .form-cell .grid tbody tr:nth-child(odd), main .subform-cell .grid tbody tr
     background-color: @lightPrimary;
 }
 main .form-cell .grid table.tablesaw, main .subform-cell .grid table.tablesaw{
-    border-bottom: 2px solid #999;
+    border-bottom: 1px solid #999;
 }
 main .grid-stack-item .grid-stack-item-header {
     background: @darkPrimary;
