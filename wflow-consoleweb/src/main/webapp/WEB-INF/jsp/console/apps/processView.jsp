@@ -381,7 +381,7 @@
                         <fmt:message key="console.process.config.label.update.message"/>
                     </p>
                     <div style="text-align:center">
-                        <button onclick="window.location='${pageContext.request.contextPath}/web/console/app/${appId}//processes';return false;"><fmt:message key="general.method.label.ok"/></button>
+                        <button onclick="window.location='${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes';return false;"><fmt:message key="general.method.label.ok"/></button>
                         <button id="closeInfo"><fmt:message key="general.method.label.cancel"/></button>
                     </div>
                 </div>
