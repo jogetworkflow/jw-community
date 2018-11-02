@@ -1,6 +1,6 @@
 PwaUtil = {
 
-    applicationServerPublicKey: "BE54-RlSdVqGwlh_skZ4qQqP1tY7uNZrQbv3IJ_Rd2uRHsId8XjvH2CXav_5PkhrM1XvBLXJyi7tx6io5E3fegg", // private key: Fe0bTj0H_UYcg7qnFzx0qBl-H90RuptO6r_vOUZJWvI
+    applicationServerPublicKey: "BE54-RlSdVqGwlh_skZ4qQqP1tY7uNZrQbv3IJ_Rd2uRHsId8XjvH2CXav_5PkhrM1XvBLXJyi7tx6io5E3fegg",
 
     serviceWorkerPath: "/jw/sw.js",
 
@@ -12,10 +12,25 @@ PwaUtil = {
         if (navigator.serviceWorker) {
             return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
                     .then(function (registration) {
-                        console.log('Service worker successfully registered.');
-                        if (PwaUtil.pushEnabled) {
-                            PwaUtil.subscribe(registration);
+                        var serviceWorker;
+                        if (registration.installing) {
+                            serviceWorker = registration.installing;
+                            // console.log('Service worker installing');
+                        } else if (registration.waiting) {
+                            serviceWorker = registration.waiting;
+                            // console.log('Service worker installed & waiting');
+                        } else if (registration.active) {
+                            serviceWorker = registration.active;
+                            // console.log('Service worker active');
                         }
+                        if (serviceWorker && serviceWorker.state == "activated") {
+                            console.log('Service worker successfully registered.');
+                            if (PwaUtil.pushEnabled) {
+                                PwaUtil.subscribe(registration);
+                            }
+                        }
+                    }, function (err) {
+                        console.error('Unsuccessful registration with ', PwaUtil.serviceWorkerPath, err);
                     });
         }
     },

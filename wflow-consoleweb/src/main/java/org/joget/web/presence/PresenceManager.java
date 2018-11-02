@@ -83,7 +83,7 @@ public class PresenceManager {
                             .setStandardDefaultImage(DefaultImage.IDENTICON)
                             .getUrl(userEntry.getEmail())
                         : "http://www.gravatar.com/avatar/default?d=identicon";
-                    output += "<li class=\"user\"><img class=\"gravatar\" src=\""+url+"\" title=\"" + userEntry.getUsername() + "\" /><span class=\"username\">" + userEntry.getUsername() + " (" + sessionId + ")</span></li>";
+                    output += "<li class=\"user\"><img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" title=\"" + userEntry.getUsername() + "\" /><span class=\"username\">" + userEntry.getUsername() + " (" + sessionId + ")</span></li>";
                 }
                 writer.println(output);
                 writer.println();

@@ -14,10 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ExpireFilter implements Filter {
     
-    public static final long DEFAULT_HEADER_CACHE_EXPIRY = 300000L; // 5 minutes
+    public static final long DEFAULT_HEADER_CACHE_EXPIRY = 3600000L; // 1 hour
     public static long expires = DEFAULT_HEADER_CACHE_EXPIRY;
     
-    private final static List<String> EXTS = Arrays.asList(new String[]{"css", "less", "js", "jpeg", "jpg", "png", "gif", "ico", "otf", "eot", "svg", "ttf", "woff"});
+    private final static List<String> EXTS = Arrays.asList(new String[]{"css", "less", "js", "jpeg", "jpg", "png", "gif", "ico", "otf", "eot", "svg", "ttf", "woff", "woff2"});
     
     public void init(FilterConfig filterConfig) throws ServletException {
         String sysExpireStr = System.getProperty("resources.expires");

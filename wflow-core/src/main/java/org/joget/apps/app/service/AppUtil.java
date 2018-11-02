@@ -271,6 +271,14 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
+     * Read language from Setup
+     * @return Language code
+     */
+    public static String getAppLanguage() {
+        return LocaleContextHolder.getLocale().getLanguage();
+    }
+    
+    /**
      * Read date format from Setup
      * @return Date format
      */

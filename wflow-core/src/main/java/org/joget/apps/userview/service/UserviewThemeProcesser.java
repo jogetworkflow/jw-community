@@ -127,7 +127,9 @@ public class UserviewThemeProcesser {
         String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
         data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
         String locale = AppUtil.getAppLocale();
+        String language = AppUtil.getAppLanguage();
         data.put("locale", locale);
+        data.put("language", language);
         data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
         data.put("body_id", getBodyId());
         data.put("body_classes", getBodyClasses(rightToLeft, locale));

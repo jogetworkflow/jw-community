@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -144,6 +145,12 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         String meta = super.getMetas(data) + "\n";
         meta += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n";
         meta += "<meta name=\"msapplication-tap-highlight\" content=\"no\"/>\n";
+        
+        // set description
+        String description = userview.getPropertyString("description");
+        if (description != null && !description.trim().isEmpty()) {
+            meta += "<meta name=\"Description\" content=\"" + StringEscapeUtils.escapeHtml(description) + "\"/>\n";
+        }
         
         // PWA: set address bar theme color
         Userview userview = (Userview)data.get("userview");
@@ -494,7 +501,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                         .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                         .setStandardDefaultImage(DefaultImage.IDENTICON)
                         .getUrl(email);
-                    profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+                    profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" /> ";
                 } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                     String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
@@ -574,7 +581,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                     .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                     .setStandardDefaultImage(DefaultImage.IDENTICON)
                     .getUrl(email);
-                profileImageTag = "<img class=\"gravatar\" src=\""+url+"\" /> ";
+                profileImageTag = "<img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" /> ";
             } else if ("hashVariable".equals(getPropertyString("userImage"))) {
                 String url = AppUtil.processHashVariable(getPropertyString("userImageUrlHash"), null, StringUtil.TYPE_HTML, null, AppUtil.getCurrentAppDefinition());
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
@@ -660,7 +667,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     }
     
     protected String getHomeLink(Map<String, Object> data) {
-        return "<li class=\"\"><a class=\"btn\" href=\"" + data.get("home_page_link") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
+        return "<li class=\"\"><a class=\"btn\" href=\"" + data.get("home_page_link") + "\" title=\"" + ResourceBundleUtil.getMessage("theme.universal.home") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
     }
     
     protected String getNavbar(Map<String, Object> data) {
