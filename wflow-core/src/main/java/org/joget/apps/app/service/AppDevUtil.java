@@ -286,6 +286,9 @@ public class AppDevUtil {
         if (user != null) {
             username = user.getUsername();
             email = user.getEmail();
+            if (email == null) {
+                email = "";
+            }
         }
         LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
         git.commit()
