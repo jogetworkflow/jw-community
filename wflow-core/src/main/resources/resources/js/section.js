@@ -124,7 +124,7 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var thisObject = this;
     
     var names = new Array();
-    $(targetEl).find('input, select, textarea, .form-element').each(function(){
+    $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
             $(this).addClass("section-visibility-disabled").attr("disabled", true);
             
@@ -157,7 +157,7 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var thisObject = this;
     
     var names = new Array();
-    $(targetEl).find('input, select, textarea, .form-element').each(function(){
+    $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
         if($(this).is(".section-visibility-disabled")){
             $(this).removeClass("section-visibility-disabled").removeAttr("disabled");
             
