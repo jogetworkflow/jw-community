@@ -1070,7 +1070,8 @@ public class WorkflowJsonController {
             app.accumulate("version", appDef.getVersion());
             JSONArray userviews = new JSONArray();
             for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
-                if (isAppCenter != null && isAppCenter && userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\":\"true\"")) {
+                if (isAppCenter != null && isAppCenter &&
+                        (userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\":\"true\"") || userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\": \"true\""))) {
                     continue;
                 }
                 
