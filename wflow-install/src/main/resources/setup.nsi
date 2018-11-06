@@ -167,7 +167,6 @@ Section "Joget Workflow" SecJoget
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
         File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-8.5.23\webapps\jw.war
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner.war apache-tomcat-8.5.23\webapps\jwdesigner.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -185,7 +184,6 @@ Section "Joget Workflow" SecJoget
   File /r glowroot
   CreateDirectory "$INSTDIR\apache-tomcat-8.5.23\webapps"
   File /oname=apache-tomcat-8.5.23\webapps\jw.war apache-tomcat-8.5.23\webapps\jw.war
-  File /oname=apache-tomcat-8.5.23\webapps\jwdesigner.war apache-tomcat-8.5.23\webapps\jwdesigner.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -350,7 +348,6 @@ Section "Uninstall"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.23\webapps\jw"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.23\webapps\jwdesigner"
   Delete "$INSTDIR\apache-tomcat-8.5.23\webapps\jw.war"
-  Delete "$INSTDIR\apache-tomcat-8.5.23\webapps\jwdesigner.war"
 
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
