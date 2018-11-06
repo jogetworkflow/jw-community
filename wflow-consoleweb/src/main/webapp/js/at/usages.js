@@ -74,7 +74,7 @@ var Usages = {
             }
 
             if (item.found !== undefined && item.found.length > 0) {
-                el.append('<a class="found_toggle"><i class="icon-angle-down fa fa-angle-down"></i></a>');
+                el.append('<a class="found_toggle"><i class="icon-angle-down fas fa-angle-down"></i></a>');
                 var foundContainer = $('<ul class="usage_found" style="display:none"></ul>');
                 el.append(foundContainer);
 

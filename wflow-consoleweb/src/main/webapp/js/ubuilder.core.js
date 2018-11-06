@@ -227,8 +227,8 @@ UserviewBuilder = {
         
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_ubuilder_msg('ubuilder.undo.disbaled.tip')+"'><i class='fa fa-undo'></i> "+get_ubuilder_msg('ubuilder.undo')+"</a>&nbsp;|&nbsp;");
-        $(".controls").append("<a class='action-redo disabled' title='"+get_ubuilder_msg('ubuilder.redo.disabled.tip')+"'><i class='fa fa-repeat'></i> "+get_ubuilder_msg('ubuilder.redo')+"</a>");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_ubuilder_msg('ubuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_ubuilder_msg('ubuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-redo disabled' title='"+get_ubuilder_msg('ubuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_ubuilder_msg('ubuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){
             UserviewBuilder.undo();
@@ -754,19 +754,19 @@ UserviewBuilder = {
 
         if ($(obj).hasClass("editable-info")) {
             // add buttons for editable
-            optionHtml += "<button class='element-edit-label' title='"+get_ubuilder_msg('ubuilder.edit')+"'><i class='fa fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-label' title='"+get_ubuilder_msg('ubuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.edit')+"</span></button>";
         }else if ($(obj).hasClass("sidebar") || $(obj).hasClass("category-bottom")) {
             // add buttons for section
-            optionHtml += "<button class='element-add-category' title='"+get_ubuilder_msg('ubuilder.addCategory')+"'><i class='fa fa-plus'></i><span>"+get_ubuilder_msg('ubuilder.addCategory')+"</span></button>";
-            optionHtml += "<button class='element-paste paste-category disabled' title='"+get_ubuilder_msg('ubuilder.pasteCategory')+"'><i class='fa fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteCategory')+"</span></button>";
+            optionHtml += "<button class='element-add-category' title='"+get_ubuilder_msg('ubuilder.addCategory')+"'><i class='fas fa-plus'></i><span>"+get_ubuilder_msg('ubuilder.addCategory')+"</span></button>";
+            optionHtml += "<button class='element-paste paste-category disabled' title='"+get_ubuilder_msg('ubuilder.pasteCategory')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteCategory')+"</span></button>";
         }else if ($(obj).hasClass("category")) {
             // add buttons for section
-            optionHtml += "<button class='element-edit-category' title='"+get_ubuilder_msg('ubuilder.editLabel')+"'><i class='fa fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.editLabel')+"</span></button>";
-            optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='fa fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
-            optionHtml += "<button class='element-paste paste-menu disabled' title='"+get_ubuilder_msg('ubuilder.pasteMenu')+"'><i class='fa fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteMenu')+"</span></button>";
-            optionHtml += "<button class='element-comment' title='"+get_ubuilder_msg('ubuilder.comment')+"'><i class='fa fa-commenting-o'></i><span>"+get_ubuilder_msg('ubuilder.comment')+"</span></button>";
-            optionHtml += "<button class='element-delete-category element-delete' title='"+get_ubuilder_msg('ubuilder.deleteCategory')+"'><i class='fa fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteCategory')+"</span></button>";
+            optionHtml += "<button class='element-edit-category' title='"+get_ubuilder_msg('ubuilder.editLabel')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.editLabel')+"</span></button>";
+            optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='fas fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
+            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
+            optionHtml += "<button class='element-paste paste-menu disabled' title='"+get_ubuilder_msg('ubuilder.pasteMenu')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteMenu')+"</span></button>";
+            optionHtml += "<button class='element-comment' title='"+get_ubuilder_msg('ubuilder.comment')+"'><i class='far fa-comment'></i><span>"+get_ubuilder_msg('ubuilder.comment')+"</span></button>";
+            optionHtml += "<button class='element-delete-category element-delete' title='"+get_ubuilder_msg('ubuilder.deleteCategory')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteCategory')+"</span></button>";
         
             //comment
             $(obj).find(".section-comment").remove();
@@ -777,9 +777,9 @@ UserviewBuilder = {
             }
         }else if ($(obj).hasClass("menu")) {
             // add buttons for section
-            optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='fa fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
-            optionHtml += "<button class='element-delete-menu element-delete' title='"+get_ubuilder_msg('ubuilder.deleteMenu')+"'><i class='fa fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteMenu')+"</span></button>";
+            optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
+            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
+            optionHtml += "<button class='element-delete-menu element-delete' title='"+get_ubuilder_msg('ubuilder.deleteMenu')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteMenu')+"</span></button>";
         }
 
 
@@ -934,7 +934,7 @@ UserviewBuilder = {
             this.redoStack.push(this.getJson());
 
             //load the last data from undo stack
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.undoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.undoing") + '</div>');
             $("body").append(loading);
             this.loadUserview(this.data.properties.id, this.getData(this.undoStack.pop()));
 
@@ -966,7 +966,7 @@ UserviewBuilder = {
             this.undoStack.push(this.getJson());
 
             //load the last data from redo stack
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.redoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_ubuilder_msg("ubuilder.label.redoing") + '</div>');
             $("body").append(loading);
             this.loadUserview(this.data.properties.id, this.getData(this.redoStack.pop()));
 
@@ -1041,7 +1041,7 @@ UserviewBuilder = {
         container = container || document.body;
         width = width || 300;
         UserviewBuilder.showMessage(get_ubuilder_msg('ubuilder.generatingScreenshot'));
-        var appcontainer = $("<div><i class='fa fa-spinner fa-spin fa-2x'></i><div style='opacity:0'></div></div>");
+        var appcontainer = $("<div><i class='fas fa-spinner fa-spin fa-2x'></i><div style='opacity:0'></div></div>");
         $(container).append(appcontainer);
         var thisObject = this;
         $.ajax({

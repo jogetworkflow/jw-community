@@ -848,7 +848,7 @@ ProcessBuilder.ApiClient = {
     appVersion: "",
     appName: null,
     httpGet: function(url, callback) {
-        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.loading") + '</div>');
+        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.loading") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -868,7 +868,7 @@ ProcessBuilder.ApiClient = {
         ConnectionManager.get(url, connCallback);
     },
     httpPost: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
+        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -887,7 +887,7 @@ ProcessBuilder.ApiClient = {
         ConnectionManager.post(url, connCallback, params);
     },
     httpPostMultipart: function(url, callback, params) {
-        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
+        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.processing") + '</div>');
         $("body").append(loading);
         var connCallback = {
             success: function(data) {
@@ -964,7 +964,7 @@ ProcessBuilder.ApiClient = {
                             function listFilter(header, list) {
                                 var form = $("<form>").attr({"class": "filterform", "action": "#", "onsubmit": "return false"}),
                                 input = $("<input>").attr({"class": "filterinput", "type": "text"});
-                                $(form).append(input).append($("<span class='filterlabel'><i class='fa fa-search'></i></span>")).appendTo(header);
+                                $(form).append(input).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).appendTo(header);
                                 $(input).change(function() {
                                     var filter = $(this).val();
                                     if (filter) {
@@ -1148,7 +1148,7 @@ ProcessBuilder.ApiClient = {
                     alert(get_pbuilder_msg("pbuilder.label.deploymentSuccessful"));
                     // don't generate screenshot here, as it will be generated on-demand later
                     /*
-                    var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
+                    var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
                     $("body").append(loading);
                     setTimeout(function() {
                         $("#loading").remove();
@@ -2188,7 +2188,7 @@ ProcessBuilder.Actions = {
             return;
         }
         ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.undoing") + '</div>');
+        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.undoing") + '</div>');
         $("body").append(loading);
         setTimeout(function() {
             ProcessBuilder.Actions.undoRedoInProgress = true;
@@ -2204,7 +2204,7 @@ ProcessBuilder.Actions = {
             return;
         }
         ProcessBuilder.Actions.undoRedoInProgress = true;
-        var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.redoing") + '</div>');
+        var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.redoing") + '</div>');
         $("body").append(loading);
         setTimeout(function() {
             ProcessBuilder.Actions.undoRedoInProgress = true;
@@ -2799,7 +2799,7 @@ ProcessBuilder.Designer = {
                 }
                 var transitionId = "transition_" + transition.id;
                 if (ProcessBuilder.Designer.editable) {
-                    label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
+                    label += "<div id='" + transitionId + "' class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
                 }
                 var connector = (transition.style === 'orthogonal') ?
                         ["Flowchart", {cornerRadius: 5, gap: 0}] :
@@ -3063,7 +3063,7 @@ ProcessBuilder.Designer = {
 
         // append edit button
         if (!$(nodes).hasClass("end")) {
-            var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
+            var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
             var $nodes = $(nodes);
             $nodes.find(".node_edit").remove();
             $nodes.prepend($editButton);
@@ -3082,7 +3082,7 @@ ProcessBuilder.Designer = {
 
         // make nodes connectable with transitions
         $(".node, .start").each(function(i, e) {
-            var label = "<div class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
+            var label = "<div class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
             ProcessBuilder.Util.jsPlumb.makeSource($(e), {
                 filter: ".endpoint",
                 anchor: "Continuous",
@@ -3212,7 +3212,7 @@ ProcessBuilder.Designer = {
         });
 
         // append edit button
-        var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
+        var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
         var $participants = $(participants).find(".participant_handle");
         $participants.find(".node_edit").remove();
         $participants.prepend($editButton);
@@ -3354,7 +3354,7 @@ ProcessBuilder.Designer = {
         $buttons = $processes.find(".node_buttons");
 
         // append duplicate button to processes
-        var $copyButton = $("<div class='node_copy'><i class='fa fa-files-o'></i></div>");
+        var $copyButton = $("<div class='node_copy'><i class=\"fas fa-copy\"></i></div>");
         $buttons.prepend($copyButton);
         $processes.find(".node_copy").on("click", function(e) {
             var $process = $(this).closest(".header_process");
@@ -3364,7 +3364,7 @@ ProcessBuilder.Designer = {
         });
 
         // append edit button to processes
-        var $editButton = $("<div class='node_edit'><i class='fa fa-pencil'></i></div>");
+        var $editButton = $("<div class='node_edit'><i class='fas fa-pencil-alt'></i></div>");
         $buttons.prepend($editButton);
         $processes.find(".node_edit").on("click", function(e) {
             var $process = $(this).closest(".header_process");
@@ -3438,7 +3438,7 @@ ProcessBuilder.Designer = {
                     var $label = $(connection.canvas).next(".transition_label").find(".transition_editable");
                     $label.attr("id", transitionId);
                     if ($label.length === 0) {
-                        var label = "<span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span>";
+                        var label = "<span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span>";
                         var overlay = connection.getOverlay();
                         if (overlay) {
                             overlay.setLabel(label);
@@ -3529,7 +3529,7 @@ ProcessBuilder.Designer = {
                         ProcessBuilder.Actions.addNode($newNode, $participant, nodeTop);
                         // connect nodes
                         var connector = ["StateMachine", {curviness:0.1}];
-                        var label = "<div class='transition_editable'><span class='transition_edit'><i class='fa fa-pencil'></i></span><span class='transition_delete'>x</span></div>";
+                        var label = "<div class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
                         ProcessBuilder.Util.jsPlumb.setSuspendDrawing(true);
                         var newConnection = ProcessBuilder.Util.jsPlumb.connect({
                             source: $(source).attr("id"),
@@ -3706,7 +3706,7 @@ ProcessBuilder.Designer = {
 
 //                var $loading = $("<span>generating image... &nbsp;</span> ");
 //                $("#controls").prepend($loading);
-                var $loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
+                var $loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_pbuilder_msg("pbuilder.label.generating") + '</div>');
                 $("body").append($loading);
 
                 // restore zoom
@@ -4229,7 +4229,7 @@ ProcessBuilder.Mapper = {
         var wlId= "processStartWhiteList";
         var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
         
-        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="fa fa-pencil-square-o"></i></a>');
+        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="fas fa-edit"></i></a>');
         $("#subheader_list li#"+processDefId).find(".edit_mapping").data("mapping", wlmapping);
         
         $(".node").each(function(){
@@ -4259,7 +4259,7 @@ ProcessBuilder.Mapper = {
                     cssClass += " hasmapping";
                 }
 
-                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
+                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fas fa-edit"></i></a>');
                 $(this).find(".edit_mapping").data("mapping", mapping);
                 $(this).removeAttr("title");
             }
@@ -4273,7 +4273,7 @@ ProcessBuilder.Mapper = {
             if (mapping !== null && mapping !== undefined) {
                 cssClass += " hasmapping";
             }
-            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="fa fa-pencil-square-o"></i></a>');
+            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="fas fa-edit"></i></a>');
             $(this).find(".participant_handle .edit_mapping").data("mapping", mapping);
             $(this).removeAttr("title");
         });
@@ -4283,7 +4283,7 @@ ProcessBuilder.Mapper = {
         var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
 
         var cssClass = "type_"+type;
-        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fa fa-pencil-square-o"></i></a>');
+        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fas fa-edit"></i></a>');
         $(".start").find(".edit_mapping").data("mapping", mapping);
         
         ProcessBuilder.Mapper.attachEvents();
@@ -4356,7 +4356,7 @@ ProcessBuilder.Mapper = {
                 $(node).tooltipster("destroy");
             } catch (err) {}
         }
-        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fa fa-times-circle"></i></a><dl></dl></div></div>');
+        $(node).find(".edit_mapping").append('<div class="mapping_detail_div"><div id="'+id+'_detail" class="mapping_detail"><a class="remove" title="'+get_pbuilder_msg('pbuilder.label.removeMapping')+'"><i class="fas fa-times-circle"></i></a><dl></dl></div></div>');
         $(node).find(".mapping_detail").data("parent",  $(node));
 
         if (type === "participant" || type === "whitelist") {
@@ -4392,9 +4392,9 @@ ProcessBuilder.Mapper = {
                 var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/form/builder/' + mapping['formId'];
                 $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.formName")+"</dd><dd><a href=\""+url+"\" target=\"_blank\">"+mapping['formName']+"</a></dd>");
                 if ($(node).find(".edit_mapping").attr("type") !== "start") {
-                    var tick = "fa fa-square-o";
+                    var tick = "far fa-square";
                     if (mapping['disableSaveAsDraft']) {
-                        tick = "fa fa-check-square-o";
+                        tick = "far fa-check-square";
                     }
                     $(node).find(".mapping_detail").append("<p class=\"removesave\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.removeSaveAsDraftButton")+"</p>");
                 }
@@ -4408,9 +4408,9 @@ ProcessBuilder.Mapper = {
             $(node).find(".mapping_detail .remove").remove();
             $(node).find(".edit_mapping").removeClass("hasmapping");
         }
-        var tick = "fa fa-square-o";
+        var tick = "far fa-square";
         if (mapping !== null && mapping['autoContinue']) {
-            tick = "fa fa-check-square-o";
+            tick = "far fa-check-square";
         }
         $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
     },
@@ -4515,7 +4515,7 @@ ProcessBuilder.Mapper = {
         var processDefId = $(node).find(".edit_mapping").attr("processdefid");
         
         var checked = false;
-        if ($(checkbox).hasClass("fa-square-o")) {
+        if ($(checkbox).hasClass("fa-square")) {
             checked = true;
         }
         
@@ -4534,12 +4534,12 @@ ProcessBuilder.Mapper = {
         
         var response = {
             success : function() {
-                if ($(checkbox).hasClass("fa-square-o")) {
-                    $(checkbox).removeClass("fa-square-o");
-                    $(checkbox).addClass("fa-check-square-o");
+                if ($(checkbox).hasClass("fa-square")) {
+                    $(checkbox).removeClass("fa-square");
+                    $(checkbox).addClass("fa-check-square");
                 } else {
-                    $(checkbox).removeClass("fa-check-square-o");
-                    $(checkbox).addClass("fa-square-o");
+                    $(checkbox).removeClass("fa-check-square");
+                    $(checkbox).addClass("fa-square");
                 }
                 
                 if (ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+id] === undefined) {

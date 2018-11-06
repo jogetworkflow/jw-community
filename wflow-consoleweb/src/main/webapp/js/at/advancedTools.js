@@ -9,7 +9,7 @@ var AdvancedTools = {
         AdvancedTools.jsonForm = jsonForm;
         AdvancedTools.options = options;
         
-        var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fa fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
+        var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fas fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
         $(document.body).append(overlayContainer);
         
         AdvancedTools.initTreeViewer();
@@ -26,7 +26,7 @@ var AdvancedTools = {
         
         $(".builder_tool_tabs_container").tabs();
         
-        $("#builder-bar .controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fa fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
+        $("#builder-bar .controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fas fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
         $("#advanced_tool").click(function(){
             $(".builder_tool_tabs li:first-child input").attr("checked", "checked");
             AdvancedTools.showQuickOverlay();
@@ -37,14 +37,14 @@ var AdvancedTools = {
     initProcess: function (options) {
         AdvancedTools.options = options;
         
-        var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fa fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
+        var overlayContainer = '<div id="advancedToolsOverlayContainer" class="quickOverlayContainer" style="display:none"><div id="advancedToolsOverlay" class="quickOverlay"></div><div id="advancedToolsOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdvancedTools.hideQuickOverlay()"><i class="fas fa-times"></i></a></div><div id="advancedToolsFrame" ><h1>'+get_advtool_msg('adv.tool.Advanced.Tools')+'</h1><div class="builder_tool_tabs_container"><ul class="builder_tool_tabs"></ul></div></div></div>';
         $(document.body).append(overlayContainer);
         
         AdvancedTools.initProcessI18n();
         
         $(".builder_tool_tabs_container").tabs();
         
-        $("#panel #controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fa fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
+        $("#panel #controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fas fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
         $("#advanced_tool").click(function(){
             AdvancedTools.showQuickOverlay();     
             setTimeout(function(){
@@ -53,7 +53,7 @@ var AdvancedTools = {
         });
     },
     initDefinitionTab: function () {
-        var tab = '<li><a href="#tab-definition" id="definition"><i class="fa fa-code"></i><span>'+get_advtool_msg('adv.tool.JSON.Definition')+'</span></a></li>';
+        var tab = '<li><a href="#tab-definition" id="definition"><i class="fas fa-code"></i><span>'+get_advtool_msg('adv.tool.JSON.Definition')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-definition" class="tab-content"></div>');
@@ -107,7 +107,7 @@ var AdvancedTools = {
         
     },
     initTreeViewer: function () {
-        var tab = '<li><a href="#tab-treeViewer" id="treeViewer"><i class="fa fa-sitemap"></i><span>'+get_advtool_msg('adv.tool.Tree.Viewer')+'</span></a></li>';
+        var tab = '<li><a href="#tab-treeViewer" id="treeViewer"><i class="fas fa-sitemap"></i><span>'+get_advtool_msg('adv.tool.Tree.Viewer')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-treeViewer" class="tab-content"></div>');
@@ -130,7 +130,7 @@ var AdvancedTools = {
         });
     },
     initDiffChecker: function () {
-        var tab = '<li><a href="#tab-diffChecker" id="diffChecker"><i class="fa fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></a></li>';
+        var tab = '<li><a href="#tab-diffChecker" id="diffChecker"><i class="fas fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-diffChecker" class="tab-content"></div>');
@@ -167,21 +167,21 @@ var AdvancedTools = {
         });
     },
     initUsage: function () {
-        var tab = '<li><a href="#tab-checkUsage" id="checkUsage"><i class="fa fa-binoculars"></i><span>'+get_advtool_msg('adv.tool.Usages')+'</span></a></li>';
+        var tab = '<li><a href="#tab-checkUsage" id="checkUsage"><i class="fas fa-binoculars"></i><span>'+get_advtool_msg('adv.tool.Usages')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-checkUsage" class="tab-content"></div>');
         
         $("a#checkUsage").on("click", function() {
             if ($("#tab-checkUsage .item_usages_container").length === 0) {
-                $("#tab-checkUsage").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                $("#tab-checkUsage").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 Usages.render($("#tab-checkUsage"), AdvancedTools.options.id, AdvancedTools.options.builder, AdvancedTools.options);
                 $("#tab-checkUsage .dt-loading").remove();
             }
         });
     },
     initTable: function () {
-        var tab = '<li><a href="#tab-formDataTable" id="formDataTable"><i class="fa fa-table"></i><span>'+get_advtool_msg('adv.tool.Table')+'</span></a></li>';
+        var tab = '<li><a href="#tab-formDataTable" id="formDataTable"><i class="fas fa-table"></i><span>'+get_advtool_msg('adv.tool.Table')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-formDataTable" class="tab-content"><div class="table_usage"><h2>'+get_advtool_msg('adv.tool.Table.Usage')+'</h2></div><div class="table_usage_other"><h2 style="display:none">'+get_advtool_msg('adv.tool.Table.Usage.otherApp')+'</h2><a class="showTableUsageInOtherApp" href="#">'+get_advtool_msg('adv.tool.Table.Usage.otherApp.show')+'</a></div><div class="table_columns"><h2>'+get_advtool_msg('adv.tool.Table.Columns')+'</h2></div></div>');
@@ -189,7 +189,7 @@ var AdvancedTools = {
         $("#tab-formDataTable .table_usage_other a.showTableUsageInOtherApp").on("click", function(){
             $(this).hide();
             $("#tab-formDataTable .table_usage_other h2").show();
-            $("#tab-formDataTable .table_usage_other").append('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+            $("#tab-formDataTable .table_usage_other").append('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
             var jsonObj = JSON.decode($(AdvancedTools.jsonForm).find('textarea[name="json"]').val());
             var tableName = jsonObj['properties']['tableName'];
             
@@ -201,7 +201,7 @@ var AdvancedTools = {
         
         $("a#formDataTable").on("click", function() {
             if ($("#tab-formDataTable .table_usage .item_usages_container").length === 0) {
-                $("#tab-formDataTable .table_usage").append('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                $("#tab-formDataTable .table_usage").append('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 var jsonObj = JSON.decode($(AdvancedTools.jsonForm).find('textarea[name="json"]').val());
                 var tableName = jsonObj['properties']['tableName'];
                 
@@ -211,7 +211,7 @@ var AdvancedTools = {
             }
             
             if ($("#tab-formDataTable .table_columns .existing_column").length === 0) {
-                $("#tab-formDataTable .table_columns").append('<div class="existing_column"><i class="dt-loading fa fa-5x fa-spinner fa-spin"></i></div>');
+                $("#tab-formDataTable .table_columns").append('<div class="existing_column"><i class="dt-loading fas fa-5x fa-spinner fa-spin"></i></div>');
                 
                 $.ajax({
                     method: "POST",
@@ -261,14 +261,14 @@ var AdvancedTools = {
         });
     },
     initI18n: function () {
-        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fa fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
+        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fas fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
         
         $("a#i18n").on("click", function() {
             if ($("#tab-i18n .i18n_table").length === 0) {
-                $("#tab-i18n").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                $("#tab-i18n").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.init($("#tab-i18n"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
                 $("#tab-i18n .dt-loading").remove();
             }
@@ -280,14 +280,14 @@ var AdvancedTools = {
         });
     },
     initToolTip: function () {
-        var tab = '<li><a href="#tab-tooltip" id="tooltip"><i class="fa fa-info-circle"></i><span>'+get_advtool_msg('adv.tool.tooltip')+'</span></a></li>';
+        var tab = '<li><a href="#tab-tooltip" id="tooltip"><i class="fas fa-info-circle"></i><span>'+get_advtool_msg('adv.tool.tooltip')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-tooltip" class="tab-content"></div>');
         
         $("a#tooltip").on("click", function() {
             if ($("#tab-tooltip .i18n_table").length === 0) {
-                $("#tab-tooltip").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                $("#tab-tooltip").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.initTooltip($("#tab-tooltip"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
                 $("#tab-tooltip .dt-loading").remove();
             }
@@ -299,14 +299,14 @@ var AdvancedTools = {
         });
     },
     initProcessI18n: function () {
-        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fa fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
+        var tab = '<li><a href="#tab-i18n" id="i18n"><i class="fas fa-language"></i><span>'+get_advtool_msg('adv.tool.i18n')+'</span></a></li>';
         
         $(".builder_tool_tabs").append(tab);
         $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
         
         $("a#i18n").on("click", function() {
             if ($("#tab-i18n .i18n_table").length === 0) {
-                $("#tab-i18n").prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+                $("#tab-i18n").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.initProcess($("#tab-i18n"), AdvancedTools.options);
                 $("#tab-i18n .dt-loading").remove();
             }

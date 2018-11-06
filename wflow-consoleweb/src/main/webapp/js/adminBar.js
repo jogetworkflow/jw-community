@@ -18,7 +18,7 @@ var AdminBar = {
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
                 '<div id="quickOverlayContainer" class="quickOverlayContainer"><div id="quickOverlay" class="quickOverlay"></div>\
-                <div id="quickOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fa fa-remove"></i></a></div>\
+                <div id="quickOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a></div>\
                 <iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div>';
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
@@ -210,7 +210,7 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
-        $("#adminControl").find("i").attr("class", "fa fa-angle-double-right");
+        $("#adminControl").find("i").attr("class", "fas fa-angle-double-right");
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "false", {
             path: path
@@ -222,7 +222,7 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");
-        $("#adminControl").find("i").attr("class", "fa fa-pencil");
+        $("#adminControl").find("i").attr("class", "fas fa-pencil-alt");
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "true", {
             path: path

@@ -20,12 +20,12 @@ APMEntries = function(container, args) {
         
         $(thisObj.container).find(".node-trigger").off("click");
         $(thisObj.container).find(".node-trigger").on("click", function() {
-            if ($(this).find("i").hasClass("fa-minus-square-o")) {
+            if ($(this).find("i").hasClass("fa-minus-square")) {
                 $(this).closest(".entry").find("> .childs").hide();
-                $(this).find("i").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+                $(this).find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
             } else {
                 $(this).closest(".entry").find("> .childs").show();
-                $(this).find("i").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
+                $(this).find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
             }
         });
     };
@@ -38,7 +38,7 @@ APMEntries = function(container, args) {
         
         var nodeDom = $('<div class="entry"><div class="info"></div><div class="childs"></div></div>');
         $(nodeDom).find("> .info").append('<div class="barwrapper"><div class="bar"><div class="bar-inner" style="margin-left:'+offset+'px;width:'+duration+'px;"></div></div></div>');
-        $(nodeDom).find("> .info").append('<div class="text-wrapper"><a class="node-trigger"><i class="fa fa-minus-square-o"></i></a><div class="text"></div></div>');
+        $(nodeDom).find("> .info").append('<div class="text-wrapper"><a class="node-trigger"><i class="far fa-minus-square"></i></a><div class="text"></div></div>');
         
         if (node.message !== undefined) {
             $(nodeDom).find("> .info .text").append('<span>'+node.message+'</span>');
@@ -83,7 +83,7 @@ APMTree = function(container, args) {
         var nextContainer = container;
         
         if (parentNode === undefined || node.sampleCount !== parentNode.sampleCount) {
-            var nodeDom = $('<div class="node"><a class="node-trigger"><i class="fa fa-minus-square-o"></i></a><div class="percentage"></div><div class="texts"></div><div class="childs"></div></div>');
+            var nodeDom = $('<div class="node"><a class="node-trigger"><i class="far fa-minus-square"></i></a><div class="percentage"></div><div class="texts"></div><div class="childs"></div></div>');
             node.container = nodeDom;
             
             var percentage = (node.sampleCount / thisObj.args.data.unfilteredSampleCount) * 100;
@@ -133,12 +133,12 @@ APMTree = function(container, args) {
         var thisObj = this;
         $(thisObj.container).find(".node-trigger").off("click");
         $(thisObj.container).find(".node-trigger").on("click", function() {
-            if ($(this).find("i").hasClass("fa-minus-square-o")) {
+            if ($(this).find("i").hasClass("fa-minus-square")) {
                 $(this).parent().find("> .childs").hide();
-                $(this).find("i").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+                $(this).find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
             } else {
                 $(this).parent().find("> .childs").show();
-                $(this).find("i").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
+                $(this).find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
             }
         });
         
@@ -233,12 +233,12 @@ APMTable = function(table, args) {
             $(thisObj.table).find('> table > tbody').append(htmlrow);
             
             if (this.args.hasDetail !== undefined && this.args.hasDetail(row)) {
-                $(htmlrow).find('td:eq(0)').append('<a class="info-trigger"><i class="fa fa-info"></i> <i class="arrow fa fa-chevron-down"></i></a> ');
+                $(htmlrow).find('td:eq(0)').append('<a class="info-trigger"><i class="fas fa-info-circle"></i> <i class="arrow fas fa-chevron-down"></i></a> ');
                 $(htmlrow).data("details", row);
             }
             
             if (this.args.subgroup !== undefined && row[this.args.subgroup] !== undefined && (($.isArray(row[this.args.subgroup]) && row[this.args.subgroup].length > 0) || (!$.isArray(row[this.args.subgroup]) && Object.keys(row[this.args.subgroup]).length > 0))) {
-                $(htmlrow).find('td:eq(0)').prepend('<a class="row-trigger"><i class="fa fa-plus-square-o"></i></a> ');
+                $(htmlrow).find('td:eq(0)').prepend('<a class="row-trigger"><i class="far fa-plus-square"></i></a> ');
                 thisObj.renderRows(row[this.args.subgroup], level + 1);
             }
             
@@ -272,7 +272,7 @@ APMTable = function(table, args) {
         $(this.table).find('> table > tbody > tr > td > .row-trigger').off("click");
         $(this.table).find('> table > tbody > tr > td > .row-trigger').on("click", function() {
             var row = $(this).closest("tr");
-            if ($(this).find("i").hasClass("fa-plus-square-o")) {
+            if ($(this).find("i").hasClass("fa-plus-square")) {
                 var nextClass = "";
                 var filterClass = "";
                 
@@ -285,7 +285,7 @@ APMTable = function(table, args) {
                 }
                 $(row).nextUntil(nextClass, filterClass).show();
                 
-                $(this).find("i").removeClass("fa-plus-square-o").addClass("fa-minus-square-o");
+                $(this).find("i").removeClass("fa-plus-square").addClass("fa-minus-square");
                 $(row).removeClass("row-collapsed").addClass("row-expand");
             } else {
                 var nextClass = "";
@@ -300,10 +300,10 @@ APMTable = function(table, args) {
                     }
                 }
                 $(row).nextUntil(nextClass).hide();
-                $(row).nextUntil(nextClass).find("> td > .row-trigger i").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+                $(row).nextUntil(nextClass).find("> td > .row-trigger i").removeClass("fa-minus-square").addClass("fa-plus-square");
                 $(row).nextUntil(nextClass).find("> td > .info-trigger i.arrow").removeClass("fa-chevron-up").addClass("fa-chevron-down");
                 
-                $(this).find("i").removeClass("fa-minus-square-o").addClass("fa-plus-square-o");
+                $(this).find("i").removeClass("fa-minus-square").addClass("fa-plus-square");
                 $(row).removeClass("row-expand").addClass("row-collapsed");
             }
         });
@@ -374,9 +374,9 @@ APMTable = function(table, args) {
         $(this.table).find("> table > thead > tr > th i").remove();
         $(this.table).find("> table > thead > tr > th:eq("+sortCol+")").addClass("sort " + order);
         if (order === "sortDesc") {
-            $(this.table).find("> table > thead > tr > th:eq("+sortCol+")").append('<i class="fa fa-sort-desc"></i>');
+            $(this.table).find("> table > thead > tr > th:eq("+sortCol+")").append('<i class="fas fa-sort-down"></i>');
         } else {
-            $(this.table).find("> table > thead > tr > th:eq("+sortCol+")").append('<i class="fa fa-sort-asc"></i>');
+            $(this.table).find("> table > thead > tr > th:eq("+sortCol+")").append('<i class="fas fa-sort-up"></i>');
         }
         this.sortTableRows(sortCol, order);
         this.showPage();
@@ -1371,9 +1371,9 @@ APMViewer = {
     },
     init : function(contextPath) {
         var tool = $('<div class="apmtool"></div>');
-        $(tool).append('<a class="refresh"><i class="fa fa-refresh"></i></a>');
+        $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
         $(tool).append(' <select class="durationSelector"></select>');
-        $(tool).append(' <a class="alert"><i class="fa fa-bell"></i></a>');
+        $(tool).append(' <a class="alert"><i class="fas fa-bell"></i></a>');
         $(tool).find(".durationSelector").append('<option value="1800000">'+get_apmviewer_msg('apm.last30m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="3600000">'+get_apmviewer_msg('apm.last60m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="7200000">'+get_apmviewer_msg('apm.last2h')+'</option>');
@@ -1525,7 +1525,7 @@ APMViewer = {
                         isString : true,
                         align : 'center',
                         format : function(value, obj) {
-                            return '<a class="rowaction edit" data-id="'+value+'" style="margin-right:10px;"><i class="fa fa-pencil"></i></a> <a style="color:red;" class="rowaction delete" data-id="'+value+'"><i class="fa fa-trash"></i></a>';
+                            return '<a class="rowaction edit" data-id="'+value+'" style="margin-right:10px;"><i class="fas fa-pencil-alt"></i></a> <a style="color:red;" class="rowaction delete" data-id="'+value+'"><i class="fas fa-trash"></i></a>';
                         }
                     }
                 ],
@@ -2094,7 +2094,7 @@ APMViewer = {
     },
     showLoading : function() {
         if ($(".apmviewer").find("#loading")) {
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> '+get_apmviewer_msg('apm.loading')+'</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> '+get_apmviewer_msg('apm.loading')+'</div>');
             $(".apmviewer").prepend(loading);
         }
     },

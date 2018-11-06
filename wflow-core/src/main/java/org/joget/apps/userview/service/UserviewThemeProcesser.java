@@ -542,7 +542,7 @@ public class UserviewThemeProcesser {
             String label = ResourceBundleUtil.getMessage("adminBar.label.menu") + ": " + userview.getPropertyString("name");
             String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id");
             content += "<div class=\"quickEdit\" style=\"display: none\">\n";
-            content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fa fa-pencil\"></i> " + label + "</a>\n";
+            content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
             content += "</div>\n";
         }
         content += menu;
@@ -588,7 +588,7 @@ public class UserviewThemeProcesser {
                     String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + userview.getCurrent().getPropertyString("label");
                     String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id") + "?menuId=" + userview.getCurrent().getPropertyString("id");
                     content += "<div class=\"quickEdit\" style=\"display: none\">\n";
-                    content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fa fa-pencil\"></i> " + label + "</a>\n";
+                    content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";
                     content += "</div>\n";
                 }
 

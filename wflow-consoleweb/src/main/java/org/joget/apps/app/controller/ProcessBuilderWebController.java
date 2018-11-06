@@ -262,12 +262,12 @@ public class ProcessBuilderWebController {
             for (String v : values.split(",")) {
                 if (groupMaps.containsKey(v)) {
                     if (DirectoryUtil.isExtDirectoryManager()) {
-                        htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/group/view/"+v+"\" target=\"_blank\">"+groupMaps.get(v).getName()+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                        htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/group/view/"+v+"\" target=\"_blank\">"+groupMaps.get(v).getName()+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
                     } else {
-                        htmlValue += "<div class=\"single_value\">" + groupMaps.get(v).getName() + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                        htmlValue += "<div class=\"single_value\">" + groupMaps.get(v).getName() + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
                     }
                 } else {
-                    htmlValue += "<div class=\"single_value\"><span class=\"unavailable\">"+v+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                    htmlValue += "<div class=\"single_value\"><span class=\"unavailable\">"+v+" " + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + "</span> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
                 }
             }
             o.put("htmlValue", htmlValue);
@@ -292,9 +292,9 @@ public class ProcessBuilderWebController {
             values = values.replaceAll(";", ",");
             for (String v : values.split(",")) {
                 if (DirectoryUtil.isExtDirectoryManager()) {
-                    htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/user/view/"+v+".\" target=\"_blank\">"+v+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                    htmlValue += "<div class=\"single_value\"><a href=\""+request.getContextPath()+"/web/console/directory/user/view/"+v+".\" target=\"_blank\">"+v+"</a> <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
                 } else {
-                    htmlValue += "<div class=\"single_value\">" + v + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fa fa-times-circle\"></i></a></div>";
+                    htmlValue += "<div class=\"single_value\">" + v + " <a class=\"remove_single\" value=\""+v+"\"><i class=\"fas fa-times-circle\"></i></a></div>";
                 }
             }
             o.put("htmlValue", htmlValue);

@@ -166,9 +166,9 @@
         css += '.tfio-row .input-fields label {display:inline;}';
         
         var html = '<div name="'+thisObj.id+'">';
-        html += '<div class="tfio-container"></div><a class="pebutton tfbutton addset"><i class="fa fa-plus-circle"></i> @@app.simpletfai.addSession@@</a>';
+        html += '<div class="tfio-container"></div><a class="pebutton tfbutton addset"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addSession@@</a>';
         html += '<div class="tfio-post tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.postprocessin@@</div><div class="posts-container">';
-        html += '<div class="buttons"><a class="addpost"><i class="fa fa-plus-circle"></i> @@app.simpletfai.addPostProcessing@@<ul>';
+        html += '<div class="buttons"><a class="addpost"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addPostProcessing@@<ul>';
         html += '<li data-type="labels">@@app.simpletfai.labels@@</li>';
         html += '<li data-type="valuelabel">@@app.simpletfai.valuelabel@@</li>';
         html += '<li data-type="euclideanDistance">@@app.simpletfai.euclideanDistance@@</li>';
@@ -343,7 +343,7 @@
     addSet : function() {
         var thisObj = this;
         
-        var ioset = $('<div class="tfio-ioset tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.model@@ <span class="buttons"><a class="deleteset" title="@@app.simpletfai.deleteSet@@"><i class="fa fa-trash"></i></a></span></div><div class="model-container"></div><div class="tfio_header peheader">@@app.simpletfai.inputs@@</div><div class="inputs-container"></div><div class="tfio_header peheader">@@app.simpletfai.outputs@@</div><div class="outputs-container"></div></div>');
+        var ioset = $('<div class="tfio-ioset tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.model@@ <span class="buttons"><a class="deleteset" title="@@app.simpletfai.deleteSet@@"><i class="fas fa-trash-alt"></i></a></span></div><div class="model-container"></div><div class="tfio_header peheader">@@app.simpletfai.inputs@@</div><div class="inputs-container"></div><div class="tfio_header peheader">@@app.simpletfai.outputs@@</div><div class="outputs-container"></div></div>');
         thisObj.initModel($(ioset));
         thisObj.initInputs($(ioset));
         thisObj.initOutputs($(ioset));
@@ -355,7 +355,7 @@
     },
     initInputs : function(ioset) {
         var thisObj = this;
-        var html = '<div class="buttons"><a class="addinput"><i class="fa fa-plus-circle"></i> @@app.simpletfai.addInput@@<ul>';
+        var html = '<div class="buttons"><a class="addinput"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addInput@@<ul>';
         html += '<li data-type="image">@@app.simpletfai.image@@</li>';
         html += '<li data-type="text">@@app.simpletfai.text@@</li>';
         html += '<li data-type="numbers">@@app.simpletfai.numbers@@</li>';
@@ -366,12 +366,12 @@
     },
     initOutputs : function(ioset) {
         var thisObj = this;
-        $(ioset).find(".outputs-container").append('<div class="buttons"><a class="addoutput"><i class="fa fa-plus-circle"></i> @@app.simpletfai.addOutput@@</a></div><div class="outputrows-container"></div>');
+        $(ioset).find(".outputs-container").append('<div class="buttons"><a class="addoutput"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addOutput@@</a></div><div class="outputrows-container"></div>');
     },
     addInput : function(button, type) {
         var thisObj = this;
         var container = $(button).parent().parent().find("> .inputrows-container");
-        var row = $('<div class="perow tfio-row input" data-type="'+type+'"><label class="row-title"></label><a class="deleteinput" title="@@app.simpletfai.deleteinput@@"><i class="fa fa-trash"></i></a><div class="input-fields"></div></div>');
+        var row = $('<div class="perow tfio-row input" data-type="'+type+'"><label class="row-title"></label><a class="deleteinput" title="@@app.simpletfai.deleteinput@@"><i class="fas fa-trash-alt"></i></a><div class="input-fields"></div></div>');
         
         $(row).find(".input-fields").append('<input class="input_name half required" placeholder="@@app.simpletfai.inputname@@"/>');
         
@@ -449,14 +449,14 @@
     addOutput : function(button) {
         var thisObj = this;
         var container = $(button).parent().parent().find("> .outputrows-container");
-        var row = $('<div class="perow tfio-row output"><table><tr><td><input class="output_name required" placeholder="@@app.simpletfai.outputname@@"/></td><td><input class="output_variable required" placeholder="@@app.simpletfai.variableName@@"/></td><td class="alignright"><a class="deleteoutput" title="@@app.simpletfai.deleteOutput@@"><i class="fa fa-trash"></i></a></td></tr></table></div>');
+        var row = $('<div class="perow tfio-row output"><table><tr><td><input class="output_name required" placeholder="@@app.simpletfai.outputname@@"/></td><td><input class="output_variable required" placeholder="@@app.simpletfai.variableName@@"/></td><td class="alignright"><a class="deleteoutput" title="@@app.simpletfai.deleteOutput@@"><i class="fas fa-trash-alt"></i></a></td></tr></table></div>');
         
         $(container).append(row);
     },
     addPost : function(button, type) {
         var thisObj = this;
         var container = $(button).parent().parent().find("> .postrows-container");
-        var row = $('<div class="perow tfio-row post" data-type="'+type+'"><label class="row-title"></label><a class="deletepost" title="@@app.simpletfai.deletepost@@"><i class="fa fa-trash"></i></a><div class="input-fields"></div></div>');
+        var row = $('<div class="perow tfio-row post" data-type="'+type+'"><label class="row-title"></label><a class="deletepost" title="@@app.simpletfai.deletepost@@"><i class="fas fa-trash-alt"></i></a><div class="input-fields"></div></div>');
         
         $(row).find(".input-fields").append('<input class="post_name half required" placeholder="@@app.simpletfai.postname@@"/>');
         

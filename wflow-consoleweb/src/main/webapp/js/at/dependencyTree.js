@@ -23,7 +23,7 @@ $.jstree.plugins.joget = function (options, parent) {
                     if (ind.color !== undefined && ind.color !== "") {
                         $(a).addClass("indicator-"+ind.color);
                     }
-                    $(a).append('<span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i><i class="'+ind.icon+' fa-stack-1x fa-inverse"></i></span>');
+                    $(a).append('<span class="fa-stack"><i class="fas fa-circle fa-stack-2x"></i><i class="'+ind.icon+' fa-stack-1x fa-inverse"></i></span>');
                     if (ind.label !== undefined && ind.label !== "") {
                         $(a).attr("title", ind.label);
                         $(a).attr('aria-label', ind.label);
@@ -149,7 +149,7 @@ DependencyTree.Util = {
         });
     },
     createEditIndicator: function (viewer, node, callback) {
-        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-pencil', get_advtool_msg("dependency.tree.Edit.Properties"), "green", function() {
+        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-pencil-alt', get_advtool_msg("dependency.tree.Edit.Properties"), "green", function() {
             DependencyTree.Util.hideAndCall(viewer, callback);
         });
     },
@@ -220,7 +220,7 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
                             node.data["indicators"] = [];
                         }
                         
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
                     }
                 } else {
                     node.a_attr['class'] += " gray";
@@ -338,7 +338,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomLoadBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['loadBinder'] !== undefined && jsonObj['properties']['loadBinder']['className'] !== "" && jsonObj['properties']['loadBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Load.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['loadBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -346,7 +346,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasCustomStoreBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['storeBinder'] !== undefined && jsonObj['properties']['storeBinder']['className'] !== "" && jsonObj['properties']['storeBinder']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-download', get_advtool_msg("dependency.tree.Store.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['storeBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -354,7 +354,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasOptionsBinder' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['optionsBinder'] !== undefined && jsonObj['properties']['optionsBinder']['className'] !== "") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-upload', get_advtool_msg("dependency.tree.Options.Binder") + ' (' + viewer.pluginList[jsonObj['properties']['optionsBinder']['className']] + ')');
                 }
                 return false;
             }
@@ -362,7 +362,7 @@ DependencyTree.Matchers['formElement'] = {
         'hasPostProcessor' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['postProcessor'] !== undefined && jsonObj['properties']['postProcessor']['className'] !== "" && jsonObj['properties']['postProcessor']['className'] !== "org.joget.apps.form.lib.WorkflowFormBinder") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-share', get_advtool_msg("dependency.tree.Post.Processor") + ' (' + viewer.pluginList[jsonObj['properties']['postProcessor']['className']] + ')');
                 }
                 return false;
             }
@@ -370,14 +370,14 @@ DependencyTree.Matchers['formElement'] = {
         'hasSectionVisibilityControl' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (node.data['isFormContainer'] && jsonObj['properties']['visibilityControl'] !== undefined && jsonObj['properties']['visibilityControl'] !== "") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-eye', get_advtool_msg("dependency.tree.Visibility.Control") + ' (' + jsonObj['properties']['visibilityControl'] + ' : ' + jsonObj['properties']['visibilityValue'] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-eye', get_advtool_msg("dependency.tree.Visibility.Control") + ' (' + jsonObj['properties']['visibilityControl'] + ' : ' + jsonObj['properties']['visibilityValue'] + ')');
                 }
             }
         },
         'hasValidator' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties']['validator'] !== undefined && jsonObj['properties']['validator']['className'] !== "") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']] + ')');
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-asterisk', get_advtool_msg("dependency.tree.Validator") + ' (' + viewer.pluginList[jsonObj['properties']['validator']['className']] + ')');
                 }
                 return false;
             }
@@ -501,7 +501,7 @@ DependencyTree.Matchers['userviewCategory'] = {
         'hidden' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (jsonObj['properties'] !== undefined && jsonObj['properties']['hide'] === "yes") {
-                    DependencyTree.Util.addIndicator(viewer, node, 'fa fa-eye-slash', get_advtool_msg("dependency.tree.Hidden"));
+                    DependencyTree.Util.addIndicator(viewer, node, 'fas fa-eye-slash', get_advtool_msg("dependency.tree.Hidden"));
                 }
                 return false;
             }
@@ -572,11 +572,11 @@ DependencyTree.Matchers['datalist'] = {
                     pnode.children.push(cnode);
                     
                     if (c["action"] !== undefined && c["action"]["className"] !== undefined && c["action"]["className"] !== "") {
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]] + ')');
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-link', get_advtool_msg("dependency.tree.Action") + ' (' + viewer.pluginList[c["action"]["className"]] + ')');
                     }
                     
                     if (c["format"] !== undefined && c["format"]["className"] !== undefined && c["format"]["className"] !== "") {
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]] + ')');
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-text-height', get_advtool_msg("dependency.tree.Format") + ' (' + viewer.pluginList[c["format"]["className"]] + ')');
                     }
 
                     //properties
@@ -659,11 +659,11 @@ DependencyTree.Matchers['datalist'] = {
                         cnode.data['value'] = viewer.pluginList[pluginClassName];
                     } else {
                         cnode.data['value'] = pluginClassName;
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-plug', get_advtool_msg("dependency.tree.Missing.Plugin"), "red");
                     }
                     
                     if (c["properties"] !== undefined && c["properties"]["rules"] !== undefined && c["properties"]["rules"].length > 0) {
-                        DependencyTree.Util.addIndicator(viewer, cnode, 'fa fa-eye', get_advtool_msg("dependency.tree.Visibility.Control"));
+                        DependencyTree.Util.addIndicator(viewer, cnode, 'fas fa-eye', get_advtool_msg("dependency.tree.Visibility.Control"));
                     }
 
                     //properties
@@ -716,7 +716,7 @@ DependencyTree.Matchers['datalist'] = {
 DependencyTree.Matchers['hasPermission'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['permission'] !== undefined && jsonObj['properties']['permission']['className'] !== "") {
-            DependencyTree.Util.addIndicator(viewer, node, 'fa fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']] + ')');
+            DependencyTree.Util.addIndicator(viewer, node, 'fas fa-lock', get_advtool_msg("dependency.tree.Permission") + ' (' + viewer.pluginList[jsonObj['properties']['permission']['className']] + ')');
         }
         return false;
     }
@@ -724,7 +724,7 @@ DependencyTree.Matchers['hasPermission'] = {
 DependencyTree.Matchers['userviewCache'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
         if (jsonObj['properties'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== undefined && jsonObj['properties']['userviewCacheScope'] !== "") {
-            DependencyTree.Util.addIndicator(viewer, node, 'fa fa-flash', get_advtool_msg("dependency.tree.UserviewCache"));
+            DependencyTree.Util.addIndicator(viewer, node, 'fas fa-bolt', get_advtool_msg("dependency.tree.UserviewCache"));
         }
         return false;
     }
@@ -878,9 +878,9 @@ DependencyTree.Matchers['string'] = {
                     
                     if (viewer.formList[jsonObj] !== undefined) {
                         node.data['value'] = viewer.formList[jsonObj];
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-file-text-o', get_advtool_msg("dependency.tree.Form") + ' (' + viewer.formList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/form/builder/' + jsonObj);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-file-alt', get_advtool_msg("dependency.tree.Form") + ' (' + viewer.formList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/form/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-file-text-o', get_advtool_msg("dependency.tree.Missing.Form"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-file-alt', get_advtool_msg("dependency.tree.Missing.Form"), "red");
                     }
                 }
                 return false;
@@ -894,9 +894,9 @@ DependencyTree.Matchers['string'] = {
                     
                     if (viewer.datalistList[jsonObj] !== undefined) {
                         node.data['value'] = viewer.datalistList[jsonObj];
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-table', get_advtool_msg("dependency.tree.Datalist") + ' (' + viewer.datalistList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/datalist/builder/' + jsonObj);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-table', get_advtool_msg("dependency.tree.Datalist") + ' (' + viewer.datalistList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/datalist/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-table', get_advtool_msg("dependency.tree.Missing.Datalist"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-table', get_advtool_msg("dependency.tree.Missing.Datalist"), "red");
                     }
                 }
                 return false;
@@ -910,9 +910,9 @@ DependencyTree.Matchers['string'] = {
                     
                     if (viewer.userviewList[jsonObj] !== undefined) {
                         node.data['value'] = viewer.userviewList[jsonObj];
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-tv', get_advtool_msg("dependency.tree.Userview") + ' (' + viewer.userviewList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/userview/builder/' + jsonObj);
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-desktop', get_advtool_msg("dependency.tree.Userview") + ' (' + viewer.userviewList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/userview/builder/' + jsonObj);
                     } else {
-                        DependencyTree.Util.addIndicator(viewer, node, 'fa fa-tv', get_advtool_msg("dependency.tree.Missing.Userview"), "red");
+                        DependencyTree.Util.addIndicator(viewer, node, 'fas fa-desktop', get_advtool_msg("dependency.tree.Missing.Userview"), "red");
                     }
                 }
                 return false;
@@ -1141,7 +1141,7 @@ DependencyTree.Viewer.prototype = {
             });
             
             $(".dt-buttons #dt-save").click(function(){
-                $(this).prepend('<i class="fa fa-spinner fa-spin"></i>');
+                $(this).prepend('<i class="fas fa-spinner fa-spin"></i>');
                 
                 // create invisible div for canvas
                 var div = $('<div id="dependencyTreeExport">');
@@ -1233,7 +1233,7 @@ DependencyTree.Viewer.prototype = {
         var viewer = this;
         
         if ($(viewer.element).find(".dt-loading").length === 0) {
-            $(viewer.element).prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+            $(viewer.element).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
         }
         viewer.callbacks = [];
         
@@ -1259,7 +1259,7 @@ DependencyTree.Viewer.prototype = {
         }
         
         if ($(viewer.element).find(".dt-loading").length === 0) {
-            $(viewer.element).prepend('<i class="dt-loading fa fa-5x fa-spinner fa-spin"></i>');
+            $(viewer.element).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
         }
         
         if (!viewer.isInit) {
@@ -1285,16 +1285,16 @@ DependencyTree.Viewer.prototype = {
             $('#dependencyTreeViewer').jstree({
                 "types" : {
                     "default" : {
-                        "icon" : "fa fa-cube"
+                        "icon" : "fas fa-cube"
                     },
                     "childs" : {
-                        "icon" : "fa fa-cubes"
+                        "icon" : "fas fa-cubes"
                     },
                     "row" : {
-                        "icon" : "fa fa-bars"
+                        "icon" : "fas fa-bars"
                     },
                     "properties" : {
-                        "icon" : "fa fa-newspaper-o"
+                        "icon" : "fas fa-newspaper"
                     }
                 },
                 "plugins": ["types", "joget"],

@@ -97,7 +97,7 @@ DatalistBuilder = {
             }
 
             var optionHtml = "<div class='form-palette-options'>";
-            optionHtml += "<button class='element-paste paste-"+type+" disabled' title='"+get_dbuilder_msg('dbuilder.paste.'+type)+"'><i class='fa fa-paste'></i><span>"+get_dbuilder_msg('dbuilder.paste.'+type)+"</span></button>";
+            optionHtml += "<button class='element-paste paste-"+type+" disabled' title='"+get_dbuilder_msg('dbuilder.paste.'+type)+"'><i class='fas fa-paste'></i><span>"+get_dbuilder_msg('dbuilder.paste.'+type)+"</span></button>";
             optionHtml += "</div>";
             var optionDiv = $(optionHtml);
 
@@ -161,8 +161,8 @@ DatalistBuilder = {
         
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_dbuilder_msg('dbuilder.undo.disbaled.tip')+"'><i class='fa fa-undo'></i> "+get_dbuilder_msg('dbuilder.undo')+"</a>&nbsp;|&nbsp;");
-        $(".controls").append("<a class='action-redo disabled' title='"+get_dbuilder_msg('dbuilder.redo.disabled.tip')+"'><i class='fa fa-repeat'></i> "+get_dbuilder_msg('dbuilder.redo')+"</a>");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_dbuilder_msg('dbuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_dbuilder_msg('dbuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-redo disabled' title='"+get_dbuilder_msg('dbuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_dbuilder_msg('dbuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){
             DatalistBuilder.undo();
@@ -810,9 +810,9 @@ DatalistBuilder = {
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fa fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
-        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fa fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
 
@@ -869,10 +869,10 @@ DatalistBuilder = {
         var action = DatalistBuilder.chosenActions[columnId];
         var propertyValues = DatalistBuilder.availableActions[action.className];
         if (propertyValues && propertyValues.propertyOptions) {
-            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fa fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
         }            
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
-        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fa fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
@@ -930,10 +930,10 @@ DatalistBuilder = {
         var action = DatalistBuilder.chosenRowActions[columnId];
         var propertyValues = DatalistBuilder.availableActions[action.className];
         if (propertyValues && propertyValues.propertyOptions) {
-            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fa fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
         }            
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
-        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fa fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
@@ -986,9 +986,9 @@ DatalistBuilder = {
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'><i class='fa fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.properties')+"</span></button>";
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fa fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
-        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fa fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.properties')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
 
@@ -2058,7 +2058,7 @@ DatalistBuilder = {
             DatalistBuilder.redoStack.push(DatalistBuilder.getJson());
 
             //undo-ing
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_dbuilder_msg("dbuilder.label.undoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_dbuilder_msg("dbuilder.label.undoing") + '</div>');
             $("body").append(loading);
             DatalistBuilder.loadJson(JSON.decode(DatalistBuilder.undoStack.pop()));
             
@@ -2088,7 +2088,7 @@ DatalistBuilder = {
             DatalistBuilder.undoStack.push(DatalistBuilder.getJson());
 
             //redo-ing
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_dbuilder_msg("dbuilder.label.redoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_dbuilder_msg("dbuilder.label.redoing") + '</div>');
             $("body").append(loading);
             DatalistBuilder.loadJson(JSON.decode(DatalistBuilder.redoStack.pop()));
 

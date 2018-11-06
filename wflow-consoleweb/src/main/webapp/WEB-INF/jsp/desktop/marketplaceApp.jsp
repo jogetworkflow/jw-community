@@ -77,7 +77,7 @@
                     };
                     // show loading icon
                     HelpGuide.hide();
-                    $("#installApp").html('<i class="icon-spinner icon-spin fa fa-spinner fa-spin"></i> <fmt:message key="appCenter.label.installingApp"/>');
+                    $("#installApp").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i> <fmt:message key="appCenter.label.installingApp"/>');
                     $("#installApp").attr("disabled", "disabled");
         
                     // invoke installation

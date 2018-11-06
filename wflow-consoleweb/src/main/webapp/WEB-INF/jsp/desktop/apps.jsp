@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fa fa-pencil"></i> <fmt:message key="console.header.menu.label.apps"/></p>
+        <p><i class="fas fa-wrench"></i> <fmt:message key="console.header.menu.label.apps"/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -35,7 +35,7 @@
                 function listFilter(header, list) { 
                     var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
                     input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-                    $(form).append($("<span class='filterlabel'><i class='fa fa-search'></i></span>")).append(input).appendTo(header);  
+                    $(form).append($("<span class='filterlabel'><i class='fas fa-search'></i></span>")).append(input).appendTo(header);  
                     $(input) .change( function () { 
                         var filter = $(this).val(); 
                         if(filter) { 
@@ -64,7 +64,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appPublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="fa fa-file-o"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="fas fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>
@@ -74,7 +74,7 @@
                 <ul class="nv-list">
                     <c:forEach items="${appUnpublishedList}" var="appDef">
                         <li>
-                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="fa fa-file-o"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
+                            <a class="nv-link" href="${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/forms"><span class="nv-link-name"><i class="far fa-file"></i> ${appDef.name}</span> <span class="nv-version"><fmt:message key="console.app.common.label.version"/> ${appDef.version}</span></a>
                         </li>
                     </c:forEach>
                 </ul>

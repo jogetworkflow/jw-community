@@ -44,7 +44,7 @@ body.embeded #adminBar {
 #adminBar #appCenter {
     position: absolute;
     display: block;
-    background: #37474F url(/jw/images/v3/builder/logo.png) no-repeat -1px 2px;
+    background: #37474F;
     bottom: 0px;
     left: 10px;
     width: 41px;
@@ -52,6 +52,11 @@ body.embeded #adminBar {
     border-radius: 50%;
     overflow: hidden;
     background-size: auto 125%;
+}
+#adminBar #appCenter i{
+    font-size: 36px;
+    padding: 3px;
+    color : #CFD8DC;
 }
 #adminBarButtons {
     vertical-align: top;
@@ -194,6 +199,10 @@ div#quickEditModeOption:before {
     }
 }
 @media screen and (max-width:680px) {
+    #adminBar #appCenter i{
+        font-size: 30px;
+        padding: 4px 5px;
+    }
     html.adminBarShown {
         padding-bottom: 45px;
     }
@@ -207,9 +216,9 @@ div#quickEditModeOption:before {
     #adminBarButtons > div > a {
         height: 45px;
         overflow: hidden;
-        font-size: 24px;
+        font-size: 20px;
         width: 32px;
-        padding: 10px 5px;
+        padding: 12px 5px;
     }
     #quickEditModeOption > div > a:hover,
     #adminBarButtons > div > a:hover {

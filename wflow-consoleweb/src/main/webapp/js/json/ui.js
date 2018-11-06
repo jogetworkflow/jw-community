@@ -910,7 +910,7 @@ HelpGuide = {
 
     insertButton: function(div) {
         // create button
-        var button = $('<span id="main-action-help"><i class="fa fa-info-circle"></i></span>');
+        var button = $('<span id="main-action-help"><i class="fa fas fa-info-circle"></i></span>');
         
         // insert button
         if ($("#main-action-help").length == 0) {

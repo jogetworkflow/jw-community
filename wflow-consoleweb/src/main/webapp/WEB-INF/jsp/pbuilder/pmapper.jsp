@@ -66,7 +66,7 @@
         <div id="builder-container">
             <div id="builder-header">
                 <a class="reload" onclick="location.reload(true);"></a>
-                <i class="fa fa-2x fa-gears"></i>
+                <i class="fas fa-2x fa-link"></i>
                 <div id="builder-logo"></div>
                 <div id="builder-title"><fmt:message key="pbuilder.mapperTitle"/> <i> - <c:out value="${appDefinition.name}"/> v${appDefinition.version}</i></div>
             </div>
@@ -86,13 +86,13 @@
                             </div>
                             <div id="panel">
                                 <div id="controls">                                    
-                                    <a class="showallcontrol"><i class="fa fa-eye"></i> <fmt:message key="pbuilder.label.displayAllInfo"/> 
+                                    <a class="showallcontrol"><i class="fas fa-eye"></i> <fmt:message key="pbuilder.label.displayAllInfo"/> 
                                         <ul>
                                             <li class="showParticipant"><fmt:message key="pbuilder.label.participant"/></li>
                                             <li class="showActivity"><fmt:message key="pbuilder.label.activity"/></li>
                                             <li class="showTool"><fmt:message key="pbuilder.label.tool"/></li>
                                             <li class="showRoute"><fmt:message key="pbuilder.label.route"/></li>
-                                            <li class="hideAll"><i class="fa fa-eye-slash"></i> <fmt:message key="pbuilder.label.hideAll"/></li>
+                                            <li class="hideAll"><i class="fas fa-eye-slash"></i> <fmt:message key="pbuilder.label.hideAll"/></li>
                                         </ul>
                                     </a>
                                 </div>

@@ -154,8 +154,8 @@ FormBuilder = {
         
         //add control
         $("#builder-steps").after("<div class='controls'></div>");
-        $(".controls").append("<a class='action-undo disabled' title='"+get_fbuilder_msg('fbuilder.undo.disbaled.tip')+"'><i class='fa fa-undo'></i> "+get_fbuilder_msg('fbuilder.undo')+"</a>&nbsp;|&nbsp;");
-        $(".controls").append("<a class='action-redo disabled' title='"+get_fbuilder_msg('fbuilder.redo.disabled.tip')+"'><i class='fa fa-repeat'></i> "+get_fbuilder_msg('fbuilder.redo')+"</a>");
+        $(".controls").append("<a class='action-undo disabled' title='"+get_fbuilder_msg('fbuilder.undo.disbaled.tip')+"'><i class='fas fa-undo'></i> "+get_fbuilder_msg('fbuilder.undo')+"</a>&nbsp;|&nbsp;");
+        $(".controls").append("<a class='action-redo disabled' title='"+get_fbuilder_msg('fbuilder.redo.disabled.tip')+"'><i class='fas fa-redo'></i> "+get_fbuilder_msg('fbuilder.redo')+"</a>");
         
         $(".action-undo").click(function(){
             FormBuilder.undo();
@@ -425,11 +425,11 @@ FormBuilder = {
         var optionHtml = "<span class='form-palette-options'>";
         if ($(obj).hasClass("form-section")) {
             // add buttons for section
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
-            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fa fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
-            optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'><i class='fa fa-columns'></i><span>"+get_fbuilder_msg("fbuilder.addColumn")+"</span></button>";
-            optionHtml += "<button class='form-palette-comment' title='"+get_fbuilder_msg("fbuilder.comment")+"'><i class='fa fa-commenting-o '></i><span>"+get_fbuilder_msg("fbuilder.comment")+"</span></button>";
-            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.deleteSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fas fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'><i class='fas fa-columns'></i><span>"+get_fbuilder_msg("fbuilder.addColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-comment' title='"+get_fbuilder_msg("fbuilder.comment")+"'><i class='far fa-comment'></i><span>"+get_fbuilder_msg("fbuilder.comment")+"</span></button>";
+            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.deleteSection")+"</span></button>";
             $(obj).append("<div class='form-clear bottom'></div>");
             
             //comment
@@ -442,10 +442,10 @@ FormBuilder = {
             }
         } else if ($(obj).hasClass("form-column")) {
             // add buttons for column
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
-            optionHtml += "<button class='form-palette-paste column disabled' title='"+get_fbuilder_msg("fbuilder.pasteElement")+"'><i class='fa fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteElement")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-paste column disabled' title='"+get_fbuilder_msg("fbuilder.pasteElement")+"'><i class='fas fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteElement")+"</span></button>";
             if ($(obj).siblings(".form-column").length > 0) {
-                optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</span></button>";
+                optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</span></button>";
             }
             
             //Update column label
@@ -459,16 +459,16 @@ FormBuilder = {
             }
         } else if (!$(obj).hasClass("form-container ")) {
             // add buttons for other elements
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'><i class='fa fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.edit")+"</span></button>";
-            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fa fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
-            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.delete")+"'><i class='fa fa-close'></i><span>"+get_fbuilder_msg("fbuilder.delete")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.edit")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fas fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.delete")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.delete")+"</span></button>";
         }
         optionHtml += "</span><div class='form-clear'></div>";
         
         if ($(obj).hasClass("form-section")) {
             optionHtml += "<span class='form-palette-options bottom'>";
-            optionHtml += "<button class='form-palette-sec' title='"+get_fbuilder_msg("fbuilder.addSection")+"'><i class='fa fa-plus'></i><span>"+get_fbuilder_msg("fbuilder.addSection")+"</span></button>";
-            optionHtml += "<button class='form-palette-paste section disabled' title='"+get_fbuilder_msg("fbuilder.pasteSection")+"'><i class='fa fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-sec' title='"+get_fbuilder_msg("fbuilder.addSection")+"'><i class='fas fa-plus'></i><span>"+get_fbuilder_msg("fbuilder.addSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-paste section disabled' title='"+get_fbuilder_msg("fbuilder.pasteSection")+"'><i class='fas fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteSection")+"</span></button>";
             optionHtml += "</span><div class='form-clear'></div>";
         }    
         
@@ -1224,7 +1224,7 @@ FormBuilder = {
             FormBuilder.redoStack.push(FormBuilder.generateJSON());
 
             //undo-ing
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.undoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.undoing") + '</div>');
             $("body").append(loading);
             FormBuilder.loadJson(JSON.decode(FormBuilder.undoStack.pop()));
             
@@ -1254,7 +1254,7 @@ FormBuilder = {
             FormBuilder.undoStack.push(FormBuilder.generateJSON());
 
             //redo-ing
-            var loading = $('<div id="loading"><i class="fa fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.redoing") + '</div>');
+            var loading = $('<div id="loading"><i class="fas fa-spinner fa-spin fa-2x"></i> ' + get_fbuilder_msg("fbuilder.label.redoing") + '</div>');
             $("body").append(loading);
             FormBuilder.loadJson(JSON.decode(FormBuilder.redoStack.pop()));
 

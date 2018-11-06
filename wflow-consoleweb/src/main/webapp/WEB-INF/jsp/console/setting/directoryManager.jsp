@@ -28,7 +28,7 @@
 </style>
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fa fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
+        <p><i class="fas fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">

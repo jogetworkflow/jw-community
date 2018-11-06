@@ -57,14 +57,14 @@
 
     <div id="main-menu">
         <a id="menu-button" href="#">
-            <i class="fa fa-bars"></i>                
+            <i class="fas fa-bars"></i>                
         </a>
         <div id="menu-popup">
             <div id="menu-logo"></div>
             <ul>
-                <li><a href="${pageContext.request.contextPath}/web/desktop"><i class="fa fa-desktop"></i> <fmt:message key="adminBar.label.appCenter"/></a></li>
+                <li><a href="${pageContext.request.contextPath}/web/desktop"><i class="fas fa-desktop"></i> <fmt:message key="adminBar.label.appCenter"/></a></li>
                 <c:if test="${!isAnonymous}">
-                    <li><a href="${pageContext.request.contextPath}/web/console/run/inbox" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/run/inbox', '${useOverlay}')"><i class="fa fa-tasks"></i> <fmt:message key="console.header.submenu.label.inbox"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/web/console/run/inbox" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/run/inbox', '${useOverlay}')"><i class="fas fa-tasks"></i> <fmt:message key="console.header.submenu.label.inbox"/></a></li>
                 </c:if>
                 <c:if test="${isAdmin}">
                     <h3><fmt:message key="appCenter.label.administration"/>
@@ -77,24 +77,24 @@
                     </h3>
                     <ul>
                         <c:if test="${!empty param.appId}">
-                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms', '${useOverlay}')"><i class="fa fa-pencil"></i> <fmt:message key="adminBar.label.designApp"/></a></li>
+                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/forms', '${useOverlay}')"><i class="fas fa-pencil-alt"></i> <fmt:message key="adminBar.label.designApp"/></a></li>
                         </c:if>
                         <c:if test="${empty param.appId}">
-                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps', '${useOverlay}')"><i class="fa fa-pencil"></i> <fmt:message key="console.header.menu.label.apps"/></a></li>
+                            <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps', '${useOverlay}')"><i class="fas fa-pencil-alt"></i> <fmt:message key="console.header.menu.label.apps"/></a></li>
                         </c:if>
-                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running', '${useOverlay}')"><i class="fa fa-dashboard"></i> <fmt:message key='adminBar.label.monitor'/></a></li>
-                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/directory/orgs" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/orgs', '${useOverlay}')"><i class="fa fa-users"></i> <fmt:message key='adminBar.label.users'/></a></li>
-                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general', '${useOverlay}')"><i class="fa fa-cogs"></i> <fmt:message key='adminBar.label.settings'/></a></li>
+                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running', '${useOverlay}')"><i class="fas fa-tachometer-alt"></i> <fmt:message key='adminBar.label.monitor'/></a></li>
+                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/directory/orgs" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/orgs', '${useOverlay}')"><i class="fas fa-users"></i> <fmt:message key='adminBar.label.users'/></a></li>
+                        <li><a class="menu-link-admin" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return NavMenu.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general', '${useOverlay}')"><i class="fas fa-cogs"></i> <fmt:message key='adminBar.label.settings'/></a></li>
                     </ul>
                 </c:if>                    
                 <c:if test="${!isAnonymous}">
                     <h3><fmt:message key="console.header.top.label.userProfile"/></h3>
                     <c:choose>
                         <c:when test="${isCustomDirectoryManager || userIsReadonly}">
-                            <li><i class="fa fa-user"></i> ${username}</li>
+                            <li><i class="fas fa-user"></i> ${username}</li>
                             </c:when>
                             <c:otherwise>
-                            <li><a href="javascript:navMenuUserProfile()"><i class="fa fa-user"></i> <fmt:message key="console.header.top.label.userProfile"/> (<c:out value="${username}"/>)</a></li>
+                            <li><a href="javascript:navMenuUserProfile()"><i class="fas fa-user"></i> <fmt:message key="console.header.top.label.userProfile"/> (<c:out value="${username}"/>)</a></li>
                             <script>
                                 <ui:popupdialog var="userProfilePopupDialog" src="${pageContext.request.contextPath}/web/console/profile"/>
                                     function navMenuUserProfile() {
@@ -107,10 +107,10 @@
                             </script>
                         </c:otherwise>
                     </c:choose>
-                    <li><a href="${pageContext.request.contextPath}/j_spring_security_logout"><i class="fa fa-sign-out"></i> <fmt:message key="console.header.top.label.logout"/></a></li>
+                    <li><a href="${pageContext.request.contextPath}/j_spring_security_logout"><i class="fas fa-sign-out-alt"></i> <fmt:message key="console.header.top.label.logout"/></a></li>
                 </c:if>
                 <c:if test="${isAnonymous}">
-                <li><a href="${pageContext.request.contextPath}/web/login"><i class="fa fa-sign-in"></i> <fmt:message key="console.header.top.label.login"/></a></li>
+                <li><a href="${pageContext.request.contextPath}/web/login"><i class="fas fa-sign-in-alt"></i> <fmt:message key="console.header.top.label.login"/></a></li>
                 </c:if>
             </ul>
         </div>

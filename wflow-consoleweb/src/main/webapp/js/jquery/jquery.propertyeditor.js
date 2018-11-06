@@ -575,7 +575,7 @@ PropertyEditor.Util = {
         if (field.properties.supportHash !== undefined && field.properties.supportHash.toLowerCase() === "true") {
             var propertyInput = $("#" + field.id + "_input");
             propertyInput.append('<div class="hashField"><input type="text" id="' + field.id + '_hash" name="' + field.id + '_hash" size="50" value="' + PropertyEditor.Util.escapeHtmlTag(field.value) + '"/></div>');
-            propertyInput.append("<a class=\"hashFieldAction\"><i class=\"fa fa-chevron-left\"></i><span>#</span><i class=\"fa fa-chevron-right\"></i></a>");
+            propertyInput.append("<a class=\"hashFieldAction\"><i class=\"fas fa-chevron-left\"></i><span>#</span><i class=\"fas fa-chevron-right\"></i></a>");
 
             if ($(propertyInput).find("div.default").length > 0) {
                 propertyInput.append($(propertyInput).find("div.default"));
@@ -584,10 +584,10 @@ PropertyEditor.Util = {
             var toogleHashField = function() {
                 if ($(propertyInput).hasClass("hash")) {
                     $(propertyInput).removeClass("hash");
-                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fa fa-chevron-left\"></i><span>#</span><i class=\"fa fa-chevron-right\"></i>");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fas fa-chevron-left\"></i><span>#</span><i class=\"fas fa-chevron-right\"></i>");
                 } else {
                     $(propertyInput).addClass("hash");
-                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fa fa-share\"></i>");
+                    $(propertyInput).find(".hashFieldAction").html("<i class=\"fas fa-share\"></i>");
                 }
             };
 
@@ -664,7 +664,7 @@ PropertyEditor.Util = {
             var height = $(field.editor).height() * 0.95;
             var width = $(field.editor).width() * 0.80;
 
-            var html = "<div class=\"property_editor_app_resources\"><div id=\"app_resource_dropzone\" class=\"dropzone\"><div class=\"dz-message needsclick\">" + get_peditor_msg('peditor.dropfile') + "</div><div class=\"uploading\"></div></div><div class=\"search_field\"><i class=\"fa fa-search\"></i><input type=\"text\"/></div><ul class=\"app_resources\"></ul></div>";
+            var html = "<div class=\"property_editor_app_resources\"><div id=\"app_resource_dropzone\" class=\"dropzone\"><div class=\"dz-message needsclick\">" + get_peditor_msg('peditor.dropfile') + "</div><div class=\"uploading\"></div></div><div class=\"search_field\"><i class=\"fas fa-search\"></i><input type=\"text\"/></div><ul class=\"app_resources\"></ul></div>";
             var object = $(html);
 
             var isPublic = "";
@@ -796,7 +796,7 @@ PropertyEditor.Model.Editor = function(element, options) {
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
 
-    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fa fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="' + get_peditor_msg('peditor.compress') + '"><i class="fa fa-compress" aria-hidden="true"></i></a><a class="expand" title="' + get_peditor_msg('peditor.expand') + '"><i class="fa fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
+    $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="' + get_peditor_msg('peditor.compress') + '"><i class="fas fa-compress" aria-hidden="true"></i></a><a class="expand" title="' + get_peditor_msg('peditor.expand') + '"><i class="fas fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
     this.editor = $(this.element).find('div#' + this.editorId);
 };
 PropertyEditor.Model.Editor.prototype = {
@@ -1236,7 +1236,7 @@ PropertyEditor.Model.Page.prototype = {
 
         var helplink = "";
         if (this.properties.helplink !== undefined && this.properties.helplink !== "") {
-            helplink = ' <a class="helplink" target="_blank" href="' + this.properties.helplink + '"><i class="fa fa-question-circle"></i></a>'
+            helplink = ' <a class="helplink" target="_blank" href="' + this.properties.helplink + '"><i class="fas fa-question-circle"></i></a>'
         }
 
         var html = '<div id="' + this.id + '" ' + this.elementData + 'class="property-editor-page' + hiddenClass + '" ' + showHide + '>';
@@ -1864,7 +1864,7 @@ PropertyEditor.Model.Type.prototype = {
             var toolTipId = '';
             if (description !== "") {
                 toolTipId = this.properties.name + (new Date()).getTime();
-                toolTip = ' <i class="property-label-description fa fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
+                toolTip = ' <i class="property-label-description fas fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
             }
 
             html += '<div class="property-label-container">';
@@ -2277,7 +2277,7 @@ PropertyEditor.Type.SelectBox.prototype = {
         }
         
         if (builder !== "") {
-            html += " <a href=\"\" target=\"_blank\" class=\"openbuilder\" data-type=\""+builder+"\" style=\"display:none;\"><i class=\"fa fa-external-link\"></i></i></a>";
+            html += " <a href=\"\" target=\"_blank\" class=\"openbuilder\" data-type=\""+builder+"\" style=\"display:none;\"><i class=\"fas fa-external-link-alt\"></i></i></a>";
         }
         
         return html;
@@ -2527,7 +2527,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
             });
         }
         html += '</select>';
-        html += '<div class="sorted_select_control"><button class="selectAll btn"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button><button class="select btn"><i class="fa fa-angle-right" aria-hidden="true"></i></button><button class="unselect btn"><i class="fa fa-angle-left" aria-hidden="true"></i></button><button class="unselectAll btn"><i class="fa fa-angle-double-left" aria-hidden="true"></i></button></div>';
+        html += '<div class="sorted_select_control"><button class="selectAll btn"><i class="fas fa-angle-double-right" aria-hidden="true"></i></button><button class="select btn"><i class="fas fa-angle-right" aria-hidden="true"></i></button><button class="unselect btn"><i class="fas fa-angle-left" aria-hidden="true"></i></button><button class="unselectAll btn"><i class="fas fa-angle-double-left" aria-hidden="true"></i></button></div>';
         html += '<select id="' + this.id + '" name="' + this.id + '" multiple' + size + '>';
         if (this.properties.options !== undefined && this.properties.options !== null && values.length > 0) {
             $.each(values, function(i, v) {
@@ -2539,7 +2539,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
             });
         }
         html += '</select>';
-        html += '<div class="sorted_select_control sort"><button class="moveup btn"><i class="fa fa-angle-up" aria-hidden="true"></i></button><button class="movedown btn"><i class="fa fa-angle-down" aria-hidden="true"></i></button></div>';
+        html += '<div class="sorted_select_control sort"><button class="moveup btn"><i class="fas fa-angle-up" aria-hidden="true"></i></button><button class="movedown btn"><i class="fas fa-angle-down" aria-hidden="true"></i></button></div>';
 
         return html;
     },
@@ -3735,7 +3735,7 @@ PropertyEditor.Type.Repeater.prototype = {
     renderField : function() {
         var thisObj = this;
         
-        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container"></div><div style="text-align:right; margin-bottom: 10px;"><a class="pebutton btn collapseAll"><i class="fa fa-compress"></i> '+get_peditor_msg('peditor.collapseAllRows')+'</a> <a class="pebutton btn expandAll"><i class="fa fa-expand"></i> '+get_peditor_msg('peditor.expandAllRows')+'</a> <a class="pebutton addrow"><i class="fa fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
+        var html = '<div name="'+thisObj.id+'"><div class="repeater-rows-container"></div><div style="text-align:right; margin-bottom: 10px;"><a class="pebutton btn collapseAll"><i class="fas fa-compress"></i> '+get_peditor_msg('peditor.collapseAllRows')+'</a> <a class="pebutton btn expandAll"><i class="fas fa-expand"></i> '+get_peditor_msg('peditor.expandAllRows')+'</a> <a class="pebutton addrow"><i class="fas fa-plus-circle"></i> '+get_peditor_msg('peditor.addRow')+'</a></div></div>';
         
         return html;
     },
@@ -3792,7 +3792,7 @@ PropertyEditor.Type.Repeater.prototype = {
     addRow : function(before, value) {
         var thisObj = this;
         
-        var row = $('<div class="repeater-row compress"><div class="actions expand-compress"><a class="expand"><i class="fa fa-expand"></i></a></div><div class="actions sort"><i class="fa fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fa fa-plus-circle"></i></a><a class="deleterow"><i class="fa fa-trash"></i></a></div></div>');
+        var row = $('<div class="repeater-row compress"><div class="actions expand-compress"><a class="expand"><i class="fas fa-expand"></i></a></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
         
         var fields = $.extend(true, {}, thisObj.properties.fields);
         
@@ -4481,7 +4481,7 @@ PropertyEditor.Type.Image.prototype = {
             style += " background-image:url('" + PropertyEditor.Util.escapeHtmlTag(path) + "')";
         }
 
-        return '<input type="text" class="image" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><a class="choosefile btn button small">' + get_peditor_msg('peditor.chooseImage') + '</a><div class="image-placeholder" style="' + style + '"><a class="image-remove"><i class="fa fa-times"></i></a></div>';
+        return '<input type="text" class="image" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><a class="choosefile btn button small">' + get_peditor_msg('peditor.chooseImage') + '</a><div class="image-placeholder" style="' + style + '"><a class="image-remove"><i class="fas fa-times"></i></a></div>';
     },
     initScripting: function() {
         var thisObj = this;

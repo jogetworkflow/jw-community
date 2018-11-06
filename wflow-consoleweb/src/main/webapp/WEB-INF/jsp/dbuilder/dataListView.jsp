@@ -26,7 +26,7 @@
     <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
     <c:if test="${isQuickEditEnabled && !dataList.disableQuickEdit}">
     <div class="quickEdit" style="display: none">
-        <a href="<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}"/>" target="_blank"><i class="fa fa-pencil"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
+        <a href="<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/${dataList.id}"/>" target="_blank"><i class="fas fa-pencil-alt"></i>  <fmt:message key="adminBar.label.list"/>: <c:out value="${dataList.name}"/></a>
     </div>
     </c:if>
     

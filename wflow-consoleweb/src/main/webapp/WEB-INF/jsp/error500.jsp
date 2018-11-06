@@ -20,7 +20,7 @@ try {
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title", locale) %></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/home/style.css"/>
     </head>
     <body class="page-body">
@@ -28,7 +28,7 @@ try {
             <div id="logo">
                 <a href="${pageContext.request.contextPath}/"><img src="${pageContext.request.contextPath}/home/logo.png" border="0" height="60" /></a>
             </div>
-            <div id="icon"><i class="warning fa fa-exclamation-circle" aria-hidden="true"></i></div>
+            <div id="icon"><i class="warning fas fa-exclamation-circle" aria-hidden="true"></i></div>
             <div id="content">
                 <h1>
                 <%= ResourceBundleUtil.getMessage("general.error.error500", locale) %>

@@ -15,7 +15,7 @@
 
         <div id="main-container">
             <div id="main-content">
-                <h1><i class="icon-desktop fa fa-desktop"></i> <fmt:message key="adminBar.label.appCenter"/></h1>
+                <h1><i class="icon-desktop fas fa-desktop"></i> <fmt:message key="adminBar.label.appCenter"/></h1>
                 <div id="search"></div>
                 <c:if test="${isAdmin && !empty marketplaceUrl && marketplaceUrl != '???appCenter.link.marketplace.url???'}">
                     <div id="categories" class="menu-link-admin">
@@ -37,8 +37,8 @@
                 </c:if>
                 <c:if test="${isAdmin}">
                 <div class="menu-link-admin-top">
-                    <a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='console.app.create.label'/></a>   
-                    <a href="#" onclick="appImport();return false" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='console.app.import.label'/></a>
+                    <a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.create.label'/></a>   
+                    <a href="#" onclick="appImport();return false" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.import.label'/></a>
                 </div>
                 <ul id="marketplace-apps" class="published-apps"></ul>
                 </c:if>
@@ -69,7 +69,7 @@
 <script>
     <c:if test="${!mobileDisabled}">
     var mobileLinkTitle = "<fmt:message key="appCenter.label.mobileEdition"/>";
-    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' id='header-mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")'><i class='icon-mobile-phone fa fa-mobile'>&nbsp;</i>" + mobileLinkTitle + "</a>";
+    var mobileLink = "<a href='${pageContext.request.contextPath}/web/mobile' id='header-mobile' onclick='return Mobile.viewMobileSite(\"${pageContext.request.contextPath}/home/\", \"${pageContext.request.contextPath}/web/mobile\")'><i class='icon-mobile-phone fas fa-mobile-alt'>&nbsp;</i>" + mobileLinkTitle + "</a>";
     $("#header-links").prepend(mobileLink + " ");
     var url = "${pageContext.request.contextPath}/web/mobile";
     Mobile.directToMobileSite(url);
@@ -94,7 +94,7 @@
 
         // show loading icon
         $(container).empty();
-        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x fa fa-spinner fa-spin fa-2x"></i> <fmt:message key="appCenter.label.loadingApps"/></div>');
+        var loading = $('<div id="apps-loading"><i class="icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x"></i> <fmt:message key="appCenter.label.loadingApps"/></div>');
         $(container).append(loading);
 
         // load JSON
@@ -114,7 +114,7 @@
                         content += '<li>';
                         <c:if test="${isAdmin}">
                             if (!isMarketplace) {
-                                content += '<a href="${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms" onclick="return AdminBar.showQuickOverlay(\'${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms\')" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='adminBar.label.designApp'/></a>';
+                                content += '<a href="${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms" onclick="return AdminBar.showQuickOverlay(\'${pageContext.request.contextPath}/web/console/app/' + app.id + '/_/forms\')" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='adminBar.label.designApp'/></a>';
                             }
                         </c:if>
                         var userviewUrl = uv.url;
@@ -159,10 +159,10 @@
                 <c:if test="${isAdmin}">
                     if (!isMarketplace) {
                         var extraContent = '<li class="menu-link-admin">';
-                        extraContent += '<a href="#" onclick="appImport();return false" class="app-import app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='console.app.import.label'/></div>';
-                        extraContent += '<a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fa fa-pencil"></i> <fmt:message key='console.app.create.label'/></div>';
+                        extraContent += '<a href="#" onclick="appImport();return false" class="app-import app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.import.label'/></div>';
+                        extraContent += '<a href="#" onclick="appCreate();return false" class="app-edit smallbutton"><i class="icon-edit fas fa-pencil-alt"></i> <fmt:message key='console.app.create.label'/></div>';
                         extraContent += '<a class="app-link app-new" href="#" onclick="appCreate();return false">\
-                                        <span class="app-icon"><i class="icon-plus fa fa-plus"></i></span>\
+                                        <span class="app-icon"><i class="icon-plus fas fa-plus"></i></span>\
                                         <div class="app-name"></div>\
                                     </a>\
                                 </li>';
@@ -194,7 +194,7 @@
         var timer;
         var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
         input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search fa fa-search'></i></span>")).appendTo(header);  
+        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search fas fa-search'></i></span>")).appendTo(header);  
         $(form).submit(function() { return false });
         $(input).change(function () { 
             var filter = $(this).val(); 

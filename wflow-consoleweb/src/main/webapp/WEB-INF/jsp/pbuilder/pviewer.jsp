@@ -14,7 +14,6 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link href="${pageContext.request.contextPath}/js/font-awesome4/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
         <link href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/js/JSONError.js"></script>
         <script src="${pageContext.request.contextPath}/js/JSON.js"></script>
@@ -66,9 +65,9 @@
             </div>
             <div id="panel">
                 <div id="controls">                                    
-                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fa fa-search-minus"></i> </a> 
-                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fa fa-search-plus"></i></a> | 
-                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fa fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
+                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fas fa-search-minus"></i> </a> 
+                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fas fa-search-plus"></i></a> | 
+                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fas fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
                 </div>
                 <div id="config">
                     <form method="POST">

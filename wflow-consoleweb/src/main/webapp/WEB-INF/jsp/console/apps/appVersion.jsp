@@ -64,7 +64,7 @@
                             '-moz-border-radius': '10px', 
                             opacity: .3, 
                             color: '#fff' 
-                        }, message : "<i class='icon-spinner icon-spin icon-2x fa fa-spinner fa-spin fa-2x'></i>" });                    
+                        }, message : "<i class='icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x'></i>" });                    
                     }
                     
                     function newVersion(version){

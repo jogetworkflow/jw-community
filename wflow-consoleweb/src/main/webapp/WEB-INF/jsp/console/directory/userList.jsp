@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fa fa-users"></i> <fmt:message key='console.header.menu.label.users'/></p>
+        <p><i class="fas fa-users"></i> <fmt:message key='console.header.menu.label.users'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">

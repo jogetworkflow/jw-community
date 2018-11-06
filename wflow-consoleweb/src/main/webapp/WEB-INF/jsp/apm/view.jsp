@@ -7,7 +7,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fa fa-dashboard"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
+        <p><i class="fas fa-tachometer-alt"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">

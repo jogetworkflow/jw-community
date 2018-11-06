@@ -111,10 +111,10 @@
         <div id="builder-container">
             <div id="builder-header">
                 <a class="reload" onclick="location.reload(true);"></a>
-                <i class="fa fa-2x fa-gears"></i>
+                <i class="fas fa-2x fa-th-list"></i>
                 <div id="builder-logo"></div>
                 <div id="builder-title"><fmt:message key="pbuilder.title"/> <i> - <c:out value="${appDefinition.name}"/> v${appDefinition.version}</i></div>
-                <div id="deploy-button" class="highlight-button last-inactive"><a id="deploy" href="#" onclick="ProcessBuilder.ApiClient.deploy(); return false"><span class="steps-bg"><span class="title"> <i class="fa fa-cloud-upload"></i> <fmt:message key="pbuilder.label.deploy"/></span></span></a></div>
+                <div id="deploy-button" class="highlight-button last-inactive"><a id="deploy" href="#" onclick="ProcessBuilder.ApiClient.deploy(); return false"><span class="steps-bg"><span class="title"> <i class="fas fa-cloud-upload-alt"></i> <fmt:message key="pbuilder.label.deploy"/></span></span></a></div>
             </div>
             <div id="builder-body">
                 <div id="builder-bar">
@@ -132,15 +132,15 @@
                             </div>
                             <div id="panel">
                                 <div id="controls">                                    
-                                    <a href="#" onclick="ProcessBuilder.Actions.undo(); return false" class="action-undo"><i class="fa fa-undo"></i> <fmt:message key="pbuilder.label.undo"/></a> | 
-                                    <a href="#" onclick="ProcessBuilder.Actions.redo(); return false" class="action-redo"><i class="fa fa-repeat"></i> <fmt:message key="pbuilder.label.redo"/></a> | 
-                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fa fa-search-minus"></i> </a> 
-                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fa fa-search-plus"></i></a> | 
-                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.saveScreenshots(function(){}, true); return false"><i class="fa fa-camera"></i> <fmt:message key="pbuilder.label.screenshot"/></a> |--> 
-                                    <!--<a href="#" onclick="ProcessBuilder.Designer.validate(); return false"><i class="fa fa-check"></i> <fmt:message key="pbuilder.label.validate"/></a> | -->
-                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.list(); return false"><i class="fa fa-cloud-download"></i> <fmt:message key="pbuilder.label.load"/></a> |-->
-                                    <span id="launchDesigner"><a href="#" onclick="launchDesigner(); return false"><i class="fa fa-upload"></i> <fmt:message key="console.process.config.label.launchDesigner"/></a> |</span>
-                                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fa fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
+                                    <a href="#" onclick="ProcessBuilder.Actions.undo(); return false" class="action-undo"><i class="fas fa-undo"></i> <fmt:message key="pbuilder.label.undo"/></a> | 
+                                    <a href="#" onclick="ProcessBuilder.Actions.redo(); return false" class="action-redo"><i class="fas fa-redo"></i> <fmt:message key="pbuilder.label.redo"/></a> | 
+                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(0.7); return false"><i class="fas fa-search-minus"></i> </a> 
+                                    <a href="#" onclick="ProcessBuilder.Designer.setZoom(1.0); return false"><i class="fas fa-search-plus"></i></a> | 
+                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.saveScreenshots(function(){}, true); return false"><i class="fas fa-camera"></i> <fmt:message key="pbuilder.label.screenshot"/></a> |--> 
+                                    <!--<a href="#" onclick="ProcessBuilder.Designer.validate(); return false"><i class="fas fa-check"></i> <fmt:message key="pbuilder.label.validate"/></a> | -->
+                                    <!--<a href="#" onclick="ProcessBuilder.ApiClient.list(); return false"><i class="fas fa-cloud-download-alt"></i> <fmt:message key="pbuilder.label.load"/></a> |-->
+                                    <span id="launchDesigner"><a href="#" onclick="launchDesigner(); return false"><i class="fas fa-upload"></i> <fmt:message key="console.process.config.label.launchDesigner"/></a> |</span>
+                                    <a href="#" onclick="$('#config').toggle(); return false"><i class="fas fa-cog"></i> <fmt:message key="pbuilder.label.debug"/></a>
                                 </div>
                                 <div id="config">
                                     <form method="POST" action="?">

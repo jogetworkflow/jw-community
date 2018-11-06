@@ -78,7 +78,7 @@
     <ion-content class="has-header">
         <ion-list>
             <a class="item item-icon-left nav-clear menu-close " ng-show="hasList" ng-click="viewList()">
-                <i class="icon fa fa-th"></i> <strong>All Apps</strong>
+                <i class="icon fas fa-th"></i> <strong>All Apps</strong>
             </a>
             <c:forEach items="${userview.categories}" var="category" varStatus="cStatus">
                 <c:if test="${category.properties.hide ne 'yes'}"> 

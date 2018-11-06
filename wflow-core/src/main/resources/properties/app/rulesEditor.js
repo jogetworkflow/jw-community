@@ -140,7 +140,7 @@
         css += '.if-rule > .rules-container {padding-left: 20px;}';
         css += '.if-rule > .rules-container > .buttons > a.revert {top: 8px; left: 9px;}';
         
-        var html = '<div name="'+thisObj.id+'"><div class="ifrules-container"></div><a class="rbutton pebutton addif"><i class="fa fa-plus-circle"></i> @@app.rulesdecision.addRule@@</a><div class="else-rule rulewrapper pewrapper"><div class="rule_header peheader">@@app.rulesdecision.elsethen@@</div><div class="then-container"></div></div></div>';
+        var html = '<div name="'+thisObj.id+'"><div class="ifrules-container"></div><a class="rbutton pebutton addif"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addRule@@</a><div class="else-rule rulewrapper pewrapper"><div class="rule_header peheader">@@app.rulesdecision.elsethen@@</div><div class="then-container"></div></div></div>';
         
         return '<style>'+ css + '</style>' + html;
     },
@@ -293,7 +293,7 @@
     addRule : function() {
         var thisObj = this;
         
-        var ifrule = $('<div class="if-rule rulewrapper pewrapper"><div class="rule_header peheader">@@app.rulesdecision.if@@ <span class="buttons"><a class="deleterule" title="@@app.rulesdecision.deleteRule@@"><i class="fa fa-trash"></i></a> | <a class="sort" title="@@app.rulesdecision.sort@@"><i class="fa fa-ellipsis-v"></i><i class="fa fa-ellipsis-v"></i></a></span></div><div class="rules-container"></div><div class="rule_header peheader">@@app.rulesdecision.then@@</div><div class="then-container"></div></div>');
+        var ifrule = $('<div class="if-rule rulewrapper pewrapper"><div class="rule_header peheader">@@app.rulesdecision.if@@ <span class="buttons"><a class="deleterule" title="@@app.rulesdecision.deleteRule@@"><i class="fas fa-trash-alt"></i></a> | <a class="sort" title="@@app.rulesdecision.sort@@"><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i></a></span></div><div class="rules-container"></div><div class="rule_header peheader">@@app.rulesdecision.then@@</div><div class="then-container"></div></div>');
         thisObj.initConditions($(ifrule).find("> .rules-container"));
         thisObj.initThen(ifrule);
         $("#" + thisObj.id + "_input").find("> div > .ifrules-container").append(ifrule);
@@ -301,20 +301,20 @@
     initThen : function(rule) {
         var thisObj = this;
         
-        $(rule).find(".then-container").append('<div class="buttons"><a class="addaction"><i class="fa fa-plus-circle"></i> @@app.rulesdecision.addAction@@</a></div><div class="actions-container"></div>');
+        $(rule).find(".then-container").append('<div class="buttons"><a class="addaction"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addAction@@</a></div><div class="actions-container"></div>');
     },
     initConditions : function(container, isGroup) {
         var thisObj = this;
-        var conditions = $('<div class="buttons"><a class="revert"><i class="fa fa-exclamation" title="@@app.rulesdecision.revert@@"></i>&nbsp;&nbsp;</a><select class="andOr"><option value="and">@@app.rulesdecision.and@@</option><option value="or">@@app.rulesdecision.or@@</option></select><a class="addcondition"><i class="fa fa-plus-circle"></i> @@app.rulesdecision.addCondition@@</a>&nbsp;&nbsp;<a class="addgroup"><i class="fa fa-plus-circle"></i> @@app.rulesdecision.addGroup@@</a></div><div class="conditions-container"></div>');
+        var conditions = $('<div class="buttons"><a class="revert"><i class="fas fa-exclamation" title="@@app.rulesdecision.revert@@"></i>&nbsp;&nbsp;</a><select class="andOr"><option value="and">@@app.rulesdecision.and@@</option><option value="or">@@app.rulesdecision.or@@</option></select><a class="addcondition"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addCondition@@</a>&nbsp;&nbsp;<a class="addgroup"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addGroup@@</a></div><div class="conditions-container"></div>');
         $(container).append(conditions);
         if (isGroup !== undefined && isGroup === true) {
-            $(container).find(".buttons").append('&nbsp;&nbsp;<a class="deletegroup" title="@@app.rulesdecision.deleteGroup@@"><i class="fa fa-trash"></i></a>');
+            $(container).find(".buttons").append('&nbsp;&nbsp;<a class="deletegroup" title="@@app.rulesdecision.deleteGroup@@"><i class="fas fa-trash-alt"></i></a>');
         }
     },
     addCondition : function(button) {
         var thisObj = this;
         var container = $(button).parent().parent().find("> .conditions-container");
-        $(container).append('<div class="rulerow perow condition"><table><tr><td class="revert"><i class="fa fa-exclamation" title="@@app.rulesdecision.revert@@"></i></td><td><input class="condition autocomplete required" placeholder="@@app.rulesdecision.variable@@"/></td><td><select class="operation"><option value="==">@@pbuilder.label.equalTo@@</option><option value=">">@@pbuilder.label.greaterThan@@</option><option value=">=">@@pbuilder.label.greaterThanOrEqualTo@@</option><option value="<">@@pbuilder.label.lessThan@@</option><option value="<=">@@pbuilder.label.lessThanOrEqualTo@@</option><option value="true">@@pbuilder.label.isTrue@@</option><option value="false">@@pbuilder.label.isFalse@@</option><option value="contains">@@app.rulesdecision.contains@@</option><option value="in">@@app.rulesdecision.in@@</option><option value="regex">@@app.rulesdecision.regex@@</option></select></td><td><input class="condition_value" placeholder="Value"/></td><td class="alignright"><a class="deletecondition" title="@@app.rulesdecision.deleteCondition@@"><i class="fa fa-trash"></i></a></td></tr></table></div>');
+        $(container).append('<div class="rulerow perow condition"><table><tr><td class="revert"><i class="fas fa-exclamation" title="@@app.rulesdecision.revert@@"></i></td><td><input class="condition autocomplete required" placeholder="@@app.rulesdecision.variable@@"/></td><td><select class="operation"><option value="==">@@pbuilder.label.equalTo@@</option><option value=">">@@pbuilder.label.greaterThan@@</option><option value=">=">@@pbuilder.label.greaterThanOrEqualTo@@</option><option value="<">@@pbuilder.label.lessThan@@</option><option value="<=">@@pbuilder.label.lessThanOrEqualTo@@</option><option value="true">@@pbuilder.label.isTrue@@</option><option value="false">@@pbuilder.label.isFalse@@</option><option value="contains">@@app.rulesdecision.contains@@</option><option value="in">@@app.rulesdecision.in@@</option><option value="regex">@@app.rulesdecision.regex@@</option></select></td><td><input class="condition_value" placeholder="Value"/></td><td class="alignright"><a class="deletecondition" title="@@app.rulesdecision.deleteCondition@@"><i class="fas fa-trash-alt"></i></a></td></tr></table></div>');
         
         $(container).find(".autocomplete").autocomplete({
             source:function (request, response) {
@@ -344,7 +344,7 @@
         var voptions = thisObj.variablehtml;
         var toptions = thisObj.transitionshtml;
         
-        var row = $('<div class="rulerow perow action"><table><tr><td><select class="type"><option value="transition">@@app.rulesdecision.transition@@</option><option value="variable">@@app.rulesdecision.workflowVariable@@</option></select></td><td><select class="transition_name">'+toptions+'</select><select class="variable_name" style="display:none;">'+voptions+'</select></td><td><input class="variable_value" placeholder="@@app.rulesdecision.value@@" style="visibility:hidden;"/></td><td class="alignright"><a class="deleteaction" title="@@app.rulesdecision.deleteAction@@"><i class="fa fa-trash"></i></a></td></tr></table></div>');
+        var row = $('<div class="rulerow perow action"><table><tr><td><select class="type"><option value="transition">@@app.rulesdecision.transition@@</option><option value="variable">@@app.rulesdecision.workflowVariable@@</option></select></td><td><select class="transition_name">'+toptions+'</select><select class="variable_name" style="display:none;">'+voptions+'</select></td><td><input class="variable_value" placeholder="@@app.rulesdecision.value@@" style="visibility:hidden;"/></td><td class="alignright"><a class="deleteaction" title="@@app.rulesdecision.deleteAction@@"><i class="fas fa-trash-alt"></i></a></td></tr></table></div>');
         
         $(row).find(".variable_name").trigger("change");
         $(row).find(".transition_name").trigger("change");

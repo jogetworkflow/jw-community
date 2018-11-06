@@ -1,6 +1,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
     <group name="common">
         <css>/js/jquery/themes/ui-lightness/jquery-ui-1.10.3.custom.css</css>
+        <css>/js/fontawesome5/css/all.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>

@@ -28,8 +28,8 @@
     <div id="main-body">
 
         <div id='nv-refresh'>
-            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='fa fa-th-list'></i></a>&nbsp;&nbsp;
-            <a href='#' onclick='return refreshNavigator()'><i class='fa fa-refresh'></i> <fmt:message key="general.method.label.refresh"/></a>
+            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='fas fa-th-list'></i></a>&nbsp;&nbsp;
+            <a href='#' onclick='return refreshNavigator()'><i class="fas fa-sync-alt"></i> <fmt:message key="general.method.label.refresh"/></a>
         </div>
         <div id="nv-container">
         <jsp:include page="/web/console/app/${appId}/${appVersion}/navigator" flush="true"/>

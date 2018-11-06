@@ -273,7 +273,7 @@ FormUtil = {
                     label = $("[name=" + selector + "]:not(form)").closest(".form-cell").find("label.label");
                 }
                 if (label !== null && label.find("i.tooltipstered").length === 0) {
-                    $(label).append(" <i class=\"fieldtooltip fa fa-info-circle\"></i>");
+                    $(label).append(" <i class=\"fieldtooltip fa fas fa-info-circle\"></i>");
                     $(label).find("i").tooltipster({
                         content: $("<div>" + tooltip + "</div>"),
                         side: 'right',
