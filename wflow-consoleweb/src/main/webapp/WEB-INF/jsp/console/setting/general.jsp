@@ -375,6 +375,17 @@
                     </div>
                 </span>
             </div>
+            <div class="main-body-row">
+                <span class="row-content">
+                    <div class="form-row">
+                        <label for="glowrootUrl"><fmt:message key="apm.glowrootUrl"/></label>
+                        <span class="form-input">
+                            <input id="glowrootUrl" type="text" name="glowrootUrl" value="<c:out value="${settingMap['glowrootUrl']}"/>"/>
+                            <i><span class="ftl_label"><fmt:message key="console.setting.general.label.default"/></span> http://localhost:4000</i>
+                        </span>
+                    </div>
+                </span>
+            </div>
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
             </div>

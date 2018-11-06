@@ -1461,11 +1461,18 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     }
                 }
 
-                if (button.ajax_method === undefined) {
-                    button.ajax_method = "GET";
-                }
+                var buttonAttrs = "";
+                if (button.ajax_url !== undefined) {
+                     if (button.ajax_method === undefined) {
+                        button.ajax_method = "GET";
+                    }
 
-                html += '<input id="' + page.id + '_' + button.name + '" type="button" class="page-button-custom" value="' + button.label + '" data-ajax_url="' + button.ajax_url + '" data-ajax_method="' + button.ajax_method + '" data-action="' + button.name + '" ' + showHide + ' />';
+                    buttonAttrs = 'data-ajax_url="' + button.ajax_url + '" data-ajax_method="' + button.ajax_method + '"';
+                } else if (button.callback !== undefined) {
+                    buttonAttrs = 'data-callback="' + button.callback + '"';
+                }
+                
+                html += '<input id="' + page.id + '_' + button.name + '" type="button" class="page-button-custom" value="' + button.label + '" ' + buttonAttrs +' data-action="' + button.name + '" ' + showHide + ' />';
                 if (button.addition_fields !== undefined && button.addition_fields !== null) {
                     html += '<div id="' + page.id + '_' + button.name + '_form" class="button_form" style="display:none;">';
                     html += '<div id="main-body-header" style="margin-bottom:15px;">' + button.label + '</div>';
@@ -1543,7 +1550,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                             click: function() {
                                 page.validation(function(addition_data) {
                                     data = $.extend(data, addition_data);
-                                    panel.executeButtonEvent(data, $(button).data("ajax_url"), $(button).data("ajax_method"));
+                                    panel.executeButtonEvent(data, $(button));
                                     $(object).dialog("close");
                                 }, function(errors) {}, true, buttonProperties.addition_fields);
                             }
@@ -1553,33 +1560,45 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         }
                     });
                 } else {
-                    panel.executeButtonEvent(data, $(button).data("ajax_url"), $(button).data("ajax_method"));
+                    panel.executeButtonEvent(data, $(button));
                 }
             }, function(errors) {}, true, pageProperties);
             return false;
         });
     },
-    executeButtonEvent: function(data, url, method) {
+    executeButtonEvent: function(data, button) {
+        var url = $(button).data("ajax_url");
+        var callback = $(button).data("callback");
+        if (url !== null && url !== undefined && url !== "") {
+            var method = $(button).data("ajax_method");
+            $.each(data, function(i, d) {
+                if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%", d.substring(d.length - 4) === "%%%%") {
+                    data[i] = d.replace(/%%%%/g, "");
+                }
+            });
 
-        $.each(data, function(i, d) {
-            if (d.indexOf("%%%%") !== -1 && d.substring(0, 4) === "%%%%", d.substring(d.length - 4) === "%%%%") {
-                data[i] = d.replace(/%%%%/g, "");
-            }
-        });
+            $.ajax({
+                method: method,
+                url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),
+                data: $.param(data),
+                dataType: "text",
+                success: function(response) {
+                    var r = $.parseJSON(response);
 
-        $.ajax({
-            method: method,
-            url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),
-            data: $.param(data),
-            dataType: "text",
-            success: function(response) {
-                var r = $.parseJSON(response);
-
-                if (r.message !== undefined && r.message !== null) {
-                    alert(r.message);
+                    if (r.message !== undefined && r.message !== null) {
+                        alert(r.message);
+                    }
+                }
+            });
+        } else if (callback !== null && callback !== undefined && callback !== "") {
+            var callbackFunc = PropertyEditor.Util.getFunction(callback);
+            if (callbackFunc !== null) {
+                var message = callbackFunc(data);
+                if (message !== undefined && message !== null) {
+                    alert(message);
                 }
             }
-        });
+        }
     },
     refresh: function() {
         if ($(this.editor).find('.property-page-show').length === 1) {

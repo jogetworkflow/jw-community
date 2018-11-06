@@ -121,12 +121,14 @@
                                 <get src="https://dev.joget.org/downloads/dependencies/apache-ant-${apache-ant.version}-bin.tar.gz" dest="downloads/apache-ant-${apache-ant.version}-bin.tar.gz" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/mariadb-noinstall-${mariadb.version}-win32.zip" dest="downloads/mariadb-noinstall-${mariadb.version}-win32.zip" username="public" password="public" usetimestamp="true" />
                                 <get src="https://dev.joget.org/downloads/dependencies/jre${jre.version}.tar.gz" dest="downloads/jre${jre.version}.tar.gz" username="public" password="public" usetimestamp="true" />
+                                <get src="https://github.com/glowroot/glowroot/releases/download/v${glowroot.version}/glowroot-${glowroot.version}-dist.zip" dest="downloads/glowroot-${glowroot.version}-dist.zip" usetimestamp="true" />
 
                                 <untar compression="gzip" dest="target">
                                     <fileset dir="downloads/">
                                         <include name="apache-tomcat-${tomcat.version}.tar.gz" />
                                         <include name="apache-ant-${apache-ant.version}-bin.tar.gz" />
                                         <include name="jre${jre.version}.tar.gz" />
+                                        <include name="glowroot-${glowroot.version}-dist.zip" />
                                     </fileset>
                                 </untar>
 
@@ -165,6 +167,7 @@
                                     <fileset dir="target">
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
+                                        <include name="glowroot/**" />
                                         <include name="jre${jre.version}/**" />
                                         <include name="mariadb-${mariadb.version}-win32/**" />
                                         <include name="data/**" />
@@ -189,6 +192,7 @@
                                     <tarfileset dir="target" prefix="joget-linux-${project.version}">
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
+                                        <include name="glowroot/**" />
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />

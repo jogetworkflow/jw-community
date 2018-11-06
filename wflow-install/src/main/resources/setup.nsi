@@ -182,6 +182,7 @@ Section "Joget Workflow" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
+  File /r glowroot
   CreateDirectory "$INSTDIR\apache-tomcat-8.5.23\webapps"
   File /oname=apache-tomcat-8.5.23\webapps\jw.war apache-tomcat-8.5.23\webapps\jw.war
   File /oname=apache-tomcat-8.5.23\webapps\jwdesigner.war apache-tomcat-8.5.23\webapps\jwdesigner.war
@@ -345,6 +346,7 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.8.0_112"
+  RmDir /r "$INSTDIR\glowroot"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.23\webapps\jw"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.23\webapps\jwdesigner"
   Delete "$INSTDIR\apache-tomcat-8.5.23\webapps\jw.war"

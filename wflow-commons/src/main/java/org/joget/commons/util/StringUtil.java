@@ -5,6 +5,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -90,6 +91,40 @@ public class StringUtil {
 
         return constructUrlQueryString(params);
     }
+    
+    /**
+     * Remove parameter from url. 
+     * @param url
+     * @param paramKey
+     * @return 
+     */
+    public static String removeParamFromUrl(String url, String paramKey) {
+        String urlResult = url;
+        try {
+            String[] urlPart = urlResult.split("\\?");
+
+            urlResult = urlPart[0];
+            Map<String, String[]> resultParams = new HashMap<String, String[]>();
+
+            if (urlPart.length > 1) {
+                resultParams.putAll(getUrlParams(urlPart[1]));
+            }
+            
+            if (resultParams.containsKey(paramKey)) {
+                resultParams.remove(paramKey);
+            } else {
+                return url;
+            }
+
+            if (!resultParams.isEmpty()) {
+                urlResult += "?" + constructUrlQueryString(resultParams);
+            }
+        } catch (Exception e) {
+            LogUtil.error(StringUtil.class.getName(), e, "");
+        }
+
+        return urlResult;
+    }
 
     /**
      * Add parameter and its value to url. Override the value if the parameter 
@@ -173,7 +208,7 @@ public class StringUtil {
                         
                         String[] values = (String[]) result.get(key);
                         if (values != null) {
-                            List temp = Arrays.asList(values);
+                            List<String> temp = (ArrayList<String>) Arrays.asList(values);
                             temp.add(value);
                             values = (String[]) temp.toArray(new String[0]);
                         } else {
