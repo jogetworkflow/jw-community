@@ -35,13 +35,15 @@ var AdminBar = {
             }
             $("#quickOverlayContainer").removeClass("minimize");
         });
-        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
-        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").on( "mouseleave", function() {
-            $("#quickOverlayContainer").addClass("minimize");
-        })
-        .on( "mouseenter", function() {
+        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter");
+        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {
             $("#quickOverlayContainer").removeClass("minimize");
         });
+        $("#quickOverlay").off("mouseenter");
+        $("#quickOverlay").on( "mouseenter", function() {
+            $("#quickOverlayContainer").addClass("minimize");
+        });
+        
         $("#quickOverlay").off("click");
         $("#quickOverlay").on("click", function() {
             AdminBar.hideQuickOverlay();

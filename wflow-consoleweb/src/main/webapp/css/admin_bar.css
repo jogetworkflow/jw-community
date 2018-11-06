@@ -155,7 +155,7 @@ div#quickEditModeOption:before {
 }
 #quickOverlayFrame {
     position: fixed;
-    height: calc(100% - 35px);
+    height: calc(100% - 50px);
     width: calc(100% - 50px);
     bottom: 30px;
     right: 25px;
