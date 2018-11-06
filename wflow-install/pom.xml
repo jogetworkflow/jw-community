@@ -128,13 +128,13 @@
                                         <include name="apache-tomcat-${tomcat.version}.tar.gz" />
                                         <include name="apache-ant-${apache-ant.version}-bin.tar.gz" />
                                         <include name="jre${jre.version}.tar.gz" />
-                                        <include name="glowroot-${glowroot.version}-dist.zip" />
                                     </fileset>
                                 </untar>
 
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
                                         <include name="mariadb-noinstall-${mariadb.version}-win32.zip" />
+                                        <include name="glowroot-${glowroot.version}-dist.zip" />
                                     </fileset>
                                 </unzip>
 
