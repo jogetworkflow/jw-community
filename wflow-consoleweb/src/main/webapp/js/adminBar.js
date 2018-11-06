@@ -35,9 +35,13 @@ var AdminBar = {
             }
             $("#quickOverlayContainer").removeClass("minimize");
         });
-        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter");
+        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
         $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {
             $("#quickOverlayContainer").removeClass("minimize");
+        }).on("mouseleave", function(event) {
+            if ((event.relatedTarget === null || event.relatedTarget === undefined) && event.pageY < 0) {
+                $("#quickOverlayContainer").addClass("minimize");
+            }
         });
         $("#quickOverlay").off("mouseenter");
         $("#quickOverlay").on( "mouseenter", function() {
