@@ -320,7 +320,7 @@
             source:function (request, response) {
                 var sources = [];
                 $.each(thisObj.getWorkflowVariables, function(i, v){
-                    sources.push("${"+v+"}");
+                    sources.push(v);
                 });
                 response(sources);
             },
@@ -353,7 +353,7 @@
             source:function (request, response) {
                 var sources = [];
                 $.each(thisObj.getWorkflowVariables, function(i, v){
-                    sources.push("${"+v+"}");
+                    sources.push(v);
                 });
                 response(sources);
             },

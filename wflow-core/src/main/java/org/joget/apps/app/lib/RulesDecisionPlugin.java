@@ -235,6 +235,8 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                     value = value.replaceAll(StringUtil.escapeRegex(found), StringUtil.escapeRegex((String)variables.get(variableKey)));
                 }
             }
+        } else if (value != null && variables.containsKey(value.trim())) {
+            value = variables.get(value.trim());
         }
         return value;
     }

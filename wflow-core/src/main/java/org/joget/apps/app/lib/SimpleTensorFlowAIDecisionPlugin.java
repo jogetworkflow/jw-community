@@ -177,13 +177,13 @@ public class SimpleTensorFlowAIDecisionPlugin  extends RulesDecisionPlugin {
                         }
                     }
                     type = FilenameUtils.getExtension(filename);
-                    inputMap.put(getVariable(input.get("name").toString(), variables), TensorFlowUtil.imageInput(getInputStream(filename, form, processId), type, Integer.parseInt(getVariable(input.get("height").toString(), variables)), Integer.parseInt(getVariable(input.get("width").toString(), variables)), Float.parseFloat(getVariable(input.get("mean").toString(), variables)), Float.parseFloat(getVariable(input.get("scale").toString(), variables)), input.get("datatype").toString()));
+                    inputMap.put(input.get("name").toString(), TensorFlowUtil.imageInput(getInputStream(filename, form, processId), type, Integer.parseInt(getVariable(input.get("height").toString(), variables)), Integer.parseInt(getVariable(input.get("width").toString(), variables)), Float.parseFloat(getVariable(input.get("mean").toString(), variables)), Float.parseFloat(getVariable(input.get("scale").toString(), variables)), input.get("datatype").toString()));
                 } else if ("text".equalsIgnoreCase(input.get("type").toString())) {
-                    inputMap.put(getVariable(input.get("name").toString(), variables), TensorFlowUtil.textInput(getVariable(input.get("text").toString(), variables), getInputStream(getVariable(input.get("dict").toString(), variables), null, null), ((getVariable(input.get("dict").toString(), variables).endsWith("json"))?"json":"csv"), Integer.parseInt(getVariable(input.get("maxlength").toString(), variables)), input.get("datatype").toString(), "true".equalsIgnoreCase(input.get("fillback").toString())));
+                    inputMap.put(input.get("name").toString(), TensorFlowUtil.textInput(getVariable(input.get("text").toString(), variables), getInputStream(getVariable(input.get("dict").toString(), variables), null, null), ((getVariable(input.get("dict").toString(), variables).endsWith("json"))?"json":"csv"), Integer.parseInt(getVariable(input.get("maxlength").toString(), variables)), input.get("datatype").toString(), "true".equalsIgnoreCase(input.get("fillback").toString())));
                 } else if ("numbers".equalsIgnoreCase(input.get("type").toString())) {
-                    inputMap.put(getVariable(input.get("name").toString(), variables), TensorFlowUtil.numbersInput(getVariable(input.get("numbers").toString(), variables), input.get("datatype").toString()));
+                    inputMap.put(input.get("name").toString(), TensorFlowUtil.numbersInput(getVariable(input.get("numbers").toString(), variables), input.get("datatype").toString()));
                 } else if ("boolean".equalsIgnoreCase(input.get("type").toString())) {
-                    inputMap.put(getVariable(input.get("name").toString(), variables), TensorFlowUtil.booleanInput(getVariable(input.get("boolean").toString(), variables)));
+                    inputMap.put(input.get("name").toString(), TensorFlowUtil.booleanInput(getVariable(input.get("boolean").toString(), variables)));
                 }
             }
         }
@@ -231,7 +231,7 @@ public class SimpleTensorFlowAIDecisionPlugin  extends RulesDecisionPlugin {
     }
     
     protected void runPostProcessing(Map postProcessing, Map<String, Object> tfvariables, Map<String, String> variables) {
-        String name = getVariable(postProcessing.get("name").toString(), variables);
+        String name = postProcessing.get("name").toString();
         String type = postProcessing.get("type").toString();
         String variable = postProcessing.get("variable").toString();
         try {
