@@ -258,7 +258,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             if ("true".equalsIgnoreCase(getPropertyString("icsAttachement"))) {
                 Calendar calendar = new Calendar();
                 calendar.getProperties().add(Version.VERSION_2_0);
-                calendar.getProperties().add(new ProdId("-//Joget Workflow//iCal4j 1.0//EN"));
+                calendar.getProperties().add(new ProdId("-//Joget DX//iCal4j 1.0//EN"));
                 calendar.getProperties().add(CalScale.GREGORIAN);
                 
                 String eventName = getPropertyString("icsEventName");

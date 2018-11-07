@@ -6,7 +6,7 @@
         <div class="form-row">
             <label for="version">@@console.app.common.label.version@@</label>
             <span class="form-input">
-                &copy; Joget Workflow - Joget Inc. All Rights Reserved. 
+                &copy; Joget DX - Joget Inc. All Rights Reserved. 
                 <br>
                 @@console.footer.label.revision@@
             </span>

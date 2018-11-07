@@ -163,7 +163,7 @@ public class CachedUserviewMenu extends UserviewMenu {
     /**
      * Return a set of plugin properties to configure by admin user
      *
-     * @Deprecated Since version 3, Joget Workflow introduced a better UI for plugin
+     * @Deprecated Since version 3, Joget introduced a better UI for plugin
      * configuration. A plugin should implement org.joget.plugin.property.model.PropertyEditable
      * interface to provide the plugin configuration options.
      *

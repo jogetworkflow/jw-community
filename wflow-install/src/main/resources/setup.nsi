@@ -8,12 +8,12 @@
 ;General
 
   ;Name and file
-  Name "Joget Workflow"
+  Name "Joget DX"
   ;OutFile "joget-installer.exe"
 
   ;Default installation folder
   ;InstallDir "$PROGRAMFILES\Joget"
-  InstallDir "C:\Joget-v6"
+  InstallDir "C:\Joget-DX7"
 
   ;Get installation folder from registry if available
   ;InstallDirRegKey HKCU "Software\Joget"
@@ -140,7 +140,7 @@
 
 ;Installer Sections
 
-Section "Joget Workflow" SecJoget
+Section "Joget DX" SecJoget
 
   SectionIn RO
   SetOutPath "$INSTDIR"
@@ -163,6 +163,7 @@ Section "Joget Workflow" SecJoget
         RmDir /r "$SMPROGRAMS\Joget Workflow v3"
         RmDir /r "$SMPROGRAMS\Joget Workflow v4"
         RmDir /r "$SMPROGRAMS\Joget Workflow v5"
+        RmDir /r "$SMPROGRAMS\Joget Workflow v6"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
@@ -256,11 +257,11 @@ Section "Start Menu Shortcuts" SecStartMenu
 
   SetOutPath "$INSTDIR"
 
-  CreateDirectory "$SMPROGRAMS\Joget Workflow v6"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v6\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v6\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v6\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
-  CreateShortCut "$SMPROGRAMS\Joget Workflow v6\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
+  CreateDirectory "$SMPROGRAMS\Joget DX 7"
+  CreateShortCut "$SMPROGRAMS\Joget DX 7\Start Joget Server.lnk" "$INSTDIR\joget-start.bat" "Start Joget Server" "$INSTDIR\joget_start.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 7\Stop Joget Server.lnk" "$INSTDIR\joget-stop.bat" "Stop Joget Server" "$INSTDIR\joget_stop.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 7\App Center.lnk" "http://localhost:8080/jw" "App Center" "$INSTDIR\joget.ico"
+  CreateShortCut "$SMPROGRAMS\Joget DX 7\www.joget.org.lnk" "http://www.joget.org" "www.joget.org" "$INSTDIR\joget.ico"
 
 SectionEnd
 
@@ -318,7 +319,7 @@ FunctionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget Workflow Application"
+  LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget DX Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
   LangString DESC_SecJava ${LANG_ENGLISH} "Java 8 Standard Edition"
   LangString DESC_SecMariaDB ${LANG_ENGLISH} "MariaDB 10 Database Server"
@@ -340,7 +341,7 @@ Section "Uninstall"
 
 
   ;Uninstall Files Here
-  RMDir /r "$SMPROGRAMS\Joget Workflow v6"
+  RMDir /r "$SMPROGRAMS\Joget DX 7"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre1.8.0_112"
