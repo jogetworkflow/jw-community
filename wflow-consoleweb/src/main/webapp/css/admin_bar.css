@@ -55,7 +55,7 @@ body.embeded #adminBar {
 }
 #adminBar #appCenter i{
     font-size: 36px;
-    padding: 3px;
+    padding: 2px 3px;
     color : #CFD8DC;
 }
 #adminBarButtons {
@@ -100,7 +100,8 @@ body.embeded #adminBar {
 }
 #adminBarButtons .separator {
     position: relative;
-    margin: 0 8px;
+    margin: 0 4px;
+    display: inline-block;
 }
 #adminBarButtons .separator h5 {
     display: none;
@@ -118,6 +119,7 @@ div#quickEditModeOption:before,
     height: 18px;
     border-left: 1px solid #CFD8DC;
     display: block;
+    left: 0;
 }
 div#quickEditModeOption:before {
     top: 6px;
@@ -160,7 +162,7 @@ div#quickEditModeOption:before {
 }
 #quickOverlayFrame {
     position: fixed;
-    height: calc(100% - 50px);
+    height: calc(100% - 35px);
     width: calc(100% - 50px);
     bottom: 30px;
     right: 25px;
