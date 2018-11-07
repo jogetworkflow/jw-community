@@ -31,7 +31,7 @@ public class FormMenu extends UserviewMenu {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.FormMenu/images/subForm_icon.gif";
+        return "<i class=\"fas fa-file-contract\"></i>";
     }
 
     @Override

@@ -42,4 +42,8 @@ public abstract class DataListActionDefault extends ExtDefaultPlugin implements 
     public Boolean supportList() {
         return true;
     }
+    
+    public String getIcon() {
+        return "";
+    }
 }

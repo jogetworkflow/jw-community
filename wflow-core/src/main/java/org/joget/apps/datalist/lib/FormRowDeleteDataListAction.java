@@ -33,6 +33,11 @@ public class FormRowDeleteDataListAction extends DataListActionDefault {
     public String getLabel() {
         return "Form Row Delete Action";
     }
+    
+    @Override
+    public String getIcon() {
+        return "<i class=\"fas fa-trash-alt\"></i>";
+    }
 
     public String getLinkLabel() {
         String label = getPropertyString("label");

@@ -34,7 +34,7 @@ public class DataListMenu extends UserviewMenu {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.DataListMenu/images/grid_icon.gif";
+        return "<i class=\"fas fa-table\"></i>";
     }
 
     @Override

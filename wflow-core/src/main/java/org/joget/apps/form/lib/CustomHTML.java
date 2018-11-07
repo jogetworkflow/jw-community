@@ -332,6 +332,6 @@ public class CustomHTML extends Element implements FormBuilderPaletteElement, Fo
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.TextArea/images/textArea_icon.gif";
+        return "<i class=\"fas fa-code\"></i>";
     }
 }

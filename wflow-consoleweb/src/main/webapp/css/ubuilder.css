@@ -1,19 +1,5 @@
 @import url("builder.css");
 
-.builder-palette-element{
-    border: dotted 1px #dddddd;
-    cursor: pointer;
-    line-height: 28px;
-    padding: 0px;
-    margin: 0px;
-    color: #4C4C4C;
-}
-
-.builder-palette-element label{
-    padding-left: 3px;
-}
-/*End custom builder style*/
-
 #toolbar{
     border: 1px solid #D6D6D6;
     padding: 5px;

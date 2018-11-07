@@ -25,6 +25,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
+import org.joget.apps.datalist.model.DataListActionDefault;
 import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListFilter;
@@ -199,6 +200,7 @@ public class DatalistBuilderWebController {
             hm.put("supportColumn", action.supportColumn());
             hm.put("supportRow", action.supportRow());
             hm.put("supportList", action.supportList());
+            hm.put("icon", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getIcon()):"");
             collection.add(hm);
         }
         jsonObject.accumulate("actions", collection);

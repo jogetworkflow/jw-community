@@ -82,6 +82,6 @@ public class HiddenField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.HiddenField/images/textField_icon.gif";
+        return "<i class=\"fas fa-eye-slash\"></i>";
     }
 }

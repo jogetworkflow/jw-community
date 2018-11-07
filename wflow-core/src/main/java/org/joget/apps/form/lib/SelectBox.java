@@ -134,7 +134,7 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
 
     @Override
     public String getFormBuilderIcon() {
-        return null;
+        return "<i class=\"fas fa-caret-square-down\"></i>";
     }
     
     protected void dynamicOptions(FormData formData) {

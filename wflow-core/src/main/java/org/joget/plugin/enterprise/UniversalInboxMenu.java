@@ -44,7 +44,7 @@ public class UniversalInboxMenu extends InboxMenu implements PluginWebSupport {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.plugin.enterprise.UniversalInboxMenu/images/grid_icon.gif";
+        return "<i class=\"fas fa-inbox\"></i>";
     }
 
     @Override

@@ -121,7 +121,7 @@ public class IdGeneratorField extends Element implements FormBuilderPaletteEleme
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.IdGeneratorField/images/textField_icon.gif";
+        return "<i><span>ID</span></i>";
     }
 
     @Override

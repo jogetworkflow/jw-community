@@ -19,7 +19,7 @@ public class Link extends UserviewMenu {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.HtmlPage/images/grid_icon.gif";
+        return "<i class=\"fas fa-link\"></i>";
     }
 
     @Override

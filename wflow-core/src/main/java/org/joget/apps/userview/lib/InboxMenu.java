@@ -61,7 +61,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.InboxMenu/images/grid_icon.gif";
+        return "<i class=\"fas fa-inbox\"></i>";
     }
 
     @Override

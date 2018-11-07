@@ -69,6 +69,6 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.TextArea/images/textArea_icon.gif";
+        return "<span class=\"fa-stack\"><i class=\"far fa-square fa-stack-2x\"></i><i><span style=\"font-weight: bold;\">A</span></i></span>";
     }
 }

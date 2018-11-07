@@ -54,7 +54,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.RunProcess/images/grid_icon.gif";
+        return "<i class=\"fas fa-play\"></i>";
     }
 
     @Override

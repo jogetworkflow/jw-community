@@ -65,17 +65,26 @@ UserviewBuilder = {
         this.menuTypes[className]['label'] = label;
         this.menuTypes[className]['propertyOptions'] = propertyOptions;
 
-        var iconPath = "/images/v3/builder/sidebar_element.gif";
-        if(icon != ""){
-            iconPath = icon;
+        var iconObj = null;
+        if (icon !== undefined && icon !== null && icon !== "") {
+            try {   
+                iconObj = $(icon);
+            } catch (err) {
+                iconObj =  $('<span class="image" style="background-image:url(\'' + UserviewBuilder.contextPath + icon + '\');" />');
+            }
+        } else {
+            iconObj = $('<i class="fas fa-desktop"></i>');
         }
+
         //get category
         var categoryId = category.replace(/\s/g , "-");
         if($('ul#'+categoryId).length == 0){
             $('#builder-palette-body').append('<h3>'+category+'</h3><ul id="'+categoryId+'"></ul>');
         }
 
-        $('ul#'+categoryId).append('<li><div id="'+className+'" element="'+className+'" class="builder-palette-element"><img src="' + this.contextPath + iconPath + '" border="0" align="left" /><label class="label">'+label+'</label></div></li>');
+        var li = $('<li><div id="'+className+'" element="'+className+'" class="builder-palette-element"> <label class="label">'+label+'</label></div></li>');
+        $(li).find('.builder-palette-element').prepend(iconObj);
+        $('ul#'+categoryId).append(li);
     },
 
     //Initial Builder feature

@@ -238,7 +238,7 @@ public class Grid extends Element implements FormBuilderPaletteElement, FormCont
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.Grid/images/grid_icon.gif";
+        return "<i class=\"fas fa-table\"></i>";
     }
      
     @Override

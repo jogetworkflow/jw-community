@@ -158,12 +158,7 @@
                                         <ul>
                                         <c:forEach items="${elementList}" var="element">
                                             <li>
-                                                <div class="form-palette-element" element-class="${element.className}" element-property='${element.defaultPropertyValues}'>
-                                                    <c:set var="elementIconPath" value="${element.formBuilderIcon}"/>
-                                                    <c:if test="${empty elementIconPath}">
-                                                        <c:set var="elementIconPath" value="/images/v3/builder/sidebar_element.gif"/>
-                                                    </c:if>
-                                                    <img src="${pageContext.request.contextPath}${elementIconPath}" border="0" align="left" />
+                                                <div class="form-palette-element builder-palette-element" element-class="${element.className}" element-property='${element.defaultPropertyValues}' data-icon='<c:out escapeXml="true" value="${element.formBuilderIcon}" />'>
                                                     <label>${element.i18nLabel}</label>
                                                 </div>
                                             </li>
@@ -172,6 +167,9 @@
                                     </c:forEach>
                                     </div>
                                 </fieldset>
+                                <script>
+                                    FormBuilder.populatePaletteIcons();
+                                </script>    
                             </td>
                             <td valign="top" style="padding-left: 185px;">
                                 <fieldset id="form-canvas">

@@ -253,7 +253,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
     @Override
     public String getFormBuilderIcon() {
-        return null;
+        return "<i class=\"fas fa-upload\"></i>";
     }
     
     @Override

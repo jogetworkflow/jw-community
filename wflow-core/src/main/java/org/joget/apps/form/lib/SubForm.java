@@ -107,7 +107,7 @@ public class SubForm extends AbstractSubForm implements FormBuilderPaletteElemen
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.SubForm/images/subForm_icon.gif";
+        return "<i class=\"fas fa-file-contract\"></i>";
     }
 
     /**

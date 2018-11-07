@@ -42,7 +42,7 @@ public class UserProfileMenu extends UserviewMenu {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.plugin.enterprise.UserProfileMenu/images/grid_icon.gif";
+        return "<i class=\"fas fa-user-edit\"></i>";
     }
 
     public String getName() {

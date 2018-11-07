@@ -168,6 +168,23 @@ FormBuilder = {
         });
     },
 
+    populatePaletteIcons: function() {
+        $("#builder-palette .form-palette-element").each(function() {
+            var icon = $(this).data("icon");
+            var iconObj = null;
+            if (icon !== undefined && icon !== null && icon !== "") {
+                try {   
+                    iconObj = $(icon);
+                } catch (err) {
+                    iconObj =  $('<span class="image" style="background-image:url(\'' + FormBuilder.contextPath + icon + '\');" />');
+                }
+            } else {
+                iconObj = $('<i class="far fa-edit"></i>');
+            }
+            $(this).prepend(iconObj);
+        });
+    },
+
     initElementDefinition: function(elementClass, properties, template) {
         FormBuilder.elementPropertyDefinitions[elementClass] = properties;
         FormBuilder.elementTemplates[elementClass] = template;

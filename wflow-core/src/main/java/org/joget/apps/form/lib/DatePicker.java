@@ -136,7 +136,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.TextField/images/textField_icon.gif";
+        return "<i class=\"fas fa-calendar-alt\"></i>";
     }
     
     protected String getTimeFormat() {

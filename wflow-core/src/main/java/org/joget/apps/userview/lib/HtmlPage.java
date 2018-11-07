@@ -18,7 +18,7 @@ public class HtmlPage extends UserviewMenu {
 
     @Override
     public String getIcon() {
-        return "/plugin/org.joget.apps.userview.lib.HtmlPage/images/grid_icon.gif";
+        return "<i><span style=\"font-size: 60%;top: -9px;font-weight: bold;\">HTML</span></i>";
     }
 
     @Override

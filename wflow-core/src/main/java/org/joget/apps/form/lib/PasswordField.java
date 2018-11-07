@@ -151,6 +151,6 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.PasswordField/images/textField_icon.gif";
+        return "<i class=\"fas fa-asterisk\"></i>";
     }
 }

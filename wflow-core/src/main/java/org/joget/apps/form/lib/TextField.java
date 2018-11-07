@@ -150,6 +150,6 @@ public class TextField extends Element implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return "/plugin/org.joget.apps.form.lib.TextField/images/textField_icon.gif";
+        return "<span class=\"fa-stack\"><i class=\"far fa-square fa-stack-2x\"></i><i><span style=\"font-weight: bold;\">T</span></i></span>";
     }
 }

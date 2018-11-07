@@ -109,7 +109,7 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return null;
+        return "<i class=\"far fa-check-square\"></i>";
     }
 }
 

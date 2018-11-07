@@ -335,7 +335,7 @@ DatalistBuilder = {
             if (field.id == field.label) {
                 cssClass = " key";
             }
-            var element = '<li><div class="builder-palette-column" id="' + field.id + '" data-id="' + field.id + '"><label class="label' + cssClass + '">' + UI.escapeHTML(field.displayLabel) + '</label></div></li>';
+            var element = '<li><div class="builder-palette-column builder-palette-element" id="' + field.id + '" data-id="' + field.id + '"><i class="far fa-hdd"></i> <label class="label' + cssClass + '">' + UI.escapeHTML(field.displayLabel) + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
         
@@ -383,7 +383,20 @@ DatalistBuilder = {
         $('#builder-palettle-actions').html('');
         for(var e in actions){
             var action = actions[e];
-            var element = '<li><div class="builder-palette-action" id="' + action.className + '" data-id="' + action.className + '"><label class="label">' + UI.escapeHTML(action.label) + '</label></div></li>';
+            
+            var iconObj = null;
+            if (action.icon !== undefined && action.icon !== null && action.icon !== "") {
+                try {   
+                    iconObj = $(action.icon);
+                } catch (err) {
+                    iconObj =  $('<span class="image" style="background-image:url(\'' + DatalistBuilder.contextPath + action.icon + '\');" />');
+                }
+            } else {
+                iconObj = $('<span class=\"fa-stack\"><i><span style="border: 1.4px solid #4c4c4c; height: 10px; width: 15px; display: block; position: absolute; border-radius: 3px; left: 3px; top: 4px;"></span></i><i class=\"fas fa-hand-point-up fa-stack-xs\" style=\"padding-top: 2px;\"></i></span>');
+            }
+            
+            var element = $('<li><div class="builder-palette-action builder-palette-element" id="' + action.className + '" data-id="' + action.className + '"> <label class="label">' + UI.escapeHTML(action.label) + '</label></div></li>');
+            $(element).find('.builder-palette-element').prepend(iconObj);
             $('#builder-palettle-actions').append(element);
         }
         DatalistBuilder.initEvents();

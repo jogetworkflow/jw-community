@@ -106,7 +106,7 @@ public class Radio extends SelectBox implements FormBuilderPaletteElement {
 
     @Override
     public String getFormBuilderIcon() {
-        return null;
+        return "<i class=\"far fa-dot-circle\"></i>";
     }
 }
 

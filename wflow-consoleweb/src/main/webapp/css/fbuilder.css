@@ -1,18 +1,5 @@
 @import url("builder.css");
 
-.form-palette-element, .form-palette-section, .form-palette-column {
-    border: dotted 1px #dddddd;
-    cursor: pointer;
-    line-height: 28px;
-    padding: 0px;
-    margin: 0px;
-    padding-leftx: 30px;
-    color: #4C4C4C;
-    backgroundx: url("../images/v3/builder/sidebar_element.gif") no-repeat scroll 0 0 transparent;
-}
-.form-palette-element label, .form-palette-section label, .form-palette-column label {
-    margin-left: 3px;
-}
 .form-palette-section {
     background: #cccccc;
     height: 30px;
@@ -21,18 +8,6 @@
 .form-palette-column {
     height: 30px;
     width: 200px;
-}
-.form-palette-element {
-    position: relative;
-    min-height: 30px;
-    color: black;
-    min-width: 120px;
-    height: 30px;
-}
-.form-palette-element .label {
-    width: 30%;
-    display: block;
-    float: left;
 }
 .form-cell-highlight {
     padding-bottom: 0px;

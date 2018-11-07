@@ -33,6 +33,11 @@ public class HyperlinkDataListAction extends DataListActionDefault {
     public String getLabel() {
         return "Hyperlink";
     }
+    
+    @Override
+    public String getIcon() {
+        return "<i class=\"fas fa-link\"></i>";
+    }
 
     public String getLinkLabel() {
         String label = getPropertyString("label");

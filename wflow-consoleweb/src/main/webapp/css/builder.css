@@ -300,6 +300,48 @@ div, label, input, button, select, th, td, a, span {
 #builder-palette-spacer {
     width: 175px;
 }
+.builder-palette-element{
+    border: dotted 1px #dddddd;
+    cursor: pointer;
+    line-height: 28px;
+    padding: 0px 3px;
+    margin: 0px;
+    color: #4C4C4C;
+    min-height: 30px;
+}
+.builder-palette-element > i, 
+.builder-palette-element > span.fa-stack,
+.builder-palette-element > span.image{
+    width: 23px;
+    height: 23px;
+    text-align: center;
+    background: #fafafa;
+    vertical-align: middle;
+    border-radius: 3px;
+    box-sizing: border-box;
+    padding: 4px 0;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    margin-right: 3px; 
+    vertical-align: middle;
+}
+.builder-palette-element > span.fa-stack {
+    font-size: 0.6em;
+}
+.builder-palette-element > span.image{
+    background-size: 105% 105%;
+    background-position: center;
+}
+.builder-palette-element > i span{
+    position: relative;
+    top: -8px;
+    display: inline-block;
+    font-weight: bold;
+    font-size: 90%;
+}
 #builder-body #canvas, #builder-body #form-canvas {
     box-shadow: 0 0 1px gray;
     border-radius: 0px;
@@ -311,7 +353,7 @@ div, label, input, button, select, th, td, a, span {
     floatx: right;
     display: block;
     min-width: 700px;
-    border: none; //1px solid #D6D6D6;
+    border: none; 
     padding: 5px;
     margin: 5px;
     background: #ffffff;
