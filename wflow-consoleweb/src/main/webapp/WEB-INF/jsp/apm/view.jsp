@@ -23,7 +23,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/apmviewer.js?build=<fmt:message key="build.number"/>"></script>
 <script>
     $(document).ready(function(){
-        APMViewer.init('${pageContext.request.contextPath}');
+        APMViewer.init('${pageContext.request.contextPath}', ${totalMemory}, ${maxHeap});
     });
 </script>
 

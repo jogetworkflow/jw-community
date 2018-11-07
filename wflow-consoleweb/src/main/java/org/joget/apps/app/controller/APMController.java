@@ -3,8 +3,12 @@ package org.joget.apps.app.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.openmbean.CompositeDataSupport;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpResponse;
@@ -42,6 +46,13 @@ public class APMController {
 
             int code = connection.getResponseCode();
             if (code == 200) {
+                MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
+                Object totalMemory = mBeanServer.getAttribute(new ObjectName("java.lang","type","OperatingSystem"), "TotalPhysicalMemorySize");
+                CompositeDataSupport maxHeap = (CompositeDataSupport) mBeanServer.getAttribute(new ObjectName("java.lang","type","Memory"), "HeapMemoryUsage");
+                
+                map.put("totalMemory", totalMemory);
+                map.put("maxHeap", maxHeap.get("max"));
+                
                 return "apm/view";
             }
         } catch (Exception e) {

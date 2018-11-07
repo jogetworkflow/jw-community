@@ -1356,6 +1356,8 @@ APMViewer = {
     },
     deferreds : [],
     contextPath : '',
+    totalMemory : 0,
+    maxheap : 0,
     apps : {},
     currenttime : null,
     table : null,
@@ -1369,7 +1371,11 @@ APMViewer = {
        'error count' : get_apmviewer_msg('apm.errorCount'),
        'error rate' : get_apmviewer_msg('apm.errorRate')
     },
-    init : function(contextPath) {
+    init : function(contextPath, totalMemory, maxheap) {
+        APMViewer.contextPath = contextPath;
+        APMViewer.totalMemory = totalMemory;
+        APMViewer.maxheap = maxheap;
+        
         var tool = $('<div class="apmtool"></div>');
         $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
         $(tool).append(' <select class="durationSelector"></select>');
@@ -1398,7 +1404,6 @@ APMViewer = {
             APMViewer.refresh();
         });
         
-        APMViewer.contextPath = contextPath;
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['apps'], function(data){
             APMViewer.loadAppsList(data);
             APMViewer.refresh();
@@ -1944,9 +1949,10 @@ APMViewer = {
                 
                 for (var j = 0; j < data.dataSeries[i].data.length; j++) {
                     if (data.dataSeries[i].data[j] !== null) {
-                        if (data.dataSeries[i].data[j][1] > 1) {
-                            data.dataSeries[i].tunit = 0.00000001;
-                            data.dataSeries[i].data[j][1] = data.dataSeries[i].data[j][1] * 0.00000001;
+                        if (i === 0 ) {
+                            data.dataSeries[i].data[j][1] = data.dataSeries[i].data[j][1] / APMViewer.maxheap * 100;
+                        } else if (i === 1 ) {
+                            data.dataSeries[i].data[j][1] = data.dataSeries[i].data[j][1] / APMViewer.totalMemory * 100;
                         } else {
                             data.dataSeries[i].tunit = 100;
                             data.dataSeries[i].data[j][1] = data.dataSeries[i].data[j][1] * 100;
@@ -1958,10 +1964,10 @@ APMViewer = {
             data.dataSeries[1].tlabel = get_apmviewer_msg('apm.freePhysicalMemory');
             data.dataSeries[2].tlabel = get_apmviewer_msg('apm.processCPULoad');
             data.dataSeries[3].tlabel = get_apmviewer_msg('apm.systemCPULoad');
-            data.dataSeries[0].name = data.dataSeries[0].tlabel + ' (×0.00000001)';
-            data.dataSeries[1].name = data.dataSeries[1].tlabel + ' (×0.00000001)';
-            data.dataSeries[2].name = data.dataSeries[2].tlabel + ' (x100)';
-            data.dataSeries[3].name = data.dataSeries[3].tlabel + ' (x100)';
+            data.dataSeries[0].name = data.dataSeries[0].tlabel;
+            data.dataSeries[1].name = data.dataSeries[1].tlabel;
+            data.dataSeries[2].name = data.dataSeries[2].tlabel;
+            data.dataSeries[3].name = data.dataSeries[3].tlabel;
             
             var myChart = echarts.init(document.getElementById('gchart'));
             var option = {
@@ -1986,12 +1992,7 @@ APMViewer = {
                         var html = "<span>"+ moment(fromdate).format("HH:mm") + " - " + moment(todate).format("HH:mm") + "</span>";
                         html += "<table style=\"color:#fff;\">";
                         for (var i = 0; i < params.length; i ++) {
-                            var value = params[i].data[1] / data.dataSeries[i].tunit;
-                            if (value > 1) {
-                                value = APMViewer.numberFormat(value, 0) + " bytes";
-                            } else {
-                                value = value.toFixed(5);
-                            }
+                            var value = params[i].data[1].toFixed(2) + "%";
                             html += "<tr><td>"+params[i].marker+" <strong style=\"color:#fff\">"+data.dataSeries[i].tlabel+"</strong></td><td style=\"text-align:right\">"+value+"</td></tr>";
                         }
                         html += "</table>";
@@ -2008,7 +2009,8 @@ APMViewer = {
                 },
                 yAxis: {
                     type: 'value',
-                    min: 0
+                    min: 0,
+                    max:100
                 },
                 series: data.dataSeries
             };
