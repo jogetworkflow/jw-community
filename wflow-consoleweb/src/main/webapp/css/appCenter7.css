@@ -1,0 +1,247 @@
+/* app center */
+body:not(.popupBody) {
+    background-color: #f8f8f8;
+}
+body:not(#login) #content > main > div:not(.quickEdit), body:not(#login) #content > main > table {
+    background: none;
+}
+body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
+    text-transform: uppercase;
+}
+#search {
+    position: relative;
+    margin: 0px auto 30px;
+    width: 165px;
+}
+#search input.filterinput {
+    height: auto;
+    width: 90%;
+}
+#apps {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -60%;
+    transform: translate(-40%, 30px);
+    width: 88%;
+}
+#apps li {
+    float: left;
+    width: 140px;
+    height: 220px;
+    display: inline-block;
+    margin-bottom: 50px;
+    margin-right: 50px;
+    box-shadow: 0px 0px 1px 1px #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #ffffff;
+}
+#apps li:hover {
+    box-shadow: 0px 0px 1px 2px #ccc;
+}
+#apps span.userview-icon {
+    display: inline-block;
+    height: 140px;
+    width: 140px;
+    overflow: hidden;
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    border: none;
+    box-shadow: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+#apps img {
+    width: 100%;
+}
+#apps a.app-link {
+    text-decoration: none;
+}
+#apps div.userview-name {
+    font-weight: 500;
+    font-size: 13px;
+    color: #555;
+    word-wrap: break-word;
+    padding: 0px 5px;
+    text-align: center;
+    max-height: 39px;
+    overflow: hidden;
+    margin-bottom: 3px;
+}
+#apps div.app-name {
+    display: block;
+    font-size: 80%;
+    color: #999;
+    max-height: 14px;
+    overflow: hidden;
+    text-align: center;
+}
+#apps div.userview-description {
+    display: none;
+    font-size: 80%;
+    color: #999;
+}
+#apps div.userview-summary {
+    background-color: #eeeeee; 
+    display: none; 
+    position: absolute; 
+    width: 100px; 
+    height: 70px;
+    padding: 10px;
+    text-align: center;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+a.print-button {
+    display: none;
+}
+#section-actions {
+    display: none;
+}
+.app-design-button {
+    cursor: pointer;
+    background: #37C8A9;
+    padding: 4px;
+    color: white;
+    border-radius: 12px;
+    margin-top: 4px;
+    position: absolute;
+    display: none;
+    box-shadow: #666 1px 1px 2px 0px;
+}    
+.app-design-button i {
+    display: inline-block;
+    width: 1.25em;
+    text-align: center;
+}
+div#apps_section {
+    padding-top: 15px;
+}
+#page #appcenter_admin {
+    position: absolute;
+    top: -40px;
+    text-align: center;
+    display: block;
+    margin: auto;
+    width: 100%;
+}
+body #form-canvas .form-section {
+    padding: 10px;
+    border: none;
+    box-shadow: none;
+    border-radius: 0px;
+    background: inherit;
+}
+#sidebar {
+    border-right: 0px;
+}
+
+/** banner positioning **/
+div#appcenter_banner {
+    position: absolute;
+    top: -95px;
+    left: -15%;
+    width: 130%;
+}
+#banner h1 {
+    display: none;
+}
+
+/* banner */
+body #page header.navbar {
+    background-color: #FF7BAC;
+    box-shadow: none;
+}
+body.horizontal_menu.inline_menu #sidebar {
+    background: #FF7BAC;
+}
+header.navbar .header-nav {
+    background-color: #FF7BAC;
+}
+body #page #banner {
+    background: url(/jw/home/banner7.jpg) #FF7BAC;
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 240px;
+    width: 100%;
+}
+#banner h1 {
+    position: relative;
+    top: -25px;
+}
+body#home ul.breadcrumb {
+    display: none;
+}
+
+/* footer */
+body > #page > footer {
+    position: fixed;
+    bottom: 0px;
+    padding: 0px;
+    width: 100%;
+    background: #ddd;
+    opacity: 0.7;
+    font-size: 10px;
+}
+
+/** mobile app icons **/
+@media (max-width:767px) {
+    #apps li {
+        float: none;
+        display: inline-block;
+        margin-bottom: 50px;
+        margin-right: 5%;
+        text-align: center;
+        vertical-align: top;
+    }
+    div.userview-name {
+        clear: both;
+    }
+    #apps span.userview-icon {
+        float: none;
+        margin: auto;
+    }
+    #apps {
+        transform: none;
+        width: 100%;
+        left: 10%;
+        margin-top: 15px;
+    }
+    #page #banner h1 {
+        padding-top: 0px;
+        position: relative;
+        top: 0px;
+        font-size: 24px;
+    }    
+    body#home #page #banner {
+        background-size: cover;
+    }
+    body > #page > footer {
+        display: none;
+    }    
+    #page #appcenter_admin {
+        top: -120px;
+        display: none;
+    }
+}
+
+/* help hint icon */
+#main-action-help {
+    display: block;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    margin: 0px;
+    position: absolute;
+    right: -8px;
+    top: -267px;
+    color: white;
+}
+#main-action-help i {
+    font-size: 20px;
+    line-height: 20px;
+}

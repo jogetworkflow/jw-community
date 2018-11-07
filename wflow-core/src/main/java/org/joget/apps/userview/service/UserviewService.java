@@ -519,7 +519,7 @@ public class UserviewService {
             }            
         } else {
             // import default app center app
-            String path = "/setup/apps/APP_appcenter-1.zip";
+            String path = "/setup/apps/APP_appcenter7-1.zip";
             LogUtil.info(getClass().getName(), "Import default app center " + path);
             InputStream in = null;
             try {
