@@ -442,8 +442,8 @@ FormBuilder = {
         var optionHtml = "<span class='form-palette-options'>";
         if ($(obj).hasClass("form-section")) {
             // add buttons for section
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
-            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fas fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editSection")+"'><i class='far fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editSection")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='far fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
             optionHtml += "<button class='form-palette-col' title='"+get_fbuilder_msg("fbuilder.addColumn")+"'><i class='fas fa-columns'></i><span>"+get_fbuilder_msg("fbuilder.addColumn")+"</span></button>";
             optionHtml += "<button class='form-palette-comment' title='"+get_fbuilder_msg("fbuilder.comment")+"'><i class='far fa-comment'></i><span>"+get_fbuilder_msg("fbuilder.comment")+"</span></button>";
             optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteSection")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.deleteSection")+"</span></button>";
@@ -459,7 +459,7 @@ FormBuilder = {
             }
         } else if ($(obj).hasClass("form-column")) {
             // add buttons for column
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.editColumn")+"'><i class='far fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.editColumn")+"</span></button>";
             optionHtml += "<button class='form-palette-paste column disabled' title='"+get_fbuilder_msg("fbuilder.pasteElement")+"'><i class='fas fa-paste'></i><span>"+get_fbuilder_msg("fbuilder.pasteElement")+"</span></button>";
             if ($(obj).siblings(".form-column").length > 0) {
                 optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.deleteColumn")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.deleteColumn")+"</span></button>";
@@ -476,8 +476,8 @@ FormBuilder = {
             }
         } else if (!$(obj).hasClass("form-container ")) {
             // add buttons for other elements
-            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'><i class='fas fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.edit")+"</span></button>";
-            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='fas fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
+            optionHtml += "<button class='form-palette-edit' title='"+get_fbuilder_msg("fbuilder.edit")+"'><i class='far fa-edit'></i><span>"+get_fbuilder_msg("fbuilder.edit")+"</span></button>";
+            optionHtml += "<button class='form-palette-copy' title='"+get_fbuilder_msg("fbuilder.copy")+"'><i class='far fa-copy'></i><span>"+get_fbuilder_msg("fbuilder.copy")+"</span></button>";
             optionHtml += "<button class='form-palette-remove' title='"+get_fbuilder_msg("fbuilder.delete")+"'><i class='fas fa-times'></i><span>"+get_fbuilder_msg("fbuilder.delete")+"</span></button>";
         }
         optionHtml += "</span><div class='form-clear'></div>";

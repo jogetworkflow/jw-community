@@ -3354,7 +3354,7 @@ ProcessBuilder.Designer = {
         $buttons = $processes.find(".node_buttons");
 
         // append duplicate button to processes
-        var $copyButton = $("<div class='node_copy'><i class=\"fas fa-copy\"></i></div>");
+        var $copyButton = $("<div class='node_copy'><i class=\"far fa-copy\"></i></div>");
         $buttons.prepend($copyButton);
         $processes.find(".node_copy").on("click", function(e) {
             var $process = $(this).closest(".header_process");
@@ -4229,7 +4229,7 @@ ProcessBuilder.Mapper = {
         var wlId= "processStartWhiteList";
         var wlmapping = ProcessBuilder.Mapper.mappingData["participants"][processDefId+"::"+wlId];
         
-        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="fas fa-edit"></i></a>');
+        $("#subheader_list li#"+processDefId).append('<a class="edit_mapping type_whitelist '+ (mapping !== null?"hasmapping":"") +'" type="whitelist" processdefid="'+processDefId+'" nodeid="'+wlId+'"><i class="far fa-edit"></i></a>');
         $("#subheader_list li#"+processDefId).find(".edit_mapping").data("mapping", wlmapping);
         
         $(".node").each(function(){
@@ -4259,7 +4259,7 @@ ProcessBuilder.Mapper = {
                     cssClass += " hasmapping";
                 }
 
-                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fas fa-edit"></i></a>');
+                $(this).append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="far fa-edit"></i></a>');
                 $(this).find(".edit_mapping").data("mapping", mapping);
                 $(this).removeAttr("title");
             }
@@ -4273,7 +4273,7 @@ ProcessBuilder.Mapper = {
             if (mapping !== null && mapping !== undefined) {
                 cssClass += " hasmapping";
             }
-            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="fas fa-edit"></i></a>');
+            $(this).find(".participant_handle").append('<a class="edit_mapping '+cssClass+'" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+pId+'"><i class="far fa-edit"></i></a>');
             $(this).find(".participant_handle .edit_mapping").data("mapping", mapping);
             $(this).removeAttr("title");
         });
@@ -4283,7 +4283,7 @@ ProcessBuilder.Mapper = {
         var mapping = ProcessBuilder.Mapper.mappingData["activityForms"][processDefId+"::"+actId];
 
         var cssClass = "type_"+type;
-        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="fas fa-edit"></i></a>');
+        $(".start").append('<a class="edit_mapping '+cssClass+' hasmapping" type="'+type+'" processdefid="'+processDefId+'" nodeid="'+actId+'"><i class="far fa-edit"></i></a>');
         $(".start").find(".edit_mapping").data("mapping", mapping);
         
         ProcessBuilder.Mapper.attachEvents();

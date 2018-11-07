@@ -823,8 +823,8 @@ DatalistBuilder = {
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='far fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
         optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);
@@ -882,9 +882,9 @@ DatalistBuilder = {
         var action = DatalistBuilder.chosenActions[columnId];
         var propertyValues = DatalistBuilder.availableActions[action.className];
         if (propertyValues && propertyValues.propertyOptions) {
-            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='far fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
         }            
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
         optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
@@ -943,9 +943,9 @@ DatalistBuilder = {
         var action = DatalistBuilder.chosenRowActions[columnId];
         var propertyValues = DatalistBuilder.availableActions[action.className];
         if (propertyValues && propertyValues.propertyOptions) {
-            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.edit')+"'><i class='far fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.edit')+"</span></button>";
         }            
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
         optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
 
         optionHtml += "</div><div class='element-clear'></div>";
@@ -999,8 +999,8 @@ DatalistBuilder = {
         }
 
         var optionHtml = "<div class='form-palette-options'>";
-        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'><i class='fas fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.properties')+"</span></button>";
-        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
+        optionHtml += "<button class='element-edit-properties' title='"+get_dbuilder_msg('dbuilder.properties')+"'><i class='far fa-edit'></i><span>"+get_dbuilder_msg('dbuilder.properties')+"</span></button>";
+        optionHtml += "<button class='element-copy' title='"+get_dbuilder_msg('dbuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_dbuilder_msg('dbuilder.copy')+"</span></button>";
         optionHtml += "<button class='element-delete' title='"+get_dbuilder_msg('dbuilder.delete')+"'><i class='fas fa-times'></i><span>"+get_dbuilder_msg('dbuilder.delete')+"</span></button>";
         optionHtml += "</div><div class='element-clear'></div>";
         var optionDiv = $(optionHtml);

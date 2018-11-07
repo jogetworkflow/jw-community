@@ -763,16 +763,16 @@ UserviewBuilder = {
 
         if ($(obj).hasClass("editable-info")) {
             // add buttons for editable
-            optionHtml += "<button class='element-edit-label' title='"+get_ubuilder_msg('ubuilder.edit')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.edit')+"</span></button>";
+            optionHtml += "<button class='element-edit-label' title='"+get_ubuilder_msg('ubuilder.edit')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.edit')+"</span></button>";
         }else if ($(obj).hasClass("sidebar") || $(obj).hasClass("category-bottom")) {
             // add buttons for section
             optionHtml += "<button class='element-add-category' title='"+get_ubuilder_msg('ubuilder.addCategory')+"'><i class='fas fa-plus'></i><span>"+get_ubuilder_msg('ubuilder.addCategory')+"</span></button>";
             optionHtml += "<button class='element-paste paste-category disabled' title='"+get_ubuilder_msg('ubuilder.pasteCategory')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteCategory')+"</span></button>";
         }else if ($(obj).hasClass("category")) {
             // add buttons for section
-            optionHtml += "<button class='element-edit-category' title='"+get_ubuilder_msg('ubuilder.editLabel')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.editLabel')+"</span></button>";
-            optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='fas fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
+            optionHtml += "<button class='element-edit-category' title='"+get_ubuilder_msg('ubuilder.editLabel')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.editLabel')+"</span></button>";
+            optionHtml += "<button class='element-permission' title='"+get_ubuilder_msg('ubuilder.permission')+"'><i class='far fa-eye'></i><span>"+get_ubuilder_msg('ubuilder.permission')+"</span></button>";
+            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
             optionHtml += "<button class='element-paste paste-menu disabled' title='"+get_ubuilder_msg('ubuilder.pasteMenu')+"'><i class='fas fa-paste'></i><span>"+get_ubuilder_msg('ubuilder.pasteMenu')+"</span></button>";
             optionHtml += "<button class='element-comment' title='"+get_ubuilder_msg('ubuilder.comment')+"'><i class='far fa-comment'></i><span>"+get_ubuilder_msg('ubuilder.comment')+"</span></button>";
             optionHtml += "<button class='element-delete-category element-delete' title='"+get_ubuilder_msg('ubuilder.deleteCategory')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteCategory')+"</span></button>";
@@ -786,8 +786,8 @@ UserviewBuilder = {
             }
         }else if ($(obj).hasClass("menu")) {
             // add buttons for section
-            optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='fas fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
-            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='fas fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
+            optionHtml += "<button class='element-menu-properties' title='"+get_ubuilder_msg('ubuilder.properties')+"'><i class='far fa-edit'></i><span>"+get_ubuilder_msg('ubuilder.properties')+"</span></button>";
+            optionHtml += "<button class='element-copy' title='"+get_ubuilder_msg('ubuilder.copy')+"'><i class='far fa-copy'></i><span>"+get_ubuilder_msg('ubuilder.copy')+"</span></button>";
             optionHtml += "<button class='element-delete-menu element-delete' title='"+get_ubuilder_msg('ubuilder.deleteMenu')+"'><i class='fas fa-times'></i><span>"+get_ubuilder_msg('ubuilder.deleteMenu')+"</span></button>";
         }
 
