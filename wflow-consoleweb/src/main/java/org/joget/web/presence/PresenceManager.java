@@ -82,7 +82,7 @@ public class PresenceManager {
                             .setRating(Rating.PARENTAL_GUIDANCE_SUGGESTED)
                             .setStandardDefaultImage(DefaultImage.IDENTICON)
                             .getUrl(userEntry.getEmail())
-                        : "http://www.gravatar.com/avatar/default?d=identicon";
+                        : "//www.gravatar.com/avatar/default?d=identicon";
                     output += "<li class=\"user\"><img class=\"gravatar\" alt=\"gravatar\" src=\""+url+"\" title=\"" + userEntry.getUsername() + "\" /><span class=\"username\">" + userEntry.getUsername() + " (" + sessionId + ")</span></li>";
                 }
                 writer.println(output);
