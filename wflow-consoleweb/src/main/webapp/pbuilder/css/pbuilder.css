@@ -220,6 +220,7 @@ tr#header {
     text-decoration: none;
     color: #000;
     margin: 0px 4px;
+    position: relative;
 }
 #controls a:hover {
     opacity: 0.7;
