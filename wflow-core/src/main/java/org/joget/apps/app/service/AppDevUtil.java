@@ -499,6 +499,10 @@ public class AppDevUtil {
             gitCommitMap = fileInitCommit(appDef, "");
         }
         GitCommitHelper gitCommitHelper = gitCommitMap.get(appDef.getAppId());
+        if (gitCommitHelper == null) {
+            gitCommitMap = fileInitCommit(appDef, "");
+            gitCommitHelper = gitCommitMap.get(appDef.getAppId());
+        }
         return gitCommitHelper;      
     }
     
