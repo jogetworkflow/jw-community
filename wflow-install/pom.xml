@@ -134,6 +134,11 @@
                                 <unzip dest="target">
                                     <fileset dir="downloads/">
                                         <include name="mariadb-noinstall-${mariadb.version}-win32.zip" />
+                                    </fileset>
+                                </unzip>
+                                
+                                <unzip dest="target/wflow">
+                                    <fileset dir="downloads/">
                                         <include name="glowroot-${glowroot.version}-dist.zip" />
                                     </fileset>
                                 </unzip>
@@ -192,7 +197,6 @@
                                     <tarfileset dir="target" prefix="joget-linux-${project.version}">
                                         <include name="apache-ant-${apache-ant.version}/**" />
                                         <include name="apache-tomcat-${tomcat.version}/**" />
-                                        <include name="glowroot/**" />
                                         <include name="data/**" />
                                         <include name="docs/**" />
                                         <include name="wflow/**" />
