@@ -1352,12 +1352,14 @@ APMViewer = {
         'addAlert' : 'config/alerts/add?agent-rollup-id=',
         'smtp' : 'admin/smtp',
         'sendTestEmail' : 'admin/send-test-email',
+        'adminGeneral' : 'admin/general',
         'apps' : '/web/json/console/app/list'
     },
     deferreds : [],
     contextPath : '',
     totalMemory : 0,
     maxheap : 0,
+    title : '',
     apps : {},
     currenttime : null,
     table : null,
@@ -1371,10 +1373,11 @@ APMViewer = {
        'error count' : get_apmviewer_msg('apm.errorCount'),
        'error rate' : get_apmviewer_msg('apm.errorRate')
     },
-    init : function(contextPath, totalMemory, maxheap) {
+    init : function(contextPath, totalMemory, maxheap, title) {
         APMViewer.contextPath = contextPath;
         APMViewer.totalMemory = totalMemory;
         APMViewer.maxheap = maxheap;
+        APMViewer.title = title;
         
         var tool = $('<div class="apmtool"></div>');
         $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
@@ -1880,7 +1883,18 @@ APMViewer = {
                     
                     if (properties["newPassword"] !== "%%%%===SECURE PASSWORD ===%%%%") {
                         newdata.newPassword = properties["newPassword"].substring(4, properties["newPassword"].length - 4);
+                        newdata.passwordExists = true;
                     }
+                    
+                    APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['adminGeneral'], function(data){
+                        if (data.config.agentDisplayName !== APMViewer.title) {
+                            data.config.agentDisplayName = APMViewer.title;
+                            APMViewer.httpPost(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['adminGeneral'], data.config, function(data){
+                                //ignore
+                            });
+                        }
+                    });
+                    
                     
                     APMViewer.httpPost(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['smtp'], newdata, function(data){
                         $(container).find(".page-button-save").before('<span class="msg">'+get_apmviewer_msg('apm.saved')+'</span>');
