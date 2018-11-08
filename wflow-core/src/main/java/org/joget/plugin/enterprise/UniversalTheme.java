@@ -170,12 +170,12 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
     protected String getPrimaryColor(UserviewTheme theme) {
         String primary = "#FFFFFF";
         if ("custom".equals(theme.getPropertyString("primaryColor"))) {
-            primary = getPropertyString("customPrimary");
+            primary = theme.getPropertyString("customPrimary");
         } else {
             Color p = Color.valueOf(theme.getPropertyString("primaryColor")); 
             if (p != null) {
                 primary = p.color;
-            }
+            } 
         }
         return primary;
     }
@@ -411,7 +411,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         data.put("header_name_classes", "inline-block");
         
         if (!getPropertyString("logo").isEmpty()) {
-            data.put("header_name_inner_before", "<img class=\"logo\" src=\""+getPropertyString("logo")+"\" />");
+            data.put("header_name_inner_before", "<img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" />");
         }
         
         data.put("header_description_classes", "inline-block visible-desktop");
