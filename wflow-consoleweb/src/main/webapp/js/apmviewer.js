@@ -1480,7 +1480,7 @@ APMViewer = {
             $("#alertpopup .alert").html("");
             
             var list = [];
-            var reg = new RegExp('^([^-]+) - (.+) over the last (.+) minutes is (.+) than or equal to (.+)$');
+            var reg = new RegExp('^([^-]+) - (.+) over the last (.+) minute[s]* is (.+) than or equal to (.+)$');
             $.each(data, function(i, d){
                 var found = d.display.match(reg);
                 if (APMViewer.alertTexts[found[2]] !== undefined) {
