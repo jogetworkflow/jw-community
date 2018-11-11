@@ -5,6 +5,9 @@
 <%@page import="org.joget.workflow.util.WorkflowUtil"%>
 <%@page contentType="text/html" pageEncoding="utf-8"%>
 
+<c:if test="${empty key}">
+    <c:set var="key" value="_"/>
+</c:if>
 <c:set var="mobileViewDisabled" value="${userview.setting.theme.mobileViewDisabled}"/>
 <c:if test="${mobileViewDisabled}">
     <c:redirect url="/web/userview/${appId}/${userview.properties.id}/${key}"/>

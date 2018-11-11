@@ -2,6 +2,27 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.12
+=================
+39ee825 Fixed: wflow-consoleweb - Design App - System error after click "ok" to refresh process list page due to "The request was rejected because the URL was not normalized", regression from 4d057f @6.0-SNAPSHOT
+94fb126 Fixed: wflow-consoleweb - Section - Visibility control disabled buttons in section without enable it back when shown. $#6052 @6.0-SNAPSHOT
+dcdfac6 Fixed: wflow-consoleweb - Design App - System error after click "ok" to refresh process view page due to "The request was rejected because the URL was not normalized", regression from 4d057f @6.0-SNAPSHOT
+d591284 Fixed: wflow-consoleweb - App Version - System error after creating new app version due to "The request was rejected because the URL was not normalized", regression from 4d057f @6.0-SNAPSHOT
+821a7d9 Fixed: wflow-consoleweb - Setup - Getting System Error page when datasource not setup instead of the Database Setup page, regression from 4d057f @6.0-SNAPSHOT
+36fff6e Fixed: wflow-consoleweb - Builder Advanced Tool - Update jstree library to 3.3.6 to fix document.registerElement deprecation warning. @6.0-SNAPSHOT
+ee74cc8 Fixed: wflow-consoleweb - Console UI - Toggle all checkboxes feature of all table is not working after it is checked. @6.0-SNAPSHOT
+9e454d4 Fixed: wflow-core/wflow-plugin-base - Deadline - Generate form pdf from deadline plugin throws exception. @6.0-SNAPSHOT
+62c0704 Modified: wflow-plugin-base - Java 11 - Upgraded Apache Felix to 6.0.1 @6.0-SNAPSHOT
+9b24d81 Fixed: wflow-commons - Java 11 - Remove older aspectjweaver version @6.0-SNAPSHOT
+4d057f1 Modified: All - Upgraded libraries to Spring 4.3.19, Spring Security 4.1.5 and bcprov 1.60 @6.0-SNAPSHOT
+6842a77 Modified: wflow-consoleweb - Prevent DoS attacks by refusing to hash large passwords #5981 @6.0-SNAPSHOT
+d34801e Fixed: wflow-core : FormUtil - jsonToFormRowSet method does not cater for deleted files. #5983 @6.0-SNAPSHOT
+d7f6818 Fixed: wflow-core/wflow-wfengine - Correction of c23e05f. #5962 @6.0-SNAPSHOT
+c23e05f Fixed: wflow-core/wflow-wfengine - Deadline Checker does not set current App Definition based on process instance. #5962 @6.0-SNAPSHOT
+b68eaf3 Fixed: wflow-wfengine, wflow-consoleweb - Fixed incompatibility with Java 11 @6.0-SNAPSHOT
+eb27ef2 Fixed: wflow-core - Cascading Options Field - Field in visibility controlled section having option not display issue after section shown #5934 @6.0-SNAPSHOT
+710893c Modified: wflow-plugin-base - Java 11 - Upgraded Apache Felix to 6.0.1 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.11
 =================
 943bd57 Fixed: wflow-core - Default Form Options Binder - Duplicate value-label options existed when both retrieved from same field id and has duplicate value. #5834 @6.0-SNAPSHOT

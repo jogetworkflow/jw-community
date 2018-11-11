@@ -10,6 +10,9 @@
 <%@ page import="org.displaytag.tags.TableTagParameters"%>
 
 <c:set var="landingPage" value="landing"/>
+<c:if test="${empty key}">
+    <c:set var="key" value="_"/>
+</c:if>
 <!DOCTYPE html>
 <html class="ui-mobile" manifest="${pageContext.request.contextPath}/web/mobilecache/${appId}/${userview.properties.id}">
     <head>
