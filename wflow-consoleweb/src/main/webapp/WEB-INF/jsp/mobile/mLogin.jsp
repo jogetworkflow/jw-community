@@ -9,10 +9,10 @@
     <c:set var="redirectUrl" scope="request" value=""/>
     <c:choose>
         <c:when test="${embed}">
-            <c:set var="redirectUrl" scope="request" value="/web/embed/mobile/${appId}/${userview.properties.id}/landing"/>
+            <c:set var="redirectUrl" scope="request" value="/web/embed/mobile/${appId}/${userview.properties.id}/"/>
         </c:when>
         <c:otherwise>
-            <c:set var="redirectUrl" scope="request" value="/web/mobile/${appId}/${userview.properties.id}/landing"/>
+            <c:set var="redirectUrl" scope="request" value="/web/mobile/${appId}/${userview.properties.id}/"/>
         </c:otherwise>
     </c:choose>
     <c:if test="${!empty key && key ne '______'}">
