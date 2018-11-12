@@ -805,3 +805,21 @@ td.error .chosen-container, td.error input {
 .pewrapper .error {
     border:1px solid red;
 }
+
+/* mobile styles */
+@media screen and (max-width:680px) {
+    .property-label-container {
+        width: 100%;
+        float: none;
+        margin-bottom: 10px;
+    }
+    .property-input {
+        width: 100%;
+        float: none;
+    }
+    .property-input input,
+    .property-input select,
+    .property-input textarea{
+        max-width: 100%;
+    }
+}

@@ -82,7 +82,7 @@
 					if (cdleft==0)
 							cdleft -= Math.floor(p.cgwidth/2);
 
-					cdpos = cdpos + cdleft + cdpad;
+					cdpos = cdpos + cdleft + cdpad + 2;
 
 					$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px'}).show();
 

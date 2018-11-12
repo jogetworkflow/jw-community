@@ -32,8 +32,8 @@
         <div class="process-name"><font class="ftl_label"><fmt:message key="console.app.process.common.label.name"/>:</font> &nbsp;&nbsp;
             <ul id="processes-list">
                 <c:forEach items="${processList}" var="process">
-                    <li>
-                        <a class="<c:if test="${process.idWithoutVersion eq processIdWithoutVersion}">active</c:if>" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.idWithoutVersion}"><c:out value="${process.name}"/></a>
+                    <li class="<c:if test="${process.idWithoutVersion eq processIdWithoutVersion}">active</c:if>" >
+                        <a href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.idWithoutVersion}"><c:out value="${process.name}"/></a>
                     </li>
                 </c:forEach>
             </ul>
@@ -71,7 +71,6 @@
                     <li><a href="#routeList"><span><fmt:message key="console.process.config.label.mapRoutes"/></span></a></li>
                     <li><a href="#variableList"><span><fmt:message key="console.process.config.label.variableList"/></span></a></li>
                 </ul>
-                <br><br>
                 <div>
 
                     <div id="participantList">
@@ -115,7 +114,7 @@
                                                                 <span class="participant-remove">
                                                                     <c:set var="participantDisplayName" value=""/>
                                                                     <c:if test="${!(status.last && status.index eq 0)}">
-                                                                        <a onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','<ui:escape value="${participant.id}" format="html;javascript"/>','${participantValue}')"> <img src="${pageContext.request.contextPath}/images/v3/cross-circle.png"/></a>
+                                                                        <a class="removesingle" onClick="participantRemoveMappingSingle(this, '${participantMap[participantUid].type}','<ui:escape value="${participant.id}" format="html;javascript"/>','${participantValue}')"> <i class="fas fa-times"></i></a>
                                                                         </c:if>
                                                                         <c:choose>
                                                                             <c:when test="${participantMap[participantUid].type eq 'user'}">
@@ -540,6 +539,37 @@
                         window.scrollTo(0, topy);
                     }, 100);
             </c:if>
+            
+                    if ($("#processes-list li").length > 1) {
+                        $("#processes-list").addClass("selector");
+                        
+                        $("#processes-list").on("click", ".active", function(){
+                            var list = $(this).closest("ul");
+                            if (!$(list).hasClass("focus")) {
+                                $(list).addClass("focus");
+                                $(list).find("a").off("click.selector");
+                                $(list).find("a").on("click.selector", function(){
+                                    setTimeout(function(){
+                                        $(list).removeClass("focus");
+                                        $(list).find("a").off("click.selector"); 
+                                        $("body").off("click.bodyselector");
+                                    }, 100);
+                                });
+                                $("body").off("click.bodyselector");
+                                $("body").on("click.bodyselector", function(e){
+                                    if (!$(list).is(e.target) && $(list).has(e.target).length === 0) {
+                                        $(list).removeClass("focus");
+                                        $(list).find("a").off("click.selector"); 
+                                        $("body").off("click.bodyselector");
+                                    }
+                                });
+                            } else {
+                                $(list).removeClass("focus");
+                                $(list).find("a").off("click.selector"); 
+                                $("body").off("click.bodyselector");
+                            }
+                        });
+                    }
                 });
 
                 var tabView = new TabView('processTabView', 'top');

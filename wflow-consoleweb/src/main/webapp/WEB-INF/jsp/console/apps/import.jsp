@@ -21,7 +21,6 @@
             </c:if>
             
             <fieldset>
-                <legend><fmt:message key="console.app.import.label.title"/></legend>
                 <div class="form-row">
                     <label for="appZip" class="upload"><fmt:message key="console.app.import.label.selectFile"/></label>
                     <span class="form-input">
@@ -66,10 +65,10 @@
                         </span>
                     </div>
                 </div>
-                <div class="form-buttons">
-                    <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
-                </div>
             </fieldset>
+            <div class="form-buttons">
+                <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
+            </div>
         </form>
     </div>
 

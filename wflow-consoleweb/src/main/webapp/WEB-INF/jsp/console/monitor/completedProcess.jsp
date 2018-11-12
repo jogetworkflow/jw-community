@@ -21,6 +21,7 @@
         </ul>
     </div>
     <div id="main-body">
+        <div class="row-content">
         <dl>
             <dt><fmt:message key="adminBar.label.app"/></dt>
             <dd><a target="_blank" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${appDef.appId}"/>/<c:out value="${appDef.version}"/>/forms"><c:out value="${appDef.name}"/> v<c:out value="${appDef.version}"/></a></dd>
@@ -51,6 +52,7 @@
             <dt><fmt:message key="console.app.process.common.label.timeConsumingFromDateStarted"/></dt>
             <dd><c:out value="${trackWflowProcess.timeConsumingFromDateStarted}"/>&nbsp;</dd>
         </dl>
+        </div>
         <div id="main-body-content-subheader">
             <fmt:message key="console.monitoring.common.label.activityList"/>
         </div>

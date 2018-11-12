@@ -28,7 +28,7 @@ html.adminBarShown {
     width: 100%;
     background: #37474F;
     border-radius: 0px;
-    z-index: 100000010;
+    z-index: 10000;
     opacity: 1;
     height: 30px;
     -webkit-font-smoothing: antialiased;
@@ -156,6 +156,7 @@ div#quickEditModeOption:before {
     font-size: 24px;
     box-shadow: #666 1px 1px 2px 1px;
     box-sizing: border-box;
+    padding: 3px;
 }
 .quickOverlayButton a:hover {
     color: #fff;
@@ -422,5 +423,18 @@ body.quickEditModeActive .analyzer-page {
 @media screen and (max-width:680px) { 
     #adminBar .analyzer-page {
         display: none !important;
+    }
+    .quickOverlayButton {
+        top: 5px;
+        right: 5px;
+    }
+    .quickOverlayButton a{
+        width: 28px;
+        height: 28px;
+        font-size: 22px;
+        padding: 0px;
+    }
+    #quickOverlayFrame {
+        height: calc(100% - 49px);
     }
 }

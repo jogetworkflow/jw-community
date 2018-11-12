@@ -24,12 +24,14 @@
         </c:if>
 
         <form method="post" action="${pageContext.request.contextPath}/web/console/setting/message/import/submit" class="form" enctype="multipart/form-data">
-            <div class="form-row">
-                <label for="localeFile" class="upload"><fmt:message key="console.setting.message.import.label.POFile"/></label>
-                <span class="form-input">
-                    <input id="localeFile" type="file" name="localeFile"/>
-                </span>
-            </div>
+            <fieldset>
+                <div class="form-row">
+                    <label for="localeFile" class="upload"><fmt:message key="console.setting.message.import.label.POFile"/></label>
+                    <span class="form-input">
+                        <input id="localeFile" type="file" name="localeFile"/>
+                    </span>
+                </div>
+            </fieldset>    
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="console.setting.message.import.label.upload"/>" />
             </div>

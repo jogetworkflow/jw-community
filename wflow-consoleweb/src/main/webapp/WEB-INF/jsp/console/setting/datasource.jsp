@@ -93,8 +93,8 @@
             <div class="form-buttons">
                 <input class="form-button" id="saveDatasource" type="button" value="<fmt:message key="general.method.label.save"/>" onclick="submitDatasource()" />
                 <input class="form-button" id="saveDatasourceAsNew" type="button" value="<fmt:message key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
-                <fmt:message key="console.setting.datasource.label.newProfileName"/>
-                <input id="newProfileName" type="text" name="profileName" />
+                <span class="newprofile"><fmt:message key="console.setting.datasource.label.newProfileName"/>
+                <input id="newProfileName" type="text" name="profileName" /></span>
             </div>
             </form>
         </div>

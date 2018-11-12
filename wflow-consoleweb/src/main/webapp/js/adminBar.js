@@ -8,6 +8,11 @@ var AdminBar = {
         AdminBar.cookiePath = path;
     },
     showQuickOverlay: function(url) {
+        if (AdminBar.webConsole) {
+            document.location = url;
+            return false;
+        }
+        
         if (AdminBar.builderMode && typeof AdvancedTools !== "undefined") {
             AdvancedTools.hideQuickOverlay();
         }

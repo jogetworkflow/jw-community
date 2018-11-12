@@ -46,7 +46,6 @@
                         </form>
                     </div>    
                     <div id="variable">
-                        <br/>
                         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/envVariable/list?${pageContext.request.queryString}"
                            var="JsonVariableDataTable"
                            divToUpdate="variableList"
@@ -71,7 +70,6 @@
                            />
                     </div>
                     <div id="message">
-                        <br/>
                         <div id="main-body-content-filter">
                             <form>
                             <fmt:message key="console.app.message.filter.label.byLocale"/>
@@ -114,7 +112,6 @@
                            />
                     </div>    
                     <div id="resources">
-                        <br/>
                         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/resource/list?${pageContext.request.queryString}"
                             var="JsonResourcesDataTable"
                             divToUpdate="ResourcesList"
@@ -139,7 +136,6 @@
                             />
                     </div>
                     <div id="pluginDefault">
-                        <br/>
                         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/pluginDefault/list?${pageContext.request.queryString}"
                            var="JsonPluginDefaultDataTable"
                            divToUpdate="pluginDefaultList"

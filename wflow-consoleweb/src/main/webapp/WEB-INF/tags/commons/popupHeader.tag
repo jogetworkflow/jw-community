@@ -16,7 +16,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v5.css?build=<fmt:message key="build.number"/>">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">
         
         <c:if test="${!empty userviewThemeCss}">
@@ -25,8 +25,9 @@
         <script>
             $(function() {
                 if (window.self !== window.top) {
-                    var wh = $(window.self).height() - 50;
+                    var wh = $(window.self).height() - $("#main-body-header").outerHeight(true);
                     $("body.popupBody").css("width", "99.9%");
+                    $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
                     $("#main-body-content").css("height", wh + "px");
                 }
             });

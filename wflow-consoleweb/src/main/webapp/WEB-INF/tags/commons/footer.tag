@@ -30,11 +30,75 @@
 <script>
     if (window.parent !== self && window.parent.name !== "quickOverlayFrame") {
         $("body").addClass("quickOverlayFrame");
-        $("#main-header, #main-menu, #header, #footer, #adminBar, #beta").hide();
-        $("#container, #nav, #menu-popup").css("top", "0px");
     } else {
-        $("#main-header, #header, #footer, #adminBar, #beta").show();
+        $("body").addClass("webconsole");
     }
+    $(function(){
+        $("#nav-body").prepend('<a class="menu-trigger" style="display:none;"><i class="fas fa-bars"></i></a>');
+        $("#nav-body .menu-trigger").on("click", function(){
+           $("#nav-body").toggleClass("show");
+        });
+        
+        if ($("#main-action-buttons li").length > 1) {
+            $("#main-action-buttons").parent().addClass("buttongroupdiv");
+            $("#main-action-buttons").addClass("buttongroup");
+            $("#main-action-buttons").prepend('<li class="moreaction"><a class="btn"><fmt:message key="general.method.label.actions"/> <i class="fas fa-chevron-down"></i></a></li>');
+            
+            $(".buttongroup").on("click", ".moreaction", function(){
+                var bgroup = $(this).closest(".buttongroup");
+                if (!$(bgroup).hasClass("focus")) {
+                    $(bgroup).addClass("focus");
+                    $(bgroup).find("a").off("click.bgroupfocus");
+                    $(bgroup).find("a").on("click.bgroupfocus", function(){
+                        setTimeout(function(){
+                            $(bgroup).removeClass("focus");
+                            $(bgroup).find("a").off("click.bgroupfocus"); 
+                            $("body").off("click.bodybgroup");
+                        }, 100);
+                    });
+                    $("body").off("click.bodytabs");
+                    $("body").on("click.bodytabs", function(e){
+                        if (!$(bgroup).is(e.target) && $(bgroup).has(e.target).length === 0) {
+                            $(bgroup).removeClass("focus");
+                            $(bgroup).find("a").off("click.bgroupfocus"); 
+                            $("body").off("click.bodybgroup");
+                        }
+                    });
+                } else {
+                    $(bgroup).removeClass("focus");
+                    $(bgroup).find("a").off("click.bgroupfocus"); 
+                    $("body").off("click.bodybgroup");
+                }
+            });
+        }
+        
+        $("body").on("click", ".ui-tabs-nav li.ui-tabs-active", function(){
+            var tabs = $(this).closest(".ui-tabs-nav");
+            if (!$(tabs).hasClass("focus")) {
+                $(tabs).addClass("focus");
+                $(tabs).find("a").off("click.tabsfocus");
+                $(tabs).find("a").on("click.tabsfocus", function(){
+                    setTimeout(function(){
+                        $(tabs).removeClass("focus");
+                        $(tabs).find("a").off("click.tabsfocus"); 
+                        $("body").off("click.bodytabs");
+                    }, 100);
+                });
+                $("body").off("click.bodytabs");
+                $("body").on("click.bodytabs", function(e){
+                    if (!$(tabs).is(e.target) && $(tabs).has(e.target).length === 0) {
+                        $(tabs).removeClass("focus");
+                        $(tabs).find("a").off("click.tabsfocus"); 
+                        $("body").off("click.bodytabs");
+                    }
+                });
+            } else {
+                $(tabs).removeClass("focus");
+                $(tabs).find("a").off("click.tabsfocus"); 
+                $("body").off("click.bodytabs");
+            }
+        });
+    });
 </script>
 
 <script type="text/javascript">

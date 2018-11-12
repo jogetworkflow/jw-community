@@ -125,29 +125,23 @@
                             <div id="requester">
                                 <form name="requesterOrgChart">
                                     <div class="form-row">
-                                    <label for="requester">
-                                        <input id="requester" type="radio" name="participantType" value="requester" checked="checked"> <fmt:message key="console.process.config.label.mapParticipants.performer.performer"/>
-                                    </label>
-                                    </div>
-                                    <div class="form-row">
-                                    <label for="requesterHod">
-                                        <input id="requesterHod" type="radio" name="participantType" value="requesterHod"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod"/>
-                                    </label>
-                                    </div>
-                                    <div class="form-row">
-                                    <label for="requesterHodIgnoreReportTo">
-                                        <input id="requesterHodIgnoreReportTo" type="radio" name="participantType" value="requesterHodIgnoreReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod.ignoreReportTo"/>
-                                    </label>
-                                    </div>
-                                    <div class="form-row">
-                                    <label for="requesterSubordinates">
-                                        <input id="requesterSubordinates" type="radio" name="participantType" value="requesterSubordinates"> <fmt:message key="console.process.config.label.mapParticipants.performer.subordinate"/>
-                                    </label>
-                                    </div>
-                                    <div class="form-row">
-                                    <label for="requesterDepartment">
-                                        <input id="requesterDepartment" type="radio" name="participantType" value="requesterDepartment"> <fmt:message key="console.process.config.label.mapParticipants.performer.department"/>
-                                    </label>
+                                        <span class="form-input">
+                                            <label for="requester">
+                                                <input id="requester" type="radio" name="participantType" value="requester" checked="checked"> <fmt:message key="console.process.config.label.mapParticipants.performer.performer"/>
+                                            </label>
+                                            <label for="requesterHod">
+                                                <input id="requesterHod" type="radio" name="participantType" value="requesterHod"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod"/>
+                                            </label>
+                                            <label for="requesterHodIgnoreReportTo">
+                                                <input id="requesterHodIgnoreReportTo" type="radio" name="participantType" value="requesterHodIgnoreReportTo"> <fmt:message key="console.process.config.label.mapParticipants.performer.hod.ignoreReportTo"/>
+                                            </label>
+                                            <label for="requesterSubordinates">
+                                                <input id="requesterSubordinates" type="radio" name="participantType" value="requesterSubordinates"> <fmt:message key="console.process.config.label.mapParticipants.performer.subordinate"/>
+                                            </label>
+                                            <label for="requesterDepartment">
+                                                <input id="requesterDepartment" type="radio" name="participantType" value="requesterDepartment"> <fmt:message key="console.process.config.label.mapParticipants.performer.department"/>
+                                            </label>
+                                        </span>
                                     </div>
                                     <div class="form-row">
                                         <label for="activity"><fmt:message key="console.process.config.label.mapParticipants.performer.activity"/></label>

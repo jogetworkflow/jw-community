@@ -30,6 +30,7 @@
         </ul>
     </div>
     <div id="main-body">
+        <div class="row-content">
         <dl>
             <dt><fmt:message key="console.app.process.common.label.instance"/></dt>
             <dd><a href="${pageContext.request.contextPath}/web/console/monitor/<c:out value="${processStatus}"/>/process/view/${activity.processId}"><c:out value="${activity.processId}"/></a>&nbsp;</dd>
@@ -95,6 +96,7 @@
             <dt><fmt:message key="console.app.activity.common.label.timeConsumingFromDateCreated"/></dt>
             <dd><c:out value="${trackWflowActivity.timeConsumingFromDateCreated}"/>&nbsp;</dd>
         </dl>
+        </div>
         <div id="reevaluateForUser" style="display: none">
             <div class="popupBody">
                 <div id="main-body-header"><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></div>

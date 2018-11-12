@@ -14,12 +14,14 @@
         </c:if>
 
         <form method="post" action="${pageContext.request.contextPath}/web/console/setting/plugin/upload/submit" class="form" enctype="multipart/form-data">
-            <div class="form-row">
-                <label for="field1" class="upload"><fmt:message key="console.setting.plugin.upload.label.pluginFile"/></label>
-                <span class="form-input">
-                    <input type="file" name="pluginFile"/>
-                </span>
-            </div>
+            <fieldset>
+                <div class="form-row">
+                    <label for="field1" class="upload"><fmt:message key="console.setting.plugin.upload.label.pluginFile"/></label>
+                    <span class="form-input">
+                        <input type="file" name="pluginFile"/>
+                    </span>
+                </div>
+            </fieldset>    
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<fmt:message key="general.method.label.upload"/>" />
             </div>

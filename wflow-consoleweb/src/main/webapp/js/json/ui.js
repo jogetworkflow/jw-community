@@ -234,6 +234,12 @@ PopupDialog.prototype = {
                 $(".ui-dialog.ui-widget").css("top", "5%");
                 $('body').addClass("stop-scrolling");
             }
+            
+            $('.ui-widget-overlay').off('click');
+            $('.ui-widget-overlay').on('click',function(){
+                PopupDialogCache.popupDialog.close();
+            });
+            
             $(this).parents('.ui-dialog').find('.ui-dialog-titlebar-close').blur();
       }
       var closePopupDialog = function() {
@@ -921,7 +927,7 @@ HelpGuide = {
         }
         
         // display icon and set event handler
-        $("#main-action-help").css("display", "block");
+        $("#main-action-help").show();
         $("#main-action-help").click(function() {
             HelpGuide.hide();
             HelpGuide.enable();
