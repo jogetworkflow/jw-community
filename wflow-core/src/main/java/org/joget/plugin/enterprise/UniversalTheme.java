@@ -507,7 +507,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                     if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
                         url = data.get("context_path") + "/" + getPathName() + "/user.png";
                     }
-                    profileImageTag = "<img src=\""+url+"\" /> ";
+                    profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
                 }
                 
                 html += "<li class=\"user-link dropdown\">\n"
@@ -587,7 +587,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 if (AppUtil.containsHashVariable(url) || url == null || url.isEmpty()) {
                     url = data.get("context_path") + "/" + getPathName() + "/user.png";
                 }
-                profileImageTag = "<img src=\""+url+"\" /> ";
+                profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
             }
             
             html += "<li class=\"mm-profile user-link\">\n"
@@ -634,7 +634,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             String profileImageTag = "";
             if (getPropertyString("userImage").isEmpty() || "hashVariable".equals(getPropertyString("userImage"))) {
                 String url = data.get("context_path") + "/" + getPathName() + "/user.png";
-                profileImageTag = "<img src=\""+url+"\" /> ";
+                profileImageTag = "<img alt=\"profile\" src=\""+url+"\" /> ";
             }
             
             html += "<li class=\"mm-profile user-link\">\n"
