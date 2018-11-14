@@ -24,7 +24,7 @@
         appPath: '[APP_PATH]',
         allowInput : 'true',
         isPublic : 'true',
-        imageSize : 'width:100px;height:70px;'
+        imageSize : 'width:100px;height:100px;'
     }]
 }, {
     title: '@@userview.userviewsetting.configPermission@@',
