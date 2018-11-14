@@ -212,7 +212,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
     transition-property: color, background-color;
     position: relative;
     display: inline-block;
-    line-height: 28px;
+    line-height: 20px;
     margin-bottom: 5px;
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
@@ -254,8 +254,9 @@ button:hover, input[type='button']:hover, input[type='submit']:hover, .smallbutt
 .form-buttons {
     margin-bottom: 20px;
 }
-
-
+#main-action-buttons .moreaction {
+    display:none;
+}
 
 /* tabs */
 body .ui-tabs,
@@ -284,6 +285,9 @@ body .ui-tabs .ui-state-default {
 body .ui-tabs .ui-state-default a{
     color: #535353 !important;
     padding: 5px 25px;
+}
+body .ui-tabs .ui-tabs-nav li.ui-state-default:not(.ui-tabs-active):hover a {
+    color: #009688 !important;
 }
 body .ui-tabs .ui-tabs-active {
     border-bottom: 2px solid #004d40 !important;
@@ -514,12 +518,14 @@ body .ui-dialog-titlebar{
 body .ui-button-text {
     display:none;
 }
+body .boxy-wrapper .title-bar a.close,
 body .ui-dialog-titlebar-close{
     top: 15px !important;
     right: 10px !important;
     border: 0 !important;
     border-radius: 50% !important;
     background: transparent !important;
+    display: block;
 }
 body .ui-dialog-titlebar-close:before {
     display: none !important;
@@ -563,9 +569,13 @@ body .boxy-wrapper > tbody > tr > td:first-child,
 body .boxy-wrapper > tbody > tr > td:last-child{
     display: none !important;
 }
+body .boxy-wrapper .boxy-inner .title-bar {
+    
+}
 body.popupBody {
     padding-top: 48px;
 }
+.boxy-content-header,
 body.popupBody #main-body-header {
     background: #00695c;
     color: #fff;
@@ -580,6 +590,10 @@ body.popupBody #main-body-header {
     box-sizing: border-box;
     z-index: 1000;
 }
+.boxy-content-header {
+    position: absolute;
+    margin: 0;
+}
 body.popupBody #main-body-header #main-action-help{
     position: absolute;
     right: 30px;
@@ -587,7 +601,23 @@ body.popupBody #main-body-header #main-action-help{
 }
 body.popupBody #main-body-content {
     padding: 20px 15px;
-    overflow: auto;
+    overflow: auto !important;
+}
+body .boxy-wrapper .title-bar {
+    position: absolute;
+    background: transparent;
+    top:0;
+    right: 15px;
+    z-index: 10000;
+}
+.boxy-wrapper .title-bar h2 {
+    display:none;
+}
+.boxy-inner {
+    position: relative;
+}
+.boxy-content-body {
+    margin-top: 50px;
 }
 
 /* jquery ui */
@@ -745,8 +775,22 @@ body .flexigrid tr.trSelected td{
 .guider .guider_description {
     text-align: left;
 }
+a.guider_button:hover {
+    color: #f0f0f0;
+}
 
 /* others */
+#installApp {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 25px;
+    z-index: 10001;
+}
+.marketplaceAppHeader{
+    background: #f0f0f0 !important;
+    height: 42px;
+}
 #license-link {
     font-weight:bold;
 }
@@ -868,6 +912,41 @@ fieldset legend,
     text-align: right;
 }
 
+/* webconsole home */
+body#webconsole {
+    background: #f7f9f9;
+}
+body#webconsole #container {
+    min-height: 70vh;
+    position: relative;
+}
+body#webconsole #home-box {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    padding: 30px;
+    background: #fff;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    width: 500px;
+    max-width:99vw;    
+}
+body#webconsole #home-box .welcome-box {
+    display: inline-block;
+    width: 49%;
+    vertical-align: top;
+}
+body#webconsole #home-box #welcomeFrame {
+    height: auto !important;
+}
+body#webconsole #footer {
+    margin-left: 0px;
+}
+body#webconsole .welcome-box ul li{
+    margin-bottom: 5px;
+}
 
 /* design app */
 #nav-apps-link {
@@ -878,7 +957,7 @@ fieldset legend,
     padding: 5px 0px 0px 20px;
     cursor: pointer;
     font-weight: normal;
-    word-break: break-all;
+    word-break: break-word;
 }
 #nv, #nv-apps {
     display: flex;
@@ -946,6 +1025,7 @@ fieldset legend,
     top: 2px;
     left: 0;
     z-index: 1;
+    line-height: 22px;
 }
 .nv-link:hover .nv-delete {
     display: block;
@@ -965,7 +1045,7 @@ fieldset legend,
     width: 60%;
     box-sizing: border-box;
     white-space: normal; 
-    word-break: break-all;
+    word-break: break-word;
 }
 .nv-version,
 .nv-form-table {
@@ -1178,8 +1258,8 @@ fieldset legend,
 }
 
 /* plugin */
-.pluginConfig input + input,
-.pluginConfig .button_form + input {
+.property-editor-container input + input,
+.property-editor-container .button_form + input {
     margin-left: 5px;
 }
 
@@ -1464,6 +1544,9 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
     }
     .dialog {
         max-width: 99%;
+    }
+    .form-row .form-input, .row-content dl dd{
+        padding-bottom: 0px;
     }
 
     /* design app */

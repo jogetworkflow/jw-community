@@ -17,6 +17,13 @@ html.adminBarShown {
     text-align: center;
     box-sizing: content-box;
 }
+body.rtl #adminControl {
+    right: auto;
+    left: 10px;
+}
+body.rtl #adminControl .fa-angle-double-right:before{
+    content: "\f100";
+}
 #adminControl i {
     font-size: 20px;
 }        
@@ -34,6 +41,11 @@ html.adminBarShown {
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
     transition: all 0.2s ease-in-out;
+}
+body.rtl #adminBar {
+    transform-origin: 100% 50%;
+    left: 0;
+    right: auto;
 }
 body.embeded #adminBar {
     display: none;
@@ -53,6 +65,10 @@ body.embeded #adminBar {
     overflow: hidden;
     background-size: auto 125%;
 }
+body.rtl #adminBar #appCenter {
+    left: auto;
+    right: 10px;
+}
 #adminBar #appCenter i{
     font-size: 36px;
     padding: 2px 3px;
@@ -62,6 +78,10 @@ body.embeded #adminBar {
     vertical-align: top;
     margin-left: 55px;
     display: inline-block;
+}
+body.rtl #adminBarButtons {
+    margin-left: 0px;
+    margin-right: 55px;
 }
 #quickEditModeOption > div,
 #adminBarButtons > div {
@@ -81,6 +101,11 @@ body.embeded #adminBar {
 #quickEditModeOption > div > a > i,
 #adminBarButtons > div > a > i {
     margin-right: 5px;
+}
+body.rtl #quickEditModeOption > div > a > i,
+body.rtl #adminBarButtons > div > a > i {
+    margin-right: 0;
+    margin-left: 5px;
 }
 #quickEditModeOption > div > a:not(.off),
 #adminBarButtons > div > a.current,
@@ -111,6 +136,12 @@ div#quickEditModeOption {
     margin-left: 6px;
     padding-left: 10px;
 }
+body.rtl div#quickEditModeOption {
+    margin-left: 0px;
+    padding-left: 0px;
+    margin-right: 6px;
+    padding-right: 10px;
+}
 div#quickEditModeOption:before,
 #adminBarButtons .separator:after {
     content: "";
@@ -121,9 +152,18 @@ div#quickEditModeOption:before,
     display: block;
     left: 0;
 }
+body.rtl div#quickEditModeOption:before,
+body.rtl #adminBarButtons .separator:after {
+    right: 0;
+    left:auto;
+}
 div#quickEditModeOption:before {
     top: 6px;
     left: 0px;
+}
+body.rtl div#quickEditModeOption:before {
+    left: auto;
+    right: 0px;
 }
 .quickOverlay { 
     height: 100%; 
@@ -140,6 +180,10 @@ div#quickEditModeOption:before {
     top: 5px;
     right: 5px;
     z-index: 15000;
+}
+body.rtl .quickOverlayButton {
+    right: auto;
+    left: 5px;
 }
 .quickOverlayButton a i { 
     padding-top:4px;
@@ -175,6 +219,11 @@ div#quickEditModeOption:before {
     transition: all 0.2s ease-in-out;
     transform-origin: bottom right;
 }
+body.rtl #quickOverlayFrame {
+    right: auto;
+    left: 25px;
+    transform-origin: bottom left;
+}
 #quickOverlayContainer.minimize #quickOverlayFrame {
     transform: scale(0.6);
 }
@@ -197,6 +246,11 @@ div#quickEditModeOption:before {
     #adminBarButtons > div > a > i {
         margin-right: 0px;
     } 
+    body.rtl #quickEditModeOption > div > a > i, 
+    body.rtl #adminBarButtons > div > a > i {
+        margin-right: auto;
+        margin-left: 0px;
+    }
     #quickEditModeOption > div > a.off > .off {
         display: none;
     }
@@ -214,6 +268,10 @@ div#quickEditModeOption:before {
     }
     #adminBarButtons {
         margin-left: 45px;
+    }
+    body.rtl #adminBarButtons {
+        margin-left: 0px;
+        margin-right: 45px;
     }
     #quickEditModeOption > div > a,
     #adminBarButtons > div > a {
@@ -235,6 +293,10 @@ div#quickEditModeOption:before {
         left: 2px;
         bottom: 2px;
     }
+    body.rtl #adminBar #appCenter {
+        left: auto;
+        right: 2px;
+    }
     #adminBarButtons .separator {
         margin: 0px 2px;
     }
@@ -251,8 +313,16 @@ div#quickEditModeOption:before {
         height: 20px;
         padding: 6px;
     }
+    body.rtl #adminControl {
+        right: auto;
+        left: 5px;
+    }
     div#quickEditModeOption {
         padding-left: 7px;
+    }
+    body.rtl div#quickEditModeOption {
+        padding-left: 0;
+        padding-right: 7px;
     }
     #quickOverlayFrame {
         height: calc(100% - 90px);
@@ -260,6 +330,10 @@ div#quickEditModeOption:before {
         right: 2px;
         width: calc(100% - 4px);
         bottom: 46px;
+    }
+    body.rtl #quickOverlayFrame {
+        right: auto;
+        left: 2px;
     }
 }
 .quickEdit, #form-canvas .quickEdit {
@@ -427,6 +501,10 @@ body.quickEditModeActive .analyzer-page {
     .quickOverlayButton {
         top: 5px;
         right: 5px;
+    }
+    body.rtl .quickOverlayButton {
+        right: auto;
+        left: 5px;
     }
     .quickOverlayButton a{
         width: 28px;

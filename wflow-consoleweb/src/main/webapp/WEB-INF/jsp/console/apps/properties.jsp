@@ -2,7 +2,7 @@
 
 <c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
 <commons:header title="${title}" />
-
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
 <div id="nav">
     <div id="nav-title">
         <jsp:include page="appTitle.jsp" flush="true" />
@@ -40,7 +40,8 @@
                 <div>
                     <div id="appDesc">
                         <form method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/note/submit">
-                            <textarea id="description" name="description"><c:out value="${appDefinition.description}" escapeXml="true"/></textarea>
+                            <textarea id="description" name="description" style="display:none"><c:out value="${appDefinition.description}" escapeXml="true"/></textarea>
+                            <pre id="description_editor" name="description_editor" class="ace_editor"></pre>
                             <br />
                             <input type="submit" value="<fmt:message key="general.method.label.submit"/>" class="form-button"/>
                         </form>
@@ -179,6 +180,20 @@
         <c:if test="${protectedReadonly == 'true'}">
         $(".ui-tabs-panel button[onclick*='Delete']").hide();
         </c:if>
+            
+        var editor = ace.edit("description_editor");
+        var textarea = $('textarea[name="description"]');
+        editor.getSession().setValue(textarea.val());
+        editor.getSession().setTabSize(4);
+        editor.setTheme("ace/theme/textmate");
+        editor.getSession().setMode("ace/mode/text");
+        editor.setAutoScrollEditorIntoView(true);
+        editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
+        editor.setOption("minLines", 20);
+        editor.resize();
+        editor.getSession().on('change', function(){
+            textarea.val(editor.getSession().getValue());
+        });
     });
 
     <ui:popupdialog var="messageCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/message/create"/>

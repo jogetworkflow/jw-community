@@ -1,47 +1,62 @@
 .apmtool a, .apmtableview a{cursor: pointer;}
-.apmtool a:hover, .apmtableview a:hover {opacity: 0.8;}
 .apmtool {text-align: right; margin-bottom: 15px;}
 
+.gaugeschart {margin-bottom: 25px;}
 .chart-container {width: 100%; height: 0; padding-bottom: 40%; position: relative;}
 .chart-container .chart {width: 100%; height:100%; position: absolute; top:0; left:0;}
 
-.apmtable {border: 1px solid #ccc; border-bottom:0; border-left:0; border-collapse: collapse; width: 100%;}
-.apmtable th {background: #8FBC8F; text-align: center;}
-.apmtable th.sortable:hover, .apmtable th.sort  {cursor: pointer; background: #646A52; color: #fff;}
-.apmtable th.sort {padding-right: 15px; position: relative;}
-.apmtable th.sort i {position: absolute; top: 50%; right: 3px; transform: translateY(-50%); color: #aaa;}
-.apmtable tr.row > td, .apmtable tr.row-info > td, .apmtable th  {border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; padding:5px;}
+.chart.stats table td {padding: 5px;}
+.chart.stats table tr td:first-child {font-weight: bold;}
+
+.apmtableview {overflow-x: auto; overflow-y: visible;}
+.apmtableview > .apmtable {min-width: 820px;}
+.alert .apmtableview > .apmtable {min-width: 450px;}
+.apmtable {border: 1px solid #ccc; border-left:0; border-collapse: collapse; width: 100%;}
+.apmtable th.sortable:hover, .apmtable th.sort  {cursor: pointer;}
+.apmtable th.sort {padding-right: 10px; position: relative;}
+.apmtable th.sort i {position: absolute; top: -3px; left: 50%; transform: translateX(-50%); color: #aaa;}
+.apmtable th.sort i.fa-sort-up {top: 3px;}
+.apmtable th {border-bottom: 1px solid #ccc;}
+.apmtable tr.row > td, .apmtable tr.row-info > td, .apmtable th  {border-left: 1px solid #ccc; padding:10px;}
 .apmtable td[data-type="number"] {text-align: right;}
 .apmtable td[data-type="text"] div {white-space: normal; word-break: break-all; display: inline-block;}
 .apmtable tr td:first-child, .apmtable tr th:first-child {text-align: left; position: relative;}
+body.rtl .apmtable tr td:first-child, body.rtl .apmtable tr th:first-child {text-align:right;}
 .apmtable tbody tr.row:not(.rowlvl0) {display:none;}
 .apmtable tbody tr.row-expand td:not(:first-child) {border-left: 0px;}
 .apmtable tbody tr.row-expand td:not(:first-child) div {display:none;}
 .apmtable tr.rowlvl1 td:first-child {padding-left:20px; padding-right: 40px; position: relative;}
 .apmtable tr.rowlvl2 td:first-child {padding-left:40px; padding-right: 40px; position: relative;}
 .apmtable tr.rowlvl3 td:first-child {padding-left:60px; padding-right: 40px; position: relative;}
-.apmtable .fixedrow {background: #f5fffa; font-weight:bold;}
-.apmtable tr.row:hover:not(.fixedrow) {background: #eee; }
-.apmtable .info-trigger {position: absolute; right: 5px; top: 5px;}
-.apmtable .row-info{background: #f8f8f8;}
+body.rtl .apmtable tr.rowlvl1 td:first-child {padding-left:40px; padding-right: 20px;}
+body.rtl .apmtable tr.rowlvl2 td:first-child {padding-left:40px; padding-right: 40px;}
+body.rtl .apmtable tr.rowlvl3 td:first-child {padding-left:40px; padding-right: 60px;}
+.apmtable .fixedrow {background: #ecf0f1; font-weight:bold; border-bottom: 1px solid #ccc;}
+.apmtable tr.row:hover:not(.fixedrow) {background: #ecf0f1; }
+.apmtable .info-trigger {position: absolute; right: 10px; top: 10px;}
+body.rtl .apmtable .info-trigger {left: 10px; right:auto;}
+.apmtable .row-info{border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;}
 .tablepagging {text-align: right;}
-.tablepagging a {padding: 5px; display: inline-block; cursor: pointer; color: #8fbc8f; }
-.tablepagging a.active {cursor: initial; color: #000; }
+body.rtl .tablepagging {text-align: left;}
+.tablepagging a {padding: 5px; display: inline-block; cursor: pointer;}
+.tablepagging a.active {cursor: initial; color: #004d40; font-weight: bold;}
+.row-expand.rowlvl0 + .rowlvl1, .row-expand.rowlvl1 + .rowlvl2 {border-top: 1px solid #ccc;}
+.apmtable tr.even {background: #f8f8f8;}
+.apmtable tr.last:not(.rowlvl0) {border-bottom: 1px solid #ccc;}
 
-.tab-contents > div {padding: 5px;}
-.tab-contents .apmtable th {background: #e4f6e4;}
-.tab-contents .apmtable th.sortable:hover, .tab-contents .apmtable th.sort  {background: #c7dfc7; color: #000;}
+.tab-contents > div {padding: 20px 0 0;}
 
-.tab-contents .charts > div {width:48%; border: 1px solid #ccc;  border-radius: 5px; padding: 5px; box-sizing: border-box; display: inline-block; margin-left: 10px; margin-bottom: 10px;}
+.tab-contents .charts > div {width:48%; border: 1px solid #ccc;  border-radius: 5px; padding: 15px; box-sizing: border-box; display: inline-block; margin-left: 10px; margin-bottom: 10px;}
+body.rtl .tab-contents .charts > div {margin-left: 0px; margin-right: 10px;}
 .tab-contents .charts > div .chart-container {padding-bottom: 60%;}
 .tab-contents .charts h4 {margin-top: 4px; font-size: 14px;}
 
 .row-info-content {padding:10px;}
 .tabs {list-style: none; border-bottom: 1px solid #ccc;}
-.tabs li {display: inline-block; padding: 5px 15px; cursor: pointer; color:#555;}
-.tabs li:hover:not(.active) {color: #8FBC8F;}
+.tabs li {display: inline-block; padding: 5px 15px; cursor: pointer;}
+.tabs li:hover:not(.active) {color: #009688;}
 .tabs li.disabled {color:#ccc !important; cursor: initial !important;}
-.tabs li.active {cursor: initial; color:#000; border:1px solid #ccc; border-bottom:1px solid #f8f8f8;margin-bottom: -1px; border-radius: 3px 3px 0px 0px; font-weight: bold;}
+.tabs li.active {cursor: initial; color:#004d40; border-bottom:2px solid #004d40;}
 
 .apmtree .node .node-trigger {vertical-align: top; cursor: pointer; display: inline-block; padding: 2px; margin-top: 3px;}
 .apmtree .node .percentage {display: inline-block; width: 45px; padding: 5px 5px 2px 2px; vertical-align: top;}
@@ -52,16 +67,20 @@
 .apmtree .node .texts.hasMore:after {content: "..."; display: block; font-size: 18px; line-height: 6px;}
 .apmtree .node .texts.hasMore:hover:after {color: #009688;}
 .apmtree .node .texts.hasMore.show:after {display: none;}
-.apmtree .node .texts.show, .apmtree .node .texts.hasMore:hover {background: #efefef;}
+.apmtree .node .texts.show, .apmtree .node .texts.hasMore:hover {background: #ecf0f1;}
 .apmtree .node .texts.show span {display: block;}
 .apmtree .node .childs {padding-left: 15px;}
+body.rtl .apmtree .node .childs {padding-left: 0px; padding-right: 15px;}
 .apmtree .node .nodeState {padding-left: 71px; font-family: Cousine,monospace;}
+body.rtl .apmtree .node .nodeState {padding-left: 0px; padding-right: 71px;}
 
 #alertpopup, #traceview {width: 95vw; height: 70vh; max-width: 950px; overflow: auto; }
 .trace-info > div > label {font-weight: bold;}
+.trace-info > div {margin-bottom: 10px;}
 .trace-info ul {list-style: none; padding: 5px 15px;}
 .trace-info ul li {padding-bottom: 5px;}
 .trace-info > div:not(.additional) table {margin: 5px 15px;}
+.trace-info > div:not(.additional) table td {padding: 5px 0 0;}
 .trace-info .additional {margin-top: 15px;}
 .trace-info .additional a {cursor: pointer; font-weight: bold;}
 .trace-info .additional a:hover {text-decoration: underline;}
@@ -75,19 +94,28 @@ a.loadtext:hover {text-decoration: none !important;}
 .entry .info > div {display: inline-block;}
 .entry .info .barwrapper {vertical-align: top; padding-top: 7px;}
 .entry .bar {width: 100px; border: 1px solid #777; height: 10px; margin-right: 5px;}
+body.rtl .entry .bar {margin-right: 0px; margin-left: 5px;}
 .entry .bar .bar-inner {height: 10px; background: #d58264;}
 .entry .info .text-wrapper {width: calc(100% - 107px); box-sizing: border-box;}
 .entry .info .node-trigger {display: inline-block; margin-right: 5px; padding-top: 5px; visibility: hidden;}
+body.rtl .entry .info .node-trigger {margin-right: 0px; margin-left: 5px;}
 .entry .info.hasChild .node-trigger {visibility: visible;}
 .entry .info .text-wrapper {width: calc(100% - 107px); box-sizing: border-box;}
 .entry .info .text {white-space: normal; word-break: break-all; display: inline-block; width: calc(100% - 18px); box-sizing: border-box; padding: 5px; border-radius: 5px;}
-.entry .info .text:hover {background: #efefef;}
+.entry .info .text:hover {background: #ecf0f1;}
 .entry .entry .text-wrapper {padding-left: 15px;}
+body.rtl .entry .entry .text-wrapper {padding-left: 0px; padding-right: 15px;}
 .entry .entry .entry .text-wrapper {padding-left: 30px;}
+body.rtl .entry .entry .entry .text-wrapper {padding-left: 0px; padding-right: 30px;}
 .entry .entry .entry .entry .text-wrapper {padding-left: 45px;}
+body.rtl .entry .entry .entry .entry .text-wrapper {padding-left: 0px; padding-right: 45px;}
 
 #alertpopup .buttons {margin-top: 15px;}
 
 @media screen and (max-width:680px) {
-    .tab-contents .charts > div {width:100%; margin-left: 0px;}
+    .gaugeschart.chart-container {padding-bottom: 120%;}
+    .tab-contents .charts > div .chart-container{padding-bottom: 100%;}
+    .tab-contents .chart-container{padding-bottom: 60%;}
+    
+    .rowaction {font-size: 120%; line-height: 25px;}
 }

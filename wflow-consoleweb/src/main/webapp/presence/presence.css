@@ -9,6 +9,10 @@
     -webkit-box-sizing: unset;
     box-sizing: unset;
 }
+body.rtl #presence{
+    right: auto;
+    left: 10px;
+}
 #formbuilder #presence, #datalistbuilder #presence, #userviewbuilder #presence, #pbuilder #presence {
     width: auto;
     max-width: 50%;
@@ -31,6 +35,9 @@
     -webkit-box-sizing: unset;
     box-sizing: unset;
 }
+body.rtl #presence li {
+    float: left;
+}
 #presence span.username {
     position: relative;
     top: -8px;
@@ -44,10 +51,18 @@
     width: 30px;
     opacity: 0.7;
 }
+body.rtl #presence span.username {
+    left: auto;
+    right: -5px;
+}
 @media screen and (max-width:680px) {
     #presence {
         right: 5px;
         top: 45px;
+    }
+    body.rtl #presence {
+        right: auto;
+        left: 5px;
     }
     #presence li {
         width: 15px;

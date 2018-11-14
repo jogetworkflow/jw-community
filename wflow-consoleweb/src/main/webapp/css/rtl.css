@@ -2,229 +2,276 @@ body{
     direction:rtl;
 }
 
-#header #logo {
-    position: absolute;
-    right: 32px;
-}
-
-#header-label {
-    left: auto;
-    right: 5px;
-}
-
-#logo-label {
-    right: 30px;
-}
-
-#header #account {
-    float: left;
-    padding-right: 0px;
-    padding-left: 20px;
-}
-
-#menu {
-    left:auto;
-    right:198px;
-}
-
-#menu span.steps{
-    padding:0 6px 0 0;
-    float:right;
-}
-
-#menu span.title {
-    padding:2px 26px 0 0;
-}
-
-#menu span.subtitle {
-    padding:0 26px 0 0;
-}
-
-#menu ul#menu-items li {
-    float: right;
-    background: url(../images/v3/console/menu_bg.png) right top repeat-x;
-}
-
-#menu ul#menu-items a {
-    background: url(../images/v3/console/menu_arrow_rtl.png) left top no-repeat;
-    padding: 0 4px 0 24px;
-}
-
-#menu ul#menu-items .dropdown {
-    right:2px;
-}
-
-#menu ul#menu-items a span.menu-bg {
-    background:url(../images/v3/console/menu_bg.png) right top repeat-x;
-    padding: 0 0 0 5px;
-}
-
-#menu ul#menu-items .active { 
-    background: url(../images/v3/console/menu_bg_selected.png) right top repeat-x;
-}
-
-#menu ul#menu-items .active a { 
-    background: url(../images/v3/console/menu_arrow_front_selected_rtl.png) left top no-repeat;
-}
-
-#menu ul#menu-items .first-active { 
-    background: url(../images/v3/console/menu_selected_first_rtl.png) right top no-repeat;
-}
-
-#menu ul#menu-items .first-inactive { 
-    background: url(../images/v3/console/menu_first_rtl.png) right top no-repeat;
-}
-
-#menu ul#menu-items .next a { 
-    background: url(../images/v3/console/menu_arrow_end_selected_rtl.png) left top no-repeat
-}
-
-#menu ul#menu-items .last-inactive a { 
-    background: url(../images/v3/console/menu_last_rtl.png) left top no-repeat;
-}
-
-#menu ul#menu-items .last-active a { 
-    background: url(../images/v3/console/menu_selected_last_rtl.png) left top no-repeat;
-}
-
-#menu .dropdown span.substeps {
-    float:right;
-    background-position:right center;
-    padding:6px 6px 5px 10px;
-}
-
-#main dd, #main-body-content dd {
-    margin-left:0px;
+body.rtl #main {
+    margin-left: 0px;
     margin-right: 200px;
 }
 
-#main #main-action-help {
+/* header */
+body.rtl #logo{
+    float: right;
+    margin-left: 0px;
+    margin-right: 4px;
+}
+body.rtl #logo-title{
+    float: right;
+}
+body.rtl #header-links{
+    right: auto;
+    left: 55px;
     float: left;
+    clear: left;
 }
 
-#main #main-action ul li {
-    float: right;
+/* footer */
+body.rtl:not(#login) #footer {
+    margin-right: 200px;
+    margin-left: 0px;
 }
 
-#main-body-content .ui-tabs-nav li {
-    float: right;
+/* menu */
+body.rtl #nav{
+    border-right: 0;
+    border-left: 1px solid #E9E9E9;
+    box-shadow: -1px 1px 1px rgba(0, 0, 0, .3);
 }
-
-#main-body-content .ui-tabs-panel{
-    text-align: right;
-}
-
-#nav span.nav-steps {
-    margin-left:5px;
-}
-
-#container {
-    padding-right: 0px;
-    padding-left: 10px;
-}
-
-#nav {
-    float: right;
-}
-
-#main {
-    left: -190px;
-    margin-left: 10px;
+body.rtl #nav-list {
     margin-right: 0px;
+    margin-left: -1px;
+}
+body.rtl #nav-list li a{
+    padding: 10px 40px 10px 15px;
+}
+body.rtl #nav-list .nav-steps{
+    right: 15px;
+    left: auto;
+}
+body.rtl div#adminWelcome{
+    right: auto;
+    left: 10px;
 }
 
-.ftl_label{
-    float:right;
-    margin-left:5px;
-}
-
-.row-content {
+/*form */
+body.rtl .form-row label{
     float: right;
-    text-align: right;
-}
-
-.row-button {
-    float: left;
-}
-
-.form-buttons {
-    clear:both;
-    text-align:right;
-}
-
-.form-row{
-    text-align:right;
-}
-
-.form-row label {
-    text-align:right;
-    float:right;
-}
-
-.form-row .form-input {
-    float:right;
-    text-align:right;
-}
-
-.form-row .input {
-    float:right;
-    text-align:right;
-}
-
-#main-body-content-filter {
-    float: right;
-    margin-left: 20px;
-}
-
-#main .list-thumbnail {
     clear: right;
-    float: right;
-    margin-left: 20px;
-    padding-left: 10px;
+    margin-left: 15px;
+    margin-right: 0;
+}
+body.rtl .form-row .form-input{
+    margin-left: 0px;
+    margin-right: 195px;
+}
+body.rtl select:not([class^="ui-"]){
+    padding-right: 2px;
+    padding-left: 25px;
+    background-position: 0% 50%;
 }
 
-#main .list-details {
-    float: right;
+/* popup */
+body.rtl .ui-dialog-titlebar{
+    right: auto;
+    left: 40px;
+}
+body.rtl .boxy-wrapper .title-bar a.close,
+body.rtl .ui-dialog-titlebar-close{
+    right: auto !important;
+    left: 10px !important;
+}
+body.rtl.popupBody #main-body-header #main-action-help{
+    right: auto;
+    left: 30px;
+}
+body .boxy-wrapper .title-bar {
+    right: auto;
+    left: 15px;
 }
 
-.popupBody #main-body-content {
-    padding: 1em;
+/* button */
+body.rtl button:before, body.rtl input[type='button']:before, body.rtl input[type='submit']:before, body.rtl .smallbutton:before, body.rtl .btn:before{
+    transform-origin: 100% 50%;
 }
 
-/*Json table*/
-.flexigrid{
+/* table */
+body.rtl .flexigrid{
     text-align:right;
     direction:ltr;
 }
- 
-#login-box td, #login-box .input {
-    text-align: right;
+
+/* plugin */
+.property-editor-container input + input,
+.property-editor-container .button_form + input {
+    margin-left: 0px;
+    margin-right: 5px;
 }
 
+/* other */
+body.rtl .row-content dl dt{
+    margin-right: 0px;
+    margin-left: 15px;
+    float: right;
+    clear: right;
+}
+body.rtl .row-content dl dd {
+    margin-left: 0px;
+    margin-right: 195px;
+}
 #ui-datepicker-div {
     display:none;
 }
-
-#desktop #header-label {
-    right: 0px;
-}
-#desktop #logo-label {
-    display: none;
-}
-#desktop .column {
-    float: right;
-}
-#desktop .column ul {
-    text-align: right;
-    margin-right: 25px;
-}
-#desktop #content .column-narrow a {
-    text-align: right;
+body.rtl #installApp {
+    right: auto;
+    left: 25px;
 }
 
-#allApps .nv-col {
+/* webconsole home */
+body#webconsole.rtl #footer {
+    margin-right: 0px;
+}
+
+/* design app */
+body.rtl .nv-border{
+    margin-right: 0;
+    margin-left: 1%;
+}
+body.rtl .nv-border:after{
+    right: auto;
+    left: 0;
+}
+body.rtl .filterform .filterlabel{
+    right: 2px;
+    left: auto;
+}
+body.rtl .filterform .filterinput{
+    padding-left: 2px;
+    padding-right: 25px;    
+}
+body.rtl .nv-link-name{
+    padding-left: 0;
+    padding-right: 20px;
+}
+body.rtl .nv-link-name i{
+    left: auto;
+    right: 0;
+}
+body.rtl .nv-version, body.rtl .nv-form-table{
+    text-align: left;
+}
+body.rtl #nav-apps-link .fa-arrow-circle-left:before{
+    content: "\f0a9";
+}
+body.rtl .nv-delete{
+    left: auto;
+    right: 0;
+}
+body.rtl .nv-button-small{
+    left: 20px;
+    right: auto;
+}
+body.rtl #nv-refresh{
+    right: auto;
+    left: 25px;
+}
+body.rtl .process-name .ftl_label{
+    float: right;
+    margin-right: 0px;
+    margin-left: 20px;
+}
+body.rtl #processes-list{
     float: right;
 }
-#nv .nv-col {
+body.rtl #processes-list li.active a{
+    padding-left: 40px;
+    padding-right: 15px;
+}
+body.rtl #processes-list.selector li.active:after{
+    right: auto;
+    left: 10px;
+}
+body.rtl #advancedView dl dt{
     float: right;
+}
+body.rtl #advancedView dl dd{
+    margin-right: 150px;
+    margin-left: 40px;
+}
+body.rtl .row-button{
+    right: auto;
+    left: 0;
+}
+body.rtl #nav-list li a:before{
+    transform-origin: 100% 50%;
+}
+body.rtl #processTabView .main-body-row dl dt{
+    float: right;
+    margin-right: 0px;
+    margin-left: 15px;
+}
+body.rtl #processTabView .main-body-row dl dd{
+    margin-left: 40px;
+    margin-right: 115px;
+}
+body.rtl .participant-remove{
+    margin-right: 0px;
+    margin-left: 10px;
+}
+body.rtl .nv-link {
+    margin-right: 0px;
+    margin-left: 10px;
+}
+
+@media screen and (max-width:680px) {
+    body.rtl #header-links {
+        right: auto;
+        left: 0;
+    }
+    /* footer */
+    body:not(#login) #footer{
+        margin-left: 0;
+        margin-right: 0;
+    }
+    /* siderbar */
+    body.rtl #nav {
+        border-left:0;
+    }
+    body.rtl #nav-title {
+        padding: 5px 45px 5px 50px;
+    }
+    body.rtl #nav-body .menu-trigger {
+        left: auto;
+        right: 10px;
+    }
+    /* popup */
+    body.rtl .ui-dialog-titlebar{
+        left: 0px;
+    }
+    /* main*/
+    body.rtl #main {
+        margin-right: 0;
+    }
+    /* button */
+    body.rtl #main-action-buttons.buttongroup li button {
+        text-align: right;
+    }
+    /* tabs */
+    body.rtl .ui-tabs .ui-tabs-nav li.ui-tabs-active:after {
+        right: auto;
+        left: 10px;
+    }
+    body.rtl .ui-tabs .ui-tabs-nav li.ui-tabs-active a{
+        padding-right: 15px;
+        padding-left: 40px;
+    }
+    /* others */
+    body.rtl .form-row .form-input,
+    body.rtl .row-content dl dd{
+        margin-right: 15px;
+    }
+    body.rtl .nv-border {
+        margin-left: 0;
+    }
+    /* design app */
+    .nv-link {
+        margin-left: 0;
+    }
 }

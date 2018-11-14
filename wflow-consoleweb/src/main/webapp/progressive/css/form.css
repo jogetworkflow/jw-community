@@ -904,13 +904,6 @@ body .form-cell .grid tbody tr:nth-child(odd) {
 body .adgrid .editor-cell .actions-buttons button {
     color: #000;
 }
-
-.popupBody #main-body-header {
-    background: transparent;
-    font-weight: bold;
-    text-transform: uppercase;
-    height: auto;
-}
 .popupBody form fieldset legend {
     padding: 10px;
 }

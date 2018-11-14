@@ -7,17 +7,15 @@
 <div id="main-body-header">
     <fmt:message key="console.app.dev.settings"/>
 </div>
-<div id="main-body-content" style="overflow-y: hidden; margin-top: 5px">
+<div id="main-body-content">
 
-    <div id="appTabView" style="min-height: 200px">
+    <div id="appTabView">
         <ul>
             <li class="selected"><a href="#appVersionDiv"><span><fmt:message key="console.app.version.label.title"/></span></a></li>
             <li><a href="#appDevSettings"><span><fmt:message key="console.app.dev.admin.settings"/></span></a></li>
             <li><a href="#appGitSettings"><span><fmt:message key="console.app.dev.git.configuration"/></span></a></li>
         </ul>
-        <br><br>
         <div>
-
             <div id="appVersionDiv">   
                 <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/version/list?${pageContext.request.queryString}"
                               var="JsonDataTable"
@@ -122,10 +120,13 @@
                             parent.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/forms';
                         }
                     }
+                    function adjustPropertySize(height) {
+                        return height - 60;
+                    }
                 </script>                
                 
             </div>
-            <div id="appDevSettings" style="position: relative; top:-5px; overflow-y:hidden">        
+            <div id="appDevSettings">        
 
                 <c:if test="${upload}">
                     <div class="form-message form-success"><fmt:message key="console.app.dev.updated" /></div>
@@ -207,14 +208,15 @@
                             saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
                             cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
                             closeAfterSaved: false,
-                            validationFailedCallback: savePropertiesFailed
+                            validationFailedCallback: savePropertiesFailed,
+                            adjustSize : adjustPropertySize
                         }
                         $('.menu-wizard-container').propertyEditor(options);
                     });
                 </script>
 
             </div>
-            <div id="appGitSettings" style="position: relative; top:-5px; overflow-y:hidden">        
+            <div id="appGitSettings" >        
 
                 <c:if test="${upload}">
                     <div class="form-message form-success"><fmt:message key="console.app.dev.updated" /></div>
@@ -301,7 +303,8 @@
                             saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
                             cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
                             closeAfterSaved: false,
-                            validationFailedCallback: savePropertiesFailed
+                            validationFailedCallback: savePropertiesFailed,
+                            adjustSize : adjustPropertySize
                         }
                         $('.menu-wizard-container-git').propertyEditor(options);
                     });

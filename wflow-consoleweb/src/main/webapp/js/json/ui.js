@@ -194,7 +194,7 @@ PopupDialog.prototype = {
                   newFrame.setAttribute("height", this.height-20);
                   newFrame.setAttribute("scrolling", "no");
               } else {
-                  newFrame.setAttribute("height", this.height-40);
+                  newFrame.setAttribute("height", this.height-10);
               }
               if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                   newFrame.onload = function() {

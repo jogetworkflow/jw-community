@@ -224,15 +224,96 @@ body #ui-datepicker-div {
     color: red;
     font-weight: normal;
 }
-body .ui-dialog .ui-dialog-titlebar {
-    padding: 0px;
-    background: none;
-}
-body .ui-dialog .ui-dialog-titlebar-close span {
-    margin: -9px;
+body .ui-dialog {
+    border: 0;
+    border-radius: 3px !important;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
+    z-index: 10001;
 }
 body .ui-dialog .ui-dialog-content {
-    padding: 5px;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+body .ui-dialog-titlebar{
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    height: 0px !important;
+    width: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+    border:0;
+    z-index: 10001;
+}
+body .ui-button-text {
+    display:none;
+}
+body .ui-dialog-titlebar-close{
+    top: -4px !important;
+    right: -11px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    background: #000000b3 !important;
+    display: block;
+    overflow: hidden;
+    width: 25px !important;
+    height: 25px !important;
+}
+body .ui-dialog-titlebar-close:before {
+    display: none !important;
+}
+body .ui-dialog .ui-dialog-titlebar-close span {
+    margin-left: -9px;
+    line-height: 13px;
+}
+body .ui-icon-closethick{
+    background: transparent !important;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-weight: 900;
+    text-indent: unset !important;
+    font-size: 20px;
+    width: 20px !important;
+    height: 20px !important;
+    color:#fff !important;
+}
+body .ui-icon-closethick:hover {
+    color: #ccc !important;
+}
+body .ui-icon-closethick:before{
+    content: 'x';
+}
+body.popupBody #main-body-header {
+    background: #37474F;
+    color: #fff;
+    padding: 15px;
+    position: fixed;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+body.popupBody #main-body-header #main-action-help{
+    position: absolute;
+    right: 30px;
+    top:15px;
+}
+body.popupBody #main-body-content {
+    padding: 20px 15px;
+    overflow: auto !important;
 }
 body .ui-widget-overlay {
     height: 1000%;
@@ -282,4 +363,10 @@ input[type="button"], input[type="submit"], input[type="reset"] {
     a[href]:after { content: none !important; }
     img[src]:after { content: none !important; }
     #adminControl {display:none !important;}
+}
+
+@media screen and (max-width:680px) {
+    .ui-dialog {
+        max-width: 95%;
+    }
 }

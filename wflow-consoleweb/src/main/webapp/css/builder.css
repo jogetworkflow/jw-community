@@ -245,7 +245,7 @@ div, label, input, button, select, th, td, a, span {
 #builder-palette {
     display: block;
     width: 190px;
-    padding: 0px 0px 20px 0px;
+    padding: 0px 0px 50px 0px;
     margin: 5px;
     float: left;
     position: fixed;

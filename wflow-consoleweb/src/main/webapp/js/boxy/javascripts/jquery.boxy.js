@@ -118,7 +118,7 @@ jQuery.extend(Boxy, {
         show:                   true,           // show dialog immediately?
         modal:                  false,          // make dialog modal?
         fixed:                  true,           // use fixed positioning, if supported? absolute positioning used otherwise
-        closeText:              '[close]',      // text to use for default close link
+        closeText:              '<i class="fa fas fa-times"></i>',      // text to use for default close link
         unloadOnHide:           false,          // should this dialog be removed from the DOM after being hidden?
         clickToFront:           false,          // bring dialog to foreground on any click (not just titlebar)?
         behaviours:             Boxy.EF,        // function used to apply behaviours to all content embedded in dialog.

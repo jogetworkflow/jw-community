@@ -6,7 +6,7 @@
 
 <commons:popupHeader />
 
-    <div id="main-body-header">
+    <div id="main-body-header" class="marketplaceAppHeader">
     </div>
 
     <div id="main-body-actions">

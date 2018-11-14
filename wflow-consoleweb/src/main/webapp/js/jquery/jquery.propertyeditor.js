@@ -909,6 +909,9 @@ PropertyEditor.Model.Editor.prototype = {
             $(this.editor).css("width", "auto");
             tempHeight = tempHeight * 0.9 - $(this.element).offset().top;
         }
+        if (this.options.adjustSize !== undefined) {
+            tempHeight = this.options.adjustSize(tempHeight);
+        }
         $(this.editor).css("height", (tempHeight - 25) + "px");
         $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 140) + "px");
     },

@@ -311,6 +311,7 @@ APMTable = function(table, args) {
         $(this.table).find("> table > thead > tr > th.sortable").off("click");
         $(this.table).find("> table > thead > tr > th.sortable").on("click", function(){
             thisObj.sortTable($(thisObj.table).find("> table > thead > tr > th").index($(this)));
+            thisObj.updateOddEven();
         });
         
         if (thisObj.args.defaultSort !== undefined) {
@@ -335,6 +336,7 @@ APMTable = function(table, args) {
                 $(this).addClass("active");
                 
                 thisObj.showPage();
+                thisObj.updateOddEven();
             });
             $(this.table).find("> .tablepagging > a:eq(0)").addClass("active");
             
@@ -344,6 +346,7 @@ APMTable = function(table, args) {
         if ($(thisObj.table).find("> table > tbody > tr").length === 0) {
             $(thisObj.table).find("> table > tbody").append('<tr class="row rowlvl0"><td colspan="'+thisObj.args.columns.length+'">'+get_apmviewer_msg('apm.nodata')+'</td></tr>');
         }
+        thisObj.updateOddEven();
     };
     this.showPage = function() {
         if ($(this.table).find("> .tablepagging").length === 0) {
@@ -471,6 +474,45 @@ APMTable = function(table, args) {
                     $(s.row).after(childs);
                 }
             });
+        }
+    };
+    this.updateOddEven = function(currentRow) {
+        var thisObj = this;
+        var rows = null;
+        if (currentRow !== undefined) {
+            var nextClass = "";
+            var filterClass = "";
+            for (var i = 0; i < this.level + 1; i++) {
+                if (nextClass !== "") {
+                    nextClass += ", ";
+                }
+                nextClass += ".rowlvl" + i;
+                if ($(currentRow).hasClass("rowlvl" + i)) {
+                    filterClass = ".rowlvl" + (i+1);
+                    break;
+                }
+            }
+            rows = $(currentRow).nextUntil(nextClass, filterClass);
+        } else {
+            $(thisObj.table).find("> table > tbody > tr").removeClass("odd").removeClass("even");
+            rows = $(thisObj.table).find("> table > tbody > tr.rowlvl0:not(.fixedrow)");
+        }
+        
+        if (rows !== null && rows.length > 0) {
+            var i = 0;
+            $.each(rows, function(i, r){
+                var css = "odd";
+                if (i % 2 === 1) {
+                    css = "even";
+                }
+                
+                $(r).addClass(css);
+                thisObj.updateOddEven($(r));
+                
+                i++;
+            });
+            
+            $(rows).last().addClass("last");
         }
     };
     this.updateData = function(data){
@@ -702,6 +744,9 @@ APMNode = function() {
                     series: data.dataSeries
                 };
                 chart.setOption(option);
+                $( window ).resize(function() {
+                    chart.resize();
+                });
                 
                 var stats = $(thisObj.detailrow).find(".tab-contents .response .stats");
                 $(stats).append("<h4>"+get_apmviewer_msg('apm.jvmStats')+"</h4><table></table>");
@@ -786,6 +831,9 @@ APMNode = function() {
                     color : ['#61a0a8', '#d48265','#c23531']
                 };
                 chart.setOption(option);
+                $( window ).resize(function() {
+                    chart.resize();
+                });
             });
             
             APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['throughput'] + this.transactionParam + APMViewer.getTimeRange(), function(data){
@@ -836,6 +884,9 @@ APMNode = function() {
                     series: data.dataSeries
                 };
                 chart.setOption(option);
+                $( window ).resize(function() {
+                    chart.resize();
+                });
             });
         }
     };
@@ -889,6 +940,9 @@ APMNode = function() {
                 if (param.seriesType === "scatter") {
                     thisObj.showTraceView(param.data[3]);
                 }
+            });
+            $( window ).resize(function() {
+                chart.resize();
             });
         });
     };
@@ -977,6 +1031,9 @@ APMNode = function() {
                     if (param.seriesType === "scatter") {
                         thisObj.showTraceView(param.data[3]);
                     }
+                });
+                $( window ).resize(function() {
+                    chart.resize();
                 });
                 
                 $(thisObj.detailrow).find(".tab-contents .errors").append('<div class="errors-container"></div>');
@@ -1114,7 +1171,7 @@ APMNode = function() {
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['trace'] + traceId, function(data){
             $("#traceview").html("");
             
-            var html = "<h3>" + data.headline + "</h3><div class=\"trace-info\">";
+            var html = "<h3 class=\"boxy-content-header\">" + data.headline + "</h3><div class=\"boxy-content-body trace-info\">";
             html += '<div><label>Transaction type</label> : <span>'+data.transactionType+'</span></div>';
             html += '<div><label>Transaction name</label> : <span>'+data.transactionName+'</span></div>';
             html += '<div><label>Start</label> : <span>'+(new Date(data.startTime))+'</span></div>';
@@ -1416,20 +1473,38 @@ APMViewer = {
             '<div id="traceview"></div>',
             {
                 title: '&nbsp;',
+                closeText : '<i class="fas fa-times"></i>',
                 closeable: true,
-                draggable: true,
+                draggable: false,
                 show: false,
-                fixed: true
+                fixed: true,
+                modal: true,
+                afterShow : function() {
+                    $('.boxy-modal-blackout').off('click');
+                    $('.boxy-modal-blackout').on('click',function(){
+                        APMViewer.popup.hide();
+                        $('.boxy-modal-blackout').off('click');
+                    });
+                }
             });
             
         APMViewer.alertPopup = new Boxy(
             '<div id="alertpopup"></div>',
             {
                 title: '&nbsp;',
+                closeText : '<i class="fas fa-times"></i>',
                 closeable: true,
-                draggable: true,
+                draggable: false,
                 show: false,
-                fixed: true
+                fixed: true,
+                modal: true,
+                afterShow : function() {
+                    $('.boxy-modal-blackout').off('click');
+                    $('.boxy-modal-blackout').on('click',function(){
+                        APMViewer.alertPopup.hide();
+                        $('.boxy-modal-blackout').off('click');
+                    });
+                }
             });    
             
         $("body").on("click", ".loadtext", function() {
@@ -1444,7 +1519,7 @@ APMViewer = {
         var thisObj = this;
         
         if ($("#alertpopup").find("ul").length === 0) {
-            $("#alertpopup").append('<ul class="tabs"></ul><div class="tab-contents"></div>');
+            $("#alertpopup").append('<h3 class=\"boxy-content-header\">' + get_apmviewer_msg('apm.performanceAlert') + '</h3><div class="boxy-content-body alert-info"><ul class="tabs"></ul><div class="tab-contents"></div></div>');
             $("#alertpopup").find(".tabs").append('<li data-tab="alert" class="active">'+get_apmviewer_msg('apm.manageAlert')+'</li>');
             $("#alertpopup").find(".tabs").append('<li data-tab="smtp" class="">'+get_apmviewer_msg('apm.smtp')+'</li>');
 
@@ -1477,7 +1552,7 @@ APMViewer = {
     loadAlertList : function(callback) {
         var thisObj = this;
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['config'], function(data){
-            $("#alertpopup .alert").html("");
+            $("#alertpopup .alert").html('<div class="apmtableview"></div>');
             
             var list = [];
             var reg = new RegExp('^([^-]+) - (.+) over the last (.+) minute[s]* is (.+) than or equal to (.+)$');
@@ -1494,7 +1569,7 @@ APMViewer = {
                 }
             });
             
-            var table = new APMTable($("#alertpopup .alert"), {
+            var table = new APMTable($("#alertpopup .alert .apmtableview"), {
                 columns : [
                     {
                         name : "name", 
@@ -1541,7 +1616,7 @@ APMViewer = {
             });
             table.renderTable();
             
-            $("#alertpopup .alert").append('<div class="buttons"><a class="addalert btn smallbutton">'+get_apmviewer_msg('apm.addAlert')+'</a></div>');
+            $("#alertpopup .alert").append('<div class="buttons"><a class="addalert btn">'+get_apmviewer_msg('apm.addAlert')+'</a></div>');
             
             $("#alertpopup .alert").find("a.addalert").off("click");
             $("#alertpopup .alert").find("a.addalert").on("click", function(){
@@ -1955,7 +2030,7 @@ APMViewer = {
         APMViewer.loadSummary();
     },
     loadGaugesChart : function() {
-        $(".apmviewer").append('<h2>'+get_apmviewer_msg('apm.jvmPerformance')+'</h2><div class="gaugeschart chart-container"><div id="gchart" class="chart"></div></div>');
+        $(".apmviewer").append('<div class="main-body-content-subheader"><span>'+get_apmviewer_msg('apm.jvmPerformance')+'</span></div><div class="gaugeschart chart-container"><div id="gchart" class="chart"></div></div>');
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['gauges'] + APMViewer.getTimeRange(), function(data){
             for (var i = 0; i < data.dataSeries.length; i++) {
                 data.dataSeries[i].type = "line";
@@ -2029,6 +2104,9 @@ APMViewer = {
                 series: data.dataSeries
             };
             myChart.setOption(option);
+            $( window ).resize(function() {
+                myChart.resize();
+            });
         });
     },
     loadSummary : function() {
@@ -2179,7 +2257,7 @@ APMViewer = {
     },
     populateViewTable : function() {
         if ($(".apmviewer .apmtableview").length === 0) {
-            $(".apmviewer").append('<h2>'+get_apmviewer_msg('apm.webRequestPerformance')+'</h2><div class="apmtableview"></div>');
+            $(".apmviewer").append('<div class="main-body-content-subheader"><span>'+get_apmviewer_msg('apm.webRequestPerformance')+'</span></div><div class="apmtableview"></div>');
             APMViewer.table = new APMTable($(".apmviewer .apmtableview"), {
                 columns : [
                     {
