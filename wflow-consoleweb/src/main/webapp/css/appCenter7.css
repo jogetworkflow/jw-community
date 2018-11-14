@@ -173,7 +173,7 @@ header.navbar .header-nav {
     font-size: 20px;
     position: relative;
     top: -40px;
-    z-index: 1000;
+    z-index: 500;
 }
 body#home ul.breadcrumb {
     display: none;
