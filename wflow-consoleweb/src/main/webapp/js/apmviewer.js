@@ -2285,7 +2285,7 @@ APMViewer = {
                         label : get_apmviewer_msg('apm.percentOfTotalTime'), 
                         sortable : true,
                         format : function(value) {
-                            return APMViewer.numberFormat(value) +get_apmviewer_msg('apm.ms');
+                            return APMViewer.numberFormat(value) +'%';
                         }
                     },
                     {
@@ -2293,7 +2293,7 @@ APMViewer = {
                         label : get_apmviewer_msg('apm.throughputPM'), 
                         sortable : true,
                         format : function(value) {
-                            return value.toFixed(2) +'%';
+                            return value.toFixed(2);
                         }
                     },
                     {
