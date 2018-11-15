@@ -1408,6 +1408,12 @@ public class ConsoleWebController {
     @RequestMapping("/console/app/(*:appId)/versioning")
     public String consoleAppVersioning(ModelMap map, @RequestParam(value = "appId") String appId) throws JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, null);
+        if (appDef == null) {
+            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+            String url = contextPath + "/web/desktop/apps";
+            map.addAttribute("url", url);
+            return "console/dialogClose";
+        }
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
