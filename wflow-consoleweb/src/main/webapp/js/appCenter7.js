@@ -84,12 +84,13 @@ var AppCenter = {
                                     </li>';
                     }
                 }
+                
                 // show apps, hide loading icon
                 $(loading).remove();
                 $(container).append($(content));
 
                 // sort by userview name
-                var appsLi = $(container).find("li");
+                var appsLi = $(container).find("li:not(.grid-dummy-fix)");
                 appsLi.sort(function(a, b) {
                     var aName = $(a).find(".userview-name").text();
                     var bName = $(b).find(".userview-name").text();
@@ -100,6 +101,10 @@ var AppCenter = {
                     }
                 });
                 appsLi.detach().appendTo($(container));
+                
+                for (var i=0; i < 10; i++) {
+                    $(container).append('<li class="grid-dummy-fix"></li>');
+                }
 
                 HelpGuide.reposition();     
                 

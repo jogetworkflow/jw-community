@@ -13,30 +13,46 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     margin: 0px auto 30px;
     width: 165px;
 }
+#search .filterform{
+    position: relative;
+    display: block;
+}
 #search input.filterinput {
     height: auto;
-    width: 90%;
+    width: 100%;
+    max-width: inherit;
+    padding-left: 25px;
+}
+#search .filterlabel{
+    position: absolute;
+    left: 5px;
+    top:5px;
 }
 #apps {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-right: -60%;
-    transform: translate(-40%, 30px);
-    width: 88%;
-    padding: 0px;
+    max-width:88%;
+    margin: 0 auto;
+    padding-left: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 #apps li {
-    float: left;
     width: 140px;
     height: 220px;
-    display: inline-block;
-    margin-bottom: 50px;
-    margin-right: 50px;
     box-shadow: 0px 0px 1px 1px #ddd;
     border-radius: 4px;
     overflow: hidden;
     background: #ffffff;
+    display: block;
+    margin: 0 25px 50px;
+    position: relative;
+}
+#apps li.grid-dummy-fix {
+    height:1px !important;
+    border:0 !important; 
+    margin-bottom:0 !important;
+    box-shadow:none;
+    background: transparent;
 }
 #apps li:hover {
     box-shadow: 0px 0px 1px 2px #ccc;
@@ -112,6 +128,8 @@ a.print-button {
     position: absolute;
     display: none;
     box-shadow: #666 1px 1px 2px 0px;
+    bottom: 3px;
+    right: 4px;
 }    
 .app-design-button i {
     display: inline-block;
@@ -225,10 +243,10 @@ body > #page > footer {
         margin: auto;
     }
     #apps {
-        transform: none;
-        width: 100%;
-        left: 10%;
-        margin-top: 15px;
+        max-width: 100%;
+    }
+    #apps li{
+        margin: 10px;
     }
     #page #banner h1 {
         padding-top: 0px;
