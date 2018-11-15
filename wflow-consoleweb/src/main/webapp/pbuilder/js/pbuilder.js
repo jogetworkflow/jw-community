@@ -4376,18 +4376,18 @@ ProcessBuilder.Mapper = {
     },
     attachParticipantDetail : function(node, mapping) {
         $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.type")+"</dt><dd>"+mapping['typeLabel']+"</dd>");
-        if (mapping['htmlValue']  !== undefined) {
+        if (mapping !== undefined && mapping['htmlValue']  !== undefined) {
             $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['htmlValue']+"</dd>");
         } else {
             $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.value")+"</dt><dd>"+mapping['value']+"</dd>");
         }
-        if (mapping['remove'] !== undefined && !mapping['remove']) {
+        if (mapping !== undefined && mapping['remove'] !== undefined && !mapping['remove']) {
             $(node).find(".mapping_detail .remove").remove();
             $(node).find(".edit_mapping").removeClass("hasmapping");
         }
     },
     attachFormDetail : function(node, mapping) {
-        if (mapping !== null && mapping['type'] !== "EXTERNAL") {
+        if (mapping !== null && mapping !== undefined && mapping['type'] !== "EXTERNAL") {
             if (mapping['formId'] !== undefined) {
                 var url = ProcessBuilder.Designer.contextPath + '/web/console/app/' + ProcessBuilder.ApiClient.appId + '/' + ProcessBuilder.ApiClient.appVersion + '/form/builder/' + mapping['formId'];
                 $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.formName")+"</dd><dd><a href=\""+url+"\" target=\"_blank\">"+mapping['formName']+"</a></dd>");
@@ -4402,20 +4402,22 @@ ProcessBuilder.Mapper = {
                 $(node).find(".mapping_detail .remove").remove();
                 $(node).find(".edit_mapping").removeClass("hasmapping");
             }
-        } else if (mapping !== null && mapping['type'] === "EXTERNAL") {
+        } else if (mapping !== null && mapping !== undefined && mapping['type'] === "EXTERNAL") {
             $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.externalForm")+"</dt><dd>"+mapping['formUrl']+"</dd>");
-        } else if (mapping === null) {
+        } else if (mapping === null || mapping !== undefined) {
             $(node).find(".mapping_detail .remove").remove();
             $(node).find(".edit_mapping").removeClass("hasmapping");
         }
         var tick = "far fa-square";
-        if (mapping !== null && mapping['autoContinue']) {
+        if (mapping !== null && mapping !== undefined && mapping['autoContinue']) {
             tick = "far fa-check-square";
         }
         $(node).find(".mapping_detail").append("<p class=\"shownext\"><i class=\"clickable "+tick+"\"></i> "+get_pbuilder_msg("pbuilder.label.showNextAssignment")+"</p>");
     },
     attachPluginDetail : function(node, mapping) {
-        $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>");
+        if (mapping !== undefined) { 
+            $(node).find(".mapping_detail > dl").append("<dt>"+get_pbuilder_msg("pbuilder.label.pluginName")+"</dt><dd>"+mapping['pluginLabel']+"</dd><dt>"+get_pbuilder_msg("pbuilder.label.pluginVersion")+"</dt><dd>"+mapping['pluginVersion']+"</dd>");
+        }
     },
     editMapping : function(node, type, mapping) {
         $(".currentedit").removeClass("currentedit");

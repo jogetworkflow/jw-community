@@ -304,8 +304,10 @@ public class ProcessBuilderWebController {
             o.put("htmlValue", htmlValue);
         } else if (p.getType().startsWith("requester")) {
             String htmlValue = ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.previousActivity");
-            if (!p.getValue().isEmpty()) {        
+            if (p.getValue() != null && !p.getValue().isEmpty()) {        
                 htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.app.process.common.label.definitionId") + " :</font> " + p.getValue();
+            } else {
+                htmlValue = "<font class=\"ftl_label\">" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.previousActivity") + "</font> ";
             }
             o.put("htmlValue", htmlValue);
         } else if ("role".equals(p.getType())) {
