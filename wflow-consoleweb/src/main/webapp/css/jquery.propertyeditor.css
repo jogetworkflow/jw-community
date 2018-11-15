@@ -76,6 +76,9 @@
     padding:5px 10px;
     margin-bottom:5px;
     background-color:#efefef;
+    left: 1px;
+    width: 100%;
+    position: relative;
 }
 
 .property-editor-page-title h1{
@@ -107,7 +110,8 @@
     display: block;
     position: absolute;
     top:0;
-    width: 100%;
+    left:1px;
+    width:100%;
     padding: 8px 0;
     background: #fff;
     z-index: 99;
@@ -183,6 +187,7 @@
     display:block;
     position: absolute;
     bottom: 0;
+    left:1px;
     width:100%;
     background: #fff;
     padding: 5px 0;

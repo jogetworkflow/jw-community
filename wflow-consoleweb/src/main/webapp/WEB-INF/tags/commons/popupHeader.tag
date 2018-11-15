@@ -29,7 +29,7 @@
         <script>
             $(function() {
                 if (window.self !== window.top) {
-                    var wh = $(window.self).height() - $("#main-body-header").outerHeight(true);
+                    var wh = $(window.self).height() - $("#main-body-header").outerHeight(true) - 40;
                     $("body.popupBody").css("width", "99.9%");
                     $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
                     $("#main-body-content").css("height", wh + "px");
