@@ -489,6 +489,14 @@ body select:not([class^="ui-"]):focus{
 .form-row select:not([class^=ui]){
     min-width: 50%;
 }
+.form-errors {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
 
 /* popup */
 body .ui-widget-overlay{
@@ -1344,18 +1352,19 @@ body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar
         cursor: pointer;
     }
     #nav-body #nav-list {
-        height: 0px;
+        height:auto;
+        max-height: 0px;
         position: absolute;
         width: 100vw;
         top: 100%;
         z-index: 100;
         background: #f7f9f9;
         border-bottom: 1px solid #ccc;
-        transition: height 0.3s ease-in-out;
+        transition: max-height 0.3s ease-in-out;
         overflow: hidden;
     }
     #nav-body.show #nav-list {
-        height: auto;
+        max-height: 200px;
     }
     #nav-list li a:focus {
         background: #004d40;
