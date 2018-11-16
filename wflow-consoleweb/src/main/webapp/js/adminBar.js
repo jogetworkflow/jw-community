@@ -8,7 +8,7 @@ var AdminBar = {
         AdminBar.cookiePath = path;
     },
     showQuickOverlay: function(url) {
-        if (AdminBar.webConsole) {
+        if (AdminBar.webConsole && !AdminBar.builderMode) {
             document.location = url;
             return false;
         }
