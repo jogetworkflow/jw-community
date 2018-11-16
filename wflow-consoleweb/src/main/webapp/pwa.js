@@ -23,7 +23,7 @@ PwaUtil = {
                             serviceWorker = registration.active;
                             // console.log('Service worker active');
                         }
-                        if (serviceWorker && serviceWorker.state == "activated") {
+                        if (serviceWorker && (serviceWorker.state == "installed" || serviceWorker.state == "activated")) {
                             console.log('Service worker successfully registered.');
                             if (PwaUtil.pushEnabled) {
                                 PwaUtil.subscribe(registration);

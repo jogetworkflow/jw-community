@@ -44,7 +44,7 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
     overflow: hidden;
     background: #ffffff;
     display: block;
-    margin: 0 25px 50px;
+    margin: 0 20px 50px;
     position: relative;
 }
 #apps li.grid-dummy-fix {
@@ -226,6 +226,11 @@ body > #page > footer {
 }
 
 /** mobile view **/
+@media (max-width:900px) {
+    #page #banner h1 {
+        width: 300px;
+    }    
+}
 @media (max-width:767px) {
     #apps li {
         float: none;
@@ -246,7 +251,7 @@ body > #page > footer {
         max-width: 100%;
     }
     #apps li{
-        margin: 10px;
+        margin: 10px 2%;
     }
     #page #banner h1 {
         padding-top: 0px;
