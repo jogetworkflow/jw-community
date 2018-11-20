@@ -3,6 +3,192 @@ PropertyEditor.Model = {};
 PropertyEditor.Type = {};
 PropertyEditor.Validator = {};
 
+PropertyEditor.Popup = {
+    propertyDialog : {},
+    hasDialog : function(id) {
+        return PropertyEditor.Popup.propertyDialog[id] !== undefined;
+    },
+    createDialog : function(id) {
+        if (PropertyEditor.Popup.hasDialog(id)) {
+            return;
+        }
+        PropertyEditor.Popup.propertyDialog[id] = new Boxy(
+            '<div id="'+id+'"></div>',
+            {
+                title: '<i class="fas fa-arrows-alt"></i><label class="autosave">'+get_peditor_msg('peditor.autoSaveWhenClose')+' <input type="checkbox"/></label>',
+                closeable: true,
+                draggable: true,
+                show: false,
+                fixed: true,
+                beforeHide : function() {
+                    PropertyEditor.Popup.cleanDialog(id);
+                },
+                afterHide : function() {
+                    $("#"+id).html("");
+                }
+            }
+        );
+    },
+    cleanDialog : function(id) {
+        if ($("#"+id + " .property-editor-container").length === 0) {
+            return;
+        }
+        var popupProp = {
+            width : $("#"+id + " .property-editor-container").width(),
+            height : $("#"+id + " .property-editor-container").height(),
+            x : $("#"+id).closest(".boxy-wrapper").position().left,
+            y : $("#"+id).closest(".boxy-wrapper").position().top,
+            autoSave : $("#"+id).closest(".boxy-wrapper").find(".autosave input").is(":checked")
+        };
+        $.localStorage.setItem(id+".boxy", JSON.encode(popupProp));
+        if ($("#"+id).hasClass("ui-resizable")) {
+            $("#"+id).resizable( "destroy" );
+        }
+    },
+    checkChangeAndHide : function(id, hide) {
+        var editor = $("#"+id).data("editor");
+        if (!editor.saved && editor.isChange()) {
+            if ($("#"+id).closest(".boxy-wrapper").find(".autosave input").is(":checked")) {
+                $("#"+id + " .property-editor-container").data("disable-hide", (hide !== true));
+                editor.save();
+            } else if (!confirm(get_peditor_msg('peditor.confirmClose'))) {
+                return false;
+            }
+        }
+        PropertyEditor.Popup.cleanDialog(id);
+        if (hide !== undefined && hide === true) {
+            editor.cancel();
+        }
+        return true;
+    },
+    showDialog : function(id, options, args) {
+        if (!PropertyEditor.Popup.hasDialog(id)) {
+            return;
+        }
+        
+        if ($("#"+id).find(".property-editor-container").length > 0) {
+            if (!PropertyEditor.Popup.checkChangeAndHide(id)) {
+                return;
+            }
+        }
+        $("#"+id).html("");
+        
+        if (args !== null && args !== undefined && args.id !== null && args.id !== undefined) {
+            $("#"+id).attr("data-id", args.id);
+        }
+        
+        PropertyEditor.Popup.propertyDialog[id].show();
+        
+        if (options.cancelCallback !== undefined) {
+            var orgCancelCallback = options.cancelCallback;
+            options.cancelCallback = function() {
+                orgCancelCallback();
+                PropertyEditor.Popup.hideDialog(id);
+            };
+        }
+        if (options.saveCallback !== undefined) {
+            var orgSaveCallback = options.saveCallback;
+            options.saveCallback = function(container, properties) {
+                orgSaveCallback(container, properties);
+                if ($("#"+id + " .property-editor-container").data("disable-hide") !== true) {
+                    PropertyEditor.Popup.hideDialog(id);
+                } else {
+                    PropertyEditor.Popup.cleanDialog(id);
+                }
+            };
+        }
+        
+        $("#"+id).closest(".boxy-wrapper").off("keydown.popup");
+        $("#"+id).closest(".boxy-wrapper").on("keydown.popup", function(e) {
+            if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
+                PropertyEditor.Popup.checkChangeAndHide(id, true);
+            }
+        });
+        
+        options.isPopupDialog = true;
+         
+        $("#"+id).propertyEditor(options);
+        
+        $("#"+id).closest(".boxy-wrapper").addClass("property-boxy-wrapper");
+        
+        $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").off("click");
+        $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").on("click", function(e){
+            return PropertyEditor.Popup.checkChangeAndHide(id, true);
+        });
+        
+        PropertyEditor.Popup.positionDialog(id, args);
+    },
+    hideDialog : function(id) {
+        if (!PropertyEditor.Popup.hasDialog(id)) {
+            return;
+        }
+        PropertyEditor.Popup.propertyDialog[id].hide();
+    },
+    adjustSize : function(id, width, height) {
+        $("#"+id + " .property-editor-container").css("width", width + "px");
+        $("#"+id + " .property-editor-container").css("height", height + "px");
+        $("#"+id + " .property-editor-container").find(".property-editor-property-container").css("height", (height - 114) + "px");
+        
+        if (width <= 680) {
+            $("#"+id + " .property-editor-container").addClass("narrow");
+        } else {
+            $("#"+id + " .property-editor-container").removeClass("narrow");
+        }
+    },
+    positionDialog : function(id, args) {
+        if (!PropertyEditor.Popup.hasDialog(id)) {
+            return;
+        }
+        
+        if ($("#"+id).hasClass("ui-resizable")) {
+            $("#"+id).resizable( "destroy" );
+        }
+        $("#"+id).resizable({
+            resize : function ( event, ui ) {
+                PropertyEditor.Popup.adjustSize(id, ui.size.width, ui.size.height);
+            }
+        });
+        
+        var popupProp = null;
+        var popupPropJson = $.localStorage.getItem(id+".boxy");
+        if (popupPropJson !== null && popupPropJson !== undefined) {
+            popupProp = JSON.decode(popupPropJson);
+        }
+        
+        if (popupProp.autoSave === true) {
+            $("#"+id).closest(".boxy-wrapper").find(".autosave input").attr("checked", "checked");
+        }
+        
+        //adjust width & height
+        var width = $(window).width() * 0.8;
+        var height = $(window).height() * 0.85 - 25;
+        if (popupProp !== null && popupProp !== undefined) {
+            if (popupProp.width !== undefined) {
+                width = popupProp.width;
+            }
+            if (popupProp.height !== undefined) {
+                height = popupProp.height;
+            }
+        } else if (args !== undefined) {
+            if (args.defaultWidth !== undefined && width > args.defaultWidth) {
+                width = args.defaultWidth;
+            }
+            if (args.defaultHeight !== undefined && height > args.defaultHeight) {
+                height = args.defaultHeight;
+            }
+        }
+        PropertyEditor.Popup.adjustSize(id, width, height);
+        
+        if (popupProp !== null && popupProp !== undefined && popupProp.x !== undefined&& popupProp.y !== undefined) {
+            $("#"+id + " .property-editor-container").closest(".boxy-wrapper").css("left", popupProp.x + "px");
+            $("#"+id + " .property-editor-container").closest(".boxy-wrapper").css("top", popupProp.y + "px");
+        } else {
+            PropertyEditor.Popup.propertyDialog[id].center('x');
+            PropertyEditor.Popup.propertyDialog[id].center('y');
+        }
+    }
+};
+
 /* Utility Functions */
 PropertyEditor.Util = {
     resources: {},
@@ -30,6 +216,13 @@ PropertyEditor.Util = {
         return string.replace(regX, replaceString);
     },
     deepEquals: function(o1, o2) {
+        if (o1 === o2) {
+            return true;
+        }
+        if (o1 === undefined || o1 === null || o2 === undefined || o2 === null ) {
+            return false;
+        }
+        
         var aProps = Object.getOwnPropertyNames(o1);
         var bProps = Object.getOwnPropertyNames(o2);
 
@@ -60,7 +253,6 @@ PropertyEditor.Util = {
                 return false;
             }
         }
-
         return true;
     },
     inherit: function(base, methods) {
@@ -795,7 +987,7 @@ PropertyEditor.Model.Editor = function(element, options) {
     this.pages = {};
     this.fields = {};
     this.editorId = 'property_' + PropertyEditor.Util.uuid();
-
+    this.saved = false;
     $(this.element).append('<div id="' + this.editorId + '" class="property-editor-container" style="position:relative;"><div class="ajaxLoader"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div><div class="property-editor-display" ><a class="compress" title="' + get_peditor_msg('peditor.compress') + '"><i class="fas fa-compress" aria-hidden="true"></i></a><a class="expand" title="' + get_peditor_msg('peditor.expand') + '"><i class="fas fa-expand" aria-hidden="true"></i></a></div><div class="property-editor-nav"></div><div class="property-editor-pages"></div><div class="property-editor-buttons"></div><div>');
     this.editor = $(this.element).find('div#' + this.editorId);
 };
@@ -882,7 +1074,7 @@ PropertyEditor.Model.Editor.prototype = {
         this.adjustSize();
         this.initPage();
 
-        if (this.options.showCancelButton) {
+        if (this.options.showCancelButton && !this.options.isPopupDialog) {
             $(this.editor).keydown(function(e) {
                 if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
                     if (thisObject.isChange()) {
@@ -897,23 +1089,28 @@ PropertyEditor.Model.Editor.prototype = {
         }
     },
     adjustSize: function() {
-        //adjust height & width
-        var tempHeight = $(window).height();
-        if ($(this.element).hasClass("boxy-content")) {
-            $(this.editor).css("width", ($(window).width() * 0.8) + "px");
-            tempHeight = tempHeight * 0.85;
-        } else if ($(this.element).parent().attr('id') === "main-body-content") {
-            $(this.editor).css("width", "auto");
-            tempHeight = tempHeight - $(this.element).offset().top;
+        if (this.options.isPopupDialog) {
+            var tempHeight = $(this.editor).height();
+            $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 114) + "px");
         } else {
-            $(this.editor).css("width", "auto");
-            tempHeight = tempHeight * 0.9 - $(this.element).offset().top;
+            //adjust height & width
+            var tempHeight = $(window).height();
+            if ($(this.element).hasClass("boxy-content")) {
+                $(this.editor).css("width", "auto");
+                tempHeight = tempHeight * 0.85;
+            } else if ($(this.element).parent().attr('id') === "main-body-content") {
+                $(this.editor).css("width", "auto");
+                tempHeight = tempHeight - $(this.element).offset().top;
+            } else {
+                $(this.editor).css("width", "auto");
+                tempHeight = tempHeight * 0.9 - $(this.element).offset().top;
+            }
+            if (this.options.adjustSize !== undefined) {
+                tempHeight = this.options.adjustSize(tempHeight);
+            }
+            $(this.editor).css("height", (tempHeight - 25) + "px");
+            $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 139) + "px");
         }
-        if (this.options.adjustSize !== undefined) {
-            tempHeight = this.options.adjustSize(tempHeight);
-        }
-        $(this.editor).css("height", (tempHeight - 25) + "px");
-        $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 140) + "px");
     },
     initPage: function() {
         var $thisObject = this;
@@ -1041,7 +1238,8 @@ PropertyEditor.Model.Editor.prototype = {
         }
     },
     saveCallback: function(data) {
-        if (this.options.closeAfterSaved) {
+        this.saved = true;
+        if (this.options.closeAfterSaved && !this.options.isPopupDialog) {
             $(this.editor).remove();
         }
 
@@ -1049,7 +1247,7 @@ PropertyEditor.Model.Editor.prototype = {
             this.options.saveCallback(this.element, data);
         }
 
-        if (this.options.closeAfterSaved) {
+        if (this.options.closeAfterSaved && !this.options.isPopupDialog) {
             this.clear();
         }
     },
@@ -1074,11 +1272,15 @@ PropertyEditor.Model.Editor.prototype = {
         }
     },
     cancel: function() {
-        $(this.editor).remove();
+        if (!this.options.isPopupDialog) {
+            $(this.editor).remove();
+        }
         if ($.isFunction(this.options.cancelCallback)) {
             this.options.cancelCallback(this.element);
         }
-        this.clear();
+        if (!this.options.isPopupDialog) {
+            this.clear();
+        }
     },
     clear: function() {
         this.element = null;
@@ -2835,9 +3037,9 @@ PropertyEditor.Type.Grid.prototype = {
             html += '</span></td>';
         });
         html += '<td class="property-type-grid-action-column">';
-        html += '<a href="#" class="property-type-grid-action-moveup"><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-movedown"><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-delete"><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
+        html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
         html += '</td></tr>';
 
         //render value
@@ -2880,14 +3082,14 @@ PropertyEditor.Type.Grid.prototype = {
                 });
 
                 html += '<td class="property-type-grid-action-column">';
-                html += '<a href="#" class="property-type-grid-action-moveup"><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-movedown"><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-delete"><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
+                html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
                 html += '</td></tr>';
             });
         }
 
-        html += '</table><a href="#" class="property-type-grid-action-add"><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
         return html;
     },
     renderDefault: function() {
@@ -3357,9 +3559,9 @@ PropertyEditor.Type.GridCombine.prototype = {
             html += '</span></td>';
         });
         html += '<td class="property-type-grid-action-column">';
-        html += '<a href="#" class="property-type-grid-action-moveup"><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-movedown"><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-delete"><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
+        html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
+        html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
         html += '</td></tr>';
 
         var values = new Array();
@@ -3433,14 +3635,14 @@ PropertyEditor.Type.GridCombine.prototype = {
                 });
 
                 html += '<td class="property-type-grid-action-column">';
-                html += '<a href="#" class="property-type-grid-action-moveup"><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-movedown"><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-delete"><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
+                html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
+                html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
                 html += '</td></tr>';
             });
         }
 
-        html += '</table><a href="#" class="property-type-grid-action-add"><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-cicle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
         return html;
     },
     renderDefault: function() {
@@ -4561,7 +4763,8 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
                 closeAfterSaved: true,
                 showDescriptionAsToolTip: false,
                 mandatoryMessage: get_peditor_msg('peditor.mandatory'),
-                skipValidation: false
+                skipValidation: false,
+                isPopupDialog: false
             };
             var o = $.extend(true, defaults, options);
             $.ajaxSetup({
@@ -4578,6 +4781,7 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
             return element.each(function() {
                 var editor = new PropertyEditor.Model.Editor(this, o);
                 editor.render();
+                $(element).data("editor", editor);
                 return false;
             });
         },

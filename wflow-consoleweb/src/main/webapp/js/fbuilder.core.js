@@ -1,6 +1,5 @@
 FormBuilder = {
 
-    propertyDialog: null, // property dialog popup object
     elementPropertyDefinitions: new Object(), // map of property dialog definitions for each element class
     elementTemplates: new Object(), // map of HTML templates for each element class
     contextPath: "/jw",
@@ -707,41 +706,23 @@ FormBuilder = {
             propertyValues : elementProperty,
             showCancelButton:true,
             cancelCallback: function() {
-                FormBuilder.propertyDialog.hide();
-                $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
                 FormBuilder.addToUndo();
-                
-                // hide dialog
-                FormBuilder.propertyDialog.hide();
 
                 // update element properties
                 FormBuilder.updateElementProperties(element, properties);
 
                 // refresh element UI
                 FormBuilder.refreshElementTemplate(element);
-                $("#form-property-editor").html("");
             }
         }
 
         // show popup dialog
-        if (FormBuilder.propertyDialog == null) {
-            FormBuilder.propertyDialog = new Boxy(
-                '<div id="form-property-editor"></div>',
-                {
-                    title: 'Property Editor',
-                    closeable: true,
-                    draggable: true,
-                    show: false,
-                    fixed: true
-                });
+        if (!PropertyEditor.Popup.hasDialog("form-property-editor")) {
+            PropertyEditor.Popup.createDialog("form-property-editor");
         }
-        $("#form-property-editor").html("");
-        FormBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        FormBuilder.propertyDialog.center('x');
-        FormBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("form-property-editor", options);
     },
 
     updateElementProperties: function(element, properties) {
@@ -1067,14 +1048,9 @@ FormBuilder = {
             propertyValues: formProperties,
             showCancelButton:true,
             cancelCallback: function() {
-                FormBuilder.propertyDialog.hide();
-                $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
                 FormBuilder.addToUndo();
-                
-                // hide dialog
-                FormBuilder.propertyDialog.hide();
 
                 // update element properties
                 FormBuilder.updateElementProperties(form, properties);
@@ -1088,22 +1064,10 @@ FormBuilder = {
         };
 
         // show popup dialog
-        if (FormBuilder.propertyDialog == null) {
-            FormBuilder.propertyDialog = new Boxy(
-                '<div id="form-property-editor"></div>',
-                {
-                    title: 'Property Editor',
-                    closeable: true,
-                    draggable: false,
-                    show: false,
-                    fixed: true
-                });
+        if (!PropertyEditor.Popup.hasDialog("form-property-editor")) {
+            PropertyEditor.Popup.createDialog("form-property-editor");
         }
-        $("#form-property-editor").html("");
-        FormBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        FormBuilder.propertyDialog.center('x');
-        FormBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("form-property-editor", options);
     },
     
     isEmpty : function() {

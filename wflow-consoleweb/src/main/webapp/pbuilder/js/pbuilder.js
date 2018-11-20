@@ -1256,12 +1256,11 @@ ProcessBuilder.ApiClient = {
 /* Actions */
 ProcessBuilder.Actions = {
     undoRedoInProgress: false,
-    propertyEditor: null,
     editProperties: function(model) {
         var propertyOptions = model.propertyOptions();
         if (propertyOptions) {
-            if (!ProcessBuilder.Actions.propertyEditor) {
-                ProcessBuilder.Actions.propertyEditor = new Boxy('<div class="property-editor"></div>', {title:'&nbsp;', closeable:true, draggable:true, show:false, fixed:false});
+            if (!PropertyEditor.Popup.hasDialog("property-editor")) {
+                PropertyEditor.Popup.createDialog("property-editor");
             }
             var saveCallback = function(container, properties) {
                 ProcessBuilder.Actions.execute(function() {
@@ -1273,15 +1272,12 @@ ProcessBuilder.Actions = {
                         var xpdl = ProcessBuilder.Designer.generateXPDL();
                         ProcessBuilder.Designer.init(xpdl, currentProcessDefId);
                         ProcessBuilder.Designer.refresh();
-                        // hide property editor
-                        ProcessBuilder.Actions.propertyEditor.hide();
                     }
                 });
             };
             var validationFailedCallback = function() {
             };
             var cancelCallback = function() {
-                ProcessBuilder.Actions.propertyEditor.hide();
             };
             var options = {
                 contextPath: ProcessBuilder.Designer.contextPath,
@@ -1293,16 +1289,7 @@ ProcessBuilder.Actions = {
                 validationFailedCallback: validationFailedCallback,
                 cancelCallback: cancelCallback
             };
-            $('.property-editor').html("");
-            $('.property-editor').attr('id', model.id);
-            ProcessBuilder.Actions.propertyEditor.show();
-            $('.property-editor').propertyEditor(options);
-            $('.property-editor').find(".property-editor-container").css("width", "680px");
-            $('.property-editor').find(".property-editor-container").css("max-height", "495px");
-            var newHeight = $('.property-editor').find(".property-editor-container").height() - 115;
-            $('.property-editor').find(".property-editor-property-container").css("height", newHeight + "px");
-            ProcessBuilder.Actions.propertyEditor.center('x');
-            ProcessBuilder.Actions.propertyEditor.center('y');
+            PropertyEditor.Popup.showDialog("property-editor", options, {id:model.id, defaultWidth: 680, defaultHeight: 495});
         }
     },
     addTransition: function(source, target, connection) {

@@ -124,6 +124,7 @@ jQuery.extend(Boxy, {
         behaviours:             Boxy.EF,        // function used to apply behaviours to all content embedded in dialog.
         afterDrop:              Boxy.EF,        // callback fired after dialog is dropped. executes in context of Boxy instance.
         afterShow:              Boxy.EF,        // callback fired after dialog becomes visible. executes in context of Boxy instance.
+        beforeHide:             Boxy.EF,        // callback fired before dialog is hidden. executes in context of Boxy instance.
         afterHide:              Boxy.EF,        // callback fired after dialog is hidden. executed in context of Boxy instance.
         beforeUnload:           Boxy.EF         // callback fired after dialog is unloaded. executed in context of Boxy instance.
     },
@@ -459,6 +460,7 @@ Boxy.prototype = {
     hide: function(after) {
         if (!this.visible) return;
         var self = this;
+        self._fire('beforeHide');
         if (this.options.modal) {
             jQuery(document.body).unbind('keypress.boxy');
             this.modalBlackout.animate({opacity: 0}, function() {

@@ -54,7 +54,6 @@ DatalistBuilder = {
         considerFilterWhenGetTotal : ''
     },                          //datalist's properties
 
-    propertyDialog: null,                       // property dialog popup object
     elementPropertyDefinitions: new Object(),   // map of property dialog definitions for each element class
     
     init : function(){
@@ -62,16 +61,8 @@ DatalistBuilder = {
         DatalistBuilder.initUndoRedo();
         
         // show popup dialog
-        if (DatalistBuilder.propertyDialog == null) {
-            DatalistBuilder.propertyDialog = new Boxy(
-                '<div id="form-property-editor"></div>',
-                {
-                    title: 'Property Editor',
-                    closeable: true,
-                    draggable: true,
-                    show: false,
-                    fixed: true
-                });
+        if (!PropertyEditor.Popup.hasDialog("list-property-editor")) {
+            PropertyEditor.Popup.createDialog("list-property-editor");
         }
         
         //init paste icon
@@ -1235,21 +1226,14 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton : true,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide()
             },
             saveCallback: function(container, properties) {
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide()
                 // update element properties
                 DatalistBuilder.updateColumnPropertiesCallback(columnId, properties);
             }
         }
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
 
     updateColumnPropertiesCallback : function (columnId, properties){
@@ -1326,21 +1310,14 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton : true,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide()
             },
             saveCallback: function(container, properties) {
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide()
                 // update element properties
                 DatalistBuilder.updateFilterPropertiesCallback(columnId, properties);
             }
         }
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
 
     updateFilterPropertiesCallback : function (columnId, properties){
@@ -1503,22 +1480,14 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton : true,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide();
-                $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide();
                 // update element properties
                 DatalistBuilder.updateDatalistProperties(container, properties);
             }
         }
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
     
     showPopUpDatalistBinderProperties : function(){
@@ -1534,8 +1503,6 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton: false,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide();
-                $("#form-property-editor").html("");
             },
             saveCallback: function(container, properties) {
                 var binderChanged = DatalistBuilder.binderProperties.className != properties.binder.className;
@@ -1548,17 +1515,10 @@ DatalistBuilder = {
                 
                 $('#source').html("");
                 $('#source').propertyEditor(options);
-                
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide();
             }
         };
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
 
     updateDatalistProperties : function(container, properties){
@@ -1611,21 +1571,14 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton : true,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide()
             },
             saveCallback: function(container, properties) {
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide()
                 // update element properties
                 DatalistBuilder.updateActionCallback(columnId, actions, properties);
             }
         }
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
     
     getRowActionPropertiesDefinition : function(className) {
@@ -1766,21 +1719,14 @@ DatalistBuilder = {
             propertyValues : propertyValues,
             showCancelButton : true,
             cancelCallback: function() {
-                DatalistBuilder.propertyDialog.hide()
             },
             saveCallback: function(container, properties) {
-                // hide dialog
-                DatalistBuilder.propertyDialog.hide()
                 // update element properties
                 DatalistBuilder.updateActionCallback(columnId, actions, properties);
             }
         }
         
-        $("#form-property-editor").html("");
-        DatalistBuilder.propertyDialog.show();
-        $("#form-property-editor").propertyEditor(options);
-        DatalistBuilder.propertyDialog.center('x');
-        DatalistBuilder.propertyDialog.center('y');
+        PropertyEditor.Popup.showDialog("list-property-editor", options);
     },
 
     getJson : function(){

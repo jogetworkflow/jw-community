@@ -12,24 +12,6 @@ body {
 div, label, input, button, select, th, td, a, span {
     font-size: 13px;
 }
-.property-editor-page-button-panel input[type=button] {
-    background: rgb(39, 174, 96);
-    font-family: Arial;
-    text-decoration: none;
-    box-shadow: none;
-    border: none;
-    cursor: pointer;    
-    color: white;
-    border-radius: 4px;
-    margin-right: 2px;
-    padding: 10px;
-}
-.property-editor-page-button-panel input[type=button]:disabled {
-    opacity: 0.5;
-}
-.property-editor-page-button-panel input.page-button-cancel {
-    background: #aaa;
-}
 #builder-container {
     min-width: 100%;
     width: auto;
@@ -262,7 +244,7 @@ div, label, input, button, select, th, td, a, span {
     display: none;
 }
 #builder-palette h3 {
-    background: #37C8A9;
+    background: #00695c;
     color: white;
     text-shadow: 0px 0px 1px black;
     padding: 5px;
@@ -560,9 +542,12 @@ li.jsondiffpatch-unchanged {
     position: fixed;
     right:0;
 }
-#builder-bar .highlight-button a, #builder-bar .highlight-button a:hover{
-    background: #009688;
+#builder-bar .highlight-button a{
+    background: #00695c;
     padding-right: 0;
+}
+#builder-bar .highlight-button a:hover{
+    background: #00897b;
 }
 #builder-bar .highlight-button a:hover {
     opacity: 0.8;
@@ -662,23 +647,9 @@ body .boxy-modal-blackout {
 body .boxy-wrapper {
     border-collapse: collapse;
     z-index: 10001;
-}
-body .boxy-wrapper .boxy-inner{
     border-radius: 3px;
     box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
-}
-body .boxy-wrapper .title-bar a.close{
-    top: -9px !important;
-    right: -26px !important;
-    border: 0 !important;
-    border-radius: 50% !important;
-    background: #000000b3 !important;
-    display: block;
-    width: 25px;
-    height: 25px;
-    box-sizing: border-box;
-    padding: 6px;
-    text-align: center;
+    overflow: hidden;
 }
 body .boxy-wrapper > tbody > tr:first-child,
 body .boxy-wrapper > tbody > tr:last-child,
@@ -690,18 +661,78 @@ body.popupBody {
     padding-top: 48px;
 }
 body .boxy-wrapper .title-bar {
-    position: absolute;
-    background: transparent;
-    top:0;
-    right: 15px;
-    z-index: 10000;
+    background: #00695c;
+    margin: 3px 3px 0 3.5px;
 }
-.boxy-wrapper .title-bar h2 {
-    display:none;
+body .boxy-wrapper .title-bar h2:after {
+    content:"";
+    display: block;
+    clear:both;
 }
 .boxy-inner {
     position: relative;
 }
 .boxy-content-body {
     margin-top: 50px;
+}
+body .boxy-wrapper .title-bar .close:hover {
+    color: #ccc;
+}
+body .property-editor-page-button-panel input[type=button]{
+    background: #00695c;
+    color: #fff;
+    border:0;
+    appearance: none;
+    -webkit-appearance: none;
+    font-size: 14px;
+    font-weight: normal;
+    border-radius: 5px;
+    padding: 5px 15px;
+    cursor: pointer;
+    -webkit-transform: perspective(1px) translateZ(0);
+    transform: perspective(1px) translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    overflow: hidden;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-property: color, background-color;
+    transition-property: color, background-color;
+    position: relative;
+    display: inline-block;
+    line-height: 20px;
+    margin-bottom: 5px;
+}
+body .property-editor-page-button-panel input + input {
+    margin-left: 5px;
+}
+body .property-editor-page-button-panel input[type=button]:focus{
+    outline:none;
+}
+body .property-editor-page-button-panel input[type=button]:before{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #00695c;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+    -webkit-transform-origin: 0 50%;
+    transform-origin: 0 50%;
+    -webkit-transition-property: transform;
+    transition-property: transform;
+    -webkit-transition-duration: 0.2s;
+    transition-duration: 0.2s;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+}
+body .property-editor-page-button-panel input[type=button]:focus:before{
+    -webkit-transform: scaleX(1) !important;
+    transform: scaleX(1) !important;
+}
+body .property-editor-page-button-panel input[type=button]:hover{
+    background-color: #00897b;
+    color: #fff;
 }

@@ -2,11 +2,30 @@
     width:750px;
     height:500px;
     overflow:hidden;
-    border:1px solid #bbbbbb;
     padding: 0px;
     position: relative;
+    color:#535353;
 }
 
+.property-editor-container div, 
+.property-editor-container label, 
+.property-editor-container input, 
+.property-editor-container button, 
+.property-editor-container select, 
+.property-editor-container th, 
+.property-editor-container td, 
+.property-editor-container a, 
+.property-editor-container span {
+    font-size: 14px;
+    line-height: 1.2em;
+}
+
+.property-editor-container a {
+    color:#535353;
+}
+.property-editor-container a:hover {
+    color:#009688;
+}
 .property-editor-display {
     position: absolute;
     right: 5px;
@@ -76,7 +95,7 @@
     padding:5px 10px;
     margin-bottom:5px;
     background-color:#efefef;
-    left: 1px;
+    left: 0px;
     width: 100%;
     position: relative;
 }
@@ -110,7 +129,7 @@
     display: block;
     position: absolute;
     top:0;
-    left:1px;
+    left:0px;
     width:100%;
     padding: 8px 0;
     background: #fff;
@@ -118,11 +137,13 @@
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.property-editor-page-step-indicator{
+.property-editor-container .property-editor-page-step-indicator{
     padding:0px 10px;
-    font-size:10px;
     color:#666666;
     height:30px;
+}
+.property-editor-container .property-editor-page-step-indicator span {
+    font-size:11px;
 }
 
 .single-page .property-editor-nav .property-editor-page-step-indicator{
@@ -187,7 +208,7 @@
     display:block;
     position: absolute;
     bottom: 0;
-    left:1px;
+    left:0px;
     width:100%;
     background: #fff;
     padding: 5px 0;
@@ -230,7 +251,7 @@
 
 .property-label{
     padding-right:10px;
-    color: #535353;
+    padding-top: 8px;
 }
 
 .property-label-description {
@@ -245,6 +266,11 @@
 
 .property-input .multiple_option{
     display:block;
+    padding: 8px 0 0;
+}
+
+.property-input .multiple_option input{
+    margin-right: 5px;
 }
 
 .property-input label{
@@ -256,7 +282,7 @@
     width: 100%;
 }
 
-.property-input .default{
+.property-editor-container .property-input .default{
     font-size:12px;
     font-style:italic;
     color:#888888;
@@ -271,17 +297,17 @@
     display:inline-block;
 }
 
-.property-input table tr#header{
-    display:table-row;
+.property-input table tr:nth-child(even) td:not(:last-child) {
+    background: #f7f9f9;
 }
 
 .property-input table tr th span{
-    font-size:10px;
+    text-transform: uppercase;
 }
 
 .property-input table tr th,
 .property-input table tr td{
-    border:1px solid #bbbbbb;
+    border:1px solid #ccc;
 }
 
 .property-input table tr th.property-type-grid-action-column,
@@ -297,6 +323,7 @@
 .property-input table tr th,
 .property-input table tr td{
     width:90px;
+    padding: 5px;
 }
 
 .property-input select{
@@ -358,7 +385,7 @@
     background-color:#ffffff;
 }
 
-.property-input-error{
+.property-editor-container .property-input-error{
     color:red;
     clear:both;
     display:block;
@@ -375,29 +402,14 @@
     width:16px;
 }
 
-.property-type-grid-action-delete{
-    background: url(../images/v3/property_editor/delete.png) no-repeat;
+.property-editor-container a.property-type-grid-action-delete{
+    color: red;
 }
 
-.property-type-grid-action-moveup{
-    background: url(../images/v3/property_editor/up.png) no-repeat;
-}
-
-.property-type-grid-action-movedown{
-    background: url(../images/v3/property_editor/down.png) no-repeat;
-}
-
-.property-type-grid-action-add{
-    margin-top:3px;
-    background: url(../images/v3/property_editor/add.png) no-repeat;
-}
-
-.property-type-grid-action-moveup.disabled{
-    background: url(../images/v3/property_editor/up_d.png) no-repeat;
-}
-
-.property-type-grid-action-movedown.disabled{
-    background: url(../images/v3/property_editor/down_d.png) no-repeat;
+.property-editor-container a.property-type-grid-action-moveup.disabled,
+.property-editor-container a.property-type-grid-action-movedown.disabled{
+    color:#ccc;
+    pointer-events: none;
 }
 
 .property-type-grid-action-delete span,
@@ -417,15 +429,16 @@
     float: none;
 }
 .property-editor-property.property-type-header .property-label-container .property-label{
-    border-bottom: 1px solid #DDDDDD;
     font-weight: bold;
-    background: #f6f6f6;
-    padding: 3px 5px;
+    background: #f7f9f9;
+    padding: 10px;
 }
 .property-editor-property.property-type-header .property-label-container .property-description{
-    margin-top: 5px;
-    padding: 3px 5px;
+    margin: 10px 0 15px;
     display:block !important;
+    font-style: italic;
+    color: #888;
+    font-size: 12px;
 }
 
 .ui-widget-overlay {
@@ -446,7 +459,7 @@ td.error .chosen-container, td.error input {
     border:1px solid red;
 }
 
-.ace_editor *{
+.property-editor-container .ace_editor *{
    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
@@ -729,6 +742,10 @@ td.error .chosen-container, td.error input {
 .pewrapper{
     background:#f6f9fa;
     border: 1px solid #eaeef0;
+    margin-bottom:5px;
+}
+.pewrapper + .pewrapper {
+    margin-top: 15px;
 }
 .pewrapper > div{
     padding:5px;
@@ -810,7 +827,240 @@ td.error .chosen-container, td.error input {
 .pewrapper .error {
     border:1px solid red;
 }
+.property-editor-container.narrow .property-label-container {
+    width: 100%;
+    float: none;
+    margin-bottom: 10px;
+} 
+.property-editor-container.narrow .property-input {
+    width: 100%;
+    float: none;
+}
+.property-editor-container.narrow .property-input input,
+.property-editor-container.narrow .property-input select,
+.property-editor-container.narrow .property-input textarea{
+    max-width: 100%;
+}
 
+/* field */
+.property-editor-container select {
+    text-transform: none;
+}
+.property-editor-container button[disabled],
+html .property-editor-container input[disabled] {
+    cursor: default;
+}
+.property-editor-container button::-moz-focus-inner,
+.property-editor-container input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+.property-editor-container input {
+    line-height: normal;
+}
+.property-editor-container input[type="number"]::-webkit-inner-spin-button,
+.property-editor-container input[type="number"]::-webkit-outer-spin-button {
+    height: auto;
+}
+.property-editor-container input[type="search"] {
+    -webkit-appearance: textfield;
+    box-sizing: content-box;
+}
+.property-editor-container input[type="search"]::-webkit-search-cancel-button,
+.property-editor-container input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+.property-editor-container legend {
+    border: 0;
+    padding: 0;
+}
+.property-editor-container textarea {
+    overflow: auto;
+}
+.property-editor-container optgroup {
+    font-weight: bold;
+}
+.property-editor-container .no-select, .property-editor-container input[type=range],
+.property-editor-container input[type=range] + .thumb {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.property-editor-container ::-webkit-input-placeholder{
+    color: #B6B6B6;
+}
+.property-editor-container :-moz-placeholder{
+    color: #B6B6B6;
+}
+.property-editor-container ::-moz-placeholder{
+    color: #B6B6B6;
+}
+.property-editor-container :-ms-input-placeholder{
+    color: #B6B6B6;
+}
+.property-editor-container input:not([type]),
+.property-editor-container input[type=text],
+.property-editor-container input[type=password],
+.property-editor-container input[type=email],
+.property-editor-container input[type=url],
+.property-editor-container input[type=time],
+.property-editor-container input[type=date],
+.property-editor-container input[type=datetime],
+.property-editor-container input[type=datetime-local],
+.property-editor-container input[type=tel],
+.property-editor-container input[type=number],
+.property-editor-container input[type=search],
+.property-editor-container input[type=file],
+.property-editor-container textarea,
+.property-editor-container select:not([class^=ui]),
+.property-editor-container .chosen-container-single .chosen-single{
+    border: none;
+    border-radius: 0;
+    outline: none;
+    height: 30px;
+    min-height: 30px;
+    margin: 0;
+    padding: 0 2px;
+    box-shadow: none;
+    box-sizing: border-box;
+    transition: all 0.3s;
+    background-color: #f9f9f9;
+    border-bottom: 1px solid #9E9E9E;
+    color: inherit;
+    min-width: 54%;
+    vertical-align: top;
+}
+.property-editor-container table input:not([type]),
+.property-editor-container table input[type=text],
+.property-editor-container table input[type=password],
+.property-editor-container table input[type=email],
+.property-editor-container table input[type=url],
+.property-editor-container table input[type=time],
+.property-editor-container table input[type=date],
+.property-editor-container table input[type=datetime],
+.property-editor-container table input[type=datetime-local],
+.property-editor-container table input[type=tel],
+.property-editor-container table input[type=number],
+.property-editor-container table input[type=search],
+.property-editor-container table input[type=file],
+.property-editor-container table textarea,
+.property-editor-container table select:not([class^=ui]),
+.property-editor-container table .chosen-container-single .chosen-single,
+.property-editor-container .pewrapper input:not([type]),
+.property-editor-container .pewrapper input[type=text],
+.property-editor-container .pewrapper input[type=password],
+.property-editor-container .pewrapper input[type=email],
+.property-editor-container .pewrapper input[type=url],
+.property-editor-container .pewrapper input[type=time],
+.property-editor-container .pewrapper input[type=date],
+.property-editor-container .pewrapper input[type=datetime],
+.property-editor-container .pewrapper input[type=datetime-local],
+.property-editor-container .pewrapper input[type=tel],
+.property-editor-container .pewrapper input[type=number],
+.property-editor-container .pewrapper input[type=search],
+.property-editor-container .pewrapper input[type=file],
+.property-editor-container .pewrapper textarea,
+.property-editor-container .pewrapper select:not([class^=ui]),
+.property-editor-container .pewrapper .chosen-container-single .chosen-single{
+    margin: 0;
+    min-width: 0;
+    margin-right: 5px;
+}
+.property-editor-container select[multiple]:not([class^=ui]){
+    height: auto;
+}
+.property-editor-container select[multiple]:not([class^=ui]) option{
+    padding: 5px 2px;
+}
+.property-editor-container input:not([type]):focus:not([readonly]),
+.property-editor-container input[type=text]:focus:not([readonly]),
+.property-editor-container input[type=password]:focus:not([readonly]),
+.property-editor-container input[type=email]:focus:not([readonly]),
+.property-editor-container input[type=url]:focus:not([readonly]),
+.property-editor-container input[type=time]:focus:not([readonly]),
+.property-editor-container input[type=date]:focus:not([readonly]),
+.property-editor-container input[type=datetime]:focus:not([readonly]),
+.property-editor-container input[type=datetime-local]:focus:not([readonly]),
+.property-editor-container input[type=tel]:focus:not([readonly]),
+.property-editor-container input[type=number]:focus:not([readonly]),
+.property-editor-container input[type=search]:focus:not([readonly]),
+.property-editor-container input[type=file]:focus:not([readonly]),
+.property-editor-container textarea:focus:not([readonly]),
+.property-editor-container select:focus:not([readonly]):not([class^=ui]),
+.property-editor-container .chosen-container-single.chosen-container-active .chosen-single{
+    border-bottom: 1px solid #727272;
+    box-shadow: 0 1px 0 0 #727272;
+}
+body .property-editor-container input:-webkit-autofill, 
+body .property-editor-container textarea:-webkit-autofill, 
+body .property-editor-container select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #f9f9f9 inset;
+    -webkit-text-fill-color: initial !important;
+}
+body .property-editor-container input:focus:-webkit-autofill, 
+body .property-editor-container textarea:focus:-webkit-autofill, 
+body .property-editor-container select:focus:-webkit-autofill {
+    -webkit-box-shadow: 0 1px 0 0 #727272, 0 0 0px 1000px #f9f9f9 inset !important;
+}
+body .property-editor-container textarea {
+    height: auto;
+}
+body .property-editor-container select:not([class^="ui-"]){
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%239E9E9E' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'/%3E%3C/svg%3E");
+    background-position: 100% 50%;
+    background-repeat: no-repeat;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    padding-right: 25px;
+}
+body .property-editor-container select:not([class^="ui-"])::-ms-expand{
+    display: none;
+}
+body .property-editor-container select:not([class^="ui-"]) option{
+    color: #000;
+    background: #fff;
+}
+body .property-editor-container select:not([class^="ui-"]):disabled {
+    background-image: none;
+}
+body .property-editor-container select:not([class^="ui-"]):focus{
+    -webkit-box-shadow: 0 1px 0 0 #727272;
+}
+.property-editor-container .chosen-container-single .chosen-single span{
+    padding-top: 8px;
+}
+.property-editor-container .chosen-container-single .chosen-drop {
+    margin-top: 2px;
+}
+.property-editor-property + .property-type-header {
+    margin-top: 25px;
+}
+.property-editor-page-button-panel input[type=button]:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+body .property-editor-page-button-panel input[type=button].page-button-cancel {
+    background: #aaa;
+}
+body .boxy-wrapper .title-bar h2:after {
+    content:"";
+    display: block;
+    clear:both;
+}
+body .boxy-wrapper .autosave {
+    float: right;
+    margin-right: 25px;
+    cursor: pointer;
+}
+body .boxy-wrapper .autosave input {
+    margin: 0;
+    padding: 0;
+}
 /* mobile styles */
 @media screen and (max-width:680px) {
     .property-label-container {

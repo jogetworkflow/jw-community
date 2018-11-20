@@ -127,10 +127,10 @@
         
         var css = '.rulewrapper .rules-container{position:relative; padding-left: 8px;}';
         css += '.rulewrapper .rules-container .buttons {margin-bottom: 6px;}';
-        css += '.rulewrapper.if-rule {margin-bottom:5px;}';
         css += '.rulewrapper .andOr {float: left; margin-left: 5px;}';
         css += '.rulewrapper .conditions-container {padding-left:15px; padding-top:5px; overflow:hidden;}';
-        css += '.rulewrapper .buttons .sort{cursor:move;}'
+        css += '.rulewrapper .buttons:after{content:""; display:block; clear:both;}';
+        css += '.rulewrapper .buttons .sort{cursor:move;}';
         css += '.conditions-container .rulerow:after {content:""; border-top:2px solid #9aafbb; position:absolute; left: -6px; top: 50%%; width: 5px; z-index:999;}';
         css += '.conditions-container .rulerow:last-child:before{content:""; border-left:2px solid #9aafbb; position:absolute; left: -6px; bottom:50%%; height:1000px; z-index:999;}';
         css += '.rulerow.rulewrapper{background:#edf2f5f2; border-color:#9aafbb; padding:2px 2px 2px 5px;}';
@@ -138,7 +138,7 @@
         css += '.rulewrapper .revert.checked{width: 15px; color:red;}';
         css += '.rulewrapper a.revert{position: absolute; left: -3px; top: 11px;}';
         css += '.if-rule > .rules-container {padding-left: 20px;}';
-        css += '.if-rule > .rules-container > .buttons > a.revert {top: 8px; left: 9px;}';
+        css += '.if-rule > .rules-container > .buttons > a.revert {top: 12px; left: 9px;}';
         
         var html = '<div name="'+thisObj.id+'"><div class="ifrules-container"></div><a class="rbutton pebutton addif"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addRule@@</a><div class="else-rule rulewrapper pewrapper"><div class="rule_header peheader">@@app.rulesdecision.elsethen@@</div><div class="then-container"></div></div></div>';
         

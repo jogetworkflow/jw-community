@@ -27,9 +27,6 @@ UserviewBuilder = {
     isAltKeyPressed : false,
     saveChecker : 0,
 
-    //Popup dialog object for property editor
-    editorDialog: null,
-
     //Initial data storing model of userview
     initDefaultUserviewDataModel : function(id){
         var d = new Object();
@@ -90,8 +87,8 @@ UserviewBuilder = {
     //Initial Builder feature
     initBuilder : function(){
         //Popup dialog
-        this.editorDialog = new Boxy('<div class="menu-wizard-container"></div>', {title:'Property Editor',closeable:true,draggable:true,show:false,fixed:true});
-
+        PropertyEditor.Popup.createDialog("menu-wizard-container");
+        
         //Shortcut key
         $(document).keyup(function (e) {
             if(e.which == 17){
@@ -258,20 +255,13 @@ UserviewBuilder = {
             propertyValues : UserviewBuilder.data.setting.properties,
             showCancelButton:true,
             cancelCallback: function() {
-                UserviewBuilder.editorDialog.hide();
-                $('.menu-wizard-container').html("");
             },
             saveCallback: function(container, properties) {
                 UserviewBuilder.saveSettingProperties(container, properties);
-                UserviewBuilder.editorDialog.hide();
             }
         };
         
-        $('.menu-wizard-container').html("");
-        UserviewBuilder.editorDialog.show();
-        $('.menu-wizard-container').propertyEditor(options);
-        UserviewBuilder.editorDialog.center('x');
-        UserviewBuilder.editorDialog.center('y');
+        PropertyEditor.Popup.showDialog("menu-wizard-container", options);
     },
 
     //Generate userview builder element based on json
@@ -486,25 +476,19 @@ UserviewBuilder = {
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
         }
-        $('.menu-wizard-container').html("");
-        $('.menu-wizard-container').attr('id', id);
-        thisObject.editorDialog.show();
-        $('.menu-wizard-container').propertyEditor(options);
-        thisObject.editorDialog.center('x');
-        thisObject.editorDialog.center('y');
+        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id:id});
     },
 
     saveMenu : function(container, properties){
         UserviewBuilder.addToUndo();
         var thisObject = UserviewBuilder;
 
-        var id = $(container).attr('id');
+        var id = $(container).attr('data-id');
         var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
 
         menu.properties = properties;
         var label = UI.escapeHTML(properties.label);
         $('#'+id+' .menu-label span').html(label);
-        thisObject.editorDialog.hide();
         UserviewBuilder.adjustJson();
     },
 
@@ -527,7 +511,7 @@ UserviewBuilder = {
     },
 
     cancelEditMenu : function(container){
-        UserviewBuilder.editorDialog.hide();
+        
     },
 
     setPermission : function(id){
@@ -544,23 +528,17 @@ UserviewBuilder = {
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
         }
-        $('.menu-wizard-container').html("");
-        $('.menu-wizard-container').attr('id', id);
-        thisObject.editorDialog.show();
-        $('.menu-wizard-container').propertyEditor(options);
-        thisObject.editorDialog.center('x');
-        thisObject.editorDialog.center('y');
+        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id, id});
     },
 
     savePermission : function(container, properties){
         UserviewBuilder.addToUndo();
         var thisObject = UserviewBuilder;
 
-        var id = $(container).attr('id');
+        var id = $(container).attr('data-id');
         var category = thisObject.data.categories[thisObject.categoriesPointer[id]];
 
         category.properties = properties;
-        thisObject.editorDialog.hide();
         
         $("#"+id).find('.category-label span').html(UI.escapeHTML(category.properties.label));
         if (category.properties.comment !== undefined && category.properties.comment !== null && category.properties.comment !== "") {
