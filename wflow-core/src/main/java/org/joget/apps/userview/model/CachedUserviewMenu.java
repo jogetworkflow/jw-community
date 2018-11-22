@@ -1,5 +1,6 @@
 package org.joget.apps.userview.model;
 
+import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewCache;
@@ -10,6 +11,7 @@ import org.osgi.framework.BundleContext;
 public class CachedUserviewMenu extends UserviewMenu {
 
     private UserviewMenu delegate;
+    private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
 
     public CachedUserviewMenu() {
     }
@@ -417,4 +419,10 @@ public class CachedUserviewMenu extends UserviewMenu {
         return propertyOptions;
     }
     
+    public String getDefaultPropertyValues(){
+        if (!CachedUserviewMenu.defaultPropertyValues.containsKey(getClassName())) {
+            CachedUserviewMenu.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
+        }
+        return CachedUserviewMenu.defaultPropertyValues.get(getClassName());
+    }
 }

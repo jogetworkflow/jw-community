@@ -25,4 +25,6 @@ http://www.springframework.org/schema/tx http://www.springframework.org/schema/t
         -->
     </bean>
 
+    <bean id="propertyUtil" class="org.joget.plugin.property.service.PropertyUtil">
+    </bean>
 </beans>

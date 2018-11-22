@@ -10,17 +10,24 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Utility method used to deal with Plugin Properties Options values (JSON format)
  * 
  */
-public class PropertyUtil {
+public class PropertyUtil implements ApplicationContextAware {
+    private static ApplicationContext applicationContext;
+    
     public final static String PASSWORD_PROTECTED_VALUE = "****SECURE_VALUE****-";
     public final static String TYPE_PASSWORD = "password";
     public final static String TYPE_ELEMENT_SELECT = "elementselect";
@@ -42,12 +49,50 @@ public class PropertyUtil {
                 JSONObject page = (JSONObject) pages.get(i);
 
                 if (page.has("properties")) {
+                    if (page.has("control_field") && !isVisible(values, page)) {
+                        continue;
+                    }
+                    
                     //loop properties
                     JSONArray properties = (JSONArray) page.get("properties");
                     for (int j = 0; j < properties.length(); j++) {
                         JSONObject property = (JSONObject) properties.get(j);
                         if (property.has("value")) {
-                            values.put(property.getString("name"), property.get("value"));
+                            if (property.has("control_field") && !isVisible(values, property)) {
+                                continue;
+                            }
+                            
+                            if (property.has("type") && "elementselect".equalsIgnoreCase(property.getString("type"))) {
+                                String value = property.getString("value");
+                                JSONObject vObj = new JSONObject();
+                                vObj.put("className", value);
+                                
+                                PluginManager pluginManager = (PluginManager) applicationContext.getBean("pluginManager");
+                                PropertyEditable plugin = (PropertyEditable) pluginManager.getPlugin(value);
+                                
+                                JSONObject pProps = new JSONObject();
+                                if (plugin != null && plugin.getPropertyOptions() != null && !plugin.getPropertyOptions().isEmpty()) {
+                                    try {
+                                        String pPropsJson = getDefaultPropertyValues(plugin.getPropertyOptions());
+                                        pProps = new JSONObject(pPropsJson);
+                                    } catch (Exception e) {
+                                        //ignore
+                                    }
+                                }
+                                vObj.put("properties", pProps);
+                                
+                                values.put(property.getString("name"), vObj);
+                            } else {
+                                values.put(property.getString("name"), property.get("value"));
+                            }
+                        } else if (property.has("type") && "selectbox".equalsIgnoreCase(property.getString("type")) && property.has("options")) {
+                            JSONArray options = property.getJSONArray("options");
+                            if (options.length() > 0) {
+                                JSONObject o = options.getJSONObject(0);
+                                if (o.has("value")) {
+                                    values.put(property.getString("name"), o.getString("value"));
+                                }
+                            }
                         }
                     }
                 }
@@ -59,6 +104,28 @@ public class PropertyUtil {
         }
         return "{}";
     }
+    
+    protected static boolean isVisible(JSONObject values, JSONObject obj) throws JSONException {
+        boolean isVisible = false;
+        boolean useRegex = false;
+        
+        String control_field = obj.getString("control_field");
+        String control_value = obj.getString("control_value");
+        if (obj.has("control_use_regex") && "true".equalsIgnoreCase(obj.getString("control_use_regex"))) {
+            useRegex = true;
+        }
+        
+        if (values != null && values.has(control_field)) {
+            String value = values.getString(control_field);
+            if (useRegex) {
+                isVisible = value.matches(control_value);
+            } else {
+                isVisible = value.equals(control_value);
+            }
+        }
+        
+        return isVisible;
+    };
 
     /**
      * Parses the Plugin Properties Options values (JSON format) into a properties
@@ -251,5 +318,10 @@ public class PropertyUtil {
             } catch (Exception e) {}
         }
         return json;
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
     }
 }

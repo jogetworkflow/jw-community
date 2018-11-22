@@ -201,6 +201,7 @@ public class DatalistBuilderWebController {
             hm.put("supportRow", action.supportRow());
             hm.put("supportList", action.supportList());
             hm.put("icon", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getIcon()):"");
+            hm.put("defaultPropertyValues", (action instanceof DataListActionDefault)?(((DataListActionDefault) action).getDefaultPropertyValues()):PropertyUtil.getDefaultPropertyValues(action.getPropertyOptions()));
             collection.add(hm);
         }
         jsonObject.accumulate("actions", collection);

@@ -1285,6 +1285,7 @@ ProcessBuilder.Actions = {
                 propertyValues: model,
                 showCancelButton: true,
                 closeAfterSaved: false,
+                changeCheckIgnoreUndefined: true,
                 saveCallback: saveCallback,
                 validationFailedCallback: validationFailedCallback,
                 cancelCallback: cancelCallback

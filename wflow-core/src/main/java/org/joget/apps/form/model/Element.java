@@ -2,13 +2,13 @@ package org.joget.apps.form.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.directory.model.User;
-import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -29,6 +29,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private FormLoadBinder optionsBinder;
     private FormStoreBinder storeBinder;
     private Validator validator;
+    private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
 
     /**
      * Get load binder
@@ -306,7 +307,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return 
      */
     public String getDefaultPropertyValues(){
-        return PropertyUtil.getDefaultPropertyValues(getPropertyOptions());
+        if (!Element.defaultPropertyValues.containsKey(getClassName())) {
+            Element.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
+        }
+        return Element.defaultPropertyValues.get(getClassName());
     }
     
     /**

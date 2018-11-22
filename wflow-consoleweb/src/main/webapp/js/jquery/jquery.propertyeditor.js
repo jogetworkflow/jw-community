@@ -45,10 +45,10 @@ PropertyEditor.Popup = {
             $("#"+id).resizable( "destroy" );
         }
     },
-    checkChangeAndHide : function(id, hide) {
+    checkChangeAndHide : function(id, checkSave, hide) {
         var editor = $("#"+id).data("editor");
         if (!editor.saved && editor.isChange()) {
-            if ($("#"+id).closest(".boxy-wrapper").find(".autosave input").is(":checked")) {
+            if (checkSave === true && $("#"+id).closest(".boxy-wrapper").find(".autosave input").is(":checked")) {
                 $("#"+id + " .property-editor-container").data("disable-hide", (hide !== true));
                 editor.save();
             } else if (!confirm(get_peditor_msg('peditor.confirmClose'))) {
@@ -57,7 +57,7 @@ PropertyEditor.Popup = {
         }
         PropertyEditor.Popup.cleanDialog(id);
         if (hide !== undefined && hide === true) {
-            editor.cancel();
+            PropertyEditor.Popup.hideDialog(id);
         }
         return true;
     },
@@ -67,7 +67,7 @@ PropertyEditor.Popup = {
         }
         
         if ($("#"+id).find(".property-editor-container").length > 0) {
-            if (!PropertyEditor.Popup.checkChangeAndHide(id)) {
+            if (!PropertyEditor.Popup.checkChangeAndHide(id, true, false)) {
                 return;
             }
         }
@@ -83,7 +83,7 @@ PropertyEditor.Popup = {
             var orgCancelCallback = options.cancelCallback;
             options.cancelCallback = function() {
                 orgCancelCallback();
-                PropertyEditor.Popup.hideDialog(id);
+                PropertyEditor.Popup.checkChangeAndHide(id, false, true);
             };
         }
         if (options.saveCallback !== undefined) {
@@ -101,7 +101,7 @@ PropertyEditor.Popup = {
         $("#"+id).closest(".boxy-wrapper").off("keydown.popup");
         $("#"+id).closest(".boxy-wrapper").on("keydown.popup", function(e) {
             if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
-                PropertyEditor.Popup.checkChangeAndHide(id, true);
+                PropertyEditor.Popup.checkChangeAndHide(id, true, true);
             }
         });
         
@@ -113,7 +113,7 @@ PropertyEditor.Popup = {
         
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").off("click");
         $("#"+id).closest(".boxy-wrapper").find(".title-bar .close").on("click", function(e){
-            return PropertyEditor.Popup.checkChangeAndHide(id, true);
+            return PropertyEditor.Popup.checkChangeAndHide(id, true, true);
         });
         
         PropertyEditor.Popup.positionDialog(id, args);
@@ -215,7 +215,7 @@ PropertyEditor.Util = {
         replaceString = '&quot;';
         return string.replace(regX, replaceString);
     },
-    deepEquals: function(o1, o2) {
+    deepEquals: function(editor, o1, o2) {
         if (o1 === o2) {
             return true;
         }
@@ -232,25 +232,60 @@ PropertyEditor.Util = {
                 temp.push(aProps[i]);
             }
         }
-        for (var i = 0; i < bProps.length; i++) {
-            if ($.inArray(bProps[i], temp) === -1) {
-                temp.push(bProps[i]);
+        if (editor.options.changeCheckIgnoreUndefined === undefined || !editor.options.changeCheckIgnoreUndefined) {
+            for (var i = 0; i < bProps.length; i++) {
+                if ($.inArray(bProps[i], temp) === -1) {
+                    temp.push(bProps[i]);
+                }
             }
         }
+        
 
         for (var i = 0; i < temp.length; i++) {
             var propName = temp[i];
             if ((typeof o1[propName] === "object" || typeof o2[propName] === "object")) {
-                if (o1[propName] !== undefined && o2[propName] !== undefined && !PropertyEditor.Util.deepEquals(o1[propName], o2[propName])) {
-                    return false;
-                } else if ((o1[propName] === undefined && o2[propName]["className"] !== "") ||
-                    (o2[propName] === undefined && o1[propName]["className"] !== "")) {
+                var returnFalse = true;
+                if ((o1[propName]["className"] !== undefined || o1[propName]["className"] !== undefined) &&
+                        ((o1[propName] === undefined && o2[propName]["className"] === "") ||
+                        (o2[propName] === undefined && o1[propName]["className"] === ""))) {
+                    //to handle empty element select
+                    returnFalse = false;
+                } else if ((Array.isArray(o1[propName]) || Array.isArray(o2[propName])) && 
+                        ((o2[propName] === undefined && o1[propName].length === 0) || 
+                        (o1[propName] === undefined && o2[propName].length === 0))) {
+                    //to handle empty grid
+                    returnFalse = false;
+                } else if (o1[propName] === "" && o2[propName] === null) {
+                    //to handle null original value
+                    returnFalse = false;
+                } else if (o1[propName] !== undefined && o2[propName] !== undefined && PropertyEditor.Util.deepEquals(editor, o1[propName], o2[propName])) {
+                    returnFalse = false;
+                }
+                
+                if (returnFalse) {
                     return false;
                 }
             } else if ((o1[propName] !== undefined && o2[propName] !== undefined && o1[propName] !== o2[propName]) ||
                 (o1[propName] === undefined && o2[propName] !== "") ||
                 (o2[propName] === undefined && o1[propName] !== "")) {
-                return false;
+                var returnFalse = true;
+                
+                if (editor.fields[propName] !== undefined) {
+                    if (editor.fields[propName].properties['type'].toLowerCase() === "checkbox" && o2[propName] === editor.fields[propName].properties['value'] && (o1[propName] === undefined || o1[propName] === "")) {
+                        //to handle invalid false default value is set for checkbox
+                        returnFalse = false;
+                    } else if (editor.fields[propName].properties['type'].toLowerCase() === "password" && o1[propName] === "%%%%%%%%" && (o2[propName] === undefined || o2[propName] === "")) {
+                        //handle for password field empty value
+                        returnFalse = false;
+                    } else if (editor.fields[propName].properties['type'].toLowerCase() === "hidden") {
+                        //handle for hidden field
+                        returnFalse = false;
+                    }
+                }
+                
+                if (returnFalse) {
+                    return false;
+                }
             }
         }
         return true;
@@ -1223,7 +1258,7 @@ PropertyEditor.Model.Editor.prototype = {
         alert(errorMsg);
     },
     isChange: function() {
-        return !PropertyEditor.Util.deepEquals(this.getData(), this.options.propertyValues);
+        return !PropertyEditor.Util.deepEquals(this, this.getData(), this.options.propertyValues);
     },
     save: function() {
         if (this.options.skipValidation || (this.options.propertiesDefinition === undefined || this.options.propertiesDefinition === null)) {
@@ -4762,6 +4797,7 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
                 showCancelButton: false,
                 closeAfterSaved: true,
                 showDescriptionAsToolTip: false,
+                changeCheckIgnoreUndefined: false,
                 mandatoryMessage: get_peditor_msg('peditor.mandatory'),
                 skipValidation: false,
                 isPopupDialog: false

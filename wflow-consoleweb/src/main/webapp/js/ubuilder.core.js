@@ -57,10 +57,11 @@ UserviewBuilder = {
     },
 
     //Initial Menu Type property options
-    initMenuType : function(category, className, label, icon, propertyOptions){
+    initMenuType : function(category, className, label, icon, propertyOptions, defaultPropertiesValues){
         this.menuTypes[className] = new Object();
         this.menuTypes[className]['label'] = label;
         this.menuTypes[className]['propertyOptions'] = propertyOptions;
+        this.menuTypes[className]['properties'] = defaultPropertiesValues;
 
         var iconObj = null;
         if (icon !== undefined && icon !== null && icon !== "") {
@@ -434,7 +435,7 @@ UserviewBuilder = {
         } else {
             var type = $(obj).attr('element');
             menu.className = type;
-            menu.properties = new Object();
+            menu.properties = JSON.parse(UserviewBuilder.menuTypes[type].properties);
             menu.properties.id=id;
             menu.properties.label = UserviewBuilder.menuTypes[type].label;
         }

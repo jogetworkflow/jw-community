@@ -60,7 +60,7 @@
                         <c:if test="${empty propertyOptions}">
                             <c:set var="propertyOptions" value="''"/>
                         </c:if>
-                        UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.i18nLabel}', '${element.icon}',${propertyOptions});
+                        UserviewBuilder.initMenuType('${category}', '${element.className}', '${element.i18nLabel}', '${element.icon}', ${propertyOptions}, '${element.defaultPropertyValues}');
                     </c:forEach>
                 </c:forEach>
 
