@@ -155,7 +155,7 @@ PropertyEditor.Popup = {
             popupProp = JSON.decode(popupPropJson);
         }
         
-        if (popupProp.autoSave === true) {
+        if (popupProp !== null && popupProp.autoSave === true) {
             $("#"+id).closest(".boxy-wrapper").find(".autosave input").attr("checked", "checked");
         }
         
