@@ -155,11 +155,11 @@ var AdminBar = {
                 AdminBar.isAltKeyPressed = true;
             }
             if(e.which === 48 && AdminBar.isCtrlKeyPressed && !AdminBar.isShiftKeyPressed && !AdminBar.isAltKeyPressed) { // CTRL+0
-                if ($("#quickEditMode").hasClass("off")) {
+                if (AdminBar.isAdminBarHide()) {
                     AdminBar.showAdminBar();
                     AdminBar.enableQuickEditMode();
                 } else {
-                    AdminBar.hideAdminBar()();
+                    AdminBar.hideAdminBar();
                     AdminBar.disableQuickEditMode();
                 }
                 return false;
