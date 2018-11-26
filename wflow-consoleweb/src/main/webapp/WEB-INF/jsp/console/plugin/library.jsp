@@ -22,7 +22,6 @@
     Dropzone.autoDiscover = false;
 </script>
 
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/chosen/chosen.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/dropzone/dropzone.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />

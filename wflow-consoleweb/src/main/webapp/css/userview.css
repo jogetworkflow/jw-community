@@ -257,7 +257,8 @@ body .ui-dialog-titlebar-close{
     border-top-right-radius: 50%;
     border-bottom-left-radius: 50%;
     border-bottom-right-radius: 50%;
-    background: #000000b3 !important;
+    background: #000000 !important;
+    opacity: 0.7;
     display: block;
     overflow: hidden;
     width: 25px !important;
