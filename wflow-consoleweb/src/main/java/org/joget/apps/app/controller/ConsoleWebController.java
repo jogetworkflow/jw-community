@@ -2103,6 +2103,13 @@ public class ConsoleWebController {
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
+        PackageActivityPlugin activityPlugin = new PackageActivityPlugin();
+        activityPlugin.setProcessDefId(processDefId);
+        activityPlugin.setActivityDefId(activityDefId);
+        activityPlugin.setPluginName(pluginName);
+
+        packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
+        
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
         map.addAttribute("pluginName", URLEncoder.encode(pluginName, "UTF-8"));
@@ -2188,7 +2195,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
     @Transactional
     public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = appService.loadAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         processDefId = SecurityUtil.validateStringInput(processDefId);
         activityDefId = SecurityUtil.validateStringInput(activityDefId);
@@ -2236,10 +2243,11 @@ public class ConsoleWebController {
             } else {
                 activityPlugin.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(activityPlugin.getPluginProperties(), pluginProperties));
             }
+            packageDef.addPackageActivityPlugin(activityPlugin);
         }
 
         // update and save
-        packageDefinitionDao.merge(packageDef);
+        packageDefinitionDao.saveOrUpdate(packageDef);
 
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
