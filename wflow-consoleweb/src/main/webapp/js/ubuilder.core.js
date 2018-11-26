@@ -528,8 +528,8 @@ UserviewBuilder = {
             saveCallback: thisObject.savePermission,
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
-        }
-        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id, id});
+        };
+        PropertyEditor.Popup.showDialog("menu-wizard-container", options, {id: id});
     },
 
     savePermission : function(container, properties){
