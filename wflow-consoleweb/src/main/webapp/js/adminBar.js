@@ -24,14 +24,18 @@ var AdminBar = {
             var overlayContainer = 
                 '<div id="quickOverlayContainer" class="quickOverlayContainer"><div id="quickOverlay" class="quickOverlay"></div>\
                 <div id="quickOverlayButton" class="quickOverlayButton"><a href="#" onclick="AdminBar.hideQuickOverlay()"><i class="fas fa-times"></i></a></div>\
-                <iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div>';
+                <div id="quickOverlayFrameDiv"><iframe id="quickOverlayFrame" name="quickOverlayFrame" src="about:blank"></iframe></div></div>';
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
             $quickOverlayFrame = $(document.body).find("#quickOverlayFrame");
+            
+            if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                $("body").addClass("fixiosframe");
+            }
         }
         $quickOverlayFrame.attr("src", "about:blank");
         $quickOverlayFrame.attr("src", url);
-        $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeIn();
+        $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
             AdminBar.currentPageTitle = document.title;
             var frameTitle = $quickOverlayFrame[0].contentDocument.title;
@@ -40,8 +44,8 @@ var AdminBar = {
             }
             $("#quickOverlayContainer").removeClass("minimize");
         });
-        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
-        $("#quickOverlayFrame, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {
+        $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
+        $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {
             $("#quickOverlayContainer").removeClass("minimize");
         }).on("mouseleave", function(event) {
             if ((event.relatedTarget === null || event.relatedTarget === undefined) && event.pageY < 0) {
@@ -62,7 +66,7 @@ var AdminBar = {
     },
     hideQuickOverlay: function() {
         $("#adminBarButtons a").removeClass("current");
-        $("#overlay, #quickOverlayButton, #quickOverlayFrame").fadeOut();
+        $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeOut();
         $("#quickOverlayContainer").remove();
         $(document.body).removeClass("stop-scrolling");
         if (AdminBar.currentPageTitle !== "") {

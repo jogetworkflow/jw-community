@@ -205,7 +205,7 @@ body.rtl .quickOverlayButton {
 .quickOverlayButton a:hover {
     color: #fff;
 }
-#quickOverlayFrame {
+#quickOverlayFrameDiv {
     position: fixed;
     height: calc(100% - 35px);
     width: calc(100% - 50px);
@@ -219,12 +219,20 @@ body.rtl .quickOverlayButton {
     transition: all 0.2s ease-in-out;
     transform-origin: bottom right;
 }
-body.rtl #quickOverlayFrame {
+body.fixiosframe #quickOverlayFrameDiv {
+    overflow:auto !important; 
+    -webkit-overflow-scrolling:touch !important;
+}
+#quickOverlayFrame {
+    width: 100%;
+    height: 100%;
+}
+body.rtl #quickOverlayFrameDiv {
     right: auto;
     left: 25px;
     transform-origin: bottom left;
 }
-#quickOverlayContainer.minimize #quickOverlayFrame {
+#quickOverlayContainer.minimize #quickOverlayFrameDiv {
     transform: scale(0.6);
 }
 #quickOverlayContainer.minimize .quickOverlay {
@@ -324,14 +332,14 @@ body.rtl #quickOverlayFrame {
         padding-left: 0;
         padding-right: 7px;
     }
-    #quickOverlayFrame {
+    #quickOverlayFrameDiv {
         height: calc(100% - 90px);
         min-width: unset;
         right: 2px;
         width: calc(100% - 4px);
         bottom: 46px;
     }
-    body.rtl #quickOverlayFrame {
+    body.rtl #quickOverlayFrameDiv {
         right: auto;
         left: 2px;
     }
@@ -489,6 +497,10 @@ body.quickEditModeActive .analyzer-page {
     background:yellow;
     padding:2px;
 }
+body.fixiosframe.stop-scrolling {
+    height: 100% !important;
+    overflow: hidden !important;
+}
 @media screen and (min-width:681px) { 
     #page .analyzer-page {
         display: none !important;
@@ -512,7 +524,7 @@ body.quickEditModeActive .analyzer-page {
         font-size: 22px;
         padding: 0px;
     }
-    #quickOverlayFrame {
+    #quickOverlayFrameDiv {
         height: calc(100% - 49px);
     }
 }
