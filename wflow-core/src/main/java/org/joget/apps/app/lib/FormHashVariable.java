@@ -43,6 +43,10 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         String tableName = temp[0];
         String columnName = temp[1];
         
+        if (tableName == null || !tableName.matches("^[a-zA-Z0-9_]+$") || columnName == null || !columnName.matches("^[a-zA-Z0-9_]+$")) {
+            return null;
+        }
+        
         WorkflowAssignment wfAssignment = (WorkflowAssignment) this.getProperty("workflowAssignment");
         if ((primaryKey != null && !primaryKey.isEmpty()) || wfAssignment != null) {
             try {
