@@ -1,6 +1,14 @@
 html.adminBarShown {
     padding-bottom: 30px;
-}        
+}
+@supports (-webkit-overflow-scrolling: touch) {
+    html.adminBarShown {
+        padding-bottom: 0px;
+    }
+    html.adminBarShown body {
+        padding-bottom: 30px;
+    }
+}
 #adminControl {
     display: none;
     position: fixed;
@@ -342,6 +350,14 @@ body.rtl #quickOverlayFrameDiv {
     body.rtl #quickOverlayFrameDiv {
         right: auto;
         left: 2px;
+    }
+    @supports (-webkit-overflow-scrolling: touch) {
+        html.adminBarShown {
+            padding-bottom: 0px;
+        }
+        html.adminBarShown body {
+            padding-bottom: 45px;
+        }
     }
 }
 .quickEdit, #form-canvas .quickEdit {
