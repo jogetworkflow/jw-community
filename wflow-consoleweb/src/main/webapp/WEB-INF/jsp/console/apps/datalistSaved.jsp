@@ -13,8 +13,8 @@
             </div>
             <div id="main-body-content">
                 <p>&nbsp;</p>
-                <div id="main-body-message">
-                    <fmt:message key="console.datalist.create.label.saved"/>
+                <div id="main-body-message" class="align-center">
+                    <h2><fmt:message key="console.datalist.create.label.saved"/></h2>
                     <p id="main-body-submessage"><fmt:message key="console.datalist.create.label.popupWarning"/></p>
                     <button onclick="launchUserviewBuilder()" class="form-button-large"><fmt:message key="console.datalist.create.label.launch"/></button>
                 </div>

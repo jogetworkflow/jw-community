@@ -9,12 +9,12 @@
     <div id="main-body-header">
         <c:out value="${process.packageName}" escapeXml="true"/> (version ${appVersion})
     </div>
-    <div id="main-body-content">
+    <div id="main-body-content" class="align-center">
         <p>&nbsp;</p>
         <c:url var="url" value="/web/client/app/${appId}/${appVersion}/process/${process.idWithoutVersion}/start?${queryString}" />
         <form id="processForm" name="processForm" method="POST" action="<c:out value="${url}"/>">
             <div id="main-body-message">
-                <c:out value="${process.name}" escapeXml="true"/>
+                <h2><c:out value="${process.name}" escapeXml="true"/></h2>
                 <p id="main-body-submessage"><c:out value="${process.packageName}" escapeXml="true"/></p>
                 <button onclick="return startProcess()" class="form-button-large"><fmt:message key="client.app.run.process.label.start"/></button>
             </div>

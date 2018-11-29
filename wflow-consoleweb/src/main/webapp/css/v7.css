@@ -251,6 +251,12 @@ button:hover, input[type='button']:hover, input[type='submit']:hover, .smallbutt
     padding: 3px 8px 4px !important;
     line-height: 16px !important;
 }
+.form-button-large {
+    font-size: 24px !important;
+    padding: 10px 30px !important;
+    line-height: 30px !important;
+    margin-top: 25px;
+}
 .form-buttons {
     margin-bottom: 20px;
 }
@@ -788,6 +794,9 @@ a.guider_button:hover {
 }
 
 /* others */
+.align-center {
+    text-align: center;
+}
 #installApp {
     display: block;
     position: absolute;
