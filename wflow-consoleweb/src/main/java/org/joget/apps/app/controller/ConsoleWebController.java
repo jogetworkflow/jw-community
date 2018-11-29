@@ -3814,6 +3814,7 @@ public class ConsoleWebController {
 
         String formId = formDefinition.getId();
         model.addAttribute("appId", appDef.getId());
+        model.addAttribute("appVersion", version);
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("formId", formId);
         model.addAttribute("formDefinition", formDefinition);
