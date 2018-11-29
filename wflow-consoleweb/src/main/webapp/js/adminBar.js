@@ -133,7 +133,7 @@ var AdminBar = {
             }
             return false;
         });
-        if (AdminBar.webConsole || AdminBar.isDefaultUserview) {
+        if ((AdminBar.webConsole && !AdminBar.builderMode) || AdminBar.isDefaultUserview) {
             $("#quickEditModeOption").hide();
         }
         if (AdminBar.isAdminBarHide()) {
