@@ -854,6 +854,11 @@ body#login #page > footer {
 }
 
 @media (min-width:768px) {
+    @supports (-webkit-overflow-scrolling: touch) {
+        body.horizontal_menu {
+            padding-top:0px;
+        }
+    }
     body.horizontal_menu {
         height: auto;
         margin-top: 0px;
