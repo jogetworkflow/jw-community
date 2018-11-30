@@ -1617,6 +1617,7 @@ public class FormUtil implements ApplicationContextAware {
             // get root form
             Form form = null;
             FormData formData = new FormData();
+            formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, "true");
             formData.setPrimaryKeyValue(primaryKeyValue);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
             if (formDef != null) {
