@@ -320,7 +320,7 @@ var AdvancedTools = {
         $(".quickOverlayButton, #advancedToolsFrame").fadeIn();
         $( ".builder_tool_tabs_container" ).tabs( "option", "active", 0 );
         
-        var height = $(window).height() - $(".builder_tool_tabs").offset().top - $(".builder_tool_tabs").height() - 50;
+        var height = $(window).height() - $(".builder_tool_tabs").offset().top - $(".builder_tool_tabs").height() - 90;
         $(".tab-content").height(height);
         $(".sticky-buttons").css("top", $(".builder_tool_tabs").offset().top + $(".builder_tool_tabs").height() + 25);
         

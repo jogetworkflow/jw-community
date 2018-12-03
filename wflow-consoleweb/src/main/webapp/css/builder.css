@@ -402,7 +402,7 @@ div, label, input, button, select, th, td, a, span {
     padding: 10px;
 }
 #tab-diffChecker h3 {
-    color: green;
+    color: #535353;
     font-size: 16px;
     font-weight: 500;
 }
@@ -415,13 +415,20 @@ li.jsondiffpatch-unchanged {
     background: #fAfafA;
     line-height: 18px;
 }
+#advancedToolsFrame a {
+    color: #535353;
+    text-decoration: none;
+}
+#advancedToolsFrame a:hover {
+    color: #009688;
+}
 #advancedToolsOverlay.quickOverlay {
     z-index: 1300;
 }
 #advancedToolsFrame { 
     position: fixed;
-    height: 100%;
-    width: 91%;
+    height: calc(100% - 35px);
+    width: 98%;
     top: 0px;
     left: 1%;
     z-index: 1301;
@@ -434,72 +441,73 @@ li.jsondiffpatch-unchanged {
 }
 #advancedToolsFrame > h1{
     font-size: 20px;
-    padding: 20px 20px 0;
-    color:#70B237;
-}
-.ui-widget-content.builder_tool_tabs_container{
-    border:0;
-}
-.ui-tabs .builder_tool_tabs.ui-tabs-nav {
-    display: block;
-    text-align: left;
-    border: 0;
-    display: block;
-    text-align: left;
-    margin: 0 25px 25px;
-    border: 0;
-    border-bottom: 2px solid #ddd;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-}
-.ui-tabs .builder_tool_tabs.ui-tabs-nav li.ui-tabs-active {
-    margin-bottom: -2px;
-    padding-bottom: 2px;
-}
-.ui-tabs .builder_tool_tabs.ui-tabs-nav li{
-    position: relative;
-    border:0;
-}
-.builder_tool_tabs > li > a {
-    min-width: 100px;
-    padding: 14px 21px;
-    border-radius: 2px 2px 0 0;
-    font-size: 20px;
-    font-weight: normal;
-    text-align: center;
+    padding: 10px 20px 0;
+    color:#00695c;
     text-transform: uppercase;
-    background: #f0f0f0;
-    color: #757575;
-    cursor: pointer;
-    position: relative;
-    outline: none;
 }
-.builder_tool_tabs > li.ui-tabs-active > a {
-    padding-top: 10px;
-    background: #fff;
-    box-shadow: inset 0 3px #8CC954;
+#advancedToolsFrame .ui-tabs,
+#advancedToolsFrame .ui-tabs-nav,
+#advancedToolsFrame .ui-tabs .ui-state-default{
+    border: 0 !important;
+    background: transparent !important;
 }
-.builder_tool_tabs > li.ui-tabs-active > a > i.fa {
-    color: #8CC954;
+#advancedToolsFrame .ui-tabs,
+#advancedToolsFrame .ui-tabs-nav{
+    padding: 0 !important;
+    margin: 0 !important;
 }
-.builder_tool_tabs > li > a > i{
-    margin: 0 0.4em 0 0;
+#advancedToolsFrame .ui-tabs-nav{
+    border-bottom: 1px solid #ccc !important;
+    white-space: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    line-height: 100%;
+    border-radius: 0 !important;
+}
+#advancedToolsFrame .ui-tabs .ui-state-default {
+    border-bottom: 2px solid transparent !important;
+}
+#advancedToolsFrame .ui-tabs .ui-state-default a{
+    color: #535353 !important;
+    padding: 5px 25px;
+}
+#advancedToolsFrame .ui-tabs .ui-state-default a i {
+    margin-right: 3px;
+}
+#advancedToolsFrame .ui-tabs .ui-tabs-nav li.ui-state-default:not(.ui-tabs-active):hover a {
+    color: #009688 !important;
+}
+#advancedToolsFrame .ui-tabs .ui-tabs-active {
+    border-bottom: 2px solid #004d40 !important;
+}
+#advancedToolsFrame .ui-tabs li:focus,
+#advancedToolsFrame .ui-tabs li a:focus{
+    outline:none;
+}
+#advancedToolsFrame .ui-tabs .ui-tabs-active a{
+    color: #004d40 !important;
+}
+#advancedToolsFrame .ui-tabs .ui-tabs-nav li {
+    float: none;
+    display: inline-block;
 }
 .builder_tool_tabs_container .tab-content {
     display: none;
     line-height: 25px;
-    padding: 0 25px;
+    padding: 10px 25px 30px;
     background: #fff;
     overflow: auto;
     position: relative;
+    box-sizing: border-box;
 }
 .builder_tool_tabs_container .tab-content h2 {
     font-size: 18px;
     text-transform: uppercase;
-    color: #70B237;
+    color: #00695c;
 }
-.builder_tool_tabs_container .tab-content .button {
-    background: rgb(39, 174, 96);
+#advancedToolsFrame .builder_tool_tabs_container .tab-content .button {
+    background: #00695c;
     font-family: Arial;
     text-decoration: none;
     box-shadow: none;
@@ -508,11 +516,13 @@ li.jsondiffpatch-unchanged {
     color: white;
     border-radius: 4px;
     margin-right: 2px;
-    padding: 5px 15px;
+    padding: 5px 15px 7px;
+    color:#fff;
 }
-.builder_tool_tabs_container .tab-content .button:hover {
-    background: #35AC5B;
+#advancedToolsFrame .builder_tool_tabs_container .tab-content .button:hover {
+    background: #00897b;
     text-decoration: none;
+    color:#fff;
 }
 .sticky-buttons {
     position: fixed;

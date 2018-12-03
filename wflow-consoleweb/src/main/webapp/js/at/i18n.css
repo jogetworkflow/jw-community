@@ -4,7 +4,7 @@
 .i18n_table td {width:33%; background: #F2F2F2; color: #5C5C5F; padding: 10px;}
 .i18n_table td + td {border-left: 1px solid #CACBCD;}
 .i18n_table th { height: 0; line-height: 0; padding-top: 0; padding-bottom: 0; color: transparent; border: none; white-space: nowrap;}
-.i18n_table th > div{ position: absolute; background: transparent; color: #fff; padding: 10px; top: 0; margin-left: -1px; line-height: 25px; border-left: 1px solid #8CC954; width:30%; }
+.i18n_table th > div{ position: absolute; background: transparent; color: #fff; padding: 10px; top: 0; margin-left: -1px; line-height: 25px; border-left: 1px solid #CACBCD; width:30%; }
 .i18n_table th:first-child > div{ border: none;}
 .i18n_table tr.even td {background: #FFF;}
 .i18n_table tr td textarea {width: 99%; height: 100%;}
