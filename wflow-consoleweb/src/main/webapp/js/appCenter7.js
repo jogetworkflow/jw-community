@@ -6,7 +6,7 @@ var AppCenter = {
         var timer;
         var form = $("<form>").attr({"class":"filterform","action":"#","onsubmit":"return false"}), 
         input = $("<input>").attr({"class":"filterinput","type":"text"}); 
-        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search fa fa-search'></i></span>")).appendTo(header);  
+        $(form).append(input).append($("<span class='filterlabel'><i class='icon-search fa fas fa-search'></i></span>")).appendTo(header);  
         $(form).submit(function() { return false });
         $(input).change(function () { 
             var filter = $(this).val(); 

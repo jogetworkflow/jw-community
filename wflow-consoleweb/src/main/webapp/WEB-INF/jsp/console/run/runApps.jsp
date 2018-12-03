@@ -31,8 +31,8 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/appCenter.css" />
-<script src="${pageContext.request.contextPath}/js/appCenter.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/appCenter7.css" />
+<script src="${pageContext.request.contextPath}/js/appCenter7.js"></script>
 <script>
 AppCenter.searchFilter($("#title"), $("#apps")); 
 AppCenter.loadPublishedApps("#apps");
