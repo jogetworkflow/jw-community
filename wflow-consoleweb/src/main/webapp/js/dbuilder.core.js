@@ -1478,12 +1478,11 @@ DatalistBuilder = {
             appPath: DatalistBuilder.appPath,
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
-            showCancelButton : true,
             propertyValues : propertyValues,
-            cancelCallback : DatalistBuilder.showDatalistProperties,
+            autoSave: true,
             saveCallback : DatalistBuilder.updateDatalistProperties,
             closeAfterSaved : false
-        }
+        };
 
         $('#properties').html("");
         $('#properties').propertyEditor(options);
@@ -1552,8 +1551,6 @@ DatalistBuilder = {
         for(e in DatalistBuilder.chosenColumns){
             DatalistBuilder.renderColumn(e);
         }
-        //change to designer's tab
-        $("#builder-steps-designer").trigger("click");
     },
 
     getActionPropertiesDefinition : function(className) {

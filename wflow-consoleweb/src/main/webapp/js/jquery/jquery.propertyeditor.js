@@ -1122,6 +1122,32 @@ PropertyEditor.Model.Editor.prototype = {
                 }
             });
         }
+        
+        if (this.options.autoSave) {
+            if (this.options.validationFailedCallback === undefined || this.options.validationFailedCallback === null) {
+                this.options.validationFailedCallback = function(container, errors){
+                    var errorMsg = get_peditor_msg('peditor.errors') + '\n';
+                    for (key in errors) {
+                        if (errors[key].fieldName === undefined || errors[key].fieldName === "") {
+                            errorMsg += errors[key].message + '\n';
+                        } else {
+                            errorMsg += errors[key].fieldName + ' : ' + errors[key].message + '\n';
+                        }
+                    }
+                    alert(errorMsg);
+                };
+            }
+            
+            $(thisObject.editor).off("mouseenter mouseleave");
+            $(thisObject.editor).on( "mouseenter", function() {
+                $(thisObject.editor).addClass("pediting");
+            }).on("mouseleave", function(event) {
+                if ($(thisObject.editor).hasClass("pediting") && thisObject.isChange()) {
+                    thisObject.save();
+                }
+                $(thisObject.editor).removeClass("pediting");
+            });
+        }
     },
     adjustSize: function() {
         if (this.options.isPopupDialog) {
@@ -1276,6 +1302,10 @@ PropertyEditor.Model.Editor.prototype = {
         this.saved = true;
         if (this.options.closeAfterSaved && !this.options.isPopupDialog) {
             $(this.editor).remove();
+        }
+        
+        if (this.options.autoSave) { 
+            this.options.propertyValues = data;
         }
 
         if ($.isFunction(this.options.saveCallback)) {
@@ -1723,8 +1753,9 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 }
             });
         }
-
-        html += '<input type="button" class="page-button-save" value="' + this.options.saveButtonLabel + '"/>';
+        if (!this.options.autoSave) {
+            html += '<input type="button" class="page-button-save" value="' + this.options.saveButtonLabel + '"/>';
+        }
         if (this.options.showCancelButton) {
             html += '<input type="button" class="page-button-cancel" value="' + this.options.cancelButtonLabel + '"/>';
         }
@@ -4800,7 +4831,8 @@ PropertyEditor.Type.Custom = PropertyEditor.Util.inherit(PropertyEditor.Model.Ty
                 changeCheckIgnoreUndefined: false,
                 mandatoryMessage: get_peditor_msg('peditor.mandatory'),
                 skipValidation: false,
-                isPopupDialog: false
+                isPopupDialog: false,
+                autoSave: false
             };
             var o = $.extend(true, defaults, options);
             $.ajaxSetup({

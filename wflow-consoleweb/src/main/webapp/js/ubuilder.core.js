@@ -153,6 +153,7 @@ UserviewBuilder = {
                 propertyValues : UserviewBuilder.data.setting.properties,
                 showCancelButton:false,
                 closeAfterSaved : false,
+                autoSave: true,
                 saveCallback: UserviewBuilder.saveSettingProperties
             };
             $('#step-setting-container').propertyEditor(options);
@@ -555,8 +556,6 @@ UserviewBuilder = {
         UserviewBuilder.data.setting.properties = properties;
         UserviewBuilder.updateSaveStatus("+");
         UserviewBuilder.adjustJson();
-
-        $('#step-design').click();
     },
 
     //Submit userview json to server for saving

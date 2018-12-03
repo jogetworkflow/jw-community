@@ -1016,6 +1016,7 @@ FormBuilder = {
             propertyValues: formProperties,
             showCancelButton: false,
             closeAfterSaved: false,
+            autoSave: true,
             saveCallback: function(container, properties) {
                 FormBuilder.addToUndo();
                 // update form properties
@@ -1023,11 +1024,8 @@ FormBuilder = {
                 
                 //retrieve existing fields
                 FormBuilder.retrieveExistingFieldIds();
-
-                // change to design tab
-                $("#builder-step-design").trigger("click");
             }
-        }
+        };
         $('#form-properties').propertyEditor(options);
 
         return false;
