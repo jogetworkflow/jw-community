@@ -4,25 +4,49 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.nio.Buffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
+import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.lib.SimpleTensorFlowAIDecisionPlugin;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppPluginUtil;
+import org.joget.apps.app.service.AppResourceUtil;
+import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.service.FileUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.PluginManager;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.tensorflow.DataType;
 import org.tensorflow.Graph;
 import org.tensorflow.Output;
@@ -34,6 +58,38 @@ import org.tensorflow.Tensors;
  * Utility for the TensorFlow Java API using pre-trained models.
  */
 public class TensorFlowUtil {
+    
+    public static Map<String, TensorFlowInput> defaultInputClasses = null;
+    public static Map<String, TensorFlowPostProcessing> defaultPostClasses = null;
+    
+    protected static boolean isValidURL(String urlString) {
+        try {
+            URL url = new URL(urlString);
+            url.toURI();
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+    
+    public static InputStream getInputStream(String filename, String formId, String recordId) {
+        try {
+            if (formId != null && !formId.isEmpty()) {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                File file = FileUtil.getFile(filename, appService.getFormTableName(appDef, formId), recordId);
+                return new FileInputStream(file);
+            } else if (isValidURL(filename)) {
+                return new URL(filename).openStream();
+            } else {
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                return new FileInputStream(AppResourceUtil.getFile(appDef.getAppId(), appDef.getVersion().toString(), filename));
+            }
+        } catch (Exception e) {
+            LogUtil.debug(TensorFlowUtil.class.getName(), "Fail to open " + filename);
+        }
+        return null;
+    }
     
     public static DataType getDataType(String name) {
         if ("Integer".equals(name)) {
@@ -439,5 +495,265 @@ public class TensorFlowUtil {
         }
 
         private final Graph g;
+    }
+    
+    public static String getEditorScript(HttpServletRequest request, HttpServletResponse response) {
+        String forms = "[]";
+        try {
+            JSONArray formArray = new JSONArray();
+            
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
+            Collection<FormDefinition> formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, null, null, null, null);
+            if (formDefinitionList != null && !formDefinitionList.isEmpty()) {
+                for (FormDefinition f : formDefinitionList) {
+                    JSONObject fo = new JSONObject();
+                    fo.put("value", f.getId());
+                    fo.put("label", f.getName());
+                    
+                    formArray.put(fo);
+                }
+            }
+            
+            forms = formArray.toString();
+        } catch(Exception e) {}
+        
+        String inputs = "{}";
+        Map<String, TensorFlowInput> inputClasses = getInputClasses();
+        try {
+            JSONObject jsonInputs = new JSONObject();
+            
+            if (!inputClasses.isEmpty()) {
+                for (String key : inputClasses.keySet()) {
+                    JSONObject jo = new JSONObject();
+                    TensorFlowInput i = inputClasses.get(key);
+                    jo.put("label", i.getLabel());
+                    jo.put("ui", i.getUI());
+                    jo.put("description", i.getDescription());
+                    jo.put("initScript", i.getInitScript());
+                    
+                    jsonInputs.put(key, jo);
+                }
+            }
+            
+            inputs = jsonInputs.toString();
+        } catch(Exception e) {}
+        
+        String posts = "{}";
+        Map<String, TensorFlowPostProcessing> postClasses = getPostProcessingClasses();
+        try {
+            JSONObject jsonPosts = new JSONObject();
+            
+            if (!postClasses.isEmpty()) {
+                for (String key : postClasses.keySet()) {
+                    JSONObject jo = new JSONObject();
+                    TensorFlowPostProcessing i = postClasses.get(key);
+                    jo.put("label", i.getLabel());
+                    jo.put("ui", i.getUI());
+                    jo.put("description", i.getDescription());
+                    jo.put("initScript", i.getInitScript());
+                    
+                    jsonPosts.put(key, jo);
+                }
+            }
+            
+            posts = jsonPosts.toString();
+        } catch(Exception e) {}
+        
+        return AppUtil.readPluginResource(SimpleTensorFlowAIDecisionPlugin.class.getName(), "/properties/app/tensorflowEditor.js", new String[]{forms, inputs, posts}, false, null);
+    }
+    
+    public static Map<String, Object> getEditorResults(Map config, String processId, Map<String, String> variables) {
+        Map<String, Object> tfvariables = new HashMap<String, Object>();
+        Map<String, Object> tempDataHolder = new HashMap<String, Object>();
+        
+        if (config != null) {
+            try {
+                Object[] sessions = (Object[]) config.get("sessions");
+                if (sessions != null && sessions.length > 0) {
+                    for (Object sessionObj : sessions) {
+                        Map session = (Map) sessionObj;
+                        runSession(session, tfvariables, variables, processId, tempDataHolder);
+                    }
+                }
+
+                Object[] postProcessingList = (Object[]) config.get("postProcessing");
+                if (postProcessingList != null && postProcessingList.length > 0) {
+                    Map<String, TensorFlowPostProcessing> postsProcessingClasses = getPostProcessingClasses();
+                    
+                    for (Object postProcessingObj : postProcessingList) {
+                        Map postProcessing = (Map) postProcessingObj;
+                        String type = postProcessing.get("type").toString();
+                        
+                        if (postsProcessingClasses.containsKey(type)) {
+                            TensorFlowPostProcessing c = postsProcessingClasses.get(type);
+                            c.runPostProcessing(postProcessing, tfvariables, variables, tempDataHolder);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                //catch exception to let the rules checking still run if error
+            }
+        }
+        
+        return tfvariables;
+    }
+    
+    protected static void runSession(Map session, Map<String, Object> tfvariables, Map<String, String> variables, String processId, Map<String, Object> tempDataHolder) {
+        InputStream model = getInputStream(AppPluginUtil.getVariable(session.get("model").toString(), variables), null, null);
+        try {
+            Map<String, Tensor> inputMap = getInputs((Object[]) session.get("inputs"), processId, variables, tempDataHolder);
+            Map<String, float[]> outputVariables = TensorFlowUtil.executeSimpleTensorFlowModel(model, inputMap, getOutputNames((Object[]) session.get("outputs")));
+            outputToTfVariables((Object[]) session.get("outputs"), outputVariables, tfvariables);
+        } catch (Exception e) {
+            LogUtil.error(TensorFlowUtil.class.getName(), e, "");
+        } finally {
+            if (model != null) {
+                try {
+                    model.close();
+                } catch (IOException ex) {}
+            }
+        }
+    }
+    
+    protected static String[] getOutputNames(Object[] outputs) {
+        Collection<String> names = new ArrayList<String>();
+        
+        if (outputs != null && outputs.length > 0) {
+            for (Object outputObj : outputs) {
+                Map output = (Map) outputObj;
+                names.add(output.get("name").toString());
+            }
+        }
+        
+        return names.toArray(new String[0]);
+    }
+    
+    protected static void outputToTfVariables(Object[] outputs, Map<String, float[]> outputVariables, Map<String, Object> tfvariables) {
+        if (outputs != null && outputs.length > 0) {
+            for (Object outputObj : outputs) {
+                Map output = (Map) outputObj;
+                tfvariables.put(output.get("variable").toString(), outputVariables.get(output.get("name").toString()));
+            }
+        }
+    }
+    
+    protected static Map<String, Tensor> getInputs(Object[] inputs, String processId, Map<String, String> variables, Map<String, Object> tempDataHolder) throws IOException {
+        Map<String, Tensor> inputMap = new HashMap<String, Tensor>();
+        
+        if (inputs != null && inputs.length > 0) {
+            Map<String, TensorFlowInput> inputClasses = getInputClasses();
+            
+            for (Object inputObj : inputs) {
+                Map input = (Map) inputObj;
+                String type = input.get("type").toString();
+                String name = input.get("name").toString();
+                        
+                if (inputClasses.containsKey(type)) {
+                    TensorFlowInput c = inputClasses.get(type);
+                    inputMap.put(name, c.getInputs(input, processId, variables, tempDataHolder));
+                }
+            }
+        }
+        
+        return inputMap;
+    }
+    
+    protected static Map<String, TensorFlowInput> getInputClasses() {
+        Map<String, TensorFlowInput> inputs = new TreeMap<String, TensorFlowInput>();
+        
+        if (defaultInputClasses == null) {
+            defaultInputClasses = new HashMap<String, TensorFlowInput>();
+            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+            provider.addIncludeFilter(new AssignableTypeFilter(TensorFlowInput.class));
+            Set<BeanDefinition> components = provider.findCandidateComponents("org.joget");
+            for (BeanDefinition component : components) {
+                String beanClassName = component.getBeanClassName();
+                try {
+                    Class<? extends TensorFlowInput> beanClass = Class.forName(beanClassName).asSubclass(TensorFlowInput.class);
+                    TensorFlowInput i = beanClass.newInstance();
+                    defaultInputClasses.put(i.getName(), i);
+                } catch (Exception ex) {}
+            }
+        }
+        inputs.putAll(defaultInputClasses);
+        
+        //retrieve from osgi plugins
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> plugins = pluginManager.listOsgiPlugin(TensorFlowPlugin.class);
+        for (Plugin p : plugins) {
+            TensorFlowPlugin tfp = (TensorFlowPlugin) p;
+            TensorFlowInput[] temp = tfp.getInputClasses();
+            if (temp != null && temp.length > 0) {
+                for (TensorFlowInput i : temp) {
+                    inputs.put(i.getName(), i);
+                }
+            }
+        }
+        
+        return inputs;
+    }
+    
+    protected static Map<String, TensorFlowPostProcessing> getPostProcessingClasses() {
+        Map<String, TensorFlowPostProcessing> posts = new TreeMap<String, TensorFlowPostProcessing>();
+     
+        if (defaultPostClasses == null) {
+            defaultPostClasses = new HashMap<String, TensorFlowPostProcessing>();
+            ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+            provider.addIncludeFilter(new AssignableTypeFilter(TensorFlowPostProcessing.class));
+            Set<BeanDefinition> components = provider.findCandidateComponents("org.joget");
+            for (BeanDefinition component : components) {
+                String beanClassName = component.getBeanClassName();
+                try {
+                    Class<? extends TensorFlowPostProcessing> beanClass = Class.forName(beanClassName).asSubclass(TensorFlowPostProcessing.class);
+                    TensorFlowPostProcessing i = beanClass.newInstance();
+                    defaultPostClasses.put(i.getName(), i);
+                } catch (Exception ex) {}
+            }
+        }
+        posts.putAll(defaultPostClasses);
+        
+        //retrieve from osgi plugins
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> plugins = pluginManager.listOsgiPlugin(TensorFlowPlugin.class);
+        for (Plugin p : plugins) {
+            TensorFlowPlugin tfp = (TensorFlowPlugin) p;
+            TensorFlowPostProcessing[] temp = tfp.getPostProcessingClasses();
+            if (temp != null && temp.length > 0) {
+                for (TensorFlowPostProcessing i : temp) {
+                    posts.put(i.getName(), i);
+                }
+            }
+        }
+        
+        return posts;
+    }
+    
+    public static void convertTFVariables(Map<String, Object> tfvariables, Map<String, String> variables) {
+        for (String name : tfvariables.keySet()) {
+            if (tfvariables.get(name) instanceof String || tfvariables.get(name) instanceof Float) {
+                variables.put(name, tfvariables.get(name).toString());
+            } else if (tfvariables.get(name) instanceof float[]) {
+                String value = "";
+                DecimalFormat df = new DecimalFormat("0.00");
+                for (Float f : (float[]) tfvariables.get(name)) {
+                    if (!value.isEmpty()) {
+                        value += ";";
+                    }
+                    value += df.format(f);
+                }
+                variables.put(name, value);
+            }
+        }
+        TensorFlowUtil.debug("Variables : ", variables);
+    }
+    
+    public static void debug(String message, Object obj) {
+        if (LogUtil.isDebugEnabled(TensorFlowUtil.class.getName())) {
+            if (obj != null) {
+                message += " : " + TensorFlowUtil.outputToJson(obj);
+            }
+            LogUtil.debug(TensorFlowUtil.class.getName(), message);
+        }
     }
 }

@@ -1,10 +1,14 @@
 package org.joget.apps.app.service;
 
+import bsh.Interpreter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
@@ -174,7 +178,7 @@ public class AppPluginUtil implements ApplicationContextAware {
      * @param response
      * @return 
      */
-    public static String getRuleEditorScript(Plugin plugin, HttpServletRequest request, HttpServletResponse response) {
+    public static String getRuleEditorScript(HttpServletRequest request, HttpServletResponse response) {
         String variables = "";
         String transitions = "";
         
@@ -207,6 +211,46 @@ public class AppPluginUtil implements ApplicationContextAware {
             }
         }
         
-        return AppUtil.readPluginResource(plugin.getClass().getName(), "/properties/app/rulesEditor.js", new String[]{variables, transitions}, false, null);
+        return AppUtil.readPluginResource(RulesDecisionPlugin.class.getName(), "/properties/app/rulesEditor.js", new String[]{variables, transitions}, false, null);
+    }
+    
+    /**
+     * Utility method of RulesDecisionPlugin to replace variable in a value
+     * @param value
+     * @param variables
+     * @return 
+     */
+    public static String getVariable(String value, Map<String, String> variables) {
+        if (value != null && value.contains("${") && value.contains("}")) {
+            Pattern pattern = Pattern.compile("\\$\\{[^\\}]+\\}");
+            Matcher matcher = pattern.matcher(value);
+            while (matcher.find()) {
+                String found = matcher.group();
+                String variableKey = found.substring(2, found.length() -1);
+                if (variables.containsKey(variableKey)) {
+                    value = value.replaceAll(StringUtil.escapeRegex(found), StringUtil.escapeRegex((String)variables.get(variableKey)));
+                }
+            }
+        } else if (value != null && variables.containsKey(value.trim())) {
+            value = variables.get(value.trim());
+        }
+        return value;
+    }
+    
+    public static Object executeScript(String script, Map properties) {
+        Object result = null;
+        try {
+            Interpreter interpreter = new Interpreter();
+            interpreter.setClassLoader(AppPluginUtil.class.getClassLoader());
+            for (Object key : properties.keySet()) {
+                interpreter.set(key.toString(), properties.get(key));
+            }
+            LogUtil.debug(AppPluginUtil.class.getName(), "Executing script " + script);
+            result = interpreter.eval(script);
+            return result;
+        } catch (Exception e) {
+            LogUtil.error(AppPluginUtil.class.getName(), e, "Error executing script");
+            return null;
+        }
     }
 }

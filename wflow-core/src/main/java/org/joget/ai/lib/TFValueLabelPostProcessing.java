@@ -1,0 +1,69 @@
+package org.joget.ai.lib;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import org.joget.ai.TensorFlowPostProcessing;
+import org.joget.ai.TensorFlowUtil;
+import org.joget.apps.app.service.AppPluginUtil;
+import org.joget.commons.util.ResourceBundleUtil;
+
+public class TFValueLabelPostProcessing implements TensorFlowPostProcessing {
+
+    @Override
+    public void runPostProcessing(Map params, Map<String, Object> tfVariables, Map<String, String> variables, Map<String, Object> tempDataHolder) throws IOException {
+        String name = params.get("name").toString();
+        String variable = params.get("variable").toString();
+        
+        float[] values = (float[]) tfVariables.get(variable);
+        String variable2 = params.get("variable2").toString();
+        Integer number = null;
+
+        if (!variable2.isEmpty()) {
+            float[] values2 = (float[]) tfVariables.get(variable2);
+            number = (int) values2[0];
+        }
+        Boolean unique = params.get("unique") != null && "true".equalsIgnoreCase(params.get("unique").toString());
+
+        List<String> labels = TensorFlowUtil.getValueToLabelList(TensorFlowUtil.getInputStream(AppPluginUtil.getVariable(params.get("labels").toString(), variables), null, null), values, number, unique);
+        String labelsStr = String.join(";", labels);
+        tfVariables.put(name, labelsStr);
+        TensorFlowUtil.debug("Post processing output ("+ name +") : ", labelsStr);
+    }
+
+    @Override
+    public String getName() {
+        return "valuelabel";
+    }
+
+    @Override
+    public String getLabel() {
+        return ResourceBundleUtil.getMessage("app.simpletfai.valuelabel");
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public String getUI() {
+        String uniqueLabel = ResourceBundleUtil.getMessage("app.simpletfai.unique");
+        String labelsFileLabel = ResourceBundleUtil.getMessage("app.simpletfai.labels_file");
+        String chooseFileLabel = ResourceBundleUtil.getMessage("peditor.chooseFile");
+        String clearFileLabel = ResourceBundleUtil.getMessage("peditor.clear");
+        String variableNameLabel = ResourceBundleUtil.getMessage("app.simpletfai.variableName");
+        String numberLabel = ResourceBundleUtil.getMessage("app.simpletfai.numberOfValues");
+        
+        String html = "<label><input name=\"unique\" class=\"post_unique truefalse\" type=\"checkbox\" value=\"true\"/> "+uniqueLabel+"</label>";
+        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
+        html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><select name=\"variable2\" class=\"post_variable half\"><option value=\"\">"+numberLabel+"</option></select></div>";
+        
+        return html;
+    }
+
+    @Override
+    public String getInitScript() {
+        return "";
+    }
+}

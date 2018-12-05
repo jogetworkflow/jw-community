@@ -134,7 +134,7 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
         String value = (String) rule.get("value");
         boolean result = false;
         
-        variable = getVariable(variable, variables);
+        variable = AppPluginUtil.getVariable(variable, variables);
         
         if (variable != null) {
             Double variableNumber = null;
@@ -204,7 +204,7 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                     }
                 } else {
                     value = (String) action.get("value");
-                    value = getVariable(value, variables);
+                    value = AppPluginUtil.getVariable(value, variables);
                     
                     if (value == null) {
                         value = "";
@@ -224,24 +224,7 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
         return result;
     }
     
-    public String getVariable(String value, Map<String, String> variables) {
-        if (value != null && value.contains("${") && value.contains("}")) {
-            Pattern pattern = Pattern.compile("\\$\\{[^\\}]+\\}");
-            Matcher matcher = pattern.matcher(value);
-            while (matcher.find()) {
-                String found = matcher.group();
-                String variableKey = found.substring(2, found.length() -1);
-                if (variables.containsKey(variableKey)) {
-                    value = value.replaceAll(StringUtil.escapeRegex(found), StringUtil.escapeRegex((String)variables.get(variableKey)));
-                }
-            }
-        } else if (value != null && variables.containsKey(value.trim())) {
-            value = variables.get(value.trim());
-        }
-        return value;
-    }
-
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.getWriter().write(AppPluginUtil.getRuleEditorScript(this, request, response));
+        response.getWriter().write(AppPluginUtil.getRuleEditorScript(request, response));
     }
 }
