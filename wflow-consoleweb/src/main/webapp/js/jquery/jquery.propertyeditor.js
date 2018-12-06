@@ -1124,26 +1124,19 @@ PropertyEditor.Model.Editor.prototype = {
         }
         
         if (this.options.autoSave) {
-            if (this.options.validationFailedCallback === undefined || this.options.validationFailedCallback === null) {
-                this.options.validationFailedCallback = function(container, errors){
-                    var errorMsg = get_peditor_msg('peditor.errors') + '\n';
-                    for (key in errors) {
-                        if (errors[key].fieldName === undefined || errors[key].fieldName === "") {
-                            errorMsg += errors[key].message + '\n';
-                        } else {
-                            errorMsg += errors[key].fieldName + ' : ' + errors[key].message + '\n';
-                        }
-                    }
-                    alert(errorMsg);
-                };
+            $(thisObject.editor).css("z-index", "102");
+            if ($(thisObject.editor).parent().find(".peautosaveblock").length === 0) {
+                $(thisObject.editor).parent().prepend('<div class="peautosaveblock" style="position:fixed;top:0;bottom:0;left:0;right:0;z-index: 101;"></div>');
             }
-            
             $(thisObject.editor).off("mouseenter mouseleave");
             $(thisObject.editor).on( "mouseenter", function() {
                 $(thisObject.editor).addClass("pediting");
+                $(thisObject.editor).parent().find(".peautosaveblock").show();
             }).on("mouseleave", function(event) {
                 if ($(thisObject.editor).hasClass("pediting") && thisObject.isChange()) {
                     thisObject.save();
+                } else {
+                    $(thisObject.editor).parent().find(".peautosaveblock").hide();
                 }
                 $(thisObject.editor).removeClass("pediting");
             });
@@ -1306,6 +1299,7 @@ PropertyEditor.Model.Editor.prototype = {
         
         if (this.options.autoSave) { 
             this.options.propertyValues = data;
+            $(this.editor).parent().find(".peautosaveblock").hide();
         }
 
         if ($.isFunction(this.options.saveCallback)) {
