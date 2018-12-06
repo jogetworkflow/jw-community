@@ -21,7 +21,7 @@ function responsiveTable(table) {
     cols.filter(":eq(0)").data("hide", "");
 
     //checkbox & radio
-    select.data("hide", "all");
+    select.data("hide", "phone,tablet");
     select.data("ignore", true);
     select.filter(":eq(0)").data("hide", "");
     select.css("width", "40px");
