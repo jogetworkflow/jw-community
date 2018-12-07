@@ -148,18 +148,20 @@
 
     var callback = {
         success: function(){
+            UI.unblockUI();
             window.location.reload(true);
         }
     }
 
     function reevaluate(){
+        UI.blockUI();
         ConnectionManager.post("${pageContext.request.contextPath}/web/json/monitoring/activity/reevaluate", callback, "activityId=${activity.id}");
     }
 
     function setVariable(variable){
         var url = "${pageContext.request.contextPath}/web/json/monitoring/activity/variable/${activity.id}/" + encodeURIComponent(variable);
         var value = $('#' + variable).attr('value');
-
+        UI.blockUI();
         ConnectionManager.post(url, callback, "value=" + encodeURIComponent(value));
 
     }
@@ -208,7 +210,7 @@
 
         var url = "${pageContext.request.contextPath}/web/json/monitoring/user/reevaluate";
         var value = $('#reevaluateUser').val();
-
+        UI.blockUI();
         ConnectionManager.post(url, callback, "username=" + encodeURIComponent(value));
     }
 

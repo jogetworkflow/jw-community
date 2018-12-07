@@ -52,7 +52,7 @@
 
                 <div id="externalForm">
                     <br>
-                    <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/${activity.id}/form/submit" class="form">
+                    <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/${activity.id}/form/submit" class="form uiblock">
                         <input type="hidden" name="type" value="<%= PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL %>"/>
                         <input type="hidden" name="activityDefId" value="${activity.id}"/>
                         <input type="hidden" name="processDefId" value="${process.id}"/>
@@ -104,8 +104,10 @@
         }
 
         function sel(formId){
+            UI.blockUI();
             var callback = {
                 success : function() {
+                    UI.unblockUI();
                     document.location.reload(true);
                 }
             }

@@ -26,6 +26,10 @@
                         $("body").off("click.bodytabs");
                     }
                 });
+                $("body").on("submit", "form.blockui", function(){
+                    UI.blockUI();
+                    return true;
+                });
             });
 
             HelpGuide.base = "${pageContext.request.contextPath}"

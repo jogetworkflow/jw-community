@@ -98,6 +98,10 @@
                 $("body").off("click.bodytabs");
             }
         });
+        $("body").on("submit", "form.blockui", function(){
+            UI.blockUI();
+            return true;
+        });
     });
 </script>
 

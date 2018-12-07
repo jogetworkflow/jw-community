@@ -23,7 +23,7 @@
             </div>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/importpo/submit" class="form" enctype="multipart/form-data">
+        <form method="post" action="${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/importpo/submit" class="form blockui" enctype="multipart/form-data">
             <div class="form-row">
                 <label for="localeFile" class="upload"><fmt:message key="console.app.message.import.po.label.poFile"/></label>
                 <span class="form-input">

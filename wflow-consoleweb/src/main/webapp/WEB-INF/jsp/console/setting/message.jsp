@@ -85,8 +85,10 @@
 
     function messageDelete(selectedList){
          if (confirm('<fmt:message key="console.setting.message.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
+                    UI.unblockUI();
                     filter(JsonMessageDataTable, '', '');
                     JsonMessageDataTable.clearSelectedRows();
                 }

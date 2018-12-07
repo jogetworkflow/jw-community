@@ -114,8 +114,10 @@
 
     function reevaluateProcessInstance(){
         if (confirm('<fmt:message key="console.monitoring.running.label.reevaluate.confirm"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
+                    UI.unblockUI();
                     alert("<fmt:message key='console.monitoring.running.label.reevaluate.success'/>");
                     document.location.reload(true);
                 }

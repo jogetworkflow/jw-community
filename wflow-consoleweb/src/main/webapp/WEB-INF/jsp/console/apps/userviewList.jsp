@@ -63,6 +63,7 @@
     }
     function userviewDelete(selectedList){
         if (confirm('<fmt:message key="console.userview.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/userviews';

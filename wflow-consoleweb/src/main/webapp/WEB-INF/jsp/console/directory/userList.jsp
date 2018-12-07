@@ -86,6 +86,7 @@
 
     function deleteUser(selectedList){
          if (confirm('<fmt:message key="console.directory.user.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/users';

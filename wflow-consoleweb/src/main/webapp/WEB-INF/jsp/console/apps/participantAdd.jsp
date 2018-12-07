@@ -351,6 +351,7 @@
                 var role = $('input[name=role]:checked').val();
                 if (role === "everyone") {
                     if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
+                        UI.blockUI();
                         var callback = {
                             success : function(response) {
                                 if (parent.ProcessBuilder !== undefined) {
@@ -370,11 +371,13 @@
         </c:if>
 
         function submitPlugin(id){
+            UI.blockUI();
             document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure"/>?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
         }
 
         function post(type, params){
             if (confirm('<fmt:message key="console.process.config.label.mapParticipants.submit.confirm"/>')) {
+                UI.blockUI();
                 var callback = {
                     success : function(response) {
                         if (parent.ProcessBuilder !== undefined) {

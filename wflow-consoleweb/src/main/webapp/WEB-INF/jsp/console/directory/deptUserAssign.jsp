@@ -47,8 +47,10 @@
 
         function assignUsers(selectedIds){
              if (confirm('<fmt:message key="console.directory.department.user.assign.label.confirmation"/>')) {
+                UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         parent.location.reload(true);
                     }
                 }

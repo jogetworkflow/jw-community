@@ -43,7 +43,7 @@
     </div>
     <div id="main-body">
         <div id="generalSetup">
-            <form method="post" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
+            <form method="post" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
             <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=settings" />
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.uiSetting"/></span>

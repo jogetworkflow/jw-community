@@ -13,7 +13,7 @@
             </div>
         </c:if>
 
-        <form method="post" action="${pageContext.request.contextPath}/web/console/setting/plugin/upload/submit" class="form" enctype="multipart/form-data">
+        <form method="post" action="${pageContext.request.contextPath}/web/console/setting/plugin/upload/submit" class="form blockui" enctype="multipart/form-data">
             <fieldset>
                 <div class="form-row">
                     <label for="field1" class="upload"><fmt:message key="console.setting.plugin.upload.label.pluginFile"/></label>

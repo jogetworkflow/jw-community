@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <form:form id="createOrg" action="${pageContext.request.contextPath}/web/console/directory/org/submit/edit" method="POST" commandName="organization" cssClass="form">
+        <form:form id="createOrg" action="${pageContext.request.contextPath}/web/console/directory/org/submit/edit" method="POST" commandName="organization" cssClass="form blockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">

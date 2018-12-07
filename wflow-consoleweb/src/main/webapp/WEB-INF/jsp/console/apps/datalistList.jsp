@@ -63,6 +63,7 @@
     }
     function datalistDelete(selectedList){
         if (confirm('<fmt:message key="console.datalist.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalists';

@@ -225,10 +225,12 @@
 
     function messageDelete(selectedList){
          if (confirm('<fmt:message key="console.app.message.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     filter(JsonMessageDataTable, '', '');
                     JsonMessageDataTable.clearSelectedRows();
+                    UI.unblockUI();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/message/delete', callback, 'ids='+selectedList);
@@ -245,10 +247,12 @@
 
     function envVariableDelete(selectedList){
          if (confirm('<fmt:message key="console.app.envVariable.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     filter(JsonVariableDataTable, '&filter=', $('#JsonVariableDataTable_searchCondition').val());
                     JsonVariableDataTable.clearSelectedRows();
+                    UI.unblockUI();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/envVariable/delete', callback, 'ids='+selectedList);
@@ -257,10 +261,12 @@
 
     function pluginDefaultDelete(selectedList){
          if (confirm('<fmt:message key="console.app.pluginDefault.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     filter(JsonPluginDefaultDataTable, '&filter=', $('#JsonPluginDefaultDataTable_searchCondition').val());
                     JsonPluginDefaultDataTable.clearSelectedRows();
+                    UI.unblockUI();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
@@ -273,10 +279,12 @@
     
     function appResourceDelete(selectedList){
         if (confirm('<fmt:message key="console.app.resource.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     filter(JsonResourcesDataTable, '&filter=', $('#JsonResourcesDataTable_searchCondition').val());
                     JsonResourcesDataTable.clearSelectedRows();
+                    UI.unblockUI();
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/resource/delete', callback, 'ids='+selectedList);

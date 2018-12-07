@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content" style="text-align: left">
-        <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload/submit" enctype="multipart/form-data">
+        <form method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/package/upload/submit" enctype="multipart/form-data" class="blockui">
             <c:if test="${!empty errorMessage}">
                 <div class="form-errors">${errorMessage}</div>
             </c:if>

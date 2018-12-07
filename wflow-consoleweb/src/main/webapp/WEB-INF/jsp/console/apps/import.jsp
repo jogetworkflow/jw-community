@@ -7,7 +7,7 @@
     </div>
     <div id="main-body-content">
 
-        <form method="post" action="${pageContext.request.contextPath}/web/console/app/import/submit" class="form" enctype="multipart/form-data">
+        <form method="post" action="${pageContext.request.contextPath}/web/console/app/import/submit" class="form blockui" enctype="multipart/form-data">
             
             <c:if test="${errorList != null || error}">
                 <div class="form-errors" style="display:block">
@@ -84,23 +84,6 @@
             $('#showAdvancedInfo').show();
             $('#hideAdvancedInfo').hide();
         }
-        $(function() {
-            $(".form-buttons input.form-button").click(function(){
-                $.blockUI({ 
-                    css: { 
-                        border: 'none', 
-                        padding: '15px', 
-                        backgroundColor: '#000', 
-                        '-webkit-border-radius': '10px', 
-                        '-moz-border-radius': '10px', 
-                        opacity: .3, 
-                        color: '#fff' 
-                    }, 
-                    message : "<h1><fmt:message key="form.form.message.wait"/></h1>" 
-                }); 
-                return true;
-            });
-        });
     </script>
                     
 <commons:popupFooter />

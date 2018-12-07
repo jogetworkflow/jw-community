@@ -206,6 +206,7 @@
 
     function onDelete(){
          if (confirm('<fmt:message key="console.directory.org.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
@@ -217,6 +218,7 @@
 
     function deleteDepartment(selectedList){
          if (confirm('<fmt:message key="console.directory.department.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
@@ -228,6 +230,7 @@
 
     function deleteGrade(selectedList){
          if (confirm('<fmt:message key="console.directory.grade.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
@@ -239,6 +242,7 @@
 
     function unassignUsers(selectedList){
          if (confirm('<fmt:message key="console.directory.org.user.unassign.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';

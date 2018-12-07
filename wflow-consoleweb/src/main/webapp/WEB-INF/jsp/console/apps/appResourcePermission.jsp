@@ -24,7 +24,7 @@
     <div id="propertyEditor" class="pluginConfig menu-wizard-container">
 
     </div>
-    <form id="propertiesForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/resource/permission/submit" class="form" method="POST" style="display:none">
+    <form id="propertiesForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/resource/permission/submit" class="form blockui" method="POST" style="display:none">
         <input id="permissionProperties" name="permissionProperties" type="hidden" value=""/>
         <input id="id" name="id" type="hidden" value="${appResource.id}"/>
     </form>

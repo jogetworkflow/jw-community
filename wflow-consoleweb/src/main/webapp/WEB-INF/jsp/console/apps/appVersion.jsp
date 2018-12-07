@@ -142,7 +142,7 @@
                 <div id="propertyEditor" class="pluginConfig menu-wizard-container">
 
                 </div>
-                <form id="propertiesForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit" class="form" method="POST" style="display:none">
+                <form id="propertiesForm" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit" class="form blockui" method="POST" style="display:none">
                     <input id="properties" name="properties" type="hidden" value=""/>
                     <input id="id" name="id" type="hidden" value="${appResource.id}"/>
                 </form>
@@ -232,7 +232,7 @@
                 <div id="propertyEditorGit" class="pluginConfig menu-wizard-container-git">
 
                 </div>
-                <form id="propertiesFormGit" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit" class="form" method="POST" style="display:none">
+                <form id="propertiesFormGit" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/dev/submit" class="form" method="POST blockui" style="display:none">
                     <input id="propertiesGit" name="properties" type="hidden" value=""/>
                     <input id="id" name="id" type="hidden" value="${appResource.id}"/>
                 </form>

@@ -69,6 +69,7 @@
             if (confirm("<fmt:message key="console.monitoring.running.label.reassign.confirm"/>")) {
                 var callback = {
                     success : function() {
+                       UI.unblockUI(); 
                        parent.location.reload(true);
                     }
                 }
@@ -76,6 +77,7 @@
                 if($('#replaceUser option[value="'+username+'"]').length > 0){
                     alert('<fmt:message key="console.monitoring.running.label.reassign.error"/>');
                 }else{
+                    UI.blockUI();
                     var params = "username=" + encodeURIComponent(username) + "&state=<c:out value="${state}"/>&processDefId=<c:out value="${processDefId}"/>&activityId=<c:out value="${activityId}"/>&processId=<c:out value="${processId}"/>&replaceUser=" + encodeURIComponent(replaceUser);
                     ConnectionManager.post('${pageContext.request.contextPath}/web/json/monitoring/running/activity/reassign', callback, params);
                 }

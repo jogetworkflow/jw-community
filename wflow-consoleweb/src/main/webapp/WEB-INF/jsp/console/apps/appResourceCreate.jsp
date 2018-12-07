@@ -7,7 +7,7 @@
     </div>
     <div id="main-body-content">
 
-        <form id="addResource" method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/resource/submit" class="form" enctype="multipart/form-data">
+        <form id="addResource" method="post" action="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/resource/submit" class="form blockui" enctype="multipart/form-data">
             <c:if test="${!empty errors}">
                 <span class="form-errors" style="display:block">
                     <c:forEach items="${errors}" var="error">

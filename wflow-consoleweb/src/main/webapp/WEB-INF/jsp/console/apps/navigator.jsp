@@ -118,24 +118,30 @@
         return false;
     }
     function formDelete(selectedList, event) {
+        UI.blockUI();
         var callback = {
             success: function () {
+                UI.unblockUI();
                 refreshNavigator();
             }
         }
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/form/delete', callback, 'formId=' + selectedList);
     }
     function datalistDelete(selectedList, event) {
+        UI.blockUI();
         var callback = {
             success: function () {
+                UI.unblockUI();
                 refreshNavigator();
             }
         }
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appDef.id}/${appDef.version}/datalist/delete', callback, 'ids=' + selectedList);
     }
     function userviewDelete(selectedList, event) {
+        UI.blockUI();
         var callback = {
             success: function () {
+                UI.unblockUI();
                 refreshNavigator();
             }
         }

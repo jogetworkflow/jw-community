@@ -84,6 +84,7 @@
 <script>
     function removeProcessInstance(){
          if (confirm('<fmt:message key="console.monitoring.common.label.removeProcess.confirm"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/monitor/completed';

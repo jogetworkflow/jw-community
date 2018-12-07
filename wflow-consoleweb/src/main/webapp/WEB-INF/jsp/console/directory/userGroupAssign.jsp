@@ -55,6 +55,7 @@
 
         function assignGroups(selectedIds){
              if (confirm('<fmt:message key="console.directory.user.group.assign.label.confirmation"/>')) {
+                UI.blockUI(); 
                 var callback = {
                     success : function() {
                         parent.location.reload(true);

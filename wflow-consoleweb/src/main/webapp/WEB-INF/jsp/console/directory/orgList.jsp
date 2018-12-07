@@ -73,6 +73,7 @@
 
     function deleteOrganization(selectedList){
          if (confirm('<fmt:message key="console.directory.org.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';

@@ -184,6 +184,7 @@
 
     function onRemoveHOD(){
         if (confirm('<fmt:message key="console.directory.department.hod.remove.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
@@ -195,6 +196,7 @@
 
     function onDelete(){
         if (confirm('<fmt:message key="console.directory.department.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
@@ -206,6 +208,7 @@
 
     function deleteDepartment(selectedList){
         if (confirm('<fmt:message key="console.directory.department.delete.label.confirmation"/>')) {
+            UI.blockUI();
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
@@ -217,6 +220,7 @@
 
     function unassignUsers(selectedList){
          if (confirm('<fmt:message key="console.directory.department.user.unassign.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';

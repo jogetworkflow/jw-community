@@ -85,6 +85,7 @@
 
     function deleteGroup(selectedList){
          if (confirm('<fmt:message key="console.directory.group.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/groups';

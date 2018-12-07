@@ -120,6 +120,7 @@
 
     function onDelete(){
          if (confirm('<fmt:message key="console.directory.grade.delete.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}';
@@ -131,6 +132,7 @@
 
     function unassignUsers(selectedList){
          if (confirm('<fmt:message key="console.directory.grade.user.unassign.label.confirmation"/>')) {
+            UI.blockUI(); 
             var callback = {
                 success : function() {
                     document.location = '${pageContext.request.contextPath}/web/console/directory/grade/view/${grade.id}';

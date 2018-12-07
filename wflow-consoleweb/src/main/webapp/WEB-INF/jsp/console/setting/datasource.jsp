@@ -57,7 +57,7 @@
             </span>
         </div>
         <div id="datasourceSetup">
-            <form id="datasourceForm" method="post" action="${pageContext.request.contextPath}/web/console/setting/datasource/submit">
+            <form id="datasourceForm" class="blockui" method="post" action="${pageContext.request.contextPath}/web/console/setting/datasource/submit">
             <div class="main-body-row">
                 <span class="row-content">
                     <div class="form-row">
@@ -186,6 +186,7 @@
 
     function changeProfile(){
         if(confirm("<fmt:message key="console.setting.datasource.label.switchProfileConfirm"/>")) {
+            UI.blockUI();
             var param = "profileName=" + $('#profileList').val();
             ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/change", callback, param);
         }
@@ -197,6 +198,7 @@
             if($('#profileList').val() == currentProfile)
                 alert("<fmt:message key="console.setting.datasource.label.deleteProfileInvalid"/>")
             else{
+                UI.blockUI();
                 var param = "profileName=" + $('#profileList').val();
                 ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/delete", callback, param);
             }
@@ -213,6 +215,7 @@
                 alert('<fmt:message key="console.setting.datasource.label.saveAsProfileExist"/>');
                 $('#newProfileName').focus();
             }else{
+                UI.blockUI();
                 var param = $('#datasourceForm').serialize();
                 ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/create", callback, param);
             }

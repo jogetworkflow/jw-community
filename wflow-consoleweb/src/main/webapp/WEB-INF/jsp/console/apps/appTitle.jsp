@@ -12,9 +12,11 @@
             if(value==""){
                 return $('#appNameValue').val();
             }else{
+                UI.blockUI();
                 var callback = {
                     success : function() {
                         $('#appNameValue').val(value);
+                        UI.unblockUI();
                     }
                 }
                 ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appDefinition.id}/${appDefinition.version}/rename/'+value, callback);

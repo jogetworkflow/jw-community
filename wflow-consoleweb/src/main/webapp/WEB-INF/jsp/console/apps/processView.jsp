@@ -581,6 +581,7 @@
 
                 var reloadCallback = {
                     success: function(data){
+                        UI.unblockUI();
                         if (data && data.length > 0) {
                             data = data.trim();
                             $("#" + data).css("display", "none");
@@ -652,6 +653,7 @@
 
                 function activityRemoveForm(activityId){
                     if (confirm("<fmt:message key="console.process.config.label.mapActivities.removeMapping.confirm"/>")) {
+                        UI.blockUI();
                         var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/form/remove";
                         ConnectionManager.post(url, reloadCallback);
                     }
@@ -659,6 +661,7 @@
 
                 function activityRemovePlugin(activityId){
                     if (confirm("<fmt:message key="console.process.config.label.mapTools.removePlugin.confirm"/>")) {
+                        UI.blockUI();
                         var url = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/remove";
                         ConnectionManager.post(url, reloadCallback);
                     }
@@ -684,10 +687,12 @@
                             } else {
                                 $('#participant_'+participantId).html('');
                             }
+                            UI.unblockUI();
                         }
                     }
                     
                     if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
+                        UI.blockUI();
                         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, '');
                     }
                 }
@@ -699,10 +704,12 @@
                             if($(obj).parent().parent().find('.participant-remove:visible').length == 2){
                                 $(obj).parent().parent().find('.participant-remove:visible').find('img').remove();
                             }
+                            UI.unblockUI();
                         }
                     }
                     
                     if (confirm("<fmt:message key="console.process.config.label.mapParticipants.removeMapping.confirm"/>")) {
+                        UI.blockUI();
                         ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/' + participantId + '/remove', removeItem, 'type='+encodeURIComponent(type)+'&value='+encodeURIComponent(value));
                     }
                 }

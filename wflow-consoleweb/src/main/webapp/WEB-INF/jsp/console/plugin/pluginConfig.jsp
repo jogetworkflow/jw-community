@@ -158,7 +158,7 @@
         <div id="propertyEditor" class="pluginConfig menu-wizard-container">
 
         </div>
-        <form id="propertiesForm" action="${actionUrl}" class="form" method="POST" style="display:none">
+        <form id="propertiesForm" action="${actionUrl}" class="form blockui" method="POST" style="display:none">
             <input id="pluginProperties" name="pluginProperties" type="hidden" value=""/>
         </form>
         <script>
