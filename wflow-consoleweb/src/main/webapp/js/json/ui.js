@@ -98,10 +98,10 @@ UI = {
         $.blockUI({ css: { 
             border: 'none', 
             padding: '15px', 
-            backgroundColor: '#000', 
+            backgroundColor: 'transparent', 
             '-webkit-border-radius': '10px', 
             '-moz-border-radius': '10px', 
-            opacity: .3, 
+            opacity: 0.8, 
             color: '#fff' 
         }, message : '<i class="fas fa-spin fa-spinner fa-3x"></i>' }); 
     },

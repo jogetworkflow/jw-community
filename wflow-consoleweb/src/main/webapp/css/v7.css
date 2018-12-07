@@ -604,6 +604,16 @@ body.popupBody #main-body-header {
     box-sizing: border-box;
     z-index: 1000;
 }
+.ui-dialog-content .popupBody #main-body-header{
+    background: #00695c;
+    color: #fff;
+    padding: 15px;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+    box-sizing: border-box;
+}
 .boxy-content-header {
     position: absolute;
     margin: 0;
@@ -616,6 +626,9 @@ body.popupBody #main-body-header #main-action-help{
 body.popupBody #main-body-content {
     padding: 20px 15px;
     overflow: auto !important;
+}
+.ui-dialog-content .popupBody #main-body-content {
+    padding: 20px 15px;
 }
 body .boxy-wrapper .title-bar {
     position: absolute;
@@ -888,6 +901,19 @@ fieldset legend,
 .dialog {
     margin: 0 auto !important;
     text-align: center;
+}
+.tick {
+    background: url(../images/v3/console/icn_tick.png) no-repeat center;
+    float: left;
+    width: 16px;
+    height: 13px;
+    padding: 0 0 0 5px;
+}
+.blockUI.blockOverlay {
+    z-index: 110000 !important;
+}
+.blockUI.blockMsg {
+    z-index: 110001 !important;
 }
 
 /* login */

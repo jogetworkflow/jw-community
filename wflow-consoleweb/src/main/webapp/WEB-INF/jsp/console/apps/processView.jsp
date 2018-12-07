@@ -702,7 +702,7 @@
                         success : function(response) {
                             $(obj).parent().hide('slow');
                             if($(obj).parent().parent().find('.participant-remove:visible').length == 2){
-                                $(obj).parent().parent().find('.participant-remove:visible').find('img').remove();
+                                $(obj).parent().parent().find('.participant-remove:visible').find('i.fa-times').remove();
                             }
                             UI.unblockUI();
                         }
