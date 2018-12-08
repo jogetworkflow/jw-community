@@ -3492,6 +3492,11 @@ ProcessBuilder.Designer = {
                         var dialogTop = (nodeTop - 50 ) * ProcessBuilder.Designer.zoom;
                         var dialogLeft = (nodeLeft + 50) * ProcessBuilder.Designer.zoom;
                         $nodeDialog.dialog("option", { position: [dialogLeft, dialogTop] });
+                        $("#node_dialog").parent().find(".ui-dialog-titlebar").remove();
+                        $('.ui-widget-overlay').off('click');
+                        $('.ui-widget-overlay').on('click',function(){
+                            $nodeDialog.dialog("close");
+                        });
                     }
                 });
                 // remove irrelevant node types
