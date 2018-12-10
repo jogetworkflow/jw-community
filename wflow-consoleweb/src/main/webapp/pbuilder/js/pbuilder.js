@@ -4436,7 +4436,7 @@ ProcessBuilder.Mapper = {
                 title = $(node).find(".participant_label").text();
             }
             if (mapping !== undefined && mapping !== null && mapping['type'] === "plugin") {
-                url += "/participant/" + escape(id) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=";
+                url += "/participant/" + escape(id) + "/pconfigure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=";
             } else {
                 url += "/participant/" + escape(id) + "?participantName=" + encodeURIComponent(title);
             }
@@ -4446,8 +4446,11 @@ ProcessBuilder.Mapper = {
                 mode = "route";
             }
             var title = $(node).find(".node_label").text();
+            if (type !== "tool" && title === "") {
+                title = id;
+            }
             if (mapping !== undefined && mapping !== null) {
-                url += "/activity/" + escape(id) + "/plugin/configure?participantName=" + encodeURIComponent(title) + "&param_tab=";
+                url += "/"+mode+"/" + escape(id) + "/plugin/configure?title=" + encodeURIComponent(' - ' + title + " ("+id+")") + "&param_tab=";
             } else {
                 url += "/" + mode + "/" + escape(id) + "/plugin?activityName=" + encodeURIComponent(title);
             }

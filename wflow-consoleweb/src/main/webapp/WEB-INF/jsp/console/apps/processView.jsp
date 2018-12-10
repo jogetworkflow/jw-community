@@ -675,7 +675,7 @@
                 
                 function routeConfigurePlugin(activityId, activityName){
                     var title = " - " + activityName + " (" + activityId + ")";
-                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/activity/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=routeList";
+                    popupDialog.src = "${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/route/" + escape(activityId) + "/plugin/configure?title=" + encodeURIComponent(title) + "&param_tab=routeList";
                     popupDialog.init();
                 }
 
@@ -716,7 +716,7 @@
 
                 function participantConfigurePlugin(participantId, participantName){
                     var title = " - " + participantName + " (" + participantId + ")";
-                    popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/plugin/configure?title=' + encodeURIComponent(title);
+                    popupDialog.src = '${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${process.encodedId}/participant/'+participantId+'/pconfigure?title=' + encodeURIComponent(title);
                     popupDialog.init();
                 }
 

@@ -2096,8 +2096,8 @@ public class ConsoleWebController {
         return "console/apps/routePluginAdd";
     }
 
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
-    public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
+    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/(*:activityType)/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
+    public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityType, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2110,6 +2110,7 @@ public class ConsoleWebController {
 
         packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
         
+        map.addAttribute("activityType", activityType);
         map.addAttribute("activityDefId", activityDefId);
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
         map.addAttribute("pluginName", URLEncoder.encode(pluginName, "UTF-8"));
@@ -2124,21 +2125,22 @@ public class ConsoleWebController {
         map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
         return "console/apps/activityFormRemoveSuccess";
     }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/configure")
-    public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/(*:activityType)/(*:activityDefId)/plugin/configure")
+    public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityType, @RequestParam String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         tab = SecurityUtil.validateStringInput(tab);
+        String processDefIdWithVersion = processDefId;
 
         if (packageDef != null) {
             activityDefId = SecurityUtil.validateStringInput(activityDefId);
-            processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-            PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefId, activityDefId);
+            processDefIdWithVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+            PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefIdWithVersion, activityDefId);
             
             if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
                 activityPlugin = new PackageActivityPlugin();
-                activityPlugin.setProcessDefId(processDefId);
+                activityPlugin.setProcessDefId(processDefIdWithVersion);
                 activityPlugin.setActivityDefId(activityDefId);
                 activityPlugin.setPluginName(pluginName);
             }
@@ -2181,30 +2183,40 @@ public class ConsoleWebController {
 
             map.addAttribute("appDef", appDef);
             map.addAttribute("plugin", plugin);
+            
+            try {
+                processDefId =  URLEncoder.encode(processDefId, "UTF-8");
+            } catch (UnsupportedEncodingException e) {}
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/activity/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/"+activityType+"/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
             if (pluginName != null) {
                 url += "&pluginname="+URLEncoder.encode(pluginName, "UTF-8");
             }
             map.addAttribute("actionUrl", url);
+            
+            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/"+activityType+"/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
+            map.addAttribute("cancelUrl", cancelUrl);
+            
+            map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
         }
 
         return "console/plugin/pluginConfig";
     }
 
-    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/activity/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
+    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/(*:activityType)/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
     @Transactional
-    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam("param_activityDefId") String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
+    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam String activityType, @RequestParam("param_activityDefId") String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
         AppDefinition appDef = appService.loadAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
         processDefId = SecurityUtil.validateStringInput(processDefId);
+        String processDefIdWithVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         activityDefId = SecurityUtil.validateStringInput(activityDefId);
         tab = SecurityUtil.validateStringInput(tab);
-        PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefId, activityDefId);
+        PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefIdWithVersion, activityDefId);
         
         if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
             activityPlugin = new PackageActivityPlugin();
-            activityPlugin.setProcessDefId(processDefId);
+            activityPlugin.setProcessDefId(processDefIdWithVersion);
             activityPlugin.setActivityDefId(activityDefId);
             activityPlugin.setPluginName(pluginName);
                 
@@ -2250,7 +2262,7 @@ public class ConsoleWebController {
         packageDefinitionDao.saveOrUpdate(packageDef);
 
         map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
+        map.addAttribute("processDefId", URLEncoder.encode(processDefIdWithVersion, "UTF-8"));
         
         map.addAttribute("tab", tab);
 
@@ -2403,8 +2415,8 @@ public class ConsoleWebController {
             return "console/apps/participantAddSuccess";
         }
     }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/plugin/configure")
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/pconfigure")
     public String consoleParticipantPluginConfigure(
             ModelMap map,
             HttpServletRequest request,
@@ -2418,14 +2430,14 @@ public class ConsoleWebController {
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
-        processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         participantId = SecurityUtil.validateStringInput(participantId);
 
         if (value != null && value.trim().length() > 0) {
             plugin = pluginManager.getPlugin(value);
         } else {
             if (packageDef != null) {
-                PackageParticipant participant = packageDef.getPackageParticipant(processDefId, participantId);
+                PackageParticipant participant = packageDef.getPackageParticipant(processDefIdWithoutVersion, participantId);
                 plugin = pluginManager.getPlugin(participant.getValue());
 
                 if (participant.getPluginProperties() != null && participant.getPluginProperties().trim().length() > 0) {
@@ -2462,11 +2474,19 @@ public class ConsoleWebController {
                 map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
             }
 
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
+            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefIdWithoutVersion) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
 
             map.addAttribute("appDef", appDef);
             map.addAttribute("plugin", plugin);
             map.addAttribute("actionUrl", url);
+            
+            try {
+                processDefId =  URLEncoder.encode(processDefId, "UTF-8");
+            } catch (UnsupportedEncodingException e) {}
+            
+            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "?tab=plugin&title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
+            map.addAttribute("cancelUrl", cancelUrl);
+            map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
         }
 
         return "console/plugin/pluginConfig";

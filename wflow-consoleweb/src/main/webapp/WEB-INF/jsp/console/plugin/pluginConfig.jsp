@@ -219,7 +219,7 @@
                     </c:choose>        
                     saveCallback: savePlugin,
                     saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><fmt:message key="${submitLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.submit"/></c:otherwise></c:choose>',
-                    cancelButtonLabel: '<fmt:message key="general.method.label.cancel"/>',
+                    cancelButtonLabel: '<c:choose><c:when test="${!empty cancelLabel}"><fmt:message key="${cancelLabel}"/></c:when><c:otherwise><fmt:message key="general.method.label.cancel"/></c:otherwise></c:choose>',
                     closeAfterSaved: false,
                     validationFailedCallback: savePluginFailed
                 }

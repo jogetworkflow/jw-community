@@ -2,11 +2,20 @@
 
 <commons:popupHeader />
 
+    <c:choose>
+        <c:when test="${!empty param.title}">
+            <c:set var="title" value="${param.title}"></c:set>
+        </c:when>
+        <c:otherwise>
+            <c:set var="title" value=" - ${param.activityName} (${activityDefId})"></c:set>
+        </c:otherwise>    
+    </c:choose>
+
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapTools"/> - <ui:stripTag html="${param.activityName}"/> <c:out value="(${activityDefId})" escapeXml="true" />
+        <fmt:message key="console.process.config.label.mapTools"/> <ui:stripTag html="${title}"/>
     </div>
     
-    <c:set var="title"><ui:escape value=" - ${param.activityName} (${activityDefId})" format="url;url;javascript" /></c:set>
+    <c:set var="title"><ui:escape value="${title}" format="url;url;javascript" /></c:set>
 
     <div id="main-body-content" style="text-align: left">
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?className=org.joget.plugin.base.ApplicationPlugin&${pageContext.request.queryString}"

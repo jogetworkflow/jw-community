@@ -1,8 +1,18 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader />
+
+    <c:choose>
+        <c:when test="${!empty param.title}">
+            <c:set var="title" value="${param.title}"></c:set>
+        </c:when>
+        <c:otherwise>
+            <c:set var="title" value=" - ${param.participantName} (${participantId})"></c:set>
+        </c:otherwise>    
+    </c:choose>
+
     <div id="main-body-header">
-        <fmt:message key="console.process.config.label.mapParticipants"/> - <ui:stripTag html="${param.participantName}"/> <c:out value="(${participantId})" escapeXml="true" />
+        <fmt:message key="console.process.config.label.mapParticipants"/> <ui:stripTag html="${title}"/>
     </div>
     <div id="main-body-content" style="text-align: left">
         <div id="userTabView">
@@ -290,6 +300,10 @@
     <script>
         var tabView = new TabView('userTabView', 'top');
         tabView.init();
+        
+        <c:if test="${!empty param.tab}">
+            tabView.select('#<ui:escape value="${param.tab}" format="html;javascript"/>');
+        </c:if>
 
         var userGroupTabView = new TabView('userGroupTabView', 'top');
         userGroupTabView.init();
@@ -372,7 +386,7 @@
 
         function submitPlugin(id){
             UI.blockUI();
-            document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/plugin/configure"/>?value='+escape(id) + '&title=' + escape(" - <c:out value=" ${param.participantName} (${participantId})" escapeXml="true" />");
+            document.location = '<c:out value="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/processes/${processDefId}/participant/${participantId}/pconfigure"/>?value='+escape(id) + '&title=' + escape("<c:out value="${title}" escapeXml="true" />");
         }
 
         function post(type, params){
