@@ -4413,6 +4413,10 @@ ProcessBuilder.Mapper = {
         }
     },
     editMapping : function(node, type, mapping) {
+        if ($(".tooltipstered").length > 0) {
+            $(".tooltipstered").tooltipster("close");
+        }
+            
         $(".currentedit").removeClass("currentedit");
         $(node).find(".edit_mapping").addClass("currentedit");
         
