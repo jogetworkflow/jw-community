@@ -61,6 +61,9 @@ public class JsonUtil {
     public static final String PROPERTY_USE_SESSION = "useSession";
     public static final String PROPERTY_SHOW_DATA_ONFILTER = "showDataWhenFilterSet";
     public static final String PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL = "considerFilterWhenGetTotal";
+    public static final String PROPERTY_DISABLE_RESPONSIVE = "disableResponsive";
+    public static final String PROPERTY_RESPONSIVE = "responsiveView";
+    public static final String PROPERTY_REPONSIVE_SEARCH_POPUP = "searchPopup";
 
     /**
      * Converts from JSON string into an object. Specifically to support data list model classes.
@@ -150,6 +153,15 @@ public class JsonUtil {
             }
             if (obj.has(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL) && !obj.isNull(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL)) {
                 object.setConsiderFilterWhenGetTotal(obj.getString(PROPERTY_CONSIDER_FILTER_WHEN_GET_TOTAL).equals("true"));
+            }
+            if (obj.has(PROPERTY_DISABLE_RESPONSIVE) && !obj.isNull(PROPERTY_DISABLE_RESPONSIVE)) {
+                object.setDisableResponsive(obj.getString(PROPERTY_DISABLE_RESPONSIVE).equals("true"));
+            }
+            if (obj.has(PROPERTY_RESPONSIVE) && !obj.isNull(PROPERTY_RESPONSIVE)) {
+                object.setResponsiveJson(obj.getJSONArray(PROPERTY_RESPONSIVE).toString());
+            }
+            if (obj.has(PROPERTY_REPONSIVE_SEARCH_POPUP) && !obj.isNull(PROPERTY_REPONSIVE_SEARCH_POPUP)) {
+                object.setResponsiveSearchPopup(obj.getString(PROPERTY_REPONSIVE_SEARCH_POPUP).equals("true"));
             }
 
             //set columns

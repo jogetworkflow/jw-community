@@ -104,7 +104,7 @@
                         <fmt:message key="dbuilder.pleaseSubmitFilter"/>
                     </p>    
                 </c:if>    
-                <form name="filters_${dataListId}" id="filters_${dataListId}" action="?" method="POST">
+                <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="POST">
                     <div class="filters">
                         <c:forEach items="${dataList.filterTemplates}" var="template">
                             ${template}
@@ -133,7 +133,7 @@
                         </c:forEach>
                     </div>
                 </c:if>
-                <div class="footable-buttons" style="display:none">
+                <div class="footable-buttons" data-disableresponsive="${dataList.disableResponsive}" data-searchpopup="${dataList.responsiveSearchPopup}" data-responsivejson="${fn:escapeXml(dataList.responsiveJson)}" style="display:none">
                     <button class="expandAll"><i></i> <fmt:message key="dbuilder.expandAll"/></button>
                     <button class="collapseAll"><i></i> <fmt:message key="dbuilder.collapseAll"/></button>
                     <span class="search_trigger"><fmt:message key="general.method.label.search"/> <i></i></span>

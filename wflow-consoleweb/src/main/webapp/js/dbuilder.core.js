@@ -1463,7 +1463,32 @@ DatalistBuilder = {
                 {label : get_dbuilder_msg('dbuilder.considerFilterWhenGetTotal'),
                   name  : 'considerFilterWhenGetTotal',
                   type : 'checkbox',
-                  options : [{label : '', value : 'true'}]}
+                  options : [{label : '', value : 'true'}]},
+                {label: get_dbuilder_msg('dbuilder.responsive'),
+                  name: 'responsive',
+                  type: 'header',
+                  description: get_dbuilder_msg('dbuilder.responsive.desc')},
+                {label: get_dbuilder_msg('dbuilder.disableResponsive'),
+                  name: 'disableResponsive',
+                  type: 'checkbox',
+                  options : [{value : 'true', label : ''}]},
+                {label: get_dbuilder_msg('dbuilder.searchPopup'),
+                  name: 'searchPopup',
+                  type: 'checkbox',
+                  options : [{value : 'true', label : ''}]},  
+                {label: get_dbuilder_msg('dbuilder.responsiveView'),
+                  name: 'responsiveView',
+                  description : get_dbuilder_msg('dbuilder.responsiveView.desc'),
+                  type: 'gridfixedrow',
+                  columns : [
+                      {key : 'view', label : get_dbuilder_msg('dbuilder.view')},
+                      {key : 'breakpoint', label : get_dbuilder_msg('dbuilder.breakpoint'), type : 'number'},
+                      {key : 'columns', label : get_dbuilder_msg('dbuilder.columns'), type : 'number'}
+                  ],
+                  rows: [
+                      {label : get_dbuilder_msg('dbuilder.mobile')},
+                      {label : get_dbuilder_msg('dbuilder.tablet')}
+                  ]}
               ]
             }
         ];

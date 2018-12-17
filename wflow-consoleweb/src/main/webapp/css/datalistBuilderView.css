@@ -262,3 +262,10 @@
     margin-left: -140px;
     margin-top: -15px;
 }
+.search_filter_popup form .filters {
+    text-align: left;
+}
+.search_filter_popup .filter-cell {
+    display: block;
+    padding-right: 10px;
+}

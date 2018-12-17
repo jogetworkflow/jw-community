@@ -2127,7 +2127,7 @@ PropertyEditor.Model.Type.prototype = {
 
             var toolTip = '';
             var toolTipId = '';
-            if (description !== "") {
+            if (description !== "" && this.properties.type !== "header") {
                 toolTipId = this.properties.name + (new Date()).getTime();
                 toolTip = ' <i class="property-label-description fas fa-question-circle" data-tooltip-content="#'+toolTipId+'"></i>';
             }
@@ -2262,6 +2262,29 @@ PropertyEditor.Type.TextField.prototype = {
     }
 };
 PropertyEditor.Type.TextField = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.TextField.prototype);
+
+PropertyEditor.Type.Number = function() {};
+PropertyEditor.Type.Number.prototype = {
+    shortname: "number",
+    renderField: function() {
+        var size = '';
+        if (this.value === null) {
+            this.value = "";
+        }
+        if (this.properties.size !== undefined && this.properties.size !== null) {
+            size = ' size="' + this.properties.size + '"';
+        } else {
+            size = ' size="50"';
+        }
+        var maxlength = '';
+        if (this.properties.maxlength !== undefined && this.properties.maxlength !== null) {
+            maxlength = ' maxlength="' + this.properties.maxlength + '"';
+        }
+
+        return '<input type="number" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/>';
+    }
+};
+PropertyEditor.Type.Number = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Number.prototype);
 
 PropertyEditor.Type.Color = function() {};
 PropertyEditor.Type.Color.prototype = {
@@ -3091,6 +3114,8 @@ PropertyEditor.Type.Grid.prototype = {
                     }
                     html += '</select>';
                 }
+            } else if (column.type === "number") {
+                html += '<input name="' + column.key + '" type="number" size="10" value=""/>';
             } else {
                 html += '<input name="' + column.key + '" size="10" value=""/>';
             }
@@ -3135,6 +3160,8 @@ PropertyEditor.Type.Grid.prototype = {
                             }
                             html += '</select>';
                         }
+                    } else if (column.type === "number") {
+                        html += '<input name="' + column.key + '" size="10" type="number" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                     } else {
                         html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                     }
@@ -3613,6 +3640,8 @@ PropertyEditor.Type.GridCombine.prototype = {
                     }
                     html += '</select>';
                 }
+            } else if (column.type === "number") {
+                html += '<input name="' + column.key + '" type="number" size="10" value=""/>';
             } else {
                 html += '<input name="' + column.key + '" size="10" value=""/>';
             }
@@ -3688,6 +3717,8 @@ PropertyEditor.Type.GridCombine.prototype = {
                             }
                             html += '</select>';
                         }
+                    } else if (column.type === "number") {
+                        html += '<input name="' + column.key + '" size="10" type="number" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                     } else {
                         html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                     }
@@ -3867,6 +3898,8 @@ PropertyEditor.Type.GridFixedRow.prototype = {
                                 }
                                 html += '</select>';
                             }
+                        } else if (column.type === "number") {
+                            html += '<input name="' + column.key + '" type="number" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                         } else {
                             html += '<input name="' + column.key + '" size="10" value="' + PropertyEditor.Util.escapeHtmlTag(columnValue) + '"/>';
                         }
