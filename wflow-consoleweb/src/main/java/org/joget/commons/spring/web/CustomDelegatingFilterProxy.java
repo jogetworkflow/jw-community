@@ -83,4 +83,14 @@ public class CustomDelegatingFilterProxy extends DelegatingFilterProxy {
         return wc;
     }
 
+    @Override
+    protected void initFilterBean() throws ServletException {
+        // catch NoSuchBeanDefinitionException for JBoss EAP, Websphere and Weblogic
+        try {
+            super.initFilterBean();
+        } catch(NoSuchBeanDefinitionException e) {
+            // ignore
+        }
+    }
+    
 }
