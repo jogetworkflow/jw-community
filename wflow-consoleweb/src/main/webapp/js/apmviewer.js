@@ -560,6 +560,8 @@ APMNode = function() {
     this.updateNode = function(transaction) {
         this.totalDurationNanos += transaction.totalDurationNanos;
         this.transactionCount += transaction.transactionCount;
+        this.errors += transaction.errorCount;
+        this.slowTrace += transaction.slowTrace;
     };
     this.updateNodeError = function(transaction) {
         this.errors += transaction.errorCount;
@@ -585,48 +587,7 @@ APMNode = function() {
             this.transactions[found[1]].updateNode(transaction);
             if (this.transactions[found[1]].parent !== null && this.transactions[found[1]].parent !== undefined) {
                 this.transactions[found[1]].isTransition = true;
-                this.transactions[found[1]].updateSlowTrace();
             }
-        }
-    };
-    this.addError = function(found, transaction) {
-        this.updateNodeError(transaction);
-        if (this.transactions[found[1]] === undefined) {
-            this.transactions[found[1]] = new APMNode().initBase(found[0], found[1], [], this);
-        }
-        if (found.length > 2) {
-            if (found[2] === "") {
-                found[2] = "/";
-            }
-            
-            this.transactions[found[1]].addError([found[0], found[2]], transaction);
-        } else {
-            this.transactions[found[1]].updateNodeError(transaction);
-            this.transactions[found[1]].isTransition = true;
-        }
-    };
-    this.updateSlowTrace = function() {
-        var thisObj = this;
-        if (this.checkSlowTrace) {
-            if (thisObj.name !== "") {
-                this.transactionParam = '&transaction-name=' + encodeURIComponent(thisObj.name);
-            }
-            
-            var d = $.Deferred();
-            APMViewer.deferreds.push(d);
-            APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['trackcount'] + this.transactionParam + APMViewer.getTimeRange(), function(data){
-                thisObj.setSlowTrace(data);
-                d.resolve();
-            });
-        }
-        return null;
-    };
-    this.setSlowTrace = function(num) {
-        this.slowTrace += num;
-        if (this.parent !== null && this.parent !== undefined) {
-            this.parent.setSlowTrace(num);
-        } else if (this.name !== '') {
-            APMViewer.apps['OVERALL'].setSlowTrace(num);
         }
     };
     this.reset = function() {
@@ -1385,8 +1346,7 @@ APMNode = function() {
 APMViewer = {
     urls : {
         'base' : '/web/json/console/monitor/apm/retrieve/',
-        'summary' : 'transaction/summaries?agent-rollup-id=&transaction-type=Web&sort-order=total-time&limit=10000',
-        'errsummary' : 'error/summaries?agent-rollup-id=&transaction-type=Web&sort-order=error-count&limit=10000',
+        'summary' : 'summary?agent-rollup-id=',
         'average' : 'transaction/average?agent-rollup-id=&transaction-type=Web',
         'percentiles' : 'transaction/percentiles?agent-rollup-id=&transaction-type=Web&percentile=80&percentile=95&percentile=99',
         'throughput' : 'transaction/throughput?agent-rollup-id=&transaction-type=Web',
@@ -1417,6 +1377,7 @@ APMViewer = {
     totalMemory : 0,
     maxheap : 0,
     title : '',
+    isVirtualHostEnabled : false,
     apps : {},
     currenttime : null,
     table : null,
@@ -1430,11 +1391,12 @@ APMViewer = {
        'error count' : get_apmviewer_msg('apm.errorCount'),
        'error rate' : get_apmviewer_msg('apm.errorRate')
     },
-    init : function(contextPath, totalMemory, maxheap, title) {
+    init : function(contextPath, totalMemory, maxheap, title, isVirtualHostEnabled) {
         APMViewer.contextPath = contextPath;
         APMViewer.totalMemory = totalMemory;
         APMViewer.maxheap = maxheap;
         APMViewer.title = title;
+        APMViewer.isVirtualHostEnabled = isVirtualHostEnabled;
         
         var tool = $('<div class="apmtool"></div>');
         $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
@@ -2004,13 +1966,13 @@ APMViewer = {
         APMViewer.apps['OVERALL'] = new APMNode().initBase("", get_apmviewer_msg('apm.overall'), []);
         APMViewer.apps['OVERALL'].isTransition = true;
         $.each(data.data, function(i, v){
-            APMViewer.apps[v.id] = new APMNode().initBase(v.name, get_apmviewer_msg('apm.app') + " : " + v.name, ['^'+APMViewer.contextPath+'/web'+ v.id + '(/[^/]+)(.*)$', '^'+APMViewer.contextPath+'/web(/ulogin)/'+ v.id + '(/.*)$']);
+            APMViewer.apps[v.id] = new APMNode().initBase(v.name, get_apmviewer_msg('apm.app') + " : " + v.name, ['^.+'+APMViewer.contextPath+'/web/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web/embed/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web(/ulogin)/'+ v.id + '(/.*)$']);
         });
-        APMViewer.apps['PLUGINS'] = new APMNode().initBase("Plugins", get_apmviewer_msg('apm.pluginWebService'), ['^'+APMViewer.contextPath+'/web([\.a-zA-Z0-9]+/service)$']);
-        APMViewer.apps['RESOURCES'] = new APMNode().initBase("Resources", get_apmviewer_msg('apm.resources'), ['^'+APMViewer.contextPath+'(/images/.+)$', '^'+APMViewer.contextPath+'(/css/.+)$', '^'+APMViewer.contextPath+'(/wro/.+)$', '^'+APMViewer.contextPath+'(/.+\.(?:js|css|jpg|ico|png|gif|eot|svg|ttf|woff|woff2))$'], undefined, false);
-        APMViewer.apps['APM'] = new APMNode().initBase("Performance", get_apmviewer_msg('apm.performance'), ['^'+APMViewer.contextPath+'(/webtransaction/.*)$', '^'+APMViewer.contextPath+'(/weberror/.*)$', '^'+APMViewer.contextPath+'(/webjvm/.*)$', '^'+APMViewer.contextPath+'(/webtrace/.*)$', '^'+APMViewer.contextPath+'(/webconfig/.*)$', '^'+APMViewer.contextPath+'(/webadmin/.*)$']);
-        APMViewer.apps['WEBCONSOLE'] = new APMNode().initBase("Web Console", get_apmviewer_msg('apm.webConsole'), ['^'+APMViewer.contextPath+'(/)$', '^'+APMViewer.contextPath+'(/web)$', '^'+APMViewer.contextPath+'(/home.*)$', '^'+APMViewer.contextPath+'(/web/console/.*)$', '^'+APMViewer.contextPath+'(/web.*)$']);
-        APMViewer.apps['OTHERS'] = new APMNode().initBase("Others", get_apmviewer_msg('apm.others'), ['^'+APMViewer.contextPath+'/(.*)$']);
+        APMViewer.apps['PLUGINS'] = new APMNode().initBase("Plugins", get_apmviewer_msg('apm.pluginWebService'), ['^.+'+APMViewer.contextPath+'/web([\.a-zA-Z0-9]+/service)$']);
+        APMViewer.apps['RESOURCES'] = new APMNode().initBase("Resources", get_apmviewer_msg('apm.resources'), ['^.+'+APMViewer.contextPath+'(/images/.+)$', '^.+'+APMViewer.contextPath+'(/css/.+)$', '^.+'+APMViewer.contextPath+'(/wro/.+)$', '^.+'+APMViewer.contextPath+'(/.+\.(?:js|css|jpg|ico|png|gif|eot|svg|ttf|woff|woff2|map))$'], undefined, false);
+        APMViewer.apps['APM'] = new APMNode().initBase("Performance", get_apmviewer_msg('apm.performance'), ['^.+'+APMViewer.contextPath+'/web(/console/monitor/apm)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)(.*)$']);
+        APMViewer.apps['WEBCONSOLE'] = new APMNode().initBase("Web Console", get_apmviewer_msg('apm.webConsole'), ['^.+'+APMViewer.contextPath+'(/)$', '^.+'+APMViewer.contextPath+'(/web)$', '^.+'+APMViewer.contextPath+'(/home.*)$', '^.+'+APMViewer.contextPath+'(/web/console/.*)$', '^.+'+APMViewer.contextPath+'(/web.*)$']);
+        APMViewer.apps['OTHERS'] = new APMNode().initBase("Others", get_apmviewer_msg('apm.others'), ['^.+'+APMViewer.contextPath+'/(.*)$']);
     },
     reset : function() {
         $(".apmviewer").html("");
@@ -2026,7 +1988,9 @@ APMViewer = {
         var d = new Date();
         APMViewer.currenttime = d.getTime();
         APMViewer.reset();
-        APMViewer.loadGaugesChart();
+        if (!APMViewer.isVirtualHostEnabled) {
+            APMViewer.loadGaugesChart();
+        }
         APMViewer.loadSummary();
     },
     loadGaugesChart : function() {
@@ -2113,10 +2077,10 @@ APMViewer = {
         var d = $.Deferred();
         APMViewer.deferreds.push(d);
         APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['summary'] + APMViewer.getTimeRange(), function(data){
-            APMViewer.apps['OVERALL'].updateNode(data.overall);
-            
             //seperate transaction
-            $.each(data.transactions, function(i, t){
+            $.each(data, function(i, t){
+                APMViewer.apps['OVERALL'].updateNode(t);
+                
                 var found = false;
                 for (var key in APMViewer.apps) {
                     if (APMViewer.apps.hasOwnProperty(key)) {
@@ -2124,6 +2088,7 @@ APMViewer = {
                         if (app.patterns !== undefined && app.patterns.length > 0) {
                             for (var j=0; j < app.patterns.length; j++) {
                                 var found = t.transactionName.match(new RegExp(app.patterns[j]));
+                                
                                 if (found !== null) {
                                     app.addTransaction(found, t);
                                     found = true;
@@ -2139,37 +2104,6 @@ APMViewer = {
             }); 
             
             d.resolve();
-        });
-        
-        var d1 = $.Deferred();
-        APMViewer.deferreds.push(d1);
-        APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['errsummary'] + APMViewer.getTimeRange(), function(data){
-            APMViewer.apps['OVERALL'].updateNodeError(data.overall);
-            
-            //seperate transaction
-            $.each(data.transactions, function(i, t){
-                var found = false;
-                for (var key in APMViewer.apps) {
-                    if (APMViewer.apps.hasOwnProperty(key)) {
-                        var app = APMViewer.apps[key];
-                        if (app.patterns !== undefined && app.patterns.length > 0) {
-                            for (var j=0; j < app.patterns.length; j++) {
-                                var found = t.transactionName.match(new RegExp(app.patterns[j]));
-                                if (found !== null) {
-                                    app.addError(found, t);
-                                    found = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (found) {
-                            break;
-                        }
-                    }
-                }
-            }); 
-            
-            d1.resolve();
         });
         
         APMViewer.loadSummaryComplete(APMViewer.deferreds);

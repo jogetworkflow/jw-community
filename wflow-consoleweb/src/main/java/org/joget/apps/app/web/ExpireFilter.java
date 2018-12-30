@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apm.APMUtil;
 
 public class ExpireFilter implements Filter {
     
@@ -34,6 +35,11 @@ public class ExpireFilter implements Filter {
         if ((request instanceof HttpServletRequest) && (response instanceof HttpServletResponse)) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
+            
+            if (APMUtil.isGlowrootAvailable()) {
+                APMUtil.setTransactionName(httpRequest.getRequestURL().toString());
+            }
+            
             if (isWebResouces(httpRequest.getRequestURI())) {
                 httpResponse.addDateHeader("Expires", System.currentTimeMillis() + expires);
                 httpResponse.addHeader("Cache-Control", "private, max-age=" + expires/1000);

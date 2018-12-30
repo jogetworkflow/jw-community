@@ -19,6 +19,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.joget.apm.APMUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
@@ -59,6 +60,11 @@ public class APMController {
         }
         
         return "apm/unavailable";
+    }
+    
+    @RequestMapping("/json/console/monitor/apm/retrieve/summary")
+    public void monitorApmRetrieveSummary(HttpServletRequest httpRequest, @RequestParam("from") Long form, @RequestParam("to") Long to, Writer writer) throws IOException {
+        writer.write(APMUtil.getSummaries(httpRequest.getServerName(), form, to));
     }
     
     @RequestMapping({"/json/console/monitor/apm/retrieve/(*:action)/(*:subaction)", "/json/console/monitor/apm/retrieve/(*:action)/(*:subaction)/(*:method)"})
