@@ -470,27 +470,29 @@ JsonTable.prototype = {
             for (i=0; i<data.length; i++) {
                 var cell = new Array();
                 var row = data[i];
-                for (j=0; j<this.colModel.length; j++) {
-                    var prop = this.colModel[j].name;
-                    if(thisObject.checkbox && prop == 'checkbox'){
-                        var check = '';
-                        if($("#"+thisObject.divToUpdate+"_selectedIds").html().indexOf(row[key]) != -1){
-                            check = 'checked="true"';
-                        }
-                        row[prop]='<input type="checkbox" class="' + thisObject.divToUpdate + '-checkbox-list" id="' + thisObject.divToUpdate + '_checkbox_' + i + '" ' + check + 'onclick="toggleCheckbox(\'' + thisObject.divToUpdate + '_checkbox_' + i + '\')">';
-                    }else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
-                        row[prop]='<input type="radio" id="' + thisObject.divToUpdate +'_radio_' + i + '" name="' + thisObject.divToUpdate + '_radio" onclick="' + thisObject.divToUpdate + '_toggleRadioButton(\'' + thisObject.divToUpdate + '_radio_' + i + '\')">';
-                    }else {
-                        var relaxed = this.colModel[j].relaxed;
-                        if (!relaxed) {
-                            row[prop]= UI.escapeHTML(row[prop]);
-                        }
-                    }
-                    cell.push(row[prop]);
-                }
                 if (row[key]) {
                     var newRow = new Object();
                     newRow.id = encodeURIComponent(row[key].replace(/\./g, '__dot__'));
+                    
+                    for (j=0; j<this.colModel.length; j++) {
+                        var prop = this.colModel[j].name;
+                        if(thisObject.checkbox && prop == 'checkbox'){
+                            var check = '';
+                            if($("#"+thisObject.divToUpdate+"_selectedIds").html().indexOf(row[key]) != -1){
+                                check = 'checked="true"';
+                            }
+                            row[prop]='<input type="checkbox" class="' + thisObject.divToUpdate + '-checkbox-list" id="' + thisObject.divToUpdate + '_checkbox_' + i + '" ' + check + 'onclick="toggleCheckbox(\'' + thisObject.divToUpdate + '_checkbox_' + i + '\')">';
+                        }else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
+                            row[prop]='<input type="radio" id="' + thisObject.divToUpdate +'_radio_' + i + '" name="' + thisObject.divToUpdate + '_radio" onclick="' + thisObject.divToUpdate + '_toggleRadioButton(\'' + thisObject.divToUpdate + '_radio_' + i + '\')">';
+                        }else {
+                            var relaxed = this.colModel[j].relaxed;
+                            if (!relaxed) {
+                                row[prop]= UI.escapeHTML(row[prop]);
+                            }
+                        }
+                        cell.push(row[prop]);
+                    }
+                    
                     newRow.cell = cell;
                     newRows.push(newRow);
                 }

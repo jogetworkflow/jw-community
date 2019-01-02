@@ -3174,7 +3174,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/permission")
-    public String consoleAppResourcePermission(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
+    public String consoleAppResourcePermission(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -3189,7 +3189,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/permission/submit", method = RequestMethod.POST)
-    public String consoleAppResourcePermissionSubmit(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
+    public String consoleAppResourcePermissionSubmit(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
