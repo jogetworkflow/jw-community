@@ -168,38 +168,11 @@ public class PropertyJsonController {
                 try {
                     file = FileStore.getFile("app_resource");
                     if (file != null && file.getOriginalFilename() != null && !file.getOriginalFilename().isEmpty()) {
-                        AppResource appResource = appResourceDao.loadById(file.getOriginalFilename(), appDef);
-                        if (appResource != null) { //replace
-                            appResource.setFilesize(file.getSize());
-                            appResourceDao.update(appResource);
-                        } else {
-                            appResource = new AppResource();
-                            appResource.setAppDefinition(appDef);
-                            appResource.setAppId(appDef.getAppId());
-                            appResource.setAppVersion(appDef.getVersion());
-                            appResource.setId(file.getOriginalFilename());
-                            appResource.setFilesize(file.getSize());
-                            
-                            if (isPublic != null && isPublic) {
-                                appResource.setPermissionClass("");
-                                appResource.setPermissionProperties("{\"permission\": { \"className\": \"\", \"properties\": {}}}");
-                            } else {
-                                appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
-                                appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
-                            }
-                            appResourceDao.add(appResource);
-                        }
-                        
-                        AppResourceUtil.storeFile(appId, version, file);
-                        
-                        String filename = appResource.getId();
-                        try {
-                            filename = URLEncoder.encode(filename, "UTF-8");
-                        } catch (Exception e){}
+                        AppResource appResource = AppResourceUtil.storeFile(appDef, file, isPublic);
             
                         obj.put("value", appResource.getId());
                         obj.put("permission", appResource.getPermissionClass());
-                        obj.put("url", request.getContextPath() + "/web/app/" + appId + "/" + appDef.getVersion() + "/resources/" + filename);
+                        obj.put("url", request.getContextPath() + "/web/app/" + appId + "/" + appDef.getVersion() + "/resources/" + appResource.getId());
                     }
                 } catch (FileLimitException e) {
                     obj.put("error", ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));

@@ -11,6 +11,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
+import org.joget.apps.app.dao.AppResourceDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppResource;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -26,6 +29,41 @@ public class AppResourceUtil {
         return SetupManager.getBaseDirectory() + File.separator + "app_resources" + File.separator;
     }
     
+    public static AppResource storeFile(AppDefinition appDef, MultipartFile file, Boolean isPublic) {
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
+            String filename = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            
+            AppResourceDao appResourceDao = (AppResourceDao) AppUtil.getApplicationContext().getBean("appResourceDao");
+            
+            AppResource appResource = appResourceDao.loadById(filename, appDef);
+            if (appResource != null) { //replace
+                appResource.setFilesize(file.getSize());
+                appResourceDao.update(appResource);
+            } else {
+                appResource = new AppResource();
+                appResource.setAppDefinition(appDef);
+                appResource.setAppId(appDef.getAppId());
+                appResource.setAppVersion(appDef.getVersion());
+                appResource.setId(filename);
+                appResource.setFilesize(file.getSize());
+
+                if (isPublic != null && isPublic) {
+                    appResource.setPermissionClass("");
+                    appResource.setPermissionProperties("{\"permission\": { \"className\": \"\", \"properties\": {}}}");
+                } else {
+                    appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
+                    appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
+                }
+                appResourceDao.add(appResource);
+            }
+            
+            storeFile(appDef.getAppId(), appDef.getVersion().toString(), file);
+            
+            return appResource;
+        }
+        return null;
+    }
+    
     /**
      * Stores files post to the HTTP request to app resources folder
      * @param appId
@@ -35,14 +73,16 @@ public class AppResourceUtil {
      */
     public static String storeFile(String appId, String appVersion, MultipartFile file) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
+            String fileOrgName = file.getOriginalFilename().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
+            
             //delete existing before store
-            deleteFile(appId, appVersion, file.getOriginalFilename());
+            deleteFile(appId, appVersion, fileOrgName);
             
             FileOutputStream out = null;
             String path =  appId + File.separator + appVersion + File.separator;
             String filename = path;
             try {
-                filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                filename += URLDecoder.decode(fileOrgName, "UTF-8");
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
