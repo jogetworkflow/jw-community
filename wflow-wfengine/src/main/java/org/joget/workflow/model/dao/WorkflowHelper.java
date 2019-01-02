@@ -97,6 +97,13 @@ public interface WorkflowHelper {
     Map<String, String> getPublishedPackageVersions();
     
     /**
+     * Clean the current app definition cache for deadline
+     * @param packageId
+     * @param packageVersion
+     */
+    void cleanDeadlineAppDefinitionCache(String packageId, String packageVersion);
+    
+    /**
      * Update current app definition based on process instance
      * @param processId
      * @param packageId

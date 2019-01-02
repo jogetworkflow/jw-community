@@ -744,6 +744,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
         
         return map;
     }
+    
+    public void cleanDeadlineAppDefinitionCache(String packageId, String packageVersion) {
+        deadlineAppDefinitionCache.remove(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
+    }
 
     public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {
         AppDefinition appDef = deadlineAppDefinitionCache.get(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
