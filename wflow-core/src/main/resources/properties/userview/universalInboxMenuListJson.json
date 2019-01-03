@@ -51,6 +51,6 @@
         "id" : "column_4",
         "label" : "@@userview.inboxmenu.dueDate@@",
         "name" : "dueDate",
-        "sortable" : "true"
+        "sortable" : "false"
     }]
 }
