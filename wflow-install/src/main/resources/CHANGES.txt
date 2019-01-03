@@ -2,6 +2,22 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.14
+=================
+436f11b Fixed: wflow-core - Universal Inbox Menu - Click on Due Date column header return empty result. #6167 @6.0-SNAPSHOT
+3b4401a Fixed: wflow-consoleweb - App Resource - Remove special chars from filename during upload. @6.0-SNAPSHOT
+76dfc7c Fixed: wflow-consoleweb - App Resource - "&" symbol in file name uploaded to Resources will lead to "system error" page when configure file permission. @6.0-SNAPSHOT
+aac1bf9 Fixed: wflow-core/wflow-wfengine - Process - Email tool triggered by deadline activity did not use updated email content. @6.0-SNAPSHOT
+a7ae18d Modified: wflow-consoleweb - Setup - DB Setup cannot be displayed on JBoss EAP, Websphere and Weblogic @6.0-SNAPSHOT
+4278c5a Fixed: wflow-core - File Upload - Stored File missing in Multi Paged Element when the page is not view. @6.0-SNAPSHOT
+e4844d2 Fixed: wflow-core - Inbox Menu - Click on Due Date column header return empty result. #6167 @6.0-SNAPSHOT
+740232d Fixed: wflow-core - Form Hash Variable/Default Formatter - Not able to retrieve field value when field id started with digit. Correction of ab34f4f. #6161 @6.0-SNAPSHOT
+db41ce3 Fixed: wflow-consoleweb - Datalist - Right table header checkbox is not showing. #6123 @6.0-SNAPSHOT
+a21112b Fixed: wflow-core - FormUtil - loadFormData method not able to retrieve page data of multi paged form. #6119 @6.0-SNAPSHOT
+9260ab9 Fixed: wflow-core - Form Hash Variable - Unparsed Nested Hash Variable in table name used in User Notification causing System Error. #6116 @6.0-SNAPSHOT
+f3fb317 Fixed: wflow-consoleweb - Create form - if hit id already exist error will caused URL was not normalized exception on next submission. @7.0-SNAPSHOT
+9019b22 Fixed: wflow-core - Process - NPE is not handled when migrating process instances which have SLA limit set. #6094 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.13
 =================
 ad53dc4 Modified: wflow-consoleweb - Updated commons-fileupload to 1.3.3 for CVE-2016-1000031. @6.0-SNAPSHOT
