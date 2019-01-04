@@ -64,7 +64,7 @@ public class APMUtil {
         td.put("slowTrace", ((Long) td.get("errorCount")) + slowTrace);
     }
     
-    public static long querySummariesInfo(String servername, long from, long to, int level, Map<String, Map<String, Object>> data) throws Exception {
+    public static long querySummariesInfo(String servername, String appId, long from, long to, int level, Map<String, Map<String, Object>> data) throws Exception {
         Object lock = FieldUtils.readDeclaredField(dataSource, "lock", true);
         long lastRolledUpTime = 0;
         synchronized (lock) {
@@ -79,7 +79,12 @@ public class APMUtil {
                 MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{1, "Web"});
                 MethodUtils.invokeMethod(preparedStatement, "setLong", new Object[]{2, from});
                 MethodUtils.invokeMethod(preparedStatement, "setLong", new Object[]{3, to});
-                MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%"});
+                
+                if (appId != null && !appId.isEmpty()) {
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%/userview/"+appId+"/%"});
+                } else {
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%"});
+                }
                 
                 resultSet = (ResultSet) MethodUtils.invokeMethod(preparedStatement, "executeQuery");
                 
@@ -96,7 +101,7 @@ public class APMUtil {
         return lastRolledUpTime;
     }
     
-    public static void querySlowTraces(String servername, long from, long to, Map<String, Map<String, Object>> data) throws Exception {
+    public static void querySlowTraces(String servername, String appId, long from, long to, Map<String, Map<String, Object>> data) throws Exception {
         Object lock = FieldUtils.readDeclaredField(dataSource, "lock", true);
         synchronized (lock) {
             boolean closed = (boolean) FieldUtils.readDeclaredField(dataSource, "closed", true);
@@ -110,7 +115,12 @@ public class APMUtil {
                 MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{1, "Web"});
                 MethodUtils.invokeMethod(preparedStatement, "setLong", new Object[]{2, from});
                 MethodUtils.invokeMethod(preparedStatement, "setLong", new Object[]{3, to});
-                MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%"});
+                
+                if (appId != null && !appId.isEmpty()) {
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%/userview/"+appId+"/%"});
+                } else {
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%"});
+                }
                 
                 resultSet = (ResultSet) MethodUtils.invokeMethod(preparedStatement, "executeQuery");
                 
@@ -125,7 +135,7 @@ public class APMUtil {
         }
     }
     
-    public static String getSummaries(String servername, long from, long to) {
+    public static String getSummaries(String servername, String appId, long from, long to) {
         try {
             initUtilObjects();
             int level = getRollupLevelForView(from, to);
@@ -135,14 +145,14 @@ public class APMUtil {
             long revisedTo = to;
             
             for (int rollupLevel = level; rollupLevel >= 0; rollupLevel--) {
-                long lastRolledUpTime = querySummariesInfo(servername, revisedFrom, revisedTo, rollupLevel, data);
+                long lastRolledUpTime = querySummariesInfo(servername, appId, revisedFrom, revisedTo, rollupLevel, data);
                 revisedFrom = Math.max(revisedFrom, lastRolledUpTime + 1);
                 if (revisedFrom > revisedTo) {
                     break;
                 }
             }
             
-            querySlowTraces(servername, from, to, data);
+            querySlowTraces(servername, appId, from, to, data);
             
             JSONArray jarr = new JSONArray();
             for (String key : data.keySet()) {
@@ -186,14 +196,17 @@ public class APMUtil {
         return isGlowroot;
     }
     
-    public static void setTransactionName(String name) {
+    public static void setTransactionName(String name, Integer priority) {
         if (isGlowrootAvailable()) {
             initUtilObjects();
             try {
+                if (priority == null) {
+                    priority = 1000;
+                }
                 //rewrite glowroot transaction name if glowroot available
                 Object transaction = MethodUtils.invokeMethod(transactionRegistry, true, "getCurrentTransaction");
                 if (transaction != null) {
-                    MethodUtils.invokeMethod(transaction, true, "setTransactionName", new Object[]{name, 1000});
+                    MethodUtils.invokeMethod(transaction, true, "setTransactionName", new Object[]{name, priority});
                 }
             } catch (Exception e) {}
         }

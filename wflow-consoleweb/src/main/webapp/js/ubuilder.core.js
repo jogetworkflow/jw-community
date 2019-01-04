@@ -465,7 +465,30 @@ UserviewBuilder = {
     },
 
     editMenu : function(id){
-        var menu = this.data.categories[this.categoriesPointer[this.menusPointer[id].categoryId]].menus[this.menusPointer[id].position];
+        var menu = null;
+        
+        if (this.menusPointer[id] === undefined) {
+            //find the menu id using custom id
+            var found = false;
+            for (var i in this.data.categories) {
+                for (var j in this.data.categories[i].menus) {
+                    if (this.data.categories[i].menus[j].properties.customId === id) {
+                        id = this.data.categories[i].menus[j].properties.id;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
+                }
+            }
+        }
+        
+        menu = this.data.categories[this.categoriesPointer[this.menusPointer[id].categoryId]].menus[this.menusPointer[id].position];
+        
+        if (menu === null) {
+            return;
+        }
 
         var thisObject = this;
         var options = {

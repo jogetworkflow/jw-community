@@ -2,6 +2,7 @@ package org.joget.apps.app.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.joget.apm.APMUtil;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
@@ -37,6 +38,16 @@ public class UserviewWebController {
     
     @RequestMapping({"/embed/userview/(*:appId)/(*:userviewId)/(~:key)","/embed/userview/(*:appId)/(*:userviewId)","/embed/userview/(*:appId)/(*:userviewId)/(*:key)/(*:menuId)"})
     public String embedView(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId, @RequestParam(value = "menuId", required = false) String menuId, @RequestParam(value = "key", required = false) String key, Boolean embed, @RequestParam(value = "embed", required = false) Boolean embedParam) throws Exception {
+        if (APMUtil.isGlowrootAvailable()) {
+            //remove key & embed keyword from the url for better tracking
+            String url = request.getRequestURL().toString();
+            url = url.substring(0, url.indexOf("/userview")) + "/userview/" + appId + "/" + userviewId;
+            if (menuId != null && !menuId.isEmpty()) {
+                url += "/" + menuId;
+            }
+            APMUtil.setTransactionName(url, 1001);
+        }
+        
         // validate input
         appId = SecurityUtil.validateStringInput(appId);        
         menuId = SecurityUtil.validateStringInput(menuId);        

@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeDataSupport;
@@ -20,9 +22,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.joget.apm.APMUtil;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,8 +36,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class APMController {
     
-    @RequestMapping("/console/monitor/apm")
-    public String monitorApm(ModelMap map) {
+    @Autowired
+    AppService appService;
+    
+    @RequestMapping({"/console/monitor/apm", "/console/app/(*:appId)/(~:version)/performance"})
+    public String monitorApm(ModelMap map, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "version", required = false) String version) {
         try {
             String glowrootUrl = WorkflowUtil.getSystemSetupValue("glowrootUrl");
             if (glowrootUrl == null || glowrootUrl.isEmpty()) {
@@ -54,7 +62,15 @@ public class APMController {
                 map.put("totalMemory", totalMemory);
                 map.put("maxHeap", maxHeap.get("max"));
                 
-                return "apm/view";
+                if (appId == null) {
+                    return "apm/view";
+                } else {
+                    AppDefinition appDef = appService.getAppDefinition(appId, version);
+                    map.addAttribute("appId", appDef.getId());
+                    map.addAttribute("appVersion", appDef.getVersion());
+                    map.addAttribute("appDefinition", appDef);
+                    return "console/apps/performance";
+                }
             }
         } catch (Exception e) {
         }
@@ -62,9 +78,42 @@ public class APMController {
         return "apm/unavailable";
     }
     
+    @RequestMapping("/console/monitor/apm/redirect")
+    public String monitorApmRedirect(ModelMap map, @RequestParam("url") String url) {
+        String appId = "";
+        String appVersion = "";
+        String userviewId = "";
+        String menuId = "";
+        
+        Pattern pattern = Pattern.compile("^http.*/userview/([^/]+)/([^/]+)(.*)");
+        Matcher matcher = pattern.matcher(url);
+        while (matcher.find()) {
+            appId = matcher.group(1);
+            userviewId = matcher.group(2);
+            menuId = matcher.group(3);
+        }
+        
+        if (!appId.isEmpty()) {
+            Long version = appService.getPublishedVersion(appId);
+            if (version == null) {
+                return "redirect:/404";
+            } else {
+                appVersion = version.toString();
+            }
+        } else {
+            return "redirect:/404";
+        }
+        
+        if (!menuId.isEmpty()) {
+            menuId = "?menuId=" + menuId.substring(1); 
+        }
+        
+        return "redirect:/web/console/app/" + appId + "/" + appVersion + "/userview/builder/" + userviewId + menuId;
+    }
+    
     @RequestMapping("/json/console/monitor/apm/retrieve/summary")
-    public void monitorApmRetrieveSummary(HttpServletRequest httpRequest, @RequestParam("from") Long form, @RequestParam("to") Long to, Writer writer) throws IOException {
-        writer.write(APMUtil.getSummaries(httpRequest.getServerName(), form, to));
+    public void monitorApmRetrieveSummary(HttpServletRequest httpRequest, @RequestParam(value = "appId", required = false) String appId, @RequestParam("from") Long form, @RequestParam("to") Long to, Writer writer) throws IOException {
+        writer.write(APMUtil.getSummaries(httpRequest.getServerName(), appId , form, to));
     }
     
     @RequestMapping({"/json/console/monitor/apm/retrieve/(*:action)/(*:subaction)", "/json/console/monitor/apm/retrieve/(*:action)/(*:subaction)/(*:method)"})

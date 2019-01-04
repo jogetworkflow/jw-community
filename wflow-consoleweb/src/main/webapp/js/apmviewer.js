@@ -1367,6 +1367,7 @@ APMViewer = {
         'removeAlert' : 'config/alerts/remove?agent-rollup-id=',
         'updateAlert' : 'config/alerts/update?agent-rollup-id=',
         'addAlert' : 'config/alerts/add?agent-rollup-id=',
+        'removeData' : 'admin/delete-all-stored-data',
         'smtp' : 'admin/smtp',
         'sendTestEmail' : 'admin/send-test-email',
         'adminGeneral' : 'admin/general',
@@ -1391,17 +1392,21 @@ APMViewer = {
        'error count' : get_apmviewer_msg('apm.errorCount'),
        'error rate' : get_apmviewer_msg('apm.errorRate')
     },
-    init : function(contextPath, totalMemory, maxheap, title, isVirtualHostEnabled) {
+    init : function(contextPath, totalMemory, maxheap, title, isVirtualHostEnabled, appId) {
         APMViewer.contextPath = contextPath;
         APMViewer.totalMemory = totalMemory;
         APMViewer.maxheap = maxheap;
         APMViewer.title = title;
         APMViewer.isVirtualHostEnabled = isVirtualHostEnabled;
+        APMViewer.appId = appId;
         
         var tool = $('<div class="apmtool"></div>');
         $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
         $(tool).append(' <select class="durationSelector"></select>');
-        $(tool).append(' <a class="alert"><i class="fas fa-bell"></i></a>');
+        if (!APMViewer.isVirtualHostEnabled && (APMViewer.appId === undefined || APMViewer.appId === "")) {
+            $(tool).append(' <a class="alert"><i class="fas fa-bell"></i></a>');
+            $(tool).append(' <a class="deleteData"><i class="fas fa-trash-alt"></i></a>');
+        }
         $(tool).find(".durationSelector").append('<option value="1800000">'+get_apmviewer_msg('apm.last30m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="3600000">'+get_apmviewer_msg('apm.last60m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="7200000">'+get_apmviewer_msg('apm.last2h')+'</option>');
@@ -1422,14 +1427,25 @@ APMViewer = {
             APMViewer.showManageAlert();
         });
         
+        $('.apmtool .deleteData').on("click", function(){
+            APMViewer.deletData();
+        });
+        
         $('.apmtool .durationSelector').on("change", function(){
             APMViewer.refresh();
         });
         
-        APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['apps'], function(data){
-            APMViewer.loadAppsList(data);
-            APMViewer.refresh();
-        });
+        if (APMViewer.appId === undefined || APMViewer.appId === "") {
+            APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['apps'], function(data){
+                APMViewer.loadAppsList(data);
+                APMViewer.refresh();
+            });
+        } else {
+            APMViewer.httpGet(APMViewer.contextPath + "/web/json/console/app/" + APMViewer.appId + "/userview/list", function(data){
+                APMViewer.loadUserviewList(data);
+                APMViewer.refresh();
+            });
+        } 
         
         APMViewer.popup = new Boxy(
             '<div id="traceview"></div>',
@@ -1476,6 +1492,12 @@ APMViewer = {
                 $(thisObj).replaceWith(data.fullText);
             });
         });    
+    },
+    deletData : function() {
+        APMViewer.httpPost(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['removeData'], {}, function(){
+            alert(get_apmviewer_msg('apm.dataDeleted'));
+            location.reload(true);
+        });
     },
     showManageAlert : function() {
         var thisObj = this;
@@ -1964,7 +1986,6 @@ APMViewer = {
     },
     loadAppsList : function(data) {
         APMViewer.apps['OVERALL'] = new APMNode().initBase("", get_apmviewer_msg('apm.overall'), []);
-        APMViewer.apps['OVERALL'].isTransition = true;
         $.each(data.data, function(i, v){
             APMViewer.apps[v.id] = new APMNode().initBase(v.name, get_apmviewer_msg('apm.app') + " : " + v.name, ['^.+'+APMViewer.contextPath+'/web/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web/embed/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web(/ulogin)/'+ v.id + '(/.*)$']);
         });
@@ -1972,6 +1993,19 @@ APMViewer = {
         APMViewer.apps['RESOURCES'] = new APMNode().initBase("Resources", get_apmviewer_msg('apm.resources'), ['^.+'+APMViewer.contextPath+'(/images/.+)$', '^.+'+APMViewer.contextPath+'(/css/.+)$', '^.+'+APMViewer.contextPath+'(/wro/.+)$', '^.+'+APMViewer.contextPath+'(/.+\.(?:js|css|jpg|ico|png|gif|eot|svg|ttf|woff|woff2|map))$'], undefined, false);
         APMViewer.apps['APM'] = new APMNode().initBase("Performance", get_apmviewer_msg('apm.performance'), ['^.+'+APMViewer.contextPath+'/web(/console/monitor/apm)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)(.*)$']);
         APMViewer.apps['WEBCONSOLE'] = new APMNode().initBase("Web Console", get_apmviewer_msg('apm.webConsole'), ['^.+'+APMViewer.contextPath+'(/)$', '^.+'+APMViewer.contextPath+'(/web)$', '^.+'+APMViewer.contextPath+'(/home.*)$', '^.+'+APMViewer.contextPath+'(/web/console/.*)$', '^.+'+APMViewer.contextPath+'(/web.*)$']);
+        APMViewer.apps['OTHERS'] = new APMNode().initBase("Others", get_apmviewer_msg('apm.others'), ['^.+'+APMViewer.contextPath+'/(.*)$']);
+    },
+    loadUserviewList : function(data) {
+        APMViewer.apps['OVERALL'] = new APMNode().initBase("", get_apmviewer_msg('apm.overall'), []);
+        
+        $.each(data.data, function(i, v){
+            var displayName = UI.escapeHTML(v.name);
+            if (displayName.length > 50) {
+                displayName = displayName.substring(0, 23) + "..." + displayName.substring(displayName.length - 24);
+            }
+            APMViewer.apps[v.id] = new APMNode().initBase(v.name, displayName, ['^.+'+APMViewer.contextPath+'/web/userview/'+ APMViewer.appId + '/' + v.id + '(.*)$', '^.+'+APMViewer.contextPath+'/web/embed/userview/'+ APMViewer.appId + '/' + v.id + '(.*)$']);
+        });
+        
         APMViewer.apps['OTHERS'] = new APMNode().initBase("Others", get_apmviewer_msg('apm.others'), ['^.+'+APMViewer.contextPath+'/(.*)$']);
     },
     reset : function() {
@@ -1988,7 +2022,7 @@ APMViewer = {
         var d = new Date();
         APMViewer.currenttime = d.getTime();
         APMViewer.reset();
-        if (!APMViewer.isVirtualHostEnabled) {
+        if (!APMViewer.isVirtualHostEnabled && (APMViewer.appId === undefined || APMViewer.appId === "")) {
             APMViewer.loadGaugesChart();
         }
         APMViewer.loadSummary();
@@ -2074,9 +2108,13 @@ APMViewer = {
         });
     },
     loadSummary : function() {
+        var appIdParam = "";
+        if (APMViewer.appId !== undefined && APMViewer.appId !== "") {
+            appIdParam = "&appId=" + encodeURIComponent(APMViewer.appId);
+        }
         var d = $.Deferred();
         APMViewer.deferreds.push(d);
-        APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['summary'] + APMViewer.getTimeRange(), function(data){
+        APMViewer.httpGet(APMViewer.contextPath + APMViewer.urls['base'] + APMViewer.urls['summary'] + APMViewer.getTimeRange() + appIdParam, function(data){
             //seperate transaction
             $.each(data, function(i, t){
                 APMViewer.apps['OVERALL'].updateNode(t);
@@ -2199,7 +2237,22 @@ APMViewer = {
                         label : get_apmviewer_msg('apm.name'), 
                         width : "50%", 
                         sortable : true,
-                        isString : true
+                        isString : true, 
+                        format : function(value, obj) {
+                            if (value === "") {
+                                value = "/";
+                            }
+                            if (obj.name.match(new RegExp('^.+'+APMViewer.contextPath+'/web/userview/')) || 
+                                    obj.name.match(new RegExp('^.+'+APMViewer.contextPath+'/web/embed/userview/'))) {
+                                var url = obj.name;
+                                if (!obj.isTransition) {
+                                    url = url.substring(0, url.lastIndexOf("/"));
+                                }
+                                return value + ' <a href="'+APMViewer.contextPath+'/web/console/monitor/apm/redirect?url='+encodeURIComponent(url)+'" target="_blank" title="'+get_apmviewer_msg('apm.openUbuilder')+'"><i class="fas fa-desktop"></i></a>';
+                            } else {
+                                return value;
+                            }
+                        }
                     },
                     {
                         name : "transactionCount", 

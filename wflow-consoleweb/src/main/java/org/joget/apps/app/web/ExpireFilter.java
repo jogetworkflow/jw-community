@@ -36,9 +36,7 @@ public class ExpireFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
             
-            if (APMUtil.isGlowrootAvailable()) {
-                APMUtil.setTransactionName(httpRequest.getRequestURL().toString());
-            }
+            APMUtil.setTransactionName(httpRequest.getRequestURL().toString(), null);
             
             if (isWebResouces(httpRequest.getRequestURI())) {
                 httpResponse.addDateHeader("Expires", System.currentTimeMillis() + expires);
