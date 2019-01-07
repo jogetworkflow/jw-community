@@ -101,9 +101,14 @@ public class DuplicateValueValidator extends FormValidator {
                 if (formDefId != null) {
                     tableName = appService.getFormTableName(appDef, formDefId);
                 }
-                if (isDuplicate(formDefId, tableName, element, data, fieldId, values)) {
+                if (tableName != null) {
+                    if (isDuplicate(formDefId, tableName, element, data, fieldId, values)) {
+                        result = false;
+                        data.addFormError(id, pm.getMessage("form.duplicatevaluevalidator.e.valueAlreadyExist", this.getClassName(), null));
+                    }
+                } else {
                     result = false;
-                    data.addFormError(id, pm.getMessage("form.duplicatevaluevalidator.e.valueAlreadyExist", this.getClassName(), null));
+                    data.addFormError(id, pm.getMessage("datalist.formrowdeletedatalistaction.noform", this.getClassName(), null));
                 }
             }
         }
