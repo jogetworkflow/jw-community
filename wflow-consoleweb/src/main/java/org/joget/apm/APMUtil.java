@@ -81,9 +81,9 @@ public class APMUtil {
                 MethodUtils.invokeMethod(preparedStatement, "setLong", new Object[]{3, to});
                 
                 if (appId != null && !appId.isEmpty()) {
-                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%/userview/"+appId+"/%"});
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%/web/userview/"+appId+"/%"});
                 } else {
-                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%"});
+                    MethodUtils.invokeMethod(preparedStatement, "setString", new Object[]{4, "http%://" + servername + "%/web/userview/%"});
                 }
                 
                 resultSet = (ResultSet) MethodUtils.invokeMethod(preparedStatement, "executeQuery");

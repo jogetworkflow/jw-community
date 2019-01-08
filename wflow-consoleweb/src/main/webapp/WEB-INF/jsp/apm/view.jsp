@@ -30,6 +30,12 @@
 <div id="main">
     <div id="main-title"></div>
     <div id="main-action">
+        <c:if test="${!isVirtualHostEnabled}">
+            <ul id="main-action-buttons">
+                <li><button id="alert"><fmt:message key="apm.manageAlert"/></button></li>
+                <li><button id="deleteData"><fmt:message key="apm.deleteData"/></button></li>
+            </ul>
+        </c:if>
     </div>
     <div id="main-body">
         <div class="apmviewer"></div>

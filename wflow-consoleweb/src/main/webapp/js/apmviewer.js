@@ -411,9 +411,7 @@ APMTable = function(table, args) {
         }
         
         $.each(rows, function(i, row){
-            if (thisObj.level > 1) {
-                thisObj.sortTableRows(sortCol, order, row);
-            }
+            thisObj.sortTableRows(sortCol, order, row);
             sortingRows.push({
                 value : $(row).find("td:eq("+sortCol+")").data("value"),
                 type : $(row).find("td:eq("+sortCol+")").data("type"),
@@ -1403,10 +1401,6 @@ APMViewer = {
         var tool = $('<div class="apmtool"></div>');
         $(tool).append('<a class="refresh"><i class="fas fa-sync-alt"></i></a>');
         $(tool).append(' <select class="durationSelector"></select>');
-        if (!APMViewer.isVirtualHostEnabled && (APMViewer.appId === undefined || APMViewer.appId === "")) {
-            $(tool).append(' <a class="alert"><i class="fas fa-bell"></i></a>');
-            $(tool).append(' <a class="deleteData"><i class="fas fa-trash-alt"></i></a>');
-        }
         $(tool).find(".durationSelector").append('<option value="1800000">'+get_apmviewer_msg('apm.last30m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="3600000">'+get_apmviewer_msg('apm.last60m')+'</option>');
         $(tool).find(".durationSelector").append('<option value="7200000">'+get_apmviewer_msg('apm.last2h')+'</option>');
@@ -1423,12 +1417,14 @@ APMViewer = {
             APMViewer.refresh();
         });
         
-        $('.apmtool .alert').on("click", function(){
+        $('#alert').on("click", function(){
             APMViewer.showManageAlert();
         });
         
-        $('.apmtool .deleteData').on("click", function(){
-            APMViewer.deletData();
+        $('#deleteData').on("click", function(){
+            if (confirm(get_apmviewer_msg('apm.confirmDelete'))) {
+                APMViewer.deletData();
+            }
         });
         
         $('.apmtool .durationSelector').on("change", function(){
@@ -1442,7 +1438,11 @@ APMViewer = {
             });
         } else {
             APMViewer.httpGet(APMViewer.contextPath + "/web/json/console/app/" + APMViewer.appId + "/userview/list", function(data){
-                APMViewer.loadUserviewList(data);
+                if (data.total === 1) {
+                    APMViewer.loadUserviewList([data.data]);
+                } else {
+                    APMViewer.loadUserviewList(data.data);
+                }
                 APMViewer.refresh();
             });
         } 
@@ -1989,16 +1989,16 @@ APMViewer = {
         $.each(data.data, function(i, v){
             APMViewer.apps[v.id] = new APMNode().initBase(v.name, get_apmviewer_msg('apm.app') + " : " + v.name, ['^.+'+APMViewer.contextPath+'/web/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web/embed/userview/'+ v.id + '(/[^/]+)(.*)$', '^.+'+APMViewer.contextPath+'/web(/ulogin)/'+ v.id + '(/.*)$']);
         });
-        APMViewer.apps['PLUGINS'] = new APMNode().initBase("Plugins", get_apmviewer_msg('apm.pluginWebService'), ['^.+'+APMViewer.contextPath+'/web([\.a-zA-Z0-9]+/service)$']);
-        APMViewer.apps['RESOURCES'] = new APMNode().initBase("Resources", get_apmviewer_msg('apm.resources'), ['^.+'+APMViewer.contextPath+'(/images/.+)$', '^.+'+APMViewer.contextPath+'(/css/.+)$', '^.+'+APMViewer.contextPath+'(/wro/.+)$', '^.+'+APMViewer.contextPath+'(/.+\.(?:js|css|jpg|ico|png|gif|eot|svg|ttf|woff|woff2|map))$'], undefined, false);
-        APMViewer.apps['APM'] = new APMNode().initBase("Performance", get_apmviewer_msg('apm.performance'), ['^.+'+APMViewer.contextPath+'/web(/console/monitor/apm)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)(.*)$']);
-        APMViewer.apps['WEBCONSOLE'] = new APMNode().initBase("Web Console", get_apmviewer_msg('apm.webConsole'), ['^.+'+APMViewer.contextPath+'(/)$', '^.+'+APMViewer.contextPath+'(/web)$', '^.+'+APMViewer.contextPath+'(/home.*)$', '^.+'+APMViewer.contextPath+'(/web/console/.*)$', '^.+'+APMViewer.contextPath+'(/web.*)$']);
+//        APMViewer.apps['PLUGINS'] = new APMNode().initBase("Plugins", get_apmviewer_msg('apm.pluginWebService'), ['^.+'+APMViewer.contextPath+'/web([\.a-zA-Z0-9]+/service)$']);
+//        APMViewer.apps['RESOURCES'] = new APMNode().initBase("Resources", get_apmviewer_msg('apm.resources'), ['^.+'+APMViewer.contextPath+'(/images/.+)$', '^.+'+APMViewer.contextPath+'(/css/.+)$', '^.+'+APMViewer.contextPath+'(/wro/.+)$', '^.+'+APMViewer.contextPath+'(/.+\.(?:js|css|jpg|ico|png|gif|eot|svg|ttf|woff|woff2|map))$'], undefined, false);
+//        APMViewer.apps['APM'] = new APMNode().initBase("Performance", get_apmviewer_msg('apm.performance'), ['^.+'+APMViewer.contextPath+'/web(/console/monitor/apm)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)$', '^.+'+APMViewer.contextPath+'/web/json/console/monitor/apm/retrieve(/[^/]+)(.*)$']);
+//        APMViewer.apps['WEBCONSOLE'] = new APMNode().initBase("Web Console", get_apmviewer_msg('apm.webConsole'), ['^.+'+APMViewer.contextPath+'(/)$', '^.+'+APMViewer.contextPath+'(/web)$', '^.+'+APMViewer.contextPath+'(/home.*)$', '^.+'+APMViewer.contextPath+'(/web/console/.*)$', '^.+'+APMViewer.contextPath+'(/web.*)$']);
         APMViewer.apps['OTHERS'] = new APMNode().initBase("Others", get_apmviewer_msg('apm.others'), ['^.+'+APMViewer.contextPath+'/(.*)$']);
     },
     loadUserviewList : function(data) {
         APMViewer.apps['OVERALL'] = new APMNode().initBase("", get_apmviewer_msg('apm.overall'), []);
         
-        $.each(data.data, function(i, v){
+        $.each(data, function(i, v){
             var displayName = UI.escapeHTML(v.name);
             if (displayName.length > 50) {
                 displayName = displayName.substring(0, 23) + "..." + displayName.substring(displayName.length - 24);
