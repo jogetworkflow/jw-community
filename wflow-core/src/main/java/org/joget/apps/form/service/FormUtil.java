@@ -422,7 +422,7 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        if (element.isAuthorize(formData)) {
+        if (element.isAuthorize(formData) || (!element.isAuthorize(formData) && "true".equalsIgnoreCase(element.getPropertyString("permissionReadonly")))) {
             FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
             if (!(element instanceof AbstractSubForm) && binder != null) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
