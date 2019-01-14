@@ -1070,15 +1070,10 @@ public class FormUtil implements ApplicationContextAware {
         Collection<Map> optionsMap = new ArrayList<Map>();
 
         if (isAjaxOptionsSupported(element, formData)) {
-            FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
-            
-            Element controlElement = ajaxElement.getControlElement(formData);
-            if (controlElement != null) {
-                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
-
-                FormAjaxOptionsBinder binder = (FormAjaxOptionsBinder) element.getOptionsBinder();
-                FormRowSet rowSet = binder.loadAjaxOptions(controlValues);
-
+            // load from binder if available
+            if (formData != null) {
+                String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
                     optionsMap = new ArrayList<Map>();
                     for (Map row : rowSet) {
@@ -1794,6 +1789,17 @@ public class FormUtil implements ApplicationContextAware {
                     s = URLEncoder.encode(s, "UTF-8");
                 } catch (Exception e) {}
                 element.setProperty("binderData", s);
+            }
+            
+            FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
+            
+            Element controlElement = ajaxElement.getControlElement(formData);
+            if (controlElement != null) {
+                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+
+                FormAjaxOptionsBinder ajaxbinder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+                FormRowSet rowSet = ajaxbinder.loadAjaxOptions(controlValues);
+                formData.setOptionsBinderData((FormLoadBinder) ajaxbinder, rowSet);
             }
         }
     }
