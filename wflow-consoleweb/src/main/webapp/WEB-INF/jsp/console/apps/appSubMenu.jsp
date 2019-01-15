@@ -8,6 +8,7 @@
 <c:if test="${isGlowrootAvailable}">
     <li id="nav-app-performance"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/performance"><span class="nav-steps"><i class="fas fa-tachometer-alt"></i></span><fmt:message key="apm.performance"/></a></li>
 </c:if>
+<li id="nav-app-logs"><a class="nav-link" href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/logs"><span class="nav-steps"><i class="fas fa-scroll"></i></span><fmt:message key="console.log.title"/></a></li>
 
 <li id="nav-apps-link"><a class="nav-link" href="${pageContext.request.contextPath}/web/desktop/apps"><i class="fas fa-arrow-circle-left" style="font-size: 20px; width: 17px; margin-right: 6px;"></i> <fmt:message key="console.header.submenu.label.allApps"/></a></li>
 

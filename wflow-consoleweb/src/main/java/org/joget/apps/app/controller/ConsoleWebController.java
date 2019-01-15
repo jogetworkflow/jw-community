@@ -107,6 +107,7 @@ import org.joget.directory.model.Organization;
 import org.joget.directory.model.service.DirectoryManagerPlugin;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.UserSecurity;
+import org.joget.logs.LogViewerAppender;
 import org.joget.workflow.model.ParticipantPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -5453,4 +5454,29 @@ public class ConsoleWebController {
         jsonObject.write(response.getWriter());
     }
 
+    @RequestMapping({"/console/app/(*:appId)/(~:version)/logs", "/console/monitor/slogs"})
+    public String appLogs(ModelMap map, @RequestParam(required = false) String appId, @RequestParam(required = false) String version) {
+        if (appId != null) {
+            String result = checkVersionExist(map, appId, version);
+            boolean protectedReadonly = false;
+            if (result != null) {
+                protectedReadonly = result.contains("status=invalidLicensor");
+                if (!protectedReadonly) {
+                    return result;
+                }
+            }
+
+            AppDefinition appDef = appService.getAppDefinition(appId, version);
+            checkAppPublishedVersion(appDef);
+            map.addAttribute("appId", appDef.getId());
+            map.addAttribute("appVersion", appDef.getVersion());
+            map.addAttribute("appDefinition", appDef);
+            map.addAttribute("protectedReadonly", protectedReadonly);
+
+            return "console/apps/logViewer";
+        } else {
+            map.addAttribute("appId", LogViewerAppender.CONSOLE_LOG);
+            return "console/monitor/systemLog";
+        }
+    }
 }
