@@ -47,6 +47,9 @@ https://github.com/ical4j/ical4j/blob/ical4j-2.0.5/LICENSE
 Groovy:
 http://groovy.codehaus.org/License+Information
 
+Guava
+http://www.apache.org/licenses/LICENSE-2.0.html
+
 Jaxen:
 http://jaxen.codehaus.org/license.html
 
@@ -100,5 +103,8 @@ http://www.oracle.com/technetwork/licenses/distribution-license-152002.html
 
 Microsoft SQL JDBC Driver:
 http://msdn.microsoft.com/en-us/sqlserver/jj589698
+
+WebSocket Server API
+https://oss.oracle.com/licenses/CDDL+GPL-1.1
 
 
