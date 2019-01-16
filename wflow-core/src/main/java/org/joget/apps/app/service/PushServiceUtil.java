@@ -107,19 +107,21 @@ public class PushServiceUtil {
         int result = 0;
         UserMetaDataDao userMetaDataDao = (UserMetaDataDao)AppUtil.getApplicationContext().getBean("userMetaDataDao");
         UserMetaData data = userMetaDataDao.getUserMetaData(username, WEBPUSH_SUBSCRIPTION_USER_METADATA);
-        String subscriptions = data.getValue();
-        String[] subscriptionArray = new String[0];
-        if (subscriptions != null && !subscriptions.trim().isEmpty()) {
-            subscriptionArray = StringUtils.delimitedListToStringArray(subscriptions, WEBPUSH_SUBSCRIPTION_DELIMITER);
-        }
-        for (String subscriptionJson: subscriptionArray) {
-            if (subscriptionJson != null && !subscriptionJson.isEmpty()) {
-                boolean newResult = sendPushNotification(subscriptionJson, title, text, url, icon, badge);
-                if (!newResult && removeOnFailure) {
-                    PushServiceUtil.removeUserPushSubscription(username, subscriptionJson);
-                }
-                if (newResult) {
-                    result++;
+        if (data != null) {
+            String subscriptions = data.getValue();
+            String[] subscriptionArray = new String[0];
+            if (subscriptions != null && !subscriptions.trim().isEmpty()) {
+                subscriptionArray = StringUtils.delimitedListToStringArray(subscriptions, WEBPUSH_SUBSCRIPTION_DELIMITER);
+            }
+            for (String subscriptionJson: subscriptionArray) {
+                if (subscriptionJson != null && !subscriptionJson.isEmpty()) {
+                    boolean newResult = sendPushNotification(subscriptionJson, title, text, url, icon, badge);
+                    if (!newResult && removeOnFailure) {
+                        PushServiceUtil.removeUserPushSubscription(username, subscriptionJson);
+                    }
+                    if (newResult) {
+                        result++;
+                    }
                 }
             }
         }
