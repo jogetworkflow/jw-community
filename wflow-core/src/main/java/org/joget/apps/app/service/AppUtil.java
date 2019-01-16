@@ -1,25 +1,54 @@
 package org.joget.apps.app.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URI;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.activation.FileDataSource;
+import javax.mail.internet.MimeUtility;
+import javax.mail.util.ByteArrayDataSource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.component.VTimeZone;
+import net.fortuna.ical4j.model.parameter.Cn;
+import net.fortuna.ical4j.model.parameter.Role;
+import net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.property.Attendee;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.Organizer;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Version;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserReplacementDao;
+import org.joget.apps.app.lib.EmailTool;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserReplacement;
+import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.Form;
+import org.joget.apps.form.model.FormData;
+import org.joget.apps.form.service.FileUtil;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
@@ -28,6 +57,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.Plugin;
@@ -1020,6 +1050,189 @@ public class AppUtil implements ApplicationContextAware {
         email.setFrom(StringUtil.encodeEmail(form));
         
         return email;
+    }
+    
+    public static void emailAttachment(Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef, final HtmlEmail email) {
+        //handle file attachment
+        String formDefId = (String) properties.get("formDefId");
+        Object[] fields = null;
+        if (properties.get("fields") instanceof Object[]){
+            fields = (Object[]) properties.get("fields");
+        }
+        if (formDefId != null && !formDefId.isEmpty() && fields != null && fields.length > 0) {
+            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+
+            FormData formData = new FormData();
+            String primaryKey = appService.getOriginProcessId(wfAssignment.getProcessId());
+            formData.setPrimaryKeyValue(primaryKey);
+            Form loadForm = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, formData, null, null);
+
+            for (Object o : fields) {
+                Map mapping = (HashMap) o;
+                String fieldId = mapping.get("field").toString();
+
+                try {
+                    Element el = FormUtil.findElement(fieldId, loadForm, formData);
+
+                    String value = FormUtil.getElementPropertyValue(el, formData);
+                    if (value != null && !value.isEmpty()) {
+                        String values[] = value.split(";");
+                        for (String v : values) {
+                            if (!v.isEmpty()) {
+                                File file = FileUtil.getFile(v, loadForm, primaryKey);
+                                if (file != null) {
+                                    FileDataSource fds = new FileDataSource(file);
+                                    email.attach(fds, MimeUtility.encodeText(file.getName()), "");
+                                }
+                            }
+                        }
+                    }
+                } catch(Exception e){
+                    LogUtil.info(EmailTool.class.getName(), "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
+                }
+            }
+        }
+
+        Object[] files = null;
+        if (properties.get("files") instanceof Object[]){
+            files = (Object[]) properties.get("files");
+        }
+        if (files != null && files.length > 0) {
+            for (Object o : files) {
+                Map mapping = (HashMap) o;
+                String path = mapping.get("path").toString();
+                String fileName = mapping.get("fileName").toString();
+                String type = mapping.get("type").toString();
+
+                try {
+
+                    if ("system".equals(type)) {
+                        EmailAttachment attachment = new EmailAttachment();
+                        attachment.setPath(path);
+                        attachment.setName(MimeUtility.encodeText(fileName));
+                        email.attach(attachment);
+                    } else {
+                        URL u = new URL(path);
+                        email.attach(u, MimeUtility.encodeText(fileName), "");
+                    }
+
+                } catch(Exception e){
+                    LogUtil.info(EmailTool.class.getName(), "Attached file fail from path \"" + path + "\"");
+                    e.printStackTrace();
+                }
+            }
+        }
+        attachIcal(email, properties, wfAssignment, appDef);
+    }
+    
+    protected static void attachIcal(final HtmlEmail email, Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef) {
+        try {
+            if ("true".equalsIgnoreCase((String) properties.get("icsAttachement"))) {
+                Calendar calendar = new Calendar();
+                calendar.getProperties().add(Version.VERSION_2_0);
+                calendar.getProperties().add(new ProdId("-//Joget DX//iCal4j 1.0//EN"));
+                calendar.getProperties().add(CalScale.GREGORIAN);
+                
+                String eventName = (String) properties.get("icsEventName");
+                if (eventName.isEmpty()) {
+                    eventName = email.getSubject();
+                }
+                
+                String startDateTime = AppUtil.processHashVariable((String) properties.get("icsDateStart"), wfAssignment, null, null, appDef);
+                String endDateTime = AppUtil.processHashVariable((String) properties.get("icsDateEnd"), wfAssignment, null, null, appDef);
+                String dateFormat = AppUtil.processHashVariable((String) properties.get("icsDateFormat"), wfAssignment, null, null, appDef);
+                String timezoneString = AppUtil.processHashVariable((String) properties.get("icsTimezone"), wfAssignment, null, null, appDef);
+                SimpleDateFormat sdFormat =  new SimpleDateFormat(dateFormat);
+                
+                net.fortuna.ical4j.model.TimeZone timezone = null;
+                TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+                try {
+                    if (!timezoneString.isEmpty()) {
+                        timezone = registry.getTimeZone(timezoneString);
+                    } else {
+                        timezone = registry.getTimeZone(TimeZoneUtil.getServerTimeZoneID());
+                    }
+                } catch (Exception et) {}
+                
+                java.util.Calendar startDate = new GregorianCalendar();
+                if (timezone != null) {
+                    startDate.setTimeZone(timezone);
+                }
+                startDate.setTime(sdFormat.parse(startDateTime));
+                DateTime start = new DateTime(startDate.getTime());
+                
+                VEvent event;
+                if (endDateTime.isEmpty()) {
+                    event = new VEvent(start, eventName);
+                } else {
+                    java.util.Calendar endDate = new GregorianCalendar();
+                    if (timezone != null) {
+                        endDate.setTimeZone(timezone);
+                    }
+                    endDate.setTime(sdFormat.parse(endDateTime));
+                    DateTime end = new DateTime(endDate.getTime());
+                    
+                    event = new VEvent(start, end, eventName);
+                }
+                
+                String eventDesc = (String) properties.get("icsEventDesc");
+                if (!eventDesc.isEmpty()) {
+                    event.getProperties().add(new Description(eventDesc));
+                }
+                
+                if (timezone != null) {
+                    VTimeZone tz = timezone.getVTimeZone();
+                    event.getProperties().add(tz.getTimeZoneId());
+                }
+                
+                if ("true".equalsIgnoreCase((String) properties.get("icsAllDay"))) {
+                    event.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
+                }
+                
+                String icsLocation = AppUtil.processHashVariable((String) properties.get("icsLocation"), wfAssignment, null, null, appDef);
+                if (icsLocation != null && !icsLocation.isEmpty()) {
+                    event.getProperties().add(new Location(icsLocation));
+                }
+                
+                String icsOrganizerEmail = AppUtil.processHashVariable((String) properties.get("icsOrganizerEmail"), wfAssignment, null, null, appDef);
+                if (icsOrganizerEmail != null && !icsOrganizerEmail.isEmpty()) {
+                    event.getProperties().add(new Organizer("MAILTO:"+icsOrganizerEmail));
+                } else {
+                    event.getProperties().add(new Organizer("MAILTO:"+email.getFromAddress().getAddress()));
+                }
+                
+                Object[] attendees = null;
+                if (properties.get("icsAttendees") instanceof Object[]){
+                    attendees = (Object[]) properties.get("icsAttendees");
+                }
+                if (attendees != null && attendees.length > 0) {
+                    for (Object o : attendees) {
+                        Map mapping = (HashMap) o;
+                        String name = AppUtil.processHashVariable(mapping.get("name").toString(), wfAssignment, null, null, appDef);
+                        String mailto = AppUtil.processHashVariable(mapping.get("email").toString(), wfAssignment, null, null, appDef);
+                        String required = mapping.get("required").toString();
+
+                        try {
+                            Attendee att = new Attendee(URI.create("mailto:"+mailto));
+                            if ("true".equals(required)) {
+                                att.getParameters().add(Role.REQ_PARTICIPANT);
+                            } else {
+                                att.getParameters().add(Role.OPT_PARTICIPANT);
+                            }
+                            att.getParameters().add(new Cn(name));
+                            event.getProperties().add(att);
+                        } catch(Exception ex){
+                            LogUtil.error(AppUtil.class.getName(), ex, "");
+                        }
+                    }
+                }
+                
+                calendar.getComponents().add(event);
+                email.attach(new ByteArrayDataSource(calendar.toString(), "text/calendar;charset=UTF-8;ENCODING=8BIT;method=REQUEST"), MimeUtility.encodeText("invite.ics"), "");
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, null);
+        }
     }
     
     public static AppDefinition getAppDefinitionByProcess(String processDefId) {

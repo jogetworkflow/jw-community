@@ -226,6 +226,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                         }
                                     }
                                     email.setCharset("UTF-8");
+                                    
+                                    AppUtil.emailAttachment(props, wfAssignment, auditTrail.getAppDef(), email);
 
                                     try {
                                         LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email from=" + email.getFromAddress().toString() + " to=" + emailToOutput + ", subject=Workflow - Pending Task Notification");
