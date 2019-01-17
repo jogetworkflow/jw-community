@@ -24,10 +24,7 @@ if ((typeof _customFooTableArgs) === "undefined") {
         if ($(".tinymce").length > 0) {
             function overrideTinymce() {
                 if (window["tinymce"] !== undefined) {
-                  tinymce.ui.Control.prototype.getContainerElm = function() {
-                      return document.getElementById("form-canvas");
-                  };
-                  tinymce.Env.container = document.getElementById("form-canvas").offsetParent;
+                    tinymce.Env.container = document.getElementById("form-canvas").offsetParent;
                 } else {
                     setTimeout(function(){
                         overrideTinymce();

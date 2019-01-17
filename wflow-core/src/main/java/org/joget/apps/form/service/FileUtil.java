@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileUtil implements ApplicationContextAware {
+    public static final String PATH_VARIABLE = "{tempFilePath}";
 
     static ApplicationContext appContext;
 
