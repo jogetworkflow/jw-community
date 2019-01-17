@@ -197,6 +197,11 @@
             <version>1.4</version>
         </dependency>
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
             <groupId>javax.resource</groupId>
             <artifactId>connector-api</artifactId>
             <version>1.5</version>

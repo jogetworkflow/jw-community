@@ -142,5 +142,8 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
     </bean>
-
+    
+    <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
+    </bean>
+    
 </beans>

@@ -5,8 +5,17 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URLDecoder;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -16,6 +25,20 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileManager {
     public final static Integer THUMBNAIL_SIZE = 60; 
     public final static String THUMBNAIL_EXT = ".thumb.jpg"; 
+    
+    public static final long CLEANER_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
+    public static final long EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours
+    
+    protected static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+    
+    static {
+        scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                FileManager.performCleanTempFile();
+            }
+        }, 10000, CLEANER_INTERVAL_MS, TimeUnit.MILLISECONDS);
+    }
     
     /**
      * Gets directory path to temporary files folder
@@ -183,6 +206,44 @@ public class FileManager {
                 }
             } catch (Exception ex) {
                 LogUtil.error(FileManager.class.getName(), ex, "");
+            }
+        }
+    }
+    
+    public static void performCleanTempFile() {
+        LogUtil.debug(FileManager.class.getName(), "Performing temp file cleaning...");
+        try {
+            if (HostManager.isVirtualHostEnabled()) {
+                //loop all profiles
+                Properties profiles = DynamicDataSourceManager.getProfileProperties();
+                Set<String> profileSet = new HashSet(profiles.values());
+                for (String profile : profileSet) {
+                    if (profile.contains(",")) {
+                        continue;
+                    }
+                    LogUtil.debug(FileManager.class.getName(), "Performing temp file cleaning for " + profile);
+                    String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + SetupManager.DIRECTORY_PROFILES + File.separator + profile + File.separator + "app_tempfile" + File.separator;
+                    cleanDirectory(baseDirectory);
+                }
+            } else {
+                cleanDirectory(getBaseDirectory());
+            }
+        } catch (Exception e) {
+            LogUtil.error(FileManager.class.getName(), e, "");
+        }
+        LogUtil.debug(FileManager.class.getName(), "Performing temp file cleaning completed.");
+    }
+    
+    protected static void cleanDirectory(String dirPath) throws IOException {
+        File dir = new File(dirPath);
+        if (dir.exists() && dir.isDirectory()) {
+            for (File f : dir.listFiles()) {
+                if (f.isDirectory()) {
+                    long diff = new Date().getTime() - f.lastModified();
+                    if (diff > EXPIRES_MS) {
+                        FileUtils.deleteDirectory(f);
+                    }
+                }
             }
         }
     }
