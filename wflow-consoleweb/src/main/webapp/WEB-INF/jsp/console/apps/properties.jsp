@@ -202,7 +202,8 @@
     <ui:popupdialog var="variableCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/envVariable/create"/>
     <ui:popupdialog var="pluginDefaultCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/pluginDefault/create"/>
     <ui:popupdialog var="resourceCreateDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/resource/create"/>
-    
+    <ui:popupdialog var="exportDialog" src="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/exportconfig"/>
+        
     function messageCreate(){
         messageCreateDialog.init();
     }
@@ -221,6 +222,7 @@
         messageImportDialog.close();
         variableCreateDialog.close();
         pluginDefaultCreateDialog.close();
+        exportDialog.close();
     }
 
     function messageDelete(selectedList){
@@ -292,7 +294,7 @@
     }
 
     function exportApp(){
-        document.location = '${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/export';
+        exportDialog.init();
     }
 
     var org_filter = window.filter;

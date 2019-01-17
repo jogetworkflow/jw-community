@@ -2,8 +2,10 @@ package org.joget.apps.app.service;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.zip.ZipOutputStream;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.ImportAppException;
@@ -477,6 +479,24 @@ public interface AppService {
      * @throws Exception 
      */
     void importPlugins(byte[] zip) throws Exception;
+    
+    /**
+     * Import form data from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    void importFormData(byte[] zip) throws Exception;
+    
+    /**
+     * Export form data of an app to ZioOutputStream
+     * @param appId
+     * @param version
+     * @param zip
+     * @param formTables
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.io.IOException
+     */
+    void exportFormData(String appId, String version, ZipOutputStream zip, String[] formTables) throws UnsupportedEncodingException, IOException;
     
     /**
      * Get version of published app

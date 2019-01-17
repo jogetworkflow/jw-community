@@ -4,13 +4,17 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -77,6 +81,8 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.User;
@@ -1789,6 +1795,14 @@ public class AppServiceImpl implements AppService {
                 
                 AppResourceUtil.addResourcesToZip(appId, version, zip);
                 
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                if (request != null && request.getParameterValues("exportplugins") != null) {
+                    AppDevUtil.addPluginsToZip(appDef, zip);
+                }
+                if (request != null && request.getParameterValues("tablenames") != null) {
+                    exportFormData(appId, version, zip, request.getParameterValues("tablenames"));
+                }
+                
                 // finish the zip
                 zip.finish();
             }
@@ -1800,6 +1814,61 @@ public class AppServiceImpl implements AppService {
             }
         }
         return output;
+    }
+    
+    /**
+     * Export form data of an app to ZioOutputStream
+     * @param appId
+     * @param version
+     * @param zip
+     * @param formTables
+     * @throws java.io.UnsupportedEncodingException
+     * @throws java.io.IOException
+     */
+    @Override
+    public void exportFormData(String appId, String version, ZipOutputStream zip, String[] formTables) throws UnsupportedEncodingException, IOException {
+        if (formTables != null && formTables.length > 0) {
+            for (String formTable : formTables) {
+                FormRowSet rows = formDataDao.find(formTable, formTable, null, null, null, null, null, null);
+                if (!rows.isEmpty()) {
+                    String json = FormUtil.formRowSetToJson(rows);
+                    byte[] byteData = json.getBytes("UTF-8");
+                    zip.putNextEntry(new ZipEntry("data/"+formTable+".json"));
+                    zip.write(byteData);
+                    zip.closeEntry();
+                    
+                    //file uploads
+                    for (FormRow row : rows) {
+                        File targetDir = new File(FileUtil.getUploadPath(formTable, row.getId()));
+                        if (targetDir.exists()) {
+                            File[] files = targetDir.listFiles();
+                            for (File file : files)
+                            {
+                                if (file.canRead())
+                                {
+                                    FileInputStream fis = null;
+                                    try {
+                                        zip.putNextEntry(new ZipEntry("app_formuploads/" + formTable + "/" + row.getId() + "/" + file.getName()));
+                                        fis = new FileInputStream(file);
+                                        byte[] buffer = new byte[4092];
+                                        int byteCount = 0;
+                                        while ((byteCount = fis.read(buffer)) != -1)
+                                        {
+                                            zip.write(buffer, 0, byteCount);
+                                        }
+                                        zip.closeEntry();
+                                    } finally {
+                                        if (fis != null) {
+                                            fis.close();
+                                        }
+                                    }  
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     /**
@@ -1840,8 +1909,14 @@ public class AppServiceImpl implements AppService {
             
             AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
 
-            importPlugins(zip);
-
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            if (request != null && request.getParameterValues("doNotImportPlugins") == null) {
+                importPlugins(zip);
+            }
+            if (request != null && request.getParameterValues("doNotImportFormDatas") == null) {
+                importFormData(zip);
+            }
+            
             return newAppDef;
         } catch (ImportAppException e) {
             throw e;
@@ -2230,6 +2305,71 @@ public class AppServiceImpl implements AppService {
             }
             out.flush();
             out.close();
+        }
+        in.close();
+    }
+    
+    /**
+     * Import form data from within a zip content.
+     * @param zip
+     * @throws Exception 
+     */
+    @Override
+    public void importFormData(byte[] zip) throws Exception {
+        ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
+        ZipEntry entry = null;
+
+        while ((entry = in.getNextEntry()) != null) {
+            if (!entry.isDirectory()) {
+                if (entry.getName().startsWith("data/")) {
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    int length;
+                    byte[] temp = new byte[1024];
+                    while ((length = in.read(temp, 0, 1024)) != -1) {
+                        out.write(temp, 0, length);
+                    }
+                
+                    String json = new String(out.toByteArray(), "UTF-8");
+                    FormRowSet rows = FormUtil.jsonToFormRowSet(json);
+
+                    String tablename = entry.getName().substring(5, entry.getName().indexOf(".json"));
+                    formDataDao.saveOrUpdate(tablename+"_import", tablename, rows);
+                    
+                    out.flush();
+                    out.close();
+                } else if (entry.getName().startsWith("app_formuploads/")) {
+                    FileOutputStream out = null;
+                    String filename = entry.getName();
+                    try {
+                        filename = SecurityUtil.normalizedFileName(filename);
+                        File file = new File(SetupManager.getBaseDirectory(), URLDecoder.decode(filename, "UTF-8"));
+                        
+                        if (file.exists()) {
+                            file.delete();
+                        } else {
+                            File parentFolder = file.getParentFile();
+                            if (!parentFolder.exists()) {
+                                parentFolder.mkdirs();
+                            }
+                        }
+
+                        out = new FileOutputStream(file);
+                        int length;
+                        byte[] temp = new byte[1024];
+                        while ((length = in.read(temp, 0, 1024)) != -1) {
+                            out.write(temp, 0, length);
+                        }
+                    } catch (Exception ex) {
+                    } finally {
+                        if (out != null) {
+                            try {
+                                out.flush();
+                                out.close();
+                            } catch (IOException iex) {}
+                        }
+                    }
+                }
+            }
         }
         in.close();
     }

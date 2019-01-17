@@ -1561,6 +1561,19 @@ public class ConsoleWebController {
         appService.deleteAppDefinitionVersion(appId, appVersion);
         return "console/apps/dialogClose";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/exportconfig")
+    public String consoleAppExportConfig(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        
+        Collection<String> tableNameList = formDefinitionDao.getTableNameList(appDef);
+        map.addAttribute("tableNameList", tableNameList);
+        
+        return "console/apps/exportConfig";
+    }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/export")
     public void consoleAppExport(HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {

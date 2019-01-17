@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
@@ -1179,4 +1181,41 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
         return newObj;
     }
     
+    public static void addPluginsToZip(AppDefinition appDef, ZipOutputStream zip) {
+        String baseDir = AppDevUtil.getAppDevBaseDirectory();
+        String projectDirName = getAppGitDirectory(appDef);
+        try {
+            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+            String targetDirName = "plugins";
+            File targetDir = new File(projectDir, targetDirName);
+            
+            if (targetDir.exists()) {
+                File[] files = targetDir.listFiles();
+                for (File file : files)
+                {
+                    if (file.canRead())
+                    {
+                        FileInputStream fis = null;
+                        try {
+                            zip.putNextEntry(new ZipEntry(file.getName()));
+                            fis = new FileInputStream(file);
+                            byte[] buffer = new byte[4092];
+                            int byteCount = 0;
+                            while ((byteCount = fis.read(buffer)) != -1)
+                            {
+                                zip.write(buffer, 0, byteCount);
+                            }
+                            zip.closeEntry();
+                        } finally {
+                            if (fis != null) {
+                                fis.close();
+                            }
+                        }  
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "");
+        }
+    }
 }
