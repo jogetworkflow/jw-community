@@ -28,18 +28,23 @@ public class FileManager {
     /**
      * Stores files post to the HTTP request to temporary files folder
      * @param file
+     * @param customFileName
      * @return the relative path of the stored temporary file, NULL if failure.
      */
-    public static String storeFile(MultipartFile file) {
+    public static String storeFile(MultipartFile file, String customFileName) {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
+            if (customFileName == null || customFileName.isEmpty()) {
+                customFileName = file.getOriginalFilename();
+            }
+            
             String id = UuidGenerator.getInstance().getUuid();
             String path =  id + File.separator;
             String filename = path;
             try {
                 try {
-                    filename += URLDecoder.decode(file.getOriginalFilename(), "UTF-8");
+                    filename += URLDecoder.decode(customFileName, "UTF-8");
                 } catch (Exception e) {
-                    filename += file.getOriginalFilename().replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
+                    filename += customFileName.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
                 }
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
@@ -55,6 +60,15 @@ public class FileManager {
             return filename;
         }
         return null;
+    }
+    
+    /**
+     * Stores files post to the HTTP request to temporary files folder
+     * @param file
+     * @return the relative path of the stored temporary file, NULL if failure.
+     */
+    public static String storeFile(MultipartFile file) {
+        return storeFile(file, null);
     }
     
     /**
