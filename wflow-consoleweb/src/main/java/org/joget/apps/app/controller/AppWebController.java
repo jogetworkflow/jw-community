@@ -61,7 +61,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AppWebController {
-
+    
     @Autowired
     private AppService appService;
     @Autowired
@@ -431,7 +431,9 @@ public class AppWebController {
                                         || (value.contains(";") 
                                             && (value.startsWith(compareValue + ";") 
                                                 || value.contains(";" + compareValue + ";")
-                                                || value.endsWith(";" + compareValue)))) {
+                                                || value.endsWith(";" + compareValue)))
+                                        || (value.contains(formDefId+"/"+primaryKeyValue+"/"+compareValue))
+                                        || (value.contains(FileUtil.PATH_VARIABLE+compareValue))) {
                                     Element field = FormUtil.findElement(fieldId.toString(), form, formData);
                                     if (field instanceof FileDownloadSecurity) {
                                         FileDownloadSecurity security = (FileDownloadSecurity) field;
