@@ -79,6 +79,8 @@
             success: function(data){
                 if (o.type === "selectbox") {
                     var options = "";
+                    var defaultValues = [];
+                    var hasValue = false;
                     if ($(target).find("option.label").length > 0) {
                         options = $("<select>").append($(target).find("option.label").clone()).html();
                     }
@@ -86,20 +88,40 @@
                         var selected = "";
                         if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
                             selected = "selected=\"selected\"";
+                            hasValue = true;
+                        }
+                        if (data[i].selected !== undefined && data[i].selected.toLowerCase() === "true") {
+                            defaultValues.push(UI.escapeHTML(data[i].value));
                         }
                         options += "<option "+selected+" value=\""+UI.escapeHTML(data[i].value)+"\">"+UI.escapeHTML(data[i].label)+"</option>"
                     }
                     $(target).html(options);
+                    if (defaultValues.length > 0 && !hasValue) {
+                        for (var dv in defaultValues) {
+                            $(target).find("option[value='"+defaultValues[dv]+"']").attr("selected", "selected");
+                        }
+                    }
                 } else {
                     var options = "";
+                    var defaultValues = [];
+                    var hasValue = false;
                     for (var i=0, len=data.length; i < len; i++) {
                         var checked = "";
                         if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
                             checked = "checked=\"checked\"";
+                            hasValue = true;
+                        }
+                        if (data[i].selected !== undefined && data[i].selected.toLowerCase() === "true") {
+                            defaultValues.push(UI.escapeHTML(data[i].value));
                         }
                         options += "<label tabindex=\"0\" ><input "+checked+" id=\""+o.paramName+"\" name=\""+o.paramName+"\" type=\""+o.type+"\" value=\""+UI.escapeHTML(data[i].value)+"\" /><i></i>"+UI.escapeHTML(data[i].label)+"</label>";
                     }
                     $(target).html(options);
+                    if (defaultValues.length > 0 && !hasValue) {
+                        for (var dv in defaultValues) {
+                            $(target).find("input[value='"+defaultValues[dv]+"']").attr("checked", "checked");
+                        }
+                    }
                     
                     if (o.readonly === "true") {
                         $(target).find("input").click(function(){

@@ -35,8 +35,8 @@ public class DefaultFormatter extends DataListColumnFormatDefault {
 
                     FormRow formRow = dao.load(formDefId, tableName, value.toString());
 
-                    if (formRow != null && formRow.getCustomProperties() != null && formRow.getCustomProperties().get(field) != null) {
-                        value = formRow.getCustomProperties().get(field);
+                    if (formRow != null && formRow.getCustomProperties() != null && formRow.getProperty(field) != null) {
+                        value = formRow.getProperty(field);
                     }
                 }
             } catch (Exception e) {

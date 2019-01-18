@@ -58,4 +58,8 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel) {
         return defaultLabel;
     }
+    
+    public void cleanDeadlineAppDefinitionCache(String packageId, String packageVersion) {
+        
+    }
 }

@@ -422,7 +422,7 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        if (element.isAuthorize(formData)) {
+        if (element.isAuthorize(formData) || (!element.isAuthorize(formData) && "true".equalsIgnoreCase(element.getPropertyString("permissionReadonly")))) {
             FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
             if (!(element instanceof AbstractSubForm) && binder != null) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
@@ -589,18 +589,20 @@ public class FormUtil implements ApplicationContextAware {
      * @return the formatted data.
      */
     public static FormData executeElementFormatDataForValidation(Element element, FormData formData) {
-        formData = element.formatDataForValidation(formData);
-        
-        if (element.continueValidation(formData)) {
-            // recurse into children
-            Collection<Element> children = element.getChildren(formData);
-            if (children != null) {
-                for (Element child : children) {
-                    formData = FormUtil.executeElementFormatDataForValidation(child, formData);
+        if (FormUtil.isFormSubmitted(element, formData)) {
+            formData = element.formatDataForValidation(formData);
+
+            if (element.continueValidation(formData)) {
+                // recurse into children
+                Collection<Element> children = element.getChildren(formData);
+                if (children != null) {
+                    for (Element child : children) {
+                        formData = FormUtil.executeElementFormatDataForValidation(child, formData);
+                    }
                 }
+            } else {
+                formData = FormUtil.executeHiddenElementFormatDataForValidation(element, formData);
             }
-        } else {
-            formData = FormUtil.executeHiddenElementFormatDataForValidation(element, formData);
         }
         
         return formData;
@@ -1068,15 +1070,10 @@ public class FormUtil implements ApplicationContextAware {
         Collection<Map> optionsMap = new ArrayList<Map>();
 
         if (isAjaxOptionsSupported(element, formData)) {
-            FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
-            
-            Element controlElement = ajaxElement.getControlElement(formData);
-            if (controlElement != null) {
-                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
-
-                FormAjaxOptionsBinder binder = (FormAjaxOptionsBinder) element.getOptionsBinder();
-                FormRowSet rowSet = binder.loadAjaxOptions(controlValues);
-
+            // load from binder if available
+            if (formData != null) {
+                String id = element.getPropertyString(FormUtil.PROPERTY_ID);
+                FormRowSet rowSet = formData.getOptionsBinderData(element, id);
                 if (rowSet != null) {
                     optionsMap = new ArrayList<Map>();
                     for (Map row : rowSet) {
@@ -1617,6 +1614,7 @@ public class FormUtil implements ApplicationContextAware {
             // get root form
             Form form = null;
             FormData formData = new FormData();
+            formData.addFormResult(FormUtil.FORM_RESULT_LOAD_ALL_DATA, "true");
             formData.setPrimaryKeyValue(primaryKeyValue);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
             if (formDef != null) {
@@ -1791,6 +1789,17 @@ public class FormUtil implements ApplicationContextAware {
                     s = URLEncoder.encode(s, "UTF-8");
                 } catch (Exception e) {}
                 element.setProperty("binderData", s);
+            }
+            
+            FormAjaxOptionsElement ajaxElement = (FormAjaxOptionsElement) element;
+            
+            Element controlElement = ajaxElement.getControlElement(formData);
+            if (controlElement != null) {
+                String[] controlValues = FormUtil.getElementPropertyValues(controlElement, formData);
+
+                FormAjaxOptionsBinder ajaxbinder = (FormAjaxOptionsBinder) element.getOptionsBinder();
+                FormRowSet rowSet = ajaxbinder.loadAjaxOptions(controlValues);
+                formData.setOptionsBinderData((FormLoadBinder) ajaxbinder, rowSet);
             }
         }
     }

@@ -698,7 +698,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     if (appDef != null) {
                         PackageDefinition packageDef = appDef.getPackageDefinition();
 
-                        if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
+                        if (!process.getPackageId().equals(appDef.getAppId()) || (packageDef != null && !process.getVersion().equals(packageDef.getVersion().toString()))) {
                             packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
                             if (packageDef != null) {
                                 originalAppDef = appDef;
@@ -823,6 +823,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         
         return map;
+    }
+    
+    public void cleanDeadlineAppDefinitionCache(String packageId, String packageVersion) {
+        deadlineAppDefinitionCache.remove(HostManager.getCurrentProfile() + ":" + packageId + ":" + packageVersion);
     }
 
     public void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion) {

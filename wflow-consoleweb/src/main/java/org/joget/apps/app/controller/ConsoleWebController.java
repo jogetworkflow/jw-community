@@ -3288,29 +3288,8 @@ public class ConsoleWebController {
             map.addAttribute("errors", errors);
             return "console/apps/appResourceCreate";
         } else {
-            AppResource appResource = appResourceDao.loadById(file.getOriginalFilename(), appDef);
-            if (appResource != null) { //replace
-                appResource.setFilesize(file.getSize());
-                appResourceDao.update(appResource);
-            } else {
-                appResource = new AppResource();
-                appResource.setAppDefinition(appDef);
-                appResource.setAppId(appDef.getAppId());
-                appResource.setAppVersion(appDef.getVersion());
-                appResource.setId(file.getOriginalFilename());
-                appResource.setFilesize(file.getSize());
-                appResource.setPermissionClass("org.joget.apps.userview.lib.LoggedInUserPermission");
-                appResource.setPermissionProperties("{\"permission\": { \"className\": \"org.joget.apps.userview.lib.LoggedInUserPermission\", \"properties\": {}}}");
-                appResourceDao.add(appResource);
-            }
-            
-            String filename = appResource.getId();
-            try {
-                filename = URLEncoder.encode(filename, "UTF-8");
-            } catch (Exception e){}
-            
             //store file
-            AppResourceUtil.storeFile(appId, version, file);
+            AppResourceUtil.storeFile(appDef, file, false);
             
             String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
             String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/properties?tab=resources";
@@ -3320,7 +3299,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/permission")
-    public String consoleAppResourcePermission(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
+    public String consoleAppResourcePermission(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -3335,7 +3314,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/permission/submit", method = RequestMethod.POST)
-    public String consoleAppResourcePermissionSubmit(ModelMap map, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
+    public String consoleAppResourcePermissionSubmit(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -3963,6 +3942,7 @@ public class ConsoleWebController {
 
         String formId = formDefinition.getId();
         model.addAttribute("appId", appDef.getId());
+        model.addAttribute("appVersion", version);
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("formId", formId);
         model.addAttribute("formDefinition", formDefinition);

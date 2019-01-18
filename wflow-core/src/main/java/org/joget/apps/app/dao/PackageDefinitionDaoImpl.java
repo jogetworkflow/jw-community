@@ -18,6 +18,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowParticipant;
 import org.joget.workflow.model.WorkflowProcess;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -54,6 +55,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         
         // sync app plugins
         AppDevUtil.dirSyncAppPlugins(appDef);
+        
+        WorkflowHelper appWorkflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+        appWorkflowHelper.cleanDeadlineAppDefinitionCache(packageDef.getId(), packageDef.getVersion().toString());
     }    
     
     @Override
@@ -72,9 +76,14 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
         // delete package definition
         super.delete(getEntityName(), obj);
-        
+
         // sync app plugins
         AppDevUtil.dirSyncAppPlugins(appDef);
+        
+        String packageId = obj.getId();
+        String packageVersion = obj.getVersion().toString();
+        WorkflowHelper appWorkflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+        appWorkflowHelper.cleanDeadlineAppDefinitionCache(packageId, packageVersion);
     }
 
     /**
@@ -141,7 +150,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
         return packageDef;
     }
-
+    
     @Override
     public PackageDefinition createPackageDefinition(AppDefinition appDef, Long packageVersion) {
         PackageDefinition packageDef = new PackageDefinition();

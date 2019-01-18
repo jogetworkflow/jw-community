@@ -361,10 +361,13 @@ public class FormBuilderWebController {
         
         JSONArray jsonArray = new JSONArray();
         if (rowSet != null) {
-            for (Map row : rowSet) {
+            for (FormRow row : rowSet) {
                 Map<String, String> data = new HashMap<String, String>();
-                data.put(FormUtil.PROPERTY_LABEL, (String) row.get(FormUtil.PROPERTY_LABEL));
-                data.put(FormUtil.PROPERTY_VALUE, (String) row.get(FormUtil.PROPERTY_VALUE));
+                data.put(FormUtil.PROPERTY_LABEL, (String) row.getProperty(FormUtil.PROPERTY_LABEL));
+                data.put(FormUtil.PROPERTY_VALUE, (String) row.getProperty(FormUtil.PROPERTY_VALUE));
+                if (row.containsKey(FormUtil.PROPERTY_SELECTED)) {
+                    data.put(FormUtil.PROPERTY_SELECTED, row.getProperty(FormUtil.PROPERTY_SELECTED));
+                }
                 jsonArray.put(data);
             }
         }
