@@ -88,16 +88,6 @@
         type : 'textfield'
     },
     {
-        name : 'readonly',
-        label : '@@form.selectbox.readonly@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    },
-    {
         name : 'readonlyLabel',
         label : '@@form.selectbox.readonlyLabel@@',
         type : 'checkbox',

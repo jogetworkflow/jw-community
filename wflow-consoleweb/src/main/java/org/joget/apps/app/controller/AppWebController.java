@@ -33,7 +33,7 @@ import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.lib.RunProcess;
-import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
@@ -539,8 +539,8 @@ public class AppWebController {
                     Map permission = (Map) value.get("permission");
                     if (!permission.get("className").toString().isEmpty()) {
                         Plugin plugin = pluginManager.getPlugin(permission.get("className").toString());
-                        if (plugin != null && plugin instanceof UserviewPermission) {
-                            UserviewPermission up = (UserviewPermission) plugin;
+                        if (plugin != null && plugin instanceof Permission) {
+                            Permission up = (Permission) plugin;
                             up.setProperties((Map) value.get("properties"));
                             up.setCurrentUser(workflowUserManager.getCurrentUser());
                             up.setRequestParameters(request.getParameterMap());

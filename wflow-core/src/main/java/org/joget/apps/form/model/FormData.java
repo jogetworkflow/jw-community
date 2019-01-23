@@ -26,6 +26,7 @@ public class FormData {
     protected Map<FormStoreBinder, FormRowSet> binderRowSetMap = new ListOrderedMap();
     protected Map<String, String> resultMap = new ListOrderedMap();
     protected Boolean stay = false;
+    protected String permissionKey;
 
     public Boolean getStay() {
         return stay;
@@ -356,5 +357,13 @@ public class FormData {
      */
     public void clearFormResults() {
         resultMap.clear();
+    }
+
+    public String getPermissionKey() {
+        return permissionKey;
+    }
+
+    public void setPermissionKey(String permissionKey) {
+        this.permissionKey = permissionKey;
     }
 }

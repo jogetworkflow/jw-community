@@ -705,6 +705,7 @@ FormBuilder = {
             propertiesDefinition : elementOptions,
             propertyValues : elementProperty,
             showCancelButton:true,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
             },
             saveCallback: function(container, properties) {
@@ -730,7 +731,7 @@ FormBuilder = {
         var dom = $(element)[0].dom;
         $(element).attr("element-id", properties.id);
         if (dom) {
-            dom.properties = properties;
+            dom.properties = $.extend(dom.properties, properties);
         }
 
         FormBuilder.generateJSON(true);
@@ -1014,6 +1015,7 @@ FormBuilder = {
             contextPath: FormBuilder.contextPath,
             propertiesDefinition: formOptions,
             propertyValues: formProperties,
+            changeCheckIgnoreUndefined: true,
             showCancelButton: false,
             closeAfterSaved: false,
             autoSave: true,

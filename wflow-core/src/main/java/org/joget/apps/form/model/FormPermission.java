@@ -1,7 +1,7 @@
 package org.joget.apps.form.model;
 
 /**
- * Used to mark a Userview Permission Plugin is reusable in Form Builder
+ * Used to mark a Permission Plugin is usable in Form Builder
  * 
  */
 public interface FormPermission {

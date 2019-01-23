@@ -16,16 +16,6 @@
                 value:'Section'
             },
             {
-                name : 'readonly',
-                label : '@@form.textfield.readonly@@',
-                type : 'checkbox',
-                value : 'False',
-                options : [{
-                    value : 'true',
-                    label : ''
-                }]
-            },
-            {
                 name : 'readonlyLabel',
                 label : '@@form.textfield.readonlyLabel@@',
                 type : 'checkbox',
@@ -101,26 +91,6 @@
                     label : '@@form.section.regex@@',
                     type : 'truefalse',
                     false_value: ''
-                }]
-            },
-            {
-                label : '@@form.section.permission@@',
-                type : 'header'
-            },
-            {
-                name:'permission',
-                label:'@@form.section.permission@@',
-                type:'elementselect',
-                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
-            },
-            {
-                name : 'permissionReadonly',
-                label : '@@form.section.permissionReadonly@@',
-                type : 'checkbox',
-                value : 'False',
-                options : [{
-                    value : 'true',
-                    label : ''
                 }]
             },
             {

@@ -51,10 +51,12 @@ import org.joget.apps.form.model.GridInnerDataStoreBinderWrapper;
 import org.joget.apps.form.model.MissingElement;
 import org.joget.apps.form.model.Section;
 import org.joget.apps.form.model.Validator;
+import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.directory.model.User;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.MockRequest;
 import org.joget.plugin.base.Plugin;
@@ -66,6 +68,7 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -393,7 +396,7 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        if (element.isAuthorize(formData) || (!element.isAuthorize(formData) && "true".equalsIgnoreCase(element.getPropertyString("permissionReadonly")))) {
+        if (!FormUtil.isHidden(element, formData)) {
             FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
             if (binder != null && !isAjaxOptionsSupported(element, formData)) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
@@ -422,7 +425,7 @@ public class FormUtil implements ApplicationContextAware {
         if (formData == null) {
             formData = new FormData();
         }
-        if (element.isAuthorize(formData) || (!element.isAuthorize(formData) && "true".equalsIgnoreCase(element.getPropertyString("permissionReadonly")))) {
+        if (!FormUtil.isHidden(element, formData)) {
             FormLoadBinder binder = (FormLoadBinder) element.getLoadBinder();
             if (!(element instanceof AbstractSubForm) && binder != null) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
@@ -1435,11 +1438,56 @@ public class FormUtil implements ApplicationContextAware {
      * @param formData
      */
     public static boolean isReadonly(Element element, FormData formData) {
-        if ("true".equalsIgnoreCase(element.getPropertyString(FormUtil.PROPERTY_READONLY))) {
+        if (element.isAuthorize(formData)) {
+            String readonlyProp = element.getPropertyString(FormUtil.PROPERTY_READONLY);
+            if (!Permission.DEFAULT.equals(formData.getPermissionKey()) && !(element instanceof Form)) {
+                Map rules = (Map) element.getProperty("permission_rules");
+                if (rules != null && rules.containsKey(formData.getPermissionKey())) {
+                    Map rule = (Map)rules.get(formData.getPermissionKey());
+                    readonlyProp = (String) rule.get(FormUtil.PROPERTY_READONLY);
+                    if (readonlyProp == null) {
+                        readonlyProp = "";
+                    }
+                } else {
+                    readonlyProp = "";
+                }
+            }
+            
+            return "true".equalsIgnoreCase(readonlyProp) || 
+                "hidden".equalsIgnoreCase(readonlyProp);
+        } else {
             return true;
         }
+    }
+    
+    /**
+     * Check an element is hidden or not
+     * @param formData
+     */
+    public static boolean isHidden(Element element, FormData formData) {
+        if (element instanceof Form) {
+            return false;
+        }
         
-        return false;
+        Map props = element.getProperties();
+        if (!Permission.DEFAULT.equals(formData.getPermissionKey())) {
+            Map rules = (Map) element.getProperty("permission_rules");
+            if (rules != null && rules.containsKey(formData.getPermissionKey())) {
+                props = (Map)rules.get(formData.getPermissionKey());
+            } else {
+                props = new HashMap();
+            }
+        }
+        
+        if (element.isAuthorize(formData)) {
+            return "hidden".equalsIgnoreCase((String) props.get(FormUtil.PROPERTY_READONLY));
+        } else {
+            if (props.containsKey("permissionReadonly")) {
+                return !"true".equalsIgnoreCase((String) props.get("permissionReadonly"));
+            } else {
+                return "true".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
+            }
+        }
     }
     
     /**
@@ -2217,5 +2265,24 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         return rowSet;
+    }
+    
+    public static Boolean getPermissionResult(Map permissionObj, FormData formData) {
+        Boolean isAuthorize = true;
+        if (permissionObj != null && permissionObj.get("className") != null) {
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            Permission permission = (Permission) pluginManager.getPlugin(permissionObj.get("className").toString());
+            if (permission != null) {
+                permission.setProperties((Map) permissionObj.get("properties"));
+                permission.setRequestParameters(formData.getRequestParams());
+
+                WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                User user = workflowUserManager.getCurrentUser();
+                permission.setCurrentUser(user);
+
+                isAuthorize = permission.isAuthorize();
+            }
+        }
+        return isAuthorize;
     }
 }

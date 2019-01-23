@@ -13,6 +13,7 @@ var AdvancedTools = {
         $(document.body).append(overlayContainer);
         
         AdvancedTools.initTreeViewer();
+        AdvancedTools.initPermission();
         AdvancedTools.initUsage();
         if (window['FormBuilder'] !== undefined) {
             AdvancedTools.initTable();
@@ -128,6 +129,28 @@ var AdvancedTools = {
                 }
             }
         });
+    },
+    initPermission: function () {
+        if (AdvancedTools.options.builder === "form") {
+            var tab = '<li><a href="#tab-permission" id="permissionTabHeader"><i class="fas fa-lock"></i><span>'+get_advtool_msg('adv.tool.permission')+'</span></a></li>';
+
+            $(".builder_tool_tabs").append(tab);
+            $(".builder_tool_tabs").after('<div id="tab-permission" class="tab-content"></div>');
+
+            $("a#permissionTabHeader").on("click", function() {
+                if ($("#tab-permission .permission_view").length === 0) {
+                    $("#tab-permission").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+                    PermissionManager.init($("#tab-permission"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
+                    $("#tab-permission .dt-loading").remove();
+                }
+            });
+
+            $(AdvancedTools.jsonForm).find('textarea[name="json"]').on("change", function() {
+                if (!$("#tab-permission").is(":visible")) { //ignore if current tab is permission tab
+                    $("#tab-permission").html("");
+                }
+            });
+        }
     },
     initDiffChecker: function () {
         var tab = '<li><a href="#tab-diffChecker" id="diffChecker"><i class="fas fa-random"></i><span>'+get_advtool_msg('adv.tool.Diff.Checker')+'</span></a></li>';

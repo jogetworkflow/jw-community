@@ -19,12 +19,11 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
-import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
-import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.spring.model.Setting;
@@ -112,10 +111,10 @@ public class UserviewService {
             try {
                 if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
                     JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                    UserviewPermission permission = null;
+                    Permission permission = null;
                     String permissionClassName = permissionObj.getString("className");
                     if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                        permission = (Permission) pluginManager.getPlugin(permissionClassName);
                     }
                     if (permission != null) {
                         permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
@@ -219,10 +218,10 @@ public class UserviewService {
             try {
                 if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
                     JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                    UserviewPermission permission = null;
+                    Permission permission = null;
                     String permissionClassName = permissionObj.getString("className");
                     if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                        permission = (Permission) pluginManager.getPlugin(permissionClassName);
                     }
                     if (permission != null) {
                         permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
@@ -255,13 +254,13 @@ public class UserviewService {
                     } else {
                         //check for permission
                         JSONObject permissionObj = null;
-                        UserviewPermission permission = null;
+                        Permission permission = null;
 
                         try {
                             permissionObj = categoryObj.getJSONObject("properties").getJSONObject("permission");
                             String permissionClassName = permissionObj.getString("className");
                             if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                                permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                                permission = (Permission) pluginManager.getPlugin(permissionClassName);
                             }
                         } catch (Exception e) {
                             LogUtil.debug(getClass().getName(), "set category permission error.");

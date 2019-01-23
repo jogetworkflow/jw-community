@@ -6,7 +6,7 @@ import org.joget.apps.userview.lib.DefaultTheme;
 public class UserviewSetting extends Element {
 
     private UserviewTheme theme;
-    private UserviewPermission permission;
+    private Permission permission;
 
     public UserviewTheme getTheme() {
         return theme;
@@ -16,11 +16,11 @@ public class UserviewSetting extends Element {
         this.theme = theme;
     }
 
-    public UserviewPermission getPermission() {
+    public Permission getPermission() {
         return permission;
     }
 
-    public void setPermission(UserviewPermission permission) {
+    public void setPermission(Permission permission) {
         this.permission = permission;
     }
 

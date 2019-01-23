@@ -4,16 +4,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.apps.userview.model.UserviewPermission;
-import org.joget.directory.model.User;
+import org.joget.apps.userview.model.Permission;
 import org.joget.plugin.base.ExtDefaultPlugin;
-import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.workflow.model.service.WorkflowUserManager;
 
 /**
  * A base abstract class to develop a Form Field Element plugin. 
@@ -30,6 +26,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private FormStoreBinder storeBinder;
     private Validator validator;
     private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
+    protected Map<FormData, Boolean> isAuthorizeSet = new HashMap<FormData, Boolean>();
 
     /**
      * Get load binder
@@ -256,6 +253,14 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (includeMetaData) {
             String elementMetaData = FormUtil.generateElementMetaData(this);
             dataModel.put("elementMetaData", elementMetaData);
+        } else if (FormUtil.isHidden(this, formData)) {
+            return "";
+        }
+        
+        if (FormUtil.isReadonly(this, formData)) {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        } else {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "");
         }
 
         return renderTemplate(formData, dataModel);
@@ -276,6 +281,16 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return
      */
     public String renderErrorTemplate(FormData formData, Map dataModel) {
+        if (FormUtil.isHidden(this, formData)) {
+            return "";
+        }
+        
+        if (FormUtil.isReadonly(this, formData)) {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        } else {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "");
+        }
+        
         return renderTemplate(formData, dataModel);
     }
 
@@ -286,6 +301,16 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return
      */
     public String renderReadOnlyTemplate(FormData formData, Map dataModel) {
+        if (FormUtil.isHidden(this, formData)) {
+            return "";
+        }
+        
+        if (FormUtil.isReadonly(this, formData)) {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        } else {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "");
+        }
+        
         // set readonly flag
         dataModel.put(FormUtil.PROPERTY_READONLY, Boolean.TRUE);
 
@@ -363,25 +388,29 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (formData.getFormResult(FormService.PREVIEW_MODE) != null) {
             return true;
         }
-        
-        Boolean isAuthorize = true;
-        
-        Map permissionMap = (Map) getProperty("permission");
-        if (permissionMap != null && permissionMap.get("className") != null) {
-            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-            UserviewPermission permission = (UserviewPermission) pluginManager.getPlugin(permissionMap.get("className").toString());
-            if (permission != null) {
-                permission.setProperties((Map) permissionMap.get("properties"));
-                permission.setRequestParameters(formData.getRequestParams());
-                
-                WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                User user = workflowUserManager.getCurrentUser();
-                permission.setCurrentUser(user);
-                
-                isAuthorize = permission.isAuthorize();
+        Boolean isAuthorize = isAuthorizeSet.get(formData);
+        if (isAuthorize == null) {
+            isAuthorize = true;
+            if (Permission.DEFAULT.equals(formData.getPermissionKey())) {
+                Map permission = (Map) getProperty("permission");
+                if (permission != null) {
+                    isAuthorize = FormUtil.getPermissionResult(permission, formData);
+                } else if (getParent() != null) {
+                    isAuthorize = getParent().isAuthorize(formData);
+                }
+            } else {
+                if (this instanceof Section) {
+                    Map rules = (Map) getProperty("permission_rules");
+                    if (rules != null && rules.containsKey(formData.getPermissionKey())) {
+                        Map rule = (Map) rules.get(formData.getPermissionKey());
+                        isAuthorize = FormUtil.getPermissionResult((Map) rule.get("permission"), formData);
+                    }
+                } else if (getParent() != null) {
+                    isAuthorize = getParent().isAuthorize(formData);
+                }
             }
+            isAuthorizeSet.put(formData, isAuthorize);
         }
-        
         return isAuthorize;
     }
 }

@@ -30,7 +30,7 @@
                 name : 'permission',
                 label : '@@userview.userviewcategory.permission@@',
                 type : 'elementselect',
-                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewPermission',
+                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.userview.model.UserviewAccessPermission',
                 url : '[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
             },
             {
