@@ -131,7 +131,7 @@ var AdvancedTools = {
         });
     },
     initPermission: function () {
-        if (AdvancedTools.options.builder === "form") {
+        if (AdvancedTools.options.builder !== "datalist") {
             var tab = '<li><a href="#tab-permission" id="permissionTabHeader"><i class="fas fa-lock"></i><span>'+get_advtool_msg('adv.tool.permission')+'</span></a></li>';
 
             $(".builder_tool_tabs").append(tab);

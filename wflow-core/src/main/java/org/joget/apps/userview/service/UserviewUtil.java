@@ -12,10 +12,14 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
+import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -183,5 +187,27 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             }
         }
         return inboxEnabled;
+    }
+    
+    public static Boolean getPermisionResult(JSONObject permissionObj, Map requestParameters, User currentUser) throws JSONException {
+        Boolean isAuthorize = true;
+        if (permissionObj != null && permissionObj.has("className")) {
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            String permissionClassName = permissionObj.getString("className");
+            Permission permission = null;
+            if (permissionClassName != null && !permissionClassName.isEmpty()) {
+                permission = (Permission) pluginManager.getPlugin(permissionClassName);
+            }
+            if (permission != null) {
+                if (permissionObj.has("properties")) {
+                    permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
+                }
+                permission.setRequestParameters(requestParameters);
+                permission.setCurrentUser(currentUser);
+
+                isAuthorize = permission.isAuthorize();
+            }
+        }
+        return isAuthorize;
     }
 }

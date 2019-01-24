@@ -15,8 +15,15 @@ PermissionManager = {
         PropertyEditor.Popup.createDialog(PermissionManager.options.builder + "-permission-element-container");
         
         if (PermissionManager.permissionPlugins === null) {
+            var className = "";
+            if (PermissionManager.options.builder === "form") {
+                className = "org.joget.apps.form.model.FormPermission";
+            } else if (PermissionManager.options.builder === "userview") {
+                className = "org.joget.apps.userview.model.UserviewAccessPermission";
+            }
+            
             $.ajax({
-                url: PermissionManager.options.contextPath + '/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
+                url: PermissionManager.options.contextPath + '/web/property/json/getElements?classname='+className,
                 dataType : "json",
                 success: function(response) {
                     PermissionManager.permissionPlugins = {};
@@ -88,13 +95,17 @@ PermissionManager = {
     getRuleElement : function() {
         if (PermissionManager.options.builder === "form") {
             return $(".form-container-div form")[0].dom.properties;
+        } else if (PermissionManager.options.builder === "userview") {
+            return UserviewBuilder.data.setting.properties;
         } else {
-            return null; //TODO : support other builder
+            return null; 
         }
     },
     getRootElement : function() {
         if (PermissionManager.options.builder === "form") {
             return $(".form-container-div form");
+        } else if (PermissionManager.options.builder === "userview") {
+            return UserviewBuilder.data;
         } else {
             return null; //TODO : support other builder
         }
@@ -102,6 +113,12 @@ PermissionManager = {
     getChildElements : function(element) {
         if (PermissionManager.options.builder === "form") {
             return $(element).find("> [element-class]");
+        } else if (PermissionManager.options.builder === "userview") {
+            if (element["categories"] !== undefined) {
+                return element["categories"];
+            } else {
+                return element["menus"];
+            }
         } else {
             return null; //TODO : support other builder
         }
@@ -194,17 +211,24 @@ PermissionManager = {
     },
     renderElements : function() {
         var container = $(PermissionManager.container).find('.elements_container');
-        $(container).append('<table class="permission-table"><thead><tr><th width="50%"></th><th class="authorized" width="30%">'+get_advtool_msg('adv.permission.authorized')+'</th><th class="unauthorized" width="20%">'+get_advtool_msg('adv.permission.unauthorized')+'</th></tr></thead><tbody></tbody></table>');
+        $(container).append('<table class="permission-table"><thead><tr><th width="50%"></th></tr></thead><tbody></tbody></table>');
+        PermissionManager.renderElementsHeader($(container).find("thead tr"));
         var tbody = $(container).find("tbody");
         
         var root = PermissionManager.getRootElement();
         PermissionManager.renderElement(root, tbody);
     },
+    renderElementsHeader : function(row) {
+        $(row).append('<th class="authorized" width="30%">'+get_advtool_msg('adv.permission.authorized')+'</th>');
+        if (PermissionManager.options.builder === "form") {
+            $(row).append('<th class="unauthorized" width="20%">'+get_advtool_msg('adv.permission.unauthorized')+'</th>');
+        }
+    },
     renderElement : function(elementObj, tbody, parentElement) {
         var element = PermissionManager.getElement(elementObj);
         
         if (element !== null && element !== undefined && !PermissionManager.isIgnoreRendering(element)) {
-            var row = $('<tr><td class="element-meta"><div class="element-class"></div></td><td class="authorized"></td><td class="unauthorized"></td></tr>');
+            var row = $('<tr><td class="element-meta"><div class="element-class"></div></td></tr>');
             $(row).data("element", element);
             
             if (parentElement !== null && parentElement !== undefined) {
@@ -213,14 +237,22 @@ PermissionManager = {
             
             var pluginLabel = PermissionManager.getElementPluginLabel(element);
 
-            if (pluginLabel !== "") {
+            if (pluginLabel !== null) {
                 $(row).find(".element-class").text(pluginLabel);
 
                 if (element["properties"]["label"] !== undefined) {
-                    $(row).find(".element-meta").append('<span class="element-label">' + element["properties"]["label"] + '</span>');
+                    $(row).find(".element-meta").append('<span class="element-label">' + UI.escapeHTML(element["properties"]["label"]) + '</span>');
                 }
                 if (element["properties"]["id"] !== undefined) {
-                    $(row).find(".element-meta").append('<span class="element-id">' + element["properties"]["id"] + '</span>');
+                    var eid = element["properties"]["id"];
+                    if (PermissionManager.options.builder === "userview") {
+                        if (element["properties"]["customId"] !== undefined) {
+                            eid = element["properties"]["customId"];
+                        } else {
+                            eid = "";
+                        }
+                    }
+                    $(row).find(".element-meta").append('<span class="element-id">' + eid + '</span>');
                 }
 
                 if (PermissionManager.isElementSupportPlugin(element)) {
@@ -230,22 +262,36 @@ PermissionManager = {
                     $(row).addClass("normal");
                 }
                 
-                $(row).find('.authorized').append('<div class="options"><a class="visible">'+get_advtool_msg("adv.permission.visible")+'</a><a class="readonly">'+get_advtool_msg("adv.permission.readonly")+'</a><a class="hidden">'+get_advtool_msg("adv.permission.hidden")+'</a></div>');
-                $(row).find('.unauthorized').append('<div class="options"><a class="readonly">'+get_advtool_msg("adv.permission.readonly")+'</a><a class="hidden">'+get_advtool_msg("adv.permission.hidden")+'</a></div>');
-
+                if (PermissionManager.options.builder === "form") {
+                    PermissionManager.renderElementFormBuilder(row);
+                } else if (PermissionManager.options.builder === "userview") {
+                    PermissionManager.renderElementUserviewBuilder(row);
+                }
+                
                 $(tbody).append(row);
             }
         }
         var childs = PermissionManager.getChildElements(elementObj);
-        if (childs.length > 0) {
+        if (childs !== null && childs !== undefined && childs.length > 0) {
             $.each(childs, function(i, child){
                 PermissionManager.renderElement(child, tbody, parentElement);
             });
         }
     },
+    renderElementFormBuilder : function(row) {
+        $(row).append('<td class="authorized"></td><td class="unauthorized"></td>');
+        $(row).find('.authorized').append('<div class="options"><a class="visible">'+get_advtool_msg("adv.permission.visible")+'</a><a class="readonly">'+get_advtool_msg("adv.permission.readonly")+'</a><a class="hidden">'+get_advtool_msg("adv.permission.hidden")+'</a></div>');
+        $(row).find('.unauthorized').append('<div class="options"><a class="readonly">'+get_advtool_msg("adv.permission.readonly")+'</a><a class="hidden">'+get_advtool_msg("adv.permission.hidden")+'</a></div>');
+    },
+    renderElementUserviewBuilder : function(row) {
+        $(row).append('<td class="authorized"></td>');
+        $(row).find('.authorized').append('<div class="options"><a class="accessible">'+get_advtool_msg("adv.permission.accessible")+'</a><a class="hidden">'+get_advtool_msg("adv.permission.hidden")+'</a><a class="deny">'+get_advtool_msg("adv.permission.deny")+'</a></div>');
+    },
     getElement : function(element) {
         if (PermissionManager.options.builder === "form") {
             return $(element)[0].dom;
+        } else if (PermissionManager.options.builder === "userview") {
+            return element;
         } else {
             return null;
         }
@@ -255,17 +301,34 @@ PermissionManager = {
             var classname = element["className"];
             if (classname === "org.joget.apps.form.model.Section") {
                 return get_advtool_msg("adv.permission.section");
-            } else {
+            } else if ($("#builder-palette .form-palette-element[element-class='"+classname+"'] label").length > 0) {
                 return $("#builder-palette .form-palette-element[element-class='"+classname+"'] label").text();
+            } else {
+                return null;
+            }
+        } else if (PermissionManager.options.builder === "userview") {
+            var classname = element["className"];
+            if (classname === "org.joget.apps.userview.model.UserviewCategory") {
+                return get_advtool_msg("dependency.tree.Category");
+            } else if (UserviewBuilder.menuTypes[classname] !== undefined) {
+                return UserviewBuilder.menuTypes[classname].label;
+            } else {
+                return null;
             }
         } else {
-            return "";
+            return null;
         }
     },
     isIgnoreRendering : function(element) {
         if (PermissionManager.options.builder === "form") {
             if (element["className"] === "org.joget.apps.form.model.Form" 
                     || element["className"] === "org.joget.apps.form.model.Column") {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (PermissionManager.options.builder === "userview") {
+            if (element["className"] === "org.joget.apps.userview.model.Userview") {
                 return true;
             } else {
                 return false;
@@ -277,6 +340,12 @@ PermissionManager = {
     isElementSupportPlugin : function(element) {
         if (PermissionManager.options.builder === "form") {
             if (element["className"] === "org.joget.apps.form.model.Section") {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (PermissionManager.options.builder === "userview") {
+            if (element["className"] === "org.joget.apps.userview.model.UserviewCategory") {
                 return true;
             } else {
                 return false;
@@ -479,6 +548,13 @@ PermissionManager = {
             permissionObj = element["properties"]["permission_rules"][key];
         }
         
+        if (PermissionManager.options.builder === "form") {
+            PermissionManager.showElementPermissionFormBuilder(key, row, parentRow, permissionObj);
+        } else {
+            PermissionManager.showElementPermissionUserviewBuilder(key, row, parentRow, permissionObj);
+        }
+    },
+    showElementPermissionFormBuilder : function(key, row, parentRow, permissionObj) {
         if ($(row).hasClass("support-plugin")) {
             $(row).find(".element-meta").append('<div class="plugin"><div class="plugin-name"><a class="edit-plugin btn"><label>'+get_advtool_msg('adv.tool.permission')+':</label> <span></span> <i class="far fa-edit"></i></a></div><div class="comment"></div></div>');
             
@@ -528,6 +604,42 @@ PermissionManager = {
             }
         }
     },
+    showElementPermissionUserviewBuilder : function(key, row, parentRow, permissionObj) {
+        if ($(row).hasClass("support-plugin")) {
+            $(row).find(".element-meta").append('<div class="plugin"><div class="plugin-name"><a class="edit-plugin btn"><label>'+get_advtool_msg('adv.tool.permission')+':</label> <span></span> <i class="far fa-edit"></i></a></div><div class="comment"></div></div>');
+            
+            if (permissionObj !== null && permissionObj !== undefined) {
+                if (permissionObj["hide"] === "yes") {
+                    $(row).find(".authorized .hidden").addClass("selected");
+                } else if (permissionObj["hide"] === "deny") {
+                    $(row).find(".authorized .deny").addClass("selected");
+                } else {
+                    $(row).find(".authorized .accessible").addClass("selected");
+                }
+
+                PermissionManager.updateElementPlugin(row, permissionObj);
+            } else {
+                $(row).find(".authorized .accessible").addClass("selected");
+                $(row).find('.plugin-name span').text(get_advtool_msg('adv.permission.noPlugin'));
+            }
+        } else {
+            if ($(parentRow).find(".authorized .accessible").hasClass("selected")) {
+                if (permissionObj !== null && permissionObj !== undefined) {
+                    if (permissionObj["permissionHidden"] === "yes") {
+                        $(row).find(".authorized .hidden").addClass("selected");
+                    } else if (permissionObj["permissionHidden"] === "deny") {
+                        $(row).find(".authorized .deny").addClass("selected");
+                    } else {
+                        $(row).find(".authorized .accessible").addClass("selected");
+                    }
+                } else {
+                    $(row).find(".authorized .accessible").addClass("selected");
+                }
+            } else {
+                $(row).find(".authorized").addClass("disabled");
+            }
+        }
+    },
     updateElementOption : function(action, row, update) {
         var options = $(action).closest("td");
         $(options).find("a").removeClass("selected");
@@ -549,6 +661,23 @@ PermissionManager = {
             permissionObj = element["properties"]["permission_rules"][key];
         }
         
+        if (PermissionManager.options.builder === "form") {
+            PermissionManager.updateElementOptionFormBuilder(options, row, permissionObj);
+        } else if (PermissionManager.options.builder === "userview") {
+            PermissionManager.updateElementOptionUserviewBuilder(options, row, permissionObj);
+        }
+        
+        if ($(row).hasClass("support-plugin")) {
+            $(row).nextUntil(".support-plugin").each(function(){
+                PermissionManager.showElementPermission(key, $(this), $(row));
+            });
+        }
+        
+        if (update === undefined || update === true) {
+            PermissionManager.updateJson();
+        }
+    },
+    updateElementOptionFormBuilder : function(options, row, permissionObj) {
         if ($(options).hasClass("authorized")) {
             if ($(options).find(".readonly").hasClass("selected")) {
                 permissionObj["readonly"] = "true";
@@ -572,15 +701,24 @@ PermissionManager = {
                 }
             }
         }
-        
+    },
+    updateElementOptionUserviewBuilder : function(options, row, permissionObj) {
         if ($(row).hasClass("support-plugin")) {
-            $(row).nextUntil(".support-plugin").each(function(){
-                PermissionManager.showElementPermission(key, $(this), $(row));
-            });
-        }
-        
-        if (update === undefined || update === true) {
-            PermissionManager.updateJson();
+            if ($(options).find(".accessible").hasClass("selected")) {
+                permissionObj["hide"] = "";
+            } else if ($(options).find(".hidden").hasClass("selected")) {
+                permissionObj["hide"] = "yes";
+            } else {
+                permissionObj["hide"] = "deny";
+            }
+        } else {
+            if ($(options).find(".accessible").hasClass("selected")) {
+                permissionObj["permissionHidden"] = "";
+            } else if ($(options).find(".hidden").hasClass("selected")) {
+                permissionObj["permissionHidden"] = "yes";
+            } else {
+                permissionObj["permissionHidden"] = "deny";
+            }
         }
     },
     editElementPlugin : function(row) {
@@ -648,12 +786,6 @@ PermissionManager = {
                 && permissionObj["permission"]["className"] !== undefined  
                 && permissionObj["permission"]["className"] !== "") {
 
-            if (permissionObj["permissionReadonly"] === "true") {
-                $(row).find(".unauthorized .readonly").addClass("selected");
-            } else {
-                $(row).find(".unauthorized .hidden").addClass("selected");
-            }
-
             var className = permissionObj["permission"]["className"];
             var pluginName = PermissionManager.permissionPlugins[className];
             if (pluginName === undefined) {
@@ -661,20 +793,38 @@ PermissionManager = {
             }
 
             $(row).find('.plugin-name span').text(pluginName);
-            $(row).find(".unauthorized").removeClass("disabled");
         } else {
-            $(row).find(".unauthorized").addClass("disabled");
             $(row).find('.plugin-name span').text(get_advtool_msg('adv.permission.noPlugin'));
+        }
+        
+        if (PermissionManager.options.builder === "form") {
+            PermissionManager.updateElementPluginFormBuilder(row, permissionObj);
         }
         
         if (permissionObj["permissionComment"] !== undefined) {
             $(row).find('.plugin .comment').text(permissionObj["permissionComment"]);
         }
     },
+    updateElementPluginFormBuilder : function(row, permissionObj) {
+        if (permissionObj["permission"] !== undefined 
+                && permissionObj["permission"]["className"] !== undefined  
+                && permissionObj["permission"]["className"] !== "") {
+            if (permissionObj["permissionReadonly"] === "true") {
+                $(row).find(".unauthorized .readonly").addClass("selected");
+            } else {
+                $(row).find(".unauthorized .hidden").addClass("selected");
+            }
+            $(row).find(".unauthorized").removeClass("disabled");
+        } else {
+            $(row).find(".unauthorized").addClass("disabled");
+        }
+    },
     updateJson : function() {
         if (!PermissionManager.addToUndo) {
             if (PermissionManager.options.builder === "form") {
                 FormBuilder.addToUndo(PermissionManager.json);
+            } else if (PermissionManager.options.builder === "userview") {
+                UserviewBuilder.addToUndo(PermissionManager.json);
             }
             PermissionManager.addToUndo = true;
         }
@@ -682,6 +832,8 @@ PermissionManager = {
         var json;
         if (PermissionManager.options.builder === "form") {
             json = FormBuilder.generateJSON(true);
+        } else if (PermissionManager.options.builder === "userview") {
+            json = UserviewBuilder.getJson();
         }
         
         AdvancedTools.json = json;
