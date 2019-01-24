@@ -74,6 +74,16 @@
         type : 'header'
     },
     {
+        name : 'readonly',
+        label : '@@form.checkbox.readonly@@',
+        type : 'checkbox',
+        value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'readonlyLabel',
         label : '@@form.checkbox.readonlyLabel@@',
         type : 'checkbox',

@@ -27,6 +27,18 @@
                 type : 'header'
             },
             {
+                name:'readonly',
+                label:'@@form.subform.readonly@@',
+                type:'checkbox',
+                value:'False',
+                options:[
+                    {
+                        value:'true',
+                        label:''
+                    }
+                ]
+            },
+            {
                 name:'readonlyLabel',
                 label:'@@form.subform.readonlyLabel@@',
                 type:'checkbox',

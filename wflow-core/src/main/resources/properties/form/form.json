@@ -55,6 +55,24 @@
                 url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
             },
             {
+                label:'@@form.form.permission@@',
+                type : 'header'
+            },
+            {
+                name:'permission',
+                label:'@@form.form.permission@@',
+                type:'elementselect',
+                options_ajax:'[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.form.model.FormPermission',
+                url:'[CONTEXT_PATH]/web/property/json[APP_PATH]/getPropertyOptions'
+            },
+            {
+                name:'noPermissionMessage',
+                label:'@@form.form.noPermissionMessage@@',
+                type:'textarea',
+                rows:'2',
+                cols:'50'
+            },
+            {
                 label:'@@form.form.postProcessing@@',
                 description:'@@form.form.postProcessing.desc@@',
                 type : 'header'
