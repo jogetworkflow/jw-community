@@ -31,7 +31,7 @@ import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
-import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.model.Permission;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -314,7 +314,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
 
                 //convert it to plugin
                 PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-                UserviewPermission plugin = (UserviewPermission) pm.getPlugin(className);
+                Permission plugin = (Permission) pm.getPlugin(className);
                 if (plugin != null && plugin instanceof FormPermission) {
                     WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
                     User user = workflowUserManager.getCurrentUser();

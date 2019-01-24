@@ -153,6 +153,7 @@ UserviewBuilder = {
                 propertyValues : UserviewBuilder.data.setting.properties,
                 showCancelButton:false,
                 closeAfterSaved : false,
+                changeCheckIgnoreUndefined: true,
                 autoSave: true,
                 saveCallback: UserviewBuilder.saveSettingProperties
             };
@@ -255,6 +256,7 @@ UserviewBuilder = {
             contextPath: UserviewBuilder.contextPath,
             propertiesDefinition : UserviewBuilder.settingPropertyOptions,
             propertyValues : UserviewBuilder.data.setting.properties,
+            changeCheckIgnoreUndefined: true,
             showCancelButton:true,
             cancelCallback: function() {
             },
@@ -497,6 +499,7 @@ UserviewBuilder = {
             propertiesDefinition : thisObject.menuTypes[menu.className].propertyOptions,
             propertyValues : menu.properties,
             showCancelButton:true,
+            changeCheckIgnoreUndefined: true,
             saveCallback: thisObject.saveMenu,
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
@@ -511,7 +514,7 @@ UserviewBuilder = {
         var id = $(container).attr('data-id');
         var menu = thisObject.data.categories[thisObject.categoriesPointer[thisObject.menusPointer[id].categoryId]].menus[thisObject.menusPointer[id].position];
 
-        menu.properties = properties;
+        menu.properties = $.extend(menu.properties, properties);
         var label = UI.escapeHTML(properties.label);
         $('#'+id+' .menu-label span').html(label);
         UserviewBuilder.adjustJson();
@@ -549,6 +552,7 @@ UserviewBuilder = {
             propertiesDefinition : UserviewBuilder.categoryPropertyOptions,
             propertyValues : category.properties,
             showCancelButton:true,
+            changeCheckIgnoreUndefined: true,
             saveCallback: thisObject.savePermission,
             validationFailedCallback: thisObject.saveMenuFailed,
             cancelCallback: thisObject.cancelEditMenu
@@ -563,7 +567,10 @@ UserviewBuilder = {
         var id = $(container).attr('data-id');
         var category = thisObject.data.categories[thisObject.categoriesPointer[id]];
 
-        category.properties = properties;
+        if (properties['hide'] === "true") {
+            properties['permissionDeny'] = "";
+        }
+        category.properties = $.extend(category.properties, properties);
         
         $("#"+id).find('.category-label span').html(UI.escapeHTML(category.properties.label));
         if (category.properties.comment !== undefined && category.properties.comment !== null && category.properties.comment !== "") {
@@ -576,7 +583,7 @@ UserviewBuilder = {
 
     //Save setting properties return from property editor
     saveSettingProperties : function(container, properties){
-        UserviewBuilder.data.setting.properties = properties;
+        UserviewBuilder.data.setting.properties = $.extend(UserviewBuilder.data.setting.properties, properties);
         UserviewBuilder.updateSaveStatus("+");
         UserviewBuilder.adjustJson();
     },
@@ -997,14 +1004,18 @@ UserviewBuilder = {
     },
 
     //Add changes info to stack
-    addToUndo : function(){
+    addToUndo : function(json){
         //if undo stack is full, delete first
         if(this.undoStack.length >= this.undoRedoMax){
             this.undoStack.splice(0,1);
         }
+        
+        if (json === null || json === undefined) {
+            json = this.getJson();
+        }
 
         //save current json data to undo stack
-        this.undoStack.push(this.getJson());
+        this.undoStack.push(json);
 
         //enable undo button if it is disabled previously
         if(this.undoStack.length == 1){

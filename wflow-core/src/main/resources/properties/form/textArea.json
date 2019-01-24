@@ -56,16 +56,6 @@
         value : '5'
     },
     {
-        name : 'readonly',
-        label : '@@form.textarea.readonly@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    },
-    {
         name : 'readonlyLabel',
         label : '@@form.textarea.readonlyLabel@@',
         type : 'checkbox',

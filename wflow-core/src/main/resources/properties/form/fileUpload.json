@@ -112,16 +112,6 @@
         }]
     },
     {
-        name : 'readonly',
-        label : '@@form.fileupload.readonly@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    },
-    {
         name : 'padding',
         label : '@@form.fileupload.dropzonePadding@@',
         type : 'textfield'

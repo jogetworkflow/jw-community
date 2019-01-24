@@ -1,0 +1,38 @@
+#tab-permission {overflow: visible;}
+.permission_view {height:calc(100% + 30px);}
+.permission_view .permission_rules { width: 250px; height:100%; overflow-y: auto; display: inline-block; border-right: 2px solid #ddd; box-sizing: border-box; padding-right: 15px;}
+.permission_view .elements_container {width: calc(100% - 250px); height:100%; overflow-y: auto; display: inline-block; box-sizing: border-box; padding-left: 15px;}
+.permission_view .buttons {margin-bottom: 10px; text-align: right;}
+.permission_view .permission_rule {padding: 5px 30px 5px 15px; margin-bottom: 5px; border: 1px solid #efefef; box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5); position: relative; cursor: pointer;}
+.permission_view .sortable .permission_rule .sort {position: absolute; top: 3px; bottom:3px; left: 2px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; width: 2px; cursor: move;}
+.permission_view .sortable .permission_rule.active .sort {border-color: #fff;}
+.permission_view .permission_rule.active {background: #009688; color: #fff; border-color: #009688; cursor: default;}
+.permission_view .permission_rule .name {font-weight: bold;}
+.permission_view .permission_rule .name.editable {cursor: text;}
+.permission_view .permission_rule .rule-buttons {position: absolute; top:5px; right: 5px; display: none;}
+.permission_view .permission_rule:hover .rule-buttons {display: block;}
+.permission_view .permission_rule .rule-buttons a {display: block; width: 22px; height: 21px; text-align: center; border-radius: 50%; overflow: hidden; background: #fff; margin-bottom: 4px; box-sizing: border-box;cursor: pointer; border: solid 1px #666666; opacity: .7; box-shadow: 0 0 2px grey; line-height: 21px;}
+.permission_view .permission_rule .rule-buttons a.delete_rule {background: #FAD2DB; border: solid 1px #FF0339; box-shadow: 0 0 2px #FF0339;}
+.permission_view .permission_rule .rule-buttons a:hover {opacity: 1;}
+.permission-table {width: 100%;}
+.permission-table td {padding: 8px; position: relative;}
+.permission-table .element-meta span + span {margin-left: 5px;}
+.permission-table .element-meta .element-id {font-style: italic; color: #777;}
+.permission-table tbody tr:hover {background:#e8fffe;}
+.permission-table tbody tr.support-plugin {background:#f2f2f2;}
+.permission-table tbody tr.support-plugin:hover {background:#c9dfdd;}
+.permission-table .authorized {background: #f1fff1ad; text-align: center; text-transform: uppercase; }
+.permission-table .unauthorized {background: #fff5f5ad; text-align: center; text-transform: uppercase; }
+.permission-table .element-class {font-weight: bold; font-size: 10px; position: absolute; top: 0; right: 0; background: #aaa; color: #fff; display: none; padding: 5px 15px; line-height: 13px;}
+.permission-table tr:hover .element-class {display:block;}
+.permission-table .normal .element-meta {padding-left: 25px;}
+.permission-table .options {border-radius: 16px; white-space: nowrap;}
+.permission-table .options a {display: inline-block; padding: 5px 10px; cursor: pointer; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;}
+.permission-table .options a:first-child {border-left: 1px solid #ccc; border-top-left-radius: 18px; border-bottom-left-radius: 18px;}
+.permission-table .options a:last-child {border-right: 1px solid #ccc; border-top-right-radius: 18px; border-bottom-right-radius: 18px;}
+.permission-table .options a.selected {background: #009688; color: #fff !important;}
+.permission-table .options a+a {border-left: 1px solid #ccc;}
+.permission-table td.disabled:after {content: ""; background: #fff; opacity: 0.8; position: absolute; top:0; left:0; right:0; bottom:0;}
+.permission-table .plugin-name label, .permission-table .plugin-name span {color: #009688; cursor: pointer;} 
+.permission-table .plugin .comment {font-style: italic; color: #aaa; font-size: 11px; line-height: 10px;}
+.permission-table .plugin .edit-plugin {cursor: pointer;}

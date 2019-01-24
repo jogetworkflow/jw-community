@@ -151,16 +151,6 @@
         control_use_regex: 'true'
     },
     {
-        name : 'readonly',
-        label : '@@form.datepicker.readonly@@',
-        type : 'checkbox',
-        value : 'False',
-        options : [{
-            value : 'true',
-            label : ''
-        }]
-    },
-    {
         name : 'readonlyLabel',
         label : '@@form.datepicker.readonlyLabel@@',
         type : 'checkbox',

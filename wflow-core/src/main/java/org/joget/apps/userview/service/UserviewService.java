@@ -19,12 +19,11 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
-import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
-import org.joget.apps.userview.model.UserviewPermission;
+import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.spring.model.Setting;
@@ -112,10 +111,10 @@ public class UserviewService {
             try {
                 if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
                     JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                    UserviewPermission permission = null;
+                    Permission permission = null;
                     String permissionClassName = permissionObj.getString("className");
                     if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                        permission = (Permission) pluginManager.getPlugin(permissionClassName);
                     }
                     if (permission != null) {
                         permission.setProperties(PropertyUtil.getPropertiesValueFromJson(permissionObj.getJSONObject("properties").toString()));
@@ -149,6 +148,8 @@ public class UserviewService {
      * @return
      */
     public Userview createUserview(AppDefinition appDef, String json, String menuId, boolean preview, String contextPath, Map requestParameters, String key, Boolean embed) {
+        String permissionKey = Permission.DEFAULT;
+                
         if (key != null && key.trim().length() == 0) {
             key = null;
         }
@@ -218,19 +219,26 @@ public class UserviewService {
             }
             try {
                 if (!"true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
-                    JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                    UserviewPermission permission = null;
-                    String permissionClassName = permissionObj.getString("className");
-                    if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                        permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                    if (settingObj.getJSONObject("properties").has("permission_rules")) {
+                        JSONArray permissionRules = settingObj.getJSONObject("properties").getJSONArray("permission_rules");
+                        if (permissionRules != null && permissionRules.length() > 0) {
+                            for (int i = 0; i < permissionRules.length(); i++) {
+                                JSONObject rule = permissionRules.getJSONObject(i);
+                                if (rule.has("permission")) {
+                                    JSONObject permissionObj = rule.optJSONObject("permission");
+                                    userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                                    if (userviewPermission) {
+                                        permissionKey = rule.getString("permission_key");
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (permission != null) {
-                        permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
-                        permission.setRequestParameters(requestParameters);
-                        permission.setCurrentUser(currentUser);
-                        setting.setPermission(permission);
-
-                        userviewPermission = permission.isAuthorize();
+                    
+                    if (!userviewPermission) {
+                        JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                        userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
                     }
                 }
             } catch (Exception e) {
@@ -249,32 +257,41 @@ public class UserviewService {
                     UserviewCategory category = new UserviewCategory();
                     category.setProperties(PropertyUtil.getProperties(categoryObj.getJSONObject("properties")));
                     
+                    //check for permission
+                    JSONObject ruleObj = null;
+                    if (Permission.DEFAULT.equals(permissionKey)) {
+                        ruleObj = categoryObj.getJSONObject("properties");
+                    } else if (categoryObj.getJSONObject("properties").has("permission_rules")) {
+                        JSONObject permissionRules = categoryObj.getJSONObject("properties").getJSONObject("permission_rules");
+                        if (permissionRules != null && permissionRules.has(permissionKey)) {
+                            ruleObj = permissionRules.getJSONObject(permissionKey);
+                        }
+                    }
+                        
                     boolean hasPermis = false;
                     if (preview || "true".equals(setting.getPropertyString("tempDisablePermissionChecking"))) {
                         hasPermis = true;
                     } else {
-                        //check for permission
-                        JSONObject permissionObj = null;
-                        UserviewPermission permission = null;
-
-                        try {
-                            permissionObj = categoryObj.getJSONObject("properties").getJSONObject("permission");
-                            String permissionClassName = permissionObj.getString("className");
-                            if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                                permission = (UserviewPermission) pluginManager.getPlugin(permissionClassName);
+                        if (ruleObj != null) {
+                            if (ruleObj.has("permissionDeny") && "true".equals(ruleObj.getString("permissionDeny"))) {
+                                hasPermis = false;
+                            } else if (ruleObj.has("permission")){
+                                try {
+                                    JSONObject permissionObj = ruleObj.getJSONObject("permission");
+                                    hasPermis = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                                } catch (Exception e) {
+                                    LogUtil.debug(getClass().getName(), "set category permission error.");
+                                }
+                            } else {
+                                hasPermis = true;
                             }
-                        } catch (Exception e) {
-                            LogUtil.debug(getClass().getName(), "set category permission error.");
-                        }
-
-                        if (permission != null && permissionObj != null) {
-                            permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
-                            permission.setRequestParameters(requestParameters);
-                            permission.setCurrentUser(currentUser);
-
-                            hasPermis = permission.isAuthorize();
+                            
+                            if (ruleObj.has("hide") && "yes".equals(ruleObj.getString("hide"))) {
+                                category.setProperty("hide", "yes");
+                            }
                         } else {
                             hasPermis = true;
+                            category.setProperty("hide", "");
                         }
                     }
 
@@ -292,6 +309,20 @@ public class UserviewService {
                                 boolean isMobileView = MobileUtil.isMobileView();
                                 if (isMobileView && (menu instanceof MobileElement) && !((MobileElement)menu).isMobileSupported()) {
                                     // mobile not supported, skip this menu
+                                    continue;
+                                }
+                                
+                                //check for deny
+                                JSONObject menuRuleObj = null;
+                                if (Permission.DEFAULT.equals(permissionKey)) {
+                                    menuRuleObj = menuObj.getJSONObject("properties");
+                                } else if (menuObj.getJSONObject("properties").has("permission_rules")) {
+                                    JSONObject permissionRules = menuObj.getJSONObject("properties").getJSONObject("permission_rules");
+                                    if (permissionRules != null && permissionRules.has(permissionKey)) {
+                                        menuRuleObj = permissionRules.getJSONObject(permissionKey);
+                                    }
+                                }
+                                if (menuRuleObj != null && menuRuleObj.has("permissionDeny") && "true".equals(menuRuleObj.getString("permissionDeny"))) {
                                     continue;
                                 }
 
@@ -326,15 +357,17 @@ public class UserviewService {
                                     userview.setProperty("homeMenuId", mId);
                                 }
                                 
-                                menu = new CachedUserviewMenu(menu);
-                                menus.add(menu);
+                                if (menuRuleObj == null || !menuRuleObj.has("permissionHidden") || !"true".equals(menuRuleObj.getString("permissionHidden"))) {
+                                    menu = new CachedUserviewMenu(menu);
+                                    menus.add(menu);
+                                }
                             } catch (Exception e) {
                                 LogUtil.debug(getClass().getName(), "Userview Menu class file not found");
                             }
                         }
 
-                        if (menus.size() > 0) {
-                            category.setMenus(menus);
+                        category.setMenus(menus);
+                        if (!"yes".equals(category.getPropertyString("hide")) && menus.size() > 0) {
                             categories.add(category);
                         }
                     }
