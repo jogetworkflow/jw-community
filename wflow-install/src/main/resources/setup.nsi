@@ -233,7 +233,7 @@ Section "Java 7" SecJava
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"  
     ;Java Files Here
-    File /r jre1.7.0_76
+    File /r jre1.8.0_112
   ${EndIf}  
 
 SectionEnd
@@ -331,7 +331,7 @@ Section "Uninstall"
   RMDir /r "$SMPROGRAMS\Joget Workflow v5"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
-  RmDir /r "$INSTDIR\jre1.7.0_76"
+  RmDir /r "$INSTDIR\jre1.8.0_112"
   RmDir /r "$INSTDIR\apache-tomcat-8.0.20\webapps\jw"
   RmDir /r "$INSTDIR\apache-tomcat-8.0.20\webapps\jwdesigner"
   Delete "$INSTDIR\apache-tomcat-8.0.20\webapps\jw.war"
