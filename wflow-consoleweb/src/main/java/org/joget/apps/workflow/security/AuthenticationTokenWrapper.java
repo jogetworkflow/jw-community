@@ -1,9 +1,11 @@
 package org.joget.apps.workflow.security;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.security.auth.Subject;
 import static org.joget.workflow.model.service.WorkflowUserManager.ROLE_ADMIN;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -67,6 +69,22 @@ public class AuthenticationTokenWrapper implements Authentication {
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         authentication.setAuthenticated(isAuthenticated);
+    }
+ 
+    public void clearCredentials() {
+        // no direct way in Spring Security, so use reflection to clear password in token
+        Field field = null;
+        try {
+            field = authentication.getClass().getDeclaredField("credentials");
+            field.setAccessible(true);
+            field.set(authentication, null);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            throw new BadCredentialsException(ex.getMessage(), ex);
+        } finally {
+            if (field != null) {
+                field.setAccessible(false);
+            }
+        }
     }
     
 }

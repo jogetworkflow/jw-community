@@ -247,19 +247,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
 
                         auth = getAuthenticationManager().authenticate(authRequest);
 
-                        // no direct way in Spring Security 2, so use reflection to clear password in token
-                        Field field = null;
-                        try {
-                            field = auth.getClass().getDeclaredField("credentials");
-                            field.setAccessible(true);
-                            field.set(auth, null);
-                        } catch (Exception ex) {
-                            LogUtil.error(getClass().getName(), ex, "Error clearing credentials in token");
-                        } finally {
-                            if (field != null) {
-                                field.setAccessible(false);
-                            }
-                        }
+                        ((AuthenticationTokenWrapper)auth).clearCredentials();
                         
                         if (auth.isAuthenticated()) {
                             currentUser = directoryManager.getUserByUsername(username);
