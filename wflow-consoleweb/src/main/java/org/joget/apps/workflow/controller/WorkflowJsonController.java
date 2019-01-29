@@ -52,6 +52,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.ModelMap;
@@ -1299,5 +1300,51 @@ public class WorkflowJsonController {
         }
         AppUtil.writeJson(writer, results, callback);
     }
+
+    /**
+     * Publish an app version
+     * POST /json/console/app/(*:appId)/(*:appVersion)/publish
+     * curl -v -X POST -d "j_username=admin&j_password=admin" http://localhost:8080/jw/web/json/console/app/crm/1/publish
+     * curl -v --header "Authorization: Basic YWRtaW46YWRtaW4=" http://localhost:8080/jw/web/json/console/app/crm/1/publish
+     * @param writer
+     * @param request
+     * @param response
+     * @param appId
+     * @param appVersion use "latest" to specify the latest version
+     * @param callback
+     * @throws IOException
+     * @throws JSONException 
+     */
+    @RequestMapping(value="/json/console/app/(*:appId)/(*:appVersion)/publish", method=RequestMethod.POST)
+    @Transactional
+    public void appPublish(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "appVersion", required = true) String appVersion, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONObject jsonObject = new JSONObject();
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        appDef = appService.publishApp(appId, appVersion);
+        jsonObject.accumulate("status", appDef != null);
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }    
     
+    /**
+     * Unpublish an app version
+     * POST /json/console/app/(*:appId)/unpublish
+     * curl -v -X POST -d "j_username=admin&j_password=admin" http://localhost:8080/jw/web/json/console/app/crm/unpublish
+     * curl -v --header "Authorization: Basic YWRtaW46YWRtaW4=" http://localhost:8080/jw/web/json/console/app/crm/unpublish
+     * @param writer
+     * @param request
+     * @param response
+     * @param appId
+     * @param callback
+     * @throws IOException
+     * @throws JSONException 
+     */
+    @RequestMapping(value="/json/console/app/(*:appId)/unpublish", method=RequestMethod.POST)
+    @Transactional
+    public void appUnpublish(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        JSONObject jsonObject = new JSONObject();
+        AppDefinition appDef = appService.getAppDefinition(appId, null);
+        appDef = appService.unpublishApp(appId);
+        jsonObject.accumulate("status", appDef != null);
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }    
 }

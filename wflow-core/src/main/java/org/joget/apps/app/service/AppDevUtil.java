@@ -1024,22 +1024,23 @@ public static File fileGetFileObject(AppDefinition appDefinition, String path, b
             LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef);
             appDefinitionDao.saveOrUpdate(appDef.getAppId(), appDef.getVersion(), true);
             LogUtil.info(AppDevUtil.class.getName(), "Git project init complete for app " + appDef);
-        } else {        
-            // compare from app last modified date
-            Date latestDate = AppDevUtil.dirLastModified(appDef);
-            Properties appProps = AppDevUtil.getAppDevProperties(appDef);
-            String appAutoSync = appProps.getProperty(PROPERTY_GIT_CONFIG_AUTO_SYNC);
-            Date appLastModifiedDate = appDef.getDateModified();
+        }
+        // compare from app last modified date
+        Date latestDate = AppDevUtil.dirLastModified(appDef);
+        Properties appProps = AppDevUtil.getAppDevProperties(appDef);
+        String appAutoSync = appProps.getProperty(PROPERTY_GIT_CONFIG_AUTO_SYNC);
+        Date appLastModifiedDate = appDef.getDateModified();
+        if (appLastModifiedDate != null) {
             Calendar lastModifiedCal = Calendar.getInstance();
             lastModifiedCal.setTime(appLastModifiedDate);
             lastModifiedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
             appLastModifiedDate = lastModifiedCal.getTime();            
-            if ("true".equals(appAutoSync) && latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate))) {
-                LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
-                // sync app
-                updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
-                LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
-            }
+        }
+        if ("true".equals(appAutoSync) && (appLastModifiedDate == null || (latestDate != null && latestDate.after(appLastModifiedDate)))) {
+            LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
+            // sync app
+            updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
+            LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
         }
         return updatedAppDef;
     }
