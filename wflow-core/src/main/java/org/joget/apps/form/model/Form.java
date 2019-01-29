@@ -190,7 +190,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
         Boolean isAuthorize = isAuthorizeSet.get(formData);
         if (isAuthorize == null) {
             formData.setPermissionKey(Permission.DEFAULT);
-            isAuthorize = true;
+            isAuthorize = false;
             Object[] rules = (Object[]) getProperty("permission_rules");
             if (rules != null && rules.length > 0) {
                 for (Object rule : rules) {
@@ -206,8 +206,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             
             if (!isAuthorize) {
                 Map permissionMap = (Map) getProperty("permission");
-                isAuthorize = FormUtil.getPermissionResult(permissionMap, formData);
-                
+                if (permissionMap != null) {
+                    isAuthorize = FormUtil.getPermissionResult(permissionMap, formData);
+                } else {
+                    isAuthorize = true;
+                }
             }
             isAuthorizeSet.put(formData, isAuthorize);
         }

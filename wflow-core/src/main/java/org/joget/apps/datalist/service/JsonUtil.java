@@ -5,6 +5,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.displaytag.util.LookupUtil;
 import org.joget.apps.app.model.DatalistDefinition;
@@ -18,12 +22,17 @@ import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListFilterType;
+import org.joget.apps.userview.model.Permission;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 
 /**
@@ -118,6 +127,16 @@ public class JsonUtil {
      * @throws Exception 
      */
     public static Object parseElementFromJsonObject(JSONObject obj) throws Exception {
+        String permissionKey = Permission.DEFAULT;
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        User currentUser = workflowUserManager.getCurrentUser();
+        Map<String, Object> requestParameters = new HashMap<String, Object>();
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            requestParameters.putAll(convertRequestParamMap(request.getParameterMap()));
+        }
+        Boolean hasPermission = false;
+        
         DataList object = (DataList) new DataList();
         if (object != null) {
             
@@ -163,31 +182,67 @@ public class JsonUtil {
             if (obj.has(PROPERTY_REPONSIVE_SEARCH_POPUP) && !obj.isNull(PROPERTY_REPONSIVE_SEARCH_POPUP)) {
                 object.setResponsiveSearchPopup(obj.getString(PROPERTY_REPONSIVE_SEARCH_POPUP).equals("true"));
             }
-
-            //set columns
-            Collection<DataListColumn> columns = parseColumnsFromJsonObject(obj);
-            DataListColumn[] temp = (DataListColumn[]) columns.toArray(new DataListColumn[columns.size()]);
-            object.setColumns(temp);
+            
+            if (obj.has("permission_rules")) {
+                JSONArray permissionRules = obj.getJSONArray("permission_rules");
+                if (permissionRules != null && permissionRules.length() > 0) {
+                    for (int i = 0; i < permissionRules.length(); i++) {
+                        JSONObject rule = permissionRules.getJSONObject(i);
+                        if (rule.has("permission")) {
+                            JSONObject permissionObj = rule.optJSONObject("permission");
+                            hasPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                            if (hasPermission) {
+                                permissionKey = rule.getString("permission_key");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!hasPermission) {
+                if (obj.has("permission")) {
+                    JSONObject permissionObj = obj.getJSONObject("permission");
+                    hasPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                } else {
+                    hasPermission = true;
+                }
+            }
+            
+            object.setIsAuthorized(hasPermission);
+            if (obj.has("noPermissionMessage") && !obj.optString("noPermissionMessage").isEmpty()) {
+                object.setUnauthorizedMsg(obj.optString("noPermissionMessage"));
+            }
 
             //set binder
             DataListBinder binder = parseBinderFromJsonObject(obj);
             object.setBinder(binder);
+                
+            if (hasPermission) {
+                //set columns
+                Collection<DataListColumn> columns = parseColumnsFromJsonObject(obj, permissionKey);
+                DataListColumn[] temp = (DataListColumn[]) columns.toArray(new DataListColumn[columns.size()]);
+                object.setColumns(temp);
 
-            //set actions
-            Collection<DataListAction> actions = parseActionsFromJsonObject(obj);
-            DataListAction[] temp2 = (DataListAction[]) actions.toArray(new DataListAction[actions.size()]);
-            object.setActions(temp2);
+                //set actions
+                Collection<DataListAction> actions = parseActionsFromJsonObject(obj, permissionKey);
+                DataListAction[] temp2 = (DataListAction[]) actions.toArray(new DataListAction[actions.size()]);
+                object.setActions(temp2);
 
-            //set row actions
-            Collection<DataListAction> rowActions = parseRowActionsFromJsonObject(obj);
-            DataListAction[] temp3 = (DataListAction[]) rowActions.toArray(new DataListAction[rowActions.size()]);
-            object.setRowActions(temp3);
+                //set row actions
+                Collection<DataListAction> rowActions = parseRowActionsFromJsonObject(obj, permissionKey);
+                DataListAction[] temp3 = (DataListAction[]) rowActions.toArray(new DataListAction[rowActions.size()]);
+                object.setRowActions(temp3);
 
-            //set filters
-            Collection<DataListFilter> filters = parseFiltersFromJsonObject(obj);
-            DataListFilter[] temp4 = (DataListFilter[]) filters.toArray(new DataListFilter[filters.size()]);
-            object.setFilters(temp4);
-            
+                //set filters
+                Collection<DataListFilter> filters = parseFiltersFromJsonObject(obj, permissionKey);
+                DataListFilter[] temp4 = (DataListFilter[]) filters.toArray(new DataListFilter[filters.size()]);
+                object.setFilters(temp4);
+            } else {
+                object.setColumns(new DataListColumn[0]);
+                object.setActions(new DataListAction[0]);
+                object.setRowActions(new DataListAction[0]);
+                object.setFilters(new DataListFilter[0]);
+            }
         }
         
         return object;
@@ -202,6 +257,18 @@ public class JsonUtil {
      * @throws IllegalAccessException 
      */
     public static Collection<DataListFilter> parseFiltersFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
+        return parseFiltersFromJsonObject(obj, Permission.DEFAULT);
+    }
+    
+    /**
+     * Used to retrieves datalist filters from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static Collection<DataListFilter> parseFiltersFromJsonObject(JSONObject obj, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListFilter> property = new ArrayList<DataListFilter>();
         
         if (!obj.isNull(PROPERTY_FILTERS)) {
@@ -228,6 +295,19 @@ public class JsonUtil {
                     dataListFilter.setHidden("true".equalsIgnoreCase(filter.getString(PROPERTY_HIDDEN)));
                 }
                 
+                if (!Permission.DEFAULT.equals(permissionKey)) {
+                    if (filter.has("permission_rules") && filter.getJSONObject("permission_rules").has(permissionKey)) {
+                        JSONObject rule = filter.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                            dataListFilter.setHidden(true);
+                        } else {
+                            dataListFilter.setHidden(false);
+                        }
+                    } else {
+                        dataListFilter.setHidden(false);
+                    }
+                }
+                
                 property.add(dataListFilter);
             }
         }
@@ -243,6 +323,18 @@ public class JsonUtil {
      * @throws IllegalAccessException 
      */
     public static Collection<DataListAction> parseRowActionsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
+        return parseRowActionsFromJsonObject(obj, Permission.DEFAULT);
+    }
+    
+    /**
+     * Used to retrieves datalist row actions from JSON Object
+     * @param obj
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static Collection<DataListAction> parseRowActionsFromJsonObject(JSONObject obj, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListAction> property = new ArrayList<DataListAction>();
         
         if (!obj.isNull(PROPERTY_ROW_ACTIONS)) {
@@ -250,7 +342,19 @@ public class JsonUtil {
             
             for (int i = 0; i < actions.length(); i++) {
                 JSONObject action = actions.getJSONObject(i);
-                if (action.has(PROPERTY_CLASS_NAME)) {
+                boolean isHidden = false;
+                if (!Permission.DEFAULT.equals(permissionKey)) {
+                    if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
+                        JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                            isHidden = true;
+                        }
+                    }
+                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+                    isHidden = true;
+                }
+                
+                if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {
                     String className = action.getString(PROPERTY_CLASS_NAME);
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
@@ -273,6 +377,19 @@ public class JsonUtil {
      * @throws IllegalAccessException 
      */
     public static Collection<DataListAction> parseActionsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
+        return parseActionsFromJsonObject(obj, Permission.DEFAULT);
+    }
+    
+    /**
+     * Used to retrieves datalist actions from JSON Object
+     * @param obj
+     * @param permissionKey
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static Collection<DataListAction> parseActionsFromJsonObject(JSONObject obj, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListAction> property = new ArrayList<DataListAction>();
         
         if (!obj.isNull(PROPERTY_ACTIONS)) {
@@ -280,7 +397,20 @@ public class JsonUtil {
             
             for (int i = 0; i < actions.length(); i++) {
                 JSONObject action = actions.getJSONObject(i);
-                if (action.has(PROPERTY_CLASS_NAME)) {
+                
+                boolean isHidden = false;
+                if (!Permission.DEFAULT.equals(permissionKey)) {
+                    if (action.has("permission_rules") && action.getJSONObject("permission_rules").has(permissionKey)) {
+                        JSONObject rule = action.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                            isHidden = true;
+                        }
+                    }
+                } else if (action.has(PROPERTY_HIDDEN) && "true".equals(action.getString(PROPERTY_HIDDEN))) {
+                    isHidden = true;
+                }
+                
+                if (!isHidden && action.has(PROPERTY_CLASS_NAME)) {
                     String className = action.getString(PROPERTY_CLASS_NAME);
                     DataListAction dataListAction = (DataListAction) loadPlugin(className);
                     if (dataListAction != null) {
@@ -380,6 +510,19 @@ public class JsonUtil {
      * @throws IllegalAccessException 
      */
     public static Collection<DataListColumn> parseColumnsFromJsonObject(JSONObject obj) throws JSONException, InstantiationException, IllegalAccessException {
+        return parseColumnsFromJsonObject(obj, Permission.DEFAULT);
+    }
+    
+    /**
+     * Used to retrieves datalist column from JSON Object
+     * @param obj
+     * @param permissionKey
+     * @return
+     * @throws JSONException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
+    public static Collection<DataListColumn> parseColumnsFromJsonObject(JSONObject obj, String permissionKey) throws JSONException, InstantiationException, IllegalAccessException {
         Collection<DataListColumn> property = new ArrayList<DataListColumn>();
         
         if (!obj.isNull(PROPERTY_COLUMNS)) {
@@ -429,6 +572,35 @@ public class JsonUtil {
                 }
                 
                 dataListColumn.setProperties(PropertyUtil.getProperties(column));
+                
+                if (!Permission.DEFAULT.equals(permissionKey)) {
+                    if (column.has("permission_rules") && column.getJSONObject("permission_rules").has(permissionKey)) {
+                        JSONObject rule = column.getJSONObject("permission_rules").getJSONObject(permissionKey);
+                        if (rule.has(PROPERTY_HIDDEN) && "true".equals(rule.getString(PROPERTY_HIDDEN))) {
+                            dataListColumn.setHidden(true);
+                            if (rule.has("include_export") && "true".equals(rule.getString("include_export"))) {
+                                dataListColumn.setProperty("include_export", "true");
+                                dataListColumn.setProperty("exclude_export", "");
+                            } else {
+                                dataListColumn.setProperty("include_export", "");
+                                dataListColumn.setProperty("exclude_export", "");
+                            }
+                        } else {
+                            dataListColumn.setHidden(false);
+                            if (rule.has("exclude_export") && "true".equals(rule.getString("exclude_export"))) {
+                                dataListColumn.setProperty("include_export", "");
+                                dataListColumn.setProperty("exclude_export", "true");
+                            } else {
+                                dataListColumn.setProperty("include_export", "");
+                                dataListColumn.setProperty("exclude_export", "");
+                            }
+                        }
+                    } else {
+                        dataListColumn.setHidden(false);
+                        dataListColumn.setProperty("include_export", "");
+                        dataListColumn.setProperty("exclude_export", "");
+                    }
+                }
                 
                 property.add(dataListColumn);
             }
@@ -580,5 +752,19 @@ public class JsonUtil {
             plugin = pluginManager.getPlugin(className);
         }
         return plugin;
+    }
+    
+    private static Map<String, Object> convertRequestParamMap(Map params) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        for (String key : (Set<String>) params.keySet()) {
+            key = StringEscapeUtils.escapeHtml(key);
+            String[] paramValue = (String[]) params.get(key);
+            if (paramValue.length == 1) {
+                result.put(key, paramValue[0]);
+            } else {
+                result.put(key, paramValue);
+            }
+        }
+        return result;
     }
 }

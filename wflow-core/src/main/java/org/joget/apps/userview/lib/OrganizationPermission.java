@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.model.DatalistPermission;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.LogUtil;
@@ -22,7 +23,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.springframework.context.ApplicationContext;
 
-public class OrganizationPermission extends UserviewPermission implements PluginWebSupport, FormPermission {
+public class OrganizationPermission extends UserviewPermission implements PluginWebSupport, FormPermission, DatalistPermission {
 
     @Override
     public boolean isAuthorize() {

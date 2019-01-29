@@ -84,116 +84,125 @@
                 </c:if>
             </div>
             <div id="logo"></div>
-            <div data-role="content" class="ui-content" role="main">
-                    
-                <c:set var="columns" value="${dataList.columns}"/>
-                
-                <%-- Get first action as primary link --%>
-                <c:forEach items="${columns}" var="column">
-                    <c:if test="${empty firstDataListAction && !empty column.action}">
-                            <c:set var="firstDataListAction" value="${column.action}"/>
-                    </c:if>
-                </c:forEach>
-                <c:if test="${empty firstDataListAction && !empty dataList.rowActions && !empty dataList.rowActions[0]}">
-                    <c:set var="firstDataListAction" value="${dataList.rowActions[0]}"/>
-                </c:if>
-                            
-                <%-- Get second action as secondary link --%>
-                <c:forEach items="${dataList.rowActions}" var="rowAction">
+                <div data-role="content" class="ui-content" role="main">
                     <c:choose>
-                        <c:when test="${empty secondDataListAction || !empty rowAction}">
-                            <c:set var="secondDataListAction" value="${rowAction}"/>
-                        </c:when>
-                    </c:choose>
-                </c:forEach>
-                <c:if test="${!empty firstDataListAction && empty secondDataListAction}">
-                    <c:set var="secondDataListAction" value="${firstDataListAction}"/>
-                </c:if>
-                
-                <%-- Determine data-split-icon --%>
-                <c:set var="dataSplitIcon" value="gear"/>
-                <c:if test="${fn:contains(secondDataListAction, 'Delete')}">
-                    <c:set var="dataSplitIcon" value="delete"/>
-                </c:if>
-                            
-                <%-- Calculate paging --%>
-                <c:set var="dataListId" value="${dataList.id}"/>
-                <c:set var="paramPage" value="<%= new ParamEncoder(pageContext.findAttribute(\"dataListId\").toString()).encodeParameterName(TableTagParameters.PARAMETER_PAGE) %>"/>
-                <c:set var="currentPage" value="${param[paramPage]}"/>
-                <c:if test="${empty currentPage}">
-                    <c:set var="currentPage" value="${1}"/>
-                </c:if>
-                <c:set var="previousPage" value="${currentPage - 1}"/>
-                <c:set var="nextPage" value="${currentPage + 1}"/>
-                <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="2" value="${(dataList.size / dataList.pageSize)}" /></c:set>
-                <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>       
-                
-                <%-- Display datalist --%>
-                <c:catch var="dataListBinderException">
-                    <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
-                </c:catch>
-                <ul id="dataList" data-role="listview" data-filter="false" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
-                    <li data-role="list-divider"><c:out value="${dataList.name}"/></li>
-                    <c:forEach items="${dataListRows}" var="row" varStatus="status">
-                        <li>
-                            <c:if test="${!empty firstDataListAction}"><a href="<ui:datalistMobileAction action='${firstDataListAction}' row='${row}' menuId='${menuId}' />"></c:if>
-                            <c:set var="column" value="${columns[0]}"/>
-                            <c:set var="cellValue" value="${row[columns[0].name]}"/>
-                            <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
-                            <h4><ui:stripTag html="${formattedValue}"/></h4>
-                            <p>
-                            <c:forEach var="column" items="${columns}" varStatus="cStatus">
-                                <c:if test="${cStatus.index > 0}">
-                                    <c:if test="${!columns[cStatus.index].hidden}">
-                                        <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
-                                        <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
-                                        <c:if test="${!empty cellValue}">
-                                            <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
-                                            <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
-                                        </c:if>
-                                        <br>
-                                    </c:if>
-                                </c:if>
-                            </c:forEach>
-                            </p>
-                            <c:if test="${!empty firstDataListAction}"></a></c:if>
-                            <c:if test="${!empty secondDataListAction}">
-                                <c:set var="link"><ui:datalistMobileAction action='${secondDataListAction}' row='${row}' menuId='${menuId}' /></c:set>
-                                <c:set var="onClickCode" value="$.mobile.changePage('${link}')"/>
-                                <c:set var="confirmation" value=""/>
-                                <c:if test="${!empty secondDataListAction.confirmation}">
-                                    <c:set var="onClickCode" value=" if (confirm('${secondDataListAction.confirmation}')) { ${onClickCode} }"/>
-                                </c:if>
-                                <a href="#" onclick="<c:out value="${onClickCode}"/>"><c:out value="${secondDataListAction.linkLabel}"/></a>
+                        <c:when test="${dataList.isAuthorized}">    
+                        <c:set var="columns" value="${dataList.columns}"/>
+
+                        <%-- Get first action as primary link --%>
+                        <c:forEach items="${columns}" var="column">
+                            <c:if test="${empty firstDataListAction && !empty column.action}">
+                                    <c:set var="firstDataListAction" value="${column.action}"/>
                             </c:if>
-                        </li>
-                    </c:forEach>    
-                    <c:if test="${!empty dataListBinderException}">
-                    <%
-                        String exceptionMessage = "";
-                        Throwable cause = (Throwable) pageContext.findAttribute("dataListBinderException");
-                        while (cause.getCause() != null) {
-                            cause = cause.getCause();
-                        }
-                        exceptionMessage = cause.getMessage();
-                    %>                        
-                        <li>
-                            <c:out value="<%= exceptionMessage %>"/>
-                        </li>
-                    </c:if>
-                </ul>    
-                    
-                <%-- Display paging buttons --%>
-                <div class="buttons">
-                    <c:if test="${currentPage > 1}">
-                        <c:url var="previousUrl" value="${menuId}?${paramPage}=${previousPage}" />
-                        <button class="buttonPrevious" onclick="$.mobile.changePage('${previousUrl}')">&lt;&lt;</button>
-                    </c:if>
-                    <c:if test="${hasNextPage}">
-                        <c:url var="nextUrl" value="${menuId}?${paramPage}=${nextPage}" />
-                        <button class="buttonNext" onclick="$.mobile.changePage('${nextUrl}')">&gt;&gt;</button>
-                    </c:if>
-                </div>
+                        </c:forEach>
+                        <c:if test="${empty firstDataListAction && !empty dataList.rowActions && !empty dataList.rowActions[0]}">
+                            <c:set var="firstDataListAction" value="${dataList.rowActions[0]}"/>
+                        </c:if>
+
+                        <%-- Get second action as secondary link --%>
+                        <c:forEach items="${dataList.rowActions}" var="rowAction">
+                            <c:choose>
+                                <c:when test="${empty secondDataListAction || !empty rowAction}">
+                                    <c:set var="secondDataListAction" value="${rowAction}"/>
+                                </c:when>
+                            </c:choose>
+                        </c:forEach>
+                        <c:if test="${!empty firstDataListAction && empty secondDataListAction}">
+                            <c:set var="secondDataListAction" value="${firstDataListAction}"/>
+                        </c:if>
+
+                        <%-- Determine data-split-icon --%>
+                        <c:set var="dataSplitIcon" value="gear"/>
+                        <c:if test="${fn:contains(secondDataListAction, 'Delete')}">
+                            <c:set var="dataSplitIcon" value="delete"/>
+                        </c:if>
+
+                        <%-- Calculate paging --%>
+                        <c:set var="dataListId" value="${dataList.id}"/>
+                        <c:set var="paramPage" value="<%= new ParamEncoder(pageContext.findAttribute(\"dataListId\").toString()).encodeParameterName(TableTagParameters.PARAMETER_PAGE) %>"/>
+                        <c:set var="currentPage" value="${param[paramPage]}"/>
+                        <c:if test="${empty currentPage}">
+                            <c:set var="currentPage" value="${1}"/>
+                        </c:if>
+                        <c:set var="previousPage" value="${currentPage - 1}"/>
+                        <c:set var="nextPage" value="${currentPage + 1}"/>
+                        <c:set var="totalPages"><fmt:formatNumber type="number" maxFractionDigits="2" value="${(dataList.size / dataList.pageSize)}" /></c:set>
+                        <c:set var="hasNextPage" value="${(currentPage*1 < totalPages*1)}"/> <%-- multiply by 1 to compare as number instead of string --%>       
+
+                        <%-- Display datalist --%>
+                        <c:catch var="dataListBinderException">
+                            <c:set var="dataListRows" scope="request" value="${dataList.rows}"/>
+                        </c:catch>
+                        <ul id="dataList" data-role="listview" data-filter="false" data-inset="true" data-split-icon="${dataSplitIcon}" data-split-theme="d" class="ui-listview" data-filter-theme="d"data-theme="d" data-divider-theme="d">
+                            <li data-role="list-divider"><c:out value="${dataList.name}"/></li>
+                            <c:forEach items="${dataListRows}" var="row" varStatus="status">
+                                <li>
+                                    <c:if test="${!empty firstDataListAction}"><a href="<ui:datalistMobileAction action='${firstDataListAction}' row='${row}' menuId='${menuId}' />"></c:if>
+                                    <c:set var="column" value="${columns[0]}"/>
+                                    <c:set var="cellValue" value="${row[columns[0].name]}"/>
+                                    <c:set var="formattedValue" value="<%= formatColumn(pageContext) %>"/>
+                                    <h4><ui:stripTag html="${formattedValue}"/></h4>
+                                    <p>
+                                    <c:forEach var="column" items="${columns}" varStatus="cStatus">
+                                        <c:if test="${cStatus.index > 0}">
+                                            <c:if test="${!columns[cStatus.index].hidden}">
+                                                <c:set var="cellLabel" value="${columns[cStatus.index].label}"/>
+                                                <c:set var="cellValue" value="${row[columns[cStatus.index].name]}"/>
+                                                <c:if test="${!empty cellValue}">
+                                                    <c:set var="cellCleanValue" value="<%= formatColumn(pageContext) %>"/>
+                                                    <c:if test="${!empty cellLabel}"><c:out value="${cellLabel}"/>:</c:if> ${cellCleanValue}
+                                                </c:if>
+                                                <br>
+                                            </c:if>
+                                        </c:if>
+                                    </c:forEach>
+                                    </p>
+                                    <c:if test="${!empty firstDataListAction}"></a></c:if>
+                                    <c:if test="${!empty secondDataListAction}">
+                                        <c:set var="link"><ui:datalistMobileAction action='${secondDataListAction}' row='${row}' menuId='${menuId}' /></c:set>
+                                        <c:set var="onClickCode" value="$.mobile.changePage('${link}')"/>
+                                        <c:set var="confirmation" value=""/>
+                                        <c:if test="${!empty secondDataListAction.confirmation}">
+                                            <c:set var="onClickCode" value=" if (confirm('${secondDataListAction.confirmation}')) { ${onClickCode} }"/>
+                                        </c:if>
+                                        <a href="#" onclick="<c:out value="${onClickCode}"/>"><c:out value="${secondDataListAction.linkLabel}"/></a>
+                                    </c:if>
+                                </li>
+                            </c:forEach>    
+                            <c:if test="${!empty dataListBinderException}">
+                            <%
+                                String exceptionMessage = "";
+                                Throwable cause = (Throwable) pageContext.findAttribute("dataListBinderException");
+                                while (cause.getCause() != null) {
+                                    cause = cause.getCause();
+                                }
+                                exceptionMessage = cause.getMessage();
+                            %>                        
+                                <li>
+                                    <c:out value="<%= exceptionMessage %>"/>
+                                </li>
+                            </c:if>
+                        </ul>    
+
+                        <%-- Display paging buttons --%>
+                        <div class="buttons">
+                            <c:if test="${currentPage > 1}">
+                                <c:url var="previousUrl" value="${menuId}?${paramPage}=${previousPage}" />
+                                <button class="buttonPrevious" onclick="$.mobile.changePage('${previousUrl}')">&lt;&lt;</button>
+                            </c:if>
+                            <c:if test="${hasNextPage}">
+                                <c:url var="nextUrl" value="${menuId}?${paramPage}=${nextPage}" />
+                                <button class="buttonNext" onclick="$.mobile.changePage('${nextUrl}')">&gt;&gt;</button>
+                            </c:if>
+                        </div>
+                    </c:when>
+                    <c:when test="${!empty dataList.unauthorizedMsg}">
+                        <h3>${dataList.unauthorizedMsg}</h3>
+                    </c:when>            
+                    <c:otherwise>    
+                        <h3><fmt:message key="form.form.message.noPermission"/></h3>
+                    </c:otherwise>   
+                </c:choose>    
             </div>		
 
         </div>

@@ -77,6 +77,8 @@ public class DataList {
     private String responsiveJson = "";
     private Boolean considerFilterWhenGetTotal = null;
     private Map<String, String[]> requestParamMap = null;
+    private boolean isAuthorized = true;
+    private String unauthorizedMsg = null;
 
     //Required when using session
     public void init() {
@@ -871,5 +873,21 @@ public class DataList {
     public void clearFilter() {
         filterQueryBuild = false;
         dataListFilterQueryObjectList = new ArrayList<DataListFilterQueryObject>();
+    }
+
+    public boolean isIsAuthorized() {
+        return isAuthorized;
+    }
+
+    public void setIsAuthorized(boolean isAuthorized) {
+        this.isAuthorized = isAuthorized;
+    }
+
+    public String getUnauthorizedMsg() {
+        return unauthorizedMsg;
+    }
+
+    public void setUnauthorizedMsg(String unauthorizedMsg) {
+        this.unauthorizedMsg = unauthorizedMsg;
     }
 }

@@ -2,11 +2,12 @@ package org.joget.apps.userview.lib;
 
 import bsh.Interpreter;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.model.DatalistPermission;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.userview.model.UserviewPermission;
 import org.joget.commons.util.LogUtil;
 
-public class BeanShellPermission extends UserviewPermission implements FormPermission {
+public class BeanShellPermission extends UserviewPermission implements FormPermission, DatalistPermission {
     @Override
     public boolean isAuthorize() {
         return executeScript();

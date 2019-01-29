@@ -1246,6 +1246,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             showCancelButton : true,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
             },
             saveCallback: function(container, properties) {
@@ -1264,7 +1265,7 @@ DatalistBuilder = {
             delete properties["renderHtml"];
         }
         
-        DatalistBuilder.chosenColumns[columnId] = properties;
+        DatalistBuilder.chosenColumns[columnId] = $.extend(DatalistBuilder.chosenColumns[columnId], properties);
         DatalistBuilder.renderColumn(columnId);
     },
     
@@ -1330,6 +1331,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             showCancelButton : true,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
             },
             saveCallback: function(container, properties) {
@@ -1343,14 +1345,14 @@ DatalistBuilder = {
 
     updateFilterPropertiesCallback : function (columnId, properties){
         DatalistBuilder.addToUndo();
-        DatalistBuilder.chosenFilters[columnId] = properties;
+        DatalistBuilder.chosenFilters[columnId] = $.extend(DatalistBuilder.chosenFilters[columnId], properties);
         DatalistBuilder.renderFilter(columnId);
     },
 
     updateActionCallback : function (columnId, actions, properties) {
         DatalistBuilder.addToUndo();
         var action = actions[columnId];
-        action.properties = properties;
+        action.properties = $.extend(action.properties, properties);
         if( columnId.indexOf('rowAction') != -1 ){
             DatalistBuilder.renderRowAction(columnId);
         }else{
@@ -1505,6 +1507,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             autoSave: true,
+            changeCheckIgnoreUndefined: true,
             saveCallback : DatalistBuilder.updateDatalistProperties,
             closeAfterSaved : false
         };
@@ -1524,6 +1527,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             showCancelButton : true,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
             },
             saveCallback: function(container, properties) {
@@ -1547,6 +1551,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             showCancelButton: false,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
             },
             saveCallback: function(container, properties) {
@@ -1568,7 +1573,7 @@ DatalistBuilder = {
 
     updateDatalistProperties : function(container, properties){
         DatalistBuilder.addToUndo();
-        DatalistBuilder.datalistProperties = properties;
+        DatalistBuilder.datalistProperties = $.extend(DatalistBuilder.datalistProperties, properties);
         var json = DatalistBuilder.getJson();
         $('#list-json').val(json);
 
@@ -1612,6 +1617,7 @@ DatalistBuilder = {
             contextPath: DatalistBuilder.contextPath,
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
+            changeCheckIgnoreUndefined: true,
             showCancelButton : true,
             cancelCallback: function() {
             },
@@ -1761,6 +1767,7 @@ DatalistBuilder = {
             propertiesDefinition : propertiesDefinition,
             propertyValues : propertyValues,
             showCancelButton : true,
+            changeCheckIgnoreUndefined: true,
             cancelCallback: function() {
                 PropertyEditor.Popup.hideDialog("list-property-editor");
             },

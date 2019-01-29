@@ -178,7 +178,7 @@ public class UserviewService {
         Userview userview = new Userview();
         userview.setParams(requestParameters);
         
-        boolean userviewPermission = true;
+        boolean userviewPermission = false;
         
         //if screenshot, set user to null (anonymous)
         User currentThreadUser = currentUser;
@@ -237,9 +237,15 @@ public class UserviewService {
                     }
                     
                     if (!userviewPermission) {
-                        JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
-                        userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                        if (settingObj.getJSONObject("properties").has("permission")) {
+                            JSONObject permissionObj = settingObj.getJSONObject("properties").getJSONObject("permission");
+                            userviewPermission = UserviewUtil.getPermisionResult(permissionObj, requestParameters, currentUser);
+                        } else {
+                            userviewPermission = true;
+                        }
                     }
+                } else {
+                    userviewPermission = true;
                 }
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");

@@ -19,7 +19,7 @@
 .permission-table .element-meta span + span {margin-left: 5px;}
 .permission-table .element-meta .element-id {font-style: italic; color: #777;}
 .permission-table tbody tr:hover {background:#e8fffe;}
-.permission-table tbody tr.support-plugin {background:#f2f2f2;}
+.permission-table tbody tr.support-plugin, .permission-table tbody tr.header {background:#f2f2f2;}
 .permission-table tbody tr.support-plugin:hover {background:#c9dfdd;}
 .permission-table .authorized {background: #f1fff1ad; text-align: center; text-transform: uppercase; }
 .permission-table .unauthorized {background: #fff5f5ad; text-align: center; text-transform: uppercase; }
