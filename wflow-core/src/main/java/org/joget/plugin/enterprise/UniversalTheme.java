@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -199,10 +200,10 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 icon = userviewSetting.getPropertyString("userview_thumbnail");
             }
         }
-        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/index";
+        String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/";
         String primaryColor = getPrimaryColor(theme);
         String backgroundColor = "#FFFFFF";
-        String scope = request.getContextPath();
+        String scope = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
         userviewName = StringUtil.stripAllHtmlTag(userviewName);
         String shortName = (userviewName.length() > 12) ? userviewName.substring(0, 10) + ".." : userviewName;
         String manifest = "{\n" +
@@ -223,6 +224,51 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             "}";
         return manifest;
     }
+    
+    public String getServiceWorker(String appId, String userviewId) {
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        
+        String contextPath = request.getContextPath();
+        String pathName = getPathName();
+        String startUrl = contextPath + "/web/userview/" + appId + "/" + userviewId + "/_/";
+        String urlsToCache = 
+            "'" + startUrl + "'," +
+            "'" + contextPath + "/wro/common.css'," +
+            "'" + contextPath + "/wro/" + pathName + ".preload.min.css'," +
+            "'" + contextPath + "/wro/" + pathName + ".min.css'," +
+            "'" + contextPath + "/js/font-awesome4/css/font-awesome.min.css'," +
+            "'" + contextPath + "/wro/common.js'," +
+            "'" + contextPath + "/wro/" + pathName + ".preload.min.js'," +
+            "'" + contextPath + "/wro/" + pathName + ".min.js'";
+
+        if (appDef != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            String json = userviewDef.getJson();
+            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+            UserviewTheme theme = userviewSetting.getTheme();
+            if (!theme.getPropertyString("urlsToCache").isEmpty()) {
+                String urls = theme.getPropertyString("urlsToCache");
+                if (urls != null) {
+                    StringTokenizer st = new StringTokenizer(urls, "\n");
+                    while (st.hasMoreTokens()) {
+                        String url = st.nextToken().trim();
+                        if (url.startsWith("/") && !url.startsWith(contextPath)) {
+                            url = contextPath + url;
+                        }
+                        urlsToCache += ",'" + url + "'";
+                    }
+                }
+            }
+        }
+        
+        Object[] arguments = new Object[]{ urlsToCache };
+        String js = AppUtil.readPluginResource(getClass().getName(), "/resources/themes/universal/sw.js", arguments, false, "");
+        return js;
+    }    
     
     @Override
     public String getCss(Map<String, Object> data) {
@@ -260,9 +306,13 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         if (!"true".equals(getPropertyString("disablePwa"))) {
             WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
             boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
+            String appId = userview.getParamString("appId");
+            String userviewId = userview.getPropertyString("id");
+            String serviceWorkerUrl = data.get("context_path") + "/web/json/plugin/" + getClassName() + "/service?_a=sw&appId=" + appId + "&userviewId=" + userviewId;            
             jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
             jsCssLink += "<script>$(function() {"
-                    + "PwaUtil.serviceWorkerPath = '" + data.get("context_path") + "/sw_" + getPathName() + ".js';"
+                    + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
+                    + "PwaUtil.serviceWorkerPath = '" + serviceWorkerUrl + "';"
                     + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
                     + "PwaUtil.pushEnabled = " + pushEnabled + ";"
                     + "PwaUtil.register();"
@@ -884,6 +934,14 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             String appId = request.getParameter("appId");
             String userviewId = request.getParameter("userviewId");
             String manifest = getManifest(appId, userviewId);
+            PrintWriter writer = response.getWriter();
+            writer.println(manifest);
+        } else if ("sw".equals(action)) {
+            String appId = request.getParameter("appId");
+            String userviewId = request.getParameter("userviewId");
+            String manifest = getServiceWorker(appId, userviewId);
+            response.setContentType("application/javascript;charset=UTF-8");
+            response.setHeader("Service-Worker-Allowed", request.getContextPath());
             PrintWriter writer = response.getWriter();
             writer.println(manifest);
         } else {

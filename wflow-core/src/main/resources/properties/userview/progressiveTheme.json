@@ -1163,6 +1163,13 @@
             value: 'true',
             label: ''
         }]
+    },
+    {
+        name: 'urlsToCache',
+        label: '@@pwa.urlsToCache@@',
+        type:'textarea',
+        cols:'40',
+        rows:'10'
     }],
     buttons : [{
         name : 'testpush',    

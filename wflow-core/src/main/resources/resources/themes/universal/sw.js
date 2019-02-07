@@ -2,22 +2,16 @@ var version = "7.0.0";
 var cacheName = "jw-cache";
 var cache = cacheName + "-" + version;
 var urlsToCache = [
-    './',
-    './wro/common.css',
-    './wro/progressive.preload.min.css',
-    './wro/progressive.min.css',
-    './js/font-awesome4/css/font-awesome.min.css',
-    './wro/common.js',
-    './wro/progressive.preload.min.js',
-    './wro/progressive.min.js',
+    %s
 ];
-
 
 self.addEventListener('install', function (event) {
     event.waitUntil(
             caches.open(cache)
             .then(function (cache) {
-                return cache.addAll(urlsToCache);
+                return cache.addAll(urlsToCache).then(function() {
+                    console.log("URLs cached");
+                });
             })
             );
 });
@@ -54,7 +48,7 @@ self.addEventListener('activate', function (event) {
                     function (keyList) {
                         Promise.all(
                                 keyList.map(function (key) {
-                                    if (cacheName.indexOf(key) === -1) {
+                                    if (cache.indexOf(key) === -1) {
                                         return caches.delete(key);
                                     }
                                 })

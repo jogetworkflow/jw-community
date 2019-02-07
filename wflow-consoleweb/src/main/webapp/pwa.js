@@ -2,6 +2,8 @@ PwaUtil = {
 
     applicationServerPublicKey: "BE54-RlSdVqGwlh_skZ4qQqP1tY7uNZrQbv3IJ_Rd2uRHsId8XjvH2CXav_5PkhrM1XvBLXJyi7tx6io5E3fegg",
 
+    contextPath: "/jw",
+
     serviceWorkerPath: "/jw/sw.js",
 
     subscriptionApiPath: "/jw/web/console/profile/subscription",
@@ -10,7 +12,7 @@ PwaUtil = {
 
     register: function () {
         if (navigator.serviceWorker) {
-            return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath)
+            return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath, { scope: PwaUtil.contextPath })
                     .then(function (registration) {
                         var serviceWorker;
                         if (registration.installing) {

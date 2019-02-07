@@ -360,7 +360,7 @@ public class UserviewService {
 
                                 //set home menu Id
                                 if (userview.getPropertyString("homeMenuId") == null || userview.getPropertyString("homeMenuId").isEmpty() && menu.isHomePageSupported()) {
-                                    userview.setProperty("homeMenuId", mId);
+                                    userview.setProperty("homeMenuId", "");
                                 }
                                 
                                 if (menuRuleObj == null || !menuRuleObj.has("permissionHidden") || !"true".equals(menuRuleObj.getString("permissionHidden"))) {
