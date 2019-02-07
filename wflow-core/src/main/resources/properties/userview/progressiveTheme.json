@@ -1168,6 +1168,7 @@
         name: 'urlsToCache',
         label: '@@pwa.urlsToCache@@',
         type:'textarea',
+        description: '@@pwa.urlsToCache.desc@@',
         cols:'40',
         rows:'10'
     }],
