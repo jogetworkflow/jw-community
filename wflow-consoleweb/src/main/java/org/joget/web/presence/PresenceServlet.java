@@ -49,7 +49,7 @@ public class PresenceServlet extends HttpServlet {
             String sessionId = request.getSession().getId();
             PresenceManager.leave(path, sessionId);
         } else {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            response.sendRedirect(request.getContextPath());
         }
     }
     

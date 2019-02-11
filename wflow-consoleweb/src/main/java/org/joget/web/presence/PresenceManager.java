@@ -212,13 +212,18 @@ public class PresenceManager {
             sessionMap = new HashMap<>();
             pathMap.put(path, sessionMap);
         }
-        UserEntry userEntry = new UserEntry();
-        userEntry.setUsername(user.getUsername());
-        userEntry.setEmail(user.getEmail());
-        sessionMap.put(sessionId, userEntry);
+        if (user != null) {
+            UserEntry userEntry = new UserEntry();
+            userEntry.setUsername(user.getUsername());
+            userEntry.setEmail(user.getEmail());
+            sessionMap.put(sessionId, userEntry);
+            LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
+        } else {
+            sessionMap.remove(sessionId);
+            LogUtil.debug(PresenceManager.class.getName(), "remove:" + path + ":" + sessionId);
+        }
         savePathMap(pathMap);
         resumeNotifier();
-        LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
     }
 
     public static void leave(String path, String sessionId) {
