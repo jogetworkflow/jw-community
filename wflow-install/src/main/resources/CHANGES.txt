@@ -2,6 +2,14 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.15
+=================
+169611c Fixed: wflow-consoleweb - Form Builder - Correction of form property description.   @6.0-SNAPSHOT
+64c47e3 Fixed: wflow-core - BeanShell Options Binder - Does not support FormUtil.PROPERTY_SELECTED to set default value when AJAX enabled. #6210  @6.0-SNAPSHOT
+83f065f Fixed: wflow-core - FormUtil - Load binders under a section configured with readonly permission does not execute. #6071 @6.0-SNAPSHOT
+a65932d Fixed: wflow-core - FormPdfUtil - Does not work correctly with RTL font. #6141 @6.0-SNAPSHOT
+e29fbe0 Fixed: wflow-core - Duplicate Value Validator - Record is still stored even validator has configuration error. #6197 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.14
 =================
 436f11b Fixed: wflow-core - Universal Inbox Menu - Click on Due Date column header return empty result. #6167 @6.0-SNAPSHOT

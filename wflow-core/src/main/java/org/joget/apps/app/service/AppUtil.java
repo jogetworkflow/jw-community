@@ -802,6 +802,9 @@ public class AppUtil implements ApplicationContextAware {
         if (request != null
                 && request.getParameterValues("__a_") != null && request.getParameterValues("__a_").length > 0
                 && request.getParameterValues("__u_") != null && request.getParameterValues("__u_").length > 0) {
+            
+            AppDefinition oriAppDef = AppUtil.getCurrentAppDefinition();
+            
             try {
                 String appId = request.getParameterValues("__a_")[0];
                 String uId = request.getParameterValues("__u_")[0];
@@ -845,6 +848,8 @@ public class AppUtil implements ApplicationContextAware {
                 }
             } catch (Exception e) {
                 LogUtil.error(AppUtil.class.getName(), e, "getUserviewThemeCss Error!");
+            } finally {
+                AppUtil.setCurrentAppDefinition(oriAppDef);
             }
         }
         
