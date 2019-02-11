@@ -1,5 +1,7 @@
 package org.joget.apps.app.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.joget.apm.APMUtil;
@@ -10,6 +12,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,4 +160,22 @@ public class UserviewWebController {
 
         return "ubuilder/login";
     }
+
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/manifest"})
+    public void manifest(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
+        String manifest = UserviewUtil.getManifest(appId, userviewId);
+        response.setContentType("application/manifest+json;charset=UTF-8");
+        PrintWriter writer = response.getWriter();
+        writer.println(manifest);
+    }
+    
+    @RequestMapping({"/userview/(*:appId)/(*:userviewId)/serviceworker"})
+    public void serviceWorker(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam("userviewId") String userviewId) throws IOException {
+        String serviceWorker = UserviewUtil.getServiceWorker(appId, userviewId);
+        response.setContentType("application/javascript;charset=UTF-8");
+        response.setHeader("Service-Worker-Allowed", request.getContextPath());
+        PrintWriter writer = response.getWriter();
+        writer.println(serviceWorker);
+    }
+    
 }

@@ -84,6 +84,7 @@ public class ProgressiveTheme extends UniversalTheme {
         return getClass().getName();
     }
 
+    @Override
     public String getPathName() {
         return "progressive";
     }

@@ -10,16 +10,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
+import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewPwaTheme;
+import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -210,4 +214,41 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
         }
         return isAuthorize;
     }
+
+    public static String getManifest(String appId, String userviewId) {
+        String manifest = "";
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        if (appDef != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            String json = userviewDef.getJson();
+            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+            UserviewTheme theme = userviewSetting.getTheme();
+            if (theme instanceof UserviewPwaTheme) {
+                manifest = ((UserviewPwaTheme)theme).getManifest(appId, userviewId);
+            }
+        }
+        return manifest;    
+    }
+    
+    public static String getServiceWorker(String appId, String userviewId) {
+        String serviceWorkerJs = "";
+        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
+        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
+        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        if (appDef != null) {
+            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
+            String json = userviewDef.getJson();
+            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
+            UserviewTheme theme = userviewSetting.getTheme();
+            if (theme instanceof UserviewPwaTheme) {
+                serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId);
+            }
+        }
+        return serviceWorkerJs;
+    }
+        
 }

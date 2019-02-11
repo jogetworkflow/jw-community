@@ -5,7 +5,6 @@ import de.bripkens.gravatar.DefaultImage;
 import de.bripkens.gravatar.Gravatar;
 import de.bripkens.gravatar.Rating;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -19,20 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.joget.apps.app.dao.UserviewDefinitionDao;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.UserviewDefinition;
-import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.InboxMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.apps.userview.model.UserviewPwaTheme;
 import org.joget.apps.userview.model.UserviewSetting;
-import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
-import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -46,7 +40,7 @@ import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
 
-public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport {
+public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme, PluginWebSupport {
     protected final static String PROFILE = "_ja_profile"; 
     protected final static String INBOX = "_ja_inbox"; 
     protected static LessEngine lessEngine = new LessEngine();
@@ -154,26 +148,26 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         }
         
         // PWA: set address bar theme color
-        Userview userview = (Userview)data.get("userview");
-        String primary = getPrimaryColor(userview.getSetting().getTheme());
+        Userview uv = (Userview)data.get("userview");
+        String primary = getPrimaryColor();
         meta += "<meta name=\"theme-color\" content=\"" + primary + "\"/>\n";
 
         // PWA: set manifest URL
-        String appId = userview.getParamString("appId");
-        String userviewId = userview.getPropertyString("id");
+        String appId = uv.getParamString("appId");
+        String userviewId = uv.getPropertyString("id");
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        String manifestUrl = request.getContextPath() + "/web/json/plugin/" + getClassName() + "/service?_a=manifest&appId=" + appId + "&userviewId=" + userviewId;
+        String manifestUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/manifest";
         meta += "<link rel=\"manifest\" href=\"" + manifestUrl + "\">";
 
         return meta;
     }
 
-    protected String getPrimaryColor(UserviewTheme theme) {
+    protected String getPrimaryColor() {
         String primary = "#FFFFFF";
-        if ("custom".equals(theme.getPropertyString("primaryColor"))) {
-            primary = theme.getPropertyString("customPrimary");
+        if ("custom".equals(getPropertyString("primaryColor"))) {
+            primary = getPropertyString("customPrimary");
         } else {
-            Color p = Color.valueOf(theme.getPropertyString("primaryColor")); 
+            Color p = Color.valueOf(getPropertyString("primaryColor")); 
             if (p != null) {
                 primary = p.color;
             } 
@@ -181,27 +175,17 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         return primary;
     }
         
+    @Override
     public String getManifest(String appId, String userviewId) {
-        String userviewName = "";
-        UserviewTheme theme = null;
-        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
-        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
-        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
-        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
+        String userviewName = getUserview().getPropertyString("name");
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         String icon = request.getContextPath() + "/images/logo_512x512.png";
-        if (appDef != null && request != null) {
-            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            String json = userviewDef.getJson();
-            userviewName = userviewService.getUserviewName(json);
-            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
-            theme = userviewSetting.getTheme();
-            if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
-                icon = userviewSetting.getPropertyString("userview_thumbnail");
-            }
+        UserviewSetting userviewSetting = getUserview().getSetting();
+        if (!userviewSetting.getPropertyString("userview_thumbnail").isEmpty()) {
+            icon = userviewSetting.getPropertyString("userview_thumbnail");
         }
         String startUrl = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/_/";
-        String primaryColor = getPrimaryColor(theme);
+        String primaryColor = getPrimaryColor();
         String backgroundColor = "#FFFFFF";
         String scope = request.getContextPath() + "/web/userview/" + appId + "/" + userviewId + "/";
         userviewName = StringUtil.stripAllHtmlTag(userviewName);
@@ -225,11 +209,8 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
         return manifest;
     }
     
+    @Override
     public String getServiceWorker(String appId, String userviewId) {
-        AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
-        UserviewService userviewService = (UserviewService)AppUtil.getApplicationContext().getBean("userviewService");
-        UserviewDefinitionDao userviewDefinitionDao = (UserviewDefinitionDao)AppUtil.getApplicationContext().getBean("userviewDefinitionDao");
-        AppDefinition appDef = appService.getPublishedAppDefinition(appId);
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         
         String contextPath = request.getContextPath();
@@ -245,22 +226,16 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             "'" + contextPath + "/wro/" + pathName + ".preload.min.js'," +
             "'" + contextPath + "/wro/" + pathName + ".min.js'";
 
-        if (appDef != null) {
-            UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            String json = userviewDef.getJson();
-            UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
-            UserviewTheme theme = userviewSetting.getTheme();
-            if (!theme.getPropertyString("urlsToCache").isEmpty()) {
-                String urls = theme.getPropertyString("urlsToCache");
-                if (urls != null) {
-                    StringTokenizer st = new StringTokenizer(urls, "\n");
-                    while (st.hasMoreTokens()) {
-                        String url = st.nextToken().trim();
-                        if (url.startsWith("/") && !url.startsWith(contextPath)) {
-                            url = contextPath + url;
-                        }
-                        urlsToCache += ",'" + url + "'";
+        if (!getPropertyString("urlsToCache").isEmpty()) {
+            String urls = getPropertyString("urlsToCache");
+            if (urls != null) {
+                StringTokenizer st = new StringTokenizer(urls, "\n");
+                while (st.hasMoreTokens()) {
+                    String url = st.nextToken().trim();
+                    if (url.startsWith("/") && !url.startsWith(contextPath)) {
+                        url = contextPath + url;
                     }
+                    urlsToCache += ",'" + url + "'";
                 }
             }
         }
@@ -308,7 +283,7 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
             boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
             String appId = userview.getParamString("appId");
             String userviewId = userview.getPropertyString("id");
-            String serviceWorkerUrl = data.get("context_path") + "/web/json/plugin/" + getClassName() + "/service?_a=sw&appId=" + appId + "&userviewId=" + userviewId;            
+            String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/serviceworker";
             jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
             jsCssLink += "<script>$(function() {"
                     + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
@@ -930,20 +905,6 @@ public class UniversalTheme extends UserviewV5Theme implements PluginWebSupport 
                 LogUtil.error(this.getClass().getName(), ex, "Get assignment error!");
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
-        } else if ("manifest".equals(action)) {
-            String appId = request.getParameter("appId");
-            String userviewId = request.getParameter("userviewId");
-            String manifest = getManifest(appId, userviewId);
-            PrintWriter writer = response.getWriter();
-            writer.println(manifest);
-        } else if ("sw".equals(action)) {
-            String appId = request.getParameter("appId");
-            String userviewId = request.getParameter("userviewId");
-            String manifest = getServiceWorker(appId, userviewId);
-            response.setContentType("application/javascript;charset=UTF-8");
-            response.setHeader("Service-Worker-Allowed", request.getContextPath());
-            PrintWriter writer = response.getWriter();
-            writer.println(manifest);
         } else {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
