@@ -6,9 +6,9 @@
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
         <css>/css/admin_bar.css</css>
-        <js>/js/jquery/jquery-1.9.1.min.js</js>
-        <js>/js/jquery/jquery-migrate-1.2.1.min.js</js>
-        <js>/js/jquery/ui/jquery-ui-1.10.3.min.js</js>
+        <js>/js/jquery/jquery-3.3.1.min.js</js>
+        <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
+        <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
         <js>/js/json/ui.js</js>
         <js>/js/json/ui_ext.js</js>
@@ -52,9 +52,9 @@
         <css>/mobile/mobile.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
-        <js>/js/jquery/jquery-1.9.1.min.js</js>
-        <js>/js/jquery/jquery-migrate-1.2.1.min.js</js>
-        <js>/js/jquery/ui/jquery-ui-1.10.3.min.js</js>
+        <js>/js/jquery/jquery-3.3.1.min.js</js>
+        <js>/js/jquery/jquery-migrate-3.0.1.min.js</js>
+        <js>/js/jquery/ui/jquery-ui-1.12.1.min.js</js>
         <js>/mobile/jqm/jquery.cookie.js</js>
         <js>/mobile/jqm/jquery.mobile-1.4.5.js</js>
         <js>/js/json/ui.js</js>

@@ -1505,12 +1505,14 @@ ProcessBuilder.Actions = {
         $participant.append($element);
 
         // calculate offsets to handle chrome and firefox
-        var newLeft = Math.round(left / zoom);
-        newLeft = newLeft - Math.round(($element.width()) / zoom);
-        var newTop = Math.round(top);
-        newTop = (newTop - Math.round(($element.height()))) * zoom;
-        $element.offset({left: newLeft, top: newTop});
-
+        if (left && top) {
+            var newLeft = Math.round(left / zoom);
+            newLeft = newLeft - Math.round(($element.width()) / zoom);
+            var newTop = Math.round(top);
+            newTop = (newTop - Math.round(($element.height())) / zoom);
+            $element.offset({left: newLeft, top: newTop});
+        }
+            
         // update model
         var nodeName = $element.find(".node_label").text();
         var performer = $participant[0].model.id;
@@ -2050,8 +2052,7 @@ ProcessBuilder.Actions = {
 
         // add a start node
         var $newNode = $('<div id="newNode" class="start"><div class="node_label">' + get_pbuilder_msg("pbuilder.label.start") + '</div></div>');
-        $newNode.offset({left: 80, top: 40});
-        ProcessBuilder.Actions.addNode($newNode, $(".participant:not(.palette_participant)"));
+        ProcessBuilder.Actions.addNode($newNode, $(".participant:not(.palette_participant)"), 180, 220);
     },
     deleteProcess: function(processId) {
         var currentProcessId = ProcessBuilder.Designer.currentProcessDefId;
@@ -3491,7 +3492,8 @@ ProcessBuilder.Designer = {
                     open: function(event, ui) {
                         var dialogTop = (nodeTop - 50 ) * ProcessBuilder.Designer.zoom;
                         var dialogLeft = (nodeLeft + 50) * ProcessBuilder.Designer.zoom;
-                        $nodeDialog.dialog("option", { position: [dialogLeft, dialogTop] });
+                        $nodeDialog.parent().css("left", dialogLeft + "px");
+                        $nodeDialog.parent().css("top", dialogTop + "px");
                         $("#node_dialog").parent().find(".ui-dialog-titlebar").remove();
                         $('.ui-widget-overlay').off('click');
                         $('.ui-widget-overlay').on('click',function(){
@@ -3519,7 +3521,8 @@ ProcessBuilder.Designer = {
                     $newNode.offset({top: nodeTop});
                     ProcessBuilder.Designer.setZoom(zoom);
                     ProcessBuilder.Actions.execute(function() {
-                        ProcessBuilder.Actions.addNode($newNode, $participant, nodeTop);
+                        var newNodeLeft = (nodeLeft + 180) * ProcessBuilder.Designer.zoom;
+                        ProcessBuilder.Actions.addNode($newNode, $participant, nodeTop, newNodeLeft);
                         // connect nodes
                         var connector = ["StateMachine", {curviness:0.1}];
                         var label = "<div class='transition_editable'><span class='transition_edit'><i class='fas fa-pencil-alt'></i></span><span class='transition_delete'>x</span></div>";
@@ -3557,7 +3560,6 @@ ProcessBuilder.Designer = {
             connectToSortable: "#canvas",
             appendTo: "#canvas",
             helper: "clone",
-            zIndex: 200,
             opacity: 0.7,
             revert: "invalid",
             cursor: "move",
@@ -3609,7 +3611,7 @@ ProcessBuilder.Designer = {
             $("#palette").dialog({
                 title: '',
                 width: "96px",
-                position: ['left', 39],
+                position:  { my: "left top", at: "left top+39" },
                 closeOnEscape: false,
                 open: function(event, ui) {
                     $(".ui-dialog-titlebar-close", this.parentNode).hide();

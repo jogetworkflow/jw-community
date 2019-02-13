@@ -69,12 +69,7 @@ FormBuilder = {
         // make elements draggable
         $(".form-palette-element").draggable({
             connectToSortable: ".form-column",
-            helper: function() {
-                var element = FormBuilder.updateElementDOM($(this));
-                element = FormBuilder.initElement($(this));
-                return element;
-            },
-            zIndex: 200,
+            helper: "clone",
             opacity: 0.7,
             revert: "invalid",
             cursor: "move"
@@ -252,6 +247,12 @@ FormBuilder = {
                 FormBuilder.addToUndo(FormBuilder.tempJson);
                 FormBuilder.generateJSON(true);
             },
+            out: function (event, ui) {
+                // workaround for bug ​http://bugs.jqueryui.com/ticket/6259
+                if (ui.helper) {
+                    ui.helper.data('overSortable', true);
+                }
+            },
             tolerance: "pointer",
             revertDuration: 100,
             revert: "invalid"
@@ -285,9 +286,16 @@ FormBuilder = {
         // make column droppable
         $(".form-column").droppable({
             over: function( event, ui ) {
+                // workaround for bug ​http://bugs.jqueryui.com/ticket/6259
+                ui.helper.removeData('overSortable');
                 FormBuilder.tempJson = FormBuilder.generateJSON();
             },
             drop: function(event, ui) {
+                // workaround for bug ​http://bugs.jqueryui.com/ticket/6259
+                if (ui.helper.data('overSortable') != null) {
+                    ui.helper.removeData('overSortable');
+                    return;
+                }
                 FormBuilder.addToUndo(FormBuilder.tempJson);
                 var column = $(this);
                 // check for drop within the column
@@ -888,6 +896,10 @@ FormBuilder = {
         FormBuilder.decorateElement(element);
         setTimeout(function() {
             FormBuilder.initSectionsAndColumns();
+            element.css("width", "");
+            element.css("height", "");
+            element.css("top", "");
+            element.css("left", "");
         }, 10);
     },
 
