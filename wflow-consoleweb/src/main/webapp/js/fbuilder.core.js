@@ -1332,11 +1332,19 @@ FormBuilder = {
             },
             success: function (response) {
                 FormBuilder.showMessage(get_fbuilder_msg('fbuilder.saved'));
-                setTimeout(function () {
-                    FormBuilder.originalJson = FormBuilder.generateJSON(true);
-                    $('#form-json-original').val(json);
-                    FormBuilder.showMessage("");
-                }, 2000);
+                var updateOriginalJson = function() {
+                    if ($(".form-container").length > 0 && $(".form-container")[0].dom !== undefined) {
+                        FormBuilder.originalJson = FormBuilder.generateJSON(true);
+                        $('#form-json-original').val(json);
+                        FormBuilder.showMessage("");
+                    } else {
+                        setTimeout(function () {
+                            updateOriginalJson();
+                        }, 1000);
+                    }
+                };
+                
+                updateOriginalJson();
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert(get_fbuilder_msg('fbuilder.errorSaving') + " (" + textStatus + "): " + errorThrown);
