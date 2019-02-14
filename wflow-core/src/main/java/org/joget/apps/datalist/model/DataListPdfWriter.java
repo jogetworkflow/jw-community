@@ -7,11 +7,17 @@ import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.FontSelector;
+import com.lowagie.text.pdf.ITextCustomOutputDevice;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import org.apache.commons.lang.StringUtils;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 
 /**
  * A utility class used to create table in PDF for datalist pdf export
@@ -40,11 +46,42 @@ public class DataListPdfWriter {
         
         selector = new FontSelector();
         selector.addFont(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        
+        String path = SetupManager.getBaseDirectory() + File.separator + "fonts" + File.separator;
+        File fontsFile = new File(path + "fonts.csv");
+        if (fontsFile.exists()) {
+            BufferedReader br = null;
+            String line, name, fontPath, encoding = "";
+            String[] parts = null;
+            File fontFile = null;
+            try {
+                br = new BufferedReader(new FileReader(path + "fonts.csv"));
+                while ((line = br.readLine()) != null) {
+                    parts = line.split(",");
+                    name = parts[0].trim();
+                    fontPath = parts[1].trim();
+                    encoding = parts[2].trim();
+                    fontFile = new File(path + fontPath);
+                    if (fontFile.exists()) {
+                        selector.addFont(new Font(BaseFont.createFont(path + fontPath, encoding, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(DataListPdfWriter.class.getName(), e, "");
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {}
+                }
+            }
+        }
+        selector.addFont(new Font(BaseFont.createFont("fonts/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         selector.addFont(new Font(BaseFont.createFont("fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 10, Font.NORMAL, new Color(0, 0, 0)));
     }
     
@@ -115,7 +152,12 @@ public class DataListPdfWriter {
      * @throws BadElementException 
      */
     protected PdfPCell getCell(String value) throws BadElementException {
-        PdfPCell cell = new PdfPCell(this.selector.process(StringUtils.trimToEmpty(value)));
+        value = StringUtils.trimToEmpty(value);
+        if (ITextCustomOutputDevice.textIsRTL(value)) {
+            value = ITextCustomOutputDevice.transformRTL(value);
+        }
+        
+        PdfPCell cell = new PdfPCell(this.selector.process(value));
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setLeading(8, 0);
         return cell;

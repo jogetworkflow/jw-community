@@ -38,6 +38,7 @@ public class FormPdfUtil {
     private static final int MIN_ESCAPE = 2;
     private static final int MAX_ESCAPE = 6;
     public final static String PDF_GENERATION = "_FORM_PDF_GENERATION";
+    private static String DEFAULT_FONTS = "";
     
     /**
      * Gets the renderer
@@ -53,7 +54,9 @@ public class FormPdfUtil {
             CustomITexResourceLoaderUserAgent callback = new CustomITexResourceLoaderUserAgent(renderer.getOutputDevice());
             callback.setSharedContext(sharedContext);
             sharedContext.setUserAgentCallback(callback);
-            sharedContext.setFontResolver(new ITextCustomFontResolver(sharedContext));
+            ITextCustomFontResolver resolver = new ITextCustomFontResolver(sharedContext);
+            sharedContext.setFontResolver(resolver);
+            DEFAULT_FONTS = resolver.getDefaultFonts();
         }
         return renderer;
     }
@@ -354,7 +357,7 @@ public class FormPdfUtil {
         
         //append style
         String style = "<style type='text/css'>";
-        style += "*{font-size:12px;font-family:Arial, \"Droid Sans\";}";
+        style += "*{font-size:12px;font-family:"+DEFAULT_FONTS+";}";
         style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
         style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
         style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";
