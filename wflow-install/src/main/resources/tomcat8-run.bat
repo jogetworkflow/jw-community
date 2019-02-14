@@ -1,4 +1,4 @@
-set JAVA_HOME=.\jre1.8.0_112
+set JAVA_HOME=.\jre11.0.2
 set CATALINA_HOME=.\apache-tomcat-8.5.38
 
 set JAVA_OPTS=-Xmx512M -Dwflow.home=./wflow/ -javaagent:./wflow/glowroot/glowroot.jar

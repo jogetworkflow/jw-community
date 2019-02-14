@@ -226,14 +226,14 @@ ${EndIf}
 
 SectionEnd
 
-Section "Java 8" SecJava
+Section "Java 11" SecJava
 
   SectionIn RO
   SetOutPath "$INSTDIR"
 
   ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"  
     ;Java Files Here
-    File /r jre1.8.0_112
+    File /r jre11.0.2
   ${EndIf}  
 
 SectionEnd
@@ -323,7 +323,7 @@ FunctionEnd
   ;Language strings
   LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget DX Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
-  LangString DESC_SecJava ${LANG_ENGLISH} "Java 8 Standard Edition"
+  LangString DESC_SecJava ${LANG_ENGLISH} "Java 11 Standard Edition"
   LangString DESC_SecMariaDB ${LANG_ENGLISH} "MariaDB 10 Database Server"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start Menu Shortcuts"
 
@@ -346,7 +346,7 @@ Section "Uninstall"
   RMDir /r "$SMPROGRAMS\Joget DX 7"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
-  RmDir /r "$INSTDIR\jre1.8.0_112"
+  RmDir /r "$INSTDIR\jre11.0.2"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.38\webapps\jw"
   RmDir /r "$INSTDIR\apache-tomcat-8.5.38\webapps\jwdesigner"
   Delete "$INSTDIR\apache-tomcat-8.5.38\webapps\jw.war"
