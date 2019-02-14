@@ -22,8 +22,8 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
-import org.joget.itextrenderer.ITextCustomFontResolver;
-import org.joget.itextrenderer.ITextCustomOutputDevice;
+import com.lowagie.text.pdf.ITextCustomFontResolver;
+import com.lowagie.text.pdf.ITextCustomOutputDevice;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
@@ -46,7 +46,8 @@ public class FormPdfUtil {
     public static ITextRenderer getRenderer() {
         if (renderer == null) {
             float dpp = 20f * 4f / 3f;
-            renderer = new ITextRenderer(dpp, 20, new ITextCustomOutputDevice(dpp));
+            ITextCustomOutputDevice outputDevice = new ITextCustomOutputDevice(dpp);
+            renderer = new ITextRenderer(dpp, 20, outputDevice);
             
             SharedContext sharedContext = renderer.getSharedContext();
             CustomITexResourceLoaderUserAgent callback = new CustomITexResourceLoaderUserAgent(renderer.getOutputDevice());
