@@ -25,15 +25,7 @@ public class ITextCustomOutputDevice extends ITextOutputDevice {
     public void drawString(String s, float x, float y, JustificationInfo info) {
         
         if (textIsRTL(s)) {
-            BidiLine bidi = new BidiLine();
-            bidi.addChunk(new PdfChunk(new Chunk(s), null));
-            bidi.getParagraph(PdfWriter.RUN_DIRECTION_RTL);
-            ArrayList<PdfChunk> arr = bidi.createArrayOfPdfChunks(0, bidi.totalTextLength - 1);
-            StringBuilder sb = new StringBuilder();
-            for (PdfChunk ck : arr) {
-                    sb.append(ck.toString());
-            }
-            s = sb.toString();
+            s = transformRTL(s);
         }
         checkFontFamily(s, 0);
         super.drawString(s, x, y, info);
@@ -48,13 +40,12 @@ public class ITextCustomOutputDevice extends ITextOutputDevice {
                 FSFont font = resolver.resolveFont(getSharedContext(), families[index+1], spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
                 if (font != null) {
                     setFont(font);
-                    checkFontFamily(s, index + 1);
                 }
+                checkFontFamily(s, index + 1);
             } else if (families.length == index+1) {
                 FSFont font = resolver.resolveFont(getSharedContext(), "serif", spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
                 if (font != null) {
                     setFont(font);
-                    checkFontFamily(s, index + 1);
                 }
             }
         }
@@ -73,7 +64,19 @@ public class ITextCustomOutputDevice extends ITextOutputDevice {
         return count;
     }
     
-    protected static boolean textIsRTL(String text) {
+    public static String transformRTL(String s) {
+        BidiLine bidi = new BidiLine();
+        bidi.addChunk(new PdfChunk(new Chunk(s), null));
+        bidi.getParagraph(PdfWriter.RUN_DIRECTION_RTL);
+        ArrayList<PdfChunk> arr = bidi.createArrayOfPdfChunks(0, bidi.totalTextLength - 1);
+        StringBuilder sb = new StringBuilder();
+        for (PdfChunk ck : arr) {
+            sb.append(ck.toString());
+        }
+        return sb.toString();
+    }
+    
+    public static boolean textIsRTL(String text) {
         for (char charac : text.toCharArray()) {
             if (Character.UnicodeBlock.of(charac) == Character.UnicodeBlock.ARABIC ||
                     Character.UnicodeBlock.of(charac) == Character.UnicodeBlock.HEBREW) {

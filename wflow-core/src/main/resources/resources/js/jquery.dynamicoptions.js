@@ -86,7 +86,7 @@
                     }
                     for (var i=0, len=data.length; i < len; i++) {
                         var selected = "";
-                        if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
+                        if ($.inArray(data[i].value, values) !== -1) {
                             selected = "selected=\"selected\"";
                             hasValue = true;
                         }
@@ -107,7 +107,7 @@
                     var hasValue = false;
                     for (var i=0, len=data.length; i < len; i++) {
                         var checked = "";
-                        if ($.inArray(UI.escapeHTML(data[i].value), values) !== -1) {
+                        if ($.inArray(data[i].value, values) !== -1) {
                             checked = "checked=\"checked\"";
                             hasValue = true;
                         }

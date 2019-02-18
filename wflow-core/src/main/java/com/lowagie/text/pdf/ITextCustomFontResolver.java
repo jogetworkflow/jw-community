@@ -1,9 +1,11 @@
 package com.lowagie.text.pdf;
 
 import com.lowagie.text.DocumentException;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +15,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 import org.xhtmlrenderer.css.constants.CSSName;
 import org.xhtmlrenderer.css.constants.IdentValue;
 import org.xhtmlrenderer.css.sheet.FontFaceRule;
@@ -35,6 +40,7 @@ import org.xhtmlrenderer.util.XRRuntimeException;
 public class ITextCustomFontResolver extends ITextFontResolver {
     private Map _fontFamilies = createInitialFontMap();
     private Map _fontCache = new HashMap();
+    private static String defaultFonts = "";
 
     private final SharedContext _sharedContext;
 
@@ -422,6 +428,10 @@ public class ITextCustomFontResolver extends ITextFontResolver {
 
         return null;
     }
+    
+    public Set<String> getFontFamilies() {
+        return _fontFamilies.keySet();
+    }
 
     public static int convertWeightToInt(IdentValue weight) {
         if (weight == IdentValue.NORMAL) {
@@ -462,19 +472,21 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     }
 
     private static Map createInitialFontMap() {
-        HashMap result = new HashMap();
+        HashMap result = new LinkedHashMap();
 
         try {
-            addCourier(result);
-            addTimes(result);
-            addHelvetica(result);
-            addSymbol(result);
-            addZapfDingbats(result);
-
             // Try and load the iTextAsian fonts
             if(ITextFontResolver.class.getClassLoader().getResource("com/lowagie/text/pdf/fonts/cjkfonts.properties") != null) {
                 addCJKFonts(result);
             }
+            
+            addCustomLoadedFonts(result);
+            
+            addTimes(result);
+            addCourier(result);
+            addHelvetica(result);
+            addSymbol(result);
+            addZapfDingbats(result);
         } catch (DocumentException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (IOException e) {
@@ -566,27 +578,9 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     // fontFamilyName, fontName, encoding
     private static final String[][] cjkFonts = {
         {"STSong-Light", "STSong-Light", "UniGB-UCS2-H"},
-        {"STSong-Light-V", "STSong-Light", "UniGB-UCS2-V"},
-        {"STSongStd-Light", "STSongStd-Light", "UniGB-UCS2-H"},
-        {"STSongStd-Light-V", "STSongStd-Light", "UniGB-UCS2-V"},
-        {"MHei-Medium", "MHei-Medium", "UniCNS-UCS2-H"},
-        {"MHei-Medium-V", "MHei-Medium", "UniCNS-UCS2-V"},
         {"MSung-Light", "MSung-Light", "UniCNS-UCS2-H"},
-        {"MSung-Light-V", "MSung-Light", "UniCNS-UCS2-V"},
-        {"MSungStd-Light", "MSungStd-Light", "UniCNS-UCS2-H"},
-        {"MSungStd-Light-V", "MSungStd-Light", "UniCNS-UCS2-V"},
         {"HeiseiMin-W3", "HeiseiMin-W3", "UniJIS-UCS2-H"},
-        {"HeiseiMin-W3-V", "HeiseiMin-W3", "UniJIS-UCS2-V"},
-        {"HeiseiKakuGo-W5", "HeiseiKakuGo-W5", "UniJIS-UCS2-H"},
-        {"HeiseiKakuGo-W5-V", "HeiseiKakuGo-W5", "UniJIS-UCS2-V"},
-        {"KozMinPro-Regular", "KozMinPro-Regular", "UniJIS-UCS2-HW-H"},
-        {"KozMinPro-Regular-V", "KozMinPro-Regular", "UniJIS-UCS2-HW-V"},
-        {"HYGoThic-Medium", "HYGoThic-Medium", "UniKS-UCS2-H"},
-        {"HYGoThic-Medium-V", "HYGoThic-Medium", "UniKS-UCS2-V"},
-        {"HYSMyeongJo-Medium", "HYSMyeongJo-Medium", "UniKS-UCS2-H"},
-        {"HYSMyeongJo-Medium-V", "HYSMyeongJo-Medium", "UniKS-UCS2-V"},
-        {"HYSMyeongJoStd-Medium", "HYSMyeongJoStd-Medium", "UniKS-UCS2-H"},
-        {"HYSMyeongJoStd-Medium-V", "HYSMyeongJoStd-Medium", "UniKS-UCS2-V"}
+        {"HYGoThic-Medium", "HYGoThic-Medium", "UniKS-UCS2-H"}
     };
 
     private static void addCJKFonts(Map fontFamilyMap) throws DocumentException, IOException {
@@ -602,6 +596,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     private static void addCJKFont(String fontFamilyName, String fontName, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
         FontFamily fontFamily = new FontFamily();
         fontFamily.setName(fontFamilyName);
+        addDefaultFonts(fontFamilyName);
 
         fontFamily.addFontDescription(new FontDescription(createFont(fontName+",BoldItalic", encoding, false), IdentValue.OBLIQUE, 700));
         fontFamily.addFontDescription(new FontDescription(createFont(fontName+",Italic", encoding, false), IdentValue.OBLIQUE, 400));
@@ -609,6 +604,62 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, false), IdentValue.NORMAL, 400));
 
         fontFamilyMap.put(fontFamilyName, fontFamily);
+    }
+    
+    private static void addCustomLoadedFonts(Map fontFamilyMap) throws DocumentException, IOException {
+        String path = SetupManager.getBaseDirectory() + File.separator + "fonts" + File.separator;
+        File fontsFile = new File(path + "fonts.csv");
+        if (fontsFile.exists()) {
+            BufferedReader br = null;
+            String line, name, fontPath, encoding = "";
+            String[] parts = null;
+            File fontFile = null;
+            try {
+                br = new BufferedReader(new FileReader(path + "fonts.csv"));
+                while ((line = br.readLine()) != null) {
+                    parts = line.split(",");
+                    name = parts[0].trim();
+                    fontPath = parts[1].trim();
+                    encoding = parts[2].trim();
+                    fontFile = new File(path + fontPath);
+                    if (fontFile.exists()) {
+                        addCustomFont(name, path + fontPath, encoding, fontFamilyMap);
+                    }
+                }
+            } catch (Exception e) {
+                LogUtil.error(ITextCustomFontResolver.class.getName(), e, "");
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {}
+                }
+            }
+        }
+        
+        addCustomFont("Noto Naskh Arabic", "fonts/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf", BaseFont.IDENTITY_H, fontFamilyMap);
+        addCustomFont("DroidSans", "fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, fontFamilyMap);
+        addCustomFont("THSarabun", "fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, fontFamilyMap);
+    }
+    
+    private static void addCustomFont(String fontFamilyName, String path, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
+        FontFamily fontFamily = new FontFamily();
+        fontFamily.setName(fontFamilyName);
+        addDefaultFonts(fontFamilyName);
+        
+        fontFamily.addFontDescription(new FontDescription(createFont(path, encoding, false), IdentValue.NORMAL, 400));
+        fontFamilyMap.put(fontFamilyName, fontFamily);
+    }
+    
+    private static void addDefaultFonts(String name) {
+        if (!defaultFonts.isEmpty()) {
+            defaultFonts += ", ";
+        }
+        defaultFonts += "\""+name+"\"";
+    }
+    
+    public String getDefaultFonts() {
+        return defaultFonts;
     }
 
     private static class FontFamily {
