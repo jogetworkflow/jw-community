@@ -108,7 +108,7 @@
                 if (o.startDateFieldId  !== undefined && o.startDateFieldId !== "") {
                     var startDate = FormUtil.getField(o.startDateFieldId);
                     var startDateOrg = null;
-                    startDate.live("change", function() {
+                    startDate.on("change", function() {
                         if (startDateOrg !== $(startDate).val()) {
                             startDateOrg = $(startDate).val();
                             setDateRange(startDate, "minDate", element, o);
@@ -120,7 +120,7 @@
                 if (o.endDateFieldId  !== undefined && o.endDateFieldId !== "") {
                     var endDate = FormUtil.getField(o.endDateFieldId);
                     var endDateOrg = null;
-                    endDate.live("change", function() {
+                    endDate.on("change", function() {
                         if (endDateOrg !== $(endDate).val()) {
                             endDateOrg = $(endDate).val();
                              setDateRange(endDate, "maxDate", element, o);

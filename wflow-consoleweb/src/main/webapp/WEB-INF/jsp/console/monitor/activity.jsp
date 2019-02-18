@@ -191,7 +191,7 @@
             modal: true,
             width: 860,
             height: 520,
-            position: 'center',
+            position: { my: 'center' },
             autoOpen: true,
             draggable: false,
             resizable: false,
@@ -200,6 +200,7 @@
               opacity: 0.5,
               background: "black"
             },
+            closeText: '',
             zIndex: 15001
         });
     }

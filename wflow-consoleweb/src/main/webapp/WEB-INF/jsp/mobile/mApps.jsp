@@ -30,7 +30,7 @@
             }            
             Mobile.contextPath = "${pageContext.request.contextPath}";
             Mobile.updateCache();
-            $("#mobileHome").live("pageshow", function() {
+            $("#mobileHome").on("pageshow", function() {
                 Mobile.checkNetworkStatus();
             });
             <c:if test="${cordova eq 'true'}">

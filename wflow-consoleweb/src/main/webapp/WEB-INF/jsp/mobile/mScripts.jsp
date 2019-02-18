@@ -52,7 +52,7 @@
             $.unblockUI();
         });
         
-        $('div:jqmData(role="page")').live('pageshow',function(){
+        $('div:jqmData(role="page")').on('pageshow',function(){
             $( document ).trigger( "enhance.tablesaw" );
         });
     });
