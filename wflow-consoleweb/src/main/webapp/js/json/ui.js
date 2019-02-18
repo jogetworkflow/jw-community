@@ -273,7 +273,7 @@ PopupDialog.prototype = {
           //minHeight: this.height,
           width: this.width,
           height: this.height,
-          position: 'center',
+          position: { my: 'center' },
           draggable: false,
           autoOpen: true,
           resizable: false,
