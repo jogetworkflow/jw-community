@@ -40,7 +40,7 @@
 
     <script type="text/javascript">
         function validateField(){
-            var idMatch = /^[0-9a-zA-Z_-]+$/.test($("#id").attr("value"));
+            var idMatch = /^[0-9a-zA-Z_-]+$/.test($("#id").val());
             if(!idMatch){
                 var alertString = '';
                 if(!idMatch){

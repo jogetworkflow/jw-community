@@ -41,7 +41,7 @@
         <script type="text/javascript">
             var viewForm = function() {
                 // get form row id
-                var primaryKey = $("#form-row-id").attr("value");
+                var primaryKey = $("#form-row-id").val();
                 if (!primaryKey || primaryKey.length == 0) {
                     primaryKey = "<c:out value="${primaryKey}"/>";
                 }

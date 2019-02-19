@@ -29,7 +29,7 @@ var AdvancedTools = {
         
         $("#builder-bar .controls").append('&nbsp;&nbsp;&nbsp;<a id="advanced_tool" ><i class="fas fa-wrench"></i> '+get_advtool_msg('adv.tool.Advanced.Tools')+'</a>');
         $("#advanced_tool").click(function(){
-            $(".builder_tool_tabs li:first-child input").attr("checked", "checked");
+            $(".builder_tool_tabs li:first-child input").prop("checked", true);
             AdvancedTools.showQuickOverlay();
             AdvancedTools.treeViewer.render();            
         });

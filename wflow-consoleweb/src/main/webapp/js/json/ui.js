@@ -283,6 +283,7 @@ PopupDialog.prototype = {
           },
           open: openDialog,
           close: closePopupDialog,
+          closeText: '',
           zIndex: 15001
       });
   },

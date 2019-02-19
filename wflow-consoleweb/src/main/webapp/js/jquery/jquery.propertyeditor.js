@@ -156,7 +156,7 @@ PropertyEditor.Popup = {
         }
         
         if (popupProp !== null && popupProp.autoSave === true) {
-            $("#"+id).closest(".boxy-wrapper").find(".autosave input").attr("checked", "checked");
+            $("#"+id).closest(".boxy-wrapper").find(".autosave input").prop("checked", true);
         }
         
         //adjust width & height
@@ -1811,7 +1811,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                         modal: true,
                         width: "70%",
                         buttons: [{
-                            text: $(button).attr("value"),
+                            text: $(button).val(),
                             click: function() {
                                 page.validation(function(addition_data) {
                                     data = $.extend(data, addition_data);
@@ -2775,7 +2775,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
         if (this.isDataReady) {
             value = "";
             $('[name=' + this.id + ']:not(.hidden) option').each(function() {
-                value += $(this).attr("value") + ';';
+                value += $(this).val() + ';';
             });
             if (value !== '') {
                 value = value.replace(/;$/i, '');
@@ -2843,7 +2843,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
                 isInit = false;
                 values = [];
                 $("#" + thisObj.id + " option").each(function() {
-                    values.push($(this).attr("value"));
+                    values.push($(this).val());
                 });
             }
 
@@ -2871,19 +2871,19 @@ PropertyEditor.Type.SortableSelect.prototype = {
                 });
             } else {
                 $("#" + thisObj.id + "option").each(function() {
-                    var value = $(this).attr("value");
+                    var value = $(this).val();
                     if ($("#" + thisObj.id + "_options").find("option[value='" + value + "']").length === 0) {
                         $(this).remove();
                     }
                 });
                 $("#" + thisObj.id + " option").each(function() {
-                    var value = $(this).attr("value");
+                    var value = $(this).val();
                     if ($("#" + thisObj.id + "_options").find("option[value='" + value + "']").length === 0) {
                         $(this).remove();
                     }
                 });
                 $("#" + thisObj.id + "_options option.selected").each(function() {
-                    var value = $(this).attr("value");
+                    var value = $(this).val();
                     if ($("#" + thisObj.id).find("option[value='" + value + "']").length === 0) {
                         var option = $(this).clone();
                         $("#" + thisObj.id).append(option);
@@ -2897,7 +2897,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
     optionsSelectAll: function() {
         var thisObj = this;
         $("#" + thisObj.id + "_options option").each(function() {
-            var value = $(this).attr("value");
+            var value = $(this).val();
             if ($("#" + thisObj.id).find("option[value='" + value + "']").length === 0) {
                 var option = $(this).clone();
                 $("#" + thisObj.id).append(option);
@@ -2908,7 +2908,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
     optionsSelect: function() {
         var thisObj = this;
         $("#" + thisObj.id + "_options option:selected").each(function() {
-            var value = $(this).attr("value");
+            var value = $(this).val();
             if ($("#" + thisObj.id).find("option[value='" + value + "']").length === 0) {
                 var option = $(this).clone();
                 $("#" + thisObj.id).append(option);
@@ -2919,7 +2919,7 @@ PropertyEditor.Type.SortableSelect.prototype = {
     optionsUnselect: function() {
         var thisObj = this;
         $("#" + thisObj.id + " option:selected").each(function() {
-            var value = $(this).attr("value");
+            var value = $(this).val();
             $("#" + thisObj.id + "_options").find("option[value='" + value + "']").removeClass("selected");
             $(this).remove();
         });
@@ -3304,7 +3304,7 @@ PropertyEditor.Type.Grid.prototype = {
                         var regex = new RegExp(tempFilter);
 
                         $(this).find("option").each(function() {
-                            var option_value = $(this).attr("value");
+                            var option_value = $(this).val();
                             if (option_value !== "") {
                                 var result = regex.exec(option_value);
                                 if (!(result !== null && result.length > 0 && result[0] === option_value)) {

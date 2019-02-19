@@ -288,7 +288,7 @@
                 if ($(container).find("[name='"+propt+"']").is("[type='checkbox']") || $(container).find("[name='"+propt+"']").is("[type='radio']")) {
                     if ($(container).find("[name='"+propt+"']").hasClass("truefalse")) {
                         if (values[propt]) {
-                            $(container).find("[name='"+propt+"']").attr("checked", "checked");
+                            $(container).find("[name='"+propt+"']").prop("checked", true);
                         }
                     } else {
                         

@@ -4504,7 +4504,7 @@ ProcessBuilder.Mapper = {
         var id = $(node).find(".edit_mapping").attr("nodeid");
         var processDefId = $(node).find(".edit_mapping").attr("processdefid");
         var mapping = $(node).find(".edit_mapping").data("mapping");
-        var value = $(valueRemoveLink).attr("value");
+        var value = $(valueRemoveLink).val();
         
         var removeItem = {
             success : function(response) {

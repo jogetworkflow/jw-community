@@ -283,7 +283,7 @@
                 if (submitForm) {
                     popupActionDialog.init();
                     var name = $(this).attr("name");
-                    var value = $(this).attr("value");
+                    var value = $(this).val();
                     setTimeout(function(){
                         $("form[name='form_${dataListId}']").append('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
                         $("form[name='form_${dataListId}']").submit();
@@ -304,9 +304,9 @@
     function toggleAll(element) {
         var table = $(element).closest("table");
         if ($(element).is(":checked")) {
-            $(table).find("input[type=checkbox]").attr("checked", "checked");
+            $(table).find("input[type=checkbox]").prop("checked", true);
         } else {
-            $(table).find("input[type=checkbox]").removeAttr("checked");
+            $(table).find("input[type=checkbox]").prop("checked", false);
         }
     }
     function dlPopupAction(element, message) {

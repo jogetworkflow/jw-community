@@ -69,7 +69,7 @@
                 for (var i = data.length - 1; i >= 0 ; i--) {
                     var id = data[i]['id'];
                     if ($("input:checkbox[value="+id+"]").length > 0) {
-                        $("input:checkbox[value="+id+"]").attr("checked", "checked");
+                        $("input:checkbox[value="+id+"]").prop("checked", true);
                         data.splice(i, 1);
                     }
                 }
