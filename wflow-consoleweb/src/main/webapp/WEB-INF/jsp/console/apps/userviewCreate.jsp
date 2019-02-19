@@ -96,7 +96,7 @@
         }
             
         function validateField(){
-            var idMatch = /^[a-zA-Z0-9_]+$/.test($("#id").attr("value"));
+            var idMatch = /^[a-zA-Z0-9_]+$/.test($("#id").val());
             if(!idMatch){
                 var alertString = '';
                 if(!idMatch){

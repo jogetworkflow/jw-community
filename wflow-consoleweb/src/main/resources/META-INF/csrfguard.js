@@ -444,12 +444,16 @@ $(function() {
 			};
 		}
 		
-		/** update nodes in DOM after load **/
-		addEvent(window,'unload',EventCache.flush);
-		addEvent(window,'load', function() {
-			//injectTokens(token_name, token_value);
-                        injectTokens(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-		});
+//		/** update nodes in DOM after load **/
+//		addEvent(window,'unload',EventCache.flush);
+//		addEvent(window,'load', function() {
+//			//injectTokens(token_name, token_value);
+//                        injectTokens(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+//		});
+                /** update nodes in DOM after document ready **/
+                $(document).ready(function(){
+                    injectTokens(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                });
 	} else {
 		alert("OWASP CSRFGuard JavaScript was included from within an unauthorized domain!");
 	}

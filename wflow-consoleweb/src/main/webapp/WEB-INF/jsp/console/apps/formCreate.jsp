@@ -114,8 +114,8 @@
         }
         
         function validateField(){
-            var idMatch = /^[0-9a-zA-Z_]+$/.test($("#id").attr("value"));
-            var tableName = $("#tableName").attr("value");
+            var idMatch = /^[0-9a-zA-Z_]+$/.test($("#id").val());
+            var tableName = $("#tableName").val();
             var tableNameMatch = /^[0-9a-zA-Z_]+$/.test(tableName);
             if(!idMatch || !tableNameMatch || tableName.length > 20){
                 var alertString = '';
