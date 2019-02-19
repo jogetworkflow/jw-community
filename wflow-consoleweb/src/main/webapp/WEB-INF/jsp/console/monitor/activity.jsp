@@ -160,7 +160,7 @@
 
     function setVariable(variable){
         var url = "${pageContext.request.contextPath}/web/json/monitoring/activity/variable/${activity.id}/" + encodeURIComponent(variable);
-        var value = $('#' + variable).attr('value');
+        var value = $('#' + variable).val();
         UI.blockUI();
         ConnectionManager.post(url, callback, "value=" + encodeURIComponent(value));
 

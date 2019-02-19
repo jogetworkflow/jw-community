@@ -435,7 +435,7 @@ JsonTable.prototype = {
                             if (thisObject.checkboxSelectSingle) {
                                 cb.click();
                             } else {
-                                cb.attr('checked', !cb.attr('checked'));
+                                cb.prop("checked", !cb.prop("checked"));
                                 toggleCheckbox(cb.attr("id"));
                             }
                         }
