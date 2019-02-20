@@ -36,6 +36,7 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
@@ -45,6 +46,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -125,6 +127,8 @@ public class AppServiceImpl implements AppService {
     DatalistDefinitionDao datalistDefinitionDao;
     @Autowired
     UserviewDefinitionDao userviewDefinitionDao;
+    @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
     @Autowired
     MessageDao messageDao;
     @Autowired
@@ -1721,6 +1725,9 @@ public class AppServiceImpl implements AppService {
             value = value.replace("<resourceList>", "<!--resourceList>");
             value = value.replace("</resourceList>", "</resourceList-->");
             value = value.replace("<resourceList/>", "<!--resourceList/-->");
+            value = value.replace("<builderDefinitionList>", "<!--builderDefinitionList>");
+            value = value.replace("</builderDefinitionList>", "</builderDefinitionList-->");
+            value = value.replace("<builderDefinitionList/>", "<!--builderDefinitionList/-->");
             
             return value.getBytes("UTF-8");
         } catch (Exception ex) {
@@ -1896,6 +1903,8 @@ public class AppServiceImpl implements AppService {
             replacement.put("</meta-->", "</meta>");
             replacement.put("<!--resourceList>", "<resourceList>");
             replacement.put("</resourceList-->", "</resourceList>");
+            replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
+            replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
             appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
             Serializer serializer = new Persister();
@@ -2164,6 +2173,14 @@ public class AppServiceImpl implements AppService {
                 
                 userviewDefinitionDao.add(o);
                 LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
+            }
+        }
+        
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                o.setAppDefinition(newAppDef);
+                builderDefinitionDao.add(o);
+                LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
             }
         }
 

@@ -30,6 +30,7 @@ import org.apache.commons.io.comparator.NameFileComparator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.dao.MessageDao;
@@ -39,6 +40,8 @@ import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
+import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.Message;
@@ -54,6 +57,7 @@ import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
@@ -193,6 +197,8 @@ public class ConsoleWebController {
     UserviewDefinitionDao userviewDefinitionDao;
     @Resource
     DatalistDefinitionDao datalistDefinitionDao;
+    @Resource
+    BuilderDefinitionDao builderDefinitionDao;
     @Resource
     FormDataDao formDataDao;
     @Autowired
@@ -5003,13 +5009,28 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/i18n/(*:name)")
-    public String consoleI18n(ModelMap map, HttpServletResponse response, @RequestParam("name") String name) throws IOException {
+    public String consoleI18n(ModelMap map, HttpServletResponse response, @RequestParam("name") String name, @RequestParam(value = "type", required = false) String type) throws IOException {
         Properties keys = new Properties();
-
+        
         //get message key from property file
         InputStream inputStream = null;
         try {
-            inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
+            if ("cbuilder".equals(name)) {
+                if (type != null) {
+                    CustomBuilder builder = CustomBuilderUtil.getBuilder(type);
+                    if (builder != null) {
+                        ResourceBundle bundle =  pluginManager.getPluginMessageBundle(builder.getClassName(), builder.getResourceBundlePath());
+                        if (bundle != null) {
+                            map.addAttribute("bundle", bundle);
+                        }
+                    }
+                }
+                
+                //reuse userview builder message bundle
+                inputStream = this.getClass().getClassLoader().getResourceAsStream("ubuilder.properties");
+            } else {
+                inputStream = this.getClass().getClassLoader().getResourceAsStream(name + ".properties");
+            }
             if (inputStream != null) {
                 keys.load(inputStream);
                 map.addAttribute("name", name);
@@ -5190,18 +5211,24 @@ public class ConsoleWebController {
         Collection<FormDefinition> formDefinitionList = null;
         Collection<DatalistDefinition> datalistDefinitionList = null;
         Collection<UserviewDefinition> userviewDefinitionList = null;
+        Collection<BuilderDefinition> builderDefinitionList = null;
 
         if (appDef != null) {
             formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, "name", false, null, null);
             datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, "name", false, null, null);
             userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, "name", false, null, null);
+            builderDefinitionList = builderDefinitionDao.getList(appDef, "name", false, null, null);
         }
 
         map.addAttribute("appDef", appDef);
         map.addAttribute("formDefinitionList", formDefinitionList);
         map.addAttribute("datalistDefinitionList", datalistDefinitionList);
         map.addAttribute("userviewDefinitionList", userviewDefinitionList);
-
+        map.addAttribute("builderDefinitionList", builderDefinitionList);
+        
+        Map<String, CustomBuilder> builders = CustomBuilderUtil.getBuilderList();
+        map.addAttribute("builders", builders);
+        
         return "console/apps/navigator";
     }
     

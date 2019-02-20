@@ -46,7 +46,13 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                pluginList = pluginManager.list(Class.forName(className));
+                Class clazz;
+                if (pluginManager.getCustomPluginInterface(className) != null) {
+                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
+                } else {
+                    clazz = Class.forName(className);
+                }
+                pluginList = pluginManager.list(clazz);
             } else {
                 pluginList = new ArrayList<Plugin>();
 
@@ -80,7 +86,13 @@ public class PluginJsonController {
                     
                     String type = "";
                     for (String c : pluginType.keySet()) {
-                        if (Class.forName(c).isInstance(plugin)) {
+                        Class clazz;
+                        if (pluginManager.getCustomPluginInterface(c) != null) {
+                            clazz = pluginManager.getCustomPluginInterface(c).getClassObj();
+                        } else {
+                            clazz = Class.forName(c);
+                        }
+                        if (clazz.isInstance(plugin)) {
                             if (!type.isEmpty()) {
                                 type += ", ";
                             }
@@ -108,7 +120,13 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                pluginList = pluginManager.list(Class.forName(className));
+                Class clazz;
+                if (pluginManager.getCustomPluginInterface(className) != null) {
+                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
+                } else {
+                    clazz = Class.forName(className);
+                }
+                pluginList = pluginManager.list(clazz);
             } else {
                 pluginList = pluginManager.list();
             }
@@ -134,7 +152,14 @@ public class PluginJsonController {
                     
                     String type = "";
                     for (String c : pluginType.keySet()) {
-                        if (Class.forName(c).isInstance(plugin)) {
+                        Class clazz;
+                        if (pluginManager.getCustomPluginInterface(c) != null) {
+                            clazz = pluginManager.getCustomPluginInterface(c).getClassObj();
+                        } else {
+                            clazz = Class.forName(c);
+                        }
+                        
+                        if (clazz.isInstance(plugin)) {
                             if (!type.isEmpty()) {
                                 type += ", ";
                             }
@@ -163,7 +188,13 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                pluginList = pluginManager.listOsgiPlugin(Class.forName(className));
+                Class clazz;
+                if (pluginManager.getCustomPluginInterface(className) != null) {
+                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
+                } else {
+                    clazz = Class.forName(className);
+                }
+                pluginList = pluginManager.listOsgiPlugin(clazz);
             } else {
                 pluginList = pluginManager.listOsgiPlugin(null);
             }
@@ -189,7 +220,13 @@ public class PluginJsonController {
                     
                     String type = "";
                     for (String c : pluginType.keySet()) {
-                        if (Class.forName(c).isInstance(plugin)) {
+                        Class clazz;
+                        if (pluginManager.getCustomPluginInterface(c) != null) {
+                            clazz = pluginManager.getCustomPluginInterface(c).getClassObj();
+                        } else {
+                            clazz = Class.forName(c);
+                        }
+                        if (clazz.isInstance(plugin)) {
                             if (!type.isEmpty()) {
                                 type += ", ";
                             }

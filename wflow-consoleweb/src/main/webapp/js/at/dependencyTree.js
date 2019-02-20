@@ -249,9 +249,20 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
                     deferreds.push(getProperties);
                     
                     var pnode = node;
+                    var customBuilderHasChilds = false;
+                    if (AdvancedTools.options.builder === "custom") {
+                        var childsproperties = CustomBuilder.config.advanced_tools.tree_viewer.childs_properties;
+                        for (var i in childsproperties) {
+                            if (jsonObj[childsproperties[i]] !== undefined) {
+                                customBuilderHasChilds = true;
+                                break;
+                            }
+                        }
+                    }
                     if (node.data['className'] === "org.joget.apps.form.model.Form" 
                             || node.data['className'] === "org.joget.apps.form.model.Section" 
-                            || node.data['className'] === "org.joget.apps.form.model.Column") {
+                            || node.data['className'] === "org.joget.apps.form.model.Column"
+                            || customBuilderHasChilds) {
                         pnode = $.extend(true, {}, DependencyTree.Node);
                         pnode.text = get_advtool_msg("dependency.tree.Properties");
                         pnode.a_attr['class'] += " properties";
@@ -276,9 +287,74 @@ DependencyTree.Matchers['pluginOrElementSelect'] = {
         }
     }
 };
+DependencyTree.Matchers['customBuilder'] = {
+    match : function (viewer, deferreds, node, jsonObj, refObj) {
+        if (AdvancedTools.options.builder === "custom") {
+            var open = false;
+            var hasChildProperty = false;
+            var childsproperties = CustomBuilder.config.advanced_tools.tree_viewer.childs_properties;
+            for (var i in childsproperties) {
+                if (jsonObj[childsproperties[i]] !== undefined) {
+                    hasChildProperty = true;
+                    break;
+                }
+            }
+            var label = "";
+            var properties;
+            if (jsonObj['className'] !== undefined) {
+                if (CustomBuilder.paletteElements[jsonObj['className']] !== undefined) {
+                    label = CustomBuilder.paletteElements[jsonObj['className']].label;
+                    properties = CustomBuilder.paletteElements[jsonObj['className']].propertyOptions;
+                } else {
+                    return false;
+                }
+            } else if (hasChildProperty) {
+                properties = CustomBuilder.propertiesOptions;
+                node.data['value'] = label;
+                node.data['indicators'] = [];
+                var getProperties = $.Deferred();
+                deferreds.push(getProperties);
+                var pnode = $.extend(true, {}, DependencyTree.Node);
+                pnode.text = get_advtool_msg("dependency.tree.Properties");
+                pnode.data['properties'] = jsonObj['properties'];
+                pnode.a_attr['class'] += " properties";
+                pnode.state = {
+                    opened: false
+                };
+                pnode.type = 'properties';
+                pnode.data['parent'] = node;
+                node.children.push(pnode);
+                DependencyTree.Util.pluginPropertiesWalker(viewer, pnode, node, jsonObj, getProperties, properties);
+            } else {
+                return false;
+            }
+            
+            for (var i in childsproperties) {
+                if (jsonObj[childsproperties[i]] !== undefined) {
+                    for (var j in jsonObj[childsproperties[i]]) {
+                        open = true;
+                        var c = jsonObj[childsproperties[i]][j];
+                        var cnode = $.extend(true, {}, DependencyTree.Node);
+                        cnode.data['isCustomBuilder'] = true;
+                        cnode.data['parent'] = node;
+                        node.children.push(cnode);
+                        DependencyTree.Util.runMatchers(viewer, deferreds, cnode, c);
+                    }
+                }
+            }
+            node.state = {
+                opened: open
+            };
+            DependencyTree.Matchers['customBuilder'].matchers = CustomBuilder.config.advanced_tools.tree_viewer.matchers;
+            return true;
+        }
+        return false;
+    },
+    matchers : {}
+};
 DependencyTree.Matchers['formContainer'] = {
     match : function (viewer, deferreds, node, jsonObj, refObj) {
-        if (jsonObj['elements'] !== undefined && jsonObj['elements'].length > 0) {
+        if (AdvancedTools.options.builder === "form" && jsonObj['elements'] !== undefined && jsonObj['elements'].length > 0) {
             node.data['isFormContainer'] = true;
             //clear indicators added previously
             node.data['indicators'] = [];
@@ -918,6 +994,29 @@ DependencyTree.Matchers['string'] = {
                 return false;
             }
         },
+        'isCustomBuilder' : {
+            match : function (viewer, deferreds, node, jsonObj, refObj) {
+                if (viewer.builderType !== null && viewer.builderType !== undefined) {
+                    for (var key in viewer.builderType) {
+                        if (viewer.builderType.hasOwnProperty(key)) {
+                            var builder = viewer.builderType[key];
+                            if (jsonObj !== "" && refObj !== undefined && (
+                                    (refObj['name'] !== undefined && refObj['name'].toLowerCase().indexOf(builder.value+"id") !== -1) ||
+                                    (refObj['options_ajax'] !== undefined && refObj['options_ajax'].toLowerCase().indexOf("/cbuilder/"+builder.value+"/options") !== -1 ))) {
+
+                                if (viewer.builderList[jsonObj] !== undefined) {
+                                    node.data['value'] = viewer.builderList[jsonObj];
+                                    DependencyTree.Util.addIndicator(viewer, node, builder.icon, builder.label + ' (' + viewer.builderList[jsonObj] + ')', "", viewer.options.contextPath + '/web/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilder/'+builder.value+'/design/' + jsonObj);
+                                } else {
+                                    DependencyTree.Util.addIndicator(viewer, node, builder.icon, builder.label, "red");
+                                }
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        },
         'options' : {
             match : function (viewer, deferreds, node, jsonObj, refObj) {
                 if (refObj !== undefined 
@@ -1032,8 +1131,10 @@ DependencyTree.Viewer = function(element, dataSelector, options) {
     this.formList;
     this.datalistList;
     this.userviewList;
+    this.builderList;
     this.processList; //ignore now
     this.pluginList;
+    this.builderType;
     this.container;
     this.pluginProperties = {};
     this.callbacks = [];
@@ -1111,6 +1212,44 @@ DependencyTree.Viewer.prototype = {
                     for (var i in response) {
                         if (response[i].value !== "") {
                             viewer.userviewList[response[i].value] = response[i].label;
+                        }
+                    }
+                    ul.resolve();
+                },
+                error: function() {
+                    ul.resolve();
+                }
+            });
+            
+            var ul = $.Deferred();
+            deferreds.push(ul);
+            $.ajax({
+                url: viewer.options.contextPath + '/web/json/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilders',
+                dataType : "json",
+                success: function(response) {
+                    viewer.builderType = {};
+                    for (var i in response) {
+                        if (response[i].value !== "") {
+                            viewer.builderType[response[i].value] = response[i];
+                        }
+                    }
+                    ul.resolve();
+                },
+                error: function() {
+                    ul.resolve();
+                }
+            });
+            
+            var ul = $.Deferred();
+            deferreds.push(ul);
+            $.ajax({
+                url: viewer.options.contextPath + '/web/json/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilderAllOptions',
+                dataType : "json",
+                success: function(response) {
+                    viewer.builderList = {};
+                    for (var i in response) {
+                        if (response[i].value !== "") {
+                            viewer.builderList[response[i].value] = response[i].label;
                         }
                     }
                     ul.resolve();
@@ -1268,9 +1407,14 @@ DependencyTree.Viewer.prototype = {
                 viewer.render();
             }, 200);
         }
+        var jsonObj;
         
-        var data = $(viewer.dataSelector).val();
-        var jsonObj = JSON.parse(data);
+        if (AdvancedTools.options.builder === "custom") {
+            jsonObj = CustomBuilder.data;
+        } else {
+            var data = $(viewer.dataSelector).val();
+            jsonObj = JSON.parse(data);
+        }   
         
         var deferreds = [];
         DependencyTree.elements = []; //clear previous data

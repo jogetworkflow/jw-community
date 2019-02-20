@@ -1,0 +1,112 @@
+@import url("builder.css");
+
+#toolbar{
+    border: 1px solid #D6D6D6;
+    padding: 5px;
+    margin: 5px;
+    background: #ECECEC;
+    -moz-box-shadow: 0 0 6px gray;
+    -webkit-box-shadow: 0 0 6px gray;
+    box-shadow: 0 0 6px gray;
+    -moz-border-radius: 6px 6px 6px 6px;
+    -webkit-border-radius: 6px;
+    border-radius: 6px;
+    display:none;
+}
+
+#toolbar ul{
+    list-style-type:none;
+    padding:0px;
+    margin:0px;
+}
+
+#toolbar ul li{
+    float:left;
+    padding:3px 5px;
+}
+
+#builder_canvas {
+    position: relative;
+    top: 3px;
+    left: 190px;
+    display: block;
+}
+
+.element-options {
+    display: none;
+    visibility: hidden;
+    position: absolute;
+    text-align: right;
+    background: none;
+    z-index: 100;
+    top: 0px;
+    right: 0px;
+}
+
+.element-options button {
+    text-decoration: none;
+    color: black;
+    font-size: 13px;
+    height: 20px;
+    width: 20px;
+    line-height: 15px;
+    padding: 0px;
+    margin-top: 2px;
+    margin-left: 2px;
+    cursor: pointer;
+    border: solid 1px #666666;
+    opacity: .6;
+    -moz-opacity: .6;
+    filter: alpha(opacity=60);
+    z-index: 300;
+    background: #f0ffcc;
+    -moz-box-shadow: 0 0 2px green;
+    -webkit-box-shadow: 0 0 2px green;
+    box-shadow: 0 0 2px green;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+.element-options button span{
+    width:0px;
+    margin-left: 0px;
+    display:none;
+}
+.element-options button:hover span {
+    background: #ddd none repeat scroll 0 0;
+    border: 1px solid gray;
+    border-radius: 2px;
+    display: block;
+    margin-top: 2px;
+    padding: 5px;
+    position: absolute;
+    width: auto;
+    margin-left: -25%;
+    white-space: nowrap;
+}
+.element-options button:hover {
+    padding: 0 4px;
+    background: lightgreen;
+}
+
+.element-options button.element-delete{
+    background: #FAD2DB;
+    border: solid 1px #FF0339;
+    -moz-box-shadow: 0 0 2px #FF0339;
+    -webkit-box-shadow: 0 0 2px #FF0339;
+    box-shadow: 0 0 2px #FF0339;
+}
+
+.element-options button.element-delete:hover{
+    background: #FA7390;
+}
+
+.element-options button.disabled, .element-options button.disabled:hover{
+    color:#fff;
+    background: darkslategray;
+    display:none;
+}
+
+.clear{
+    clear:both;
+}

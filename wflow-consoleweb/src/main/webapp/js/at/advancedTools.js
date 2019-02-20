@@ -13,12 +13,16 @@ var AdvancedTools = {
         $(document.body).append(overlayContainer);
         
         AdvancedTools.initTreeViewer();
-        AdvancedTools.initPermission();
+        if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportPermission())) {
+            AdvancedTools.initPermission();
+        }
         AdvancedTools.initUsage();
         if (window['FormBuilder'] !== undefined) {
             AdvancedTools.initTable();
         }
-        AdvancedTools.initI18n();
+        if (AdvancedTools.options.builder !== "custom" || (AdvancedTools.options.builder === "custom" && CustomBuilder.supportI18n())) {
+            AdvancedTools.initI18n();
+        }
         if (window['FormBuilder'] !== undefined) {
             AdvancedTools.initToolTip();
         }
@@ -166,6 +170,8 @@ var AdvancedTools = {
                 builder = DatalistBuilder;
             } else if (AdvancedTools.options.builder === "userview") {
                 builder = UserviewBuilder;
+            } else if (AdvancedTools.options.builder === "custom") {
+                builder = CustomBuilder;
             }
             
             builder.showDiff(function (merge) {
@@ -288,7 +294,7 @@ var AdvancedTools = {
         $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
         
         $("a#i18n").on("click", function() {
-            if ($("#tab-i18n .i18n_table").length === 0) {
+            if ($("#tab-i18n .i18n_table").length === 0 || $("#tab-i18n > h3").length === 0) {
                 $("#tab-i18n").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.init($("#tab-i18n"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
                 $("#tab-i18n .dt-loading").remove();

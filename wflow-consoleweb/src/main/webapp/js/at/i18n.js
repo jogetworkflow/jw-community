@@ -50,7 +50,11 @@ I18nEditor = {
         var jsonObj = JSON.parse(json);
         
         var labels = [];
-        I18nEditor.retrieveLabels(labels, jsonObj, ['label']);
+        if (AdvancedTools.options.builder === "custom") {
+            I18nEditor.retrieveLabels(labels, jsonObj, CustomBuilder.config.advanced_tools.i18n.keywords);
+        } else {
+            I18nEditor.retrieveLabels(labels, jsonObj, ['label']);
+        }
         
         var regex = new RegExp("\\#([^#^\"^ ])*\\.([^#^\"])*\\#", "gi");
         var found = json.match(regex);

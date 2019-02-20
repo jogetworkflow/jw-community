@@ -112,6 +112,11 @@
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="fluCache" />
     </bean>
+    
+    <bean id="builderDefinitionDao" class="org.joget.apps.app.dao.BuilderDefinitionDaoImpl">
+        <property name="sessionFactory" ref="appSessionFactory"/>
+        <property name="cache" ref="fluCache" />
+    </bean>
 
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
         <property name="sessionFactory" ref="appSessionFactory"/>
@@ -152,6 +157,7 @@
                 <value>/org/joget/apps/app/model/PackageActivityPlugin.hbm.xml</value>
                 <value>/org/joget/apps/app/model/PackageParticipant.hbm.xml</value>
                 <value>/org/joget/apps/app/model/UserviewDefinition.hbm.xml</value>
+                <value>/org/joget/apps/app/model/BuilderDefinition.hbm.xml</value>
                 <value>/org/joget/apps/app/model/PluginDefaultProperties.hbm.xml</value>
                 <value>/org/joget/apps/app/model/Message.hbm.xml</value>
                 <value>/org/joget/apps/app/model/AppResource.hbm.xml</value>

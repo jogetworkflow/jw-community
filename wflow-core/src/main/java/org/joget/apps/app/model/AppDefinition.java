@@ -28,6 +28,10 @@ public class AppDefinition extends AbstractVersionedObject {
     @ElementList(required = false,inline=true)
     private Collection<DatalistDefinition> datalistDefinitionList;
 
+    @Path("builderDefinitionList")
+    @ElementList(required = false,inline=true)
+    private Collection<BuilderDefinition> builderDefinitionList;
+
     @Path("pluginDefaultPropertiesList")
     @ElementList(required = false,inline=true)
     private Collection<PluginDefaultProperties> pluginDefaultPropertiesList;
@@ -142,6 +146,14 @@ public class AppDefinition extends AbstractVersionedObject {
 
     public void setUserviewDefinitionList(Collection<UserviewDefinition> userviewDefinitionList) {
         this.userviewDefinitionList = userviewDefinitionList;
+    }
+    
+    public Collection<BuilderDefinition> getBuilderDefinitionList() {
+        return builderDefinitionList;
+    }
+
+    public void setBuilderDefinitionList(Collection<BuilderDefinition> builderDefinitionList) {
+        this.builderDefinitionList = builderDefinitionList;
     }
 
     public boolean isPublished() {

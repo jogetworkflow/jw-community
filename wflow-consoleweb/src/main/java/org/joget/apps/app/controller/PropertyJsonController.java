@@ -21,6 +21,7 @@ import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.plugin.base.CustomPluginInterface;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -63,7 +64,15 @@ public class PropertyJsonController {
         
         try {
             // get available elements from the plugin manager
-            Collection<Plugin> elementList = pluginManager.list(Class.forName(className));
+            Class clazz;
+            CustomPluginInterface cpi = pluginManager.getCustomPluginInterface(className);
+            if (cpi != null) {
+                clazz = cpi.getClassObj();
+            } else {
+                clazz = Class.forName(className);
+            }
+            
+            Collection<Plugin> elementList = pluginManager.list(clazz);
             Map<String, String> empty = new HashMap<String, String>();
             empty.put("value", "");
             empty.put("label", "");
