@@ -475,6 +475,7 @@ td.error .chosen-container, td.error input {
 
 .property-type-sortableselect select {
     width: 38%;
+    min-width: 38% !important;
     height: 130px;
 }
 
