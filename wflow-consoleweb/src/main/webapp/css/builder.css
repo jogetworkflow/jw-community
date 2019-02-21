@@ -524,6 +524,9 @@ li.jsondiffpatch-unchanged {
     text-decoration: none;
     color:#fff;
 }
+#advancedToolsFrame .ace_editor * {
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace !important;
+}
 .sticky-buttons {
     position: fixed;
     right: 10%;
