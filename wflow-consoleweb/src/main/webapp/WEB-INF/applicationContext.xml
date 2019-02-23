@@ -127,6 +127,13 @@
         
     <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager">
     </bean>                
+    
+    <bean id="directoryManager" class="org.joget.apps.workflow.security.EnhancedDirectoryManagerProxyImpl" primary="true">
+        <qualifier value="main" />
+        <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
+        <property name="setupManager" ref="setupManager" />
+        <property name="pluginManager" ref="pluginManager" />
+    </bean>
 
     <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
         <property name="directoryManager" ref="directoryManager"/>

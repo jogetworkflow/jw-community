@@ -115,7 +115,7 @@ body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs > li.active > a {
 a.print-button {
     display: none;
 }
-#section-actions {
+#home #section-actions {
     display: none;
 }
 .app-design-button {
