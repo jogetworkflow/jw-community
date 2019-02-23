@@ -327,24 +327,22 @@ public class TensorFlowUtil {
         Map<String, Tensor> tensorMap = executeTensorFlowModel(graphInputStream, inputTensorMap, outputNames);
         for (String operationName: tensorMap.keySet()) {
             try (Tensor tensor = tensorMap.get(operationName)) {
-                float[] result;
                 long[] rshape = tensor.shape();
-                long resultSize = (rshape.length == 1) ? 1 : rshape[1];
-                if (resultSize == 1) {
-                    if (tensor.dataType().equals(DataType.INT32) || tensor.dataType().equals(DataType.INT64) || tensor.dataType().equals(DataType.UINT8)) {
-                        int[] tempResult = new int[1];
-                        tensor.copyTo(tempResult);
-                        result = new float[1];
-                        result[0] = tempResult[0];
-                    } else {
-                        float[] tempResult = new float[1];
-                        tensor.copyTo(tempResult);
-                        result = tempResult;
+                int size = 1;
+                for (int i = 0; i < rshape.length; i++) {
+                    size *= rshape[i];
+                }
+                float[] result = new float[size];
+                if (tensor.dataType().equals(DataType.INT32) || tensor.dataType().equals(DataType.INT64) || tensor.dataType().equals(DataType.UINT8)) {
+                    int[] tempResult = new int[size];
+                    IntBuffer intBuffer = IntBuffer.wrap(tempResult);
+                    tensor.writeTo(intBuffer);
+                    for (int i = 0; i < size; i++) {
+                        result[i] = tempResult[i];
                     }
                 } else {
-                    float[][] tempResult = new float[1][(int)resultSize];
-                    tensor.copyTo(tempResult);
-                    result = tempResult[0];
+                    FloatBuffer floatBuffer = FloatBuffer.wrap(result);
+                    tensor.writeTo(floatBuffer);
                 }
                 resultMap.put(operationName, result);
             }
@@ -592,7 +590,7 @@ public class TensorFlowUtil {
                     }
                 }
             } catch (Exception e) {
-                //catch exception to let the rules checking still run if error
+                LogUtil.error(TensorFlowUtil.class.getName(), e, "");
             }
         }
         

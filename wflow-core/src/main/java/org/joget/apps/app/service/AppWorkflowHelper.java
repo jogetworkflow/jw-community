@@ -188,6 +188,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
 
                 if (plugin != null) {
                     WorkflowAssignment mockAssignment = new WorkflowAssignment();
+                    mockAssignment.setProcessId(processId);
                     
                     Map propertiesMap = AppPluginUtil.getDefaultProperties(plugin, activityPluginMeta.getPluginProperties(), appDef, mockAssignment);
                     propertiesMap.put("pluginManager", pluginManager);
