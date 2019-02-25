@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.Normalizer;
 import org.apache.commons.lang.StringUtils;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
@@ -64,6 +65,12 @@ public class DataListPdfWriter {
                     parts = line.split(",");
                     name = parts[0].trim();
                     fontPath = parts[1].trim();
+                    
+                    String normalizedFileName = Normalizer.normalize(fontPath, Normalizer.Form.NFKC);
+                    if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+                        continue;
+                    }
+                    
                     encoding = parts[2].trim();
                     fontFile = new File(path + fontPath);
                     if (fontFile.exists()) {
