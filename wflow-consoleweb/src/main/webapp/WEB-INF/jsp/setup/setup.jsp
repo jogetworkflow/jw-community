@@ -23,16 +23,17 @@
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title")%></title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v5.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css">
         <style>
+            body {
+                padding-top: 41px;
+            }
             #main {
-                width: 99%;
-                margin-left: 10px;
-                top: -8px;                
+                margin-left: 0px;                
             }
             #main-header {
-                display: block;
+                display: block !important;
             }
             #setupNotice {
                 border-bottom: solid 1px #555;
@@ -46,17 +47,20 @@
                 margin: 20px 0px;
             }
             #setupResult {
-                background: #ddd;
-                padding: 10px;
-                margin: 20px 0px;
-                border: dashed 1px #555;
+                padding: 10px 15px;
+                margin-bottom: 20px;
                 border-radius: 5px;
+                border: 1px solid #c3e6cb;
             }
             #setupResult.setupSuccess {
-                background: #ccffcc;
+                color: #155724;
+                background-color: #d4edda;
+                border-color: #c3e6cb;
             }
             #setupResult.setupError {
-                background: #ffcccc;
+                color: #721c24;
+                background-color: #f8d7da;
+                border-color: #f5c6cb;
             }
             #setupResult ul {
                 margin: 10px 15px;
@@ -69,6 +73,12 @@
             }
             #setupErrorDetails {
                 margin: 5px 0px;
+            }
+            .form-row span.form-input.checkbox{
+                min-height: 30px;
+                display: block;
+                margin-bottom: 15px;
+                line-height: 16px;
             }
         </style>
     </head>
@@ -161,13 +171,13 @@
                             <div id="advancedSetup" class="main-row-content">
                                 <div class="form-row">
                                     <label for="sampleApps"><%= ResourceBundleUtil.getMessage("setup.datasource.label.sampleApps")%></label>                                     
-                                    <span class="form-input">
+                                    <span class="form-input checkbox">
                                         <input type="checkbox" id="sampleApps" name="sampleApps" value="true" checked />
                                     </span>
                                 </div>
                                 <div class="form-row">
                                     <label for="sampleUsers"><%= ResourceBundleUtil.getMessage("setup.datasource.label.sampleUsers")%></label>                                     
-                                    <span class="form-input">
+                                    <span class="form-input checkbox">
                                         <input type="checkbox" id="sampleUsers" name="sampleUsers" value="true" checked />
                                     </span>
                                 </div>
