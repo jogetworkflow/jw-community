@@ -22,12 +22,12 @@ public class PresenceListener implements HttpSessionListener, ServletContextList
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        //ignore
+        PresenceManager.registerServer();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        PresenceManager.leaveAll();
+        PresenceManager.unregisterServer();
     }
  
 }
