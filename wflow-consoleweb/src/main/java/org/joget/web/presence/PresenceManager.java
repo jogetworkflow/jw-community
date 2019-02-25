@@ -12,7 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -36,6 +38,9 @@ public class PresenceManager {
     
     // Map of profile->{path->{sessionId, User}}
     private static final Map<String, Map> profilePathMap = new ConcurrentHashMap<>();
+    
+    // Map of profile->{path->{sessionId, User}}
+    private static final Set<String> activeSessions = new HashSet<>();
     
     // Blocking queue to wake notifier
     private static BlockingQueue waitQueue = new LinkedBlockingQueue();
@@ -217,9 +222,11 @@ public class PresenceManager {
             userEntry.setUsername(user.getUsername());
             userEntry.setEmail(user.getEmail());
             sessionMap.put(sessionId, userEntry);
+            activeSessions.add(DynamicDataSourceManager.getCurrentProfile() + ":" + sessionId);
             LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
         } else {
             sessionMap.remove(sessionId);
+            activeSessions.remove(DynamicDataSourceManager.getCurrentProfile() + ":" + sessionId);
             LogUtil.debug(PresenceManager.class.getName(), "remove:" + path + ":" + sessionId);
         }
         savePathMap(pathMap);
@@ -237,16 +244,26 @@ public class PresenceManager {
                 }
             }
         } else {
-            for (Map<String, UserEntry> sessionMap: pathMap.values()) {
+            for (String tempPath : pathMap.keySet()) {
+                Map<String, UserEntry> sessionMap = pathMap.get(tempPath);
                 sessionMap.remove(sessionId);
                 if (sessionMap.isEmpty()) {
-                    pathMap.remove(path);
+                    pathMap.remove(tempPath);
                 }
             }
         }
+        activeSessions.remove(DynamicDataSourceManager.getCurrentProfile() + ":" + sessionId);
         savePathMap(pathMap);
         resumeNotifier();
         LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
+    }
+    
+    public static void leaveAll() {
+        Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
+        String[] sessions = activeSessions.toArray(new String[0]);
+        for (String sess : sessions) {
+            leave(null, sess.substring(sess.indexOf(":") + 1));
+        }
     }
 
     public static Map<String, UserEntry> getUsers(String path) {
