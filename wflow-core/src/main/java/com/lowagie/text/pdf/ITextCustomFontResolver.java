@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.joget.commons.util.LogUtil;
@@ -159,7 +161,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
             } catch (DocumentException e) {
                 XRLog.exception("Could not load font " + src.asString(), e);
                 continue;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 XRLog.exception("Could not load font " + src.asString(), e);
             }
         }
@@ -171,7 +173,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         if (f.isDirectory()) {
             File[] files = f.listFiles(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
-                    String lower = name.toLowerCase();
+                    String lower = name.toLowerCase(Locale.ENGLISH);
                     return lower.endsWith(".otf") || lower.endsWith(".ttf");
                 }
             });
@@ -199,7 +201,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     public void addFont(String path, String fontFamilyNameOverride,
                         String encoding, boolean embedded, String pathToPFB)
             throws DocumentException, IOException {
-        String lower = path.toLowerCase();
+        String lower = path.toLowerCase(Locale.ENGLISH);
         if (lower.endsWith(".otf") || lower.endsWith(".ttf") || lower.indexOf(".ttc,") != -1) {
             BaseFont font = BaseFont.createFont(path, encoding, embedded);
 
@@ -256,7 +258,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     }
 
     private boolean fontSupported(String uri) {
-        String lower = uri.toLowerCase();
+        String lower = uri.toLowerCase(Locale.ENGLISH);
         if(FontUtil.isEmbeddedBase64Font(uri)) {
             return SupportedEmbeddedFontTypes.isSupported(uri);
         } else {
@@ -269,7 +271,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
     private void addFontFaceFont(
             String fontFamilyNameOverride, IdentValue fontWeightOverride, IdentValue fontStyleOverride, String uri, String encoding, boolean embedded, byte[] afmttf, byte[] pfb)
             throws DocumentException, IOException {
-        String lower = uri.toLowerCase();
+        String lower = uri.toLowerCase(Locale.ENGLISH);
         if (fontSupported(lower)) {
             String fontName = (FontUtil.isEmbeddedBase64Font(uri)) ? fontFamilyNameOverride+SupportedEmbeddedFontTypes.getExtension(uri) : uri;
             BaseFont font = BaseFont.createFont(fontName, encoding, embedded, false, afmttf, pfb);
@@ -620,6 +622,12 @@ public class ITextCustomFontResolver extends ITextFontResolver {
                     parts = line.split(",");
                     name = parts[0].trim();
                     fontPath = parts[1].trim();
+                    
+                    String normalizedFileName = Normalizer.normalize(fontPath, Normalizer.Form.NFKC);
+                    if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
+                        continue;
+                    }
+
                     encoding = parts[2].trim();
                     fontFile = new File(path + fontPath);
                     if (fontFile.exists()) {
