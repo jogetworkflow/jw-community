@@ -2,6 +2,19 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.16
+=================
+dd8e7ed Fixed: wflow-core - Ajax Cascading Field - Option id contains quote character does not work correctly. #6284 @6.0-SNAPSHOT
+01307e7 Fixed: wflow-consoleweb - Embeded Datalist - Id in returned JSON should not be escaped. #6260 @6.0-SNAPSHOT
+7b5224b Fixed: wflow-plugin-base - Plugin - Not able to extends UniversalTheme. @6.0-SNAPSHOT
+0cfb036 Fixed: wflow-core - FormPdfUtil - Fixed security scan reported issues. @6.0-SNAPSHOT
+f8c36e6 Fixed: wflow-core - Selectbox - Value can't load in an Ajax cascading selecbox when value has ampersand. #6284 @6.0-SNAPSHOT
+5eb3db9 Fixed: wflow-consoleweb - Datalist PDF Export - Does not support Arabic. #6141 @6.0-SNAPSHOT Fixed: wflow-consoleweb - Datalist PDF Export - Not able to extend language support. #6141 @6.0-SNAPSHOT Fixed: wflow-consoleweb - FormPDFUtil - Should support the languages supported by datalist PDF export without additional configuration. #6141 @6.0-SNAPSHOT
+6aedbd6 Fixed: wflow-plugin-base - Upgraded to Apache Felix 6.0.2 to fix "Unknown protocol: jrt" error on Java 11.0.2 @6.0-SNAPSHOT
+260b1f6 Fixed: wflow-consoleweb - FormPdfUtil - Arabic characters are disjointed. #6141 @6.0-SNAPSHOT
+8cf6bcf Fixed: wflow-consoleweb - Form Builder - Throws undefined 'dom' error after saved due to form is not ready rendering. #6278 @6.0-SNAPSHOT
+fcf374e Fixed: wflow-core - Popup - Userview theme reset the current app definition of a popup window. #6260 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.15
 =================
 169611c Fixed: wflow-consoleweb - Form Builder - Correction of form property description.   @6.0-SNAPSHOT
