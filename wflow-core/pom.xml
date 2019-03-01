@@ -198,11 +198,6 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>4.11.0.201803080745-r</version>
         </dependency>    
-        <dependency>
-            <groupId>com.github.axet</groupId>
-            <artifactId>TarsosDSP</artifactId>
-            <version>2.4-1</version>
-        </dependency>    
     </dependencies>
     <distributionManagement>
         <repository>
