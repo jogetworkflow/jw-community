@@ -62,7 +62,7 @@ public class TensorFlowUtil {
     public static Map<String, TensorFlowInput> defaultInputClasses = null;
     public static Map<String, TensorFlowPostProcessing> defaultPostClasses = null;
     
-    protected static boolean isValidURL(String urlString) {
+    public static boolean isValidURL(String urlString) {
         try {
             URL url = new URL(urlString);
             url.toURI();
