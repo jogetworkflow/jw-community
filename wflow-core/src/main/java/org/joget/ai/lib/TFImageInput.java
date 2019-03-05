@@ -20,9 +20,10 @@ public class TFImageInput implements TensorFlowInput {
     public Tensor getInputs(Map params, String processId, Map<String, String> variables, Map<String, Object> tempDataHolder) throws IOException {
         String filename = AppPluginUtil.getVariable(params.get("image").toString(), variables);
         String form = AppPluginUtil.getVariable(params.get("form").toString(), variables);
+        String recordId = null;
         if (!form.isEmpty()) {
             AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-            String recordId = appService.getOriginProcessId(processId);
+            recordId = appService.getOriginProcessId(processId);
             
             Map<String, FormRowSet> formDatas = null;
             if (tempDataHolder.containsKey("FORM_DATAS_CACHE")) {
@@ -46,7 +47,7 @@ public class TFImageInput implements TensorFlowInput {
         }
         String type = FilenameUtils.getExtension(filename);
         
-        return TensorFlowUtil.imageInput(TensorFlowUtil.getInputStream(filename, form, processId), 
+        return TensorFlowUtil.imageInput(TensorFlowUtil.getInputStream(filename, form, recordId), 
                 type, Integer.parseInt(AppPluginUtil.getVariable(params.get("height").toString(), variables)), 
                 Integer.parseInt(AppPluginUtil.getVariable(params.get("width").toString(), variables)), 
                 Float.parseFloat(AppPluginUtil.getVariable(params.get("mean").toString(), variables)), 
@@ -80,8 +81,8 @@ public class TFImageInput implements TensorFlowInput {
         
         String html = "<select name=\"datatype\" class=\"input_datatype\"></select>";
         html += "<div><select name=\"form\" class=\"input_form\"><option value=\"\">"+emptyLabel+"</option></select><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/></div>";
-        html += "<div><input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/>";
-        html += "<input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/>";
+        html += "<div><input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/>";
+        html += "<input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/>";
         html += "<input name=\"mean\" class=\"input_mean small required\" placeholder=\""+meanLabel+"\"/>";
         html += "<input name=\"scale\" class=\"input_scale small required\" placeholder=\""+scaleLabel+"\"/></div>";
         
