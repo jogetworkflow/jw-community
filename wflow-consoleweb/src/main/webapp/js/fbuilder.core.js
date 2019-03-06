@@ -1154,22 +1154,18 @@ FormBuilder = {
             
             // decorate all elements
             if ($(copiedElement).hasClass("form-section")) {
-                FormBuilder.updateCopiedId(copiedElement);
                 FormBuilder.decorateSection(copiedElement);
             
                 $(copiedElement).find(".form-column").each(function(index, obj) {
-                    FormBuilder.updateCopiedId(obj);
                     FormBuilder.decorateColumn(obj);
                 });
 
                 $(copiedElement).find(".form-cell").each(function(index, obj) {
-                    FormBuilder.updateCopiedId(obj);
                     FormBuilder.updateElementDOM(obj);
                     FormBuilder.refreshElementTemplate(obj);
                     FormBuilder.decorateElement(obj);
                 });
             } else {
-                FormBuilder.updateCopiedId(copiedElement);
                 FormBuilder.updateElementDOM(copiedElement);
                 FormBuilder.refreshElementTemplate(copiedElement);
                 FormBuilder.decorateElement(copiedElement);
@@ -1177,23 +1173,6 @@ FormBuilder = {
             
             // initialize new sections and columns
             FormBuilder.initSectionsAndColumns();
-        }
-    },
-    
-    updateCopiedId : function (element) {
-        var propertyJson = $(element).attr("element-property");
-        var property = eval("(" + propertyJson + ")");
-        if (property !== undefined && property !== null) {
-            var id = property.id;
-            var count = 0;
-            var newId = id;
-            while ($("[element-id="+newId+"]").length > 0) {
-                count++;
-                newId = id + "_" + count;
-            }
-            
-            property.id = newId;
-            $(element).attr("element-property", JSON.encode(property));
         }
     },
     
