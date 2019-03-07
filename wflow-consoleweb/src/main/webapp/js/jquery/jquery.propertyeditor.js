@@ -3733,7 +3733,7 @@ PropertyEditor.Type.GridCombine.prototype = {
             });
         }
 
-        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-cicle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
         return html;
     },
     renderDefault: function() {
