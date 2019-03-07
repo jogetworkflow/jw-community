@@ -9,8 +9,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.PackageDefinition;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.LogUtil;
+import org.joget.workflow.model.dao.WorkflowHelper;
+import org.joget.workflow.util.WorkflowUtil;
 
 /**
  * DAO to load/store AppVersionedObjects objects
@@ -62,6 +65,9 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
     public boolean add(T object) {
         try {
             save(getEntityName(), object);
+            
+            clearDeadlineCache(object);
+            
             return true;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -72,6 +78,9 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
     public boolean update(T object) {
         try {
             merge(getEntityName(), object);
+            
+            clearDeadlineCache(object);
+            
             return true;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
@@ -84,6 +93,8 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
             T object = loadById(id, appDefinition);
             if (object != null) {
                 delete(getEntityName(), object);
+                
+                clearDeadlineCache(object);
             }
             return true;
         } catch (Exception e) {
@@ -157,5 +168,14 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
             paramList.add(appDefinition.getVersion());
         }
         return paramList;
+    }
+    
+    protected void clearDeadlineCache(T object) {
+        AppDefinition appDef = object.getAppDefinition();
+        if (appDef != null && appDef.getPackageDefinition() != null) {
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            WorkflowHelper appWorkflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            appWorkflowHelper.cleanDeadlineAppDefinitionCache(packageDef.getId(), packageDef.getVersion().toString());
+        }
     }
 }

@@ -758,4 +758,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         AppUtil.setCurrentAppDefinition(appDef);
     }
+    
+    public void cleanForDeadline() {
+        AuditTrailManager auditTrailManager = (AuditTrailManager) WorkflowUtil.getApplicationContext().getBean("auditTrailManager");
+        auditTrailManager.clean();
+    }
 }

@@ -111,4 +111,8 @@ public interface WorkflowHelper {
      */
     void updateAppDefinitionForDeadline(String processId, String packageId, String packageVersion);
     
+    /**
+     * Clean all the cache cache for deadline
+     */
+    void cleanForDeadline();
 }

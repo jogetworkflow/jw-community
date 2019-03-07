@@ -53,4 +53,8 @@ public class MockWorkflowHelperImpl implements WorkflowHelper {
     public void cleanDeadlineAppDefinitionCache(String packageId, String packageVersion) {
         
     }
+    
+    public void cleanForDeadline() {
+    
+    }
 }
