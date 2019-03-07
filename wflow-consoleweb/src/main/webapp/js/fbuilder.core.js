@@ -1144,6 +1144,10 @@ FormBuilder = {
                 $(copiedElement).html("");
             }
             
+            if ($(copiedElement).hasClass("form-section")) {
+                FormBuilder.updateCopiedId(copiedElement);
+            }
+            
             if (position === "before") {
                 $(element).before(copiedElement);
             } else if (position === "after") {
@@ -1173,6 +1177,23 @@ FormBuilder = {
             
             // initialize new sections and columns
             FormBuilder.initSectionsAndColumns();
+        }
+    },
+    
+    updateCopiedId : function (element) {
+        var propertyJson = $(element).attr("element-property");
+        var property = eval("(" + propertyJson + ")");
+        if (property !== undefined && property !== null) {
+            var id = property.id;
+            var count = 0;
+            var newId = id;
+            while ($("[element-id="+newId+"]").length > 0) {
+                count++;
+                newId = id + "_" + count;
+            }
+            
+            property.id = newId;
+            $(element).attr("element-property", JSON.encode(property));
         }
     },
     
