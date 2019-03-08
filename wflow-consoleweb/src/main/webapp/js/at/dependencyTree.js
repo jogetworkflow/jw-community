@@ -1221,8 +1221,8 @@ DependencyTree.Viewer.prototype = {
                 }
             });
             
-            var ul = $.Deferred();
-            deferreds.push(ul);
+            var cb = $.Deferred();
+            deferreds.push(cb);
             $.ajax({
                 url: viewer.options.contextPath + '/web/json/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilders',
                 dataType : "json",
@@ -1233,15 +1233,15 @@ DependencyTree.Viewer.prototype = {
                             viewer.builderType[response[i].value] = response[i];
                         }
                     }
-                    ul.resolve();
+                    cb.resolve();
                 },
                 error: function() {
-                    ul.resolve();
+                    cb.resolve();
                 }
             });
             
-            var ul = $.Deferred();
-            deferreds.push(ul);
+            var cbl = $.Deferred();
+            deferreds.push(cbl);
             $.ajax({
                 url: viewer.options.contextPath + '/web/json/console/app/'+viewer.options.appId+'/'+viewer.options.appVersion+'/cbuilderAllOptions',
                 dataType : "json",
@@ -1252,10 +1252,10 @@ DependencyTree.Viewer.prototype = {
                             viewer.builderList[response[i].value] = response[i].label;
                         }
                     }
-                    ul.resolve();
+                    cbl.resolve();
                 },
                 error: function() {
-                    ul.resolve();
+                    cbl.resolve();
                 }
             });
             
@@ -1406,6 +1406,7 @@ DependencyTree.Viewer.prototype = {
             setTimeout(function(){
                 viewer.render();
             }, 200);
+            return;
         }
         var jsonObj;
         
