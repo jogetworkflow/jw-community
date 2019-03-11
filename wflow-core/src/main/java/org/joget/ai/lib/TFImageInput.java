@@ -78,13 +78,15 @@ public class TFImageInput implements TensorFlowInput {
         String meanLabel = ResourceBundleUtil.getMessage("app.simpletfai.mean");
         String scaleLabel = ResourceBundleUtil.getMessage("app.simpletfai.scale");
         String emptyLabel = ResourceBundleUtil.getMessage("app.simpletfai.retrieveFromUrl");
+        String sourceLabel = ResourceBundleUtil.getMessage("app.simpletfai.source");
+        String typeLabel = ResourceBundleUtil.getMessage("app.simpletfai.type");
         
-        String html = "<select name=\"datatype\" class=\"input_datatype\"></select>";
-        html += "<div><select name=\"form\" class=\"input_form\"><option value=\"\">"+emptyLabel+"</option></select><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/></div>";
-        html += "<div><input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/>";
-        html += "<input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/>";
-        html += "<input name=\"mean\" class=\"input_mean small required\" placeholder=\""+meanLabel+"\"/>";
-        html += "<input name=\"scale\" class=\"input_scale small required\" placeholder=\""+scaleLabel+"\"/></div>";
+        String html = "<select name=\"datatype\" class=\"input_datatype small\"></select><span class=\"label\">"+typeLabel+"</span>";
+        html += "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
+        html += "<div><input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span>";
+        html += "<input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span>";
+        html += "<input name=\"mean\" class=\"input_mean small required\" placeholder=\""+meanLabel+"\"/><span class=\"label\">"+meanLabel+"</span>";
+        html += "<input name=\"scale\" class=\"input_scale small required\" placeholder=\""+scaleLabel+"\"/><span class=\"label\">"+scaleLabel+"</span></div>";
         
         return html;
     }

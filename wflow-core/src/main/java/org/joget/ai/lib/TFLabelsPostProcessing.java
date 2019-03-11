@@ -63,10 +63,10 @@ public class TFLabelsPostProcessing implements TensorFlowPostProcessing {
         String clearFileLabel = ResourceBundleUtil.getMessage("peditor.clear");
         String variableNameLabel = ResourceBundleUtil.getMessage("app.simpletfai.variableName");
         
-        String html = "<input name=\"threshold\" class=\"post_threshold small required\" placeholder=\""+thresholdLabel+"\"/>";
+        String html = "<input name=\"threshold\" class=\"post_threshold small required\" placeholder=\""+thresholdLabel+"\"/><span class=\"label\">"+thresholdLabel+"</span>";
         html += "<label><input name=\"toplabel\" class=\"post_toplabel truefalse\" type=\"checkbox\" value=\"true\"/> "+toplabelLabel+"</label>";
-        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
-        html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select></div>";
+        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
+        html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span></div>";
         
         return html;
     }

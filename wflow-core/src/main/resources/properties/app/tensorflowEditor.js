@@ -148,7 +148,7 @@
         var css = '.tfio-ioset {margin-bottom: 5px;}';
         css += '.tfiowrapper a.deleteinput, .tfiowrapper a.deletepost {position: absolute; right: 5px; top: 5px;}';
         css += '.tfio-row .input-fields > div {margin-top:5px;}';
-        css += '.tfio-row .input-fields label {display:inline;}';
+        css += '.tfio-row .input-fields label {display:inline-block; padding: 7px 0;}';
         
         var html = '<div name="'+thisObj.id+'">';
         html += '<div class="tfio-container"></div><a class="pebutton tfbutton addset"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addSession@@</a>';
@@ -365,7 +365,7 @@
         var row = $('<div class="perow tfio-row input" data-type="'+type+'"><label class="row-title"></label><a class="deleteinput" title="@@app.simpletfai.deleteinput@@"><i class="fas fa-trash-alt"></i></a><div class="input-fields"></div></div>');
         
         $(row).find(".row-title").text(thisObj.inputs[type].label);
-        $(row).find(".input-fields").append('<input name="name" class="input_name half required" placeholder="@@app.simpletfai.inputname@@"/>');
+        $(row).find(".input-fields").append('<input name="name" class="input_name half required" placeholder="@@app.simpletfai.inputname@@"/><span class="label">@@app.simpletfai.inputname@@</span>');
         $(row).find(".input-fields").append(thisObj.inputs[type].ui);
         
         if ($(row).find(".input_datatype").length > 0) {
@@ -381,7 +381,7 @@
     addOutput : function(button) {
         var thisObj = this;
         var container = $(button).parent().parent().find("> .outputrows-container");
-        var row = $('<div class="perow tfio-row output"><table><tr><td><input name="name" class="output_name required" placeholder="@@app.simpletfai.outputname@@"/></td><td><input name="variable" class="output_variable required" placeholder="@@app.simpletfai.variableName@@"/></td><td class="alignright"><a class="deleteoutput" title="@@app.simpletfai.deleteOutput@@"><i class="fas fa-trash-alt"></i></a></td></tr></table></div>');
+        var row = $('<div class="perow tfio-row output"><table><tr><td><input name="name" class="output_name required" placeholder="@@app.simpletfai.outputname@@"/><span class="label">@@app.simpletfai.outputname@@</span></td><td><input name="variable" class="output_variable required" placeholder="@@app.simpletfai.variableName@@"/><span class="label">@@app.simpletfai.variableName@@</span></td><td class="alignright"><a class="deleteoutput" title="@@app.simpletfai.deleteOutput@@"><i class="fas fa-trash-alt"></i></a></td></tr></table></div>');
         
         $(container).append(row);
     },
@@ -405,7 +405,7 @@
             });
         }
         
-        $(row).find(".input-fields").append('<input name="name" class="post_name half required" placeholder="@@app.simpletfai.postname@@"/>');
+        $(row).find(".input-fields").append('<input name="name" class="post_name half required" placeholder="@@app.simpletfai.postname@@"/><span class="label">@@app.simpletfai.postname@@</span>');
         $(row).find(".input-fields").append(thisObj.posts[type].ui);
         
         if (thisObj.posts[type].initScript !== undefined && thisObj.posts[type].initScript !== "") {

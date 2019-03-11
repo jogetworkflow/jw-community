@@ -41,7 +41,7 @@ public class TFEuclideanDistancePostProcessing implements TensorFlowPostProcessi
     public String getUI() {
         String variableNameLabel = ResourceBundleUtil.getMessage("app.simpletfai.variableName");
         
-        String html = "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><select name=\"variable2\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select></div>";
+        String html = "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span><select name=\"variable2\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span></div>";
         return html;
     }
 

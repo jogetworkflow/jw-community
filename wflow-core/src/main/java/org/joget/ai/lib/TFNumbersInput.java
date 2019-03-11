@@ -33,7 +33,8 @@ public class TFNumbersInput implements TensorFlowInput {
     @Override
     public String getUI() {
         String label = ResourceBundleUtil.getMessage("app.simpletfai.numbervalues");
-        return "<select name=\"datatype\" class=\"input_datatype\"></select><div><input name=\"numbers\" class=\"input_numbers full required\" placeholder=\""+label+"\"/></div>";
+        String typeLabel = ResourceBundleUtil.getMessage("app.simpletfai.type");
+        return "<select name=\"datatype\" class=\"input_datatype small\"></select><span class=\"label\">"+typeLabel+"</span><div><input name=\"numbers\" class=\"input_numbers full required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
     }
 
     @Override

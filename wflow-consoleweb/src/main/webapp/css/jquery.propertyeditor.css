@@ -797,6 +797,7 @@ td.error .chosen-container, td.error input {
 }
 .pewrapper table tr td{
     border:0;
+    position: relative;
 }
 .pewrapper .aligncenter {
     text-align:center;
@@ -812,21 +813,61 @@ td.error .chosen-container, td.error input {
 .pewrapper .row-title {
     margin-bottom: 5px;
 }
+.pewrapper .button {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+.pewrapper span.label {
+    display: none;
+    position: absolute;
+    font-size: 11px;
+    font-weight: bold;
+    transform: translateX(-100%);
+}
 .pewrapper input, .pewrapper select {
     margin-right:5px;
+    margin-top: 8px !important;
 }
-.pewrapper .small {
+.pewrapper .small,
+.pewrapper .small + span.label{
     width:15%; 
     min-width:80px;
+    box-sizing: border-box;
 }
-.pewrapper .half {
+.pewrapper .quarter,
+.pewrapper .quarter + span.label{
+    width:25%; 
+    min-width:80px;
+    box-sizing: border-box;
+}
+.pewrapper .half,
+.pewrapper .half + span.label{
     width:40%;
+    box-sizing: border-box;
 }
-.pewrapper .full {
+.pewrapper .full,
+.pewrapper .full + span.label{
     width:80%;
+    box-sizing: border-box;
+}
+.pewrapper .perow td input + span.label,
+.pewrapper .perow td select + span.label{
+    width:88%; 
+    box-sizing: border-box;
+}
+.pewrapper .perow td select + span.label{
+    transform: none;
+    top:4px;
 }
 .pewrapper .error {
     border:1px solid red;
+}
+.pewrapper .error + span.label {
+    color: red;
+}
+.pewrapper input:focus + span.label, 
+.pewrapper select:focus + span.label {
+    display: inline-block;
 }
 .property-editor-container.narrow .property-label-container {
     width: 100%;

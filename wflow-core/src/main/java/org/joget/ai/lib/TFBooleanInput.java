@@ -34,7 +34,8 @@ public class TFBooleanInput implements TensorFlowInput {
     public String getUI() {
         String trueLabel = ResourceBundleUtil.getMessage("app.simpletfai.true");
         String falseLabel = ResourceBundleUtil.getMessage("app.simpletfai.false");
-        return "<select name=\"boolean\" class=\"input_boolean\"><option value=\"true\">"+trueLabel+"</option><option value=\"false\">"+falseLabel+"</option></select>";
+        String valueLabel = ResourceBundleUtil.getMessage("app.simpletfai.value");
+        return "<select name=\"boolean\" class=\"input_boolean small\"><option value=\"true\">"+trueLabel+"</option><option value=\"false\">"+falseLabel+"</option></select><span class=\"label\">"+valueLabel+"</span>";
     }
 
     @Override

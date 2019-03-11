@@ -146,14 +146,15 @@ public class TFAudioMelSpectrogramInput implements TensorFlowInput {
         String minFrequencyLabel = ResourceBundleUtil.getMessage("app.simpletfai.minFrequency");
         String maxFrequencyLabel = ResourceBundleUtil.getMessage("app.simpletfai.maxFrequency");
         String emptyLabel = ResourceBundleUtil.getMessage("app.simpletfai.retrieveFromUrl");
+        String sourceLabel = ResourceBundleUtil.getMessage("app.simpletfai.source");
         
-        String html = "<div><select name=\"form\" class=\"input_form\"><option value=\"\">"+emptyLabel+"</option></select><input name=\"audio\" class=\"input_audio half required\" placeholder=\""+label+"\"/></div>";
-        html += "<div><input name=\"width\" class=\"input_width small required\" placeholder=\""+widthLabel+"\"/>";
-        html += "<input name=\"height\" class=\"input_height small required\" placeholder=\""+heightLabel+"\"/>";
-        html += "<input name=\"fftSize\" class=\"input_fftSize small required\" placeholder=\""+fftSizeLabel+"\"/>";
-        html += "<input name=\"overlapSize\" class=\"input_overlapSize small required\" placeholder=\""+overlapSizeLabel+"\"/></div>";
-        html += "<div><input name=\"minFrequency\" class=\"input_minFrequency small required\" placeholder=\""+minFrequencyLabel+"\"/>";
-        html += "<input name=\"maxFrequency\" class=\"input_maxFrequency small required\" placeholder=\""+maxFrequencyLabel+"\"/></div>";
+        String html = "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"audio\" class=\"input_audio half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
+        html += "<div><input name=\"width\" class=\"input_width small required \" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span>";
+        html += "<input name=\"height\" class=\"input_height small required \" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span>";
+        html += "<input name=\"fftSize\" class=\"input_fftSize small required \" placeholder=\""+fftSizeLabel+"\"/><span class=\"label\">"+fftSizeLabel+"</span>";
+        html += "<input name=\"overlapSize\" class=\"input_overlapSize small required \" placeholder=\""+overlapSizeLabel+"\"/><span class=\"label\">"+overlapSizeLabel+"</span></div>";
+        html += "<div><input name=\"minFrequency\" class=\"input_minFrequency small required \" placeholder=\""+minFrequencyLabel+"\"/><span class=\"label\">"+minFrequencyLabel+"</span>";
+        html += "<input name=\"maxFrequency\" class=\"input_maxFrequency small required \" placeholder=\""+maxFrequencyLabel+"\"/><span class=\"label\">"+maxFrequencyLabel+"</span></div>";
         
         return html;
     }
