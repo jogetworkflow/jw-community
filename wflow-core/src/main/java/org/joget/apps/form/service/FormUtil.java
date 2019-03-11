@@ -1481,9 +1481,11 @@ public class FormUtil implements ApplicationContextAware {
             Map rules = (Map) element.getProperty("permission_rules");
             if (rules != null && rules.containsKey(formData.getPermissionKey())) {
                 props = (Map)rules.get(formData.getPermissionKey());
-            } else {
-                props = new HashMap();
             }
+        }
+        
+        if (props == null) {
+            props = new HashMap();
         }
         
         if (element.isAuthorize(formData)) {
