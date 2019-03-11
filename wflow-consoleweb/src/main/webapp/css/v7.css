@@ -221,6 +221,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
     outline:none;
+    background: #00897b !important;
 }
 button:before, input[type='button']:before, input[type='submit']:before, .smallbutton:before, .btn:before{
     content: "";
@@ -230,15 +231,15 @@ button:before, input[type='button']:before, input[type='submit']:before, .smallb
     left: 0;
     right: 0;
     bottom: 0;
-    background: #00695c;
+    background: #004d40;
     -webkit-transform: scaleX(0);
     transform: scaleX(0);
     -webkit-transform-origin: 0 50%;
     transform-origin: 0 50%;
     -webkit-transition-property: transform;
     transition-property: transform;
-    -webkit-transition-duration: 0.2s;
-    transition-duration: 0.2s;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
     -webkit-transition-timing-function: ease-out;
     transition-timing-function: ease-out;
 }
@@ -1073,7 +1074,7 @@ body#webconsole .welcome-box ul li{
     padding: 5px;
     margin-right: 10px;
 }
-.nv-link:hover {
+.nv-link:hover, .nv-link:focus {
     background: #efefef;
 }
 .nv-link-name {
