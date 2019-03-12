@@ -282,16 +282,18 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             WorkflowUserManager workflowUserManager = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
             boolean pushEnabled = !"true".equals(getPropertyString("disablePush")) && !workflowUserManager.isCurrentUserAnonymous();
             String appId = userview.getParamString("appId");
-            String userviewId = userview.getPropertyString("id");
-            String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/serviceworker";
-            jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
-            jsCssLink += "<script>$(function() {"
-                    + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
-                    + "PwaUtil.serviceWorkerPath = '" + serviceWorkerUrl + "';"
-                    + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
-                    + "PwaUtil.pushEnabled = " + pushEnabled + ";"
-                    + "PwaUtil.register();"
-                    + "});</script>";
+            if (appId != null && !appId.isEmpty()) {
+                String userviewId = userview.getPropertyString("id");
+                String serviceWorkerUrl = data.get("context_path") + "/web/userview/" + appId + "/" + userviewId + "/serviceworker";
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/pwa.js\"></script>";
+                jsCssLink += "<script>$(function() {"
+                        + "PwaUtil.contextPath = '" + data.get("context_path") + "';"
+                        + "PwaUtil.serviceWorkerPath = '" + serviceWorkerUrl + "';"
+                        + "PwaUtil.subscriptionApiPath = '" + data.get("context_path") + "/web/console/profile/subscription';"
+                        + "PwaUtil.pushEnabled = " + pushEnabled + ";"
+                        + "PwaUtil.register();"
+                        + "});</script>";
+            }
         }
             
         return jsCssLink;
