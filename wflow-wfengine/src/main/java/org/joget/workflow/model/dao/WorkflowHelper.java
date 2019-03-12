@@ -132,4 +132,9 @@ public interface WorkflowHelper {
      * @return 
      */
     String translateProcessLabel(String processId, String processDefId, String activityDefId, String defaultLabel);
+
+    /**
+     * Clean all the cache cache for deadline
+     */
+    void cleanForDeadline();
 }

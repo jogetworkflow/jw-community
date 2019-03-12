@@ -10,6 +10,7 @@ import java.util.List;
 import org.enhydra.shark.client.utilities.LimitStruct;
 import org.enhydra.shark.utilities.MiscUtilities;
 import org.joget.commons.util.HostManager;
+import org.joget.workflow.model.dao.WorkflowHelper;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.LocaleContextResolver;
@@ -183,6 +184,9 @@ public class DeadlineChecker extends Thread {
             long end = System.currentTimeMillis();
 
             LogUtil.debug(getClass().getName(), "Deadline check lasted " + (end - start) + " ms for profile " + profile + ". Checked:" + sizeToCheck + ". Failed:" + instancesFailed2check.size());
+            
+            WorkflowHelper workflowMapper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            workflowMapper.cleanForDeadline();
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
         }

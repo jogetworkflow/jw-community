@@ -865,4 +865,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
         }
         return defaultLabel;
     }
+    
+    public void cleanForDeadline() {
+        AuditTrailManager auditTrailManager = (AuditTrailManager) WorkflowUtil.getApplicationContext().getBean("auditTrailManager");
+        auditTrailManager.clean();
+    }
 }
