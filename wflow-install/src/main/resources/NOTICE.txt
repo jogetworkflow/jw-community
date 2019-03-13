@@ -62,6 +62,9 @@ http://www.jdom.org/docs/faq.html#a0030
 JFree:
 http://www.gnu.org/licenses/lgpl.html
 
+JGit
+https://www.eclipse.org/org/documents/edl-v10.php
+
 OpenPDF
 https://github.com/LibrePDF/OpenPDF/blob/master/License.md
 
@@ -76,6 +79,9 @@ http://www.apache.org/licenses/LICENSE-2.0.html
 
 Stax:
 http://stax.codehaus.org/
+
+Tensorflow
+http://www.apache.org/licenses/LICENSE-2.0.html
 
 True License:
 http://www.apache.org/licenses/LICENSE-2.0.html
