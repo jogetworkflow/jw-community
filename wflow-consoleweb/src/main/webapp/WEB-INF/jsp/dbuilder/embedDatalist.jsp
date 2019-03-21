@@ -155,7 +155,9 @@
                         }
                     }
                 });
-                result["id"] = id;
+                if (result["id"] !== undefined) {
+                    result["id"] = id;
+                }
                 var json = JSON.stringify(result);
                 var d = new Object();
                 d['id'] = id;
