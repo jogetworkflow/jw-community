@@ -294,7 +294,8 @@ var AdvancedTools = {
         $(".builder_tool_tabs").after('<div id="tab-i18n" class="tab-content"></div>');
         
         $("a#i18n").on("click", function() {
-            if ($("#tab-i18n .i18n_table").length === 0 || $("#tab-i18n > h3").length === 0) {
+            if ($("#tab-i18n .i18n_table").length === 0) {
+                $("#tab-i18n").html("");
                 $("#tab-i18n").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.init($("#tab-i18n"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
                 $("#tab-i18n .dt-loading").remove();
@@ -314,6 +315,7 @@ var AdvancedTools = {
         
         $("a#tooltip").on("click", function() {
             if ($("#tab-tooltip .i18n_table").length === 0) {
+                $("#tab-tooltip").html("");
                 $("#tab-tooltip").prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
                 I18nEditor.initTooltip($("#tab-tooltip"), $(AdvancedTools.jsonForm).find('textarea[name="json"]').val(), AdvancedTools.options);
                 $("#tab-tooltip .dt-loading").remove();
