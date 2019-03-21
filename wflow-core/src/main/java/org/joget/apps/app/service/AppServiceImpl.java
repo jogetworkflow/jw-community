@@ -2063,21 +2063,25 @@ public class AppServiceImpl implements AppService {
             }
         }
 
-        if (appDef.getEnvironmentVariableList() != null) {
-            for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
-                    EnvironmentVariable temp = environmentVariableDao.loadById(o.getId(), orgAppDef);
-                    if (temp != null) {
-                        o.setValue(temp.getValue());
+        if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
+                EnvironmentVariable temp = new EnvironmentVariable();
+                temp.setAppDefinition(newAppDef);
+                temp.setId(o.getId());
+                temp.setValue(o.getValue());
+                temp.setRemarks(o.getRemarks());
+                environmentVariableDao.add(temp);
+            }
+        } else {
+            if (appDef.getEnvironmentVariableList() != null) {
+                for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                    if (o.getValue() == null) {
+                        o.setValue("");
                     }
+                    o.setAppDefinition(newAppDef);
+
+                    environmentVariableDao.add(o);
                 }
-                
-                if (o.getValue() == null) {
-                    o.setValue("");
-                }
-                o.setAppDefinition(newAppDef);
-                
-                environmentVariableDao.add(o);
             }
         }
         
