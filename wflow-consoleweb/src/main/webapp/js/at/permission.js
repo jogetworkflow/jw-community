@@ -680,7 +680,9 @@ PermissionManager = {
     removeElementsPermission : function(key) {
         $(PermissionManager.container).find(".permission-table tbody tr:not(.header)").each(function(){
             var element = $(this).data("element");
-            if (element["properties"]["permission_rules"] !== undefined && element["properties"]["permission_rules"][key] !== undefined) {
+            if (element["properties"] === undefined && element["permission_rules"] !== undefined && element["permission_rules"][key] !== undefined) {
+                delete element["permission_rules"][key];
+            } else if (element["properties"]["permission_rules"] !== undefined && element["properties"]["permission_rules"][key] !== undefined) {
                 delete element["properties"]["permission_rules"][key];
             }
         });
