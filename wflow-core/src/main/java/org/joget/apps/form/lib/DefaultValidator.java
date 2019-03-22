@@ -201,7 +201,11 @@ public class DefaultValidator extends FormValidator {
             for (String val : values) {
                 if (val != null && !val.isEmpty()) {
                     String expression = regex;
-                    Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+                    int flags = Pattern.CASE_INSENSITIVE;
+                    if ("true".equalsIgnoreCase(getPropertyString("custom-regex-casesensitive"))) {
+                        flags = 0;
+                    }
+                    Pattern pattern = Pattern.compile(expression, flags);
                     Matcher matcher = pattern.matcher(val);
                     if (!matcher.matches()) {
                         result = false;

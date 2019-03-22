@@ -42,7 +42,19 @@
     {
         name : 'custom-regex',
         label : '@@form.defaultvalidator.custom.regex@@',
-        type : 'textfield'
+        type : 'textfield',
+        control_field: 'type',
+        control_value: 'custom',
+        control_use_regex: 'false'
+    },
+    {
+        name : 'custom-regex-casesensitive',
+        label : '@@form.defaultvalidator.custom.regex.casesensitive@@',
+        type : 'checkbox',
+        options : [{value:'true', label:''}],
+        control_field: 'type',
+        control_value: 'custom',
+        control_use_regex: 'false'
     },
     {
         name : 'message',
