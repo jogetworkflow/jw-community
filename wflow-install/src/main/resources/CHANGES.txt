@@ -2,6 +2,15 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.17
+=================
+1b878e66 Fixed: wflow-core - Import App - Environment Variable in previous app version is removed if it does not exist in the imported zip even override environment variables is disabled. #6379 @6.0-SNAPSHOT
+9b510044 Fixed: wflow-consoleweb - Embeded Datalist - Regression bug caused list grid does not work correctly. #6260 #6377 @6.0-SNAPSHOT
+c806b98e Fixed: wflow-consoleweb - Monitoring - Not able to reassign activity to username which are email address. #6378 @6.0-SNAPSHOT
+9d367693 Fixed: wflow-core - AppService - Userview manage permission menu to control listing in AppCenter works intermittently. #6373 @6.0-SNAPSHOT
+68794e2d Fixed: wflow-core/wflow-wfengine - User Notification - Did not pick up the latest plugin properties when the activity is triggered by deadline. #6342 @6.0-SNAPSHOT
+fab7b2d7 Fixed: wflow-consoleweb - Form Builder - Usability issue when copy/paste which appended number after the field id. #6343 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.16
 =================
 dd8e7ed Fixed: wflow-core - Ajax Cascading Field - Option id contains quote character does not work correctly. #6284 @6.0-SNAPSHOT
