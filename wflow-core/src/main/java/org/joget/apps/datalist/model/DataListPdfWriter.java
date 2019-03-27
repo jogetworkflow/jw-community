@@ -47,10 +47,10 @@ public class DataListPdfWriter {
         
         selector = new FontSelector();
         selector.addFont(FontFactory.getFont(FontFactory.HELVETICA, 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("MSung-Light", "UniCNS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("HeiseiMin-W3", "UniJIS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("HYGoThic-Medium", "UniKS-UCS2-H", BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
         
         String path = SetupManager.getBaseDirectory() + File.separator + "fonts" + File.separator;
         File fontsFile = new File(path + "fonts.csv");
@@ -74,7 +74,7 @@ public class DataListPdfWriter {
                     encoding = parts[2].trim();
                     fontFile = new File(path + fontPath);
                     if (fontFile.exists()) {
-                        selector.addFont(new Font(BaseFont.createFont(path + fontPath, encoding, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+                        selector.addFont(new Font(BaseFont.createFont(path + fontPath, encoding, BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
                     }
                 }
             } catch (Exception e) {
@@ -87,9 +87,9 @@ public class DataListPdfWriter {
                 }
             }
         }
-        selector.addFont(new Font(BaseFont.createFont("fonts/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
-        selector.addFont(new Font(BaseFont.createFont("fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED), 10, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("fonts/NotoNaskhArabic/NotoNaskhArabic-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("fonts/Droid-Sans/DroidSans.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 7, Font.NORMAL, new Color(0, 0, 0)));
+        selector.addFont(new Font(BaseFont.createFont("fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED), 10, Font.NORMAL, new Color(0, 0, 0)));
     }
     
     /**
