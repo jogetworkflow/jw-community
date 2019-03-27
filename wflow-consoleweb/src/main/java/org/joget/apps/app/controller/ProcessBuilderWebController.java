@@ -223,7 +223,9 @@ public class ProcessBuilderWebController {
 
         if (!pluginsMap.containsKey(p.getPluginName())) {
             Plugin plugin = pluginManager.getPlugin(p.getPluginName());
-            pluginsMap.put(p.getPluginName(), plugin);
+            if (plugin != null) {
+                pluginsMap.put(p.getPluginName(), plugin);
+            }
         }
         if (pluginsMap.containsKey(p.getPluginName())) {
             o.put("pluginLabel", pluginsMap.get(p.getPluginName()).getI18nLabel());
@@ -243,13 +245,15 @@ public class ProcessBuilderWebController {
         if ("plugin".equals(p.getType())) {
             if (!pluginsMap.containsKey(p.getValue())) {
                 Plugin plugin = pluginManager.getPlugin(p.getValue());
-                pluginsMap.put(p.getValue(), plugin);
+                if (plugin != null) {
+                    pluginsMap.put(p.getValue(), plugin);
+                }
             }
             if (pluginsMap.containsKey(p.getValue())) {
                 String htmlValue = pluginsMap.get(p.getValue()).getI18nLabel() + " (" + ResourceBundleUtil.getMessage("console.plugin.label.version") + " " +pluginsMap.get(p.getValue()).getVersion()+")";
                 o.put("htmlValue", htmlValue);
             } else {
-                String htmlValue = p.getValue() + " (" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable") + " " +pluginsMap.get(p.getValue()).getVersion()+")";
+                String htmlValue = p.getValue() + " (" + ResourceBundleUtil.getMessage("console.process.config.label.mapParticipants.unavailable");
                 o.put("htmlValue", htmlValue);
             }
         } else if ("group".equals(p.getType())) {
