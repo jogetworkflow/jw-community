@@ -290,6 +290,20 @@ body .ui-tabs-nav{
     line-height: 100%;
     border-radius: 0 !important;
 }
+body .ui-tabs-nav::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+body .ui-tabs-nav::-webkit-scrollbar:vertical {
+    width: 8px;
+}
+body .ui-tabs-nav::-webkit-scrollbar:horizontal {
+    height: 8px;
+}
+body .ui-tabs-nav::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    border: 0; 
+    background-color: rgba(0, 0, 0, .3);
+}
 body .ui-tabs .ui-state-default {
     border-bottom: 2px solid transparent !important;
 }
