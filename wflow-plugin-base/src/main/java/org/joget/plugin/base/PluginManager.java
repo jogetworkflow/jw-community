@@ -1269,6 +1269,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.app.service.MfaAuthenticator", ResourceBundleUtil.getMessage("setting.plugin.mfaAuthenticator"));
         pluginTypeMap.put("org.joget.apps.app.model.CustomBuilder", ResourceBundleUtil.getMessage("setting.plugin.customBuilder"));
         pluginTypeMap.put("org.joget.ai.TensorFlowPlugin", ResourceBundleUtil.getMessage("setting.plugin.TensorFlowPlugin"));
+        pluginTypeMap.put("org.joget.workflow.model.DecisionPlugin", ResourceBundleUtil.getMessage("setting.plugin.DecisionPlugin"));
         
         if (!customPluginInterfaces.isEmpty()) {
             for (String className : customPluginInterfaces.keySet()) {
