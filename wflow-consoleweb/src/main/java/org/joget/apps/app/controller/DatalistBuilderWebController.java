@@ -260,7 +260,7 @@ public class DatalistBuilderWebController {
             hm.put("label", sourceColumn.getLabel());
             hm.put("displayLabel", AppUtil.processHashVariable(sourceColumn.getLabel(), null, null, null, appDef));
             hm.put("sortable", true);
-            hm.put("filterable", true);
+            hm.put("filterable", sourceColumn.isFilterable());
             hm.put("type", sourceColumn.getType());
             collection.add(hm);
         }

@@ -264,7 +264,8 @@ DatalistBuilder = {
                 "id"         : column.name.toString(),
                 "label"      : column.label.toString(),
                 "displayLabel" : column.displayLabel.toString(),
-                "name"       : column.name.toString()
+                "name"       : column.name.toString(),
+                "filterable" : column.filterable
             }
             fields[temp.id] = temp;
         }
@@ -322,11 +323,15 @@ DatalistBuilder = {
         for(var e in fields){
             var field = fields[e];
             var cssClass = "";
+            var filterable = "filterable";
             DatalistBuilder.availableColumnNames.push(field.id);
             if (field.id == field.label) {
                 cssClass = " key";
             }
-            var element = '<li><div class="builder-palette-column builder-palette-element" id="' + field.id + '" data-id="' + field.id + '"><i class="far fa-hdd"></i> <label class="label' + cssClass + '">' + UI.escapeHTML(field.displayLabel) + '</label></div></li>';
+            if (!field.filterable) {
+                filterable = "";
+            }
+            var element = '<li><div class="builder-palette-column builder-palette-element ' + filterable + '" id="' + field.id + '" data-id="' + field.id + '"><i class="far fa-hdd"></i> <label class="label' + cssClass + '">' + UI.escapeHTML(field.displayLabel) + '</label></div></li>';
             $('#builder-palettle-items').append(element);
         }
         
@@ -414,7 +419,16 @@ DatalistBuilder = {
         //attach draggable and related events to columns and actions
 
         //columns and filters drag
-        $('.builder-palette-column').draggable({
+        $('.builder-palette-column:not(.filterable)').draggable({
+            connectToSortable: "#databuilderContentColumns",
+            opacity: 0.7,
+            helper: "clone",
+            zIndex: 200,
+            revert: "invalid",
+            cursor: "move"
+        }).disableSelection();
+        
+        $('.builder-palette-column.filterable').draggable({
             connectToSortable: "#databuilderContentColumns, #databuilderContentFilters",
             opacity: 0.7,
             helper: "clone",
