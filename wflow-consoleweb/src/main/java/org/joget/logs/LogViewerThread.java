@@ -17,7 +17,6 @@ public class LogViewerThread extends Thread {
     private LogViewerEndpoint endpoint;
 
     public LogViewerThread(String profile, String appId, LogViewerEndpoint endpoint) {
-        HostManager.setCurrentProfile(profile);
         this.appId = appId;
         this.profile = profile;
         this.endpoint = endpoint;
@@ -25,6 +24,8 @@ public class LogViewerThread extends Thread {
 
     @Override
     public void run() {
+        HostManager.setCurrentProfile(profile);
+        
         currentFilename = LogViewerAppender.getFileName(appId) + LogViewerAppender.LOG_ROLLING_EXT;
         readFile(currentFilename);
         
