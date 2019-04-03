@@ -989,7 +989,9 @@ body#login #page > footer {
         width: 100%;
         z-index: 10;
     }
-    
+    body.horizontal_menu #main .systemAlert + .row-fluid {
+        margin-top: 40px;
+    }
 }
 @media (max-width:767px) {
     body.horizontal_menu #sidebar li.toggled>a.dropdown:before {

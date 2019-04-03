@@ -522,6 +522,23 @@ body select:not([class^="ui-"]):focus{
     margin-bottom: 20px;
     border-radius: 5px;
 }
+.systemAlert {
+    position: relative;
+    color: #856404;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+.systemAlertClose {
+    position: absolute;
+    right: 15px;
+    top: 8px;
+    font-size: 16px;
+}
+.systemAlertMessage {
+    display: block;
+}
 
 /* popup */
 body .ui-widget-overlay{
