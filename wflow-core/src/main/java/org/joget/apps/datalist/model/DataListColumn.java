@@ -44,6 +44,13 @@ public class DataListColumn {
         this.label = label;
         this.sortable = sortable;
     }
+    
+    public DataListColumn(String name, String label, boolean sortable, boolean filterable) {
+        this.name = name;
+        this.label = label;
+        this.sortable = sortable;
+        this.filterable = filterable;
+    }
     /**
      * Identifier for the column
      */
@@ -56,6 +63,10 @@ public class DataListColumn {
      * Flag to indicate if column is sortable
      */
     private boolean sortable;
+    /**
+     * Flag to indicate if column is filterable
+     */
+    private boolean filterable = true;
     /**
      * Flag to indicate if column is hidden
      */
@@ -142,6 +153,14 @@ public class DataListColumn {
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public boolean isFilterable() {
+        return filterable;
+    }
+
+    public void setFilterable(boolean filterable) {
+        this.filterable = filterable;
     }
 
     public String getWidth() {
