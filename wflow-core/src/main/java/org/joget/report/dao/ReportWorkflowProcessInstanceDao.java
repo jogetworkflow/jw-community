@@ -11,5 +11,7 @@ public interface ReportWorkflowProcessInstanceDao {
 
     public Collection<ReportWorkflowProcessInstance> getReportWorkflowProcessInstanceList(String appId, String appVersion, String processDefId, String sort, Boolean desc, Integer start, Integer rows);
 
+    public Collection<ReportWorkflowProcessInstance> getReportWorkflowProcessInstanceList(String appId, String appVersion, String processDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows);
+
     public long getReportWorkflowProcessInstanceListSize(String appId, String appVersion, String processDefId);
 }

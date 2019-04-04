@@ -11,5 +11,7 @@ public interface ReportWorkflowActivityInstanceDao {
 
     public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows);
 
+    public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows);
+
     public long getReportWorkflowActivityInstanceListSize(String appId, String appVersion, String processDefId, String activityDefId);
 }

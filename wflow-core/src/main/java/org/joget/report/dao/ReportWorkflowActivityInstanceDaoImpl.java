@@ -24,8 +24,12 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
     public ReportWorkflowActivityInstance getReportWorkflowActivityInstance(String instanceId) {
         return (ReportWorkflowActivityInstance) super.find(ENTITY_NAME, instanceId);
     }
-
+    
     public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        return getReportWorkflowActivityInstanceList(appId, appVersion, processDefId, activityDefId, false, sort, desc, start, rows);
+    }
+
+    public Collection<ReportWorkflowActivityInstance> getReportWorkflowActivityInstanceList(String appId, String appVersion, String processDefId, String activityDefId, boolean hasSlaOnly, String sort, Boolean desc, Integer start, Integer rows) {
         String condition = " WHERE 1=1";
         Collection params = new ArrayList();
 
@@ -47,6 +51,10 @@ public class ReportWorkflowActivityInstanceDaoImpl extends AbstractSpringDao imp
         if (activityDefId != null && !activityDefId.isEmpty()) {
             condition += " AND e.reportWorkflowActivity.activityDefId = ?";
             params.add(activityDefId);
+        }
+        
+        if (hasSlaOnly) {
+            condition += " AND e.due IS NOT NULL";
         }
 
         return (List<ReportWorkflowActivityInstance>) super.find(ENTITY_NAME, condition, params.toArray(), sort, desc, start, rows);
