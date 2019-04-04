@@ -107,6 +107,31 @@ UI = {
     },
     unblockUI : function() {
         $.unblockUI();
+    },
+    maxIframe : function(id) {
+        if ($("iframe#" + id).length > 0) {
+            var iframe = $("iframe#" + id);
+            $(iframe).trigger("iframe-ui-maxsize");
+            if ($(iframe)[0].hasAttribute("frameBorder")) {
+                $(iframe).data("frameBorder", $(iframe).attr("frameBorder"));
+            }
+            $(iframe).attr("frameBorder", 0);
+            $(iframe).data("style", $(iframe).attr("style"));
+            $(iframe).addClass("maxsize");
+            $(iframe).attr("style", "position:fixed; top:0; left:0; width: 100vw;height: 100vh; margin:0; padding:0; z-index: 9999999;");
+        }
+    },
+    restoreIframe : function(id) {
+        if ($("iframe#" + id).length > 0) {
+            var iframe = $("iframe#" + id);
+            $(iframe).attr("style", $(iframe).data("style"));
+            $(iframe).removeAttr("frameBorder");
+            if ($(iframe).data("frameBorder") !== undefined) {
+                $(iframe).attr("frameBorder", $(iframe).data("frameBorder"));
+            }
+            $(iframe).removeClass("maxsize");
+            $(iframe).trigger("iframe-ui-restore");
+        }
     }
 }
 
@@ -181,6 +206,11 @@ PopupDialog.prototype = {
           }
           return;
       }
+      
+        if (parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
+            $("html").css("background", "#fff");
+            parent.UI.maxIframe(window.frameElement.id);
+        }
       
       var temWidth = $(window).width();
       var temHeight = $(window).height();
@@ -261,6 +291,11 @@ PopupDialog.prototype = {
           var newFrame = document.getElementById("jqueryDialogFrame");
           if (newFrame != null) {
               newFrame.setAttribute("src", "");
+          }
+          
+          if (parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
+                parent.UI.restoreIframe(window.frameElement.id);
+                $("html").css("background", "transparent");
           }
       }
       
