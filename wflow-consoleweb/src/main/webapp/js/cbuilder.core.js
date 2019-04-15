@@ -310,6 +310,7 @@ CustomBuilder = {
         $.post(this.saveUrl, {json : json} , function(data) {
             var d = JSON.decode(data);
             if(d.success == true){
+                $('#cbuilder-json-original').val(json);
                 CustomBuilder.updateSaveStatus("0");
                 CustomBuilder.showMessage("");
             }else{
