@@ -1,0 +1,67 @@
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+
+<c:set var="title"><fmt:message key="adminBar.label.app"/>: ${appDefinition.name}</c:set>
+<commons:header title="${title}" />
+
+<link href="${pageContext.request.contextPath}/js/boxy/stylesheets/boxy.css" rel="stylesheet" type="text/css" />
+<link href="${pageContext.request.contextPath}/js/at/usages.css" rel="stylesheet" type="text/css" />
+<script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
+<script type='text/javascript' src="${pageContext.request.contextPath}/js/at/usages.js"></script>
+
+<div id="nav">
+    <div id="nav-title">
+        <jsp:include page="appTitle.jsp" flush="true" />
+    </div>
+    <div id="nav-body">
+        <ul id="nav-list">
+            <jsp:include page="appSubMenu.jsp" flush="true" />
+        </ul>
+    </div>
+</div>
+
+<div id="main">
+    <div id="main-title"></div>
+    <div id="main-action">
+        <ul id="main-action-buttons">
+        </ul>
+    </div>
+    <div id="main-body">
+
+        <div id='nv-refresh'>
+            <a href="#" id="toggleInfo" onclick="toggleInfo();return false"><i class='fas fa-th-list'></i></a>&nbsp;&nbsp;
+            <a href='#' onclick='return refreshNavigator()'><i class="fas fa-sync-alt"></i> <fmt:message key="general.method.label.refresh"/></a>
+        </div>
+        <div id="nv-container">
+        <jsp:include page="/web/console/app/${appId}/${appVersion}/customBuilders" flush="true"/>
+        </div>
+        <script>
+            function refreshNavigator() {
+                if ($("#nv-refresh").css("visibility") != "hidden") {
+                    var loading = $("<img id='nv-loading' src='${pageContext.request.contextPath}/images/v3/loading.gif'>");
+                    $("#nv-refresh a").css("visibility", "hidden");
+                    $("#nv-refresh").append(loading);
+                }
+                $.ajax({
+                    url: "${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/customBuilders?hidden=true&_=" + jQuery.now(),
+                    success: function(data) {
+                        $("#nv-container").html(data);
+                    },
+                    complete: function() {
+                        $("#nv-refresh a").css("visibility", "visible");
+                        $(loading).remove();
+                    }
+                });
+                return false;
+            }
+            function closeDialog() {
+                refreshNavigator();
+            }            
+        </script>
+    </div>
+</div>
+
+<script>
+    Template.init("#menu-apps", "#nav-app-cbuilders");
+</script>
+
+<commons:footer />

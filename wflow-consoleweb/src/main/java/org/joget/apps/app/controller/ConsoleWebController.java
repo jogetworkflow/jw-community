@@ -3571,6 +3571,21 @@ public class ConsoleWebController {
         map.addAttribute("appDefinition", appDef);
         return "console/apps/formList";
     }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/cbuilders")
+    public String consoleCustomBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
+        String result = checkVersionExist(map, appId, version);
+        if (result != null) {
+            return result;
+        }
+
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        checkAppPublishedVersion(appDef);
+        map.addAttribute("appId", appDef.getId());
+        map.addAttribute("appVersion", appDef.getVersion());
+        map.addAttribute("appDefinition", appDef);
+        return "console/apps/cbuilderList";
+    }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
         String appId = appDef.getId();
@@ -5211,25 +5226,38 @@ public class ConsoleWebController {
         Collection<FormDefinition> formDefinitionList = null;
         Collection<DatalistDefinition> datalistDefinitionList = null;
         Collection<UserviewDefinition> userviewDefinitionList = null;
-        Collection<BuilderDefinition> builderDefinitionList = null;
 
         if (appDef != null) {
             formDefinitionList = formDefinitionDao.getFormDefinitionList(null, appDef, "name", false, null, null);
             datalistDefinitionList = datalistDefinitionDao.getDatalistDefinitionList(null, appDef, "name", false, null, null);
             userviewDefinitionList = userviewDefinitionDao.getUserviewDefinitionList(null, appDef, "name", false, null, null);
-            builderDefinitionList = builderDefinitionDao.getList(appDef, "name", false, null, null);
         }
 
         map.addAttribute("appDef", appDef);
         map.addAttribute("formDefinitionList", formDefinitionList);
         map.addAttribute("datalistDefinitionList", datalistDefinitionList);
         map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+        
+        return "console/apps/navigator";
+    }
+    
+    @RequestMapping("/console/app/(*:appId)/(~:version)/customBuilders")
+    public String consoleAppCustomBuildersNav(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        Collection<BuilderDefinition> builderDefinitionList = null;
+
+        if (appDef != null) {
+            builderDefinitionList = builderDefinitionDao.getList(appDef, "name", false, null, null);
+        }
+
+        map.addAttribute("appDef", appDef);
         map.addAttribute("builderDefinitionList", builderDefinitionList);
         
         Map<String, CustomBuilder> builders = CustomBuilderUtil.getBuilderList();
         map.addAttribute("builders", builders);
         
-        return "console/apps/navigator";
+        return "console/apps/customBuilders";
     }
     
     @RequestMapping({"/desktop","/desktop/home"})

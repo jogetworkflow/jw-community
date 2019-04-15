@@ -32,7 +32,9 @@ public class CustomBuilderUtil {
         return list;
     }
     
-    
+    public static boolean hasBuilders() {
+        return !getBuilderList().isEmpty();
+    }
     
     public static CustomBuilder getBuilder(String name) {
         return getBuilderList().get(name);
