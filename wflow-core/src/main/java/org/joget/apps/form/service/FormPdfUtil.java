@@ -34,7 +34,6 @@ import org.xhtmlrenderer.resource.FSEntityResolver;
  * 
  */
 public class FormPdfUtil {
-    private static ITextRenderer renderer;
     private static final int MIN_ESCAPE = 2;
     private static final int MAX_ESCAPE = 6;
     public final static String PDF_GENERATION = "_FORM_PDF_GENERATION";
@@ -45,19 +44,17 @@ public class FormPdfUtil {
      * @return 
      */
     public static ITextRenderer getRenderer() {
-        if (renderer == null) {
-            float dpp = 20f * 4f / 3f;
-            ITextCustomOutputDevice outputDevice = new ITextCustomOutputDevice(dpp);
-            renderer = new ITextRenderer(dpp, 20, outputDevice);
+        float dpp = 20f * 4f / 3f;
+        ITextCustomOutputDevice outputDevice = new ITextCustomOutputDevice(dpp);
+        ITextRenderer renderer = new ITextRenderer(dpp, 20, outputDevice);
             
-            SharedContext sharedContext = renderer.getSharedContext();
-            CustomITexResourceLoaderUserAgent callback = new CustomITexResourceLoaderUserAgent(renderer.getOutputDevice());
-            callback.setSharedContext(sharedContext);
-            sharedContext.setUserAgentCallback(callback);
-            ITextCustomFontResolver resolver = new ITextCustomFontResolver(sharedContext);
-            sharedContext.setFontResolver(resolver);
-            DEFAULT_FONTS = resolver.getDefaultFonts();
-        }
+        SharedContext sharedContext = renderer.getSharedContext();
+        CustomITexResourceLoaderUserAgent callback = new CustomITexResourceLoaderUserAgent(renderer.getOutputDevice());
+        callback.setSharedContext(sharedContext);
+        sharedContext.setUserAgentCallback(callback);
+        ITextCustomFontResolver resolver = new ITextCustomFontResolver(sharedContext);
+        sharedContext.setFontResolver(resolver);
+        DEFAULT_FONTS = resolver.getDefaultFonts();
         return renderer;
     }
     
@@ -102,10 +99,26 @@ public class FormPdfUtil {
      * @return 
      */
     public static byte[] createPdf(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
+        return createPdf(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter, true);
+    }
+    
+    /**
+     * Create PDF file based on Form HTML
+     * @param html
+     * @param header
+     * @param footer
+     * @param css
+     * @param showAllSelectOptions
+     * @param repeatHeader
+     * @param repeatFooter
+     * @param cleanForm
+     * @return 
+     */
+    public static byte[] createPdf(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter, Boolean cleanForm) {
         try {
             ITextRenderer r = getRenderer();
             synchronized (r) {
-                html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter);
+                html = formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter, cleanForm);
             
                 final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 documentBuilderFactory.setValidating(false);
@@ -195,8 +208,123 @@ public class FormPdfUtil {
      * @return 
      */
     public static String formatHtml(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter) {
+        return formatHtml(html, header, footer, css, showAllSelectOptions, repeatHeader, repeatFooter, true);
+    }
+    
+    /**
+     * Prepare the HTML for PDF generation
+     * @param html
+     * @param header
+     * @param footer
+     * @param css
+     * @param showAllSelectOptions
+     * @param repeatHeader
+     * @param repeatFooter
+     * @param cleanForm
+     * @return 
+     */
+    public static String formatHtml(String html, String header, String footer, String css, Boolean showAllSelectOptions, Boolean repeatHeader, Boolean repeatFooter, Boolean cleanForm) {
+        //taking care special characters
         html = convertSpecialHtmlEntity(html);
+        
+        //remove script
+        html = html.replaceAll("(?s)<script[^>]*>.*?</script>", "");
 
+        //remove style
+        html = html.replaceAll("(?s)<style[^>]*>.*?</style>", "");
+        
+        if (cleanForm != null && cleanForm) {
+            html = cleanFormHtml(html, showAllSelectOptions);
+        }
+        
+        //append style
+        String style = "<style type='text/css'>";
+        style += "*{font-size:12px;font-family:"+DEFAULT_FONTS+";}";
+        style += formPdfCss();
+        style += ".quickEdit{display:none;}";
+        style += ".pdf_visible{display:block !important; height: auto !important; width: 100% !important;}";
+        style += ".pdf_hidden{display:none !important;}";
+        
+        if (repeatHeader != null && repeatHeader) {
+            style += "div.header{display: block;position: running(header);}";
+            style += "@page { @top-center { content: element(header) }}";
+        }
+        if (repeatFooter != null && repeatFooter) {    
+            style += "div.footer{display: block;position: running(footer);}";
+            style += "@page { @bottom-center { content: element(footer) }}";
+        }
+        
+        if (css != null && !css.isEmpty()) {
+            style += css;
+        }
+        
+        style += "</style>";
+        
+        String headerHtml = ""; 
+        if (header != null && !header.isEmpty()) {
+            headerHtml = "<div class=\"header\">" + header + "</div>";
+        }
+        
+        String footerHtml = ""; 
+        if (footer != null && !footer.isEmpty()) {
+            footerHtml = "<div class=\"footer\">" + footer + "</div>";
+        }
+        
+        String htmlMeta = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        htmlMeta += "<!DOCTYPE html>";
+        htmlMeta += "<html>";
+        htmlMeta += "<head>";
+        htmlMeta += "<meta http-equiv=\"content-type\" content=\"application/xhtml+xml; charset=UTF-8\" />";
+        htmlMeta += style + "</head><body>";
+                
+        if (repeatFooter != null && repeatFooter) { 
+            html = htmlMeta + headerHtml + footerHtml + html;
+        } else {
+            html = htmlMeta + headerHtml + html + footerHtml;
+        }
+        
+        html += "</body></html>";
+        
+        return html;
+    }
+    
+    /**
+     * Get the styles of form in PDF
+     * 
+     * @return 
+     */
+    public static String formPdfCss() {
+        String style = "";
+        style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
+        style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
+        style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";
+        style += ".form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px;}";
+        style += ".form-cell > .label, .subform-cell > .label {width: 40%;display: block;float: left;font-weight:bold;}";
+        style += "table {clear:both;}";
+        style += "p {margin:5px 0;}";
+        style += ".form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {border: solid 1px silver;padding: 3px;margin: 0px;}";
+        style += ".subform-container{ border: 5px solid #dfdfdf;padding: 3px;margin-top:5px;}";
+        style += ".subform-container, .subform-section {background: #efefef;}";
+        style += ".subform-title{background: #efefef;position:relative;top:-12px;}";
+        style += ".form-fileupload {float: left;}";
+        style += ".form-cell-value, .subform-cell-value {float: left;width: 60%;}";
+        style += ".form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}";
+        style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
+        style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
+        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
+        style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
+        return style;
+    }
+    
+    /**
+     * Clean the form HTML for PDF generation
+     * 
+     * @param html
+     * @param showAllSelectOptions
+     * @return 
+     */
+    public static String cleanFormHtml(String html, Boolean showAllSelectOptions) {
+        
         //remove hidden field
         html = html.replaceAll("<input[^>]*type=\"hidden\"[^>]*>", "");
 
@@ -212,12 +340,6 @@ public class FormPdfUtil {
 
         //remove link
         html = html.replaceAll("<link[^>]*>", "");
-
-        //remove script
-        html = html.replaceAll("(?s)<script[^>]*>.*?</script>", "");
-
-        //remove style
-        html = html.replaceAll("(?s)<style[^>]*>.*?</style>", "");
 
         //remove id
         html = html.replaceAll("id=\"([^\\\"]*)\"", "");
@@ -354,71 +476,6 @@ public class FormPdfUtil {
         
         //remove br
         html = html.replaceAll("</\\s?br>", "");
-        
-        //append style
-        String style = "<style type='text/css'>";
-        style += "*{font-size:12px;font-family:"+DEFAULT_FONTS+";}";
-        style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
-        style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
-        style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";
-        style += ".form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px;}";
-        style += ".form-cell > .label, .subform-cell > .label {width: 40%;display: block;float: left;font-weight:bold;}";
-        style += "table {clear:both;}";
-        style += "p {margin:5px 0;}";
-        style += ".form-cell table td, .form-cell table th, .subform-cell table td, .subform-cell table th {border: solid 1px silver;padding: 3px;margin: 0px;}";
-        style += ".subform-container{ border: 5px solid #dfdfdf;padding: 3px;margin-top:5px;}";
-        style += ".subform-container, .subform-section {background: #efefef;}";
-        style += ".subform-title{background: #efefef;position:relative;top:-12px;}";
-        style += ".form-fileupload {float: left;}";
-        style += ".form-cell-value, .subform-cell-value {float: left;width: 60%;}";
-        style += ".form-cell-value.form-cell-full, .subform-cell-value.subform-cell-full {width: 100%;}";
-        style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
-        style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
-        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
-        style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
-        style += ".quickEdit{display:none;}";
-        style += ".pdf_visible{display:block !important; height: auto !important; width: 100% !important;}";
-        style += ".pdf_hidden{display:none !important;}";
-        
-        if (repeatHeader != null && repeatHeader) {
-            style += "div.header{display: block;position: running(header);}";
-            style += "@page { @top-center { content: element(header) }}";
-        }
-        if (repeatFooter != null && repeatFooter) {    
-            style += "div.footer{display: block;position: running(footer);}";
-            style += "@page { @bottom-center { content: element(footer) }}";
-        }
-        
-        if (css != null && !css.isEmpty()) {
-            style += css;
-        }
-        
-        style += "</style>";
-        
-        String headerHtml = ""; 
-        if (header != null && !header.isEmpty()) {
-            headerHtml = "<div class=\"header\">" + header + "</div>";
-        }
-        
-        String footerHtml = ""; 
-        if (footer != null && !footer.isEmpty()) {
-            footerHtml = "<div class=\"footer\">" + footer + "</div>";
-        }
-        
-        String htmlMeta = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-        htmlMeta += "<!DOCTYPE html>";
-        htmlMeta += "<html>";
-        htmlMeta += "<head>";
-        htmlMeta += "<meta http-equiv=\"content-type\" content=\"application/xhtml+xml; charset=UTF-8\" />";
-        htmlMeta += style + "</head><body>";
-                
-        if (repeatFooter != null && repeatFooter) { 
-            html = htmlMeta + headerHtml + footerHtml + html;
-        } else {
-            html = htmlMeta + headerHtml + html + footerHtml;
-        }
-        
-        html += "</body></html>";
         
         return html;
     }
