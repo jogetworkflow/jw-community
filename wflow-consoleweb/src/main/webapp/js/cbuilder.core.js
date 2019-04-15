@@ -221,7 +221,7 @@ CustomBuilder = {
         PropertyEditor.Popup.showDialog(CustomBuilder.builderType + "-property-editor", options);
     },
     
-    initPaletteElement : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, render){
+    initPaletteElement : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData){
         if ((typeof propertyOptions) === "string") {
             propertyOptions = eval(propertyOptions);
         }
@@ -229,10 +229,18 @@ CustomBuilder = {
             defaultPropertiesValues = eval("["+defaultPropertiesValues+"]")[0];
         }
         
+        if (css === undefined || css === null) {
+            css = "";
+        }
+        
         this.paletteElements[className] = new Object();
         this.paletteElements[className]['label'] = label;
         this.paletteElements[className]['propertyOptions'] = propertyOptions;
         this.paletteElements[className]['properties'] = defaultPropertiesValues;
+        
+        if (metaData !== undefined && metaData !== null) {
+            this.paletteElements[className] = $.extend(this.paletteElements[className], metaData);
+        }
 
         if (render === undefined || render !== false) {
             var iconObj = null;
@@ -261,7 +269,7 @@ CustomBuilder = {
                 container = $('#builder-palette-body > ul');
             }
 
-            var li = $('<li><div id="'+className.replace(".", "_")+'" element-class="'+className+'" class="builder-palette-element"> <label class="label">'+label+'</label></div></li>');
+            var li = $('<li><div id="'+className.replace(".", "_")+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <label class="label">'+label+'</label></div></li>');
             $(li).find('.builder-palette-element').prepend(iconObj);
             $(container).append(li);
         }
@@ -296,7 +304,7 @@ CustomBuilder = {
     },
     
     save : function(){
-        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saving'));
+        CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
         var self = this;
         var json = this.getJson();
         $.post(this.saveUrl, {json : json} , function(data) {
