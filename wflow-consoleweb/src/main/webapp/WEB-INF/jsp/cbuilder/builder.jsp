@@ -59,7 +59,7 @@
                 CustomBuilder.initPropertiesOptions(${builder.propertyOptions});
                 
                 CustomBuilder.initBuilder(function() {
-                    CustomBuilder.loadJson('${json}');
+                    CustomBuilder.loadJson($("#cbuilder-json").val());
                 });
             });
 
