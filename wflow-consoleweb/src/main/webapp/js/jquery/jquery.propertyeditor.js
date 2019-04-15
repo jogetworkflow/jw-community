@@ -768,7 +768,9 @@ PropertyEditor.Util = {
         var data = control.getData(true);
         var value = data[control.properties.name];
 
-        if (value !== undefined && value !== null) {
+        if (value !== undefined && value !== null && value["className"] !== undefined) {
+            values = [value["className"]];
+        }else if (value !== undefined && value !== null) {
             values = value.split(";");
         }
 
@@ -2515,6 +2517,38 @@ PropertyEditor.Type.Radio.prototype = {
     renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault
 };
 PropertyEditor.Type.Radio = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Radio.prototype);
+
+PropertyEditor.Type.ImageRadio = function() {};
+PropertyEditor.Type.ImageRadio.prototype = {
+    shortname: "imageradio",
+    getData: PropertyEditor.Type.Radio.prototype.getData,
+    renderField: function() {
+        var thisObj = this;
+        var html = '';
+
+        if (this.value === null) {
+            this.value = "";
+        }
+
+        PropertyEditor.Util.retrieveOptionsFromCallback(this, this.properties);
+
+        if (this.properties.options !== undefined && this.properties.options !== null) {
+            $.each(this.properties.options, function(i, option) {
+                var checked = "";
+                if (thisObj.value === option.value) {
+                    checked = " checked";
+                }
+                html += '<span class="multiple_option"><label><input type="radio" id="' + thisObj.id + '" name="' + thisObj.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + checked + '/><img style="max-width:100%;" title="' + PropertyEditor.Util.escapeHtmlTag(option.label) + '" src="' + PropertyEditor.Util.escapeHtmlTag(PropertyEditor.Util.replaceContextPath(option.image, thisObj.options.contextPath)) + '"/></label></span>';
+            });
+        }
+        return html;
+    },
+    initScripting: function() {
+        PropertyEditor.Util.supportHashField(this);
+    },
+    renderDefault: PropertyEditor.Type.CheckBox.prototype.renderDefault
+};
+PropertyEditor.Type.ImageRadio = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ImageRadio.prototype);
 
 PropertyEditor.Type.SelectBox = function() {};
 PropertyEditor.Type.SelectBox.prototype = {
