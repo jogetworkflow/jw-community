@@ -221,6 +221,11 @@ CustomBuilder = {
         PropertyEditor.Popup.showDialog(CustomBuilder.builderType + "-property-editor", options);
     },
     
+    saveBuilderProperties : function(container, properties) {
+        CustomBuilder.data.properties = properties;
+        CustomBuilder.update();
+    },
+    
     initPaletteElement : function(category, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData){
         if ((typeof propertyOptions) === "string") {
             propertyOptions = eval(propertyOptions);
