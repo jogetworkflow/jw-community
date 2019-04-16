@@ -2596,6 +2596,14 @@ PropertyEditor.Type.SelectBox.prototype = {
             builder = "userview";
         } else if (lname.indexOf("processid") !== -1 || lname.indexOf("processdefid") !== -1) {
             builder = "process";
+        } else if (AdvancedTools !== undefined && AdvancedTools !== null 
+                && AdvancedTools.treeViewer !== undefined && AdvancedTools.treeViewer !== null 
+                && AdvancedTools.treeViewer.builderType !== undefined) {
+            for (var key in AdvancedTools.treeViewer.builderType) {
+                if (lname.indexOf(key+"id") !== -1 || lname.indexOf(key+"defid") !== -1) {
+                    builder = "cbuilder/" + key;
+                }
+            }
         }
         
         if (builder !== "") {
@@ -2681,7 +2689,13 @@ PropertyEditor.Type.SelectBox.prototype = {
                 var value = $("#" + field.id).val();
                 if (value !== "" && value !== undefined && value !== null) {
                     var builder = $("#" + field.id + "_input a.openbuilder").data("type");
-                    var url = field.options.contextPath + "/web/console/app" + field.options.appPath + "/" + builder + "/builder";
+                    var url = "";
+                    
+                    if (builder.indexOf("cbuilder") !== -1) {
+                        url = field.options.contextPath + "/web/console/app" + field.options.appPath + "/" + builder + "/design";
+                    } else {
+                        url = field.options.contextPath + "/web/console/app" + field.options.appPath + "/" + builder + "/builder";
+                    }
                     
                     if (builder === "process") {
                         url += "?processId=" + value;
