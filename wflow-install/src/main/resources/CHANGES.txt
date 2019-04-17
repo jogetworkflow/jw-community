@@ -2,6 +2,13 @@ v6 COMMUNITY
 ============
 For more information, please refer to the knowledge base at http://dev.joget.org/community/display/KBv6
 
+CHANGES IN 6.0.18
+=================
+c0dccae3 Fixed: wflow-consoleweb - Form - Header title is not allowed to put HTML tag. #6393 @6.0-SNAPSHOT
+96789f25 Fixed: wflow-core - Grid - In readonly mode, fail to display data after form submission with validation error. #6406 @6.0-SNAPSHOT
+309e2baa Fixed: wflow-core - FormPdfUtil/ Datalist PDF export - Arabic font is not embedded.  #6141 @6.0-SNAPSHOT
+3d17097f Fixed: wflow-core - Section - Radio button field with same id in 2 visibility controlled sections are not able to load value correctly. #6392 @6.0-SNAPSHOT
+
 CHANGES IN 6.0.17
 =================
 1b878e66 Fixed: wflow-core - Import App - Environment Variable in previous app version is removed if it does not exist in the imported zip even override environment variables is disabled. #6379 @6.0-SNAPSHOT
