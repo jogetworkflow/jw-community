@@ -54,8 +54,12 @@ public class PropertyJsonController {
     AppResourceDao appResourceDao;
 
     @RequestMapping("/property/json/getElements")
-    public void getElements(Writer writer, @RequestParam("classname") String className, @RequestParam(value = "exclude", required = false) String exclude) throws Exception {
+    public void getElements(Writer writer, @RequestParam("classname") String className, @RequestParam(value = "exclude", required = false) String exclude, @RequestParam(value = "includeHidden", required = false) Boolean includeHidden) throws Exception {
         JSONArray jsonArray = new JSONArray();
+        
+        if (includeHidden == null) {
+            includeHidden = false;
+        }
         
         Collection<String> excludeList = new ArrayList<String>();
         if (exclude != null && !exclude.isEmpty()) {
@@ -80,7 +84,7 @@ public class PropertyJsonController {
 
             for (Plugin p : elementList) {
                 String pClassName = ClassUtils.getUserClass(p).getName();
-                if (!(p instanceof HiddenPlugin || excludeList.contains(pClassName))) {
+                if (!((!includeHidden && p instanceof HiddenPlugin) || excludeList.contains(pClassName))) {
                     Map<String, String> option = new HashMap<String, String>();
                     option.put("value", pClassName);
                     option.put("label", p.getI18nLabel());

@@ -21,11 +21,11 @@ CustomBuilder = {
                 matchers : {
                     'editable' : {
                         match : function (viewer, deferreds, node, jsonObj, refObj) {
-                            if (jsonObj['className'] === undefined) {
+                            if (node.data['parent'] === undefined) {
                                 DependencyTree.Util.createEditIndicator(viewer, node, function(){
                                     CustomBuilder.showPopUpBuilderProperties();
                                 });
-                            } else {
+                            } else if (jsonObj['className'] !== undefined) {
                                 DependencyTree.Util.createEditIndicator(viewer, node, function() {
                                     CustomBuilder.editProperties(jsonObj["className"], jsonObj["properties"]);
                                 });
