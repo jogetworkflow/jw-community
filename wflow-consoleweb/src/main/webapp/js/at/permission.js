@@ -236,8 +236,13 @@ PermissionManager = {
         if (PermissionManager.options.builder === "datalist") {
             PermissionManager.renderElementsDatalistBuilder(tbody);
         } else {
-            var root = PermissionManager.getRootElement();
-            PermissionManager.renderElement(root, tbody);
+            if (PermissionManager.options.builder === "custom"
+                    && CustomBuilder.config.advanced_tools.permission.render_elements_callback !== "") {
+                CustomBuilder.callback(CustomBuilder.config.advanced_tools.permission.render_elements_callback, [tbody]);
+            } else {
+                var root = PermissionManager.getRootElement();
+                PermissionManager.renderElement(root, tbody);
+            }
         }
     },
     renderElementsHeader : function(row) {
@@ -345,12 +350,23 @@ PermissionManager = {
             if (pluginLabel !== null) {
                 $(row).find(".element-class").text(pluginLabel);
 
+                var label = "";
                 if (element["properties"]["label"] !== undefined) {
                     $(row).find(".element-meta").append('<div class="element-class">'+UI.escapeHTML(pluginLabel)+'</div>');
-                    $(row).find(".element-meta").append('<span class="element-label">' + UI.escapeHTML(element["properties"]["label"]) + '</span>');
+                    label = element["properties"]["label"];
                 } else {
-                    $(row).find(".element-meta").append('<span class="element-label">' + UI.escapeHTML(pluginLabel) + '</span>');
+                    label = pluginLabel;
                 }
+                
+                if (PermissionManager.options.builder === "custom" 
+                        && CustomBuilder.config.advanced_tools.permission.element_label_callback !== "") {
+                    var tempLabel = CustomBuilder.callback(CustomBuilder.config.advanced_tools.permission.element_label_callback, [element]);
+                    if (tempLabel !== null && tempLabel !== undefined) {
+                        label = tempLabel;
+                    }
+                }
+                
+                $(row).find(".element-meta").append('<span class="element-label">' + UI.escapeHTML(label) + '</span>');
                 if (element["properties"]["id"] !== undefined) {
                     var eid = element["properties"]["id"];
                     if (PermissionManager.options.builder === "userview") {
@@ -890,7 +906,7 @@ PermissionManager = {
                 if (default_value === null || default_value === undefined) {
                     default_value = "";
                 }
-                if ($(parentRow).find(".unauthorized").hasClass("disabled") || !$(parentRow).find(".unauthorized a[data-value='"+default_value+"']").hasClass("selected")) {
+                if (parentRow !== null && ($(parentRow).find(".unauthorized").hasClass("disabled") || !$(parentRow).find(".unauthorized a[data-value='"+default_value+"']").hasClass("selected"))) {
                     $(row).find(".unauthorized").addClass("disabled");
                 } else {
                     if (permissionObj !== null && permissionObj !== undefined) {
@@ -908,7 +924,7 @@ PermissionManager = {
             if (default_value === null || default_value === undefined) {
                 default_value = "";
             }
-            if ($(parentRow).find(".authorized a[data-value='"+default_value+"']").hasClass("selected")) {
+            if (parentRow === null || $(parentRow).find(".authorized a[data-value='"+default_value+"']").hasClass("selected")) {
                 if (permissionObj !== null && permissionObj !== undefined) {
                     var property = $(row).find(".authorized").data("property");
                     var propertyValue = permissionObj[property];

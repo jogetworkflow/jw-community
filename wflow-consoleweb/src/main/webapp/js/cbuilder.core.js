@@ -81,7 +81,8 @@ CustomBuilder = {
                 element_support_plugin : [],
                 display_element_id : false,
                 childs_properties : ["elements"],
-                ignore_classes : []
+                ignore_classes : [],
+                render_elements_callback : "" 
             }
         }
     },
@@ -105,7 +106,7 @@ CustomBuilder = {
         if (name !== "" && name !== undefined && name !== null) {
             var func = PropertyEditor.Util.getFunction(name);
             if (func !== null && func !== undefined) {
-                func.apply(null, args);
+                return func.apply(null, args);
             }
         }
     },
