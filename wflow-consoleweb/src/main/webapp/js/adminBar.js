@@ -62,6 +62,8 @@ var AdminBar = {
             AdminBar.hideQuickOverlay();
         });
         
+        AdminBar.initPinMode();
+        
         return false;
     },
     togglePinQuickOverlay: function() {
@@ -250,7 +252,6 @@ var AdminBar = {
             path: path
         });
         AdminBar.initQuickEditMode();
-        AdminBar.initPinMode();
     },
     hideAdminBar: function() {
         $("body, html").removeClass("adminBarShown");
