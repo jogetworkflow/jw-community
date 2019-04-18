@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.userview.model.Permission;
 
 /**
  * Represents data related to a form e.g. from request, binders, errors, etc.
@@ -26,7 +27,7 @@ public class FormData {
     protected Map<FormStoreBinder, FormRowSet> binderRowSetMap = new ListOrderedMap();
     protected Map<String, String> resultMap = new ListOrderedMap();
     protected Boolean stay = false;
-    protected String permissionKey;
+    protected String permissionKey = Permission.DEFAULT;
 
     public Boolean getStay() {
         return stay;
