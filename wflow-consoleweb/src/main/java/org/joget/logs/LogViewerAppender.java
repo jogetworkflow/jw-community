@@ -115,10 +115,10 @@ public class LogViewerAppender extends AppenderSkeleton {
     protected synchronized CountingQuietWriter getWriter(String appId) {
         try {
             String filename = getFileName(appId);
-            CountingQuietWriter writer = getCache().get(filename);
             
             //check rolling
-            long size = writer.getCount();
+            File currentFile = new File(filename);
+            long size = currentFile.length();
             if (size >= MAX_FILESIZE) {
                 //delete previous rolling file if exist
                 File file = new File(filename + LOG_ROLLING_EXT);
@@ -131,9 +131,10 @@ public class LogViewerAppender extends AppenderSkeleton {
                 
                 //rename the current to rolling
                 FileUtils.rename(new File(filename), new File(filename + LOG_ROLLING_EXT));
-                
-                writer = getCache().get(filename);
-            }
+            }            
+            
+            CountingQuietWriter writer = getCache().get(filename);            
+
             return writer;
         } catch (Exception e) {
             e.printStackTrace();

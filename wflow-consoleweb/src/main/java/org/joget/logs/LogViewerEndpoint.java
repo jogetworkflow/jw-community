@@ -35,7 +35,9 @@ public class LogViewerEndpoint {
     
     @OnError
     public void onError(Throwable thr) {
-        LogUtil.error(LogViewerEndpoint.class.getName(), thr, "");
+        if (LogUtil.isDebugEnabled(LogViewerEndpoint.class.getName())) {
+            LogUtil.error(LogViewerEndpoint.class.getName(), thr, "");
+        }
         HostManager.resetProfile();
     }
 }

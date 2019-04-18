@@ -45,7 +45,7 @@
             if ($(".followbtn").hasClass("unfollow")) {
                 var height = $("#logviewer").outerHeight(true);
                 if (height > navHeight) {
-                    $('html, body').stop().animate({scrollTop:height - navHeight}, "200");
+                    $('html, body').stop().animate({scrollTop:height - navHeight}, 50);
                 }
             }
         };
@@ -58,6 +58,8 @@
         
         var i = 1;
         var websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "${pageContext.request.contextPath}/applog/${appId}");
+        let messages = [];
+        let timer;
         websocket.onmessage = function(event) {
             var text = event.data;
             if (text.startsWith("INFO")) {
@@ -71,8 +73,15 @@
             }
             
             if(text.trim() !== ""){
-                $("#logviewer #logs").append('<div class="line '+status+'"><div class="linenumber">'+(i++)+'</div><div class="text">'+ text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') + '</div></div>');
-                scrollSmoothToBottom();
+                let line = '<div class="line '+status+'"><div class="linenumber">'+(i++)+'</div><div class="text">'+ text.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') + '</div></div>';
+                messages.push(line);
+                clearTimeout(timer);
+                timer = setTimeout(function() {
+                    let logs = $("#logviewer #logs");
+                    logs[0].innerHTML = logs[0].innerHTML + messages.join("\n");
+                    messages = [];
+                    scrollSmoothToBottom();
+                }, 1000);
             }
         };
     });

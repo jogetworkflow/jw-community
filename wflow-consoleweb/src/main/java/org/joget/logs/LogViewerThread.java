@@ -45,12 +45,21 @@ public class LogViewerThread extends Thread {
             String line;
             try {
                 while((line = reader.readLine()) != null) {
-                    endpoint.session.getBasicRemote().sendText(line);
+                    try {
+                        endpoint.session.getBasicRemote().sendText(line, true);
+                    } catch(IllegalArgumentException | IllegalStateException ise) {
+                        // ignore
+                    }
                 }
             } catch (IOException e) {
-                LogUtil.error(LogViewerThread.class.getName(), e, "");
+                if (LogUtil.isDebugEnabled(LogViewerThread.class.getName())) {
+                    LogUtil.error(LogViewerThread.class.getName(), e, "");
+                }
             }
         } catch(Exception ex) { 
+            if (LogUtil.isDebugEnabled(LogViewerThread.class.getName())) {
+                LogUtil.error(LogViewerThread.class.getName(), ex, "");
+            }
         } finally {
             try {
                 if (reader != null) {

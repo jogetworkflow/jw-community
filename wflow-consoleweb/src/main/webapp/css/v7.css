@@ -743,6 +743,11 @@ body .flexigrid div.hDiv th.sorted.thOver > div{
 body .flexigrid div.hDiv th.sorted{
     background: transparent;
 }
+body .flexigrid div.bDiv tr {
+    max-height: 100px;
+    display: inline-block;
+    overflow: auto;
+}
 body .flexigrid div.bDiv td {
     padding: 5px;
     box-sizing: border-box;
